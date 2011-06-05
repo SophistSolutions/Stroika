@@ -1,23 +1,24 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<cstdio>
 #include	<fstream>
 #include	<map>
 #include	<cmath>
 
-#include	"DateUtils.h"
-#include	"FileUtils.h"
-#include	"StroikaConfig.h"
-#include	"ThreadUtils.h"
+#include	"../DateUtils.h"
+#include	"../FileUtils.h"
+#include	"../StroikaConfig.h"
+#include	"../ThreadUtils.h"
 
 #include	"Trace.h"
 
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Debug;
 
 using	namespace	StringUtils;
 using	namespace	ThreadUtils;

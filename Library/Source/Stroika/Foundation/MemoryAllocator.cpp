@@ -19,7 +19,7 @@ using	namespace	MemoryAllocator;
 
 using	ThreadUtils::AutoCriticalSection;
 
-using	Trace::TraceContextBumper;
+using	Debug::Trace::TraceContextBumper;
 
 
 

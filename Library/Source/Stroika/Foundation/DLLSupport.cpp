@@ -3,9 +3,9 @@
  */
 #include	"StroikaPreComp.h"
 
-#include	"Assertions.h"
+#include	"Debug/Assertions.h"
 #include	"Exceptions.h"
-#include	"Trace.h"
+#include	"Debug/Trace.h"
 
 #include	"DLLSupport.h"
 
@@ -13,12 +13,11 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
-using	Trace::TraceContextBumper;
+using	Debug::Trace::TraceContextBumper;
 
 using	namespace	DLLSupport;
 using	namespace	Exceptions;
 
-using	namespace	Trace;
 
 
 

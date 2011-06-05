@@ -19,7 +19,7 @@
 
 #include	"Exceptions.h"
 #include	"SetUtils.h"
-#include	"Trace.h"
+#include	"Debug/Trace.h"
 
 #include	"FileUtils.h"
 

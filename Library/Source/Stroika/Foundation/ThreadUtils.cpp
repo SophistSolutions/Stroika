@@ -9,7 +9,7 @@
 #include	<windows.h>
 
 #include	"DLLSupport.h"
-#include	"Trace.h"
+#include	"Debug/Trace.h"
 #include	"WaitSupport.h"
 #include	"VectorUtils.h"
 
@@ -118,7 +118,7 @@ LONG	Event::sCurAllocatedHandleCount		=	0;
 #endif
 
 
-using	Trace::TraceContextBumper;
+using	Debug::Trace::TraceContextBumper;
 
 /*
  ********************************************************************************

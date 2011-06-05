@@ -6,7 +6,7 @@
 
 #include	"StroikaPreComp.h"
 
-#include	"Assertions.h"
+#include	"Debug/Assertions.h"
 #include	"Support.h"
 
 

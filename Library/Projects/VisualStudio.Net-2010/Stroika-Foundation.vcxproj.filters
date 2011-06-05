@@ -4,11 +4,11 @@
     <Filter Include="Source">
       <UniqueIdentifier>{d70c3221-cc48-4c51-a412-c35c017e0612}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Debug">
+      <UniqueIdentifier>{bc9615e9-a571-4236-a748-3e2c455667e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Assertions.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\BlockAllocated.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -16,9 +16,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Trace.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\ModuleInit.cpp">
@@ -63,11 +60,14 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Assertions.cpp">
+      <Filter>Source\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Trace.cpp">
+      <Filter>Source\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Assertions.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\BlockAllocated.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -78,9 +78,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Trace.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h">
@@ -127,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h">
+      <Filter>Source\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Trace.h">
+      <Filter>Source\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

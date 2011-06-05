@@ -10,7 +10,7 @@
 #include	<tchar.h>
 
 #include	"FileUtils.h"
-#include	"Trace.h"
+#include	"Debug/Trace.h"
 #include	"StringUtils.h"
 
 #include	"Exceptions.h"
@@ -28,7 +28,7 @@ using	namespace	Stroika::Foundation;
 using	namespace	StringUtils;
 using	namespace	Exceptions;
 
-using	Trace::TraceContextBumper;
+using	Debug::Trace::TraceContextBumper;
 
 
 namespace {

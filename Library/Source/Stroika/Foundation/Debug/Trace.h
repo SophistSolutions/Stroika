@@ -4,22 +4,25 @@
 #ifndef	__Trace_h__
 #define	__Trace_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #ifdef	_WIN32
-#include	<windows.h>
-#include	<tchar.h>
+	#include	<windows.h>
+	#include	<tchar.h>
 #endif
 
-#include	"ModuleInit.h"
-#include	"StringUtils.h"
-#include	"Support.h"
+#include	"../ModuleInit.h"
+#include	"../StringUtils.h"
+#include	"../Support.h"
 
 
 
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	Debug {
 
+
+			
 /*
  *	So we can distribute near-release versions of HF to users, and get feedback - a trace file
  *	to help debug problems we cannot reproduce.
@@ -146,7 +149,7 @@ namespace	Trace {
 */
 #ifndef	DbgTrace
 	#if		qDefaultTracingOn
-		#define	DbgTrace	Trace::Emitter::Get ().EmitTraceMessage
+		#define	DbgTrace	Stroika::Foundation::Debug::Trace::Emitter::Get ().EmitTraceMessage
 	#else
 		#define	DbgTrace	__noop
 	#endif
@@ -154,6 +157,7 @@ namespace	Trace {
 
 
 
+		}
 	}
 }
 
@@ -170,6 +174,7 @@ namespace	Trace {
 
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	Debug {
 
 namespace	Trace {
 
@@ -232,14 +237,15 @@ namespace	Trace {
 		};
 	}
 }
+		}
 	}
 }
 
 namespace	{
-	Stroika::Foundation::ModuleInit::ModuleInitializer<Stroika::Foundation::Trace::Private::MODULE_INIT>	_TracePrivateINIT_;	// this object constructed for the CTOR/DTOR per-module side-effects
+	Stroika::Foundation::ModuleInit::ModuleInitializer<Stroika::Foundation::Debug::Trace::Private::MODULE_INIT>	_TracePrivateINIT_;	// this object constructed for the CTOR/DTOR per-module side-effects
 }
 
-inline	Stroika::Foundation::Trace::Emitter&	Stroika::Foundation::Trace::Emitter::Get ()
+inline	Stroika::Foundation::Debug::Trace::Emitter&	Stroika::Foundation::Debug::Trace::Emitter::Get ()
 	{
 		return _TracePrivateINIT_.Actual ().fEmitter;
 	}

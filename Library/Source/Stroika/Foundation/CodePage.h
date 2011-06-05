@@ -307,7 +307,7 @@ class	CodePagesGuesser {
  ********************************************************************************
  */
 }
-#include	"Assertions.h"
+#include	"Debug/Assertions.h"
 
 
 namespace	Stroika {	

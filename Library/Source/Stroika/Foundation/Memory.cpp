@@ -16,7 +16,7 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
-using	Trace::TraceContextBumper;
+using	Debug::Trace::TraceContextBumper;
 
 
 // Very primitive memleak detector to help me debug memleak issues

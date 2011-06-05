@@ -7,7 +7,7 @@
 
 #include	<atlbase.h>		// For CComBSTR
 
-#include	"Assertions.h"
+#include	"Debug/Assertions.h"
 #include	"Exceptions.h"
 #include	"SmallStackBuffer.h"
 
@@ -16,7 +16,7 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
-using	Trace::TraceContextBumper;
+using	Debug::Trace::TraceContextBumper;
 
 using	namespace	Exceptions;
 using	namespace	StringUtils;

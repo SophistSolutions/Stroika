@@ -57,7 +57,7 @@ namespace	VectorUtils {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-	#include	"Assertions.h"
+	#include	"Debug/Assertions.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

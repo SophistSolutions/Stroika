@@ -1,16 +1,17 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__Assertions_h__
-#define	__Assertions_h__	1
+#ifndef	__Stroika_Foundation_Debug_Assertions_h__
+#define	__Stroika_Foundation_Debug_Assertions_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
-#include "Support.h"
+#include "../Support.h"
 
 
-namespace	Stroika {	
+namespace	Stroika {
 	namespace	Foundation {
+		namespace	Debug {
 
 
 #if		defined (_DEBUG)
@@ -94,17 +95,17 @@ namespace	Stroika {
 	@METHOD:		Assert
 	@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 	*/
-	#define	Assert(c)			{if (!(c)) { _Debug_Trap_ (__FILE__, __LINE__); }}
+	#define	Assert(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
 	/*
 	@METHOD:		Require
 	@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 	*/
-	#define	Require(c)			{if (!(c)) { _Debug_Trap_ (__FILE__, __LINE__); }}
+	#define	Require(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
 	/*
 	@METHOD:		Ensure
 	@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 	*/
-	#define	Ensure(c)			{if (!(c)) { _Debug_Trap_ (__FILE__, __LINE__); }}
+	#define	Ensure(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
 #else
 	#define	Assert(c)
 	#define	Require(c)
@@ -152,8 +153,9 @@ namespace	Stroika {
 	#define	Verify(c)		(c)
 #endif
 
+		}
 	}
 }
 
 
-#endif	/*__Assertions_h__*/
+#endif	/*__Stroika_Foundation_Debug_Assertions_h__*/

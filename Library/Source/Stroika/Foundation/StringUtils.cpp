@@ -6,9 +6,9 @@
 #include	<iomanip>
 #include	<sstream>
 
-#include	"Assertions.h"
+#include	"Debug/Assertions.h"
 #include	"CodePage.h"
-#include	"Trace.h"
+#include	"Debug/Trace.h"
 
 #include	"StringUtils.h"
 

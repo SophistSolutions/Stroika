@@ -11,10 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Assertions.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\CodePage.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\DateUtils.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Assertions.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\DLLSupport.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Exceptions.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\FileUtils.cpp" />
@@ -27,15 +28,15 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\StringUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\ThreadUtils.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Trace.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\VectorUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Assertions.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\BlockAllocated.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\CodePage.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\DateUtils.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\DLLSupport.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Exceptions.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\FileUtils.h" />
@@ -50,7 +51,6 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\ThreadUtils.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Trace.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\VectorUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h" />
   </ItemGroup>

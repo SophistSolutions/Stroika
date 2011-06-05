@@ -7,7 +7,7 @@
 
 #include	"Support.h"
 #include	"StringUtils.h"
-#include	"Trace.h"
+#include	"Debug/Trace.h"
 
 #include	"WaitSupport.h"
 
