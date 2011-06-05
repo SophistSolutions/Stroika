@@ -9,7 +9,7 @@
 #include	<wininet.h>		// for error codes
 #include	<tchar.h>
 
-#include	"../FileUtils.h"
+#include	"../IO/FileUtils.h"
 #include	"../Debug/Trace.h"
 #include	"../StringUtils.h"
 

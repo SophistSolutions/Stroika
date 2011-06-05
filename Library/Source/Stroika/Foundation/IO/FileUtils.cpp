@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<aclapi.h>
 #include	<shlobj.h>
@@ -17,9 +17,9 @@
 #include	<windows.h>
 #include	<tchar.h>
 
-#include	"Execution/Exceptions.h"
-#include	"SetUtils.h"
-#include	"Debug/Trace.h"
+#include	"../Execution/Exceptions.h"
+#include	"../SetUtils.h"
+#include	"../Debug/Trace.h"
 
 #include	"FileUtils.h"
 

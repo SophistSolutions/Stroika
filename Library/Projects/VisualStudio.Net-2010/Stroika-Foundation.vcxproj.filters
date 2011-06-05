@@ -16,6 +16,9 @@
     <Filter Include="Source\Execution">
       <UniqueIdentifier>{10fdccef-36de-4118-9913-a6bbcce6aa34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IO">
+      <UniqueIdentifier>{72c67723-c814-40c6-85fd-7c2150b77b92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp">
@@ -28,9 +31,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\DateUtils.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\FileUtils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\SetUtils.cpp">
@@ -75,6 +75,9 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp">
       <Filter>Source\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\IO\FileUtils.cpp">
+      <Filter>Source\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
@@ -90,9 +93,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\DateUtils.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\FileUtils.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\SetUtils.h">
@@ -139,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h">
       <Filter>Source\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\IO\FileUtils.h">
+      <Filter>Source\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

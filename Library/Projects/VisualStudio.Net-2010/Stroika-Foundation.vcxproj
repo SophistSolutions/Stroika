@@ -19,7 +19,7 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\FileUtils.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\IO\FileUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\Memory.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
@@ -41,7 +41,7 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\FileUtils.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\IO\FileUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Memory.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.h" />
