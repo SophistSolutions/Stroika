@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<algorithm>
 
 #include	<atlbase.h>		// For CComBSTR
 
-#include	"Debug/Assertions.h"
-#include	"Execution/Exceptions.h"
-#include	"Memory/SmallStackBuffer.h"
+#include	"../Debug/Assertions.h"
+#include	"../Execution/Exceptions.h"
+#include	"../Memory/SmallStackBuffer.h"
 
 #include	"DateUtils.h"
 

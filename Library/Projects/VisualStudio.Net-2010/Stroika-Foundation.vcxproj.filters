@@ -25,12 +25,12 @@
     <Filter Include="Source\Containers">
       <UniqueIdentifier>{9b393954-aec8-4060-8572-69f31e6d30a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Time">
+      <UniqueIdentifier>{53245152-d369-4911-b1fc-0ca5997b5f2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\DateUtils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp">
@@ -84,15 +84,15 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.cpp">
       <Filter>Source\Containers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Time\DateUtils.cpp">
+      <Filter>Source\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\DateUtils.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h">
@@ -149,6 +149,9 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.h">
       <Filter>Source\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Time\DateUtils.h">
+      <Filter>Source\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Stroika\Foundation\Support.inl">
@@ -198,6 +201,9 @@
     </None>
     <None Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.inl">
       <Filter>Source\Containers</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Time\DateUtils.inl">
+      <Filter>Source\Time</Filter>
     </None>
   </ItemGroup>
 </Project>
