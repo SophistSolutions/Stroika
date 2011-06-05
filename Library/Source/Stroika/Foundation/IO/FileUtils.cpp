@@ -18,7 +18,7 @@
 #include	<tchar.h>
 
 #include	"../Execution/Exceptions.h"
-#include	"../SetUtils.h"
+#include	"../Containers/SetUtils.h"
 #include	"../Debug/Trace.h"
 
 #include	"FileUtils.h"

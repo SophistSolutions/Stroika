@@ -22,18 +22,15 @@
     <Filter Include="Source\Characters">
       <UniqueIdentifier>{b10cae0f-e7af-476d-91d8-c99071203d54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Containers">
+      <UniqueIdentifier>{9b393954-aec8-4060-8572-69f31e6d30a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\DateUtils.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\SetUtils.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\VectorUtils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp">
@@ -81,6 +78,12 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.cpp">
       <Filter>Source\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.cpp">
+      <Filter>Source\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.cpp">
+      <Filter>Source\Containers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
@@ -90,12 +93,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\DateUtils.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\SetUtils.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\VectorUtils.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h">
@@ -146,11 +143,14 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.h">
       <Filter>Source\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Source\Stroika\Foundation\SetUtils.inl">
-      <Filter>Source</Filter>
-    </None>
     <None Include="..\..\Source\Stroika\Foundation\Support.inl">
       <Filter>Source</Filter>
     </None>
@@ -192,6 +192,12 @@
     </None>
     <None Include="..\..\Source\Stroika\Foundation\Characters\CodePage.inl">
       <Filter>Source\Characters</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.inl">
+      <Filter>Source\Containers</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.inl">
+      <Filter>Source\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>

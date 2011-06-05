@@ -4,11 +4,11 @@
 #ifndef	__SetUtils_h__
 #define	__SetUtils_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<set>
 
-#include	"Support.h"
+#include	"../Support.h"
 
 
 
@@ -59,6 +59,10 @@ namespace	SetUtils {
 	}
 }
 
+#endif	/*__SetUtils_h__*/
+
+
+
 
 /*
  ********************************************************************************
@@ -66,5 +70,3 @@ namespace	SetUtils {
  ********************************************************************************
  */
 #include	"SetUtils.inl"
-
-#endif	/*__SetUtils_h__*/

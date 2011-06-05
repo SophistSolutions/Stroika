@@ -11,7 +11,7 @@
 #include	"DLLSupport.h"
 #include	"../Debug/Trace.h"
 #include	"../WaitSupport.h"
-#include	"../VectorUtils.h"
+#include	"../Containers/VectorUtils.h"
 
 #include	"ThreadUtils.h"
 
