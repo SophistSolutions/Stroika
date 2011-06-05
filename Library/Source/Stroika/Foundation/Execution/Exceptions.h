@@ -12,7 +12,7 @@
 
 #include	"../Characters/StringUtils.h"
 #include	"../Debug/Trace.h"
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 

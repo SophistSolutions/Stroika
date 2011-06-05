@@ -5,6 +5,23 @@
 #define	__StroiaFoundationConfig_h__	1
 
 
+/*
+ *	Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
+ *	is set consistently (even if its not explicitly checked).
+ */
+#if		defined(_DEBUG) && defined (NDEBUG)
+#error	CONFLICT - ONE OR THE OTHER
+#endif
+#if		!defined(_DEBUG) && !defined (NDEBUG)
+#error	DEFINE - ONE OR THE OTHER
+#endif
+
+
+// We should automate detecing this, but I don't know any portable way todo so at compile time - just runtime.
+#define	qIsLittleEndian		1
+#define	qIsBigEndian		0
+
+
 
 /*
  *	Since this include file CAN define #defines which are required before including system includes, its required

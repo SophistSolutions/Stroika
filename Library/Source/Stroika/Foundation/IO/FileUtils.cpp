@@ -1005,7 +1005,7 @@ vector<Byte>	FileUtils::ReadBytes (istream& in)
  */
 void	FileUtils::WriteBytes (ostream& out, const vector<Byte>& s)
 {
-	out.write (reinterpret_cast<const char*> (R4LLib::Start (s)), s.size ());
+	out.write (reinterpret_cast<const char*> (Containers::Start (s)), s.size ());
 }
 
 

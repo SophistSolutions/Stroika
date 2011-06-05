@@ -28,11 +28,11 @@
     <Filter Include="Source\Time">
       <UniqueIdentifier>{53245152-d369-4911-b1fc-0ca5997b5f2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Math">
+      <UniqueIdentifier>{c0ded7bf-d414-4138-bf41-ce8dfe42c0b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -87,11 +87,11 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Time\DateUtils.cpp">
       <Filter>Source\Time</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Time\Realtime.cpp">
+      <Filter>Source\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -152,11 +152,20 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Time\DateUtils.h">
       <Filter>Source\Time</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\Basics.h">
+      <Filter>Source\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Time\Realtime.h">
+      <Filter>Source\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\Basics.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Math\Basics.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Source\Stroika\Foundation\Support.inl">
-      <Filter>Source</Filter>
-    </None>
     <None Include="..\..\Source\Stroika\Foundation\Memory\Memory.inl">
       <Filter>Source\Memory</Filter>
     </None>
@@ -204,6 +213,18 @@
     </None>
     <None Include="..\..\Source\Stroika\Foundation\Time\DateUtils.inl">
       <Filter>Source\Time</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Configuration\Basics.inl">
+      <Filter>Source\Configuration</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Time\Realtime.inl">
+      <Filter>Source\Time</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Containers\Basics.inl">
+      <Filter>Source\Containers</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Math\Basics.inl">
+      <Filter>Source\Math</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Containers/Basics.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -172,7 +173,7 @@ namespace	StringUtils {
 			int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, NULL, NULL, NULL, NULL);
 			intoResult->resize (stringLength);
 			if (stringLength != 0) {
-				Verify (::WideCharToMultiByte (codePage, 0, wsStart, wsLen, R4LLib::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
+				Verify (::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
 			}
 		}
 	inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
@@ -181,7 +182,7 @@ namespace	StringUtils {
 			int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), ws.size (), NULL, NULL, NULL, NULL);
 			intoResult->resize (stringLength);
 			if (stringLength != 0) {
-				Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), ws.size (), R4LLib::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
+				Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), ws.size (), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
 			}
 		}
 	inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
@@ -198,7 +199,7 @@ namespace	StringUtils {
 			int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, sLen, NULL, NULL);
 			intoResult->resize (newStrLen);
 			if (newStrLen != 0) {
-				Verify (::MultiByteToWideChar (codePage, 0, sStart, sLen, R4LLib::Start (*intoResult), newStrLen) == newStrLen);
+				Verify (::MultiByteToWideChar (codePage, 0, sStart, sLen, Containers::Start (*intoResult), newStrLen) == newStrLen);
 			}
 		}
 	inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
@@ -207,7 +208,7 @@ namespace	StringUtils {
 			int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), s.size (), NULL, NULL);
 			intoResult->resize (newStrLen);
 			if (newStrLen != 0) {
-				Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), s.size (), R4LLib::Start (*intoResult), newStrLen) == newStrLen);
+				Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), s.size (), Containers::Start (*intoResult), newStrLen) == newStrLen);
 			}
 		}
 	inline	wstring	NarrowStringToWide (const string& s, int codePage)
@@ -294,7 +295,7 @@ namespace	StringUtils {
 				int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, bstr, srcStrLen, NULL, NULL, NULL, NULL);
 				string	result;
 				result.resize (stringLength);
-				Verify (::WideCharToMultiByte (CP_UTF8, 0, bstr, srcStrLen, R4LLib::Start (result), stringLength, NULL, NULL) == stringLength);
+				Verify (::WideCharToMultiByte (CP_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, NULL, NULL) == stringLength);
 				return result;
 			}
 		}
@@ -435,7 +436,7 @@ namespace	StringUtils {
 		inline	void	CRLFToNL (basic_string<typename TCHAR>* text)
 			{
 				size_t	origLen	=	text->length ();
-				size_t	newLen	=	CRLFToNL (R4LLib::Start (*text), origLen, R4LLib::Start (*text), origLen);
+				size_t	newLen	=	CRLFToNL (Containers::Start (*text), origLen, Containers::Start (*text), origLen);
 				Assert (newLen <= origLen);
 				text->resize (newLen);
 			}
@@ -472,7 +473,7 @@ namespace	StringUtils {
 			{
 				size_t	outBufSize	=	(text.length () + 1) * 2;
 				SmallStackBuffer<TCHAR>	outBuf (outBufSize);
-				size_t newSize = NLToCRLF<TCHAR> (R4LLib::Start (text), text.length (), outBuf.begin (), outBufSize);
+				size_t newSize = NLToCRLF<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
 				Assert (newSize < outBufSize);
 				outBuf[newSize] = '\0';
 				return basic_string<TCHAR> (outBuf);
@@ -510,7 +511,7 @@ namespace	StringUtils {
 			{
 				size_t	outBufSize	=	(text.length () + 1) * 2;
 				SmallStackBuffer<TCHAR>	outBuf (outBufSize);
-				size_t newSize = NLToNative<TCHAR> (R4LLib::Start (text), text.length (), outBuf.begin (), outBufSize);
+				size_t newSize = NLToNative<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
 				Assert (newSize < outBufSize);
 				outBuf[newSize] = '\0';
 				return basic_string<TCHAR> (outBuf);
@@ -549,7 +550,7 @@ namespace	StringUtils {
 			{
 				RequireNotNil (text);
 				size_t	origLen	=	text->length ();
-				size_t	newLen	=	NormalizeTextToNL (static_cast<const typename TCHAR*> (R4LLib::Start (*text)), origLen, static_cast<typename TCHAR*> (R4LLib::Start (*text)), origLen);
+				size_t	newLen	=	NormalizeTextToNL (static_cast<const typename TCHAR*> (Containers::Start (*text)), origLen, static_cast<typename TCHAR*> (Containers::Start (*text)), origLen);
 				Assert (newLen <= origLen);
 				text->resize (newLen);
 			}
@@ -613,7 +614,7 @@ namespace	StringUtils {
 				STRING::size_type	lastPos = str.find_first_not_of (delimiters, 0);		// Skip delimiters at beginning
 				STRING::size_type	pos     = str.find_first_of (delimiters, lastPos);		// Find first "non-delimiter"
 				while (STRING::npos != pos || STRING::npos != lastPos) {
-					R4LLib::ReserveSpeedTweekAdd1 (result);
+					Containers::ReserveSpeedTweekAdd1 (result);
 					// Found a token, add it to the vector.
 					result.push_back(str.substr (lastPos, pos - lastPos));
 					// Skip delimiters.  Note the "not_of"

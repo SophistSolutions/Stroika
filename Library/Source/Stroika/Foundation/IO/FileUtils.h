@@ -18,7 +18,7 @@
 #include	"../Time/DateUtils.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Characters/StringUtils.h"
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 #include	"../Execution/ThreadUtils.h"
 
 

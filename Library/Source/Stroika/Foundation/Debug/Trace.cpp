@@ -12,6 +12,7 @@
 #include	"../IO/FileUtils.h"
 #include	"../Configuration/StroikaConfig.h"
 #include	"../Execution/ThreadUtils.h"
+#include	"../Time/Realtime.h"
 
 #include	"Trace.h"
 
@@ -298,9 +299,9 @@ template	<typename	CHARTYPE>
 			FlushBufferedCharacters_ ();
 			static	float	sStartOfTime	=	0.0f;
 			if (sStartOfTime == 0.0f) {
-				sStartOfTime = R4LLib::GetTickCount ();
+				sStartOfTime = Time::GetTickCount ();
 			}
-			float	curRelativeTime	=	R4LLib::GetTickCount () - sStartOfTime;
+			float	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
 			{
 				char	buf[1024];
 				ThreadID	threadID	=	::GetCurrentThreadId ();
@@ -386,7 +387,7 @@ bool	Trace::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedW
 	// hasn't been too long (we currently write 1/100th second timestamp resolution).
 	// then blank unput (ignore) buffered characters, and return true so caller knows to write
 	// funky replacement for those characters.
-	if (fLastNCharBuf_Token == token and (R4LLib::GetTickCount () - fLastNCharBuf_WriteTickcount < 0.02f)) {
+	if (fLastNCharBuf_Token == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount < 0.02f)) {
 		fLastNCharBufCharCount = 0;
 		return true;
 	}

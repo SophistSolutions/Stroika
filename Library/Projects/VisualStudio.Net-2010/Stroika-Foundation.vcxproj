@@ -27,14 +27,16 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Time\DateUtils.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Time\Realtime.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Characters\CodePage.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\Basics.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\StroikaConfig.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\Basics.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h" />
@@ -44,19 +46,22 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\IO\FileUtils.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Math\Basics.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Memory.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Time\DateUtils.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Stroika\Foundation\Characters\CodePage.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Configuration\Basics.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Containers\Basics.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Debug\Trace.inl" />
@@ -65,13 +70,14 @@
     <None Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\IO\FileUtils.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Math\Basics.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\Memory.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
-    <None Include="..\..\Source\Stroika\Foundation\Support.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Time\DateUtils.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Time\Realtime.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}</ProjectGuid>

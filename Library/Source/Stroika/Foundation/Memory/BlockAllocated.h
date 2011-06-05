@@ -9,7 +9,7 @@
 #include	<cstddef>
 
 #include	"../Execution/ModuleInit.h"
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 namespace	Stroika {	

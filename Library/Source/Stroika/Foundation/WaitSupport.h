@@ -8,7 +8,7 @@
 
 #include	<windows.h>
 
-#include	"Support.h"
+#include	"Configuration/Basics.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

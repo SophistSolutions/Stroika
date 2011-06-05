@@ -13,7 +13,7 @@
 
 #include	"../Execution/ModuleInit.h"
 #include	"../Characters/StringUtils.h"
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 

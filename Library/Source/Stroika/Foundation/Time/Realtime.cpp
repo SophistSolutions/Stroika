@@ -1,19 +1,21 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
-#include	<limits>
-#include	<windows.h>
-#include	<float.h>
+#include	<algorithm>
 
-#include	"Debug/Assertions.h"
+#include	<atlbase.h>		// For CComBSTR
 
-#include	"Support.h"
+#include	"../Debug/Assertions.h"
+#include	"../Execution/Exceptions.h"
+#include	"../Memory/SmallStackBuffer.h"
 
+#include	"RealTime.h"
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+
 
 
 
@@ -32,7 +34,7 @@ using	namespace	Stroika::Foundation;
 			data - together with time values from the client (where Led is running) computer will be used to provide a
 			better approximation of the true elapsed time.</p>
 */
-float	R4LLib::GetTickCount ()
+float	Stroika::Foundation::Time::GetTickCount ()
 {
 	static	bool			sInited	=	false;
 	static	LARGE_INTEGER	sPerformanceFrequency;
@@ -54,9 +56,3 @@ float	R4LLib::GetTickCount ()
 }
 
 
-
-
-double	R4LLib::nan ()
-{
-	return numeric_limits<double>::quiet_NaN ();
-}

@@ -5,9 +5,11 @@
 
 #include	<windows.h>
 
-#include	"Support.h"
+#include	"Configuration/Basics.h"
 #include	"Characters/StringUtils.h"
 #include	"Debug/Trace.h"
+
+#include	"Time/Realtime.h"
 
 #include	"WaitSupport.h"
 
@@ -34,11 +36,11 @@ void	WaitSupport::WaitAndPumpMessages (HWND dialog, float forNSecs)
 
 void	WaitSupport::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
 {
-	float	startAt	=	R4LLib::GetTickCount ();
+	float	startAt	=	Time::GetTickCount ();
 	float	endAt	=	startAt + forNSecs;
 
-	for (float timeLeft  = endAt - R4LLib::GetTickCount (); timeLeft > 0; timeLeft  = endAt - R4LLib::GetTickCount ()) {
-		(void)::MsgWaitForMultipleObjectsEx (waitOn.size (), R4LLib::Start (waitOn), static_cast<int> (timeLeft * 1000), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
+	for (float timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
+		(void)::MsgWaitForMultipleObjectsEx (waitOn.size (), Containers::Start (waitOn), static_cast<int> (timeLeft * 1000), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
 		MSG msg;
 		while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
 			try {
@@ -49,7 +51,7 @@ void	WaitSupport::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn
 			}
 			catch (...) {
 			}
-			timeLeft  = endAt - R4LLib::GetTickCount ();
+			timeLeft  = endAt - Time::GetTickCount ();
 			if (timeLeft < 0) {
 				break;
 			}
@@ -63,7 +65,7 @@ void	WaitSupport::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn
  */
 void	WaitSupport::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
 {
-	float	startAt	=	R4LLib::GetTickCount ();
+	float	startAt	=	Time::GetTickCount ();
 	float	endAt	=	startAt + atMostNSecs;
 
 	MSG msg;
@@ -76,7 +78,7 @@ void	WaitSupport::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSec
 		}
 		catch (...) {
 		}
-		if (endAt < R4LLib::GetTickCount ()) {
+		if (endAt < Time::GetTickCount ()) {
 			break;		// should be only rarely triggered, except if atMostNSecs <= 0
 		}
 	}

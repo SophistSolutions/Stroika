@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_Support_inl
-#define	_Support_inl	1
+#ifndef	_Containsersgbasics_inl
+#define	_Containsersgbasics_inl	1
 
 
 /*
@@ -13,42 +13,36 @@
 
 namespace	Stroika {	
 	namespace	Foundation {
-
+		namespace	Containers {
 	template	<typename CONTAINER>
-		inline	typename	CONTAINER::value_type*	R4LLib::Start (CONTAINER& c)
+		inline	typename	CONTAINER::value_type*	Start (CONTAINER& c)
 			{
 				size_t	cnt	=	c.size ();
 				return cnt==0? NULL: &c[0];
 			}
 	template	<typename CONTAINER>
-		inline	typename	typename const CONTAINER::value_type*	R4LLib::Start (const CONTAINER& c)
+		inline	typename	typename const CONTAINER::value_type*	Start (const CONTAINER& c)
 			{
 				size_t	cnt	=	c.size ();
 				return cnt==0? NULL: &c[0];
 			}
 	template	<typename CONTAINER>
-		inline	typename	CONTAINER::value_type*	R4LLib::End (CONTAINER& c)
+		inline	typename	CONTAINER::value_type*	End (CONTAINER& c)
 			{
 				size_t	cnt	=	c.size ();
 				return cnt == 0? NULL: &c[0] + cnt;
 			}
 	template	<typename CONTAINER>
-		inline	typename	typename const CONTAINER::value_type*	R4LLib::End (const CONTAINER& c)
+		inline	typename	typename const CONTAINER::value_type*	End (const CONTAINER& c)
 			{
 				size_t	cnt	=	c.size ();
 				return cnt == 0? NULL: &c[0] + cnt;
 			}
 
 
-
-	template	<typename	ENUM>
-		inline	ENUM	R4LLib::Inc (typename ENUM e)
-			{
-				return static_cast<ENUM> (e + 1);
-			}
 
 	template	<typename	CONTAINER>
-		inline	void	R4LLib::ReserveSpeedTweekAdd1 (typename CONTAINER& c, size_t kMinChunk)
+		inline	void	ReserveSpeedTweekAdd1 (typename CONTAINER& c, size_t kMinChunk)
 			{
 				size_t	size	=	c.size ();
 				//Assert (size <= c.capacity ());	we don't want to include the assertion library in this .h file.... for now... --LGP 2007-03-08
@@ -60,7 +54,7 @@ namespace	Stroika {
 			}
 
 	template	<typename	CONTAINER>
-		inline	void	R4LLib::ReserveSpeedTweekAddN (typename CONTAINER& c, size_t n, size_t kMinChunk)
+		inline	void	ReserveSpeedTweekAddN (typename CONTAINER& c, size_t n, size_t kMinChunk)
 			{
 				size_t	size	=	c.size () + n;
 				if (size >= c.capacity ()) {
@@ -70,7 +64,11 @@ namespace	Stroika {
 				}
 			}
 
+		}
 	}
 }
 
-#endif	/*_Support_inl*/
+#endif	/*_Containsersgbasics_inl*/
+
+
+

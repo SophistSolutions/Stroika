@@ -9,7 +9,7 @@
 
 #include	"../Memory/SmallStackBuffer.h"
 
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 using	namespace	Stroika;

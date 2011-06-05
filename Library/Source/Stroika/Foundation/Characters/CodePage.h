@@ -20,14 +20,16 @@
 #include	<windows.h>
 
 
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 
+
 namespace	CodePageUtils {
 
+		using	namespace	std;
 
 enum	{
 	kCodePage_INVALID					=	0xffffffff,	// I hope this is always an invalid code page???

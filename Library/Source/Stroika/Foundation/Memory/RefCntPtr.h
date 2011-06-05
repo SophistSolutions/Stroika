@@ -7,7 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Execution/Exceptions.h"
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 #ifndef	qUseInterlockedIncrement

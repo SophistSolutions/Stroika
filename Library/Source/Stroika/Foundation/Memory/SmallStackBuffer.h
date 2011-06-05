@@ -6,9 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<cstddef>
-
-#include	"../Support.h"
+#include	"../Configuration/Basics.h"
 
 
 

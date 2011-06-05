@@ -9,6 +9,7 @@
 #include	"../Debug/Assertions.h"
 #include	"CodePage.h"
 #include	"../Debug/Trace.h"
+#include	"../Math/Basics.h"
 
 #include	"StringUtils.h"
 
@@ -31,7 +32,7 @@ wstring	StringUtils::ACPStringToWide (const string& ws)
 	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), ws.size (), NULL, NULL);
 	wstring	result;
 	result.resize (newStrLen);
-	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), ws.size (), R4LLib::Start (result), newStrLen) == newStrLen);
+	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), ws.size (), Containers::Start (result), newStrLen) == newStrLen);
 	return result;
 }
 
@@ -354,7 +355,7 @@ string	StringUtils::QuoteForXMLAttribute (const string& s)
 	string	r;
 	r.reserve (s.size () * 6 / 5);	// wild guess about good estimate
 	for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
-		R4LLib::ReserveSpeedTweekAdd1 (r);
+		Containers::ReserveSpeedTweekAdd1 (r);
 		switch (*i) {
 			case	'&':	r += "&amp;"; break;
 			case	'<':	r += "&lt;"; break;
@@ -372,7 +373,7 @@ string	StringUtils::QuoteForXMLAttribute (const wstring& s)
 	string	r;
 	r.reserve (s.size () * 7 / 5);	// wild guess about good estimate
 	for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
-		R4LLib::ReserveSpeedTweekAdd1 (r);
+		Containers::ReserveSpeedTweekAdd1 (r);
 		switch (*i) {
 			case	'&':	r += "&amp;"; break;
 			case	'<':	r += "&lt;"; break;
@@ -415,7 +416,7 @@ string	StringUtils::QuoteForXML (const string& s)
 	string	r;
 	r.reserve (s.size () * 6 / 5);	// wild guess about good estimate
 	for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
-		R4LLib::ReserveSpeedTweekAdd1 (r);
+		Containers::ReserveSpeedTweekAdd1 (r);
 		switch (*i) {
 			case	'&':	r += "&amp;"; break;
 			case	'<':	r += "&lt;"; break;
@@ -446,7 +447,7 @@ string	StringUtils::QuoteForXML (const wstring& s)
 	string	r;
 	r.reserve (s.size () * 7 / 5);	// wild guess about good estimate
 	for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
-		R4LLib::ReserveSpeedTweekAdd1 (r);
+		Containers::ReserveSpeedTweekAdd1 (r);
 		switch (*i) {
 			case	'&':	r += "&amp;"; break;
 			case	'<':	r += "&lt;"; break;
@@ -707,7 +708,7 @@ int	StringUtils::String2Int (const wstring& s)
  */
 float	StringUtils::String2Float (const wstring& s)
 {
-	static	const	float	kBADVAL	=	static_cast<float> (R4LLib::nan ());
+	static	const	float	kBADVAL	=	static_cast<float> (Math::nan ());
 	return String2Float (s, kBADVAL);
 }
 
@@ -817,7 +818,7 @@ namespace	{
 			wstring	r;
 			r.reserve (s.size ());
 			for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
-				R4LLib::ReserveSpeedTweekAdd1 (r);
+				Containers::ReserveSpeedTweekAdd1 (r);
 				if (IS_ENCODED_CHAR (*i)) {
 					r += ENCODE (*i);
 				}
@@ -894,7 +895,7 @@ wstring			StringUtils::StringVectorEncoding::Encode (const vector<wstring>& v)
 
 	result += L"(";
 	for (vector<wstring>::const_iterator i = v.begin (); i != v.end (); ++i) {
-		R4LLib::ReserveSpeedTweekAddN (result, i->length () + 25);
+		Containers::ReserveSpeedTweekAddN (result, i->length () + 25);
 		result += L"(";
 		{
 			result += ENCODE (*i);
@@ -929,7 +930,7 @@ vector<wstring>	StringUtils::StringVectorEncoding::Decode (const wstring& encode
 				else {
 					wchar_t	c	=	'\0';
 					if (DECODE (&i, encodedString.end (), &c)) {
-						R4LLib::ReserveSpeedTweekAdd1 (curAccumulatedString);
+						Containers::ReserveSpeedTweekAdd1 (curAccumulatedString);
 						curAccumulatedString.push_back (c);
 					}
 					else {

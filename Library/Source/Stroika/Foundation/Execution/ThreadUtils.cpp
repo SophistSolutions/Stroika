@@ -12,6 +12,7 @@
 #include	"../Debug/Trace.h"
 #include	"../WaitSupport.h"
 #include	"../Containers/VectorUtils.h"
+#include	"../Time/Realtime.h"
 
 #include	"ThreadUtils.h"
 
@@ -437,14 +438,14 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) c
 
 void	SimpleThread::WaitForDoneWhilePumpingMessages (float timeout) const
 {
-	float	timeoutAt	=	R4LLib::GetTickCount () + timeout;
+	float	timeoutAt	=	Time::GetTickCount () + timeout;
 	// CRUDDY impl - but decent enuf for first draft
 	while (GetStatus () != ThreadUtils::SimpleThread::eCompleted) {
 		if (timeout < 0.0f) {
 			PumpMessagesAndReturnWhenDoneOrAfterTime ();
 		}
 		else {
-			float	time2Wait	=	timeoutAt - R4LLib::GetTickCount ();
+			float	time2Wait	=	timeoutAt - Time::GetTickCount ();
 			if (time2Wait <= 0) {
 				Win32ErrorException::DoThrow (WAIT_TIMEOUT);
 			}

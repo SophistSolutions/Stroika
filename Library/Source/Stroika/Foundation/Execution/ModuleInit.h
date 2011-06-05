@@ -6,8 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	"../Configuration/Basics.h"
 #include	"../Debug/Assertions.h"
-#include	"../Support.h"
 
 
 
@@ -15,8 +15,10 @@ namespace	Stroika {
 	namespace	Foundation {
 
 
+
 namespace	ModuleInit {
 
+		using	namespace	Configuration;
 
 	/*
 	 *	OVERVIEW:
