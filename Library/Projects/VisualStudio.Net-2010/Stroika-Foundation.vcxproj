@@ -55,8 +55,15 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Source\Stroika\Foundation\Debug\Trace.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\Memory.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Source\Stroika\Foundation\SetUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\StringUtils.inl" />

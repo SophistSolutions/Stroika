@@ -6,45 +6,41 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<tchar.h>
-#include	<Windows.h>
+#if		defined(_WIN32)
+	#include	<tchar.h>
+	#include	<Windows.h>
+#endif
 
-#include	<string>
-#include	<vector>
-
-#include	"../Debug/Assertions.h"
 #include	"../StringUtils.h"
 
 
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	DLLSupport {
 
+			using	StringUtils::tstring;
 
+			class	DLLLoader {
+				public:
+					DLLLoader (const TCHAR* dllName);
+					DLLLoader (const TCHAR* dllName, const vector<tstring>& searchPath);
+					~DLLLoader ();
 
-namespace	DLLSupport {
+				public:
+					operator HMODULE ();
 
+				public:
+					nonvirtual	FARPROC	GetProcAddress (__in LPCSTR lpProcName) const;
 
-		using	StringUtils::tstring;
+				private:
+					HMODULE	fModule;
+			};
 
-	class	DLLLoader {
-		public:
-			DLLLoader (const TCHAR* dllName);
-			DLLLoader (const TCHAR* dllName, const vector<tstring>& searchPath);
-			~DLLLoader ();
-
-		public:
-			operator HMODULE ();
-
-		public:
-			nonvirtual	FARPROC	GetProcAddress (__in LPCSTR lpProcName) const;
-
-		private:
-			HMODULE	fModule;
-	};
-}
-
+		}
 	}
 }
+#endif	/*_DLLSupport_h*/
+
 
 
 /*
@@ -52,21 +48,5 @@ namespace	DLLSupport {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace	Stroika {	
-	namespace	Foundation {
-	//	class	DLLSupport::DLLLoader
-		inline	DLLSupport::DLLLoader::operator HMODULE ()
-			{
-				EnsureNotNil (fModule);
-				return fModule;
-			}
-		inline	FARPROC	DLLSupport::DLLLoader::GetProcAddress (__in LPCSTR lpProcName) const
-			{
-				AssertNotNil (fModule);
-				RequireNotNil (lpProcName);
-				return ::GetProcAddress (fModule, lpProcName);
-			}
-	}
-}
+#include	"DLLSupport.inl"
 
-#endif	/*_DLLSupport_h*/

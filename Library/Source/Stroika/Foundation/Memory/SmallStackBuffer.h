@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<Windows.h>
+#include	<cstddef>
 
 #include	"../Support.h"
 
@@ -76,6 +76,8 @@ template	<typename	T, size_t BUF_SIZE = ((4096/sizeof(T)) == 0? 1 : (4096/sizeof
 
 	}
 }
+#endif	/*__SmallStackBuffer_h__*/
+
 
 
 /*
@@ -84,6 +86,3 @@ template	<typename	T, size_t BUF_SIZE = ((4096/sizeof(T)) == 0? 1 : (4096/sizeof
  ********************************************************************************
  */
 #include	"SmallStackBuffer.inl"
-
-
-#endif	/*__SmallStackBuffer_h__*/

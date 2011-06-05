@@ -3,7 +3,9 @@
  */
 #include	"../StroikaPreComp.h"
 
+#if		defined(_WIN32)
 #include	<Windows.h>
+#endif
 
 #include	"Assertions.h"
 

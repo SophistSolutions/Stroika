@@ -160,5 +160,26 @@
     <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl">
       <Filter>Source\Execution</Filter>
     </None>
+    <None Include="..\..\Source\Stroika\Foundation\Debug\Trace.inl">
+      <Filter>Source\Debug</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.inl">
+      <Filter>Source\Memory</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.inl">
+      <Filter>Source\Memory</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.inl">
+      <Filter>Source\Memory</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.inl">
+      <Filter>Source\Execution</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.inl">
+      <Filter>Source\Execution</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.inl">
+      <Filter>Source\Execution</Filter>
+    </None>
   </ItemGroup>
 </Project>

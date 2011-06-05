@@ -17,10 +17,6 @@
 namespace	Stroika {	
 	namespace	Foundation {
 
-		inline	void	xxx (size_t nElements)
-		{
-		}
-
 //	class	SmallStackBuffer<T,BUF_SIZE>
 	template	<typename	T, size_t BUF_SIZE>
 		inline	void	SmallStackBuffer<T,BUF_SIZE>::GrowToSize (size_t nElements)
