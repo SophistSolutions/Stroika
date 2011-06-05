@@ -4,13 +4,13 @@
 #ifndef	__ThreadUtils_h__
 #define	__ThreadUtils_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<windows.h>
 
 #include	"Exceptions.h"
-#include	"Memory/RefCntPtr.h"
-#include	"Support.h"
+#include	"../Memory/RefCntPtr.h"
+#include	"../Support.h"
 
 
 namespace	Stroika {	

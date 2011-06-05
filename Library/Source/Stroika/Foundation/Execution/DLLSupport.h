@@ -4,7 +4,7 @@
 #ifndef	_DLLSupport_h
 #define	_DLLSupport_h	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<tchar.h>
 #include	<Windows.h>
@@ -12,8 +12,8 @@
 #include	<string>
 #include	<vector>
 
-#include	"Debug/Assertions.h"
-#include	"StringUtils.h"
+#include	"../Debug/Assertions.h"
+#include	"../StringUtils.h"
 
 
 namespace	Stroika {	

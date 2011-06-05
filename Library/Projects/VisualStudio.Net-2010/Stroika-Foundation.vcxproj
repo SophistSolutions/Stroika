@@ -15,19 +15,19 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\DateUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Trace.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\DLLSupport.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Exceptions.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\FileUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\Memory.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\ModuleInit.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\SetUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\StringUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\ThreadUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\VectorUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp" />
   </ItemGroup>
@@ -37,30 +37,30 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\DateUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Trace.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\DLLSupport.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Exceptions.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\FileUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Memory.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\ModuleInit.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\SetUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\StringUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\ThreadUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\VectorUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\Memory.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Source\Stroika\Foundation\SetUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\StringUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Support.inl" />
-    <None Include="..\..\Source\Stroika\Foundation\ThreadUtils.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}</ProjectGuid>

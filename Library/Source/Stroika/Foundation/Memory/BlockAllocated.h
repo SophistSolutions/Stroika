@@ -8,7 +8,7 @@
 
 #include	<algorithm>
 
-#include	"../ModuleInit.h"
+#include	"../Execution/ModuleInit.h"
 #include	"../Support.h"
 
 
@@ -130,7 +130,7 @@ template	<typename	T>	class	BlockAllocated {
  */
 	#include	"../Debug/Assertions.h"
 	#include	"Memory.h"
-	#include	"../ThreadUtils.h"
+	#include	"../Execution/ThreadUtils.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

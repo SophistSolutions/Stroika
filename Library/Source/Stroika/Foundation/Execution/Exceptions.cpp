@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<errno.h>
 #include	<windows.h>
@@ -9,9 +9,9 @@
 #include	<wininet.h>		// for error codes
 #include	<tchar.h>
 
-#include	"FileUtils.h"
-#include	"Debug/Trace.h"
-#include	"StringUtils.h"
+#include	"../FileUtils.h"
+#include	"../Debug/Trace.h"
+#include	"../StringUtils.h"
 
 #include	"Exceptions.h"
 

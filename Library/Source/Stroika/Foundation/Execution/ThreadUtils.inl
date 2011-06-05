@@ -8,7 +8,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Memory/Memory.h"
+#include	"../Memory/Memory.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

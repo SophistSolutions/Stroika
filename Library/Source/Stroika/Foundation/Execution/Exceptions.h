@@ -4,15 +4,15 @@
 #ifndef	__Exceptions_h__
 #define	__Exceptions_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<exception>
 #include	<string>
 #include	<Windows.h>
 
-#include	"StringUtils.h"
-#include	"Debug/Trace.h"
-#include	"Support.h"
+#include	"../StringUtils.h"
+#include	"../Debug/Trace.h"
+#include	"../Support.h"
 
 
 

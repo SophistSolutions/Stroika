@@ -16,10 +16,10 @@
 
 #include	"Debug/Assertions.h"
 #include	"DateUtils.h"
-#include	"Exceptions.h"
+#include	"Execution/Exceptions.h"
 #include	"StringUtils.h"
 #include	"Support.h"
-#include	"ThreadUtils.h"
+#include	"Execution/ThreadUtils.h"
 
 
 namespace	Stroika {	

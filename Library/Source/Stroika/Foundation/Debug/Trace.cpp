@@ -11,7 +11,7 @@
 #include	"../DateUtils.h"
 #include	"../FileUtils.h"
 #include	"../Configuration/StroikaConfig.h"
-#include	"../ThreadUtils.h"
+#include	"../Execution/ThreadUtils.h"
 
 #include	"Trace.h"
 

@@ -4,10 +4,10 @@
 #ifndef	__ModuleInit_h__
 #define	__ModuleInit_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
-#include	"Debug/Assertions.h"
-#include	"Support.h"
+#include	"../Debug/Assertions.h"
+#include	"../Support.h"
 
 
 

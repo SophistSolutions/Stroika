@@ -11,7 +11,7 @@
 	#include	<tchar.h>
 #endif
 
-#include	"../ModuleInit.h"
+#include	"../Execution/ModuleInit.h"
 #include	"../StringUtils.h"
 #include	"../Support.h"
 

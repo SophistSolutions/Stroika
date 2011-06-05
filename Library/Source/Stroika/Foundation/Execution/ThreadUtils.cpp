@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
-#include	"Configuration/StroikaConfig.h"
+#include	"../Configuration/StroikaConfig.h"
 
 #include	<process.h>
 #include	<windows.h>
 
 #include	"DLLSupport.h"
-#include	"Debug/Trace.h"
-#include	"WaitSupport.h"
-#include	"VectorUtils.h"
+#include	"../Debug/Trace.h"
+#include	"../WaitSupport.h"
+#include	"../VectorUtils.h"
 
 #include	"ThreadUtils.h"
 

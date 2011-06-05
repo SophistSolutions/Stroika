@@ -13,24 +13,15 @@
     <Filter Include="Source\Configuration">
       <UniqueIdentifier>{12b6a747-07e0-4ac8-8b0a-56c27e830f0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Execution">
+      <UniqueIdentifier>{10fdccef-36de-4118-9913-a6bbcce6aa34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\DLLSupport.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\Support.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\ModuleInit.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Exceptions.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\StringUtils.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\ThreadUtils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\CodePage.cpp">
@@ -72,27 +63,27 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp">
       <Filter>Source\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.cpp">
+      <Filter>Source\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.cpp">
+      <Filter>Source\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.cpp">
+      <Filter>Source\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp">
+      <Filter>Source\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\DLLSupport.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\ModuleInit.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Exceptions.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\StringUtils.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\ThreadUtils.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\CodePage.h">
@@ -137,12 +128,21 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\StroikaConfig.h">
       <Filter>Source\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.h">
+      <Filter>Source\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.h">
+      <Filter>Source\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.h">
+      <Filter>Source\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h">
+      <Filter>Source\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Stroika\Foundation\StringUtils.inl">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\..\Source\Stroika\Foundation\ThreadUtils.inl">
       <Filter>Source</Filter>
     </None>
     <None Include="..\..\Source\Stroika\Foundation\SetUtils.inl">
@@ -156,6 +156,9 @@
     </None>
     <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl">
       <Filter>Source\Memory</Filter>
+    </None>
+    <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl">
+      <Filter>Source\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
