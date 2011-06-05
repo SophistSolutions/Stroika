@@ -17,7 +17,7 @@
 #include	"../Debug/Assertions.h"
 #include	"../DateUtils.h"
 #include	"../Execution/Exceptions.h"
-#include	"../StringUtils.h"
+#include	"../Characters/StringUtils.h"
 #include	"../Support.h"
 #include	"../Execution/ThreadUtils.h"
 

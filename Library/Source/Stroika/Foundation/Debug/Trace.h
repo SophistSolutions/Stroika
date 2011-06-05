@@ -12,7 +12,7 @@
 #endif
 
 #include	"../Execution/ModuleInit.h"
-#include	"../StringUtils.h"
+#include	"../Characters/StringUtils.h"
 #include	"../Support.h"
 
 

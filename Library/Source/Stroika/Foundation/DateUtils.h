@@ -13,7 +13,7 @@
 #include	<Windows.h>
 #endif
 
-#include	"StringUtils.h"
+#include	"Characters/StringUtils.h"
 #include	"Support.h"
 
 

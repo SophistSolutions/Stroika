@@ -10,7 +10,7 @@
 #include	<string>
 #include	<Windows.h>
 
-#include	"../StringUtils.h"
+#include	"../Characters/StringUtils.h"
 #include	"../Debug/Trace.h"
 #include	"../Support.h"
 

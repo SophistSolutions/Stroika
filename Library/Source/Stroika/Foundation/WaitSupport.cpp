@@ -6,7 +6,7 @@
 #include	<windows.h>
 
 #include	"Support.h"
-#include	"StringUtils.h"
+#include	"Characters/StringUtils.h"
 #include	"Debug/Trace.h"
 
 #include	"WaitSupport.h"

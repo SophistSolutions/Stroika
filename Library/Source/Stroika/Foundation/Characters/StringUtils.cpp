@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<iomanip>
 #include	<sstream>
 
-#include	"Debug/Assertions.h"
+#include	"../Debug/Assertions.h"
 #include	"CodePage.h"
-#include	"Debug/Trace.h"
+#include	"../Debug/Trace.h"
 
 #include	"StringUtils.h"
 

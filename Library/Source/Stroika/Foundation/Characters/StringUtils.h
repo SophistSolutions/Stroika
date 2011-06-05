@@ -4,7 +4,7 @@
 #ifndef	_StringUtils_h
 #define	_StringUtils_h	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<cctype>
 #include	<locale>
@@ -14,8 +14,8 @@
 #include	<Windows.h>
 
 #include	"CodePage.h"
-#include	"Memory/SmallStackBuffer.h"
-#include	"Support.h"
+#include	"../Memory/SmallStackBuffer.h"
+#include	"../Support.h"
 
 
 

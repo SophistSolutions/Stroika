@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<algorithm>
 #include	<cstdio>
 #include	<tchar.h>
 
-#include	"Memory/SmallStackBuffer.h"
+#include	"../Memory/SmallStackBuffer.h"
 
-#include	"Support.h"
+#include	"../Support.h"
 
 
 using	namespace	Stroika;

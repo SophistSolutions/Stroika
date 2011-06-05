@@ -11,7 +11,7 @@
 
 #include	"../IO/FileUtils.h"
 #include	"../Debug/Trace.h"
-#include	"../StringUtils.h"
+#include	"../Characters/StringUtils.h"
 
 #include	"Exceptions.h"
 
