@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\CodePage.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\StroikaConfig.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\DateUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Trace.h" />
@@ -47,7 +48,6 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\ModuleInit.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\SetUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\StringUtils.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaConfig.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\ThreadUtils.h" />

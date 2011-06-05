@@ -3,7 +3,7 @@
  */
 #include	"StroikaPreComp.h"
 
-#include	"StroikaConfig.h"
+#include	"Configuration/StroikaConfig.h"
 
 #include	<process.h>
 #include	<windows.h>

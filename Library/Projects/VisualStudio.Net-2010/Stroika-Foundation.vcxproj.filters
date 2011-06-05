@@ -10,6 +10,9 @@
     <Filter Include="Source\Memory">
       <UniqueIdentifier>{685cf277-cad8-4003-8569-129e87b78377}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Configuration">
+      <UniqueIdentifier>{12b6a747-07e0-4ac8-8b0a-56c27e830f0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Stroika\Foundation\DLLSupport.cpp">
@@ -74,9 +77,6 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\DLLSupport.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaConfig.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Support.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -133,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.h">
       <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\StroikaConfig.h">
+      <Filter>Source\Configuration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

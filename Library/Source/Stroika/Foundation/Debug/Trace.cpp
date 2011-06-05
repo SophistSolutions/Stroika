@@ -10,7 +10,7 @@
 
 #include	"../DateUtils.h"
 #include	"../FileUtils.h"
-#include	"../StroikaConfig.h"
+#include	"../Configuration/StroikaConfig.h"
 #include	"../ThreadUtils.h"
 
 #include	"Trace.h"

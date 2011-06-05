@@ -4,7 +4,7 @@
 #ifndef	__StroikaPreComp_h__
 #define	__StroikaPreComp_h__	1
 
-#include	"StroikaConfig.h"
+#include	"Configuration/StroikaConfig.h"
 
 // FOR NOW - include StroikaConfig.h - but maybe get rid of that and directly do stuff here.
 
