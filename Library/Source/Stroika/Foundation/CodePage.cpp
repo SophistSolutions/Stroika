@@ -7,7 +7,7 @@
 #include	<cstdio>
 #include	<tchar.h>
 
-#include	"SmallStackBuffer.h"
+#include	"Memory/SmallStackBuffer.h"
 
 #include	"Support.h"
 

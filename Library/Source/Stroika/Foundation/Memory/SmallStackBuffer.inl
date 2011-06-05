@@ -11,7 +11,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Debug/Assertions.h"
+#include	"../Debug/Assertions.h"
 #include	"Memory.h"
 
 namespace	Stroika {	

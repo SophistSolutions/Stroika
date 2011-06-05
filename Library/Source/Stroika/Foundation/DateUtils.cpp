@@ -9,7 +9,7 @@
 
 #include	"Debug/Assertions.h"
 #include	"Exceptions.h"
-#include	"SmallStackBuffer.h"
+#include	"Memory/SmallStackBuffer.h"
 
 #include	"DateUtils.h"
 

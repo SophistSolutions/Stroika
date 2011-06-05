@@ -4,11 +4,11 @@
 #ifndef	__SmallStackBuffer_h__
 #define	__SmallStackBuffer_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<Windows.h>
 
-#include	"Support.h"
+#include	"../Support.h"
 
 
 

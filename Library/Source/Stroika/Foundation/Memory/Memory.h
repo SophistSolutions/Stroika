@@ -4,13 +4,13 @@
 #ifndef	__Memory_h__
 #define	__Memory_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<Windows.h>
 
 #include	<memory>
 
-#include	"Support.h"
+#include	"../Support.h"
 
 
 

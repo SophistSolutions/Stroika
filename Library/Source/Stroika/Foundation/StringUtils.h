@@ -14,7 +14,7 @@
 #include	<Windows.h>
 
 #include	"CodePage.h"
-#include	"SmallStackBuffer.h"
+#include	"Memory/SmallStackBuffer.h"
 #include	"Support.h"
 
 

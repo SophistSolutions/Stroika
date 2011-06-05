@@ -4,12 +4,12 @@
 #ifndef	__BlockAllocated_h__
 #define	__BlockAllocated_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<algorithm>
 
-#include	"ModuleInit.h"
-#include	"Support.h"
+#include	"../ModuleInit.h"
+#include	"../Support.h"
 
 
 namespace	Stroika {	
@@ -128,9 +128,9 @@ template	<typename	T>	class	BlockAllocated {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-	#include	"Debug/Assertions.h"
+	#include	"../Debug/Assertions.h"
 	#include	"Memory.h"
-	#include	"ThreadUtils.h"
+	#include	"../ThreadUtils.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

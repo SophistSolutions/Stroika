@@ -7,11 +7,11 @@
     <Filter Include="Source\Debug">
       <UniqueIdentifier>{bc9615e9-a571-4236-a748-3e2c455667e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Memory">
+      <UniqueIdentifier>{685cf277-cad8-4003-8569-129e87b78377}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\BlockAllocated.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\DLLSupport.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -30,12 +30,6 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\ThreadUtils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\RefCntPtr.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\SmallStackBuffer.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\CodePage.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -43,12 +37,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\FileUtils.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\MemoryAllocator.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\SetUtils.cpp">
@@ -66,11 +54,23 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Trace.cpp">
       <Filter>Source\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\Memory.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\BlockAllocated.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\DLLSupport.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -95,12 +95,6 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\ThreadUtils.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\RefCntPtr.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\SmallStackBuffer.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\CodePage.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -108,12 +102,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\FileUtils.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\MemoryAllocator.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\SetUtils.h">
@@ -131,6 +119,21 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Trace.h">
       <Filter>Source\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.h">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Memory.h">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.h">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.h">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.h">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Stroika\Foundation\StringUtils.inl">
@@ -145,11 +148,11 @@
     <None Include="..\..\Source\Stroika\Foundation\Support.inl">
       <Filter>Source</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Memory.inl">
-      <Filter>Source</Filter>
+    <None Include="..\..\Source\Stroika\Foundation\Memory\Memory.inl">
+      <Filter>Source\Memory</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\SmallStackBuffer.inl">
-      <Filter>Source</Filter>
+    <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl">
+      <Filter>Source\Memory</Filter>
     </None>
   </ItemGroup>
 </Project>

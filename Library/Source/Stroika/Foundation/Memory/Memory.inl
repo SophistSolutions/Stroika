@@ -10,8 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Debug/Assertions.h"
-#include	"ModuleInit.h"
+#include	"../Debug/Assertions.h"
+#include	"../ModuleInit.h"
 
 
 

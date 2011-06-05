@@ -9,7 +9,7 @@
 #include	<windows.h>
 
 #include	"Exceptions.h"
-#include	"RefCntPtr.h"
+#include	"Memory/RefCntPtr.h"
 #include	"Support.h"
 
 

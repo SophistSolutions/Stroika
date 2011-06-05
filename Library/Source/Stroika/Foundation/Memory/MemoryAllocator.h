@@ -4,14 +4,14 @@
 #ifndef	__MemoryAllocator_h__
 #define	__MemoryAllocator_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
 #include	<Windows.h>
 
 #include	<map>
 #include	<memory>
 
-#include	"ThreadUtils.h"
+#include	"../ThreadUtils.h"
 
 #include	"Memory.h"
 

@@ -4,10 +4,10 @@
 #ifndef	__RefCntPtr_h__
 #define	__RefCntPtr_h__	1
 
-#include	"StroikaPreComp.h"
+#include	"../StroikaPreComp.h"
 
-#include	"Exceptions.h"
-#include	"Support.h"
+#include	"../Exceptions.h"
+#include	"../Support.h"
 
 
 #ifndef	qUseInterlockedIncrement
@@ -160,7 +160,7 @@ template	<typename	T>
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-	#include	"BlockAllocated.h"
+#include	"BlockAllocated.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
