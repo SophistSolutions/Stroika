@@ -8,30 +8,32 @@
 #include	<map>
 #include	<cmath>
 
-#include	"../Time/DateUtils.h"
-#include	"../IO/FileUtils.h"
 #include	"../Configuration/StroikaConfig.h"
+
+
 #include	"../Execution/ThreadUtils.h"
+#include	"../Time/DateUtils.h"
 #include	"../Time/Realtime.h"
 
 #include	"Trace.h"
 
 
-using	namespace	Stroika;
+
 using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Debug;
 
-using	namespace	StringUtils;
-using	namespace	ThreadUtils;
+using	namespace	Characters;
+using	namespace	Debug;
+using	namespace	Execution;
 
-using	namespace	Trace;
+
+
 
 
 
 
 /*
  ********************************************************************************
- **************************** Trace::Private::MODULE_INIT ***********************
+ **************************** Private::MODULE_INIT ***********************
  ********************************************************************************
  */
 namespace	{
@@ -46,7 +48,7 @@ namespace	{
 }
 
 
-Trace::Private::MODULE_INIT::MODULE_INIT ()
+Private::MODULE_INIT::MODULE_INIT ()
 {
 	Assert (sEmitTraceCritSec == NULL);
 	sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
@@ -61,7 +63,7 @@ Trace::Private::MODULE_INIT::MODULE_INIT ()
 	#endif
 }
 
-Trace::Private::MODULE_INIT::~MODULE_INIT ()
+Private::MODULE_INIT::~MODULE_INIT ()
 {
 	delete sEmitTraceCritSec;
 	sEmitTraceCritSec = NULL;
@@ -97,7 +99,7 @@ namespace	{
 
 
 #if		qTraceToFile
-tstring	Trace::Emitter::GetTraceFileName () const
+tstring	Emitter::GetTraceFileName () const
 {
 	static	tstring	sTraceFileName;
 	if (sTraceFileName.empty ()) {
@@ -131,7 +133,7 @@ tstring	Trace::Emitter::GetTraceFileName () const
 				*i = '-';
 			}
 		}
-		sTraceFileName = FileUtils::GetSpecialDir_GetTempDir () + Format (_T ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
+		sTraceFileName = IO::::GetSpecialDir_GetTempDir () + Format (_T ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
 	}
 	return sTraceFileName;
 }
@@ -167,10 +169,10 @@ namespace	{
 
 /*
  ********************************************************************************
- ******************************** Trace::Emitter ********************************
+ ******************************** Emitter ********************************
  ********************************************************************************
  */
-Trace::Emitter::Emitter ()
+Emitter::Emitter ()
 	: fLastNCharBufCharCount (0)
 //	, fLastNCharBuf_CHAR () 
 //	, fLastNCharBuf_WCHAR ()
@@ -186,7 +188,7 @@ Trace::Emitter::Emitter ()
 			 @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
 			 @'LedDebugTrace'.</p>
 */
-void	Trace::Emitter::EmitTraceMessage (const char* format, ...)
+void	Emitter::EmitTraceMessage (const char* format, ...)
 {
 	try {
 		char		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
@@ -197,7 +199,7 @@ void	Trace::Emitter::EmitTraceMessage (const char* format, ...)
 		#else
 			(void)::vsnprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
 		#endif
-		size_t	len	=	StringUtils::Length (msgBuf);
+		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
 			(void)::strcat_s (msgBuf, "\r\n");
 		}
@@ -210,7 +212,7 @@ void	Trace::Emitter::EmitTraceMessage (const char* format, ...)
 	}
 }
 
-void	Trace::Emitter::EmitTraceMessage (const wchar_t* format, ...)
+void	Emitter::EmitTraceMessage (const wchar_t* format, ...)
 {
 	try {
 		wchar_t		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
@@ -222,7 +224,7 @@ void	Trace::Emitter::EmitTraceMessage (const wchar_t* format, ...)
 		#else
 			(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
 		#endif
-		size_t	len	=	StringUtils::Length (msgBuf);
+		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
 			(void)::wcscat_s (msgBuf, L"\r\n");
 		}
@@ -235,7 +237,7 @@ void	Trace::Emitter::EmitTraceMessage (const wchar_t* format, ...)
 	}
 }
 
-Trace::Emitter::TraceLastBufferedWriteTokenType	Trace::Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...)
+Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...)
 {
 	try {
 		char		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
@@ -246,7 +248,7 @@ Trace::Emitter::TraceLastBufferedWriteTokenType	Trace::Emitter::EmitTraceMessage
 		#else
 			(void)::vsnprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
 		#endif
-		size_t	len	=	StringUtils::Length (msgBuf);
+		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
 			(void)::strcat_s (msgBuf, "\r\n");
 		}
@@ -260,7 +262,7 @@ Trace::Emitter::TraceLastBufferedWriteTokenType	Trace::Emitter::EmitTraceMessage
 	}
 }
 
-Trace::Emitter::TraceLastBufferedWriteTokenType	Trace::Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...)
+Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...)
 {
 	try {
 		wchar_t		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
@@ -272,7 +274,7 @@ Trace::Emitter::TraceLastBufferedWriteTokenType	Trace::Emitter::EmitTraceMessage
 		#else
 			(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
 		#endif
-		size_t	len	=	StringUtils::Length (msgBuf);
+		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
 			(void)::wcscat_s (msgBuf, L"\r\n");
 		}
@@ -293,7 +295,7 @@ namespace	{
 }
 
 template	<typename	CHARTYPE>
-	Trace::Emitter::TraceLastBufferedWriteTokenType	Trace::Emitter::DoEmitMessage_ (size_t bufferLastNChars, CHARTYPE* p)
+	Emitter::TraceLastBufferedWriteTokenType	Emitter::DoEmitMessage_ (size_t bufferLastNChars, CHARTYPE* p)
 		{
 			AutoCriticalSection critSec (GetCritSection_ ());
 			FlushBufferedCharacters_ ();
@@ -342,9 +344,9 @@ template	<typename	CHARTYPE>
 				fLastNCharBuf_Token++;	// even if not buffering, increment, so other buffers known to be invalid
 			}
 			else {
-				Assert (StringUtils::Length (p) > bufferLastNChars);
-				BufferNChars_ (bufferLastNChars, p + StringUtils::Length (p) - bufferLastNChars);
-				p[StringUtils::Length (p) - bufferLastNChars] = '\0';
+				Assert (Characters::Length (p) > bufferLastNChars);
+				BufferNChars_ (bufferLastNChars, p + Characters::Length (p) - bufferLastNChars);
+				p[Characters::Length (p) - bufferLastNChars] = '\0';
 				DoEmit_ (p);
 				fLastNCharBuf_WriteTickcount = curRelativeTime + sStartOfTime;
 				fLastNCharBuf_Token++;	// even if not buffering, increment, so other buffers known to be invalid
@@ -352,7 +354,7 @@ template	<typename	CHARTYPE>
 			return fLastNCharBuf_Token;
 		}
 
-void	Trace::Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
+void	Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
 	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR));
 	fLastNCharBufCharCount = bufferLastNChars;
@@ -360,7 +362,7 @@ void	Trace::Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 	fLastNCharBuf_WCHARFlag = false;
 }
 
-void	Trace::Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
+void	Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
 	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR));
 	fLastNCharBufCharCount = bufferLastNChars;
@@ -368,7 +370,7 @@ void	Trace::Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 	fLastNCharBuf_WCHARFlag = true;
 }
 
-void	Trace::Emitter::FlushBufferedCharacters_ ()
+void	Emitter::FlushBufferedCharacters_ ()
 {
 	if (fLastNCharBufCharCount != 0) {
 		if (fLastNCharBuf_WCHARFlag) {
@@ -381,7 +383,7 @@ void	Trace::Emitter::FlushBufferedCharacters_ ()
 	}
 }
 
-bool	Trace::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
+bool	Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
 	// If the fLastNCharBuf_Token matches (no new tokens written since the saved one) and the time
 	// hasn't been too long (we currently write 1/100th second timestamp resolution).
@@ -394,7 +396,7 @@ bool	Trace::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedW
 	return false;	// assume old behavior for now
 }
 
-void	Trace::Emitter::DoEmit_ (const char* p)
+void	Emitter::DoEmit_ (const char* p)
 {
 	::OutputDebugStringA (p);
 	#if		qTraceToFile
@@ -402,7 +404,7 @@ void	Trace::Emitter::DoEmit_ (const char* p)
 	#endif
 }
 
-void	Trace::Emitter::DoEmit_ (const wchar_t* p)
+void	Emitter::DoEmit_ (const wchar_t* p)
 {
 	::OutputDebugStringW (p);
 	#if		qTraceToFile
@@ -481,3 +483,7 @@ void	TraceContextBumper::DecrCount ()
 	DecrCount_ ();
 }
 #endif
+
+
+
+

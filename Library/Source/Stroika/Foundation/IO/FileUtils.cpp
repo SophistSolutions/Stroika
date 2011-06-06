@@ -18,20 +18,21 @@
 #include	<tchar.h>
 
 #include	"../Execution/Exceptions.h"
+#include	"../Containers/Basics.h"
 #include	"../Containers/SetUtils.h"
 #include	"../Debug/Trace.h"
 
 #include	"FileUtils.h"
 
-using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
 
-using	namespace	StringUtils;
-using	namespace	FileUtils;
-using	namespace	Exceptions;
+using	namespace	Characters;
+using	namespace	Containers;
+using	namespace	IO;
+using	namespace	Execution;
 
-using	ThreadUtils::AutoCriticalSection;
+using	Execution::AutoCriticalSection;
 
 
 
@@ -46,15 +47,15 @@ using	ThreadUtils::AutoCriticalSection;
 
 /*
  ********************************************************************************
- ******************** FileUtils::Private::UsingModuleHelper *********************
+ ******************** IO::Private::UsingModuleHelper *********************
  ********************************************************************************
  */
-FileUtils::Private::UsingModuleHelper::UsingModuleHelper ()
+Private::UsingModuleHelper::UsingModuleHelper ()
 	:fAppTempFileManager ()
 {
 }
 
-FileUtils::Private::UsingModuleHelper::~UsingModuleHelper ()
+Private::UsingModuleHelper::~UsingModuleHelper ()
 {
 }
 
@@ -64,10 +65,10 @@ FileUtils::Private::UsingModuleHelper::~UsingModuleHelper ()
 
 /*
  ********************************************************************************
- ********************* FileUtils::GetSpecialDir_MyDocuments *********************
+ ********************* IO::GetSpecialDir_MyDocuments *********************
  ********************************************************************************
  */
-tstring	FileUtils::GetSpecialDir_MyDocuments (bool createIfNotPresent)
+tstring	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 {
 	TCHAR	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
@@ -93,10 +94,10 @@ tstring	FileUtils::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 
 /*
  ********************************************************************************
- ********************* FileUtils::GetSpecialDir_AppData *************************
+ ********************* IO::GetSpecialDir_AppData *************************
  ********************************************************************************
  */
-tstring	FileUtils::GetSpecialDir_AppData (bool createIfNotPresent)
+tstring	IO::GetSpecialDir_AppData (bool createIfNotPresent)
 {
 	TCHAR	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
@@ -122,10 +123,10 @@ tstring	FileUtils::GetSpecialDir_AppData (bool createIfNotPresent)
 
 /*
  ********************************************************************************
- ********************** FileUtils::GetSpecialDir_WinSxS *************************
+ ********************** IO::GetSpecialDir_WinSxS *************************
  ********************************************************************************
  */
-tstring	FileUtils::GetSpecialDir_WinSxS ()
+tstring	IO::GetSpecialDir_WinSxS ()
 {
 	TCHAR	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
@@ -151,10 +152,10 @@ tstring	FileUtils::GetSpecialDir_WinSxS ()
 
 /*
  ********************************************************************************
- ********************** FileUtils::GetSpecialDir_GetTempDir *********************
+ ********************** IO::GetSpecialDir_GetTempDir *********************
  ********************************************************************************
  */
-tstring	FileUtils::GetSpecialDir_GetTempDir ()
+tstring	IO::GetSpecialDir_GetTempDir ()
 {
 	tstring	tempPath;
 	TCHAR	buf[1024];
@@ -173,7 +174,7 @@ tstring	FileUtils::GetSpecialDir_GetTempDir ()
 
 /*
  ********************************************************************************
- ********************* FileUtils::FileAccessException ***************************
+ ********************* IO::FileAccessException ***************************
  ********************************************************************************
  */
 namespace	{
@@ -193,7 +194,7 @@ namespace	{
 				message = L"Access failure for file";
 			}
 			if (not fileName.empty ()) {
-				message = Format (L"%s: '%.200s'", message.c_str (), StringUtils::LimitLength (tstring2Wide (fileName), 100, false).c_str ());
+				message = Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (tstring2Wide (fileName), 100, false).c_str ());
 			}
 			return message;
 		}
@@ -209,16 +210,16 @@ FileAccessException::FileAccessException (const tstring& fileName, FileAccessMod
 
 /*
  ********************************************************************************
- ************************* FileUtils::CheckFileAccess ***************************
+ ************************* IO::CheckFileAccess ***************************
  ********************************************************************************
  */
-void	FileUtils::CheckFileAccess (const tstring& fileFullPath, bool checkCanRead, bool checkCanWrite)
+void	IO::CheckFileAccess (const tstring& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
 	// quick hack - not fully implemented - but since advsiory only - not too important...
 
 	if (not FileExists (fileFullPath)) {
 // FOR NOW - MIMIC OLD CODE - BUT FIX TO CHECK READ AND WRITE (AND BOTH) ACCESS DEPENDING ON ARGS) -- LGP 2009-08-15
-		Exceptions::DoThrow (FileAccessException (fileFullPath, FileUtils::eRead_FAM));
+		Execution::DoThrow (FileAccessException (fileFullPath, IO::eRead_FAM));
 	}
 }
 
@@ -231,10 +232,10 @@ void	FileUtils::CheckFileAccess (const tstring& fileFullPath, bool checkCanRead,
 
 /*
  ********************************************************************************
- *************** FileUtils::AssureDirectoryPathSlashTerminated ******************
+ *************** IO::AssureDirectoryPathSlashTerminated ******************
  ********************************************************************************
  */
-tstring	FileUtils::AssureDirectoryPathSlashTerminated (const tstring& dirPath)
+tstring	IO::AssureDirectoryPathSlashTerminated (const tstring& dirPath)
 {
 	if (dirPath.empty ()) {
 		Assert (false);	// not sure if this is an error or not. Not sure how code used.
@@ -259,10 +260,10 @@ tstring	FileUtils::AssureDirectoryPathSlashTerminated (const tstring& dirPath)
 
 /*
  ********************************************************************************
- ************************ FileUtils::SafeFilenameChars **************************
+ ************************ IO::SafeFilenameChars **************************
  ********************************************************************************
  */
-tstring	FileUtils::SafeFilenameChars (const tstring& s)
+tstring	IO::SafeFilenameChars (const tstring& s)
 {
 	wstring	tmp	=	tstring2Wide (s);	// analyze as wide-char string so we don't mis-identify
 										// characters (by looking at lead bytes etc)
@@ -286,10 +287,10 @@ Again:
 
 /*
  ********************************************************************************
- ************************** FileUtils::ResolveShortcut **************************
+ ************************** IO::ResolveShortcut **************************
  ********************************************************************************
  */
-tstring	FileUtils::ResolveShortcut (const tstring& path2FileOrShortcut)
+tstring	IO::ResolveShortcut (const tstring& path2FileOrShortcut)
 {
 	// NB: this requires COM, and for now - I don't want the support module depending on the COM module,
 	// so just allow this to fail if COM isn't initialized.
@@ -337,7 +338,7 @@ tstring	FileUtils::ResolveShortcut (const tstring& path2FileOrShortcut)
 		if (psl != NULL) {
 			psl->Release ();
 		}
-		Exceptions::DoReThrow ();
+		Execution::DoReThrow ();
 	}
 	if (ppf != NULL) {
 		ppf->Release ();
@@ -359,10 +360,10 @@ tstring	FileUtils::ResolveShortcut (const tstring& path2FileOrShortcut)
 
 /*
  ********************************************************************************
- ****************** FileUtils::FileSizeToDisplayString **************************
+ ****************** IO::FileSizeToDisplayString **************************
  ********************************************************************************
  */
-wstring	FileUtils::FileSizeToDisplayString (FileOffset_t bytes)
+wstring	IO::FileSizeToDisplayString (FileOffset_t bytes)
 {
 	if (bytes < 1000) {
 		return Format (L"%d bytes", static_cast<int> (bytes));
@@ -381,10 +382,10 @@ wstring	FileUtils::FileSizeToDisplayString (FileOffset_t bytes)
 
 /*
  ********************************************************************************
- ****************************** FileUtils::GetFileSize **************************
+ ****************************** IO::GetFileSize **************************
  ********************************************************************************
  */
-FileOffset_t	FileUtils::GetFileSize (const tstring& fileName)
+FileOffset_t	IO::GetFileSize (const tstring& fileName)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -399,10 +400,10 @@ FileOffset_t	FileUtils::GetFileSize (const tstring& fileName)
 
 /*
  ********************************************************************************
- ********************** FileUtils::GetFileLastModificationDate ******************
+ ********************** IO::GetFileLastModificationDate ******************
  ********************************************************************************
  */
-DateTime		FileUtils::GetFileLastModificationDate (const tstring& fileName)
+DateTime		IO::GetFileLastModificationDate (const tstring& fileName)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -417,10 +418,10 @@ DateTime		FileUtils::GetFileLastModificationDate (const tstring& fileName)
 
 /*
  ********************************************************************************
- ************************ FileUtils::GetFileLastAccessDate **********************
+ ************************ IO::GetFileLastAccessDate **********************
  ********************************************************************************
  */
-DateTime			FileUtils::GetFileLastAccessDate (const tstring& fileName)
+DateTime			IO::GetFileLastAccessDate (const tstring& fileName)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -433,7 +434,7 @@ DateTime			FileUtils::GetFileLastAccessDate (const tstring& fileName)
 
 /*
  ********************************************************************************
- ********************** FileUtils::SetFileAccessWideOpened **********************
+ ********************** IO::SetFileAccessWideOpened **********************
  ********************************************************************************
  */
 /*
@@ -442,7 +443,7 @@ DateTime			FileUtils::GetFileLastAccessDate (const tstring& fileName)
  *		Add 'Everyone' to have FULL ACCESS to the given argument file
  *
  */
-void	FileUtils::SetFileAccessWideOpened (const tstring& filePathName)
+void	IO::SetFileAccessWideOpened (const tstring& filePathName)
 {
 	static	PACL pACL = NULL;	// Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
 	if (pACL == NULL) {
@@ -496,10 +497,10 @@ void	FileUtils::SetFileAccessWideOpened (const tstring& filePathName)
 
 /*
  ********************************************************************************
- ************************* FileUtils::CreateDirectory ***************************
+ ************************* IO::CreateDirectory ***************************
  ********************************************************************************
  */
-void	FileUtils::CreateDirectory (const tstring& directoryPath, bool createParentComponentsIfNeeded)
+void	IO::CreateDirectory (const tstring& directoryPath, bool createParentComponentsIfNeeded)
 {
 	if (createParentComponentsIfNeeded) {
 		// walk path and break into parts, and from top down - try to create parent directory structure.
@@ -516,7 +517,7 @@ void	FileUtils::CreateDirectory (const tstring& directoryPath, bool createParent
 	if (not ::CreateDirectory (directoryPath.c_str (), NULL)) {
 		DWORD error = ::GetLastError ();
 		if (error != ERROR_ALREADY_EXISTS) {
-			Exceptions::DoThrow (Exceptions::Win32ErrorException (error));
+			Execution::DoThrow (Execution::Win32ErrorException (error));
 		}
 	}
 }
@@ -529,13 +530,13 @@ void	FileUtils::CreateDirectory (const tstring& directoryPath, bool createParent
 
 /*
  ********************************************************************************
- ****************** FileUtils::CreateDirectoryForFile ***************************
+ ****************** IO::CreateDirectoryForFile ***************************
  ********************************************************************************
  */
-void	FileUtils::CreateDirectoryForFile (const tstring& filePath)
+void	IO::CreateDirectoryForFile (const tstring& filePath)
 {
 	if (filePath.empty ()) {
-		Exceptions::DoThrow (Exceptions::Win32ErrorException (ERROR_FILE_NOT_FOUND));
+		Execution::DoThrow (Execution::Win32ErrorException (ERROR_FILE_NOT_FOUND));
 	}
 	if (FileExists (filePath)) {
 		// were done
@@ -551,10 +552,10 @@ void	FileUtils::CreateDirectoryForFile (const tstring& filePath)
 
 /*
  ********************************************************************************
- *************************** FileUtils::GetVolumeName ***************************
+ *************************** IO::GetVolumeName ***************************
  ********************************************************************************
  */
-tstring	FileUtils::GetVolumeName (const tstring& driveLetterAbsPath)
+tstring	IO::GetVolumeName (const tstring& driveLetterAbsPath)
 {
 	// SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
 	AdjustSysErrorMode	errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
@@ -586,10 +587,10 @@ tstring	FileUtils::GetVolumeName (const tstring& driveLetterAbsPath)
 
 /*
  ********************************************************************************
- ********************** FileUtils::AssureLongFileName ***************************
+ ********************** IO::AssureLongFileName ***************************
  ********************************************************************************
  */
-tstring	FileUtils::AssureLongFileName (const tstring& fileName)
+tstring	IO::AssureLongFileName (const tstring& fileName)
 {
 	DWORD	r	=	::GetLongPathName (fileName.c_str (), NULL, 0);
 	if (r != 0) {
@@ -608,10 +609,10 @@ tstring	FileUtils::AssureLongFileName (const tstring& fileName)
 
 /*
  ********************************************************************************
- *************************** FileUtils::GetFileSuffix ***************************
+ *************************** IO::GetFileSuffix ***************************
  ********************************************************************************
  */
-tstring	FileUtils::GetFileSuffix (const tstring& fileName)
+tstring	IO::GetFileSuffix (const tstring& fileName)
 {
 	tstring	useFName	=	fileName;
 
@@ -639,10 +640,10 @@ tstring	FileUtils::GetFileSuffix (const tstring& fileName)
 
 /*
  ********************************************************************************
- ************************* FileUtils::GetFileBaseName ***************************
+ ************************* IO::GetFileBaseName ***************************
  ********************************************************************************
  */
-tstring	FileUtils::GetFileBaseName (const tstring& pathName)
+tstring	IO::GetFileBaseName (const tstring& pathName)
 {
 	tstring	useFName	=	pathName;
 
@@ -671,10 +672,10 @@ tstring	FileUtils::GetFileBaseName (const tstring& pathName)
 
 /*
  ********************************************************************************
- ************************* FileUtils::StripFileSuffix ***************************
+ ************************* IO::StripFileSuffix ***************************
  ********************************************************************************
  */
-tstring	FileUtils::StripFileSuffix (const tstring& pathName)
+tstring	IO::StripFileSuffix (const tstring& pathName)
 {
 	tstring	useFName	=	pathName;
 	tstring	fileSuffix	=	GetFileSuffix (pathName);
@@ -693,10 +694,10 @@ tstring	FileUtils::StripFileSuffix (const tstring& pathName)
 
 /*
  ********************************************************************************
- ************************* FileUtils::GetFileDirectory **************************
+ ************************* IO::GetFileDirectory **************************
  ********************************************************************************
  */
-tstring	FileUtils::GetFileDirectory (const tstring& pathName)
+tstring	IO::GetFileDirectory (const tstring& pathName)
 {
 	// could use splitpath, but this maybe better, since works with \\UNCNAMES
 	tstring	tmp		=	pathName;
@@ -715,10 +716,10 @@ tstring	FileUtils::GetFileDirectory (const tstring& pathName)
 
 /*
  ********************************************************************************
- ****************************** FileUtils::FileExists ***************************
+ ****************************** IO::FileExists ***************************
  ********************************************************************************
  */
-bool	FileUtils::FileExists (const TCHAR* filePath)
+bool	IO::FileExists (const TCHAR* filePath)
 {
 	RequireNotNil (filePath);
 	DWORD attribs = ::GetFileAttributes (filePath);
@@ -728,7 +729,7 @@ bool	FileUtils::FileExists (const TCHAR* filePath)
 	return not (attribs & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-bool	FileUtils::FileExists (const tstring& filePath)
+bool	IO::FileExists (const tstring& filePath)
 {
 	return FileExists (filePath.c_str ());
 }
@@ -739,10 +740,10 @@ bool	FileUtils::FileExists (const tstring& filePath)
 
 /*
  ********************************************************************************
- ************************* FileUtils::DirectoryExists ***************************
+ ************************* IO::DirectoryExists ***************************
  ********************************************************************************
  */
-bool	FileUtils::DirectoryExists (const TCHAR* filePath)
+bool	IO::DirectoryExists (const TCHAR* filePath)
 {
 	RequireNotNil (filePath);
 	DWORD attribs = ::GetFileAttributes (filePath);
@@ -752,7 +753,7 @@ bool	FileUtils::DirectoryExists (const TCHAR* filePath)
 	return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-bool	FileUtils::DirectoryExists (const tstring& filePath)
+bool	IO::DirectoryExists (const tstring& filePath)
 {
 	return DirectoryExists (filePath.c_str ());
 }
@@ -765,16 +766,16 @@ bool	FileUtils::DirectoryExists (const tstring& filePath)
 
 /*
  ********************************************************************************
- ******************************** FileUtils::CopyFile ***************************
+ ******************************** IO::CopyFile ***************************
  ********************************************************************************
  */
-void	FileUtils::CopyFile (const tstring& srcFile, const tstring& destPath)
+void	IO::CopyFile (const tstring& srcFile, const tstring& destPath)
 {
 // see if can be/should be rewritten to use Win32 API of same name!!!
 //
 // If I DONT do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
 	if (not FileExists (srcFile)) {
-		Exceptions::DoThrow (FileAccessException (srcFile, FileUtils::eRead_FAM));
+		Execution::DoThrow (FileAccessException (srcFile, IO::eRead_FAM));
 	}
 	CreateDirectoryForFile (destPath);
 	ThrowIfFalseGetLastError (::CopyFile (destPath.c_str (), srcFile.c_str (), false));
@@ -790,10 +791,10 @@ void	FileUtils::CopyFile (const tstring& srcFile, const tstring& destPath)
 
 /*
  ********************************************************************************
- ****************************** FileUtils::FindFiles ****************************
+ ****************************** IO::FindFiles ****************************
  ********************************************************************************
  */
-vector<tstring>	FileUtils::FindFiles (const tstring& path, const tstring& fileNameToMatch)
+vector<tstring>	IO::FindFiles (const tstring& path, const tstring& fileNameToMatch)
 {
 	vector<tstring>	result;
 	if (path.empty ()) {
@@ -815,7 +816,7 @@ vector<tstring>	FileUtils::FindFiles (const tstring& path, const tstring& fileNa
 		}
 		catch (...) {
 			::FindClose (hFind);
-			Exceptions::DoReThrow ();
+			Execution::DoReThrow ();
 		}
 		::FindClose (hFind);
 	}
@@ -831,10 +832,10 @@ vector<tstring>	FileUtils::FindFiles (const tstring& path, const tstring& fileNa
 
 /*
  ********************************************************************************
- ************************** FileUtils::FindFilesOneDirUnder *********************
+ ************************** IO::FindFilesOneDirUnder *********************
  ********************************************************************************
  */
-vector<tstring>	FileUtils::FindFilesOneDirUnder (const tstring& path, const tstring& fileNameToMatch)
+vector<tstring>	IO::FindFilesOneDirUnder (const tstring& path, const tstring& fileNameToMatch)
 {
 	if (path.empty ()) {
 		return vector<tstring> ();
@@ -872,13 +873,13 @@ vector<tstring>	FileUtils::FindFilesOneDirUnder (const tstring& path, const tstr
 
 /*
  ********************************************************************************
- ****************** FileUtils::DeleteAllFilesInDirectory ************************
+ ****************** IO::DeleteAllFilesInDirectory ************************
  ********************************************************************************
  */
-void	FileUtils::DeleteAllFilesInDirectory (const tstring& path, bool ignoreErrors)
+void	IO::DeleteAllFilesInDirectory (const tstring& path, bool ignoreErrors)
 {
 	if (path.empty ()) {
-		Exceptions::DoThrow (Exceptions::Win32ErrorException (ERROR_INVALID_NAME));
+		Execution::DoThrow (Execution::Win32ErrorException (ERROR_INVALID_NAME));
 	}
 	tstring	dir2Use	=	AssureDirectoryPathSlashTerminated (path);
 
@@ -898,7 +899,7 @@ void	FileUtils::DeleteAllFilesInDirectory (const tstring& path, bool ignoreError
 						catch (...) {
 							DbgTrace (_T ("Exception %s calling RemoveDirectory on file '%s'"), ignoreErrors? _T ("(ignored)"): _T (""), (dir2Use + fileName).c_str ());
 							if (!ignoreErrors) {
-								Exceptions::DoReThrow ();
+								Execution::DoReThrow ();
 							}
 						}
 					}
@@ -910,7 +911,7 @@ void	FileUtils::DeleteAllFilesInDirectory (const tstring& path, bool ignoreError
 					catch (...) {
 						DbgTrace (_T ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors? _T ("(ignored)"): _T (""), (dir2Use + fileName).c_str ());
 						if (!ignoreErrors) {
-							Exceptions::DoReThrow ();
+							Execution::DoReThrow ();
 						}
 					}
 				}
@@ -918,7 +919,7 @@ void	FileUtils::DeleteAllFilesInDirectory (const tstring& path, bool ignoreError
 		}
 		catch (...) {
 			::FindClose (hFind);
-			Exceptions::DoReThrow ();
+			Execution::DoReThrow ();
 		}
 		::FindClose (hFind);
 	}
@@ -930,10 +931,10 @@ void	FileUtils::DeleteAllFilesInDirectory (const tstring& path, bool ignoreError
 
 /*
  ********************************************************************************
- ***************************** FileUtils::WriteString ***************************
+ ***************************** IO::WriteString ***************************
  ********************************************************************************
  */
-void	FileUtils::WriteString (ostream& out, const wstring& s)
+void	IO::WriteString (ostream& out, const wstring& s)
 {
 	string	s1 = WideStringToNarrow (s, CP_UTF8);
 	out << s1.size ();
@@ -948,10 +949,10 @@ void	FileUtils::WriteString (ostream& out, const wstring& s)
 
 /*
  ********************************************************************************
- ****************************** FileUtils::ReadString ***************************
+ ****************************** IO::ReadString ***************************
  ********************************************************************************
  */
-wstring	FileUtils::ReadString (istream& in)
+wstring	IO::ReadString (istream& in)
 {
 	int	strlen;
 	in >> strlen;
@@ -974,17 +975,17 @@ wstring	FileUtils::ReadString (istream& in)
 
 /*
  ********************************************************************************
- ******************************* FileUtils::ReadBytes ***************************
+ ******************************* IO::ReadBytes ***************************
  ********************************************************************************
  */
-vector<Byte>	FileUtils::ReadBytes (istream& in)
+vector<Byte>	IO::ReadBytes (istream& in)
 {
 	streamoff	start	=	in.tellg ();
 	in.seekg (0, ios_base::end);
 	streamoff	end		=	in.tellg ();
 	Assert (start <= end);
 	if (end - start > numeric_limits<size_t>::max ()) {
-		Exceptions::DoThrow (StringException (L"stream too large"));
+		Execution::DoThrow (StringException (L"stream too large"));
 	}
 	size_t	len	=	static_cast<size_t> (end-start);
 	SmallStackBuffer<Byte>	buf (len);
@@ -1000,10 +1001,10 @@ vector<Byte>	FileUtils::ReadBytes (istream& in)
 
 /*
  ********************************************************************************
- ****************************** FileUtils::WriteBytes ***************************
+ ****************************** IO::WriteBytes ***************************
  ********************************************************************************
  */
-void	FileUtils::WriteBytes (ostream& out, const vector<Byte>& s)
+void	IO::WriteBytes (ostream& out, const vector<Byte>& s)
 {
 	out.write (reinterpret_cast<const char*> (Containers::Start (s)), s.size ());
 }
@@ -1015,10 +1016,10 @@ void	FileUtils::WriteBytes (ostream& out, const vector<Byte>& s)
 
 /*
  ********************************************************************************
- ********************** FileUtils::DirectoryChangeWatcher ***********************
+ ********************** IO::DirectoryChangeWatcher ***********************
  ********************************************************************************
  */
-FileUtils::DirectoryChangeWatcher::DirectoryChangeWatcher (const tstring& directoryName, bool watchSubTree, DWORD notifyFilter):
+IO::DirectoryChangeWatcher::DirectoryChangeWatcher (const tstring& directoryName, bool watchSubTree, DWORD notifyFilter):
 	fDirectory (directoryName),
 	fWatchSubTree (watchSubTree),
 	fThread (),
@@ -1026,12 +1027,12 @@ FileUtils::DirectoryChangeWatcher::DirectoryChangeWatcher (const tstring& direct
 	fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter)),
 	fQuitting (false)
 {
-	fThread = ThreadUtils::SimpleThread (&ThreadProc, this);
+	fThread = Execution::SimpleThread (&ThreadProc, this);
 	fThread.SetThreadName (L"DirectoryChangeWatcher");
 	fThread.Start ();
 }
 
-FileUtils::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
+IO::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
 {
 	fQuitting = true;
 	if (fDoneEvent != INVALID_HANDLE_VALUE) {
@@ -1046,11 +1047,11 @@ FileUtils::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
 	}
 }
 
-void	FileUtils::DirectoryChangeWatcher::ValueChanged ()
+void	IO::DirectoryChangeWatcher::ValueChanged ()
 {
 }
 
-void	FileUtils::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
+void	IO::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 {
 	DirectoryChangeWatcher*		_THS_	=	reinterpret_cast<DirectoryChangeWatcher*> (lpParameter);
 	while (not _THS_->fQuitting and _THS_->fWatchEvent != INVALID_HANDLE_VALUE) {
@@ -1071,7 +1072,7 @@ void	FileUtils::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 
 /*
  ********************************************************************************
- ************************ FileUtils::AppTempFileManager *************************
+ ************************ IO::AppTempFileManager *************************
  ********************************************************************************
  */
 AppTempFileManager::AppTempFileManager ():
@@ -1121,7 +1122,7 @@ AppTempFileManager::AppTempFileManager ():
 			}
 			else {
 				DbgTrace ("bad news if we cannot create AppTempFileManager::fTmpDir: %d", error);
-				Exceptions::DoThrow (Win32ErrorException (error));
+				Execution::DoThrow (Win32ErrorException (error));
 			}
 		}
 		// we succeeded - good! Done...
@@ -1142,7 +1143,7 @@ AppTempFileManager::~AppTempFileManager ()
 tstring	AppTempFileManager::GetTempFile (const tstring& fileNameBase)
 {
 	tstring	fn	=	AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
-	FileUtils::CreateDirectoryForFile (fn);
+	IO::CreateDirectoryForFile (fn);
 
 	int	suffixStart = fn.rfind ('.');
 	if (suffixStart == -1) {
@@ -1164,7 +1165,7 @@ tstring	AppTempFileManager::GetTempFile (const tstring& fileNameBase)
 			}
 		}
 	}
-	Exceptions::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
+	Execution::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
 tstring	AppTempFileManager::GetTempDir (const tstring& fileNameBase)
@@ -1183,7 +1184,7 @@ tstring	AppTempFileManager::GetTempDir (const tstring& fileNameBase)
 			return s;
 		}
 	}
-	Exceptions::DoThrow (StringException (L"Unknown error creating temporary file"), "AppTempFileManager::GetTempDir (): failed to create tempdir");
+	Execution::DoThrow (StringException (L"Unknown error creating temporary file"), "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
 
 
@@ -1219,7 +1220,7 @@ TempFileLibrarian::~TempFileLibrarian ()
 			// item could be a file or directory, so see if dir delete works, and only if that fails,
 			// then try to delete the item as a directory ... all silently ignoring failures...
 			if (::DeleteFile (it->c_str ()) == 0) {
-				FileUtils::DeleteAllFilesInDirectory (*it);
+				IO::DeleteAllFilesInDirectory (*it);
 				(void)::RemoveDirectory (it->c_str ());
 			}
 		}
@@ -1241,7 +1242,7 @@ tstring	TempFileLibrarian::GetTempFile (const tstring& fileNameBase)
 			fn = AppTempFileManager::Get ().GetMasterTempDir () + fn;
 		}
 	}
-	FileUtils::CreateDirectoryForFile (fn);
+	IO::CreateDirectoryForFile (fn);
 
 	int	suffixStart = fn.rfind ('.');
 	if (suffixStart == -1) {
@@ -1255,7 +1256,7 @@ tstring	TempFileLibrarian::GetTempFile (const tstring& fileNameBase)
 		char	buf[100];
 		sprintf_s (buf, "%d", ::rand ());
 		s.insert (suffixStart, totstring (buf));
-		if (not FileUtils::FileExists (s.c_str ())) {
+		if (not IO::FileExists (s.c_str ())) {
 			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (f != NULL) {
 				CloseHandle (f);
@@ -1265,7 +1266,7 @@ tstring	TempFileLibrarian::GetTempFile (const tstring& fileNameBase)
 			}
 		}
 	}
-	Exceptions::DoThrow (StringException (L"Unknown error creating file"));
+	Execution::DoThrow (StringException (L"Unknown error creating file"));
 }
 
 tstring	TempFileLibrarian::GetTempDir (const tstring& fileNameBase)
@@ -1290,14 +1291,14 @@ tstring	TempFileLibrarian::GetTempDir (const tstring& fileNameBase)
 			(void)::sprintf_s (buf, "%d\\", ::rand ());
 		}
 		s.append (totstring  (buf));
-		if (not FileUtils::DirectoryExists (s)) {
-			FileUtils::CreateDirectory (s, true);
+		if (not IO::DirectoryExists (s)) {
+			IO::CreateDirectory (s, true);
 			AutoCriticalSection enterCriticalSection (fCriticalSection);
 			fFiles.insert (s);
 			return s;
 		}
 	}
-	Exceptions::DoThrow (StringException (L"Unknown error creating temporary file"));
+	Execution::DoThrow (StringException (L"Unknown error creating temporary file"));
 }
 
 
@@ -1308,7 +1309,7 @@ tstring	TempFileLibrarian::GetTempDir (const tstring& fileNameBase)
 
 /*
  ********************************************************************************
- ***************************** FileUtils::ScopedTmpDir **************************
+ ***************************** IO::ScopedTmpDir **************************
  ********************************************************************************
  */
 ScopedTmpDir::ScopedTmpDir (const tstring& fileNameBase):
@@ -1335,7 +1336,7 @@ ScopedTmpDir::~ScopedTmpDir ()
 
 /*
  ********************************************************************************
- ************************ FileUtils::ScopedTmpFile ******************************
+ ************************ IO::ScopedTmpFile ******************************
  ********************************************************************************
  */
 ScopedTmpFile::ScopedTmpFile (const tstring& fileNameBase):
@@ -1361,7 +1362,7 @@ ScopedTmpFile::~ScopedTmpFile ()
 
 /*
  ********************************************************************************
- ********************** FileUtils::ThroughTmpFileWriter *************************
+ ********************** IO::ThroughTmpFileWriter *************************
  ********************************************************************************
  */
 ThroughTmpFileWriter::ThroughTmpFileWriter (const tstring& realFileName, const tstring& tmpSuffix):
@@ -1394,7 +1395,7 @@ void	ThroughTmpFileWriter::Commit ()
 			ThrowIfFalseGetLastError (::MoveFile (fTmpFilePath.c_str (), fRealFilePath.c_str ()));
 		}
 		else {
-			Exceptions::DoReThrow ();
+			Execution::DoReThrow ();
 		}
 	}
 	fRealFilePath.clear ();
@@ -1409,10 +1410,10 @@ void	ThroughTmpFileWriter::Commit ()
 
 /*
  ********************************************************************************
- **************************** FileUtils::GetEXEDir ******************************
+ **************************** IO::GetEXEDir ******************************
  ********************************************************************************
  */
-tstring	FileUtils::GetEXEDir ()
+tstring	IO::GetEXEDir ()
 {
 	return GetFileDirectory (GetEXEPath ());
 }
@@ -1425,10 +1426,10 @@ tstring	FileUtils::GetEXEDir ()
 
 /*
  ********************************************************************************
- ************************** FileUtils::GetEXEPath *******************************
+ ************************** IO::GetEXEPath *******************************
  ********************************************************************************
  */
-tstring	FileUtils::GetEXEPath ()
+tstring	IO::GetEXEPath ()
 {
 	TCHAR	buf[MAX_PATH];
 	memset (buf, 0, sizeof (buf));
@@ -1479,7 +1480,7 @@ FileReader::FileReader (const TCHAR* fileName)
 		catch (...) {
 			::CloseHandle  (fd);
 			delete[] fileData;
-			Exceptions::DoReThrow ();
+			Execution::DoReThrow ();
 		}
 
 		// Close file, and update data pointers to stored file data...
@@ -1507,7 +1508,7 @@ FileReader::FileReader (const TCHAR* fileName)
 		catch (...) {
 			::_close (fd);
 			delete[] fileData;
-			Exceptions::DoReThrow ();
+			Execution::DoReThrow ();
 		}
 
 		// Close file, and update data pointers to stored file data...
@@ -1587,7 +1588,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const TCHAR* fileName):
 		if (fFileHandle != INVALID_HANDLE_VALUE) {
 			::CloseHandle (fFileHandle);
 		}
-		Exceptions::DoReThrow ();
+		Execution::DoReThrow ();
 	}
 }
 
@@ -1609,7 +1610,7 @@ MemoryMappedFileReader::~MemoryMappedFileReader ()
 
 /*
  ********************************************************************************
- *********************** FileUtils::AdjustSysErrorMode **************************
+ *********************** IO::AdjustSysErrorMode **************************
  ********************************************************************************
  */
 
@@ -1648,7 +1649,7 @@ DirectoryContentsIterator::DirectoryContentsIterator (const tstring& pathExpr):
 	memset (&fFindFileData, 0, sizeof (fFindFileData));
 	size_t i = fDirectory.rfind ('\\');
 	if (i == wstring::npos) {
-		Exceptions::DoThrow (StringException (L"Cannot find final '\\' in directory path"));
+		Execution::DoThrow (StringException (L"Cannot find final '\\' in directory path"));
 	}
 	fDirectory = fDirectory.substr (0, i+1);
 	fHandle = ::FindFirstFile (pathExpr.c_str (), &fFindFileData);

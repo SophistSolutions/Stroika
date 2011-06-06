@@ -12,7 +12,8 @@
  */
 namespace	Stroika {	
 	namespace	Foundation {
-
+		namespace	Time {
+		}
 	}
 }
 

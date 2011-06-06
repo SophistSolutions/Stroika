@@ -6,10 +6,15 @@
 #include	<windows.h>
 
 #include	"Configuration/Basics.h"
+
+#include	"Containers/Basics.h"
+
 #include	"Characters/StringUtils.h"
+
 #include	"Debug/Trace.h"
 
 #include	"Time/Realtime.h"
+
 
 #include	"WaitSupport.h"
 

@@ -10,7 +10,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Configuration {
@@ -24,7 +23,6 @@ namespace	Stroika {
 		}
 	}
 }
-
 #endif	/*_Configbasics_inl*/
 
 

@@ -20,10 +20,10 @@ namespace	Stroika {
 	namespace	Foundation {
 
 
-namespace	Exceptions {
+namespace	Execution {
 
 
-	using	StringUtils::tstring;
+	using	Characters::tstring;
 
 
 	// Throw this when an error has already been reported - so that it isn't reported again
@@ -253,34 +253,34 @@ namespace	Exceptions {
 
 
 	#define	CATCH_AND_CAPTURE_CATCH_BLOCK(CE)\
-		catch (const Exceptions::RequiredComponentMissingException& e) {\
-			(CE).fRequiredComponentMissingException = auto_ptr<Exceptions::RequiredComponentMissingException> (DEBUG_NEW Exceptions::RequiredComponentMissingException (e));\
+		catch (const Execution::RequiredComponentMissingException& e) {\
+			(CE).fRequiredComponentMissingException = auto_ptr<Execution::RequiredComponentMissingException> (DEBUG_NEW Execution::RequiredComponentMissingException (e));\
 		}\
-		catch (const Exceptions::StringException& e) {\
-			(CE).fStringException = auto_ptr<Exceptions::StringException> (DEBUG_NEW Exceptions::StringException (e));\
+		catch (const Execution::StringException& e) {\
+			(CE).fStringException = auto_ptr<Execution::StringException> (DEBUG_NEW Execution::StringException (e));\
 		}\
-		catch (const Exceptions::HRESULTErrorException& e) {\
-			(CE).fHRESULTErrorException = auto_ptr<Exceptions::HRESULTErrorException> (DEBUG_NEW Exceptions::HRESULTErrorException (e));\
+		catch (const Execution::HRESULTErrorException& e) {\
+			(CE).fHRESULTErrorException = auto_ptr<Execution::HRESULTErrorException> (DEBUG_NEW Execution::HRESULTErrorException (e));\
 		}\
-		catch (const Exceptions::Win32ErrorException& e) {\
-			(CE).fWin32ErrorException = auto_ptr<Exceptions::Win32ErrorException> (DEBUG_NEW Exceptions::Win32ErrorException (e));\
+		catch (const Execution::Win32ErrorException& e) {\
+			(CE).fWin32ErrorException = auto_ptr<Execution::Win32ErrorException> (DEBUG_NEW Execution::Win32ErrorException (e));\
 		}\
-		catch (const Exceptions::FileFormatException& e) {\
-			(CE).fFileFormatException = auto_ptr<Exceptions::FileFormatException> (DEBUG_NEW Exceptions::FileFormatException (e));\
+		catch (const Execution::FileFormatException& e) {\
+			(CE).fFileFormatException = auto_ptr<Execution::FileFormatException> (DEBUG_NEW Execution::FileFormatException (e));\
 		}\
-		catch (const Exceptions::FileBusyException& e) {\
-			(CE).fFileBusyException = auto_ptr<Exceptions::FileBusyException> (DEBUG_NEW Exceptions::FileBusyException (e));\
+		catch (const Execution::FileBusyException& e) {\
+			(CE).fFileBusyException = auto_ptr<Execution::FileBusyException> (DEBUG_NEW Execution::FileBusyException (e));\
 		}\
-		catch (const Exceptions::SilentException& e) {\
-			(CE).fSilentException = auto_ptr<Exceptions::SilentException> (DEBUG_NEW Exceptions::SilentException (e));\
+		catch (const Execution::SilentException& e) {\
+			(CE).fSilentException = auto_ptr<Execution::SilentException> (DEBUG_NEW Execution::SilentException (e));\
 		}\
 		catch (...) {\
-			(CE).fStringException = auto_ptr<Exceptions::StringException> (DEBUG_NEW Exceptions::StringException (L"Unknown Exception"));\
+			(CE).fStringException = auto_ptr<Execution::StringException> (DEBUG_NEW Execution::StringException (L"Unknown Exception"));\
 		}\
 
 
 
-		// these map invalid parameters etc to exceptions (with assertions and appropriate
+		// these map invalid parameters etc to Execution (with assertions and appropriate
 		// logging)
 		void	RegisterDefaultHandler_invalid_parameter ();
 		void	RegisterDefaultHandler_pure_function_call ();

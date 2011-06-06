@@ -6,18 +6,21 @@
 #include	<iomanip>
 #include	<sstream>
 
+#include	"../Containers/Basics.h"
 #include	"../Debug/Assertions.h"
-#include	"CodePage.h"
 #include	"../Debug/Trace.h"
 #include	"../Math/Basics.h"
+#include	"CodePage.h"
 
 #include	"StringUtils.h"
+
+
 
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
-using	namespace	StringUtils;
+using	namespace	Characters;
 
 
 
@@ -27,7 +30,7 @@ using	namespace	StringUtils;
  ***************************** ACPStringToWide **********************************
  ********************************************************************************
  */
-wstring	StringUtils::ACPStringToWide (const string& ws)
+wstring	Characters::ACPStringToWide (const string& ws)
 {
 	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), ws.size (), NULL, NULL);
 	wstring	result;
@@ -46,7 +49,7 @@ wstring	StringUtils::ACPStringToWide (const string& ws)
  **************************** UTF8StringToBSTR **********************************
  ********************************************************************************
  */
-BSTR	StringUtils::UTF8StringToBSTR (const char* ws)
+BSTR	Characters::UTF8StringToBSTR (const char* ws)
 {
 	RequireNotNil (ws);
 	size_t	wsLen	=	::strlen (ws);
@@ -68,7 +71,7 @@ BSTR	StringUtils::UTF8StringToBSTR (const char* ws)
  *********************************** tolower ************************************
  ********************************************************************************
  */
-void	StringUtils::tolower (wstring* s)
+void	Characters::tolower (wstring* s)
 {
 	RequireNotNil (s);
 	wstring::iterator	end	=	s->end ();
@@ -77,7 +80,7 @@ void	StringUtils::tolower (wstring* s)
 	}
 }
 
-void	StringUtils::tolower (string* s)
+void	Characters::tolower (string* s)
 {
 	RequireNotNil (s);
 	string::iterator	end	=	s->end ();
@@ -95,7 +98,7 @@ void	StringUtils::tolower (string* s)
  *********************************** toupper ************************************
  ********************************************************************************
  */
-void	StringUtils::toupper (wstring* s)
+void	Characters::toupper (wstring* s)
 {
 	RequireNotNil (s);
 	wstring::iterator	end	=	s->end ();
@@ -104,7 +107,7 @@ void	StringUtils::toupper (wstring* s)
 	}
 }
 
-void	StringUtils::toupper (string* s)
+void	Characters::toupper (string* s)
 {
 	RequireNotNil (s);
 	string::iterator	end	=	s->end ();
@@ -128,7 +131,7 @@ void	StringUtils::toupper (string* s)
  ********************************* Contains *************************************
  ********************************************************************************
  */
-bool	StringUtils::Contains (const wstring& string2Search, const wstring& substr, StringCompareOptions co)
+bool	Characters::Contains (const wstring& string2Search, const wstring& substr, StringCompareOptions co)
 {
 	if (co == eWithCase_CO) {
 		return string2Search.find (substr) != wstring::npos;
@@ -196,12 +199,12 @@ namespace	{
 				return r;
 			}
 }
-wstring	StringUtils::MungeStringSoSingular (const wstring& s)
+wstring	Characters::MungeStringSoSingular (const wstring& s)
 {
 	return MungeStringSoSingular_ (s);
 }
 
-string	StringUtils::MungeStringSoSingular (const string& s)
+string	Characters::MungeStringSoSingular (const string& s)
 {
 	return MungeStringSoSingular_ (s);
 }
@@ -234,12 +237,12 @@ namespace	{
 				return r;
 			}
 }
-wstring	StringUtils::CapitalizeEachWord (const wstring& s)
+wstring	Characters::CapitalizeEachWord (const wstring& s)
 {
 	return CapitalizeEachWord_ (s);
 }
 
-string	StringUtils::CapitalizeEachWord (const string& s)
+string	Characters::CapitalizeEachWord (const string& s)
 {
 	return CapitalizeEachWord_ (s);
 }
@@ -275,12 +278,12 @@ namespace	{
 				return r;
 			}
 }
-wstring	StringUtils::CapitalizeEachSentence (const wstring& s)
+wstring	Characters::CapitalizeEachSentence (const wstring& s)
 {
 	return CapitalizeEachSentence_ (s);
 }
 
-string	StringUtils::CapitalizeEachSentence (const string& s)
+string	Characters::CapitalizeEachSentence (const string& s)
 {
 	return CapitalizeEachSentence_ (s);
 }
@@ -309,12 +312,12 @@ namespace	{
 				return r;
 			}
 }
-wstring	StringUtils::UnCapitalizeFirstWord (const wstring& s)
+wstring	Characters::UnCapitalizeFirstWord (const wstring& s)
 {
 	return UnCapitalizeFirstWord_ (s);
 }
 
-string	StringUtils::UnCapitalizeFirstWord (const string& s)
+string	Characters::UnCapitalizeFirstWord (const string& s)
 {
 	return UnCapitalizeFirstWord_ (s);
 }
@@ -329,12 +332,12 @@ string	StringUtils::UnCapitalizeFirstWord (const string& s)
  ********************************** IsAllCaps ***********************************
  ********************************************************************************
  */
-bool	StringUtils::IsAllCaps (const string& s)
+bool	Characters::IsAllCaps (const string& s)
 {
 	return not s.empty () and s == toupper (s);
 }
 
-bool	StringUtils::IsAllCaps (const wstring& s)
+bool	Characters::IsAllCaps (const wstring& s)
 {
 	return not s.empty () and s == toupper (s);
 }
@@ -350,7 +353,7 @@ bool	StringUtils::IsAllCaps (const wstring& s)
  ************************* QuoteForXMLAttribute *********************************
  ********************************************************************************
  */
-string	StringUtils::QuoteForXMLAttribute (const string& s)
+string	Characters::QuoteForXMLAttribute (const string& s)
 {
 	string	r;
 	r.reserve (s.size () * 6 / 5);	// wild guess about good estimate
@@ -368,7 +371,7 @@ string	StringUtils::QuoteForXMLAttribute (const string& s)
 	return r;
 }
 
-string	StringUtils::QuoteForXMLAttribute (const wstring& s)
+string	Characters::QuoteForXMLAttribute (const wstring& s)
 {
 	string	r;
 	r.reserve (s.size () * 7 / 5);	// wild guess about good estimate
@@ -395,7 +398,7 @@ string	StringUtils::QuoteForXMLAttribute (const wstring& s)
 	return r;
 }
 
-wstring	StringUtils::QuoteForXMLAttributeW (const wstring& s)
+wstring	Characters::QuoteForXMLAttributeW (const wstring& s)
 {
 	string	tmp	=	QuoteForXMLAttribute (s);
 	return ACPStringToWide (tmp);
@@ -411,7 +414,7 @@ wstring	StringUtils::QuoteForXMLAttributeW (const wstring& s)
  ******************************** QuoteForXML ***********************************
  ********************************************************************************
  */
-string	StringUtils::QuoteForXML (const string& s)
+string	Characters::QuoteForXML (const string& s)
 {
 	string	r;
 	r.reserve (s.size () * 6 / 5);	// wild guess about good estimate
@@ -442,7 +445,7 @@ string	StringUtils::QuoteForXML (const string& s)
 	return r;
 }
 
-string	StringUtils::QuoteForXML (const wstring& s)
+string	Characters::QuoteForXML (const wstring& s)
 {
 	string	r;
 	r.reserve (s.size () * 7 / 5);	// wild guess about good estimate
@@ -482,7 +485,7 @@ string	StringUtils::QuoteForXML (const wstring& s)
 	return r;
 }
 
-wstring	StringUtils::QuoteForXMLW (const wstring& s)
+wstring	Characters::QuoteForXMLW (const wstring& s)
 {
 	string	tmp	=	QuoteForXML (s);
 	return ACPStringToWide (tmp);
@@ -498,7 +501,7 @@ wstring	StringUtils::QuoteForXMLW (const wstring& s)
  ************************************* Format ***********************************
  ********************************************************************************
  */
-string	StringUtils::Format (const char* format, ...)
+string	Characters::Format (const char* format, ...)
 {
 	char		msgBuf [10*1024];	// no idea how big to make it...
 	va_list		argsList;
@@ -513,7 +516,7 @@ string	StringUtils::Format (const char* format, ...)
 	return msgBuf;
 }
 
-wstring	StringUtils::Format (const wchar_t* format, ...)
+wstring	Characters::Format (const wchar_t* format, ...)
 {
 	wchar_t		msgBuf [10*1024];	// no idea how big to make it...
 	va_list		argsList;
@@ -553,12 +556,12 @@ namespace	{
 				}
 			}
 }
-string	StringUtils::PluralizeNoun (const string& s, int count)
+string	Characters::PluralizeNoun (const string& s, int count)
 {
 	return PluralizeNoun_HLPR (s, count);
 }
 
-wstring	StringUtils::PluralizeNoun (const wstring& s, int count)
+wstring	Characters::PluralizeNoun (const wstring& s, int count)
 {
 	return PluralizeNoun_HLPR (s, count);
 }
@@ -586,12 +589,12 @@ namespace	{
 			}
 }
 
-string	StringUtils::StripTrailingCharIfAny (const string& s, char c)
+string	Characters::StripTrailingCharIfAny (const string& s, char c)
 {
 	return StripTrailingCharIfAny_HLPR (s, c);
 }
 
-wstring	StringUtils::StripTrailingCharIfAny (const wstring& s, wchar_t c)
+wstring	Characters::StripTrailingCharIfAny (const wstring& s, wchar_t c)
 {
 	return StripTrailingCharIfAny_HLPR (s, c);
 }
@@ -612,7 +615,7 @@ wstring	StringUtils::StripTrailingCharIfAny (const wstring& s, wchar_t c)
  *********************** MapUNICODETextWithMaybeBOMTowstring ********************
  ********************************************************************************
  */
-wstring	StringUtils::MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end)
+wstring	Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end)
 {
 	Require (start <= end);
 	if (start == end) {
@@ -622,7 +625,7 @@ wstring	StringUtils::MapUNICODETextWithMaybeBOMTowstring (const char* start, con
 		size_t	outBufSize		=	end-start;
 		SmallStackBuffer<wchar_t>	wideBuf (outBufSize);
 		size_t	outCharCount	=	outBufSize;
-		CodePageUtils::MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end-start, wideBuf, &outCharCount);
+		MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end-start, wideBuf, &outCharCount);
 		Assert (outCharCount <= outBufSize);
 		if (outCharCount == 0) {
 			return wstring ();
@@ -644,9 +647,8 @@ wstring	StringUtils::MapUNICODETextWithMaybeBOMTowstring (const char* start, con
  *********************** MapUNICODETextWithMaybeBOMTowstring ********************
  ********************************************************************************
  */
-vector<Byte>	StringUtils::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
+vector<Byte>	Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
 {
-	using	namespace	CodePageUtils;
 	CodePageConverter	cpc (useCP, CodePageConverter::eHandleBOM);
 	size_t	outCharCount	=	cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end-start);
 	SmallStackBuffer<char>	buf (outCharCount);
@@ -664,14 +666,14 @@ vector<Byte>	StringUtils::MapUNICODETextToSerializedFormat (const wchar_t* start
  ****************************** HexString2Int ***********************************
  ********************************************************************************
  */
-int	StringUtils::HexString2Int (const string& s)
+int	Characters::HexString2Int (const string& s)
 {
 	int	v	=	0;
 	(void)::sscanf_s (s.c_str (), "%x", &v);
 	return v;
 }
 
-int	StringUtils::HexString2Int (const wstring& s)
+int	Characters::HexString2Int (const wstring& s)
 {
 	int	v	=	0;
 	(void)::swscanf_s (s.c_str (), L"%x", &v);
@@ -687,12 +689,12 @@ int	StringUtils::HexString2Int (const wstring& s)
  ********************************* String2Int ***********************************
  ********************************************************************************
  */
-int	StringUtils::String2Int (const string& s)
+int	Characters::String2Int (const string& s)
 {
 	return atol (s.c_str ());
 }
 
-int	StringUtils::String2Int (const wstring& s)
+int	Characters::String2Int (const wstring& s)
 {
 	return _wtol (s.c_str ());
 }
@@ -706,13 +708,13 @@ int	StringUtils::String2Int (const wstring& s)
  ********************************* String2Float *********************************
  ********************************************************************************
  */
-float	StringUtils::String2Float (const wstring& s)
+float	Characters::String2Float (const wstring& s)
 {
 	static	const	float	kBADVAL	=	static_cast<float> (Math::nan ());
 	return String2Float (s, kBADVAL);
 }
 
-float	StringUtils::String2Float (const wstring& s, float returnValIfInvalidString)
+float	Characters::String2Float (const wstring& s, float returnValIfInvalidString)
 {
 	float	num	=	returnValIfInvalidString;
 	if (::swscanf_s (s.c_str (), L"%f", &num) == 1) {
@@ -732,7 +734,7 @@ float	StringUtils::String2Float (const wstring& s, float returnValIfInvalidStrin
  ********************************* Float2String *********************************
  ********************************************************************************
  */
-wstring	StringUtils::Float2String (float f, unsigned int precision)
+wstring	Characters::Float2String (float f, unsigned int precision)
 {
 	if (_isnan (f)) {
 		return wstring ();
@@ -777,12 +779,12 @@ namespace	{
 				}
 			}
 }
-string	StringUtils::LimitLength (const string& str, size_t maxLen, bool keepLeft)
+string	Characters::LimitLength (const string& str, size_t maxLen, bool keepLeft)
 {
 	return LimitLength_HLPR<string> (str, maxLen, keepLeft, "...");
 }
 
-wstring	StringUtils::LimitLength (const wstring& str, size_t maxLen, bool keepLeft)
+wstring	Characters::LimitLength (const wstring& str, size_t maxLen, bool keepLeft)
 {
 	return LimitLength_HLPR<wstring> (str, maxLen, keepLeft, L"...");
 }
@@ -885,7 +887,7 @@ namespace	{
 			}
 		}
 }
-wstring			StringUtils::StringVectorEncoding::Encode (const vector<wstring>& v)
+wstring			Characters::StringVectorEncoding::Encode (const vector<wstring>& v)
 {
 	/*
 	 *	use LISP-LIKE SYNTAX for encoding.
@@ -908,7 +910,7 @@ wstring			StringUtils::StringVectorEncoding::Encode (const vector<wstring>& v)
 	return result;
 }
 
-vector<wstring>	StringUtils::StringVectorEncoding::Decode (const wstring& encodedString)
+vector<wstring>	Characters::StringVectorEncoding::Decode (const wstring& encodedString)
 {
 	vector<wstring>	result;
 

@@ -312,11 +312,11 @@ namespace	Stroika {
 		inline	void	ThrowIfNull (const RefCntPtr<typename T>& p)
 			{
 				if (p.get () == NULL) {
-					Exceptions::DoThrow (bad_alloc (), _T ("ThrowIfNull (RefCntPtr<typename T> ()) - throwing bad_alloc ()"));
+					Execution::DoThrow (bad_alloc (), _T ("ThrowIfNull (RefCntPtr<typename T> ()) - throwing bad_alloc ()"));
 				}
 			}
-}
-}
 
 
+	}
+}
 #endif	/*_RefCntPtr_inl*/

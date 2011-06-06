@@ -16,10 +16,10 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
-using	Debug::Trace::TraceContextBumper;
+using	Debug::TraceContextBumper;
 
-using	namespace	Exceptions;
-using	namespace	StringUtils;
+using	namespace	Execution;
+using	namespace	Characters;
 
 
 
@@ -89,7 +89,7 @@ Date::Date (const wstring& rep, XML)
 			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), LOCALE_USER_DEFAULT, VAR_DATEVALUEONLY, &d));
 		}
 		catch (...) {
-			Exceptions::DoThrow (FormatException ());
+			Execution::DoThrow (FormatException ());
 		}
 		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
 		SYSTEMTIME	sysTime;
@@ -113,7 +113,7 @@ Date::Date (const wstring& rep, Javascript)
 			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), kUS_ENGLISH_LOCALE, VAR_DATEVALUEONLY, &d));
 		}
 		catch (...) {
-			Exceptions::DoThrow (FormatException ());
+			Execution::DoThrow (FormatException ());
 		}
 		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
 		SYSTEMTIME	sysTime;
@@ -133,7 +133,7 @@ Date::Date (const wstring& rep, LCID lcid)
 			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
 		}
 		catch (...) {
-			Exceptions::DoThrow (FormatException ());
+			Execution::DoThrow (FormatException ());
 		}
 		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
 		SYSTEMTIME	sysTime;
@@ -518,7 +518,7 @@ TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid):
 			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
 		}
 		else {
-			Exceptions::DoThrow (FormatException ());
+			Execution::DoThrow (FormatException ());
 		}
 	}
 	// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
@@ -831,7 +831,7 @@ DateTime::DateTime (const wstring& rep, LCID lcid):
 		}
 		catch (...) {
 			// though COULD be time format exception?
-			Exceptions::DoThrow (Date::FormatException ());
+			Execution::DoThrow (Date::FormatException ());
 		}
 		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
 		SYSTEMTIME	sysTime;
@@ -1150,7 +1150,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nYears) + StringUtils::PluralizeNoun (L"year", static_cast<int> (nYears));
+			result += Format (L"%d ", nYears) + Characters::PluralizeNoun (L"year", static_cast<int> (nYears));
 			timeLeft -= nYears * kSecondsPerYear;
 		}
 	}
@@ -1160,7 +1160,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nMonths) + StringUtils::PluralizeNoun (L"month", static_cast<int> (nMonths));
+			result += Format (L"%d ", nMonths) + Characters::PluralizeNoun (L"month", static_cast<int> (nMonths));
 			timeLeft -= nMonths * kSecondsPerMonth;
 		}
 	}
@@ -1170,7 +1170,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nDays) + StringUtils::PluralizeNoun (L"day", static_cast<int> (nDays));
+			result += Format (L"%d ", nDays) + Characters::PluralizeNoun (L"day", static_cast<int> (nDays));
 			timeLeft -= nDays * kSecondsPerDay;
 		}
 	}
@@ -1181,7 +1181,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", nHours) + StringUtils::PluralizeNoun (L"hour", static_cast<int> (nHours));
+				result += Format (L"%d ", nHours) + Characters::PluralizeNoun (L"hour", static_cast<int> (nHours));
 				timeLeft -= nHours * kSecondsPerHour;
 			}
 		}
@@ -1191,7 +1191,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", nMinutes) + StringUtils::PluralizeNoun (L"minute", static_cast<int> (nMinutes));
+				result += Format (L"%d ", nMinutes) + Characters::PluralizeNoun (L"minute", static_cast<int> (nMinutes));
 				timeLeft -= nMinutes * kSecondsPerMinute;
 			}
 		}
@@ -1199,7 +1199,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", timeLeft) + StringUtils::PluralizeNoun (L"second", static_cast<int> (timeLeft));
+			result += Format (L"%d ", timeLeft) + Characters::PluralizeNoun (L"second", static_cast<int> (timeLeft));
 		}
 	}
 	if (isNeg) {
@@ -1225,7 +1225,7 @@ time_t	DateUtils::Duration::ParseTime_ (const string& s)
 		i = SkipWhitespace_ (i+1, s.end ());
 	}
 	else {
-		Exceptions::DoThrow (FormatException ());
+		Execution::DoThrow (FormatException ());
 	}
 	bool	timePart	=	false;
 	while (i != s.end ()) {
@@ -1237,10 +1237,10 @@ time_t	DateUtils::Duration::ParseTime_ (const string& s)
 		string::const_iterator	firstDigitI	=	i;
 		string::const_iterator	lastDigitI	=	FindFirstNonDigit_ (i, s.end ());
 		if (lastDigitI == s.end ()) {
-			Exceptions::DoThrow (FormatException ());
+			Execution::DoThrow (FormatException ());
 		}
 		if (firstDigitI == lastDigitI) {
-			Exceptions::DoThrow (FormatException ());
+			Execution::DoThrow (FormatException ());
 		}
 		int	n	=	atoi (string (firstDigitI, lastDigitI).c_str ());
 		switch (*lastDigitI) {

@@ -23,6 +23,12 @@
 
 
 
+// Not sure we will ever support this? Maybe?
+//#define	qRealInlines	1
+
+
+
+
 /*
  *	Since this include file CAN define #defines which are required before including system includes, its required
  *	that THIS file be included before all others (like a precomp.h precompiled header file).

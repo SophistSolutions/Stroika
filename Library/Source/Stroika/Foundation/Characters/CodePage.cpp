@@ -4,16 +4,18 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
+#if		defined(_WIN32)
 #include	<cstdio>
 #include	<tchar.h>
-
-#include	"../Memory/SmallStackBuffer.h"
+#endif
 
 #include	"../Configuration/Basics.h"
+#include	"../Memory/SmallStackBuffer.h"
 
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+
 
 #ifndef	qBuildInTableDrivenCodePageBuilderProc
 	#define	qBuildInTableDrivenCodePageBuilderProc		0
@@ -28,8 +30,6 @@ using	namespace	Stroika::Foundation;
 	#define	qBuildMemoizedISXXXBuilderProc				0
 #endif
 
-
-
 /*
  *	Use this to test my IsWXXX functions produce the right results. Only test under WinXP,
  *	since that is the reference they are copying (SPR#1229).
@@ -37,6 +37,11 @@ using	namespace	Stroika::Foundation;
 #ifndef	qTestMyISWXXXFunctions
 	#define	qTestMyISWXXXFunctions						0
 #endif
+
+
+#include	"CodePage.h"
+
+
 
 
 
@@ -50,12 +55,15 @@ using	namespace	Stroika::Foundation;
 
 
 
-#include	"CodePage.h"
 
 
 
 
-using	namespace	CodePageUtils;
+
+
+
+
+using	namespace	Characters;
 
 
 
@@ -218,7 +226,7 @@ namespace {
  ******************************** CodePageConverter *****************************
  ********************************************************************************
  */
-void	CodePageUtils::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
 {
 	RequireNotNil (outChars);
 	RequireNotNil (outCharCnt);

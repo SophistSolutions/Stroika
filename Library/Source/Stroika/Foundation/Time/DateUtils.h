@@ -21,7 +21,7 @@ namespace	Stroika {
 	namespace	Foundation {
 
 
-		using	StringUtils::tstring;
+		using	Characters::tstring;
 
 
 /*

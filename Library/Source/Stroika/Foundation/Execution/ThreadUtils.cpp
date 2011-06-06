@@ -18,7 +18,6 @@
 
 
 
-using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
 
@@ -40,9 +39,8 @@ using	namespace	Stroika::Foundation;
 
 
 
-using	namespace	StringUtils;
-using	namespace	ThreadUtils;
-using	namespace	Exceptions;
+using	namespace	Characters;
+using	namespace	Execution;
 
 
 // RE-Examine altenrate appraoches to this and beter docuemnt!!!!
@@ -119,7 +117,7 @@ LONG	Event::sCurAllocatedHandleCount		=	0;
 #endif
 
 
-using	Debug::Trace::TraceContextBumper;
+using	Debug::TraceContextBumper;
 
 /*
  ********************************************************************************
@@ -145,7 +143,7 @@ SimpleThread::Rep::Rep ()
 	}
 	catch (...) {
 		::CloseHandle (fThread);
-		Exceptions::DoReThrow ();
+		Execution::DoReThrow ();
 	}
 }
 
@@ -212,7 +210,7 @@ unsigned int	__stdcall	SimpleThread::Rep::ThreadProc (void* lpParameter)
 	}
 }
 
-void	ThreadUtils::SimpleThread::Rep::NotifyOfAbort ()
+void	SimpleThread::Rep::NotifyOfAbort ()
 {
 	Require (fStatus == eAborting or fStatus == eCompleted);
 	// CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
@@ -327,10 +325,10 @@ void	SimpleThread::SetThreadPriority (int nPriority)
 	Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
 }
 
-void	ThreadUtils::SimpleThread::SetThreadName (const wstring& threadName)
+void	SimpleThread::SetThreadName (const wstring& threadName)
 {
 	if (fRep->fThreadName != threadName) {
-		TraceContextBumper	ctx (_T ("ThreadUtils::SimpleThread::SetThreadName"));
+		TraceContextBumper	ctx (_T ("Execution::SimpleThread::SetThreadName"));
 		DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
 		fRep->fThreadName = threadName;
 		#if		qSupportSetThreadNameDebuggerCall
@@ -432,7 +430,7 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) c
 		}
 	}
 	if (thread != NULL) {
-		WaitSupport::WaitAndPumpMessages (NULL, VectorUtils::mkV<HANDLE> (thread), timeToPump);
+		WaitSupport::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
 	}
 }
 
@@ -440,7 +438,7 @@ void	SimpleThread::WaitForDoneWhilePumpingMessages (float timeout) const
 {
 	float	timeoutAt	=	Time::GetTickCount () + timeout;
 	// CRUDDY impl - but decent enuf for first draft
-	while (GetStatus () != ThreadUtils::SimpleThread::eCompleted) {
+	while (GetStatus () != SimpleThread::eCompleted) {
 		if (timeout < 0.0f) {
 			PumpMessagesAndReturnWhenDoneOrAfterTime ();
 		}
@@ -471,14 +469,14 @@ SimpleThread::Status	SimpleThread::GetStatus () const
 
 /*
  ********************************************************************************
- *********************** ThreadUtils::CheckForThreadAborting ********************
+ ************************* Execution::CheckForThreadAborting ********************
  ********************************************************************************
  */
-void	ThreadUtils::CheckForThreadAborting ()
+void	Execution::CheckForThreadAborting ()
 {
 	#if		qUseTLSForSAbortingFlag
 		if (s_Aborting) {
-			Exceptions::DoThrow (ThreadAbortException ());
+			Execution::DoThrow (ThreadAbortException ());
 		}
 	#elif	qUseSleelExForSAbortingFlag
 		::SleepEx (0, true);

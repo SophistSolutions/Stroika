@@ -68,7 +68,7 @@ namespace	Stroika {
 
 
 namespace	{
-	Stroika::Foundation::ModuleInit::ModuleInitializer<Stroika::Foundation::Memory::Private::INIT>	_StroikaFoundationMemoryPrivateINIT_;	// this object constructed for the CTOR/DTOR per-module side-effects
+	Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::INIT>	_StroikaFoundationMemoryPrivateINIT_;	// this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 

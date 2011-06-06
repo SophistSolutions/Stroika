@@ -6,34 +6,19 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<string>
-#include	<climits>
-
-#if		defined(_WIN32)
-#include	<Windows.h>
-#endif
-
-#include	"../Characters/StringUtils.h"
-#include	"../Configuration/Basics.h"
-
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Time {
 
-
-
-	float	GetTickCount ();
+			float	GetTickCount ();
 
 		}
 	}
 }
-
-
-
-
-
 #endif	/*__Realtime_h__*/
+
+
+
 
 
 

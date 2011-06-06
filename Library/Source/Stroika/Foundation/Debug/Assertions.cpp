@@ -16,29 +16,29 @@ using	namespace	Stroika::Foundation::Debug;
 
 
 #if		defined (_DEBUG)
-namespace {
-	void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	NULL;
-}
-
-void	(*Stroika::Foundation::Debug::GetAssertionHandler ()) (const char* fileName, int lineNum)
-{
-	return sLedAssertFailedCallback;
-}
-
-void	Stroika::Foundation::Debug::SetAssertionHandler (void (*assertionHandler) (const char* fileName, int lineNum))
-{
-	sLedAssertFailedCallback = assertionHandler;
-}
-
-void	Stroika::Foundation::Debug::_Debug_Trap_ (const char* fileName, int lineNum)
-{
-	if (sLedAssertFailedCallback == NULL) {
-		DebugBreak ();
+	namespace {
+		void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	NULL;
 	}
-	else {
-		(sLedAssertFailedCallback) (fileName, lineNum);
+
+	void	(*Stroika::Foundation::Debug::GetAssertionHandler ()) (const char* fileName, int lineNum)
+	{
+		return sLedAssertFailedCallback;
 	}
-}
+
+	void	Stroika::Foundation::Debug::SetAssertionHandler (void (*assertionHandler) (const char* fileName, int lineNum))
+	{
+		sLedAssertFailedCallback = assertionHandler;
+	}
+
+	void	Stroika::Foundation::Debug::_Debug_Trap_ (const char* fileName, int lineNum)
+	{
+		if (sLedAssertFailedCallback == NULL) {
+			DebugBreak ();
+		}
+		else {
+			(sLedAssertFailedCallback) (fileName, lineNum);
+		}
+	}
 #endif
 
 

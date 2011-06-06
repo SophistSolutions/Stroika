@@ -17,15 +17,15 @@ using	namespace	Stroika::Foundation;
 
 using	namespace	MemoryAllocator;
 
-using	ThreadUtils::AutoCriticalSection;
+using	Execution::AutoCriticalSection;
 
-using	Debug::Trace::TraceContextBumper;
+using	Debug::TraceContextBumper;
 
 
 
 
 namespace	{
-	ModuleInit::StaticSingletonObjectConstructionHelper<SimpleAllocator_CallLIBCMallocFree>	sDefaultAllocator;
+	Execution::StaticSingletonObjectConstructionHelper<SimpleAllocator_CallLIBCMallocFree>	sDefaultAllocator;
 }
 
 
@@ -261,7 +261,7 @@ void*	LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 	}
 	catch (...) {
 		delete memptr;
-		Exceptions::DoReThrow ();
+		Execution::DoReThrow ();
 	}
 }
 

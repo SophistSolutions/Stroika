@@ -4,8 +4,9 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Debug/Assertions.h"
-#include	"Exceptions.h"
 #include	"../Debug/Trace.h"
+
+#include	"Exceptions.h"
 
 #include	"DLLSupport.h"
 
@@ -13,10 +14,10 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 
-using	Debug::Trace::TraceContextBumper;
+using	Debug::TraceContextBumper;
 
 using	namespace	DLLSupport;
-using	namespace	Exceptions;
+using	namespace	Execution;
 
 
 
@@ -46,7 +47,7 @@ DLLLoader::DLLLoader (const TCHAR* dllName, const vector<tstring>& searchPath)
 				return;
 			}
 		}
-		Exceptions::DoReThrow ();
+		Execution::DoReThrow ();
 	}
 }
 

@@ -16,7 +16,7 @@ namespace	Stroika {
 
 
 
-namespace	ModuleInit {
+namespace	Execution {
 
 		using	namespace	Configuration;
 
@@ -40,7 +40,7 @@ namespace	ModuleInit {
 	 *			}
 	 *		};
 	 *		namespace	{
-	 *			ModuleInit::ModuleInitializer<ExampleModule::Private::ActualModuleInit>	_MI_;	// this object constructed for the CTOR/DTOR per-module side-effects
+	 *			Execution::ModuleInitializer<ExampleModule::Private::ActualModuleInit>	_MI_;	// this object constructed for the CTOR/DTOR per-module side-effects
 	 *		}
 	 */
 
@@ -151,11 +151,13 @@ namespace	ModuleInit {
 }
 
 
+#endif	/*__ModuleInit_h__*/
+
+
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
-#endif	/*__ModuleInit_h__*/
+#include	"ModuleInit.inl"

@@ -41,9 +41,6 @@ namespace	Stroika {
 			#endif
 
 
-
-			double	nan ();
-
 			template	<typename	ENUM>
 				ENUM	Inc (typename ENUM e);
 

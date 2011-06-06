@@ -15,6 +15,7 @@
 
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	Containers {
 
 
 
@@ -56,6 +57,7 @@ namespace	SetUtils {
 }
 
 
+		}
 	}
 }
 

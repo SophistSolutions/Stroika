@@ -165,7 +165,7 @@ namespace	MemoryAllocator {
 			nonvirtual	void		DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
 
 		private:
-			mutable	ThreadUtils::CriticalSection	fCritSection;
+			mutable	Execution::CriticalSection	fCritSection;
 			AbstractGeneralPurposeAllocator&		fBaseAllocator;
 			PTRMAP									fAllocations;
 		private:

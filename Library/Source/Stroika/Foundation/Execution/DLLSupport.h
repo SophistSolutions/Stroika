@@ -18,7 +18,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	DLLSupport {
 
-			using	StringUtils::tstring;
+			using	Characters::tstring;
 
 			class	DLLLoader {
 				public:

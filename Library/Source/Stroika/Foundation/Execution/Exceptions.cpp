@@ -9,11 +9,12 @@
 #include	<wininet.h>		// for error codes
 #include	<tchar.h>
 
-#include	"../IO/FileUtils.h"
-#include	"../Debug/Trace.h"
 #include	"../Characters/StringUtils.h"
+#include	"../Debug/Trace.h"
+#include	"../IO/FileUtils.h"
 
 #include	"Exceptions.h"
+
 
 
 using	namespace	Stroika;
@@ -25,10 +26,10 @@ using	namespace	Stroika::Foundation;
 
 
 
-using	namespace	StringUtils;
-using	namespace	Exceptions;
+using	namespace	Characters;
+using	namespace	Execution;
 
-using	Debug::Trace::TraceContextBumper;
+using	Debug::TraceContextBumper;
 
 
 namespace {
@@ -121,11 +122,11 @@ void	Win32ErrorException::DoThrow (DWORD error)
 		}
 		case ERROR_FILE_NOT_FOUND: {
 			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileAccessException", error);
-			throw FileUtils::FileAccessException ();	// don't know if they were reading or writing at this level..., and don't know file name...
+			throw IO::FileAccessException ();	// don't know if they were reading or writing at this level..., and don't know file name...
 		}
 		case ERROR_PATH_NOT_FOUND: {
 			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileAccessException", error);
-			throw FileUtils::FileAccessException ();	// don't know if they were reading or writing at this level..., and don't know file name...
+			throw IO::FileAccessException ();	// don't know if they were reading or writing at this level..., and don't know file name...
 		}
 		default: {
 			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing Win32ErrorException", error);
@@ -319,7 +320,7 @@ void	errno_ErrorException::DoThrow (DWORD error)
 {
 	switch (error) {
 		case	ENOMEM: {
-			Exceptions::DoThrow (bad_alloc (), "errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
+			Execution::DoThrow (bad_alloc (), "errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
 		}
 		// If I decide to pursue mapping, this maybe a good place to start
 		//	http://aplawrence.com/Unixart/errors.html
@@ -423,7 +424,7 @@ FeatureNotSupportedInThisVersionException::FeatureNotSupportedInThisVersionExcep
  ***************************** ThrowIfShellExecError ****************************
  ********************************************************************************
  */
-void	Exceptions::ThrowIfShellExecError (HINSTANCE r)
+void	Execution::ThrowIfShellExecError (HINSTANCE r)
 {
 	int	errCode	=	reinterpret_cast<int> (r);
 	if (errCode <= 32) {
@@ -458,7 +459,7 @@ void	Exceptions::ThrowIfShellExecError (HINSTANCE r)
 
 /*
  ********************************************************************************
- ********** Exceptions::RegisterDefaultHandler_invalid_parameter ****************
+ ********** Execution::RegisterDefaultHandler_invalid_parameter ****************
  ********************************************************************************
  */
 	namespace	{
@@ -475,7 +476,7 @@ void	Exceptions::ThrowIfShellExecError (HINSTANCE r)
 				throw Win32ErrorException (ERROR_INVALID_PARAMETER);
 			}
 	}
-void	Exceptions::RegisterDefaultHandler_invalid_parameter ()
+void	Execution::RegisterDefaultHandler_invalid_parameter ()
 {
 	(void)_set_invalid_parameter_handler (invalid_parameter_handler_);
 }
@@ -484,7 +485,7 @@ void	Exceptions::RegisterDefaultHandler_invalid_parameter ()
 
 /*
  ********************************************************************************
- ********** Exceptions::RegisterDefaultHandler_pure_function_call ***************
+ ********** Execution::RegisterDefaultHandler_pure_function_call ***************
  ********************************************************************************
  */
 	namespace	{
@@ -495,7 +496,7 @@ void	Exceptions::RegisterDefaultHandler_invalid_parameter ()
 				throw Win32ErrorException (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
 			}
 	}
-void	Exceptions::RegisterDefaultHandler_pure_function_call ()
+void	Execution::RegisterDefaultHandler_pure_function_call ()
 {
 	(void)_set_purecall_handler (purecall_handler_);
 }
@@ -518,7 +519,7 @@ CatchAndCaptureExceptionHelper::CatchAndCaptureExceptionHelper ()
 
 void	CatchAndCaptureExceptionHelper::DoRunWithCatchRePropagate (Callback* callback)
 {
-	// Subclassers add additional 'exceptions' as data members, and override this to catch additioanl fields, and
+	// Subclassers add additional 'Execution' as data members, and override this to catch additioanl fields, and
 	// AnyExceptionCaught/RethrowIfAnyCaught to rethrow each
 	RequireNotNil (callback);
 	try {

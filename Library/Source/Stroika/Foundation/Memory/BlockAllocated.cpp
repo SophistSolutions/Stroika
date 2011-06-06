@@ -5,19 +5,27 @@
 
 #include	"../Execution/ThreadUtils.h"
 
+#include	"RefCntPtr.h"
+
 #include	"BlockAllocated.h"
+
+
+
+
 
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Memory;
+using	namespace	Stroika::Foundation::Memory::Private;
+using	namespace	Stroika::Foundation::Execution;
+
+using	namespace	Execution;
+
+using	Execution::CriticalSection;
 
 
-using	namespace	BlockAllocation;
-using	namespace	BlockAllocation::Private;
-
-using	namespace	ThreadUtils;
-
-CriticalSection*	BlockAllocation::Private::sCritSection_	=	NULL;
+CriticalSection*	Private::sCritSection_	=	NULL;
 
 
 ActualModuleInit::ActualModuleInit ()
@@ -40,25 +48,25 @@ ActualModuleInit::~ActualModuleInit ()
 
 
 #if		qAllowBlockAllocation
-	void*	BlockAllocation::Private::sSizeof_4_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_8_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_12_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_16_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_20_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_24_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_28_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_32_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_36_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_40_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_44_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_48_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_52_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_56_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_60_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_64_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_68_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_72_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_76_NextLink	=	NULL;
-	void*	BlockAllocation::Private::sSizeof_80_NextLink	=	NULL;
+	void*	Private::sSizeof_4_NextLink	=	NULL;
+	void*	Private::sSizeof_8_NextLink	=	NULL;
+	void*	Private::sSizeof_12_NextLink	=	NULL;
+	void*	Private::sSizeof_16_NextLink	=	NULL;
+	void*	Private::sSizeof_20_NextLink	=	NULL;
+	void*	Private::sSizeof_24_NextLink	=	NULL;
+	void*	Private::sSizeof_28_NextLink	=	NULL;
+	void*	Private::sSizeof_32_NextLink	=	NULL;
+	void*	Private::sSizeof_36_NextLink	=	NULL;
+	void*	Private::sSizeof_40_NextLink	=	NULL;
+	void*	Private::sSizeof_44_NextLink	=	NULL;
+	void*	Private::sSizeof_48_NextLink	=	NULL;
+	void*	Private::sSizeof_52_NextLink	=	NULL;
+	void*	Private::sSizeof_56_NextLink	=	NULL;
+	void*	Private::sSizeof_60_NextLink	=	NULL;
+	void*	Private::sSizeof_64_NextLink	=	NULL;
+	void*	Private::sSizeof_68_NextLink	=	NULL;
+	void*	Private::sSizeof_72_NextLink	=	NULL;
+	void*	Private::sSizeof_76_NextLink	=	NULL;
+	void*	Private::sSizeof_80_NextLink	=	NULL;
 #endif
 
