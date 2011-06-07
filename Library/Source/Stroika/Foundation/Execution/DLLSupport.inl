@@ -13,20 +13,22 @@
 
 namespace	Stroika {	
 	namespace	Foundation {
-	//	class	DLLSupport::DLLLoader
-		inline	DLLSupport::DLLLoader::operator HMODULE ()
+		namespace	Execution {
+
+	//	class	DLLLoader
+		inline	DLLLoader::operator HMODULE ()
 			{
 				EnsureNotNil (fModule);
 				return fModule;
 			}
-		inline	FARPROC	DLLSupport::DLLLoader::GetProcAddress (__in LPCSTR lpProcName) const
+		inline	FARPROC	DLLLoader::GetProcAddress (__in LPCSTR lpProcName) const
 			{
 				AssertNotNil (fModule);
 				RequireNotNil (lpProcName);
 				return ::GetProcAddress (fModule, lpProcName);
 			}
+
+		}
 	}
 }
-
-
 #endif	/*_DLLSupport_inl*/

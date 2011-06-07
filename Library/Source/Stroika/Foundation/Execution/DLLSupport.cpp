@@ -11,13 +11,11 @@
 #include	"DLLSupport.h"
 
 
-using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Execution;
 
 using	Debug::TraceContextBumper;
 
-using	namespace	DLLSupport;
-using	namespace	Execution;
 
 
 

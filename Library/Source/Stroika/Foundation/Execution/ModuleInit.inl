@@ -68,6 +68,4 @@ namespace	Stroika {
 		}
 	}
 }
-
-
 #endif	/*_ModuleInit_inl*/

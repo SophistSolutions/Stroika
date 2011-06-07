@@ -92,7 +92,7 @@ int MyGetThreadId (HANDLE thread)
 			// See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
 			// GetThreadId (HANDLE) in Win 2003 Server or later
 			using namespace XXX;
-			static	DLLSupport::DLLLoader	ntdll (_T ("ntdll.dll"));
+			static	DLLLoader	ntdll (_T ("ntdll.dll"));
 			static	pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
 			if (NtQueryInformationThread == NULL)
 				return 0;	// failed to get proc address

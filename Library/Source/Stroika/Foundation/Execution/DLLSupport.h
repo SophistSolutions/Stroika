@@ -16,7 +16,7 @@
 
 namespace	Stroika {	
 	namespace	Foundation {
-		namespace	DLLSupport {
+		namespace	Execution {
 
 			using	Characters::tstring;
 
@@ -40,6 +40,7 @@ namespace	Stroika {
 	}
 }
 #endif	/*_DLLSupport_h*/
+
 
 
 
