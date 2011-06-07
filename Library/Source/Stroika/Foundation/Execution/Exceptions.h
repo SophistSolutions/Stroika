@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__Exceptions_h__
-#define	__Exceptions_h__	1
+#ifndef	_Stroia_Foundation_Execution_Exceptions_h_
+#define	_Stroia_Foundation_Execution_Exceptions_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -291,7 +291,7 @@ namespace	Execution {
 
 	}
 }
-#endif	/*__Exceptions_h__*/
+#endif	/*_Stroia_Foundation_Execution_Exceptions_h_*/
 
 
 
