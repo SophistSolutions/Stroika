@@ -12,7 +12,7 @@
  ********************************************************************************
  */
 #include	"../Debug/Assertions.h"
-#include	"Memory.h"
+#include	"Basics.h"
 
 namespace	Stroika {
 	namespace	Foundation {

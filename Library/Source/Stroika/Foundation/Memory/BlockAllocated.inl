@@ -16,7 +16,7 @@
 	
 #include	"../Execution/ThreadUtils.h"
 	
-#include	"Memory.h"
+#include	"Basics.h"
 
 
 namespace	Stroika {	

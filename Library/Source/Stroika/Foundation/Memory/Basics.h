@@ -26,23 +26,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Memory {
 
-			class	StackBasedHandleLocker {
-				public:
-					StackBasedHandleLocker (HANDLE h);
-					~StackBasedHandleLocker ();
-				private:
-					StackBasedHandleLocker (const StackBasedHandleLocker&);
-					const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&);
-
-				public:
-					nonvirtual	Byte*	GetPointer () const;
-					nonvirtual	size_t	GetSize () const;
-
-				private:
-					HANDLE	fHandle;
-					Byte*	fPointer;
-			};
-
 			/* 
 			 * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
 			 * to 'new' so it can be safely used in places where the global new operator would have been used.
@@ -94,4 +77,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Memory.inl"
+#include	"Basics.inl"

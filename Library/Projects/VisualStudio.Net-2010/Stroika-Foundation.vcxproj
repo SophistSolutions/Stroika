@@ -23,9 +23,10 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\IO\FileUtils.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\Basics.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\Memory.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\OS_Win32\Handle.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Time\DateUtils.cpp" />
@@ -48,9 +49,10 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\IO\FileUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Math\Basics.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Basics.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Memory.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\OS_Win32\Handle.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h" />
@@ -71,9 +73,10 @@
     <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\IO\FileUtils.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Math\Basics.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Memory\Basics.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.inl" />
-    <None Include="..\..\Source\Stroika\Foundation\Memory\Memory.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.inl" />
+    <None Include="..\..\Source\Stroika\Foundation\Memory\OS_Win32\Handle.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Source\Stroika\Foundation\Time\DateUtils.inl" />
