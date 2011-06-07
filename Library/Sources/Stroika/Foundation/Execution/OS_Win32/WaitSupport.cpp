@@ -21,7 +21,7 @@ using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
 
-
+using	Time::TickCountType;
 
 
 
@@ -42,10 +42,10 @@ void	OS_Win32::WaitAndPumpMessages (HWND dialog, float forNSecs)
 
 void	OS_Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
 {
-	float	startAt	=	Time::GetTickCount ();
-	float	endAt	=	startAt + forNSecs;
+	TickCountType	startAt	=	Time::GetTickCount ();
+	TickCountType	endAt	=	startAt + forNSecs;
 
-	for (float timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
+	for (TickCountType timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
 		(void)::MsgWaitForMultipleObjectsEx (waitOn.size (), Containers::Start (waitOn), static_cast<int> (timeLeft * 1000), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
 		MSG msg;
 		while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -71,8 +71,8 @@ void	OS_Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, f
  */
 void	OS_Win32::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
 {
-	float	startAt	=	Time::GetTickCount ();
-	float	endAt	=	startAt + atMostNSecs;
+	TickCountType	startAt	=	Time::GetTickCount ();
+	TickCountType	endAt	=	startAt + atMostNSecs;
 
 	MSG msg;
 	while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {

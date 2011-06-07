@@ -16,6 +16,7 @@
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Time;
 
 
 
@@ -35,7 +36,7 @@ using	namespace	Stroika::Foundation;
 			data - together with time values from the client (where Led is running) computer will be used to provide a
 			better approximation of the true elapsed time.</p>
 */
-float	Stroika::Foundation::Time::GetTickCount ()
+TickCountType	Stroika::Foundation::Time::GetTickCount ()
 {
 	static	bool			sInited	=	false;
 	static	LARGE_INTEGER	sPerformanceFrequency;
@@ -52,7 +53,7 @@ float	Stroika::Foundation::Time::GetTickCount ()
 		LARGE_INTEGER	counter;
 		counter.QuadPart = 0;
 		Verify (::QueryPerformanceCounter (&counter));
-		return static_cast<float> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
+		return static_cast<TickCountType> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
 	}
 }
 

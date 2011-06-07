@@ -242,6 +242,43 @@ void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
 	Ensure (*outCharCnt <= outBufSize);
 }
 
+/*
+@METHOD:		CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize
+@DESCRIPTION:	<p>Call to get an upper bound, reasonable buffer size to use to pass to MapFromUNICODE calls.</p>
+*/
+size_t	CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const
+{
+	size_t	resultSize;
+	switch (fCodePage) {
+		case	kCodePage_ANSI:	resultSize = inCharCnt * 1; break;
+		case	kCodePage_MAC:	resultSize = inCharCnt * 1; break;
+		case	kCodePage_PC:	resultSize = inCharCnt * 1; break;
+		case	kCodePage_PCA:	resultSize = inCharCnt * 1; break;
+		case	kCodePage_SJIS:	resultSize = inCharCnt * 2; break;
+		case	kCodePage_UTF7:	resultSize = inCharCnt * 6;	break;	// ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
+		case	kCodePage_UTF8:	resultSize = UTF8Converter ().MapFromUNICODE_QuickComputeOutBufSize (inChars, inCharCnt);
+		default:				resultSize = inCharCnt * 8; break;	// I THINK that should always be enough - but who knows...
+	}
+	if (GetHandleBOM ()) {
+		switch (fCodePage) {
+			case	kCodePage_UNICODE_WIDE:
+			case	kCodePage_UNICODE_WIDE_BIGENDIAN: {
+				// BOM (byte order mark)
+				resultSize += 2;
+			}
+			break;
+			case	kCodePage_UTF7: {
+				resultSize += 5;	// for BOM
+			}
+			break;
+			case	kCodePage_UTF8: {
+				resultSize += 3;	// BOM (byte order mark)
+			}
+		}
+	}
+	return resultSize;
+}
+
 
 
 
@@ -1395,6 +1432,17 @@ void	CodePagesInstalled::AddIfNotPresent (CodePage cp)
 	if (std::find (sCodePages.begin (), sCodePages.end (), cp) == sCodePages.end ()) {
 		sCodePages.push_back (cp);
 	}
+}
+
+/*
+@METHOD:		CodePagesInstalled::IsCodePageAvailable
+@DESCRIPTION:	<p>Checks if the given code page is installed.</p>
+*/
+bool	CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+{
+	const vector<CodePage>&				codePages	=	GetAll ();
+	vector<CodePage>::const_iterator	i			=	lower_bound (codePages.begin (), codePages.end (), cp);
+	return (i != codePages.end ());
 }
 
 

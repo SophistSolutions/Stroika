@@ -14,6 +14,7 @@
 #include	"../Characters/StringUtils.h"
 #include	"../Configuration/Basics.h"
 #include	"../Execution/ModuleInit.h"
+#include	"../Time/Realtime.h"
 
 
 
@@ -93,7 +94,7 @@ namespace	Stroika {
 					wchar_t							fLastNCharBuf_WCHAR[10];
 					bool							fLastNCharBuf_WCHARFlag;
 					TraceLastBufferedWriteTokenType	fLastNCharBuf_Token;
-					float							fLastNCharBuf_WriteTickcount;
+					Time::TickCountType				fLastNCharBuf_WriteTickcount;
 
 					nonvirtual	void	BufferNChars_ (size_t nChars, const char* p);
 					nonvirtual	void	BufferNChars_ (size_t nChars, const wchar_t* p);

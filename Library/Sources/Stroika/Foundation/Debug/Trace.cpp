@@ -33,7 +33,7 @@ using	namespace	Execution;
 
 /*
  ********************************************************************************
- **************************** Private::MODULE_INIT ***********************
+ ********************************** Private::MODULE_INIT ************************
  ********************************************************************************
  */
 namespace	{
@@ -169,7 +169,7 @@ namespace	{
 
 /*
  ********************************************************************************
- ******************************** Emitter ********************************
+ ************************************ Emitter ***********************************
  ********************************************************************************
  */
 Emitter::Emitter ()
@@ -299,11 +299,11 @@ template	<typename	CHARTYPE>
 		{
 			AutoCriticalSection critSec (GetCritSection_ ());
 			FlushBufferedCharacters_ ();
-			static	float	sStartOfTime	=	0.0f;
-			if (sStartOfTime == 0.0f) {
+			static	Time::TickCountType	sStartOfTime	=	0.0;
+			if (sStartOfTime == 0.0) {
 				sStartOfTime = Time::GetTickCount ();
 			}
-			float	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
+			Time::TickCountType	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
 			{
 				char	buf[1024];
 				ThreadID	threadID	=	::GetCurrentThreadId ();

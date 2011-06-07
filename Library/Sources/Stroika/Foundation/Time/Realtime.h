@@ -10,7 +10,10 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
-			float	GetTickCount ();
+
+			typedef	double	TickCountType;
+
+			TickCountType	GetTickCount ();
 
 		}
 	}

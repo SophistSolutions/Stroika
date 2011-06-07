@@ -155,6 +155,4 @@ namespace	Stroika {
 		}
 	}
 }
-
-
 #endif	/*__Stroika_Foundation_Debug_Assertions_h__*/

@@ -7,7 +7,6 @@
 #include	"../StroikaPreComp.h"
 
 #include	<cctype>
-#include	<functional>
 #include	<locale>
 #include	<string>
 #include	<vector>
