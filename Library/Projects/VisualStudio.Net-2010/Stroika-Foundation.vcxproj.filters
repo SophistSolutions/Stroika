@@ -1,245 +1,245 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source">
+    <Filter Include="Sources">
       <UniqueIdentifier>{d70c3221-cc48-4c51-a412-c35c017e0612}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Debug">
+    <Filter Include="Sources\Debug">
       <UniqueIdentifier>{bc9615e9-a571-4236-a748-3e2c455667e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Memory">
+    <Filter Include="Sources\Memory">
       <UniqueIdentifier>{685cf277-cad8-4003-8569-129e87b78377}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Configuration">
+    <Filter Include="Sources\Configuration">
       <UniqueIdentifier>{12b6a747-07e0-4ac8-8b0a-56c27e830f0f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Execution">
+    <Filter Include="Sources\Execution">
       <UniqueIdentifier>{10fdccef-36de-4118-9913-a6bbcce6aa34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\IO">
+    <Filter Include="Sources\IO">
       <UniqueIdentifier>{72c67723-c814-40c6-85fd-7c2150b77b92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Characters">
+    <Filter Include="Sources\Characters">
       <UniqueIdentifier>{b10cae0f-e7af-476d-91d8-c99071203d54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Containers">
+    <Filter Include="Sources\Containers">
       <UniqueIdentifier>{9b393954-aec8-4060-8572-69f31e6d30a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Time">
+    <Filter Include="Sources\Time">
       <UniqueIdentifier>{53245152-d369-4911-b1fc-0ca5997b5f2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Math">
+    <Filter Include="Sources\Math">
       <UniqueIdentifier>{c0ded7bf-d414-4138-bf41-ce8dfe42c0b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Execution\OS_Win32">
+    <Filter Include="Sources\Execution\OS_Win32">
       <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Memory\OS_Win32">
+    <Filter Include="Sources\Memory\OS_Win32">
       <UniqueIdentifier>{f6f48fae-3185-4b6c-8228-ba71ac92da20}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Assertions.cpp">
-      <Filter>Source\Debug</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
+      <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Trace.cpp">
-      <Filter>Source\Debug</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp">
+      <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.cpp">
-      <Filter>Source\Memory</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp">
+      <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.cpp">
-      <Filter>Source\Memory</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.cpp">
+      <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.cpp">
-      <Filter>Source\Memory</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
+      <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp">
-      <Filter>Source\Memory</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp">
+      <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.cpp">
-      <Filter>Source\Execution</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp">
+      <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.cpp">
-      <Filter>Source\Execution</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp">
+      <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.cpp">
-      <Filter>Source\Execution</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
+      <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp">
-      <Filter>Source\Execution</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.cpp">
+      <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\IO\FileUtils.cpp">
-      <Filter>Source\IO</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.cpp">
+      <Filter>Sources\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Characters\CodePage.cpp">
-      <Filter>Source\Characters</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp">
+      <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.cpp">
-      <Filter>Source\Characters</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp">
+      <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.cpp">
-      <Filter>Source\Containers</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.cpp">
-      <Filter>Source\Containers</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Time\DateUtils.cpp">
-      <Filter>Source\Time</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.cpp">
+      <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Time\Realtime.cpp">
-      <Filter>Source\Time</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
+      <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.cpp">
-      <Filter>Source\Execution\OS_Win32</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OS_Win32\WaitSupport.cpp">
+      <Filter>Sources\Execution\OS_Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\OS_Win32\Handle.cpp">
-      <Filter>Source\Memory\OS_Win32</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.cpp">
+      <Filter>Sources\Memory\OS_Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\Basics.cpp">
-      <Filter>Source\Memory</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Basics.cpp">
+      <Filter>Sources\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h">
-      <Filter>Source\Debug</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Trace.h">
-      <Filter>Source\Debug</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.h">
-      <Filter>Source\Memory</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h">
+      <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.h">
-      <Filter>Source\Memory</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.h">
+      <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.h">
-      <Filter>Source\Memory</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h">
+      <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.h">
-      <Filter>Source\Memory</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
+      <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\StroikaConfig.h">
-      <Filter>Source\Configuration</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h">
+      <Filter>Sources\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.h">
-      <Filter>Source\Execution</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.h">
-      <Filter>Source\Execution</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.h">
-      <Filter>Source\Execution</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h">
-      <Filter>Source\Execution</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\IO\FileUtils.h">
-      <Filter>Source\IO</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.h">
+      <Filter>Sources\IO</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Characters\CodePage.h">
-      <Filter>Source\Characters</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h">
+      <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.h">
-      <Filter>Source\Characters</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h">
+      <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.h">
-      <Filter>Source\Containers</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h">
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.h">
-      <Filter>Source\Containers</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h">
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Time\DateUtils.h">
-      <Filter>Source\Time</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.h">
+      <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Configuration\Basics.h">
-      <Filter>Source\Configuration</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.h">
+      <Filter>Sources\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Time\Realtime.h">
-      <Filter>Source\Time</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h">
+      <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Containers\Basics.h">
-      <Filter>Source\Containers</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Basics.h">
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Math\Basics.h">
-      <Filter>Source\Math</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Basics.h">
+      <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.h">
-      <Filter>Source\Execution\OS_Win32</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS_Win32\WaitSupport.h">
+      <Filter>Sources\Execution\OS_Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\OS_Win32\Handle.h">
-      <Filter>Source\Memory\OS_Win32</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.h">
+      <Filter>Sources\Memory\OS_Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\Memory\Basics.h">
-      <Filter>Source\Memory</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Basics.h">
+      <Filter>Sources\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.inl">
-      <Filter>Source\Memory</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.inl">
-      <Filter>Source\Execution</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Debug\Trace.inl">
-      <Filter>Source\Debug</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
+      <Filter>Sources\Debug</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.inl">
-      <Filter>Source\Memory</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Memory\MemoryAllocator.inl">
-      <Filter>Source\Memory</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Memory\RefCntPtr.inl">
-      <Filter>Source\Memory</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.inl">
-      <Filter>Source\Execution</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.inl">
-      <Filter>Source\Execution</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.inl">
-      <Filter>Source\Execution</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\IO\FileUtils.inl">
-      <Filter>Source\IO</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.inl">
+      <Filter>Sources\IO</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Characters\StringUtils.inl">
-      <Filter>Source\Characters</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Characters\CodePage.inl">
-      <Filter>Source\Characters</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Containers\SetUtils.inl">
-      <Filter>Source\Containers</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Containers\VectorUtils.inl">
-      <Filter>Source\Containers</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Time\DateUtils.inl">
-      <Filter>Source\Time</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.inl">
+      <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Configuration\Basics.inl">
-      <Filter>Source\Configuration</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Time\Realtime.inl">
-      <Filter>Source\Time</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
+      <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Containers\Basics.inl">
-      <Filter>Source\Containers</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Basics.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Math\Basics.inl">
-      <Filter>Source\Math</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Basics.inl">
+      <Filter>Sources\Math</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Memory\OS_Win32\Handle.inl">
-      <Filter>Source\Memory\OS_Win32</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.inl">
+      <Filter>Sources\Memory\OS_Win32</Filter>
     </None>
-    <None Include="..\..\Source\Stroika\Foundation\Memory\Basics.inl">
-      <Filter>Source\Memory</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Basics.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
 </Project>
