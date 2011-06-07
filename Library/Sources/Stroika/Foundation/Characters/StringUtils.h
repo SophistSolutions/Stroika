@@ -11,7 +11,10 @@
 #include	<functional>
 #include	<string>
 #include	<vector>
-#include	<Windows.h>
+//NOT SURE WINDOW.H NEEDED?
+//#if		defined(_WIN32)
+//	#include	<Windows.h>
+//#endif
 
 #include	"../Configuration/Basics.h"
 #include	"../Memory/SmallStackBuffer.h"

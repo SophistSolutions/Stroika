@@ -8,7 +8,9 @@
 
 #include	<exception>
 #include	<string>
-#include	<Windows.h>
+#if		defined(_WIN32)
+	#include	<Windows.h>
+#endif
 
 #include	"../Characters/StringUtils.h"
 #include	"../Configuration/Basics.h"

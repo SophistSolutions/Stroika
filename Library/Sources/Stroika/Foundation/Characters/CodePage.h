@@ -17,8 +17,9 @@
 #include	<cctype>
 #include	<vector>
 
+// CURRENTLY NEEDED FOR TYPE 'USHORT' - but could avoid that dependency!!!
 #if		defined(_WIN32)
-#include	<windows.h>
+	#include	<Windows.h>
 #endif
 
 #include	"../Configuration/Basics.h"

@@ -6,12 +6,10 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<Windows.h>
-
 #include	<map>
 #include	<memory>
 
-#include	"../Execution/ThreadUtils.h"
+#include	"../Execution/CriticalSection.h"
 
 #include	"Basics.h"
 

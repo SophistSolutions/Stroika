@@ -100,16 +100,6 @@ namespace	Stroika {
 
 
 
-			// enter  in CTOR and LEAVE in DTOR
-			class	AutoCriticalSection {
-				public:
-					explicit AutoCriticalSection (CRITICAL_SECTION& critSec);
-					~AutoCriticalSection ();
-
-				private:
-					CRITICAL_SECTION&	fCritSec;
-			};
-
 
 			// MAIN reason to use this - is it sets the 'alertable' flag on the sleep, so the QueueUserAPC () stuff works!
 			// which allows SimpleThread::Stop () to work properly...
@@ -272,4 +262,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-//#include	"ThreadUtils.inl"
+#include	"ThreadUtils.inl"

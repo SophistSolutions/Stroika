@@ -14,7 +14,7 @@
 
 #include	"../Debug/Assertions.h"
 	
-#include	"../Execution/ThreadUtils.h"
+#include	"../Execution/CriticalSection.h"
 	
 #include	"Basics.h"
 

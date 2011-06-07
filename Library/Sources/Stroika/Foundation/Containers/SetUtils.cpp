@@ -3,8 +3,6 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
-
 #include	"SetUtils.h"
 
 

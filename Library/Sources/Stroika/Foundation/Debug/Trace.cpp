@@ -11,7 +11,7 @@
 #include	"../Configuration/StroikaConfig.h"
 
 
-#include	"../Execution/ThreadUtils.h"
+#include	"../Execution/CriticalSection.h"
 #include	"../Time/DateUtils.h"
 #include	"../Time/Realtime.h"
 

@@ -7,7 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #if		defined(_WIN32)
-#include	<windows.h>
+	#include	<windows.h>
 #endif
 
 #include	"../Configuration/Basics.h"
@@ -35,6 +35,20 @@ namespace	Stroika {
 				private:
 					CRITICAL_SECTION fCritSec;
 			};
+
+
+
+
+			// enter  in CTOR and LEAVE in DTOR
+			class	AutoCriticalSection {
+				public:
+					explicit AutoCriticalSection (CRITICAL_SECTION& critSec);
+					~AutoCriticalSection ();
+
+				private:
+					CRITICAL_SECTION&	fCritSec;
+			};
+
 
 		}
 	}

@@ -16,6 +16,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
+
 	//	class	IRunnable
 		inline	IRunnable::~IRunnable ()
 			{
@@ -55,19 +56,6 @@ namespace	Stroika {
 			{
 				return *fCritSec;
 			}
-
-
-	//	class	AutoCriticalSection
-		inline	AutoCriticalSection::AutoCriticalSection (CRITICAL_SECTION& critSec):
-			fCritSec (critSec)
-			{
-				::EnterCriticalSection (&fCritSec);
-			}
-		inline	AutoCriticalSection::~AutoCriticalSection ()
-			{
-				IgnoreExceptionsForCall (::LeaveCriticalSection (&fCritSec));
-			}
-
 
 
 	// class	Event
@@ -199,6 +187,7 @@ namespace	Stroika {
 				return fRep->fThreadName;
 			}
 
+		}
 	}
 }
 #endif	/*_ThreadUtils_inl*/

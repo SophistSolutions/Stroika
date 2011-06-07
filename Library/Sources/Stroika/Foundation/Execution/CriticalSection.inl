@@ -10,7 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-//#include	"../Memory/Basics.h"
+#include	"Exceptions.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -39,6 +39,18 @@ namespace	Stroika {
 				{
 					return fCritSec;
 				}
+
+		//	class	AutoCriticalSection
+			inline	AutoCriticalSection::AutoCriticalSection (CRITICAL_SECTION& critSec):
+				fCritSec (critSec)
+				{
+					::EnterCriticalSection (&fCritSec);
+				}
+			inline	AutoCriticalSection::~AutoCriticalSection ()
+				{
+					IgnoreExceptionsForCall (::LeaveCriticalSection (&fCritSec));
+				}
+
 
 		}
 	}

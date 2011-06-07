@@ -4,10 +4,12 @@
 #include	"../StroikaPreComp.h"
 
 #include	<errno.h>
-#include	<windows.h>
-#include	<winerror.h>
-#include	<wininet.h>		// for error codes
-#include	<tchar.h>
+#if		defined(_WIN32)
+	#include	<Windows.h>
+	#include	<winerror.h>
+	#include	<wininet.h>		// for error codes
+	#include	<tchar.h>
+#endif
 
 #include	"../Characters/StringUtils.h"
 #include	"../Debug/Trace.h"

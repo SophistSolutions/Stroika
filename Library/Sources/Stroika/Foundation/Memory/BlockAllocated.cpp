@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	"../Execution/ThreadUtils.h"
+#include	"../Execution/CriticalSection.h"
 
 #include	"RefCntPtr.h"
 

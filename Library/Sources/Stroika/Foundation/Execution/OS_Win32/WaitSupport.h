@@ -6,7 +6,11 @@
 
 #include	"../../StroikaPreComp.h"
 
-#include	<windows.h>
+#if		defined(_WIN32)
+	#include	<Windows.h>
+#else
+	#error "WINDOWS REQUIRED FOR THIS MODULE"
+#endif
 
 #include	"../../Configuration/Basics.h"
 
