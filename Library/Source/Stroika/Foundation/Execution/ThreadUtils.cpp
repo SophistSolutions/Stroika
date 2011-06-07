@@ -10,9 +10,9 @@
 
 #include	"DLLSupport.h"
 #include	"../Debug/Trace.h"
-#include	"../WaitSupport.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Time/Realtime.h"
+#include	"OS_Win32/WaitSupport.h"
 
 #include	"ThreadUtils.h"
 
@@ -430,7 +430,7 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) c
 		}
 	}
 	if (thread != NULL) {
-		WaitSupport::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
+		OS_Win32::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
 	}
 }
 

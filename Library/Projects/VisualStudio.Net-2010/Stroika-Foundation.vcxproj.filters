@@ -31,11 +31,11 @@
     <Filter Include="Source\Math">
       <UniqueIdentifier>{c0ded7bf-d414-4138-bf41-ce8dfe42c0b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Execution\OS_Win32">
+      <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Stroika\Foundation\Debug\Assertions.cpp">
       <Filter>Source\Debug</Filter>
     </ClCompile>
@@ -90,12 +90,12 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Source\Time</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.cpp">
+      <Filter>Source\Execution\OS_Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Debug\Assertions.h">
@@ -163,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Math\Basics.h">
       <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.h">
+      <Filter>Source\Execution\OS_Win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,27 +1,24 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#include	"StroikaPreComp.h"
+#include	"../../StroikaPreComp.h"
 
 #include	<windows.h>
 
-#include	"Configuration/Basics.h"
-
-#include	"Containers/Basics.h"
-
-#include	"Characters/StringUtils.h"
-
-#include	"Debug/Trace.h"
-
-#include	"Time/Realtime.h"
-
-
+#include	"../../Characters/StringUtils.h"
+#include	"../../Configuration/Basics.h"
+#include	"../../Containers/Basics.h"
+#include	"../../Debug/Trace.h"
+#include	"../../Time/Realtime.h"
 #include	"WaitSupport.h"
-
 
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Execution;
+
+
+
 
 
 
@@ -34,12 +31,12 @@ using	namespace	Stroika::Foundation;
 /*
  *	Call this if you want to pump messages and want to block/wait for a while if need be (to avoid busy-waiting).
  */
-void	WaitSupport::WaitAndPumpMessages (HWND dialog, float forNSecs)
+void	OS_Win32::WaitAndPumpMessages (HWND dialog, float forNSecs)
 {
-	WaitSupport::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
+	OS_Win32::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
 }
 
-void	WaitSupport::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
+void	OS_Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
 {
 	float	startAt	=	Time::GetTickCount ();
 	float	endAt	=	startAt + forNSecs;
@@ -68,7 +65,7 @@ void	WaitSupport::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn
  *	Call this if you want to pump messages, but return immediately if none available (e.g. when you are
  *	doing something else).
  */
-void	WaitSupport::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
+void	OS_Win32::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
 {
 	float	startAt	=	Time::GetTickCount ();
 	float	endAt	=	startAt + atMostNSecs;

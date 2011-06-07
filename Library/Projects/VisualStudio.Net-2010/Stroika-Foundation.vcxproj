@@ -20,6 +20,7 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.cpp" />
+    <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\IO\FileUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\BlockAllocated.cpp" />
@@ -29,7 +30,6 @@
     <ClCompile Include="..\..\Source\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Time\DateUtils.cpp" />
     <ClCompile Include="..\..\Source\Stroika\Foundation\Time\Realtime.cpp" />
-    <ClCompile Include="..\..\Source\Stroika\Foundation\WaitSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Stroika\Foundation\Characters\CodePage.h" />
@@ -44,6 +44,7 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ModuleInit.h" />
+    <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\OS_Win32\WaitSupport.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Execution\ThreadUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\IO\FileUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Math\Basics.h" />
@@ -55,7 +56,6 @@
     <ClInclude Include="..\..\Source\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Time\DateUtils.h" />
     <ClInclude Include="..\..\Source\Stroika\Foundation\Time\Realtime.h" />
-    <ClInclude Include="..\..\Source\Stroika\Foundation\WaitSupport.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Stroika\Foundation\Characters\CodePage.inl" />
