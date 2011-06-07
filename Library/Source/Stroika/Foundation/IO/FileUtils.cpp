@@ -24,15 +24,14 @@
 
 #include	"FileUtils.h"
 
+
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Characters;
+using	namespace	Stroika::Foundation::Containers;
+using	namespace	Stroika::Foundation::Execution;
+using	namespace	Stroika::Foundation::IO;
+using	namespace	Stroika::Foundation::Memory;
 
-
-using	namespace	Characters;
-using	namespace	Containers;
-using	namespace	IO;
-using	namespace	Execution;
-
-using	Execution::AutoCriticalSection;
 
 
 
@@ -50,12 +49,12 @@ using	Execution::AutoCriticalSection;
  ******************** IO::Private::UsingModuleHelper *********************
  ********************************************************************************
  */
-Private::UsingModuleHelper::UsingModuleHelper ()
+IO::Private::UsingModuleHelper::UsingModuleHelper ()
 	:fAppTempFileManager ()
 {
 }
 
-Private::UsingModuleHelper::~UsingModuleHelper ()
+IO::Private::UsingModuleHelper::~UsingModuleHelper ()
 {
 }
 
@@ -1200,12 +1199,12 @@ tstring	AppTempFileManager::GetTempDir (const tstring& fileNameBase)
  **************************** TempFileLibrarian *********************************
  ********************************************************************************
  */
-TempFileLibrarian::TempFileLibrarian (const tstring& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction):
-	fFiles (),
-	fPrivateDirectory (privateDirectory),
-	fMakeTMPDIRRel (makeTMPDIRRel),
-	fDeleteFilesOnDescruction (deleteFilesOnDescruction),
-	fCriticalSection ()
+TempFileLibrarian::TempFileLibrarian (const tstring& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction)
+	: fFiles ()
+	, fPrivateDirectory (privateDirectory)
+	, fMakeTMPDIRRel (makeTMPDIRRel)
+	, fDeleteFilesOnDescruction (deleteFilesOnDescruction)
+	, fCriticalSection ()
 {
 	::srand (static_cast<unsigned int> (::time (0)));
 	if (purgeDirectory and fPrivateDirectory.size () > 0) {

@@ -26,6 +26,9 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	IO {
 
+			using	Characters::tstring;
+			using	Time::DateTime;
+
 			typedef	__int64	FileOffset_t;
 
 

@@ -15,11 +15,14 @@
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Characters;
+using	namespace	Stroika::Foundation::Execution;
+using	namespace	Stroika::Foundation::Memory;
+using	namespace	Stroika::Foundation::Time;
 
 using	Debug::TraceContextBumper;
 
-using	namespace	Execution;
-using	namespace	Characters;
+using	namespace	Time;
 
 
 
@@ -396,7 +399,7 @@ void	Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
 	*year = static_cast<Year> (y);
 }
 
-int	Stroika::Foundation::YearDifference (const Date& lhs, const Date& rhs)
+int	Time::YearDifference (const Date& lhs, const Date& rhs)
 {
 	Require (not lhs.empty ());		// since meaning of diff wouldn't make much sense
 	Require (not rhs.empty ());		// ditto
@@ -419,7 +422,7 @@ int	Stroika::Foundation::YearDifference (const Date& lhs, const Date& rhs)
 	return diff;
 }
 
-float	Stroika::Foundation::YearDifferenceF (const Date& lhs, const Date& rhs)
+float	Time::YearDifferenceF (const Date& lhs, const Date& rhs)
 {
 	Require (not lhs.empty ());		// since meaning of diff wouldn't make much sense
 	Require (not rhs.empty ());		// ditto
@@ -436,7 +439,7 @@ float	Stroika::Foundation::YearDifferenceF (const Date& lhs, const Date& rhs)
  ***************************** GetFormattedAge **********************************
  ********************************************************************************
  */
-wstring	Stroika::Foundation::GetFormattedAge (const Date& birthDate, const Date& deathDate)
+wstring	Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
 {
 	if (birthDate.empty ()) {
 		return L"?";
@@ -447,7 +450,7 @@ wstring	Stroika::Foundation::GetFormattedAge (const Date& birthDate, const Date&
 	}
 }
 
-wstring	Stroika::Foundation::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
+wstring	Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
 {
 	if (birthDate.empty ()) {
 		return L"?";
@@ -1022,7 +1025,7 @@ void		DateTime::SetTimeOfDay (const TimeOfDay& tod)
 	fTimeOfDay = tod;
 }
 
-bool Stroika::Foundation::operator< (const DateTime& lhs, const DateTime& rhs)
+bool Time::operator< (const DateTime& lhs, const DateTime& rhs)
 {
 	if (lhs.GetDate () < rhs.GetDate ()) {
 		return true;
@@ -1033,12 +1036,12 @@ bool Stroika::Foundation::operator< (const DateTime& lhs, const DateTime& rhs)
 	return false;
 }
 
-bool Stroika::Foundation::operator<= (const DateTime& lhs, const DateTime& rhs)
+bool Time::operator<= (const DateTime& lhs, const DateTime& rhs)
 {
 	return lhs < rhs or lhs == rhs;
 }
 
-bool Stroika::Foundation::operator> (const DateTime& lhs, const DateTime& rhs)
+bool Time::operator> (const DateTime& lhs, const DateTime& rhs)
 {
 	if (lhs.GetDate () > rhs.GetDate ()) {
 		return true;
@@ -1049,17 +1052,17 @@ bool Stroika::Foundation::operator> (const DateTime& lhs, const DateTime& rhs)
 	return false;
 }
 
-bool Stroika::Foundation::operator>= (const DateTime& lhs, const DateTime& rhs)
+bool Time::operator>= (const DateTime& lhs, const DateTime& rhs)
 {
 	return lhs == rhs or lhs > rhs;
 }
 
-bool Stroika::Foundation::operator== (const DateTime& lhs, const DateTime& rhs)
+bool Time::operator== (const DateTime& lhs, const DateTime& rhs)
 {
 	return lhs.GetDate () == rhs.GetDate () and lhs.GetTimeOfDay () == rhs.GetTimeOfDay ();
 }
 
-bool Stroika::Foundation::operator!= (const DateTime& lhs, const DateTime& rhs)
+bool Time::operator!= (const DateTime& lhs, const DateTime& rhs)
 {
 	return lhs.GetDate () != rhs.GetDate () or lhs.GetTimeOfDay () != rhs.GetTimeOfDay ();
 }
@@ -1072,41 +1075,41 @@ bool Stroika::Foundation::operator!= (const DateTime& lhs, const DateTime& rhs)
 
 /*
  ********************************************************************************
- **************************** DateUtils::Duration *******************************
+ *********************************** Duration ***********************************
  ********************************************************************************
  */
-DateUtils::Duration::Duration ()
+Duration::Duration ()
 	: fDurationRep ()
 {
 }
 
-DateUtils::Duration::Duration (const wstring& durationStr)
+Duration::Duration (const wstring& durationStr)
 	: fDurationRep (WideStringToASCII (durationStr))
 {
 	(void)ParseTime_ (fDurationRep);	// call for the side-effect of throw if bad format src string
 }
 
-DateUtils::Duration::Duration (time_t duration)
+Duration::Duration (time_t duration)
 	: fDurationRep (UnParseTime_ (duration))
 {
 }
 
-void	DateUtils::Duration::clear ()
+void	Duration::clear ()
 {
 	fDurationRep.clear ();
 }
 
-bool	DateUtils::Duration::empty () const
+bool	Duration::empty () const
 {
 	return fDurationRep.empty ();
 }
 
-DateUtils::Duration::operator time_t () const
+Duration::operator time_t () const
 {
 	return ParseTime_ (fDurationRep);		// could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-DateUtils::Duration::operator wstring () const
+Duration::operator wstring () const
 {
 	return ASCIIStringToWide (fDurationRep);
 }
@@ -1137,7 +1140,7 @@ namespace	{
 	const	time_t	kSecondsPerYear		=	kSecondsPerDay * 365;
 }
 
-wstring DateUtils::Duration::PrettyPrint () const
+wstring Duration::PrettyPrint () const
 {
 	time_t	t			=	static_cast<time_t> (*this);
 	bool	isNeg		=	(t < 0);
@@ -1208,7 +1211,7 @@ wstring DateUtils::Duration::PrettyPrint () const
 	return result;
 }
 
-time_t	DateUtils::Duration::ParseTime_ (const string& s)
+time_t	Duration::ParseTime_ (const string& s)
 {
 	if (s.empty ()) {
 		return 0;
@@ -1256,7 +1259,7 @@ time_t	DateUtils::Duration::ParseTime_ (const string& s)
 	return isNeg ? -curVal : curVal;
 }
 
-string	DateUtils::Duration::UnParseTime_ (time_t t)
+string	Duration::UnParseTime_ (time_t t)
 {
 	bool	isNeg		=	(t < 0);
 	time_t	timeLeft	=	t < 0? -t : t;

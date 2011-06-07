@@ -36,9 +36,10 @@ namespace	{
 
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	IO {
 
 		//	class	IO::ThroughTmpFileWriter
-		inline	IO::ThroughTmpFileWriter::operator tstring () const
+			inline	ThroughTmpFileWriter::operator tstring () const
 				{
 					Require (not fTmpFilePath.empty ());	// cannot access after Commit ()
 					return fTmpFilePath;
@@ -46,15 +47,15 @@ namespace	Stroika {
 
 
 		//	class	FileReader
-			inline	const Byte*	IO::FileReader::GetFileStart () const
+			inline	const Byte*	FileReader::GetFileStart () const
 				{
 					return fFileDataStart;
 				}
-			inline	const Byte* IO::FileReader::GetFileEnd () const
+			inline	const Byte* FileReader::GetFileEnd () const
 				{
 					return fFileDataEnd;
 				}
-			inline	size_t	IO::FileReader::GetFileSize () const
+			inline	size_t	FileReader::GetFileSize () const
 				{
 					return fFileDataEnd - fFileDataStart;
 				}
@@ -62,51 +63,53 @@ namespace	Stroika {
 
 
 		//	class	MemoryMappedFileReader
-			inline	const Byte*	IO::MemoryMappedFileReader::GetFileStart () const
+			inline	const Byte*	MemoryMappedFileReader::GetFileStart () const
 				{
 					return fFileDataStart;
 				}
-			inline	const Byte* IO::MemoryMappedFileReader::GetFileEnd () const
+			inline	const Byte* MemoryMappedFileReader::GetFileEnd () const
 				{
 					return fFileDataEnd;
 				}
-			inline	size_t	IO::MemoryMappedFileReader::GetFileSize () const
+			inline	size_t	MemoryMappedFileReader::GetFileSize () const
 				{
 					return fFileDataEnd - fFileDataStart;
 				}
 
 
 
-			//	class	IO::AppTempFileManager
-			inline	IO::AppTempFileManager&	IO::AppTempFileManager::Get ()
+			//	class	AppTempFileManager
+			inline	AppTempFileManager&	AppTempFileManager::Get ()
 				{
 					return _FileUtils_MOULULE_INIT_.Actual ().fAppTempFileManager;
 				}
-			inline	tstring	IO::AppTempFileManager::GetMasterTempDir () const
+			inline	tstring	AppTempFileManager::GetMasterTempDir () const
 				{
 					return fTmpDir;
 				}
 
 
-			//	class	IO::ScopedTmpDir {
-			inline	IO::ScopedTmpDir::operator tstring () const
+			//	class	ScopedTmpDir {
+			inline	ScopedTmpDir::operator tstring () const
 				{
 					return fTmpDir;
 				}
 
-			//	class	IO::ScopedTmpFile {
-			inline	IO::ScopedTmpFile::operator tstring () const
+			//	class	ScopedTmpFile {
+			inline	ScopedTmpFile::operator tstring () const
 				{
 					return fTmpFile;
 				}
+		}
 
-			template	<>
-				inline	__declspec(noreturn)	void	Execution::DoThrow (const IO::FileAccessException& e2Throw)
-					{
-						DbgTrace (_T ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.fFileName.c_str (), e2Throw.fFileAccessMode);
-						throw e2Throw;
-					}
+
+
+		template	<>
+			inline	__declspec(noreturn)	void	Execution::DoThrow (const IO::FileAccessException& e2Throw)
+				{
+					DbgTrace (_T ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.fFileName.c_str (), e2Throw.fFileAccessMode);
+					throw e2Throw;
+				}
 	}
 }
-
 #endif	/*_FileUtils_inl*/

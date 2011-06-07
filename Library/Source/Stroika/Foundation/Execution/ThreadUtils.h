@@ -19,6 +19,9 @@ namespace	Stroika {
 		namespace	Execution {
 
 
+			using	Memory::RefCntPtr;
+
+
 			#ifndef	qTrack_ThreadUtils_HandleCounts
 			#define	qTrack_ThreadUtils_HandleCounts		defined (_DEBUG)
 			#endif
@@ -69,7 +72,7 @@ namespace	Stroika {
 
 			class	CopyableCriticalSection {
 				private:
-					RefCntPtr<CriticalSection>	fCritSec;
+					Memory::RefCntPtr<CriticalSection>	fCritSec;
 				public:
 					CopyableCriticalSection ();
 
@@ -225,7 +228,7 @@ namespace	Stroika {
 				private:
 					RefCntPtr<Rep>	fRep;
 			};
-			class	SimpleThread::Rep : public virtual RefCntPtrBase {
+			class	SimpleThread::Rep : public virtual Memory::RefCntPtrBase {
 				protected:
 					Rep ();
 				public:

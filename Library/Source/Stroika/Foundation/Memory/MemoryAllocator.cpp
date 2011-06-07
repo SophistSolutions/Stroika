@@ -14,8 +14,8 @@
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Memory;
 
-using	namespace	MemoryAllocator;
 
 using	Execution::AutoCriticalSection;
 
@@ -61,7 +61,7 @@ namespace	{
 
 /*
  ********************************************************************************
- ************** MemoryAllocator::SimpleAllocator_CallLIBCMallocFree *************
+ ************** Memory::SimpleAllocator_CallLIBCMallocFree *************
  ********************************************************************************
  */
 void*	SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
@@ -86,7 +86,7 @@ void	SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p)
 
 /*
  ********************************************************************************
- ************** MemoryAllocator::SimpleAllocator_CallLIBCMallocFree *************
+ ************** Memory::SimpleAllocator_CallLIBCMallocFree *************
  ********************************************************************************
  */
 void*	SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size)
@@ -124,7 +124,7 @@ namespace	{
 
 /*
  ********************************************************************************
- ******** MemoryAllocator::SimpleSizeCountingGeneralPurposeAllocator ************
+ ******** Memory::SimpleSizeCountingGeneralPurposeAllocator ************
  ********************************************************************************
  */
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ():
@@ -201,7 +201,7 @@ size_t	SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () co
 
 /*
  ********************************************************************************
- ************** MemoryAllocator::LeakTrackingGeneralPurposeAllocator ************
+ ************** Memory::LeakTrackingGeneralPurposeAllocator ************
  ********************************************************************************
  */
 namespace	{
