@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__Stroika_Foundation_Characters_CodePage_h__
-#define	__Stroika_Foundation_Characters_CodePage_h__	1
+#ifndef	_Stroika_Foundation_Characters_CodePage_h_
+#define	_Stroika_Foundation_Characters_CodePage_h_	1
 
 /*
 @MODULE:	CodePage
@@ -293,7 +293,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*__Stroika_Foundation_Characters_CodePage_h__*/
+#endif	/*_Stroika_Foundation_Characters_CodePage_h_*/
 
 
 
