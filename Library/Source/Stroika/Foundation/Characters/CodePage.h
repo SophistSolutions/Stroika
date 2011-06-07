@@ -21,7 +21,6 @@
 #include	<windows.h>
 #endif
 
-
 #include	"../Configuration/Basics.h"
 
 

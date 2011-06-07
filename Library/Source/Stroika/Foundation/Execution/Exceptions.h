@@ -11,8 +11,8 @@
 #include	<Windows.h>
 
 #include	"../Characters/StringUtils.h"
-#include	"../Debug/Trace.h"
 #include	"../Configuration/Basics.h"
+#include	"../Debug/Trace.h"
 
 
 

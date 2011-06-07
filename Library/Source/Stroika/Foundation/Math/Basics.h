@@ -4,12 +4,15 @@
 #ifndef	__StroiaFoundationMathBasics_h__
 #define	__StroiaFoundationMathBasics_h__	1
 
+#include	"../StroikaPreComp.h"
+
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Math {
 
+			double	nan ();
 
 		}
 

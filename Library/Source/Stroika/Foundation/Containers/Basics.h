@@ -4,6 +4,7 @@
 #ifndef	__StroiaFoundationContainersBasics_h__
 #define	__StroiaFoundationContainersBasics_h__	1
 
+#include	"../StroikaPreComp.h"
 
 
 namespace	Stroika {	

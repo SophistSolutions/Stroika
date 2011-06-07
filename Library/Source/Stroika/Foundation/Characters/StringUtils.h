@@ -13,9 +13,9 @@
 #include	<vector>
 #include	<Windows.h>
 
-#include	"CodePage.h"
-#include	"../Memory/SmallStackBuffer.h"
 #include	"../Configuration/Basics.h"
+#include	"../Memory/SmallStackBuffer.h"
+#include	"CodePage.h"
 
 
 

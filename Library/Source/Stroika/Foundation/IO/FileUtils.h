@@ -14,12 +14,12 @@
 #include	<Windows.h>
 #include	<tchar.h>
 
-#include	"../Debug/Assertions.h"
-#include	"../Time/DateUtils.h"
-#include	"../Execution/Exceptions.h"
 #include	"../Characters/StringUtils.h"
 #include	"../Configuration/Basics.h"
+#include	"../Debug/Assertions.h"
+#include	"../Execution/Exceptions.h"
 #include	"../Execution/ThreadUtils.h"
+#include	"../Time/DateUtils.h"
 
 
 namespace	Stroika {	
