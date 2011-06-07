@@ -11,6 +11,7 @@
 #include	"../Configuration/Basics.h"
 #include	"../Memory/RefCntPtr.h"
 
+#include	"CriticalSection.h"
 #include	"Exceptions.h"
 
 
@@ -46,26 +47,6 @@ namespace	Stroika {
 			class	WaitTimedOutException : public StringException {
 				public:
 					WaitTimedOutException ();
-			};
-
-
-			class	CriticalSection {
-				public:
-					CriticalSection () throw ();
-					~CriticalSection ();
-
-				private:
-					CriticalSection (const CriticalSection&);					// not allowed
-					const CriticalSection& operator= (const CriticalSection&);	// not allowed
-
-				public:
-					nonvirtual	void	Lock (); 
-					nonvirtual	void	Unlock ();
-
-					operator CRITICAL_SECTION& ();
-
-				private:
-					CRITICAL_SECTION fCritSec;
 			};
 
 

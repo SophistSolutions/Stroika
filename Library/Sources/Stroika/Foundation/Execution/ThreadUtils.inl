@@ -36,29 +36,6 @@ namespace	Stroika {
 			{
 			}
 
-			
-	//	class	CriticalSection
-		inline	CriticalSection::CriticalSection () throw ()
-			{
-				memset (&fCritSec, 0, sizeof(CRITICAL_SECTION));
-				::InitializeCriticalSection (&fCritSec);
-			}
-		inline	CriticalSection::~CriticalSection()
-			{
-				IgnoreExceptionsForCall (::DeleteCriticalSection (&fCritSec));
-			}
-		inline	void	CriticalSection::Lock () 
-			{
-				::EnterCriticalSection (&fCritSec);
-			}
-		inline	void CriticalSection::Unlock()
-			{
-				::LeaveCriticalSection (&fCritSec);
-			}
-		inline	CriticalSection::operator CRITICAL_SECTION& ()
-			{
-				return fCritSec;
-			}
 
 
 	//	class	CopyableCriticalSection

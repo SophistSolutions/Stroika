@@ -17,6 +17,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
@@ -67,6 +69,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />

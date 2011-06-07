@@ -99,11 +99,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Basics.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
@@ -176,6 +176,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Basics.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -240,6 +244,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Basics.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
