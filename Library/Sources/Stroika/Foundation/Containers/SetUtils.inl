@@ -57,20 +57,20 @@ namespace	Stroika {
 
 
 			template	<typename T>
-				inline	set<typename T>	SetUtils::mkS ()
+				inline	set<typename T>	mkS ()
 					{
 						set<T>	v;
 						return v;
 					}
 			template	<typename T>
-				inline	set<typename T>	SetUtils::mkS (const T& t1)
+				inline	set<typename T>	mkS (const T& t1)
 					{
 						set<T>	s;
 						s.insert (t1);
 						return s;
 					}
 			template	<typename T>
-				inline	set<typename T>	SetUtils::mkS (const T& t1, const T& t2)
+				inline	set<typename T>	mkS (const T& t1, const T& t2)
 					{
 						set<T>	s;
 						s.insert (t1);
@@ -78,7 +78,7 @@ namespace	Stroika {
 						return s;
 					}
 			template	<typename T>
-				inline	set<typename T>	SetUtils::mkS (const T& t1, const T& t2, const T& t3)
+				inline	set<typename T>	mkS (const T& t1, const T& t2, const T& t3)
 					{
 						set<T>	s;
 						s.insert (t1);
@@ -87,7 +87,7 @@ namespace	Stroika {
 						return s;
 					}
 			template	<typename T>
-				inline	set<typename T>	SetUtils::mkS (const T& t1, const T& t2, const T& t3, const T& t4)
+				inline	set<typename T>	mkS (const T& t1, const T& t2, const T& t3, const T& t4)
 					{
 						set<T>	s;
 						s.insert (t1);
@@ -97,7 +97,7 @@ namespace	Stroika {
 						return s;
 					}
 			template	<typename T, typename FROMCONTAINER>
-				inline	set<typename T>	SetUtils::mkSfromC (const FROMCONTAINER& rhs)
+				inline	set<typename T>	mkSfromC (const FROMCONTAINER& rhs)
 					{
 						return set<typename T> (rhs.begin (), rhs.end ());
 					}
@@ -105,19 +105,19 @@ namespace	Stroika {
 
 
 			template	<typename T>
-				void	SetUtils::Intersect (set<T>* s1, const set<T>& s2)
+				void	Intersect (set<T>* s1, const set<T>& s2)
 					{
 						RequireNotNil (s1);
 						// Sloppy - but hopefully adequate implementation
 						if (not s1->empty () and not s2.empty ()) {
-							*s1 = SetUtils::Intersection (*s1, s2);
+							*s1 = Intersection (*s1, s2);
 						}
 					}
 
 
 
 			template	<typename T>
-				set<typename T>	SetUtils::Intersection (const set<T>& s1, const set<T>& s2)
+				set<typename T>	Intersection (const set<T>& s1, const set<T>& s2)
 					{
 						set<T>	result;
 						for (set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
@@ -128,7 +128,7 @@ namespace	Stroika {
 						return result;
 					}
 			template	<typename T>
-				bool	SetUtils::Intersect (const set<T>& s1, const set<T>& s2)
+				bool	Intersect (const set<T>& s1, const set<T>& s2)
 					{
 						for (set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
 							if (s2.find (*i) != s2.end ()) {
@@ -139,7 +139,7 @@ namespace	Stroika {
 					}
 
 			template	<typename T>
-				void	SetUtils::Union (set<T>* s1, const set<T>& s2)
+				void	Union (set<T>* s1, const set<T>& s2)
 					{
 						for (set<T>::const_iterator i = s2.begin (); i != s2.end (); ++i) {
 							if (s1->find (*i) == s1->end ()) {
@@ -149,12 +149,13 @@ namespace	Stroika {
 					}
 
 			template	<typename T>
-				set<typename T>	SetUtils::Union (const set<T>& s1, const set<T>& s2)
+				set<typename T>	Union (const set<T>& s1, const set<T>& s2)
 					{
 						set<T>	result	=	s1;
 						Union (&result, s2);
 						return result;
 					}
+
 		}
 	}
 }
