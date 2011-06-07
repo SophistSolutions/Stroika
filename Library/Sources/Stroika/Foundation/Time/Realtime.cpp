@@ -5,10 +5,11 @@
 
 #include	<algorithm>
 
-#include	<atlbase.h>		// For CComBSTR
+#if		defined(_WIN32)
+#include	<Windows.h>
+#endif
 
 #include	"../Debug/Assertions.h"
-//#include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 
 #include	"RealTime.h"

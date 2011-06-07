@@ -31,7 +31,7 @@ namespace	Stroika {
 				}
 
 
-	// Module initialization
+		// Module initialization
 			namespace	Private {
 				struct	INIT {
 					INIT ();
