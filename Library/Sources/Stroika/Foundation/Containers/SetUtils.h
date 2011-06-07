@@ -12,6 +12,8 @@
 
 
 
+/// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
+
 
 namespace	Stroika {	
 	namespace	Foundation {
