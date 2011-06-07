@@ -7,17 +7,12 @@
 #include	"../StroikaPreComp.h"
 
 #include	<cctype>
-#include	<locale>
 #include	<functional>
+#include	<locale>
 #include	<string>
 #include	<vector>
-//NOT SURE WINDOW.H NEEDED?
-//#if		defined(_WIN32)
-//	#include	<Windows.h>
-//#endif
 
 #include	"../Configuration/Basics.h"
-#include	"../Memory/SmallStackBuffer.h"
 #include	"CodePage.h"
 
 

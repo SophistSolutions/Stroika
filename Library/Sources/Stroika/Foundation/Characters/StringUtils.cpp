@@ -10,6 +10,7 @@
 #include	"../Debug/Assertions.h"
 #include	"../Debug/Trace.h"
 #include	"../Math/Basics.h"
+#include	"../Memory/SmallStackBuffer.h"
 #include	"CodePage.h"
 
 #include	"StringUtils.h"

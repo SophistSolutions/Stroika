@@ -21,6 +21,7 @@
 #include	"../Containers/Basics.h"
 #include	"../Containers/SetUtils.h"
 #include	"../Debug/Trace.h"
+#include	"../Memory/SmallStackBuffer.h"
 
 #include	"FileUtils.h"
 
