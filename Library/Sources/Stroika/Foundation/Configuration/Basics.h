@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__StroiaFoundationConfigurationBasics_h__
-#define	__StroiaFoundationConfigurationBasics_h__	1
+#ifndef	_Stroika_Foundation_Configuration_Basics_h_
+#define	_Stroika_Foundation_Configuration_Basics_h_	1
 
 #include	<cstddef>
 #include	<cstdint>
@@ -51,7 +51,7 @@ namespace	Stroika {
 }
 
 
-#endif	/*__StroiaFoundationConfigurationBasics_h__*/
+#endif	/*_Stroika_Foundation_Configuration_Basics_h_*/
 
 
 
