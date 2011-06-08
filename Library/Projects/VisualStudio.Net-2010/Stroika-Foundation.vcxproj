@@ -52,6 +52,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_Win32_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Basics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h" />
@@ -119,23 +120,27 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <UseOfAtl>Static</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugU32|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfAtl>Static</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseA32|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <UseOfAtl>Static</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU32|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfAtl>Static</UseOfAtl>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

@@ -216,6 +216,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_Win32_.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
