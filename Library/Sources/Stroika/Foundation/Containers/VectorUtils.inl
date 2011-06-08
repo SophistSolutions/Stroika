@@ -4,8 +4,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#ifndef	_VectorUtils_inl
-#define	_VectorUtils_inl	1
+#ifndef	_Stroika_Foundation_Containers_VectorUtils_inl_
+#define	_Stroika_Foundation_Containers_VectorUtils_inl_	1
 
 #include	"../Debug/Assertions.h"
 
@@ -133,4 +133,4 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_VectorUtils_inl*/
+#endif	/*_Stroika_Foundation_Containers_VectorUtils_inl_*/

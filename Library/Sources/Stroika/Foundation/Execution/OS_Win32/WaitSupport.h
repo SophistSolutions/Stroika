@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__WaitSupport_h__
-#define	__WaitSupport_h__	1
+#ifndef	_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_
+#define	_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_	1
 
 #include	"../../StroikaPreComp.h"
 
@@ -34,5 +34,4 @@ namespace	Stroika {
  ********************************************************************************
  */
 
-
-#endif	/*__WaitSupport_h__*/
+#endif	/*_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_*/

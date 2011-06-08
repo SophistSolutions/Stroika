@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_StroikaFoundationMemory_BlockAllocated_inl
-#define	_StroikaFoundationMemory_BlockAllocated_inl	1
+#ifndef	_Stroika_Foundation_Memory_BlockAllocated_inl_
+#define	_Stroika_Foundation_Memory_BlockAllocated_inl_	1
 
 
 /*
@@ -294,4 +294,4 @@ namespace	Stroika {
 namespace	{
 	Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::ActualModuleInit>	_MI_;	// this object constructed for the CTOR/DTOR per-module side-effects
 }
-#endif	/*_StroikaFoundationMemory_BlockAllocated_inl*/
+#endif	/*_Stroika_Foundation_Memory_BlockAllocated_inl_*/

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_Realtime_inl
-#define	_Realtime_inl	1
+#ifndef	_Stroika_Foundation_Time_Realtime_inl_
+#define	_Stroika_Foundation_Time_Realtime_inl_	1
 
 
 /*
@@ -16,5 +16,4 @@ namespace	Stroika {
 		}
 	}
 }
-
-#endif	/*_Realtime_inl*/
+#endif	/*_Stroika_Foundation_Time_Realtime_inl_*/

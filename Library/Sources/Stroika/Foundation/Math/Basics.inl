@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_Contmathsgbasics_inl
-#define	_Contmathsgbasics_inl	1
+#ifndef	_Stroika_Foundation_Math_Basic_inl_
+#define	_Stroika_Foundation_Math_Basic_inl_	1
 
 
 /*
@@ -24,8 +24,7 @@ namespace	Stroika {
 		}
 	}
 }
-
-#endif	/*_Contmathsgbasics_inl*/
+#endif	/*_Stroika_Foundation_Math_Basic_inl_*/
 
 
 

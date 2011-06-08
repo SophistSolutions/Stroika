@@ -4,8 +4,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#ifndef	_SetUtils_inl
-#define	_SetUtils_inl	1
+#ifndef	_Stroika_Foundation_Containers_SetUtils_inl_
+#define	_Stroika_Foundation_Containers_SetUtils_inl_	1
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -159,4 +159,4 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_SetUtils_inl*/
+#endif	/*_Stroika_Foundation_Containers_SetUtils_inl_*/

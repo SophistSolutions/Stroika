@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__RefCntPtr_h__
-#define	__RefCntPtr_h__	1
+#ifndef	_Stroika_Foundation_Memory_RefCntPtr_h_
+#define	_Stroika_Foundation_Memory_RefCntPtr_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -160,7 +160,7 @@ template	<typename	T>
 
 	}
 }
-#endif	/*__RefCntPtr_h__*/
+#endif	/*_Stroika_Foundation_Memory_RefCntPtr_h_*/
 
 
 

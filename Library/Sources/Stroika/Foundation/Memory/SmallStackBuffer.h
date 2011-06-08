@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__SmallStackBuffer_h__
-#define	__SmallStackBuffer_h__	1
+#ifndef	_Stroika_Foundation_Memory_SmallStackBuffer_h_
+#define	_Stroika_Foundation_Memory_SmallStackBuffer_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -76,7 +76,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*__SmallStackBuffer_h__*/
+#endif	/*_Stroika_Foundation_Memory_SmallStackBuffer_h_*/
 
 
 

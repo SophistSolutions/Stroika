@@ -4,8 +4,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#ifndef	_Trace_inl
-#define	_Trace_inl	1
+#ifndef	_Stroika_Foundation_Debug_Trace_inl_
+#define	_Stroika_Foundation_Debug_Trace_inl_	1
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -81,4 +81,4 @@ inline	Stroika::Foundation::Debug::Emitter&	Stroika::Foundation::Debug::Emitter:
 	{
 		return _TracePrivateINIT_.Actual ().fEmitter;
 	}
-#endif	/*_Trace_inl*/
+#endif	/*_Stroika_Foundation_Debug_Trace_inl_*/

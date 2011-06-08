@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_Stroia_Foundation_Execution_DLLSupport_h
-#define	_Stroia_Foundation_Execution_DLLSupport_h	1
+#ifndef	_Stroia_Foundation_Execution_DLLSupport_h_
+#define	_Stroia_Foundation_Execution_DLLSupport_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -39,7 +39,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroia_Foundation_Execution_DLLSupport_h*/
+#endif	/*_Stroia_Foundation_Execution_DLLSupport_h_*/
 
 
 

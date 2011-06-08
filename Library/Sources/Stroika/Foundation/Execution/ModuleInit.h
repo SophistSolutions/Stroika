@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	__ModuleInit_h__
-#define	__ModuleInit_h__	1
+#ifndef	_Stroika_Foundation_Execution_ModuleInit_h_
+#define	_Stroika_Foundation_Execution_ModuleInit_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -143,7 +143,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*__ModuleInit_h__*/
+#endif	/*_Stroika_Foundation_Execution_ModuleInit_h_*/
 
 
 

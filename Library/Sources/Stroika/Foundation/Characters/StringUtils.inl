@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_StringUtils_inl
-#define	_StringUtils_inl	1
+#ifndef	_Stroika_Foundation_Characters_StringUtils_inl_
+#define	_Stroika_Foundation_Characters_StringUtils_inl_	1
 
 
 /*
@@ -642,5 +642,4 @@ namespace	Stroika {
 		}
 	}
 }
-
-#endif	/*_StringUtils_inl*/
+#endif	/*_Stroika_Foundation_Characters_StringUtils_inl_*/

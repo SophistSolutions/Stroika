@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_Memory_inl
-#define	_Memory_inl	1
+#ifndef	_Stroika_Foundation_Memory_Basic_inl_
+#define	_Stroika_Foundation_Memory_Basic_inl_	1
 
 
 /*
@@ -48,4 +48,4 @@ namespace	Stroika {
 namespace	{
 	Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::INIT>	_StroikaFoundationMemoryPrivateINIT_;	// this object constructed for the CTOR/DTOR per-module side-effects
 }
-#endif	/*_Memory_inl*/
+#endif	/*_Stroika_Foundation_Memory_Basic_inl_*/
