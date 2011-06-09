@@ -26,10 +26,8 @@ namespace	Stroika {
 				memory leaks). But others may have other reasons.</p>
 					<p>Defaults to true.</p>
 			 */
-			//#define	qAllowBlockAllocation						0
-			//#define	qAllowBlockAllocation						1
-			#ifndef	qAllowBlockAllocation
-				#define	qAllowBlockAllocation						1
+			#if		!defined (qAllowBlockAllocation)
+				#error Must be Defined in Stroika/Foundation/Configuration/StroikaConfig.h
 			#endif
 
 

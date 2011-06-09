@@ -15,6 +15,12 @@
 #include	"../Memory/Basics.h"
 #include	"../Time/Realtime.h"
 
+#if		qTraceToFile
+#include	"../IO/FileUtils.h"
+#include	"../Time/DateUtils.h"
+#endif
+
+
 #include	"Trace.h"
 
 
@@ -24,7 +30,6 @@ using	namespace	Stroika::Foundation;
 using	namespace	Characters;
 using	namespace	Debug;
 using	namespace	Execution;
-
 
 
 
@@ -127,13 +132,13 @@ tstring	Emitter::GetTraceFileName () const
 				}
 			}
 		}
-		tstring nowstr	=	totstring (DateTime::Now ().Format4XML ());
+		tstring nowstr	=	totstring (Time::DateTime::Now ().Format4XML ());
 		for (tstring::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
 			if (*i == ':') {
 				*i = '-';
 			}
 		}
-		sTraceFileName = IO::::GetSpecialDir_GetTempDir () + Format (_T ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
+		sTraceFileName = IO::GetSpecialDir_GetTempDir () + Format (_T ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
 	}
 	return sTraceFileName;
 }

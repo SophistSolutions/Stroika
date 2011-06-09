@@ -23,13 +23,15 @@ namespace	Stroika {
 		namespace	Debug {
 
 
-			
+			using	Characters::tstring;
+
+
 			/*
 			 *	So we can distribute near-release versions of HF to users, and get feedback - a trace file
 			 *	to help debug problems we cannot reproduce.
 			 */
-			#ifndef	qTraceToFile
-				#define	qTraceToFile	0
+			#if		!defined (qTraceToFile)
+				#error Must be Defined in Stroika/Foundation/Configuration/StroikaConfig.h
 			#endif
 
 
@@ -41,14 +43,9 @@ namespace	Stroika {
 						on (windows only cuz thats the only place I've implemented the trace message emitter so far).</p>
 							<p>See also @'qDebug' and @'DebugTrace'</p>
 			 */
-			#ifndef	qDefaultTracingOn
-				#if		defined(_DEBUG)
-					#define	qDefaultTracingOn	1
-				#else
-					#define	qDefaultTracingOn	0
-				#endif
+			#if		!defined (qDefaultTracingOn)
+				#error Must be Defined in Stroika/Foundation/Configuration/StroikaConfig.h
 			#endif
-
 
 			namespace	Private {
 				struct	MODULE_INIT;

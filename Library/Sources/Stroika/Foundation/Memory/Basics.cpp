@@ -86,9 +86,9 @@ namespace	{
 	bool	sInitialized	=	false;
 
 	#if		qOverrideOpNew_EXTRA_LEAK_DETECTION
-		typedef	MemoryAllocator::LeakTrackingGeneralPurposeAllocator		_USE_ALLOCATOR_;
+		typedef	Memory::LeakTrackingGeneralPurposeAllocator		_USE_ALLOCATOR_;
 	#else
-		typedef	MemoryAllocator::SimpleSizeCountingGeneralPurposeAllocator	_USE_ALLOCATOR_;
+		typedef	Memory::SimpleSizeCountingGeneralPurposeAllocator	_USE_ALLOCATOR_;
 	#endif
 
 	Byte	sAllocatorBuf_[sizeof (_USE_ALLOCATOR_)];		// BSS until intiailized in Memory::Private::INIT::INIT ()
@@ -240,7 +240,7 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 #if		qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
 namespace	{
 	// no critical sections - only used for debugging - and caller can easily avoid trouble by being careful
-	MemoryAllocator::LeakTrackingGeneralPurposeAllocator::Snapshot	sLastSnapshot;
+	Memory::LeakTrackingGeneralPurposeAllocator::Snapshot	sLastSnapshot;
 }
 #endif
 #if		defined(_DEBUG)

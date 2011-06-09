@@ -11,38 +11,78 @@
  *	Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
  *	is set consistently (even if its not explicitly checked).
  */
-#if		defined(_DEBUG) && defined (NDEBUG)
-	#error	CONFLICT - ONE OR THE OTHER
-#endif
-#if		!defined(_DEBUG) && !defined (NDEBUG)
-	#error	DEFINE - ONE OR THE OTHER
-#endif
 #if		defined(_DEBUG)
 	#define	qDebug	1
 #else
 	#define	qDebug	0
 #endif
 
+// Check for consistent defines
+#if		qDebug
+	#if		!defined(_DEBUG)
+		#error	INCONSISTENT DEFINES
+	#endif
+	#if		defined (NDEBUG)
+		#error	INCONSISTENT DEFINES
+	#endif
+#else
+	#if		defined(_DEBUG)
+		#error	INCONSISTENT DEFINES
+	#endif
+	#if		!defined (NDEBUG)
+		#error	INCONSISTENT DEFINES
+	#endif
+#endif
+
+
+
 
 
 // We should automate detecing this, but I don't know any portable way todo so at compile time - just runtime.
-#define	qIsLittleEndian		1
-#define	qIsBigEndian		0
+#if		!defined (qIsLittleEndian) && !defined (qIsBigEndian)
+	#if		defined (_LITTLE_ENDIAN_)
+		#define	qIsLittleEndian		1
+	#elif	defined (_BIG_ENDIAN_)
+		#define	qIsBigEndian		1
+	#elif	defined(__hppa__)
+		#define	qIsBigEndian		1
+	#elif	defined(__m68k__) || defined(mc68000) || defined(_M_M68K)
+		#define	qIsBigEndian		1
+	#elif	defined(__MIPS__) && defined(__MISPEB__)
+		#define	qIsBigEndian		1
+	#elif	defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC)
+		#define	qIsBigEndian		1
+	#elif	defined(__sparc__)
+		#define	qIsBigEndian		1
+	#else
+		// DEFAULT
+		#define	qIsLittleEndian		1
+	#endif
+
+	// Be sure other defined
+	#if		qIsLittleEndian
+		#define	qIsBigEndian		0
+	#elif	qIsBigEndian
+		#define	qIsLittleEndian		0
+	#else
+		#error	INCONSISTENT DEFINES
+	#endif
+#endif
 
 
 
-/*
- *	Since this include file CAN define #defines which are required before including system includes, its required
- *	that THIS file be included before all others (like a precomp.h precompiled header file).
- *
- *	This is the ONLY file this is true of. Otherwise, we generally include system files before RFLLib files etc.
- */
+#if		defined(_WINDOWS)
+	#define	qPlatform_Windows	1
+#endif
 
-// Used to declare these in vcproj file automatically, but better to declare here to assure
-// synchonized among all projects that include the R4LLib project
-//		-- LGP 2007-09-05
+
 #if		defined(_WIN32)
+	#define	qPlatform_Win32		1
+#endif
 
+
+
+#if		qPlatform_Windows
 
 	// not important, but a good default
 	#if		!defined (STRICT)
@@ -93,10 +133,53 @@
 
 #endif
 
-#if		defined(_WIN32)
-	#define	qPlatform_Windows	1
-	#define	qPlatform_Win32		1
-#endif
+
+	/*
+	 * SEE ALSO Stroika/Foundation/Debug/Trace.h
+	 *
+		*	So we can distribute near-release versions of HF to users, and get feedback - a trace file
+		*	to help debug problems we cannot reproduce.
+		*/
+	#ifndef	qTraceToFile
+		#define	qTraceToFile	0
+	#endif
+
+
+
+	/*
+	 * SEE ALSO Stroika/Foundation/Debug/Trace.h
+	 *
+	@CONFIGVAR:		qDefaultTracingOn
+	@DESCRIPTION:	<p>Led contains a limited amount of pre-built tracing code. This could be expanded someday,
+				depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
+				on (windows only cuz thats the only place I've implemented the trace message emitter so far).</p>
+					<p>See also @'qDebug' and @'DebugTrace'</p>
+		*/
+	#ifndef	qDefaultTracingOn
+		#if		defined(_DEBUG)
+			#define	qDefaultTracingOn	1
+		#else
+			#define	qDefaultTracingOn	0
+		#endif
+	#endif
+
+
+
+	/*
+	 * SEE ALSO Stroika/Foundation/Memory/BlockAllocated.h
+	 *
+	@CONFIGVAR:		qAllowBlockAllocation
+	@DESCRIPTION:	<p>Allow use of block-allocation. The main reason to
+		disable it indescriminantly is for debugging purposes (looking for
+		memory leaks). But others may have other reasons.</p>
+			<p>Defaults to true.</p>
+		*/
+	//#define	qAllowBlockAllocation						0
+	//#define	qAllowBlockAllocation						1
+	#ifndef	qAllowBlockAllocation
+		#define	qAllowBlockAllocation						1
+	#endif
+
 
 
 #endif	/*_Stroika_Foundation_Configuration_StroikaConfig_Win32_h_*/

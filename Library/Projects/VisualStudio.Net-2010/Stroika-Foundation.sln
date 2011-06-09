@@ -8,6 +8,8 @@ Global
 		DebugA32|Win32 = DebugA32|Win32
 		DebugU32|Win32 = DebugU32|Win32
 		ReleaseA32|Win32 = ReleaseA32|Win32
+		Release-DbgMemLeaks-U-32|Win32 = Release-DbgMemLeaks-U-32|Win32
+		Release-Logging-U-32|Win32 = Release-Logging-U-32|Win32
 		ReleaseU32|Win32 = ReleaseU32|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -17,6 +19,10 @@ Global
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.DebugU32|Win32.Build.0 = DebugU32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.ReleaseA32|Win32.ActiveCfg = ReleaseA32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.ReleaseA32|Win32.Build.0 = ReleaseA32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-DbgMemLeaks-U-32|Win32.Build.0 = Release-DbgMemLeaks-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Win32.ActiveCfg = Release-Logging-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Win32.Build.0 = Release-Logging-U-32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.ReleaseU32|Win32.ActiveCfg = ReleaseU32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.ReleaseU32|Win32.Build.0 = ReleaseU32|Win32
 	EndGlobalSection
