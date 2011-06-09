@@ -74,10 +74,17 @@
 #if		defined(_WINDOWS)
 	#define	qPlatform_Windows	1
 #endif
-
-
 #if		defined(_WIN32)
 	#define	qPlatform_Win32		1
+	// in case only _WIN32 defined
+	#define	qPlatform_Windows	1
+#endif
+
+
+#if		qPlatform_Win32
+	#if		!qPlatform_Windows
+		#error	INCONSISTENT DEFINES
+	#endif
 #endif
 
 
