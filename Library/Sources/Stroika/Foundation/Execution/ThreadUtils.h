@@ -41,7 +41,7 @@ namespace	Stroika {
 			// MAIN reason to use this - is it sets the 'alertable' flag on the sleep, so the QueueUserAPC () stuff works!
 			// which allows SimpleThread::Stop () to work properly...
 			// -- LGP 2009-04-28
-			void	Sleep (float seconds2Wait);
+			void	Sleep (Time::TickCountType seconds2Wait);
 
 
 

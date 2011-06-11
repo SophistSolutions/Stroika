@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include	"../Containers/Basics.h"
+#include	"../Memory/SmallStackBuffer.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

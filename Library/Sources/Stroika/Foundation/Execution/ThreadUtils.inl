@@ -38,7 +38,7 @@ namespace	Stroika {
 
 
 	// class	Sleep
-		inline	void	Sleep (float seconds2Wait)
+		inline	void	Sleep (Time::TickCountType seconds2Wait)
 			{
 				::SleepEx (static_cast<int> (seconds2Wait * 1000), true);
 			}

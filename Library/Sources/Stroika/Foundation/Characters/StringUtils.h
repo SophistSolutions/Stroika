@@ -10,6 +10,9 @@
 #include	<locale>
 #include	<string>
 #include	<vector>
+#if		qPlatform_Windows
+#include	<tchar.h>
+#endif
 
 #include	"../Configuration/Basics.h"
 #include	"CodePage.h"
