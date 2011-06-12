@@ -7,6 +7,8 @@
 #ifndef	_Stroika_Foundation_Containers_SetUtils_inl_
 #define	_Stroika_Foundation_Containers_SetUtils_inl_	1
 
+#include	"../Debug/Assertions.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Containers {
