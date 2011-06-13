@@ -210,10 +210,10 @@ namespace	Execution {
 		catch (HRESULT hr) {\
 			return hr;\
 		}\
-		catch (const Win32ErrorException& we) {\
+		catch (const Stroika::Foundation::Execution::Win32ErrorException& we) {\
 			return (HRESULT_FROM_WIN32 (we));\
 		}\
-		catch (const HRESULTErrorException& h) {\
+		catch (const Stroika::Foundation::Execution::HRESULTErrorException& h) {\
 			return static_cast<HRESULT> (h);\
 		}\
 		catch (const bad_alloc&) {\
@@ -255,29 +255,29 @@ namespace	Execution {
 
 
 	#define	CATCH_AND_CAPTURE_CATCH_BLOCK(CE)\
-		catch (const Execution::RequiredComponentMissingException& e) {\
-			(CE).fRequiredComponentMissingException = auto_ptr<Execution::RequiredComponentMissingException> (DEBUG_NEW Execution::RequiredComponentMissingException (e));\
+		catch (const Stroika::Foundation::Execution::RequiredComponentMissingException& e) {\
+			(CE).fRequiredComponentMissingException = auto_ptr<Stroika::Foundation::Execution::RequiredComponentMissingException> (DEBUG_NEW Stroika::Foundation::Execution::RequiredComponentMissingException (e));\
 		}\
-		catch (const Execution::StringException& e) {\
-			(CE).fStringException = auto_ptr<Execution::StringException> (DEBUG_NEW Execution::StringException (e));\
+		catch (const Stroika::Foundation::Execution::StringException& e) {\
+			(CE).fStringException = auto_ptr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (e));\
 		}\
-		catch (const Execution::HRESULTErrorException& e) {\
-			(CE).fHRESULTErrorException = auto_ptr<Execution::HRESULTErrorException> (DEBUG_NEW Execution::HRESULTErrorException (e));\
+		catch (const Stroika::Foundation::Execution::HRESULTErrorException& e) {\
+			(CE).fHRESULTErrorException = auto_ptr<Stroika::Foundation::Execution::HRESULTErrorException> (DEBUG_NEW Stroika::Foundation::Execution::HRESULTErrorException (e));\
 		}\
-		catch (const Execution::Win32ErrorException& e) {\
-			(CE).fWin32ErrorException = auto_ptr<Execution::Win32ErrorException> (DEBUG_NEW Execution::Win32ErrorException (e));\
+		catch (const Stroika::Foundation::Execution::Win32ErrorException& e) {\
+			(CE).fWin32ErrorException = auto_ptr<Stroika::Foundation::Execution::Win32ErrorException> (DEBUG_NEW Stroika::Foundation::Execution::Win32ErrorException (e));\
 		}\
-		catch (const Execution::FileFormatException& e) {\
-			(CE).fFileFormatException = auto_ptr<Execution::FileFormatException> (DEBUG_NEW Execution::FileFormatException (e));\
+		catch (const Stroika::Foundation::Execution::FileFormatException& e) {\
+			(CE).fFileFormatException = auto_ptr<Stroika::Foundation::Execution::FileFormatException> (DEBUG_NEW Stroika::Foundation::Execution::FileFormatException (e));\
 		}\
-		catch (const Execution::FileBusyException& e) {\
-			(CE).fFileBusyException = auto_ptr<Execution::FileBusyException> (DEBUG_NEW Execution::FileBusyException (e));\
+		catch (const Stroika::Foundation::Execution::FileBusyException& e) {\
+			(CE).fFileBusyException = auto_ptr<Stroika::Foundation::Execution::FileBusyException> (DEBUG_NEW Stroika::Foundation::Execution::FileBusyException (e));\
 		}\
-		catch (const Execution::SilentException& e) {\
-			(CE).fSilentException = auto_ptr<Execution::SilentException> (DEBUG_NEW Execution::SilentException (e));\
+		catch (const Stroika::Foundation::Execution::SilentException& e) {\
+			(CE).fSilentException = auto_ptr<Stroika::Foundation::Execution::SilentException> (DEBUG_NEW Stroika::Foundation::Execution::SilentException (e));\
 		}\
 		catch (...) {\
-			(CE).fStringException = auto_ptr<Execution::StringException> (DEBUG_NEW Execution::StringException (L"Unknown Exception"));\
+			(CE).fStringException = auto_ptr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (L"Unknown Exception"));\
 		}\
 
 
