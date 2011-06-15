@@ -27,7 +27,9 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-			using	namespace	 std;
+			using	std::string;
+			using	std::wstring;
+			using	std::basic_string;
 
 			using	Characters::CodePage;
 

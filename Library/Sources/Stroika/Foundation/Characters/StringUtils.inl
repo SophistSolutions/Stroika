@@ -473,7 +473,7 @@ namespace	Stroika {
 				inline	basic_string<typename TCHAR>	NLToCRLF (const basic_string<typename TCHAR>& text)
 					{
 						size_t	outBufSize	=	(text.length () + 1) * 2;
-						SmallStackBuffer<TCHAR>	outBuf (outBufSize);
+						Memory::SmallStackBuffer<TCHAR>	outBuf (outBufSize);
 						size_t newSize = NLToCRLF<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
 						Assert (newSize < outBufSize);
 						outBuf[newSize] = '\0';
@@ -511,7 +511,7 @@ namespace	Stroika {
 				inline	basic_string<typename TCHAR>	NLToNative (const basic_string<typename TCHAR>& text)
 					{
 						size_t	outBufSize	=	(text.length () + 1) * 2;
-						SmallStackBuffer<TCHAR>	outBuf (outBufSize);
+						Memory::SmallStackBuffer<TCHAR>	outBuf (outBufSize);
 						size_t newSize = NLToNative<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
 						Assert (newSize < outBufSize);
 						outBuf[newSize] = '\0';
