@@ -4,7 +4,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
-#if		defined(_WIN32)
+#if		qPlatform_Windows
 #include	<cstdio>
 #include	<tchar.h>
 #endif

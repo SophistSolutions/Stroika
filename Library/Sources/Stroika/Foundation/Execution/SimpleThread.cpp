@@ -22,7 +22,7 @@
 
 using	namespace	Stroika::Foundation;
 
-using	Time::TickCountType;
+using	Time::DurationSecondsType;
 
 
 
@@ -433,14 +433,14 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) c
 
 void	SimpleThread::WaitForDoneWhilePumpingMessages (float timeout) const
 {
-	TickCountType	timeoutAt	=	Time::GetTickCount () + timeout;
+	DurationSecondsType	timeoutAt	=	Time::GetTickCount () + timeout;
 	// CRUDDY impl - but decent enuf for first draft
 	while (GetStatus () != SimpleThread::eCompleted) {
 		if (timeout < 0.0f) {
 			PumpMessagesAndReturnWhenDoneOrAfterTime ();
 		}
 		else {
-			TickCountType	time2Wait	=	timeoutAt - Time::GetTickCount ();
+			DurationSecondsType	time2Wait	=	timeoutAt - Time::GetTickCount ();
 			if (time2Wait <= 0) {
 				Win32ErrorException::DoThrow (WAIT_TIMEOUT);
 			}

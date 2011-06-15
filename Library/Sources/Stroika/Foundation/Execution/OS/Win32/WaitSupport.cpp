@@ -3,7 +3,7 @@
  */
 #include	"../../../StroikaPreComp.h"
 
-#if		defined(_WIN32)
+#if		qPlatform_Windows
 	#include	<Windows.h>
 #else
 	#error "WINDOWS REQUIRED FOR THIS MODULE"
@@ -23,7 +23,7 @@ using	namespace	Stroika::Foundation::Execution;
 using	namespace	Stroika::Foundation::Execution::OS;
 using	namespace	Stroika::Foundation::Execution::OS::Win32;
 
-using	Time::TickCountType;
+using	Time::DurationSecondsType;
 
 
 
@@ -44,10 +44,10 @@ void	Win32::WaitAndPumpMessages (HWND dialog, float forNSecs)
 
 void	Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
 {
-	TickCountType	startAt	=	Time::GetTickCount ();
-	TickCountType	endAt	=	startAt + forNSecs;
+	DurationSecondsType	startAt	=	Time::GetTickCount ();
+	DurationSecondsType	endAt	=	startAt + forNSecs;
 
-	for (TickCountType timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
+	for (DurationSecondsType timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
 		(void)::MsgWaitForMultipleObjectsEx (waitOn.size (), Containers::Start (waitOn), static_cast<int> (timeLeft * 1000), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
 		MSG msg;
 		while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -73,8 +73,8 @@ void	Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, floa
  */
 void	Win32::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
 {
-	TickCountType	startAt	=	Time::GetTickCount ();
-	TickCountType	endAt	=	startAt + atMostNSecs;
+	DurationSecondsType	startAt	=	Time::GetTickCount ();
+	DurationSecondsType	endAt	=	startAt + atMostNSecs;
 
 	MSG msg;
 	while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {

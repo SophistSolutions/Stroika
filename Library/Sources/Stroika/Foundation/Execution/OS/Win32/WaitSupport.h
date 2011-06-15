@@ -6,7 +6,7 @@
 
 #include	"../../../StroikaPreComp.h"
 
-#if		defined(_WIN32)
+#if		qPlatform_Windows
 	#include	<Windows.h>
 #else
 	#error "WINDOWS REQUIRED FOR THIS MODULE"

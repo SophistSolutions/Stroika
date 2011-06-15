@@ -304,11 +304,11 @@ template	<typename	CHARTYPE>
 		{
 			AutoCriticalSection critSec (GetCritSection_ ());
 			FlushBufferedCharacters_ ();
-			static	Time::TickCountType	sStartOfTime	=	0.0;
+			static	Time::DurationSecondsType	sStartOfTime	=	0.0;
 			if (sStartOfTime == 0.0) {
 				sStartOfTime = Time::GetTickCount ();
 			}
-			Time::TickCountType	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
+			Time::DurationSecondsType	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
 			{
 				char	buf[1024];
 				ThreadID	threadID	=	::GetCurrentThreadId ();

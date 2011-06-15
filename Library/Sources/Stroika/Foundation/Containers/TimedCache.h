@@ -44,9 +44,9 @@ namespace	Stroika {
 	template	<typename	KEY, typename RESULT>
 		class	TimedCache {
 			public:
-				TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::TickCountType timeoutInSeconds);
+				TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds);
 
-				nonvirtual	void	SetTimeout (Stroika::Foundation::Time::TickCountType timeoutInSeconds);
+				nonvirtual	void	SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds);
 
 				nonvirtual	bool	AccessElement (const KEY& key, RESULT* result);
 				nonvirtual	void	AddElement (const KEY& key, const RESULT& result);
@@ -55,8 +55,8 @@ namespace	Stroika {
 
 			private:
 				bool	fAccessFreshensDate;
-				Stroika::Foundation::Time::TickCountType	fTimeout;
-				Stroika::Foundation::Time::TickCountType	fNextAutoClearAt;
+				Stroika::Foundation::Time::DurationSecondsType	fTimeout;
+				Stroika::Foundation::Time::DurationSecondsType	fNextAutoClearAt;
 			
 			private:
 				nonvirtual	void	ClearIfNeeded_ ();
@@ -70,7 +70,7 @@ namespace	Stroika {
 						{
 						}
 					RESULT	fResult;
-					Stroika::Foundation::Time::TickCountType	fLastAccessedAt;
+					Stroika::Foundation::Time::DurationSecondsType	fLastAccessedAt;
 				};
 				map<KEY,MyResult>	fMap;
 
@@ -100,7 +100,7 @@ namespace	Stroika {
 
 
 	template	<typename	KEY, typename RESULT>
-		TimedCache<KEY,RESULT>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::TickCountType timeoutInSeconds):
+		TimedCache<KEY,RESULT>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds):
 			fMap (),
 			fAccessFreshensDate (accessFreshensDate),
 			fTimeout (timeoutInSeconds),
@@ -113,7 +113,7 @@ namespace	Stroika {
 				Require (fTimeout > 0.0f);
 			}
 	template	<typename	KEY, typename RESULT>
-		void	TimedCache<KEY,RESULT>::SetTimeout (Stroika::Foundation::Time::TickCountType timeoutInSeconds)
+		void	TimedCache<KEY,RESULT>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
 			{
 				Require (timeoutInSeconds > 0.0f);
 				if (fTimeout != timeoutInSeconds) {
@@ -173,9 +173,9 @@ namespace	Stroika {
 	template	<typename	KEY, typename RESULT>
 		void	TimedCache<KEY,RESULT>::ClearOld_ ()
 			{
-				Stroika::Foundation::Time::TickCountType	now	=	Time::GetTickCount ();
+				Stroika::Foundation::Time::DurationSecondsType	now	=	Time::GetTickCount ();
 				fNextAutoClearAt = now + fTimeout/2.0f;	// somewhat arbitrary how far into the future we do this...
-				Stroika::Foundation::Time::TickCountType	lastAccessThreshold	=	now - fTimeout;
+				Stroika::Foundation::Time::DurationSecondsType	lastAccessThreshold	=	now - fTimeout;
 				for (map<KEY,MyResult>::iterator i = fMap.begin (); i != fMap.end (); ) {
 					if (i->second.fLastAccessedAt < lastAccessThreshold) {
 						i = fMap.erase (i);

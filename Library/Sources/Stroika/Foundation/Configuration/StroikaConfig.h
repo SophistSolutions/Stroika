@@ -23,6 +23,9 @@
  *
  *		-- LGP 2011-06-08
  */
+#include	"StroikaConfig_qDebug_.h"
+
+#include	"StroikaConfig_qEndian_.h"
 
 #include	"StroikaConfig_Win32_.h"
 

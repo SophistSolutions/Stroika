@@ -4,7 +4,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	<errno.h>
-#if		defined(_WIN32)
+#if		qPlatform_Windows
 	#include	<Windows.h>
 	#include	<winerror.h>
 	#include	<wininet.h>		// for error codes

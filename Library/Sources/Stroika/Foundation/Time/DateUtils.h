@@ -9,7 +9,7 @@
 #include	<climits>
 #include	<string>
 
-#if		defined(_WIN32)
+#if		qPlatform_Windows
 	#include	<Windows.h>
 #endif
 

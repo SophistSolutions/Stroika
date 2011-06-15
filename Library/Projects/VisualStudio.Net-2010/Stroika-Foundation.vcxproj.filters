@@ -285,6 +285,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\WaitSupport.h">
       <Filter>Sources\Execution\OS\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qDebug_.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qEndian_.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

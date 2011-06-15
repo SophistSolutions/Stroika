@@ -6,139 +6,86 @@
 
 
 
-
-/*
- *	Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
- *	is set consistently (even if its not explicitly checked).
- */
-#if		defined(_DEBUG)
-	#define	qDebug	1
-#else
-	#define	qDebug	0
-#endif
-
-// Check for consistent defines
-#if		qDebug
-	#if		!defined(_DEBUG)
-		#error	INCONSISTENT DEFINES
+	#if		defined(_WINDOWS)
+		#define	qPlatform_Windows	1
 	#endif
-	#if		defined (NDEBUG)
-		#error	INCONSISTENT DEFINES
-	#endif
-#else
-	#if		defined(_DEBUG)
-		#error	INCONSISTENT DEFINES
-	#endif
-	#if		!defined (NDEBUG)
-		#error	INCONSISTENT DEFINES
-	#endif
-#endif
-
-
-
-
-
-// We should automate detecing this, but I don't know any portable way todo so at compile time - just runtime.
-#if		!defined (qIsLittleEndian) && !defined (qIsBigEndian)
-	#if		defined (_LITTLE_ENDIAN_)
-		#define	qIsLittleEndian		1
-	#elif	defined (_BIG_ENDIAN_)
-		#define	qIsBigEndian		1
-	#elif	defined(__hppa__)
-		#define	qIsBigEndian		1
-	#elif	defined(__m68k__) || defined(mc68000) || defined(_M_M68K)
-		#define	qIsBigEndian		1
-	#elif	defined(__MIPS__) && defined(__MISPEB__)
-		#define	qIsBigEndian		1
-	#elif	defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC)
-		#define	qIsBigEndian		1
-	#elif	defined(__sparc__)
-		#define	qIsBigEndian		1
-	#else
-		// DEFAULT
-		#define	qIsLittleEndian		1
-	#endif
-
-	// Be sure other defined
-	#if		qIsLittleEndian
-		#define	qIsBigEndian		0
-	#elif	qIsBigEndian
-		#define	qIsLittleEndian		0
-	#else
-		#error	INCONSISTENT DEFINES
-	#endif
-#endif
-
-
-
-#if		defined(_WINDOWS)
-	#define	qPlatform_Windows	1
-#endif
-#if		defined(_WIN32)
-	#define	qPlatform_Win32		1
-	// in case only _WIN32 defined
-	#define	qPlatform_Windows	1
-#endif
-
-
-#if		qPlatform_Win32
-	#if		!qPlatform_Windows
-		#error	INCONSISTENT DEFINES
-	#endif
-#endif
-
-
-
-#if		qPlatform_Windows
-
-	// not important, but a good default
-	#if		!defined (STRICT)
-	#define	STRICT
-	#endif
-
-	/*
-	 *	See http://msdn2.microsoft.com/en-us/library/aa383745.aspx
-	 *
-	 *	...
-	 *		Windows Vista/Windows Server 2008 	_WIN32_WINNT>=0x0600
-	 *					WINVER>=0x0600
-	 *
-	 *	...
-	 *		Windows Server 2003 	_WIN32_WINNT>=0x0502
-	 *					WINVER>=0x0502
-	 *	...
-	 *		Windows XP 	_WIN32_WINNT>=0x0501
-	 *					WINVER>=0x0501
-	 *	...
-	 *		Windows Me 	_WIN32_WINDOWS=0x0500
-	 *					WINVER>=0x0500
-	 *
-	 *		Internet Explorer 6.0 	
-	 *					_WIN32_IE>=0x0600
-	 */
-
-	// We COULD easily use an earlier build (was using 0x501 until 2011-02-22) - but use 0x502 because 
-	// MyGetThreadId () can be more efficient using builtin version if we define 0x502 - and no real reason not to...
-	//		-- LGP 2011-02-22
-	#if		!defined (WINVER)
-	#define	WINVER			0x0501
-	#endif
-	#if		!defined (_WIN32_WINNT)
-	#define	_WIN32_WINNT	0x0501
-	#endif
-	#if		!defined (_WIN32_WINDOWS)
-	#define	_WIN32_WINDOWS	0x0501
-	#endif
-	#if		!defined (_WIN32_IE)
-	#define	_WIN32_IE		0x0600
+	#if		defined(_WIN32)
+		#define	qPlatform_Win32		1
+		// in case only _WIN32 defined
+		#define	qPlatform_Windows	1
 	#endif
 
 
-	// Avoid MSFT Win32 macro which interferes with several 'standard c++' things - not just the min/max templates, but
-	// the numeric_limits<>::max() stuff as well!
-	#define	NOMINMAX
+	#if		qPlatform_Win32
+		#if		!qPlatform_Windows
+			#error	INCONSISTENT DEFINES
+		#endif
+	#endif
 
-#endif
+
+
+	#if		qPlatform_Windows
+
+		// not important, but a good default
+		#if		!defined (STRICT)
+		#define	STRICT
+		#endif
+
+		/*
+		 *	See http://msdn2.microsoft.com/en-us/library/aa383745.aspx
+		 *
+		 *	...
+		 *		Windows Vista/Windows Server 2008 	_WIN32_WINNT>=0x0600
+		 *					WINVER>=0x0600
+		 *
+		 *	...
+		 *		Windows Server 2003 	_WIN32_WINNT>=0x0502
+		 *					WINVER>=0x0502
+		 *	...
+		 *		Windows XP 	_WIN32_WINNT>=0x0501
+		 *					WINVER>=0x0501
+		 *	...
+		 *		Windows Me 	_WIN32_WINDOWS=0x0500
+		 *					WINVER>=0x0500
+		 *
+		 *		Internet Explorer 6.0 	
+		 *					_WIN32_IE>=0x0600
+		 */
+
+		// We COULD easily use an earlier build (was using 0x501 until 2011-02-22) - but use 0x502 because 
+		// MyGetThreadId () can be more efficient using builtin version if we define 0x502 - and no real reason not to...
+		//		-- LGP 2011-02-22
+		#if		!defined (WINVER)
+		#define	WINVER			0x0501
+		#endif
+		#if		!defined (_WIN32_WINNT)
+		#define	_WIN32_WINNT	0x0501
+		#endif
+		#if		!defined (_WIN32_WINDOWS)
+		#define	_WIN32_WINDOWS	0x0501
+		#endif
+		#if		!defined (_WIN32_IE)
+		#define	_WIN32_IE		0x0600
+		#endif
+
+
+		// Avoid MSFT Win32 macro which interferes with several 'standard c++' things - not just the min/max templates, but
+		// the numeric_limits<>::max() stuff as well!
+		#define	NOMINMAX
+
+	#endif
+
+
+
+
+
+
+
+
+
+
+
+// BELOW DEFINES NEED TOGO IN ANOTHER FILE - LIKE STROIKACONFIG_qDebug
 
 
 	/*

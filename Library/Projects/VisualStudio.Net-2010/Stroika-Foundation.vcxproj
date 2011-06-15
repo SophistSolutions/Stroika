@@ -69,6 +69,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qDebug_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qEndian_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_Win32_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Basics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.h" />
