@@ -14,7 +14,7 @@
 #include	"../Debug/Trace.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Time/Realtime.h"
-#include	"OS_Win32/WaitSupport.h"
+#include	"OS/Win32/WaitSupport.h"
 
 #include	"ThreadUtils.h"
 

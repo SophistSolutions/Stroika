@@ -4,7 +4,7 @@
 #ifndef	_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_
 #define	_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_	1
 
-#include	"../../StroikaPreComp.h"
+#include	"../../../StroikaPreComp.h"
 
 #if		defined(_WIN32)
 	#include	<Windows.h>
@@ -12,15 +12,17 @@
 	#error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include	"../../Configuration/Basics.h"
+#include	"../../../Configuration/Basics.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
-			namespace	OS_Win32 {
-				void	WaitAndPumpMessages (HWND dialog = NULL, float forNSecs = 0.1f);
-				void	WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs = 0.1f);
-				void	PumpMessagesWhileInputAvailable (HWND dialog = NULL, float atMostNSecs = 0.1f);
+			namespace	OS {
+				namespace	Win32 {
+					void	WaitAndPumpMessages (HWND dialog = NULL, float forNSecs = 0.1f);
+					void	WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs = 0.1f);
+					void	PumpMessagesWhileInputAvailable (HWND dialog = NULL, float atMostNSecs = 0.1f);
+				}
 			}
 		}
 	}

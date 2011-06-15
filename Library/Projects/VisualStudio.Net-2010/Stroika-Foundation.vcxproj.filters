@@ -31,11 +31,23 @@
     <Filter Include="Sources\Math">
       <UniqueIdentifier>{c0ded7bf-d414-4138-bf41-ce8dfe42c0b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Execution\OS_Win32">
-      <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Memory\OS_Win32">
       <UniqueIdentifier>{f6f48fae-3185-4b6c-8228-ba71ac92da20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Cryptography">
+      <UniqueIdentifier>{f853972f-222a-4134-89dd-771992a35d70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Database">
+      <UniqueIdentifier>{8b3a56e4-cb11-426d-966f-591815e96707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\IO\Network">
+      <UniqueIdentifier>{13c8d0c5-f17b-4427-b683-763b6acaef9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Execution\OS">
+      <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Execution\OS\Win32">
+      <UniqueIdentifier>{4aeb5339-ebc3-4aa8-a44b-749d9af47704}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,9 +102,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OS_Win32\WaitSupport.cpp">
-      <Filter>Sources\Execution\OS_Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.cpp">
       <Filter>Sources\Memory\OS_Win32</Filter>
     </ClCompile>
@@ -119,6 +128,36 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp">
       <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp">
+      <Filter>Sources\Cryptography</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp">
+      <Filter>Sources\Cryptography</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Optional.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp">
+      <Filter>Sources\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\ResourceAccessor.cpp">
+      <Filter>Sources\Execution\OS\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\WaitSupport.cpp">
+      <Filter>Sources\Execution\OS\Win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +224,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Basics.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS_Win32\WaitSupport.h">
-      <Filter>Sources\Execution\OS_Win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.h">
       <Filter>Sources\Memory\OS_Win32</Filter>
     </ClInclude>
@@ -218,6 +254,36 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_Win32_.h">
       <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h">
+      <Filter>Sources\Cryptography</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h">
+      <Filter>Sources\Cryptography</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h">
+      <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\ResourceAccessor.h">
+      <Filter>Sources\Execution\OS\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\WaitSupport.h">
+      <Filter>Sources\Execution\OS\Win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +363,15 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl">
+      <Filter>Sources\Cryptography</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl">
+      <Filter>Sources\Cryptography</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
