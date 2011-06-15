@@ -91,7 +91,7 @@ namespace	Stroika {
 					wchar_t							fLastNCharBuf_WCHAR[10];
 					bool							fLastNCharBuf_WCHARFlag;
 					TraceLastBufferedWriteTokenType	fLastNCharBuf_Token;
-					Time::TickCountType				fLastNCharBuf_WriteTickcount;
+					Time::DurationSecondsType		fLastNCharBuf_WriteTickcount;
 
 					nonvirtual	void	BufferNChars_ (size_t nChars, const char* p);
 					nonvirtual	void	BufferNChars_ (size_t nChars, const wchar_t* p);
