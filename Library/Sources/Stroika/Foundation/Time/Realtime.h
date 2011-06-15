@@ -10,9 +10,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
-//OBSOLETE			
-typedef	double	TickCountType;
-
 			typedef	double	DurationSecondsType;
 
 			DurationSecondsType	GetTickCount ();

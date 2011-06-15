@@ -58,7 +58,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Optional.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.cpp" />
@@ -103,7 +103,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
@@ -135,7 +135,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Basics.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\OS_Win32\Handle.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.inl" />

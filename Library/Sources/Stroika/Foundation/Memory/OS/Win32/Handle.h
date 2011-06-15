@@ -4,7 +4,7 @@
 #ifndef	_Stroika_Foundation_Memory_OS_Win32_Handle_h_
 #define	_Stroika_Foundation_Memory_OS_Win32_Handle_h_	1
 
-#include	"../../StroikaPreComp.h"
+#include	"../../../StroikaPreComp.h"
 
 #if		qPlatform_Windows
 	#include	<Windows.h>
@@ -12,31 +12,33 @@
 
 #include	<memory>
 
-#include	"../../Configuration/Basics.h"
+#include	"../../../Configuration/Basics.h"
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Memory {
-			namespace	OS_Win32 {
+			namespace	OS {
+				namespace	Win32 {
 
-				class	StackBasedHandleLocker {
-					public:
-						StackBasedHandleLocker (HANDLE h);
-						~StackBasedHandleLocker ();
-					private:
-						StackBasedHandleLocker (const StackBasedHandleLocker&);
-						const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&);
+					class	StackBasedHandleLocker {
+						public:
+							StackBasedHandleLocker (HANDLE h);
+							~StackBasedHandleLocker ();
+						private:
+							StackBasedHandleLocker (const StackBasedHandleLocker&);
+							const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&);
 
-					public:
-						nonvirtual	Byte*	GetPointer () const;
-						nonvirtual	size_t	GetSize () const;
+						public:
+							nonvirtual	Byte*	GetPointer () const;
+							nonvirtual	size_t	GetSize () const;
 
-					private:
-						HANDLE	fHandle;
-						Byte*	fPointer;
-				};
+						private:
+							HANDLE	fHandle;
+							Byte*	fPointer;
+					};
 
+				}
 			}
 		}
 	}
