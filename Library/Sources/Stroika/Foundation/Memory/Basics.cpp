@@ -42,16 +42,16 @@ using	Debug::TraceContextBumper;
 //	library.
 //		-- LGP 2009-05-26
 //
-//	#if		defined (_DEBUG)
+//	#if		qDebug
 //		#define	qOverrideOpNewDeleteForAccounting	1
 //	#endif
-	#if		defined (_DEBUG)
+	#if		qDebug
 		#define	qOverrideOpNewDeleteForAccounting	0
 	#endif
 #endif
 #ifndef	qOverrideOpNewDeleteForAccounting
 	// for LOGGING builds - which are RELEASE builds - turn on our override op-new
-	#if		defined (qTraceToFile) && !defined (_DEBUG)
+	#if		defined (qTraceToFile) && !qDebug
 		#if		qTraceToFile
 			//#define	qOverrideOpNewDeleteForAccounting	1
 			#define	qOverrideOpNewDeleteForAccounting	0
@@ -211,7 +211,7 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 			#if		qOverrideOpNewDeleteForAccounting
 				s.fTotalOutstandingAllocations = GetAllocator_ ().GetNetAllocationCount ();
 				s.fTotalOutstandingBytesAllocated = GetAllocator_ ().GetNetAllocatedByteCount ();
-			#elif	defined (_DEBUG)
+			#elif	qDebug
 				_CrtMemState	memState;
 				_CrtMemCheckpoint (&memState);
 				s.fTotalOutstandingAllocations = memState.lCounts[_NORMAL_BLOCK] + memState.lCounts[_CLIENT_BLOCK];
@@ -243,7 +243,7 @@ namespace	{
 	Memory::LeakTrackingGeneralPurposeAllocator::Snapshot	sLastSnapshot;
 }
 #endif
-#if		defined(_DEBUG)
+#if		qDebug
 namespace	{
 	_CrtMemState	sLastSnapshot;
 }
@@ -252,7 +252,7 @@ void	Memory::LeakChecker::ForceCheckpoint ()
 {
 	#if		qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
 		sLastSnapshot = GetAllocator_ ().GetSnapshot ();
-	#elif	defined(_DEBUG)
+	#elif	qDebug
 		_CrtMemCheckpoint (&sLastSnapshot);
 	#else
 		Assert (false);
@@ -264,7 +264,7 @@ void	Memory::LeakChecker::DumpLeaksSinceLastCheckpoint ()
 	TraceContextBumper	ctx (_T ("LeakChecker::DumpLeaksSinceLastCheckpoint"));
 	#if		qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
 		GetAllocator_ ().DUMPCurMemStats (sLastSnapshot);
-	#elif	defined(_DEBUG)
+	#elif	qDebug
 		_CrtMemState	memState;
 		_CrtMemCheckpoint (&memState);
 		_CrtMemState	diffState;

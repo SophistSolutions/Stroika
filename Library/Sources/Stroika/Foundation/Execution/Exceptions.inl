@@ -23,7 +23,7 @@ namespace	Stroika {
 				{
 					return fError;
 				}
-			inline	tstring	Win32ErrorException::LookupMessage () const
+			inline	TString	Win32ErrorException::LookupMessage () const
 				{
 					return LookupMessage (fError);
 				}
@@ -38,7 +38,7 @@ namespace	Stroika {
 				{
 					return fSECode;
 				}
-			inline	tstring	Win32StructuredException::LookupMessage () const
+			inline	TString	Win32StructuredException::LookupMessage () const
 				{
 					return LookupMessage (fSECode);
 				}
@@ -55,7 +55,7 @@ namespace	Stroika {
 				{
 					return fHResult;
 				}
-			inline	tstring	HRESULTErrorException::LookupMessage () const
+			inline	TString	HRESULTErrorException::LookupMessage () const
 				{
 					return LookupMessage (fHResult);
 				}
@@ -67,7 +67,7 @@ namespace	Stroika {
 				{
 					return fError;
 				}
-			inline	tstring	errno_ErrorException::LookupMessage () const
+			inline	TString	errno_ErrorException::LookupMessage () const
 				{
 					return LookupMessage (fError);
 				}
@@ -87,13 +87,13 @@ namespace	Stroika {
 
 		
 		//	class	FileBusyException
-			inline	FileBusyException::FileBusyException (const tstring& fileName):
+			inline	FileBusyException::FileBusyException (const TString& fileName):
 				fFileName (fileName)
 				{
 				}
 
 		//	class	FileFormatException
-			inline	FileFormatException::FileFormatException (const tstring& fileName):
+			inline	FileFormatException::FileFormatException (const TString& fileName):
 				fFileName (fileName)
 				{
 				}

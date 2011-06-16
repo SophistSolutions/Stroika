@@ -20,7 +20,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
-			using	Characters::tstring;
+			using	Characters::TString;
 
 
 			/*
@@ -121,7 +121,7 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
-					nonvirtual	wstring	Format (const tstring& format, LCID lcid = LOCALE_USER_DEFAULT) const;				// See GetDateFormat () format args
+					nonvirtual	wstring	Format (const TString& format, LCID lcid = LOCALE_USER_DEFAULT) const;				// See GetDateFormat () format args
 					nonvirtual	wstring	Format4XML () const;
 					nonvirtual	wstring	Format4JScript () const;
 					nonvirtual	wstring	LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;

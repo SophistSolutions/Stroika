@@ -26,7 +26,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	IO {
 
-			using	Characters::tstring;
+			using	Characters::TString;
 			using	Time::DateTime;
 
 			typedef	__int64	FileOffset_t;
@@ -35,11 +35,11 @@ namespace	Stroika {
 			// These GetSpecialDir_XXX routines always return a valid directory (if createIfNotPresent) - and
 			// it always ends in a '\\'
 			//
-			tstring	GetSpecialDir_MyDocuments (bool createIfNotPresent = true);
-			tstring	GetSpecialDir_AppData (bool createIfNotPresent = true);
-			tstring	GetSpecialDir_WinSxS ();	// empty string if doesn't exist
+			TString	GetSpecialDir_MyDocuments (bool createIfNotPresent = true);
+			TString	GetSpecialDir_AppData (bool createIfNotPresent = true);
+			TString	GetSpecialDir_WinSxS ();	// empty string if doesn't exist
 
-			tstring	GetSpecialDir_GetTempDir ();
+			TString	GetSpecialDir_GetTempDir ();
 
 
 
@@ -63,10 +63,10 @@ namespace	Stroika {
 			// list of exceptions. Probably should do separate handler so can customize messages...
 			class	FileAccessException : public Execution::StringException {
 				public:
-					FileAccessException (const tstring& fileName = tstring (), FileAccessMode fileAccessMode = eReadWrite_FAM);
+					FileAccessException (const TString& fileName = TString (), FileAccessMode fileAccessMode = eReadWrite_FAM);
 
 				public:
-					tstring			fFileName;
+					TString			fFileName;
 					FileAccessMode	fFileAccessMode;
 			};
 
@@ -89,51 +89,51 @@ namespace	Stroika {
 			// doesn't actually open the file. It's purely advisory. But its helpful to assure
 			// a consistent set of error reporting across differnt styles of opens. Just call this first,
 			// and it will throw exceptions if the file doesn't exist, or has access privileges issues.
-			void	CheckFileAccess (const tstring& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
+			void	CheckFileAccess (const TString& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
 
 
 
-			tstring	AssureDirectoryPathSlashTerminated (const tstring& dirPath);
+			TString	AssureDirectoryPathSlashTerminated (const TString& dirPath);
 
 			// map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
-			tstring	SafeFilenameChars (const tstring& s);
+			TString	SafeFilenameChars (const TString& s);
 
-			tstring	ResolveShortcut (const tstring& path2FileOrShortcut);
+			TString	ResolveShortcut (const TString& path2FileOrShortcut);
 
 			wstring	FileSizeToDisplayString (FileOffset_t bytes);
 
-			FileOffset_t	GetFileSize (const tstring& fileName);
-			DateTime		GetFileLastModificationDate (const tstring& fileName);
-			DateTime		GetFileLastAccessDate (const tstring& fileName);
+			FileOffset_t	GetFileSize (const TString& fileName);
+			DateTime		GetFileLastModificationDate (const TString& fileName);
+			DateTime		GetFileLastAccessDate (const TString& fileName);
 
-			void	SetFileAccessWideOpened (const tstring& filePathName);
+			void	SetFileAccessWideOpened (const TString& filePathName);
 
-			void	CreateDirectory (const tstring& directoryPath, bool createParentComponentsIfNeeded = true);
+			void	CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded = true);
 
-			void	CreateDirectoryForFile (const tstring& filePath);
+			void	CreateDirectoryForFile (const TString& filePath);
 
-			tstring	GetVolumeName (const tstring& driveLetterAbsPath);
+			TString	GetVolumeName (const TString& driveLetterAbsPath);
 
-			tstring	AssureLongFileName (const tstring& fileName);		// if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
+			TString	AssureLongFileName (const TString& fileName);		// if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
 
-			tstring	GetFileSuffix (const tstring& fileName);
-			tstring	GetFileBaseName (const tstring& pathName);		// get the base name (strippping path and suffix)
-			tstring	StripFileSuffix (const tstring& pathName);		// get the full path WITHOUT the file suffix at the end
-			tstring	GetFileDirectory (const tstring& pathName);		// get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
+			TString	GetFileSuffix (const TString& fileName);
+			TString	GetFileBaseName (const TString& pathName);		// get the base name (strippping path and suffix)
+			TString	StripFileSuffix (const TString& pathName);		// get the full path WITHOUT the file suffix at the end
+			TString	GetFileDirectory (const TString& pathName);		// get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
 
 			bool	FileExists (const TCHAR* filePath);
-			bool	FileExists (const tstring& filePath);
+			bool	FileExists (const TString& filePath);
 
 			// returns true iff given path exists, is accessible, and is a directory
 			bool	DirectoryExists (const TCHAR* filePath);
-			bool	DirectoryExists (const tstring& filePath);
+			bool	DirectoryExists (const TString& filePath);
 
-			vector<tstring>	FindFiles (const tstring& path, const tstring& fileNameToMatch = _T ("*.*"));
-			vector<tstring>	FindFilesOneDirUnder (const tstring& path, const tstring& fileNameToMatch = _T ("*.*"));
+			vector<TString>	FindFiles (const TString& path, const TString& fileNameToMatch = _T ("*.*"));
+			vector<TString>	FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch = _T ("*.*"));
 
-			void	DeleteAllFilesInDirectory (const tstring& path, bool ignoreErrors = true);
+			void	DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors = true);
 
-			void	CopyFile (const tstring& srcFile, const tstring& destPath);
+			void	CopyFile (const TString& srcFile, const TString& destPath);
 
 			void	WriteString (ostream& out, const wstring& s);
 			wstring	ReadString (istream& in);
@@ -148,7 +148,7 @@ namespace	Stroika {
 					DirectoryChangeWatcher (const DirectoryChangeWatcher&);		// declare but not defined, to prevent copies
 					void operator= (const DirectoryChangeWatcher&);				// ''
 				public:
-					DirectoryChangeWatcher (const tstring& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);
+					DirectoryChangeWatcher (const TString& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);
 					virtual ~DirectoryChangeWatcher ();
 
 				protected:
@@ -158,7 +158,7 @@ namespace	Stroika {
 					static	void	ThreadProc (void* lpParameter);
 
 				private:
-					tstring						fDirectory;
+					TString						fDirectory;
 					bool						fWatchSubTree;
 					Execution::SimpleThread	fThread;
 					HANDLE						fDoneEvent;
@@ -179,14 +179,14 @@ namespace	Stroika {
 				public:
 					static	AppTempFileManager&	Get ();
 				public:
-					nonvirtual	tstring	GetMasterTempDir () const;
+					nonvirtual	TString	GetMasterTempDir () const;
 
 				public:
-					nonvirtual	tstring	GetTempFile (const tstring& fileNameBase);
-					nonvirtual	tstring	GetTempDir (const tstring& fileNameBase);
+					nonvirtual	TString	GetTempFile (const TString& fileNameBase);
+					nonvirtual	TString	GetTempDir (const TString& fileNameBase);
 
 				private:
-					tstring	fTmpDir;
+					TString	fTmpDir;
 
 				private:
 					friend	class	Private::UsingModuleHelper;
@@ -196,16 +196,16 @@ namespace	Stroika {
 
 			class	TempFileLibrarian {
 				public:
-					TempFileLibrarian (const tstring& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel = true, bool deleteFilesOnDescruction = true);
+					TempFileLibrarian (const TString& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel = true, bool deleteFilesOnDescruction = true);
 					~TempFileLibrarian ();
 
 				public:
-					nonvirtual	tstring	GetTempFile (const tstring& fileNameBase);
-					nonvirtual	tstring	GetTempDir (const tstring& fileNameBase);
+					nonvirtual	TString	GetTempFile (const TString& fileNameBase);
+					nonvirtual	TString	GetTempDir (const TString& fileNameBase);
 
 				private:
-					set<tstring>					fFiles;
-					tstring							fPrivateDirectory;
+					set<TString>					fFiles;
+					TString							fPrivateDirectory;
 					bool							fMakeTMPDIRRel;
 					bool							fDeleteFilesOnDescruction;
 					Execution::CriticalSection	fCriticalSection;
@@ -217,13 +217,13 @@ namespace	Stroika {
 					ScopedTmpDir (const ScopedTmpDir&);
 					const ScopedTmpDir& operator= (const ScopedTmpDir&);
 				public:
-					ScopedTmpDir (const tstring& fileNameBase);
-					ScopedTmpDir (TempFileLibrarian& tfl, const tstring& fileNameBase);
+					ScopedTmpDir (const TString& fileNameBase);
+					ScopedTmpDir (TempFileLibrarian& tfl, const TString& fileNameBase);
 					~ScopedTmpDir ();
 				public:
-					operator tstring () const;
+					operator TString () const;
 				private:
-					tstring		fTmpDir;
+					TString		fTmpDir;
 			};
 
 			class	ScopedTmpFile {
@@ -231,13 +231,13 @@ namespace	Stroika {
 					ScopedTmpFile (const ScopedTmpFile&);
 					const ScopedTmpFile& operator= (const ScopedTmpFile&);
 				public:
-					ScopedTmpFile (const tstring& fileNameBase);
-					ScopedTmpFile (TempFileLibrarian& tfl, const tstring& fileNameBase);
+					ScopedTmpFile (const TString& fileNameBase);
+					ScopedTmpFile (TempFileLibrarian& tfl, const TString& fileNameBase);
 					~ScopedTmpFile ();
 				public:
-					operator tstring () const;
+					operator TString () const;
 				private:
-					tstring	fTmpFile;
+					TString	fTmpFile;
 			};
 
 
@@ -258,7 +258,7 @@ namespace	Stroika {
 			 */
 			class	ThroughTmpFileWriter {
 				public:
-					ThroughTmpFileWriter (const tstring& realFileName, const tstring& tmpSuffix = _T (".tmp"));
+					ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix = _T (".tmp"));
 					~ThroughTmpFileWriter ();
 
 				private:	// NOT IMPLEMENTED
@@ -266,7 +266,7 @@ namespace	Stroika {
 					const ThroughTmpFileWriter& operator= (const ThroughTmpFileWriter&);
 
 				public:
-					nonvirtual operator tstring () const;
+					nonvirtual operator TString () const;
 
 				public:
 					// tmpfile must have been closed the time we call Commit, and it atomicly renames the file
@@ -274,15 +274,15 @@ namespace	Stroika {
 					nonvirtual	void	Commit ();
 
 				private:
-					tstring	fRealFilePath;
-					tstring	fTmpFilePath;
+					TString	fRealFilePath;
+					TString	fTmpFilePath;
 			};
 
 
 
 
-			tstring	GetEXEDir ();
-			tstring	GetEXEPath ();
+			TString	GetEXEDir ();
+			TString	GetEXEPath ();
 
 
 			class	FileReader {
@@ -331,7 +331,7 @@ namespace	Stroika {
 
 			class	DirectoryContentsIterator {
 				public:
-					DirectoryContentsIterator (const tstring& pathExpr);		// can include wildcards - see ::FindFirstFile docs
+					DirectoryContentsIterator (const TString& pathExpr);		// can include wildcards - see ::FindFirstFile docs
 					~DirectoryContentsIterator ();
 				private:
 					DirectoryContentsIterator (const DirectoryContentsIterator&);
@@ -339,13 +339,13 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	bool	NotAtEnd () const;
-					nonvirtual	tstring	operator *() const;
+					nonvirtual	TString	operator *() const;
 					nonvirtual	void	operator++ ();
 
 				private:
 					HANDLE			fHandle;
 					WIN32_FIND_DATA	fFindFileData;
-					tstring			fDirectory;
+					TString			fDirectory;
 			};
 
 

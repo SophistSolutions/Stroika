@@ -226,7 +226,7 @@ namespace	Stroika {
 
 			inline	wstring	ASCIIStringToWide (const string& s)
 				{
-					#if		defined (_DEBUG)
+					#if		qDebug
 						for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
 							Assert (isascii (*i));
 						}
@@ -235,52 +235,12 @@ namespace	Stroika {
 				}
 			inline	string	WideStringToASCII (const wstring& s)
 				{
-					#if		defined (_DEBUG)
+					#if		qDebug
 						for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
 							Assert (isascii (*i));
 						}
 					#endif
 					return string (s.begin (), s.end ());
-				}
-			inline	string	tstring2ANSI (const tstring& s)
-				{
-					#if		defined (UNICODE)
-						return WideStringToACP (s);
-					#else
-						return s;
-					#endif
-				}
-			inline	wstring	tstring2Wide (const tstring& s)
-				{
-					#if		defined (UNICODE)
-						return s;
-					#else
-						return ACPStringToWide (s);
-					#endif
-				}
-			inline	tstring	ANSI2tstring (const string& s)
-				{
-					#if		defined (UNICODE)
-						return ACPStringToWide (s);
-					#else
-						return s;
-					#endif
-				}
-			inline	tstring	Wide2tstring (const wstring& s)
-				{
-					#if		defined (UNICODE)
-						return s;
-					#else
-						return WideStringToACP (s);
-					#endif
-				}
-			inline	tstring	totstring (const string& s)
-				{
-					return ANSI2tstring (s);
-				}
-			inline	tstring	totstring (const wstring& s)
-				{
-					return Wide2tstring (s);
 				}
 			inline	string	WideStringToACP (const wstring& ws)
 				{

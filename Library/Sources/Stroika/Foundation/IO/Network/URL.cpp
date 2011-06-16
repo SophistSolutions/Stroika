@@ -218,7 +218,7 @@ URLCracker::URLCracker (const wstring& w):
 	}
 
 
-#if		defined (_DEBUG)
+#if		qDebug
 	{
 		wstring	testProtocol;
 		wstring	testHost;

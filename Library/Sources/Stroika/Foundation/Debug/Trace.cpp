@@ -104,36 +104,36 @@ namespace	{
 
 
 #if		qTraceToFile
-tstring	Emitter::GetTraceFileName () const
+TString	Emitter::GetTraceFileName () const
 {
-	static	tstring	sTraceFileName;
+	static	TString	sTraceFileName;
 	if (sTraceFileName.empty ()) {
 		// Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
 		// (could fix of course, but I'm not sure desirable - reasonable defaults)
 		//
 		// Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
-		tstring	mfname;
+		TString	mfname;
 		{
 			TCHAR	mfbuf[MAX_PATH];
 			memset (mfbuf, 0, sizeof (mfbuf));
 			Verify (::GetModuleFileName (NULL, mfbuf, NEltsOf (mfbuf)));
 			mfname = mfbuf;
 			size_t i = mfname.rfind ('\\');
-			if (i != tstring::npos) {
+			if (i != TString::npos) {
 				mfname = mfname.substr (i + 1);
 			}
 			i = mfname.rfind ('.');
-			if (i != tstring::npos) {
+			if (i != TString::npos) {
 				mfname.erase (i);
 			}
-			for (tstring::iterator i = mfname.begin (); i != mfname.end (); ++i) {
+			for (TString::iterator i = mfname.begin (); i != mfname.end (); ++i) {
 				if (*i == ' ') {
 					*i = '-';
 				}
 			}
 		}
-		tstring nowstr	=	totstring (Time::DateTime::Now ().Format4XML ());
-		for (tstring::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
+		TString nowstr	=	totstring (Time::DateTime::Now ().Format4XML ());
+		for (TString::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
 			if (*i == ':') {
 				*i = '-';
 			}

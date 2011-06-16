@@ -25,7 +25,7 @@ namespace	Stroika {
 namespace	Execution {
 
 
-	using	Characters::tstring;
+	using	Characters::TString;
 
 
 	// Throw this when an error has already been reported - so that it isn't reported again
@@ -49,8 +49,8 @@ namespace	Execution {
 			static	void	DoThrow (DWORD error);
 
 		public:
-			static	tstring	LookupMessage (DWORD hr);
-			nonvirtual	tstring	LookupMessage () const;
+			static	TString	LookupMessage (DWORD hr);
+			nonvirtual	TString	LookupMessage () const;
 
 		private:
 			DWORD	fError;
@@ -76,8 +76,8 @@ namespace	Execution {
 			operator unsigned int () const;
 
 		public:
-			static	tstring	LookupMessage (unsigned int n);
-			nonvirtual	tstring	LookupMessage () const;
+			static	TString	LookupMessage (unsigned int n);
+			nonvirtual	TString	LookupMessage () const;
 
 		public:
 			static	void	RegisterHandler ();
@@ -93,8 +93,8 @@ namespace	Execution {
 			operator HRESULT () const;
 
 		public:
-			static	tstring	LookupMessage (HRESULT hr);
-			nonvirtual	tstring	LookupMessage () const;
+			static	TString	LookupMessage (HRESULT hr);
+			nonvirtual	TString	LookupMessage () const;
 
 		private:
 			HRESULT	fHResult;
@@ -118,8 +118,8 @@ namespace	Execution {
 			operator errno_t () const;
 
 		public:
-			static	tstring	LookupMessage (errno_t e);
-			nonvirtual	tstring	LookupMessage () const;
+			static	TString	LookupMessage (errno_t e);
+			nonvirtual	TString	LookupMessage () const;
 
 		public:
 			// throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
@@ -158,18 +158,18 @@ namespace	Execution {
 
 	class	FileBusyException {
 		public:
-			FileBusyException (const tstring& fileName = tstring ());
+			FileBusyException (const TString& fileName = TString ());
 
 		public:
-			tstring	fFileName;
+			TString	fFileName;
 	};
 
 	class	FileFormatException {
 		public:
-			FileFormatException (const tstring& fileName);
+			FileFormatException (const TString& fileName);
 
 		public:
-			tstring	fFileName;
+			TString	fFileName;
 	};
 
 

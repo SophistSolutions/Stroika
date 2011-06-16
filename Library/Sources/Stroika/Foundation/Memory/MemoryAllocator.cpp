@@ -35,14 +35,14 @@ namespace	{
 //#define	qSuperAssertChecks_MemAllocator	0
 //#define	qSuperAssertChecks_MemAllocator	1
 #ifndef	qSuperAssertChecks_MemAllocator
-#define	qSuperAssertChecks_MemAllocator	defined (_DEBUG)
+#define	qSuperAssertChecks_MemAllocator	qDebug
 #endif
 
 namespace	{
 	#if		qSuperAssertChecks_MemAllocator
 	inline	void	SUPER_ASSERT_ (bool t)
 		{
-			#if		defined (_DEBUG)
+			#if		qDebug
 				Assert (t);
 			#else
 				if (not t) {

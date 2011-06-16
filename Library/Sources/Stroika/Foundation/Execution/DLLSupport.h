@@ -11,19 +11,19 @@
 	#include	<Windows.h>
 #endif
 
-#include	"../Characters/StringUtils.h"
+#include	"../Characters/TString.h"
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
 
-			using	Characters::tstring;
+			using	Characters::TString;
 
 			class	DLLLoader {
 				public:
 					DLLLoader (const TCHAR* dllName);
-					DLLLoader (const TCHAR* dllName, const vector<tstring>& searchPath);
+					DLLLoader (const TCHAR* dllName, const vector<TString>& searchPath);
 					~DLLLoader ();
 
 				public:

@@ -13,7 +13,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Debug {
 
-			#if		defined (_DEBUG)
+			#if		qDebug
 				/*
 				@DESCRIPTION:	<p>Led makes very heavy use of assertions (to some extent inspired and patterend after
 					Bertrand Meyers Eiffel assertion mechanism). Assertions are logical statements about function parameters,
@@ -146,7 +146,7 @@ namespace	Stroika {
 				one assertion test...</p>
 					<p>See @'GetAssertionHandler'</p>
 			*/
-			#if		defined (_DEBUG)
+			#if		qDebug
 				#define	Verify(c)		Assert (c)
 			#else
 				#define	Verify(c)		(c)

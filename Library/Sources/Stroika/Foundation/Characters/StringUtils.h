@@ -16,6 +16,7 @@
 
 #include	"../Configuration/Basics.h"
 #include	"CodePage.h"
+//#include	"TString.h"
 
 
 
@@ -75,17 +76,23 @@ namespace	Stroika {
 			string	StripTrailingCharIfAny (const string& s, char c);
 			wstring	StripTrailingCharIfAny (const wstring& s, wchar_t c);
 
-			// Effectively the same as string, or wstring, depending on the value of TCHAR (char, or wchar_t).
-			typedef	basic_string<TCHAR, char_traits<TCHAR>, allocator<TCHAR> >	tstring;
+#if 0
+// Effectively the same as string, or wstring, depending on the value of TCHAR (char, or wchar_t).
+typedef	basic_string<TCHAR, char_traits<TCHAR>, allocator<TCHAR> >	TString;
+#endif
 
-			string	tstring2ANSI (const tstring& s);
-			wstring	tstring2Wide (const tstring& s);
 
-			tstring	ANSI2tstring (const string& s);
-			tstring	Wide2tstring (const wstring& s);
+#if 0
 
-			tstring	totstring (const string& s);
-			tstring	totstring (const wstring& s);
+			string	tstring2ANSI (const TString& s);
+			wstring	tstring2Wide (const TString& s);
+
+			TString	ANSI2tstring (const string& s);
+			TString	Wide2tstring (const wstring& s);
+
+			TString	totstring (const string& s);
+			TString	totstring (const wstring& s);
+#endif
 
 
 			wstring			MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);

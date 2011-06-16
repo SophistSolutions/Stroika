@@ -68,19 +68,19 @@ IO::Private::UsingModuleHelper::~UsingModuleHelper ()
  ********************* IO::GetSpecialDir_MyDocuments *********************
  ********************************************************************************
  */
-tstring	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
+TString	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 {
 	TCHAR	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
 	ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
-	tstring	result = fileBuf;
+	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {
-		result = _T("c:");	// shouldn't happen
+		result = TSTR("c:");	// shouldn't happen
 	}
 	// assure ends in '\'
 	if (result[result.size ()-1] != '\\') {
-		result += _T("\\");
+		result += TSTR("\\");
 	}
 	Ensure (result[result.size ()-1] == '\\');
 	Ensure (not createIfNotPresent or DirectoryExists (result));
@@ -97,19 +97,19 @@ tstring	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
  ********************* IO::GetSpecialDir_AppData *************************
  ********************************************************************************
  */
-tstring	IO::GetSpecialDir_AppData (bool createIfNotPresent)
+TString	IO::GetSpecialDir_AppData (bool createIfNotPresent)
 {
 	TCHAR	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
 	Verify (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
-	tstring	result = fileBuf;
+	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {
-		result = _T("c:");	// shouldn't happen
+		result = TSTR ("c:");	// shouldn't happen
 	}
 	// assure ends in '\'
 	if (result[result.size ()-1] != '\\') {
-		result += _T("\\");
+		result += TSTR ("\\");
 	}
 	Ensure (result[result.size ()-1] == '\\');
 	Ensure (not createIfNotPresent or DirectoryExists (result));
@@ -126,12 +126,12 @@ tstring	IO::GetSpecialDir_AppData (bool createIfNotPresent)
  ********************** IO::GetSpecialDir_WinSxS *************************
  ********************************************************************************
  */
-tstring	IO::GetSpecialDir_WinSxS ()
+TString	IO::GetSpecialDir_WinSxS ()
 {
 	TCHAR	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
 	Verify (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_WINDOWS, false));
-	tstring	result = fileBuf;
+	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {
 		return result;
@@ -155,9 +155,9 @@ tstring	IO::GetSpecialDir_WinSxS ()
  ********************** IO::GetSpecialDir_GetTempDir *********************
  ********************************************************************************
  */
-tstring	IO::GetSpecialDir_GetTempDir ()
+TString	IO::GetSpecialDir_GetTempDir ()
 {
-	tstring	tempPath;
+	TString	tempPath;
 	TCHAR	buf[1024];
 	if (::GetTempPath (NEltsOf (buf), buf) == 0) {
 		tempPath = _T ("c:\\Temp\\");
@@ -178,7 +178,7 @@ tstring	IO::GetSpecialDir_GetTempDir ()
  ********************************************************************************
  */
 namespace	{
-	wstring	mkMessage_ (const tstring& fileName, FileAccessMode fileAccessMode)
+	wstring	mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode)
 		{
 			wstring	message;
 			if ((fileAccessMode & eRead_FAM) and (fileAccessMode & eWrite_FAM)) {
@@ -199,7 +199,7 @@ namespace	{
 			return message;
 		}
 }
-FileAccessException::FileAccessException (const tstring& fileName, FileAccessMode fileAccessMode)
+FileAccessException::FileAccessException (const TString& fileName, FileAccessMode fileAccessMode)
 	:StringException (mkMessage_ (fileName, fileAccessMode))
 	,fFileName (fileName)
 	,fFileAccessMode (fileAccessMode)
@@ -213,7 +213,7 @@ FileAccessException::FileAccessException (const tstring& fileName, FileAccessMod
  ************************* IO::CheckFileAccess ***************************
  ********************************************************************************
  */
-void	IO::CheckFileAccess (const tstring& fileFullPath, bool checkCanRead, bool checkCanWrite)
+void	IO::CheckFileAccess (const TString& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
 	// quick hack - not fully implemented - but since advsiory only - not too important...
 
@@ -235,7 +235,7 @@ void	IO::CheckFileAccess (const tstring& fileFullPath, bool checkCanRead, bool c
  *************** IO::AssureDirectoryPathSlashTerminated ******************
  ********************************************************************************
  */
-tstring	IO::AssureDirectoryPathSlashTerminated (const tstring& dirPath)
+TString	IO::AssureDirectoryPathSlashTerminated (const TString& dirPath)
 {
 	if (dirPath.empty ()) {
 		Assert (false);	// not sure if this is an error or not. Not sure how code used.
@@ -263,7 +263,7 @@ tstring	IO::AssureDirectoryPathSlashTerminated (const tstring& dirPath)
  ************************ IO::SafeFilenameChars **************************
  ********************************************************************************
  */
-tstring	IO::SafeFilenameChars (const tstring& s)
+TString	IO::SafeFilenameChars (const TString& s)
 {
 	wstring	tmp	=	tstring2Wide (s);	// analyze as wide-char string so we don't mis-identify
 										// characters (by looking at lead bytes etc)
@@ -290,7 +290,7 @@ Again:
  ************************** IO::ResolveShortcut **************************
  ********************************************************************************
  */
-tstring	IO::ResolveShortcut (const tstring& path2FileOrShortcut)
+TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)
 {
 	// NB: this requires COM, and for now - I don't want the support module depending on the COM module,
 	// so just allow this to fail if COM isn't initialized.
@@ -385,7 +385,7 @@ wstring	IO::FileSizeToDisplayString (FileOffset_t bytes)
  ****************************** IO::GetFileSize **************************
  ********************************************************************************
  */
-FileOffset_t	IO::GetFileSize (const tstring& fileName)
+FileOffset_t	IO::GetFileSize (const TString& fileName)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -403,7 +403,7 @@ FileOffset_t	IO::GetFileSize (const tstring& fileName)
  ********************** IO::GetFileLastModificationDate ******************
  ********************************************************************************
  */
-DateTime		IO::GetFileLastModificationDate (const tstring& fileName)
+DateTime		IO::GetFileLastModificationDate (const TString& fileName)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -421,7 +421,7 @@ DateTime		IO::GetFileLastModificationDate (const tstring& fileName)
  ************************ IO::GetFileLastAccessDate **********************
  ********************************************************************************
  */
-DateTime			IO::GetFileLastAccessDate (const tstring& fileName)
+DateTime			IO::GetFileLastAccessDate (const TString& fileName)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -443,7 +443,7 @@ DateTime			IO::GetFileLastAccessDate (const tstring& fileName)
  *		Add 'Everyone' to have FULL ACCESS to the given argument file
  *
  */
-void	IO::SetFileAccessWideOpened (const tstring& filePathName)
+void	IO::SetFileAccessWideOpened (const TString& filePathName)
 {
 	static	PACL pACL = NULL;	// Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
 	if (pACL == NULL) {
@@ -500,7 +500,7 @@ void	IO::SetFileAccessWideOpened (const tstring& filePathName)
  ************************* IO::CreateDirectory ***************************
  ********************************************************************************
  */
-void	IO::CreateDirectory (const tstring& directoryPath, bool createParentComponentsIfNeeded)
+void	IO::CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded)
 {
 	if (createParentComponentsIfNeeded) {
 		// walk path and break into parts, and from top down - try to create parent directory structure.
@@ -508,7 +508,7 @@ void	IO::CreateDirectory (const tstring& directoryPath, bool createParentCompone
 		// CreateDirectory call.
 		size_t	index	=	directoryPath.find (_T ("\\"));
 		while (index != -1 and index + 1 < directoryPath.length ()) {
-			tstring	parentPath = directoryPath.substr (0, index);
+			TString	parentPath = directoryPath.substr (0, index);
 			IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
 			index = directoryPath.find ('\\', index+1);
 		}
@@ -533,7 +533,7 @@ void	IO::CreateDirectory (const tstring& directoryPath, bool createParentCompone
  ****************** IO::CreateDirectoryForFile ***************************
  ********************************************************************************
  */
-void	IO::CreateDirectoryForFile (const tstring& filePath)
+void	IO::CreateDirectoryForFile (const TString& filePath)
 {
 	if (filePath.empty ()) {
 		Execution::DoThrow (Execution::Win32ErrorException (ERROR_FILE_NOT_FOUND));
@@ -555,7 +555,7 @@ void	IO::CreateDirectoryForFile (const tstring& filePath)
  *************************** IO::GetVolumeName ***************************
  ********************************************************************************
  */
-tstring	IO::GetVolumeName (const tstring& driveLetterAbsPath)
+TString	IO::GetVolumeName (const TString& driveLetterAbsPath)
 {
 	// SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
 	AdjustSysErrorMode	errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
@@ -578,7 +578,7 @@ tstring	IO::GetVolumeName (const tstring& driveLetterAbsPath)
 	if (result) {
 		return volNameBuf;
 	}
-	return tstring ();
+	return TString ();
 }
 
 
@@ -590,14 +590,14 @@ tstring	IO::GetVolumeName (const tstring& driveLetterAbsPath)
  ********************** IO::AssureLongFileName ***************************
  ********************************************************************************
  */
-tstring	IO::AssureLongFileName (const tstring& fileName)
+TString	IO::AssureLongFileName (const TString& fileName)
 {
 	DWORD	r	=	::GetLongPathName (fileName.c_str (), NULL, 0);
 	if (r != 0) {
 		SmallStackBuffer<TCHAR>	buf (r);
 		r = ::GetLongPathName (fileName.c_str (), buf, r);
 		if (r != 0) {
-			return tstring (buf);
+			return TString (buf);
 		}
 	}
 	return fileName;
@@ -612,9 +612,9 @@ tstring	IO::AssureLongFileName (const tstring& fileName)
  *************************** IO::GetFileSuffix ***************************
  ********************************************************************************
  */
-tstring	IO::GetFileSuffix (const tstring& fileName)
+TString	IO::GetFileSuffix (const TString& fileName)
 {
-	tstring	useFName	=	fileName;
+	TString	useFName	=	fileName;
 
 	{
 		TCHAR	fNameBuf[4 * MAX_PATH ];
@@ -643,9 +643,9 @@ tstring	IO::GetFileSuffix (const tstring& fileName)
  ************************* IO::GetFileBaseName ***************************
  ********************************************************************************
  */
-tstring	IO::GetFileBaseName (const tstring& pathName)
+TString	IO::GetFileBaseName (const TString& pathName)
 {
-	tstring	useFName	=	pathName;
+	TString	useFName	=	pathName;
 
 	{
 		TCHAR	fNameBuf[4 * MAX_PATH ];
@@ -675,10 +675,10 @@ tstring	IO::GetFileBaseName (const tstring& pathName)
  ************************* IO::StripFileSuffix ***************************
  ********************************************************************************
  */
-tstring	IO::StripFileSuffix (const tstring& pathName)
+TString	IO::StripFileSuffix (const TString& pathName)
 {
-	tstring	useFName	=	pathName;
-	tstring	fileSuffix	=	GetFileSuffix (pathName);
+	TString	useFName	=	pathName;
+	TString	fileSuffix	=	GetFileSuffix (pathName);
 	if (useFName.length () > fileSuffix.length ()) {
 		return useFName.substr (0, useFName.length () - fileSuffix.length ());
 	}
@@ -697,12 +697,12 @@ tstring	IO::StripFileSuffix (const tstring& pathName)
  ************************* IO::GetFileDirectory **************************
  ********************************************************************************
  */
-tstring	IO::GetFileDirectory (const tstring& pathName)
+TString	IO::GetFileDirectory (const TString& pathName)
 {
 	// could use splitpath, but this maybe better, since works with \\UNCNAMES
-	tstring	tmp		=	pathName;
+	TString	tmp		=	pathName;
 	size_t	idx		=	tmp.rfind ('\\');
-	if (idx != tstring::npos) {
+	if (idx != TString::npos) {
 		tmp.erase (idx + 1);
 	}
 	return tmp;
@@ -729,7 +729,7 @@ bool	IO::FileExists (const TCHAR* filePath)
 	return not (attribs & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-bool	IO::FileExists (const tstring& filePath)
+bool	IO::FileExists (const TString& filePath)
 {
 	return FileExists (filePath.c_str ());
 }
@@ -753,7 +753,7 @@ bool	IO::DirectoryExists (const TCHAR* filePath)
 	return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-bool	IO::DirectoryExists (const tstring& filePath)
+bool	IO::DirectoryExists (const TString& filePath)
 {
 	return DirectoryExists (filePath.c_str ());
 }
@@ -769,7 +769,7 @@ bool	IO::DirectoryExists (const tstring& filePath)
  ******************************** IO::CopyFile ***************************
  ********************************************************************************
  */
-void	IO::CopyFile (const tstring& srcFile, const tstring& destPath)
+void	IO::CopyFile (const TString& srcFile, const TString& destPath)
 {
 // see if can be/should be rewritten to use Win32 API of same name!!!
 //
@@ -794,21 +794,21 @@ void	IO::CopyFile (const tstring& srcFile, const tstring& destPath)
  ****************************** IO::FindFiles ****************************
  ********************************************************************************
  */
-vector<tstring>	IO::FindFiles (const tstring& path, const tstring& fileNameToMatch)
+vector<TString>	IO::FindFiles (const TString& path, const TString& fileNameToMatch)
 {
-	vector<tstring>	result;
+	vector<TString>	result;
 	if (path.empty ()) {
 		return result;
 	}
-	tstring	usePath			=	AssureDirectoryPathSlashTerminated (path);
-	tstring	matchFullPath	=	usePath + (fileNameToMatch.empty ()? _T("*"): fileNameToMatch);
+	TString	usePath			=	AssureDirectoryPathSlashTerminated (path);
+	TString	matchFullPath	=	usePath + (fileNameToMatch.empty ()? TSTR ("*"): fileNameToMatch);
 	WIN32_FIND_DATA fd;
 	memset (&fd, 0, sizeof (fd));
 	HANDLE hFind = ::FindFirstFile (matchFullPath.c_str (), &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		try {
 			do {
-				tstring fileName = fd.cFileName;
+				TString fileName = fd.cFileName;
 				if (not (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 					result.push_back (usePath + fileName);
 				}
@@ -835,33 +835,33 @@ vector<tstring>	IO::FindFiles (const tstring& path, const tstring& fileNameToMat
  ************************** IO::FindFilesOneDirUnder *********************
  ********************************************************************************
  */
-vector<tstring>	IO::FindFilesOneDirUnder (const tstring& path, const tstring& fileNameToMatch)
+vector<TString>	IO::FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch)
 {
 	if (path.empty ()) {
-		return vector<tstring> ();
+		return vector<TString> ();
 	}
 
-	set<tstring>	resultSet;
-	tstring	usePath	=	AssureDirectoryPathSlashTerminated (path);
+	set<TString>	resultSet;
+	TString	usePath	=	AssureDirectoryPathSlashTerminated (path);
 	WIN32_FIND_DATA fd;
 	memset (&fd, 0, sizeof (fd));
 	HANDLE hFind = ::FindFirstFile ((usePath + _T ("*")).c_str (), &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
-			tstring fileName = (LPCTSTR) &fd.cFileName;
+			TString fileName = (LPCTSTR) &fd.cFileName;
 			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				tstring fileName = (LPCTSTR) &fd.cFileName;
-				const	tstring	kDOT	=	_T (".");
-				const	tstring	kDOTDOT	=	_T ("..");
+				TString fileName = (LPCTSTR) &fd.cFileName;
+				const	TString	kDOT	=	_T (".");
+				const	TString	kDOTDOT	=	_T ("..");
 				if ((fileName != kDOT) and (fileName != kDOTDOT)) {
-					vector<tstring>	subdirFiles	=	FindFiles (usePath + fileName, fileNameToMatch);
-					resultSet = resultSet + set<tstring> (subdirFiles.begin (), subdirFiles.end ());
+					vector<TString>	subdirFiles	=	FindFiles (usePath + fileName, fileNameToMatch);
+					resultSet = resultSet + set<TString> (subdirFiles.begin (), subdirFiles.end ());
 				}
 			}
 		} while (::FindNextFile (hFind, &fd));
 		::FindClose (hFind);
 	}
-	return vector<tstring> (resultSet.begin (), resultSet.end ());
+	return vector<TString> (resultSet.begin (), resultSet.end ());
 }
 
 
@@ -876,12 +876,12 @@ vector<tstring>	IO::FindFilesOneDirUnder (const tstring& path, const tstring& fi
  ****************** IO::DeleteAllFilesInDirectory ************************
  ********************************************************************************
  */
-void	IO::DeleteAllFilesInDirectory (const tstring& path, bool ignoreErrors)
+void	IO::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
 {
 	if (path.empty ()) {
 		Execution::DoThrow (Execution::Win32ErrorException (ERROR_INVALID_NAME));
 	}
-	tstring	dir2Use	=	AssureDirectoryPathSlashTerminated (path);
+	TString	dir2Use	=	AssureDirectoryPathSlashTerminated (path);
 
 	WIN32_FIND_DATA	fd;
 	(void)::memset (&fd, 0, sizeof (fd));
@@ -889,7 +889,7 @@ void	IO::DeleteAllFilesInDirectory (const tstring& path, bool ignoreErrors)
 	if (hFind != INVALID_HANDLE_VALUE) {
 		try {
 			do {
-				tstring	fileName = fd.cFileName;
+				TString	fileName = fd.cFileName;
 				if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 					if ((fileName != _T (".")) and (fileName != _T (".."))) {
 						DeleteAllFilesInDirectory (dir2Use + fileName + _T ("\\"), ignoreErrors);
@@ -1019,7 +1019,7 @@ void	IO::WriteBytes (ostream& out, const vector<Byte>& s)
  ********************** IO::DirectoryChangeWatcher ***********************
  ********************************************************************************
  */
-IO::DirectoryChangeWatcher::DirectoryChangeWatcher (const tstring& directoryName, bool watchSubTree, DWORD notifyFilter):
+IO::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& directoryName, bool watchSubTree, DWORD notifyFilter):
 	fDirectory (directoryName),
 	fWatchSubTree (watchSubTree),
 	fThread (),
@@ -1078,27 +1078,27 @@ void	IO::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 AppTempFileManager::AppTempFileManager ():
 	fTmpDir ()
 {
-	tstring	tmpDir	=	GetSpecialDir_GetTempDir ();
+	TString	tmpDir	=	GetSpecialDir_GetTempDir ();
 
 	TCHAR	exePath[MAX_PATH];
 	memset (exePath, 0, sizeof exePath);
 	Verify (::GetModuleFileName (NULL, exePath, NEltsOf (exePath)));
 
-	tstring	exeFileName	=	exePath;
+	TString	exeFileName	=	exePath;
 	{
 		size_t	i	=	exeFileName.rfind (_T ("\\"));
-		if (i != tstring::npos) {
+		if (i != TString::npos) {
 			exeFileName = exeFileName.substr (i + 1);
 		}
 		// strip trailing .EXE
 		i = exeFileName.rfind ('.');
-		if (i != tstring::npos) {
+		if (i != TString::npos) {
 			exeFileName = exeFileName.erase (i);
 		}
 		// no biggie, but avoid spaces in tmpfile path name (but dont try too hard, should be
 		// harmless)
 		//	-- LGP 2009-08-16
-		for (tstring::iterator i = exeFileName.begin (); i != exeFileName.end (); ++i) {
+		for (TString::iterator i = exeFileName.begin (); i != exeFileName.end (); ++i) {
 			if (*i == ' ') {
 				*i = '-';
 			}
@@ -1114,7 +1114,7 @@ AppTempFileManager::AppTempFileManager ():
 	tmpDir += _T ("HealthFrameWorks\\");
 	CreateDirectory (tmpDir);
 	for (int i = 0; i < INT_MAX; ++i) {
-		tstring	d	=	tmpDir + Format (_T ("%s-%d-%d\\"), exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
+		TString	d	=	tmpDir + Format (_T ("%s-%d-%d\\"), exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
 		if (not ::CreateDirectory (d.c_str (), NULL)) {
 			DWORD error = ::GetLastError ();
 			if (error == ERROR_ALREADY_EXISTS) {
@@ -1140,9 +1140,9 @@ AppTempFileManager::~AppTempFileManager ()
 	Verify (::RemoveDirectory (fTmpDir.c_str ()));
 }
 
-tstring	AppTempFileManager::GetTempFile (const tstring& fileNameBase)
+TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 {
-	tstring	fn	=	AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
+	TString	fn	=	AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
 	IO::CreateDirectoryForFile (fn);
 
 	int	suffixStart = fn.rfind ('.');
@@ -1152,7 +1152,7 @@ tstring	AppTempFileManager::GetTempFile (const tstring& fileNameBase)
 	}
 	int	attempts = 0;
 	while (attempts < 5) {
-		tstring	s = fn;
+		TString	s = fn;
 		char	buf[100];
 		sprintf_s (buf, "%d", ::rand ());
 		s.insert (suffixStart, totstring (buf));
@@ -1168,13 +1168,13 @@ tstring	AppTempFileManager::GetTempFile (const tstring& fileNameBase)
 	Execution::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
-tstring	AppTempFileManager::GetTempDir (const tstring& fileNameBase)
+TString	AppTempFileManager::GetTempDir (const TString& fileNameBase)
 {
-	tstring	fn	=	AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
+	TString	fn	=	AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
 
 	int	attempts = 0;
 	while (attempts < 5) {
-		tstring	s = fn;
+		TString	s = fn;
 		char	buf[100];
 		(void)::sprintf_s (buf, "%d\\", ::rand ());
 		s.append (totstring  (buf));
@@ -1200,7 +1200,7 @@ tstring	AppTempFileManager::GetTempDir (const tstring& fileNameBase)
  **************************** TempFileLibrarian *********************************
  ********************************************************************************
  */
-TempFileLibrarian::TempFileLibrarian (const tstring& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction)
+TempFileLibrarian::TempFileLibrarian (const TString& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction)
 	: fFiles ()
 	, fPrivateDirectory (privateDirectory)
 	, fMakeTMPDIRRel (makeTMPDIRRel)
@@ -1216,7 +1216,7 @@ TempFileLibrarian::TempFileLibrarian (const tstring& privateDirectory, bool purg
 TempFileLibrarian::~TempFileLibrarian ()
 {
 	if (fDeleteFilesOnDescruction) {
-		for (set<tstring>::iterator it = fFiles.begin (); it != fFiles.end (); ++it) {
+		for (set<TString>::iterator it = fFiles.begin (); it != fFiles.end (); ++it) {
 			// item could be a file or directory, so see if dir delete works, and only if that fails,
 			// then try to delete the item as a directory ... all silently ignoring failures...
 			if (::DeleteFile (it->c_str ()) == 0) {
@@ -1230,9 +1230,9 @@ TempFileLibrarian::~TempFileLibrarian ()
 	}
 }
 
-tstring	TempFileLibrarian::GetTempFile (const tstring& fileNameBase)
+TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 {
-	tstring	fn	=	fileNameBase;
+	TString	fn	=	fileNameBase;
 	if (fn.find (':') == -1) {
 		if (fPrivateDirectory.size () > 0) {
 			fn = fPrivateDirectory + _T ("\\") + fn;
@@ -1252,7 +1252,7 @@ tstring	TempFileLibrarian::GetTempFile (const tstring& fileNameBase)
 	
 	int	attempts = 0;
 	while (attempts < 5) {
-		tstring	s = fn;
+		TString	s = fn;
 		char	buf[100];
 		sprintf_s (buf, "%d", ::rand ());
 		s.insert (suffixStart, totstring (buf));
@@ -1269,9 +1269,9 @@ tstring	TempFileLibrarian::GetTempFile (const tstring& fileNameBase)
 	Execution::DoThrow (StringException (L"Unknown error creating file"));
 }
 
-tstring	TempFileLibrarian::GetTempDir (const tstring& fileNameBase)
+TString	TempFileLibrarian::GetTempDir (const TString& fileNameBase)
 {
-	tstring	fn	=	fileNameBase;
+	TString	fn	=	fileNameBase;
 	if (fn.find (':') == -1) {
 		if (fPrivateDirectory.size () > 0) {
 			fn = fPrivateDirectory + _T ("\\") + fn;
@@ -1283,7 +1283,7 @@ tstring	TempFileLibrarian::GetTempDir (const tstring& fileNameBase)
 
 	int	attempts = 0;
 	while (attempts < 5) {
-		tstring	s = fn;
+		TString	s = fn;
 		char	buf[100];
 		{
 			// man page doesn't gaurantee thread-safety of rand ()
@@ -1312,7 +1312,7 @@ tstring	TempFileLibrarian::GetTempDir (const tstring& fileNameBase)
  ***************************** IO::ScopedTmpDir **************************
  ********************************************************************************
  */
-ScopedTmpDir::ScopedTmpDir (const tstring& fileNameBase):
+ScopedTmpDir::ScopedTmpDir (const TString& fileNameBase):
 	fTmpDir (AppTempFileManager::Get ().GetTempDir (fileNameBase))
 {
 }
@@ -1339,7 +1339,7 @@ ScopedTmpDir::~ScopedTmpDir ()
  ************************ IO::ScopedTmpFile ******************************
  ********************************************************************************
  */
-ScopedTmpFile::ScopedTmpFile (const tstring& fileNameBase):
+ScopedTmpFile::ScopedTmpFile (const TString& fileNameBase):
 	fTmpFile (AppTempFileManager::Get ().GetTempFile (fileNameBase))
 {
 }
@@ -1365,7 +1365,7 @@ ScopedTmpFile::~ScopedTmpFile ()
  ********************** IO::ThroughTmpFileWriter *************************
  ********************************************************************************
  */
-ThroughTmpFileWriter::ThroughTmpFileWriter (const tstring& realFileName, const tstring& tmpSuffix):
+ThroughTmpFileWriter::ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix):
 	fRealFilePath (realFileName),
 	fTmpFilePath (realFileName + tmpSuffix)
 {
@@ -1413,7 +1413,7 @@ void	ThroughTmpFileWriter::Commit ()
  **************************** IO::GetEXEDir ******************************
  ********************************************************************************
  */
-tstring	IO::GetEXEDir ()
+TString	IO::GetEXEDir ()
 {
 	return GetFileDirectory (GetEXEPath ());
 }
@@ -1429,7 +1429,7 @@ tstring	IO::GetEXEDir ()
  ************************** IO::GetEXEPath *******************************
  ********************************************************************************
  */
-tstring	IO::GetEXEPath ()
+TString	IO::GetEXEPath ()
 {
 	TCHAR	buf[MAX_PATH];
 	memset (buf, 0, sizeof (buf));
@@ -1641,7 +1641,7 @@ AdjustSysErrorMode::~AdjustSysErrorMode ()
  ************************ DirectoryContentsIterator *****************************
  ********************************************************************************
  */
-DirectoryContentsIterator::DirectoryContentsIterator (const tstring& pathExpr):
+DirectoryContentsIterator::DirectoryContentsIterator (const TString& pathExpr):
 	fHandle (INVALID_HANDLE_VALUE),
 	fFindFileData (),
 	fDirectory (pathExpr)
@@ -1667,7 +1667,7 @@ bool	DirectoryContentsIterator::NotAtEnd () const
 	return fHandle != INVALID_HANDLE_VALUE;
 }
 
-tstring	DirectoryContentsIterator::operator *() const
+TString	DirectoryContentsIterator::operator *() const
 {
 	Ensure (NotAtEnd ());
 	return fDirectory + fFindFileData.cFileName;

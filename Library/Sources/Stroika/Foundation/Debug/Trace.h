@@ -12,6 +12,7 @@
 #endif
 
 #include	"../Characters/StringUtils.h"
+#include	"../Characters/TString.h"
 #include	"../Configuration/Basics.h"
 #include	"../Execution/ModuleInit.h"
 #include	"../Time/Realtime.h"
@@ -23,7 +24,7 @@ namespace	Stroika {
 		namespace	Debug {
 
 
-			using	Characters::tstring;
+			using	Characters::TString;
 
 
 			/*
@@ -59,7 +60,7 @@ namespace	Stroika {
 
 			#if		qTraceToFile
 				public:
-					nonvirtual	tstring	GetTraceFileName () const;
+					nonvirtual	TString	GetTraceFileName () const;
 			#endif
 
 				public:

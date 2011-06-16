@@ -20,7 +20,7 @@ namespace	Stroika {
 		namespace	Execution {
 
 			#ifndef	qTrack_ThreadUtils_HandleCounts
-			#define	qTrack_ThreadUtils_HandleCounts		defined (_DEBUG)
+			#define	qTrack_ThreadUtils_HandleCounts		qDebug
 			#endif
 
 			class	Event {

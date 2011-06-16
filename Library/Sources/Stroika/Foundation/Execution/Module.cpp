@@ -11,14 +11,14 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
 
 
-tstring	Execution::GetEXEDir ()
+TString	Execution::GetEXEDir ()
 {
 
 	//MOVE ROUTINE GETEXEDIR () here from IO
 	return IO::GetEXEDir ();
 }
 
-tstring	Execution::GetEXEPath ()
+TString	Execution::GetEXEPath ()
 {
 	//MOVE ROUTINE GetEXEPath () here from IO
 	return IO::GetEXEPath ();

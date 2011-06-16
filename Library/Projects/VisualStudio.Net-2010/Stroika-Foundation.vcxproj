@@ -29,6 +29,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.cpp" />
@@ -67,10 +69,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qDebug_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qEndian_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qTargetPlatformSDKUsesWchar_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_Win32_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Basics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.h" />
@@ -113,9 +118,13 @@
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Basics.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />

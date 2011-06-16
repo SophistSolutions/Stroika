@@ -169,7 +169,7 @@ wstring	Date::Format (LCID lcid) const
 	}
 }
 
-wstring	Date::Format (const tstring& format, LCID lcid) const
+wstring	Date::Format (const TString& format, LCID lcid) const
 {
 	SYSTEMTIME	st	=	*this;
 	int	nTChars	=	::GetDateFormat (lcid, 0, &st, format.c_str (), NULL, 0);

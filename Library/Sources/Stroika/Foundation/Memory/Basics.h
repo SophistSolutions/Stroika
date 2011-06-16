@@ -11,7 +11,7 @@
 #include	"../Configuration/Basics.h"
 
 
-#if		defined (_DEBUG)
+#if		qDebug
 	#define		_CRTDBG_MAP_ALLOC
 	#include	<crtdbg.h>
 #endif // _DEBUG
@@ -27,7 +27,7 @@ namespace	Stroika {
 			 * to 'new' so it can be safely used in places where the global new operator would have been used.
 			 *		-- LGP 2009-05-25
 			 */
-			#if		defined (_DEBUG)
+			#if		qDebug
 				#define		_CRTDBG_MAP_ALLOC
 				#include	<crtdbg.h>
 				#define DEBUG_NEW	new (_NORMAL_BLOCK, __FILE__, __LINE__)

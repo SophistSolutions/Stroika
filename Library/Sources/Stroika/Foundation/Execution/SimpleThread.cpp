@@ -34,7 +34,7 @@ using	Time::DurationSecondsType;
 //
 //#define	qSupportSetThreadNameDebuggerCall	0
 #ifndef	qSupportSetThreadNameDebuggerCall
-	#if		defined (_DEBUG)
+	#if		qDebug
 		#define	qSupportSetThreadNameDebuggerCall	1
 	#endif
 #endif

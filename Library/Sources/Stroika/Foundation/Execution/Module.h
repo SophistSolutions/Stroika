@@ -15,10 +15,10 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-			using	Characters::tstring;
+			using	Characters::TString;
 
-			tstring	GetEXEDir ();
-			tstring	GetEXEPath ();
+			TString	GetEXEDir ();
+			TString	GetEXEPath ();
 
 		}
 	}

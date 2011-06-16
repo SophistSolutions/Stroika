@@ -162,6 +162,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.cpp">
       <Filter>Sources\Memory\OS\Win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TString.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -294,6 +300,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.h">
       <Filter>Sources\Memory\OS\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qTargetPlatformSDKUsesWchar_.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -382,6 +397,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.inl">
       <Filter>Sources\Memory\OS\Win32</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>

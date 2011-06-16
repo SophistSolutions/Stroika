@@ -5,6 +5,9 @@
 #define	_Stroika_Foundation_Configuration_qDebug_h_	1
 
 
+	////PRIVATE IMPL DETAIL - DONT INCLUDE DIRECTLY
+
+
 /*
  *	Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
  *	is set consistently (even if its not explicitly checked).

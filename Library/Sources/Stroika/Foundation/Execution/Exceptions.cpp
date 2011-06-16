@@ -35,7 +35,7 @@ using	Debug::TraceContextBumper;
 
 
 namespace {
-	inline	tstring	Win32Error2String_ (DWORD win32Err)
+	inline	TString	Win32Error2String_ (DWORD win32Err)
 		{
 			switch (win32Err) {
 				case	ERROR_NOT_ENOUGH_MEMORY:	return _T ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
@@ -78,7 +78,7 @@ namespace {
 				) {
 				return Format (_T ("Win32 error# %d"), static_cast<DWORD> (win32Err));
 			}
-			tstring	result	=	lpMsgBuf;
+			TString	result	=	lpMsgBuf;
 			::LocalFree (lpMsgBuf);
 			return Trim (result);
 		}
@@ -137,7 +137,7 @@ void	Win32ErrorException::DoThrow (DWORD error)
 	}
 }
 
-tstring	Win32ErrorException::LookupMessage (DWORD dw)
+TString	Win32ErrorException::LookupMessage (DWORD dw)
 {
 	return Win32Error2String_ (dw);
 }
@@ -184,7 +184,7 @@ void	Win32StructuredException::trans_func (unsigned int u, EXCEPTION_POINTERS* p
 	throw Win32StructuredException (u);
 }
 
-tstring	Win32StructuredException::LookupMessage (unsigned int u)
+TString	Win32StructuredException::LookupMessage (unsigned int u)
 {
 	switch (u) {
 		case	EXCEPTION_ACCESS_VIOLATION:			return _T ("EXCEPTION_ACCESS_VIOLATION");
@@ -225,7 +225,7 @@ tstring	Win32StructuredException::LookupMessage (unsigned int u)
  ***************************** HRESULTErrorException ****************************
  ********************************************************************************
  */
-tstring	HRESULTErrorException::LookupMessage (HRESULT hr)
+TString	HRESULTErrorException::LookupMessage (HRESULT hr)
 {
 	switch (hr) {
 		case	E_FAIL:						return _T ("HRESULT failure (E_FAIL)");
@@ -302,7 +302,7 @@ errno_ErrorException::errno_ErrorException (errno_t e):
 {
 }
 
-tstring	errno_ErrorException::LookupMessage (errno_t e)
+TString	errno_ErrorException::LookupMessage (errno_t e)
 {
 #if 0
 	switch (hr) {

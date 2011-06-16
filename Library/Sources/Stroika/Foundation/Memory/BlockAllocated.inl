@@ -243,7 +243,7 @@ namespace	Stroika {
 					#pragma warn -8008
 					#pragma warn -8066
 				#endif
-			#if		defined (_DEBUG)
+			#if		qDebug
 				/*
 				 * Temporary hack to verify were getting the most out of our blockallocator.
 				 * If this is ever gets called, add extra sizes. NO COST, just wins!!!

@@ -15,7 +15,7 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Debug;
 
 
-#if		defined (_DEBUG)
+#if		qDebug
 	namespace {
 		void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	NULL;
 	}

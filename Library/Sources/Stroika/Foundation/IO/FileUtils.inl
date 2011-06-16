@@ -39,7 +39,7 @@ namespace	Stroika {
 		namespace	IO {
 
 		//	class	IO::ThroughTmpFileWriter
-			inline	ThroughTmpFileWriter::operator tstring () const
+			inline	ThroughTmpFileWriter::operator TString () const
 				{
 					Require (not fTmpFilePath.empty ());	// cannot access after Commit ()
 					return fTmpFilePath;
@@ -83,20 +83,20 @@ namespace	Stroika {
 				{
 					return _FileUtils_MOULULE_INIT_.Actual ().fAppTempFileManager;
 				}
-			inline	tstring	AppTempFileManager::GetMasterTempDir () const
+			inline	TString	AppTempFileManager::GetMasterTempDir () const
 				{
 					return fTmpDir;
 				}
 
 
 			//	class	ScopedTmpDir {
-			inline	ScopedTmpDir::operator tstring () const
+			inline	ScopedTmpDir::operator TString () const
 				{
 					return fTmpDir;
 				}
 
 			//	class	ScopedTmpFile {
-			inline	ScopedTmpFile::operator tstring () const
+			inline	ScopedTmpFile::operator TString () const
 				{
 					return fTmpFile;
 				}

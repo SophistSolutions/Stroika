@@ -348,7 +348,7 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		break;
 	}
 
-#if		defined(_DEBUG)
+#if		qDebug
 	// Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
 	if (fCodePage == kCodePage_ANSI or
 		fCodePage == kCodePage_MAC or
@@ -480,7 +480,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		}
 	}
 
-#if		defined(_DEBUG)
+#if		qDebug
 	// Assure my baked tables perform the same as the builtin Win32 API
 	if (fCodePage == kCodePage_ANSI or fCodePage == kCodePage_MAC or fCodePage == kCodePage_PC or fCodePage == kCodePage_PCA) {
 		size_t						win32TstCharCnt	=	*outCharCnt;
