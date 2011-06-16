@@ -297,7 +297,7 @@ TString	HRESULTErrorException::LookupMessage (HRESULT hr)
  ********************************************************************************
  */
 errno_ErrorException::errno_ErrorException (errno_t e):
-	StringException (tstring2Wide (LookupMessage (e))),
+	StringException (TString2Wide (LookupMessage (e))),
 	fError (e)
 {
 }

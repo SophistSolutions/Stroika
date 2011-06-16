@@ -194,7 +194,7 @@ namespace	{
 				message = L"Access failure for file";
 			}
 			if (not fileName.empty ()) {
-				message = Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (tstring2Wide (fileName), 100, false).c_str ());
+				message = Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (TString2Wide (fileName), 100, false).c_str ());
 			}
 			return message;
 		}
@@ -265,7 +265,7 @@ TString	IO::AssureDirectoryPathSlashTerminated (const TString& dirPath)
  */
 TString	IO::SafeFilenameChars (const TString& s)
 {
-	wstring	tmp	=	tstring2Wide (s);	// analyze as wide-char string so we don't mis-identify
+	wstring	tmp	=	TString2Wide (s);	// analyze as wide-char string so we don't mis-identify
 										// characters (by looking at lead bytes etc)
 Again:
 	for (wstring::iterator i = tmp.begin (); i != tmp.end (); ++i) {
@@ -315,7 +315,7 @@ TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)
 			return path2FileOrShortcut;
 		}
 		if (SUCCEEDED (psl->QueryInterface (IID_IPersistFile, (LPVOID*)&ppf))) {
-			if (SUCCEEDED (ppf->Load (tstring2Wide (path2FileOrShortcut).c_str (), STGM_READ))) {
+			if (SUCCEEDED (ppf->Load (TString2Wide (path2FileOrShortcut).c_str (), STGM_READ))) {
 				// Resolve the link, this may post UI to find the link
 				if (SUCCEEDED (psl->Resolve(0, SLR_NO_UI))) {
 					TCHAR	path[MAX_PATH+1];
@@ -1155,7 +1155,7 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 		TString	s = fn;
 		char	buf[100];
 		sprintf_s (buf, "%d", ::rand ());
-		s.insert (suffixStart, totstring (buf));
+		s.insert (suffixStart, ToTString (buf));
 		if (not FileExists (s.c_str ())) {
 			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (f != NULL) {
@@ -1177,7 +1177,7 @@ TString	AppTempFileManager::GetTempDir (const TString& fileNameBase)
 		TString	s = fn;
 		char	buf[100];
 		(void)::sprintf_s (buf, "%d\\", ::rand ());
-		s.append (totstring  (buf));
+		s.append (ToTString  (buf));
 		if (not DirectoryExists (s)) {
 			CreateDirectory (s, true);
 			DbgTrace (_T ("AppTempFileManager::GetTempDir (): returning '%s'"), s.c_str ());
@@ -1255,7 +1255,7 @@ TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 		TString	s = fn;
 		char	buf[100];
 		sprintf_s (buf, "%d", ::rand ());
-		s.insert (suffixStart, totstring (buf));
+		s.insert (suffixStart, ToTString (buf));
 		if (not IO::FileExists (s.c_str ())) {
 			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (f != NULL) {
@@ -1290,7 +1290,7 @@ TString	TempFileLibrarian::GetTempDir (const TString& fileNameBase)
 			AutoCriticalSection enterCriticalSection (fCriticalSection);
 			(void)::sprintf_s (buf, "%d\\", ::rand ());
 		}
-		s.append (totstring  (buf));
+		s.append (ToTString  (buf));
 		if (not IO::DirectoryExists (s)) {
 			IO::CreateDirectory (s, true);
 			AutoCriticalSection enterCriticalSection (fCriticalSection);

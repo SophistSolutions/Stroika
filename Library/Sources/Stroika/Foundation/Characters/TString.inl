@@ -16,7 +16,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-			inline	string	tstring2ANSI (const TString& s)
+			inline	string	TString2ANSI (const TString& s)
 				{
 					#if		qTargetPlatformSDKUseswchar_t
 						return WideStringToACP (s);
@@ -24,7 +24,7 @@ namespace	Stroika {
 						return s;
 					#endif
 				}
-			inline	wstring	tstring2Wide (const TString& s)
+			inline	wstring	TString2Wide (const TString& s)
 				{
 					#if		qTargetPlatformSDKUseswchar_t
 						return s;
@@ -48,11 +48,11 @@ namespace	Stroika {
 						return WideStringToACP (s);
 					#endif
 				}
-			inline	TString	totstring (const string& s)
+			inline	TString	ToTString (const string& s)
 				{
 					return ANSI2tstring (s);
 				}
-			inline	TString	totstring (const wstring& s)
+			inline	TString	ToTString (const wstring& s)
 				{
 					return Wide2tstring (s);
 				}

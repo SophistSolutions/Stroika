@@ -76,23 +76,7 @@ namespace	Stroika {
 			string	StripTrailingCharIfAny (const string& s, char c);
 			wstring	StripTrailingCharIfAny (const wstring& s, wchar_t c);
 
-#if 0
-// Effectively the same as string, or wstring, depending on the value of TCHAR (char, or wchar_t).
-typedef	basic_string<TCHAR, char_traits<TCHAR>, allocator<TCHAR> >	TString;
-#endif
 
-
-#if 0
-
-			string	tstring2ANSI (const TString& s);
-			wstring	tstring2Wide (const TString& s);
-
-			TString	ANSI2tstring (const string& s);
-			TString	Wide2tstring (const wstring& s);
-
-			TString	totstring (const string& s);
-			TString	totstring (const wstring& s);
-#endif
 
 
 			wstring			MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);

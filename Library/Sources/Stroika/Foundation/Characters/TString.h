@@ -25,14 +25,14 @@ namespace	Stroika {
 #endif
 
 
-			string	tstring2ANSI (const TString& s);
-			wstring	tstring2Wide (const TString& s);
+			string	TString2ANSI (const TString& s);
+			wstring	TString2Wide (const TString& s);
 
 			TString	ANSI2tstring (const string& s);
 			TString	Wide2tstring (const wstring& s);
 
-			TString	totstring (const string& s);
-			TString	totstring (const wstring& s);
+			TString	ToTString (const string& s);
+			TString	ToTString (const wstring& s);
 
 		}
 	}

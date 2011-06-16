@@ -132,7 +132,7 @@ TString	Emitter::GetTraceFileName () const
 				}
 			}
 		}
-		TString nowstr	=	totstring (Time::DateTime::Now ().Format4XML ());
+		TString nowstr	=	ToTString (Time::DateTime::Now ().Format4XML ());
 		for (TString::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
 			if (*i == ':') {
 				*i = '-';

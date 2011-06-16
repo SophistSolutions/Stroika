@@ -95,7 +95,7 @@ class	Database::DBConnection::Rep {
 // And ONLY thorw exceptions on ERROR!
 					SQLRETURN return_value = SQLConnect (
 							fConnectionHandle, 
-							reinterpret_cast<SQLTCHAR*>(const_cast<TCHAR*>(totstring (dsn).c_str())), 
+							reinterpret_cast<SQLTCHAR*>(const_cast<TCHAR*>(ToTString (dsn).c_str())), 
 							SQL_NTS,
 							NULL, SQL_NTS,
 							NULL, SQL_NTS
@@ -116,7 +116,7 @@ class	Database::DBConnection::Rep {
 						if (errValue == SQL_SUCCESS) {
 							// TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they
 							// used unsigned char for SQLCHAR!
-							errorString += tstring2Wide (reinterpret_cast<TCHAR*> (errorMessage));
+							errorString += TString2Wide (reinterpret_cast<TCHAR*> (errorMessage));
 						}
 						else if (errValue == SQL_SUCCESS_WITH_INFO) {
 							errorString = L"Error message too long at";

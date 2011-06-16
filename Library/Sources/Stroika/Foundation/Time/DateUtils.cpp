@@ -165,7 +165,7 @@ wstring	Date::Format (LCID lcid) const
 	else {
 		SmallStackBuffer<TCHAR> buf (nTChars + 1);
 		(void)::GetDateFormat (lcid, DATE_SHORTDATE, &st, NULL, buf, nTChars+1);
-		return tstring2Wide (static_cast<const TCHAR*> (buf));
+		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
 
@@ -179,7 +179,7 @@ wstring	Date::Format (const TString& format, LCID lcid) const
 	else {
 		SmallStackBuffer<TCHAR> buf (nTChars + 1);
 		(void)::GetDateFormat (lcid, 0, &st, format.c_str (), buf, nTChars+1);
-		return tstring2Wide (static_cast<const TCHAR*> (buf));
+		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
 
@@ -236,7 +236,7 @@ wstring	Date::LongFormat (LCID lcid) const
 	else {
 		SmallStackBuffer<TCHAR> buf (nTChars + 1);
 		(void)::GetDateFormat (lcid, DATE_LONGDATE, &st, NULL, buf, nTChars+1);
-		return tstring2Wide (static_cast<const TCHAR*> (buf));
+		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
 
