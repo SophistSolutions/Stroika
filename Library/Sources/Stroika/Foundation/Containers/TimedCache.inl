@@ -8,6 +8,7 @@
 #define	_Stroika_Foundation_Containers_TimedCache_inl_	1
 
 #include	"../Debug/Assertions.h"
+#include	"../Debug/Trace.h"
 
 
 namespace	Stroika {	
