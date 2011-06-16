@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	"../Characters/StringUtils.h"
+#include	"../Characters/TString.h"
 #include	"../Configuration/Basics.h"
 
 
