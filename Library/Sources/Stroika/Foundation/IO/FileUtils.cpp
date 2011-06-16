@@ -276,7 +276,7 @@ Again:
 			case	'.':	tmp.erase (i); goto Again;
 		}
 	}
-	return Wide2tstring (tmp);
+	return Wide2TString (tmp);
 }
 
 
@@ -287,7 +287,7 @@ Again:
 
 /*
  ********************************************************************************
- ************************** IO::ResolveShortcut **************************
+ ********************************* IO::ResolveShortcut **************************
  ********************************************************************************
  */
 TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)

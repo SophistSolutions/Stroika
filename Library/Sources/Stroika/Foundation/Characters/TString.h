@@ -28,8 +28,8 @@ namespace	Stroika {
 			string	TString2ANSI (const TString& s);
 			wstring	TString2Wide (const TString& s);
 
-			TString	ANSI2tstring (const string& s);
-			TString	Wide2tstring (const wstring& s);
+			TString	ANSI2TString (const string& s);
+			TString	Wide2TString (const wstring& s);
 
 			TString	ToTString (const string& s);
 			TString	ToTString (const wstring& s);

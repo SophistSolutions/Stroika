@@ -16,11 +16,11 @@ namespace	Stroika {
 		namespace	Memory {
 
 			template	<typename T>
-				class	Opt {
+				class	Optional {
 					public:
-						Opt ();
-						Opt (const T& from);
-						Opt (const Opt<T>& from);
+						Optional ();
+						Optional (const T& from);
+						Optional (const Optional<T>& from);
 			
 					public:
 						nonvirtual	void	clear ();
@@ -41,18 +41,18 @@ namespace	Stroika {
 
 					// Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
 					public:
-						nonvirtual	bool	operator< (const Opt<T>& rhs) const;
-						nonvirtual	bool	operator<= (const Opt<T>& rhs) const;
-						nonvirtual	bool	operator> (const Opt<T>& rhs) const;
-						nonvirtual	bool	operator>= (const Opt<T>& rhs) const;
-						nonvirtual	bool	operator== (const Opt<T>& rhs) const;
-						nonvirtual	bool	operator!= (const Opt<T>& rhs) const;
+						nonvirtual	bool	operator< (const Optional<T>& rhs) const;
+						nonvirtual	bool	operator<= (const Optional<T>& rhs) const;
+						nonvirtual	bool	operator> (const Optional<T>& rhs) const;
+						nonvirtual	bool	operator>= (const Optional<T>& rhs) const;
+						nonvirtual	bool	operator== (const Optional<T>& rhs) const;
+						nonvirtual	bool	operator!= (const Optional<T>& rhs) const;
 
 					private:
 						/*
 						 * Note: the implementation here is safe via copying - because we never WRITE to the value stored in the
 						 * RefCntPtr<T> and never return a copy to someone who could, so the value can never change. One changes
-						 * an Opt<T> by creating a whole new value object and assigning it.
+						 * an Optional<T> by creating a whole new value object and assigning it.
 						 */
 						RefCntPtr<T>	fValue;
 				};
@@ -72,39 +72,39 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-	//	class	Optional::Opt<T>
+	//	class	Optional::Optional<T>
 	template	<typename T>
-		inline	Opt<T>::Opt ()
+		inline	Optional<T>::Optional ()
 			: fValue (NULL)
 			{
 			}
 	template	<typename T>
-		inline	Opt<T>::Opt (const T& from)
+		inline	Optional<T>::Optional (const T& from)
 			: fValue (new T (from))
 			{
 			}
 	template	<typename T>
-		inline	Opt<T>::Opt (const Opt<T>& from)
+		inline	Optional<T>::Optional (const Optional<T>& from)
 			: fValue (from.fValue)
 			{
 			}
 	template	<typename T>
-		inline	void	Opt<T>::clear ()
+		inline	void	Optional<T>::clear ()
 			{
 				fValue.clear ();
 			}
 	template	<typename T>
-		inline	const typename T*	Opt<T>::get () const
+		inline	const typename T*	Optional<T>::get () const
 			{
 				return fValue.IsNull ()? NULL : fValue.get ();
 			}
 	template	<typename T>
-		inline	bool	Opt<T>::empty () const
+		inline	bool	Optional<T>::empty () const
 			{
 				return fValue.IsNull ();
 			}
 	template	<typename T>
-		inline	const T* Opt<T>::operator-> () const
+		inline	const T* Optional<T>::operator-> () const
 			{
 				if (fValue.IsNull ()) {
 					throw bad_alloc ();
@@ -112,7 +112,7 @@ namespace	Stroika {
 				return &fValue.GetRep ();
 			}
 	template	<typename T>
-		inline	T* Opt<T>::operator-> ()
+		inline	T* Optional<T>::operator-> ()
 			{
 				if (fValue.IsNull ()) {
 					throw bad_alloc ();
@@ -120,7 +120,7 @@ namespace	Stroika {
 				return &fValue.GetRep ();
 			}
 	template	<typename T>
-		inline	const T& Opt<T>::operator* () const
+		inline	const T& Optional<T>::operator* () const
 			{
 				if (fValue.IsNull ()) {
 					throw bad_alloc ();
@@ -128,7 +128,7 @@ namespace	Stroika {
 				return fValue.GetRep ();
 			}
 	template	<typename T>
-		inline	T& Opt<T>::operator* ()
+		inline	T& Optional<T>::operator* ()
 			{
 				if (fValue.IsNull ()) {
 					throw bad_alloc ();
@@ -136,7 +136,7 @@ namespace	Stroika {
 				return fValue.GetRep ();
 			}
 	template	<typename T>
-		inline	Opt<T>::operator T () const
+		inline	Optional<T>::operator T () const
 			{
 				if (fValue.IsNull ()) {
 					throw bad_alloc ();
@@ -144,7 +144,7 @@ namespace	Stroika {
 				return *fValue;
 			}
 	template	<typename T>
-		bool	Opt<T>::operator< (const Opt<T>& rhs) const
+		bool	Optional<T>::operator< (const Optional<T>& rhs) const
 			{
 				if (fValue.IsNull ()) {
 					return rhs.fValue.IsNull ()? false: true;	// arbitrary choice - but assume if lhs is empty thats less than any T value
@@ -155,22 +155,22 @@ namespace	Stroika {
 				return *fValue < rhs.fValue;
 			}
 	template	<typename T>
-		bool	Opt<T>::operator<= (const Opt<T>& rhs) const
+		bool	Optional<T>::operator<= (const Optional<T>& rhs) const
 			{
 				return *this < rhs or *this == rhs;
 			}
 	template	<typename T>
-		inline	bool	Opt<T>::operator> (const Opt<T>& rhs) const
+		inline	bool	Optional<T>::operator> (const Optional<T>& rhs) const
 			{
 				return rhs < *this;
 			}
 	template	<typename T>
-		bool	Opt<T>::operator>= (const Opt<T>& rhs) const
+		bool	Optional<T>::operator>= (const Optional<T>& rhs) const
 			{
 				return *this > rhs or *this == rhs;
 			}
 	template	<typename T>
-		bool	Opt<T>::operator== (const Opt<T>& rhs) const
+		bool	Optional<T>::operator== (const Optional<T>& rhs) const
 			{
 				if (fValue.IsNull ()) {
 					return rhs.fValue.IsNull ();
@@ -181,7 +181,7 @@ namespace	Stroika {
 				return *fValue == *rhs.fValue;
 			}
 	template	<typename T>
-		inline	bool	Opt<T>::operator!= (const Opt<T>& rhs) const
+		inline	bool	Optional<T>::operator!= (const Optional<T>& rhs) const
 			{
 				return not (*this == rhs);
 			}

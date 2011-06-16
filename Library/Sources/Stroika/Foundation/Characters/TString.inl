@@ -32,7 +32,7 @@ namespace	Stroika {
 						return ACPStringToWide (s);
 					#endif
 				}
-			inline	TString	ANSI2tstring (const string& s)
+			inline	TString	ANSI2TString (const string& s)
 				{
 					#if		qTargetPlatformSDKUseswchar_t
 						return ACPStringToWide (s);
@@ -40,7 +40,7 @@ namespace	Stroika {
 						return s;
 					#endif
 				}
-			inline	TString	Wide2tstring (const wstring& s)
+			inline	TString	Wide2TString (const wstring& s)
 				{
 					#if		qTargetPlatformSDKUseswchar_t
 						return s;
@@ -50,11 +50,11 @@ namespace	Stroika {
 				}
 			inline	TString	ToTString (const string& s)
 				{
-					return ANSI2tstring (s);
+					return ANSI2TString (s);
 				}
 			inline	TString	ToTString (const wstring& s)
 				{
-					return Wide2tstring (s);
+					return Wide2TString (s);
 				}
 		}
 	}
