@@ -13,7 +13,7 @@
 	#include	<Windows.h>
 #endif
 
-#include	"../Characters/StringUtils.h"
+#include	"../Characters/TString.h"
 #include	"../Configuration/Basics.h"
 
 namespace	Stroika {
