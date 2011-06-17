@@ -280,11 +280,6 @@ namespace	Stroika {
 
 
 
-
-			TString	GetEXEDir ();
-			TString	GetEXEPath ();
-
-
 			class	FileReader {
 				public:
 					FileReader (const TCHAR* fileName);
