@@ -168,7 +168,9 @@ void	Win32StructuredException::trans_func (unsigned int u, EXCEPTION_POINTERS* p
 				TraceContextBumper	ctx (_T ("ContextRecord"));
 				DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
 				DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
+			#if		qPlatform_Win32
 				DbgTrace ("ContextRecord->Esp = 0x%x", pExp->ContextRecord->Esp);
+			#endif
 			}
 			if (pExp->ExceptionRecord != NULL) {
 				TraceContextBumper	ctx (_T ("ExceptionRecord"));

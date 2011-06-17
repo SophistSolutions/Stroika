@@ -10,7 +10,13 @@
 	#if		defined(_WINDOWS)
 		#define	qPlatform_Windows	1
 	#endif
-	#if		defined(_WIN32)
+	#if		defined(_WIN64)
+		#define	qPlatform_Win64		1
+		#define	qPlatform_Win32		0
+		// in case only _WIN32 defined
+		#define	qPlatform_Windows	1
+	#elif		defined(_WIN32)
+		#define	qPlatform_Win64		0
 		#define	qPlatform_Win32		1
 		// in case only _WIN32 defined
 		#define	qPlatform_Windows	1

@@ -5,7 +5,7 @@
 
 #include	"../Configuration/StroikaConfig.h"
 
-#if		defined (_WIN32)
+#if		qPlatform_Windows
 	#include	<process.h>
 	#include	<windows.h>
 #endif
@@ -345,7 +345,7 @@ void	SimpleThread::SetThreadName (const wstring& threadName)
 					info.dwThreadID = MyGetThreadId (fRep->fThread);
 					info.dwFlags = 0;
 				}
-				IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info));
+				IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info));
 			}
 		#endif
 	}

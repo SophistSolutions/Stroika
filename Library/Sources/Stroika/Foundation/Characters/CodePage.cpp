@@ -5,8 +5,8 @@
 
 #include	<algorithm>
 #if		qPlatform_Windows
-#include	<cstdio>
-#include	<tchar.h>
+	#include	<cstdio>
+	#include	<tchar.h>
 #endif
 
 #include	"../Configuration/Basics.h"
