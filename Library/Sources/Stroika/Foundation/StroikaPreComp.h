@@ -6,5 +6,4 @@
 
 #include	"Configuration/StroikaConfig.h"
 
-
 #endif	/*_Stroika_Foundation_StroikaPreComp_h_*/
