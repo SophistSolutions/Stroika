@@ -17,8 +17,8 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
-			namespace	OS {
-				namespace	Win32 {
+			namespace	Platform {
+				namespace	Windows {
 					void	WaitAndPumpMessages (HWND dialog = NULL, float forNSecs = 0.1f);
 					void	WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs = 0.1f);
 					void	PumpMessagesWhileInputAvailable (HWND dialog = NULL, float atMostNSecs = 0.1f);

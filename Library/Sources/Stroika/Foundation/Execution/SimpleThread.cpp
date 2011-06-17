@@ -14,7 +14,7 @@
 #include	"../Debug/Trace.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Time/Realtime.h"
-#include	"OS/Win32/WaitSupport.h"
+#include	"Platform/Windows/WaitSupport.h"
 
 #include	"SimpleThread.h"
 
@@ -427,7 +427,7 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) c
 		}
 	}
 	if (thread != NULL) {
-		OS::Win32::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
+		Platform::Windows::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
 	}
 }
 

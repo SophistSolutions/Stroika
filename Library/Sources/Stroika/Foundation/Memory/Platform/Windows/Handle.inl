@@ -17,8 +17,8 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Memory {
-			namespace	OS {
-				namespace	Win32 {
+			namespace	Platform {
+				namespace	Windows {
 
 
 				//	class	StackBasedHandleLocker

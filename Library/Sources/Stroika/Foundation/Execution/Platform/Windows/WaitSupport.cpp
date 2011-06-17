@@ -20,8 +20,8 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
-using	namespace	Stroika::Foundation::Execution::OS;
-using	namespace	Stroika::Foundation::Execution::OS::Win32;
+using	namespace	Stroika::Foundation::Execution::Platform;
+using	namespace	Stroika::Foundation::Execution::Platform::Windows;
 
 using	Time::DurationSecondsType;
 
@@ -37,12 +37,12 @@ using	Time::DurationSecondsType;
 /*
  *	Call this if you want to pump messages and want to block/wait for a while if need be (to avoid busy-waiting).
  */
-void	Win32::WaitAndPumpMessages (HWND dialog, float forNSecs)
+void	Windows::WaitAndPumpMessages (HWND dialog, float forNSecs)
 {
-	Win32::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
+	Windows::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
 }
 
-void	Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
+void	Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, float forNSecs)
 {
 	DurationSecondsType	startAt	=	Time::GetTickCount ();
 	DurationSecondsType	endAt	=	startAt + forNSecs;
@@ -71,7 +71,7 @@ void	Win32::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, floa
  *	Call this if you want to pump messages, but return immediately if none available (e.g. when you are
  *	doing something else).
  */
-void	Win32::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
+void	Windows::PumpMessagesWhileInputAvailable (HWND dialog, float atMostNSecs)
 {
 	DurationSecondsType	startAt	=	Time::GetTickCount ();
 	DurationSecondsType	endAt	=	startAt + atMostNSecs;

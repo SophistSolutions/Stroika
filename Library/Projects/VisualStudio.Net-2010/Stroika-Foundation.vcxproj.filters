@@ -40,17 +40,17 @@
     <Filter Include="Sources\IO\Network">
       <UniqueIdentifier>{13c8d0c5-f17b-4427-b683-763b6acaef9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Execution\OS">
-      <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Execution\OS\Win32">
-      <UniqueIdentifier>{4aeb5339-ebc3-4aa8-a44b-749d9af47704}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Memory\OS">
+    <Filter Include="Sources\Memory\Platform">
       <UniqueIdentifier>{f6f48fae-3185-4b6c-8228-ba71ac92da20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Memory\OS\Win32">
+    <Filter Include="Sources\Memory\Platform\Windows">
       <UniqueIdentifier>{d5f4d135-7c9a-40ae-bd35-869feb225078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Execution\Platform">
+      <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Execution\Platform\Windows">
+      <UniqueIdentifier>{4aeb5339-ebc3-4aa8-a44b-749d9af47704}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -153,20 +153,20 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\ResourceAccessor.cpp">
-      <Filter>Sources\Execution\OS\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\WaitSupport.cpp">
-      <Filter>Sources\Execution\OS\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.cpp">
-      <Filter>Sources\Memory\OS\Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TString.cpp">
       <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.cpp">
+      <Filter>Sources\Memory\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -285,20 +285,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\ResourceAccessor.h">
-      <Filter>Sources\Execution\OS\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OS\Win32\WaitSupport.h">
-      <Filter>Sources\Execution\OS\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qDebug_.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qEndian_.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.h">
-      <Filter>Sources\Memory\OS\Win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h">
       <Filter>Sources\Characters</Filter>
@@ -308,6 +299,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qTargetPlatformSDKUsesWchar_.h">
       <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h">
+      <Filter>Sources\Memory\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -395,9 +395,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\OS\Win32\Handle.inl">
-      <Filter>Sources\Memory\OS\Win32</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -409,6 +406,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
+      <Filter>Sources\Memory\Platform\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>

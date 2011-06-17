@@ -21,8 +21,8 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
-using	namespace	Stroika::Foundation::Execution::OS;
-using	namespace	Stroika::Foundation::Execution::OS::Win32;
+using	namespace	Stroika::Foundation::Execution::Platform;
+using	namespace	Stroika::Foundation::Execution::Platform::Windows;
 
 
 /*

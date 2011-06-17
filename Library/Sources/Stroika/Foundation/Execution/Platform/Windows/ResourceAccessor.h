@@ -20,8 +20,8 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
-			namespace	OS {
-				namespace	Win32 {
+			namespace	Platform {
+				namespace	Windows {
 
 				using	namespace	Stroika::Foundation::Configuration;
 
@@ -55,8 +55,8 @@ namespace	Stroika {
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
-			namespace	OS {
-				namespace	Win32 {
+			namespace	Platform {
+				namespace	Windows {
 
 				//	class	ResourceAccessor
 				inline	bool	ResourceAccessor::GetFound () const
