@@ -1,0 +1,6 @@
+Debug/
+Release/
+Output/
+*.ncb
+*.suo
+*.Socrates.lewis.user
