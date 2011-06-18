@@ -1,5 +1,10 @@
+CheckFileExists ("Debug-A-32/Test.exe");
+CheckFileExists ("Release-A-32/Test.exe");
+
 CheckFileExists ("Debug-U-32/Test.exe");
 CheckFileExists ("Release-U-32/Test.exe");
+CheckFileExists ("Debug-U-64/Test.exe");
+CheckFileExists ("Release-U-64/Test.exe");
 
 print "[SUCCEEDED]\r\n";
 

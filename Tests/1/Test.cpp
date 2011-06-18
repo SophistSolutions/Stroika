@@ -31,7 +31,7 @@ namespace	{
 			{
 				char	Src1[] = "This is a very good test of a very good test";
 				char	Val1[] = "08c8888b86d6300ade93a10095a9083a";
-				Assert (Cryptography::ComputeMD5Digest ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)) == Val1);
+				Verify (Cryptography::ComputeMD5Digest ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)) == Val1);
 			}
 
 			{
@@ -44,8 +44,8 @@ namespace	{
 
 
 				//string tmp = Cryptography::EncodeBase64 (vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)));
-				Assert (Cryptography::EncodeBase64 (Val1Bytes) == Val1);
-				Assert (Cryptography::DecodeBase64 (Cryptography::EncodeBase64 (Val1Bytes)) == Val1Bytes);
+				Verify (Cryptography::EncodeBase64 (Val1Bytes) == Val1);
+				Verify (Cryptography::DecodeBase64 (Cryptography::EncodeBase64 (Val1Bytes)) == Val1Bytes);
 			}
 
 			{
@@ -69,13 +69,13 @@ namespace	{
 				vector<Byte> Val1Bytes = vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1));
 
 				string tmp = Cryptography::EncodeBase64 (vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)));
-				Assert (Cryptography::EncodeBase64 (vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1))) == Val1);
+				Verify (Cryptography::EncodeBase64 (vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1))) == Val1);
 
-				Assert (Cryptography::DecodeBase64 (Cryptography::EncodeBase64 (Val1Bytes)) == Val1Bytes);
+				Verify (Cryptography::DecodeBase64 (Cryptography::EncodeBase64 (Val1Bytes)) == Val1Bytes);
 
 				vector<Byte>	x = Cryptography::DecodeBase64 (Val1);
 
-				Assert (Cryptography::EncodeBase64 (x) == Val1);
+				Verify (Cryptography::EncodeBase64 (x) == Val1);
 			}
 
 		}

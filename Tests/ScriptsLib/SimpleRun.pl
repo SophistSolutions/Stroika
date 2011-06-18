@@ -3,6 +3,18 @@
 #use warnings;
 
 
+#CRUDDY IMPL - but avoid runnign 64 bit binaries on 32-bit OS
+sub bitter {
+     my $bit;
+     if ($ENV{'ProgramFiles(x86)'} eq '') {
+         $bit = "32";
+     }
+     else {
+         $bit = "64";
+     }
+     return $bit;
+}
+
 sub PrepareOutputDir
 {
 	use File::Path;
@@ -24,8 +36,14 @@ sub DoRunSimpleTestArgv
 	local $outDir = PrepareOutputDir();
 
 	if ($dbgOrRel eq 'All') {
+		DoRunSimpleTest ('Debug-A-32', $outDir, $tstName);
+		DoRunSimpleTest ('Release-A-32', $outDir, $tstName);
 		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName);
 		DoRunSimpleTest ('Release-U-32', $outDir, $tstName);
+		if (bitter() eq 64) {
+			DoRunSimpleTest ('Debug-U-64', $outDir, $tstName);
+			DoRunSimpleTest ('Release-U-64', $outDir, $tstName);
+		}
 	}
 	else {
 		DoRunSimpleTest ($dbgOrRel, $outDir, $tstName);
