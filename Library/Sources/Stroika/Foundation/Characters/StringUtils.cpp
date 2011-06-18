@@ -32,10 +32,10 @@ using	namespace	Stroika::Foundation::Memory;
  */
 wstring	Characters::ACPStringToWide (const string& ws)
 {
-	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), ws.size (), NULL, NULL);
+	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), NULL, NULL);
 	wstring	result;
 	result.resize (newStrLen);
-	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), ws.size (), Containers::Start (result), newStrLen) == newStrLen);
+	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (result), newStrLen) == newStrLen);
 	return result;
 }
 
@@ -53,13 +53,13 @@ BSTR	Characters::UTF8StringToBSTR (const char* ws)
 {
 	RequireNotNil (ws);
 	size_t	wsLen	=	::strlen (ws);
-	int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, wsLen, NULL, NULL);
+	int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), NULL, NULL);
 	BSTR result	= ::SysAllocStringLen (NULL, stringLength);
 	if (result == NULL) {
 		DbgTrace ("UTF8StringToBSTR () out of memory - throwing bad_alloc");
 		throw bad_alloc ();
 	}
-	Verify (::MultiByteToWideChar (CP_UTF8, 0, ws, wsLen, result, stringLength) == stringLength);
+	Verify (::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
 	return result;
 }
 

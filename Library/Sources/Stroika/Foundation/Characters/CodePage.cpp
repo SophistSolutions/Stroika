@@ -513,7 +513,7 @@ void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCh
 	RequireNotNil (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != NULL);
 //	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
-	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, inMBCharCnt, outChars, *outCharCnt);
+	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
 #if 0
 // enable to debug cases (e.g. caused when you read a CRLF file with fstream
 // in text mode, and get - somehow - stuff that triggers this ??? - with convert to
@@ -532,7 +532,7 @@ void	Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inC
 	Require (inCharCnt == 0 or inChars != NULL);
 	RequireNotNil (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != NULL);
-	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, inCharCnt, outChars, *outCharCnt, NULL, NULL);
+	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), NULL, NULL);
 }
 
 
@@ -601,7 +601,7 @@ void	TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (const wchar_t
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -678,7 +678,7 @@ void	TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (const wchar_t*
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -752,7 +752,7 @@ void	TableDrivenCodePageConverter<kCodePage_PC>::MapFromUNICODE (const wchar_t* 
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -828,7 +828,7 @@ void	TableDrivenCodePageConverter<kCodePage_PCA>::MapFromUNICODE (const wchar_t*
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -903,7 +903,7 @@ void	TableDrivenCodePageConverter<kCodePage_GREEK>::MapFromUNICODE (const wchar_
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -978,7 +978,7 @@ void	TableDrivenCodePageConverter<kCodePage_Turkish>::MapFromUNICODE (const wcha
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -1054,7 +1054,7 @@ void	TableDrivenCodePageConverter<kCodePage_HEBREW>::MapFromUNICODE (const wchar
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}
@@ -1129,7 +1129,7 @@ void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar
 		size_t j = 0;
 		for (; j < 256; ++j) {
 			if (kMap[j] == inChars[i]) {
-				outChars[i] = j;
+				outChars[i] = static_cast<char> (j);
 				break;
 			}
 		}

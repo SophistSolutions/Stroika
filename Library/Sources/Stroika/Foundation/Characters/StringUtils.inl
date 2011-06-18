@@ -171,19 +171,19 @@ namespace	Stroika {
 					RequireNotNil (intoResult);
 					Require (wsStart <= wsEnd);
 					size_t	wsLen	=	(wsEnd - wsStart);
-					int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, NULL, NULL, NULL, NULL);
+					int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), NULL, NULL, NULL, NULL);
 					intoResult->resize (stringLength);
 					if (stringLength != 0) {
-						Verify (::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
+						Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
 					}
 				}
 			inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
 				{
 					RequireNotNil (intoResult);
-					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), ws.size (), NULL, NULL, NULL, NULL);
+					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), NULL, NULL, NULL, NULL);
 					intoResult->resize (stringLength);
 					if (stringLength != 0) {
-						Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), ws.size (), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
+						Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
 					}
 				}
 			inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
@@ -197,19 +197,19 @@ namespace	Stroika {
 					RequireNotNil (intoResult);
 					Require (sStart <= sEnd);
 					size_t	sLen	=	(sEnd - sStart);
-					int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, sLen, NULL, NULL);
+					int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), NULL, NULL);
 					intoResult->resize (newStrLen);
 					if (newStrLen != 0) {
-						Verify (::MultiByteToWideChar (codePage, 0, sStart, sLen, Containers::Start (*intoResult), newStrLen) == newStrLen);
+						Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
 					}
 				}
 			inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
 				{
 					RequireNotNil (intoResult);
-					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), s.size (), NULL, NULL);
+					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), NULL, NULL);
 					intoResult->resize (newStrLen);
 					if (newStrLen != 0) {
-						Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), s.size (), Containers::Start (*intoResult), newStrLen) == newStrLen);
+						Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), Containers::Start (*intoResult), newStrLen) == newStrLen);
 					}
 				}
 			inline	wstring	NarrowStringToWide (const string& s, int codePage)

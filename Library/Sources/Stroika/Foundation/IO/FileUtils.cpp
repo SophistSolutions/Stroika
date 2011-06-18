@@ -984,7 +984,7 @@ vector<Byte>	IO::ReadBytes (istream& in)
 	in.seekg (0, ios_base::end);
 	streamoff	end		=	in.tellg ();
 	Assert (start <= end);
-	if (end - start > numeric_limits<size_t>::max ()) {
+	if ((end - start) > numeric_limits<size_t>::max ()) {
 		Execution::DoThrow (StringException (L"stream too large"));
 	}
 	size_t	len	=	static_cast<size_t> (end-start);
@@ -1145,8 +1145,8 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 	TString	fn	=	AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
 	IO::CreateDirectoryForFile (fn);
 
-	int	suffixStart = fn.rfind ('.');
-	if (suffixStart == -1) {
+	TString::size_type	suffixStart = fn.rfind ('.');
+	if (suffixStart == TString::npos) {
 		fn += _T (".txt");
 		suffixStart = fn.rfind ('.');
 	}
@@ -1244,8 +1244,8 @@ TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 	}
 	IO::CreateDirectoryForFile (fn);
 
-	int	suffixStart = fn.rfind ('.');
-	if (suffixStart == -1) {
+	TString::size_type	suffixStart = fn.rfind ('.');
+	if (suffixStart == TString::npos) {
 		fn += _T (".txt");
 		suffixStart = fn.rfind ('.');
 	}
@@ -1438,10 +1438,10 @@ FileReader::FileReader (const TCHAR* fileName)
 			ThrowIfFalseGetLastError (::SetFilePointer (fd, 0, NULL, FILE_BEGIN) == 0);
 
 			fileData = DEBUG_NEW Byte [fileLen];
-
+//BAD CODE - WONT WORK FOR FILES > 4GB
 			// READ IN DATA
 			DWORD	osRead	=	0;
-			ThrowIfFalseGetLastError (::ReadFile (fd, fileData, fileLen, &osRead, NULL));
+			ThrowIfFalseGetLastError (::ReadFile (fd, fileData, static_cast<DWORD> (fileLen), &osRead, NULL));
 			ThrowIfFalseGetLastError (osRead == fileLen);
 		}
 		catch (...) {
@@ -1516,7 +1516,7 @@ FileWriter::~FileWriter ()
 void	FileWriter::Append (const Byte* data, size_t count)
 {
 	RequireNotNil (fFD != -1);
-	ThrowIfFalseGetLastError (::_write (fFD, data, count) == int (count));
+	ThrowIfFalseGetLastError (::_write (fFD, data, static_cast<unsigned int> (count)) == static_cast<int> (count));
 }
 
 

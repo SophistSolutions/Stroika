@@ -158,7 +158,7 @@ void*	SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
 	p->fBlockSize = size;
 	memcpy (reinterpret_cast<Byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
 	::InterlockedIncrement (&fNetAllocationCount);
-	::InterlockedExchangeAdd (&fNetAllocatedByteCount, size);
+	::InterlockedExchangeAdd (&fNetAllocatedByteCount, static_cast<LONG> (size));
 	return (reinterpret_cast<Byte*> (p) + sizeof (MemWithExtraStuff));
 }
 

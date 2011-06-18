@@ -364,7 +364,7 @@ string	Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 	MD5_CTX	ctx;
 	memset (&ctx, 0, sizeof (ctx));
 	MD5Init (&ctx);
-	MD5Update (&ctx, s, (e-s));
+	MD5Update (&ctx, s, static_cast<unsigned int> (e-s));
 	MD5Final (&ctx);
 
 	string	result;
