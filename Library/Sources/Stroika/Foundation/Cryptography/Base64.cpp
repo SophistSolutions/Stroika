@@ -301,7 +301,7 @@ static inline bool is_base64(unsigned char c) {
   return (isalnum(c) || (c == '+') || (c == '/'));
 }
 
-	std::string base64_encode_(unsigned char const* bytes_to_encode, unsigned int in_len) {
+	std::string base64_encode_(unsigned char const* bytes_to_encode, unsigned int in_len, LineBreak lb) {
 	  std::string ret;
 	  int i = 0;
 	  int j = 0;
@@ -326,7 +326,10 @@ static inline bool is_base64(unsigned char c) {
 	rowLen += 4;
 		  i = 0;
 	if ((rowLen %76) == 0) {
-		ret += "\r\n";
+		switch (lb) {
+			case	eLF_LB: ret += "\n";; break;
+			case	eCRLF_LB: ret += "\r\n";; break;
+		}
 		rowLen=0;
 	}
 		}
@@ -420,9 +423,15 @@ namespace	{
 		}
 }
 
+string	Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
+{
+	Assert (EncodeBase64_ATL_REFERENCE_ (vector<Byte> (start, end), lb) == base64_encode_ (start, end-start, lb));
+	return base64_encode_ (start, end-start, lb);
+}
+
 string	Cryptography::EncodeBase64 (const vector<Byte>& b, LineBreak lb)
 {
-	Assert (EncodeBase64_ATL_REFERENCE_ (b, lb) == base64_encode_ (Containers::Start (b), b.size ()));
-	return base64_encode_ (Containers::Start (b), b.size ());
+	Assert (EncodeBase64_ATL_REFERENCE_ (b, lb) == base64_encode_ (Containers::Start (b), b.size (), lb));
+	return base64_encode_ (Containers::Start (b), b.size (), lb);
 }
 

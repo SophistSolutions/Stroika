@@ -26,6 +26,10 @@ namespace	Stroika {
 		}
 	}
 }
+#endif	/*_Stroika_Foundation_Cryptography_MD5_h_*/
+
+
+
 
 
 
@@ -35,5 +39,3 @@ namespace	Stroika {
  ********************************************************************************
  */
 #include	"MD5.inl"
-
-#endif	/*_Stroika_Foundation_Cryptography_MD5_h_*/

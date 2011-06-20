@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	<cstddef>
 
 namespace	Stroika {	
 	namespace	Foundation {

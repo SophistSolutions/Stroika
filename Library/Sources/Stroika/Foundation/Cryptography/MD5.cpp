@@ -3,9 +3,6 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
-#include	<atlenc.h>
-
 #include	"../Containers/Basics.h"
 #include	"../Debug/Assertions.h"
 #include	"../Memory/SmallStackBuffer.h"
@@ -68,18 +65,13 @@ namespace	{
 	typedef unsigned int UINT4;
 
 	/* Data structure for MD5 (Message Digest) computation */
-	typedef struct {
+	struct MD5_CTX {
 	  UINT4 i[2];                   /* number of _bits_ handled mod 2^64 */
 	  UINT4 buf[4];                                    /* scratch buffer */
 	  unsigned char in[64];                              /* input buffer */
 	  unsigned char digest[16];     /* actual digest after MD5Final call */
-	} MD5_CTX;
+	};
 
-#if 0
-	void MD5Init ();
-	void MD5Update ();
-	void MD5Final ();
-#endif
 	/*
 	 **********************************************************************
 	 ** End of md5.h                                                     **
@@ -356,11 +348,14 @@ namespace	{
 	 ******************************* (cut) ********************************
 	 */
 }
+
+
+
+
 string	Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 {
 	Require (s == e or s != NULL);
 	Require (s == e or e != NULL);
-
 	MD5_CTX	ctx;
 	memset (&ctx, 0, sizeof (ctx));
 	MD5Init (&ctx);
@@ -371,7 +366,7 @@ string	Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 	result.reserve (33);
 	for (int i = 0; i < 16; ++i) {
 		char	b[10];
-		memset (b, 0, sizeof (b));
+		 b[0] = '\0';
 		sprintf_s (b, "%02x", ctx.digest[i]);
 		result += b;
 	}
