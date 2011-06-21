@@ -10,6 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#if		qPlatform_Windows
+	#include	<windows.h>
+#endif
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {

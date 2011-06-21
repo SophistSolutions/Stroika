@@ -84,9 +84,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>
@@ -224,9 +221,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
@@ -361,9 +355,6 @@
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
       <Filter>Sources\Debug</Filter>

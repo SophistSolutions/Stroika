@@ -18,7 +18,7 @@
 #include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
-#include	"../Execution/ThreadUtils.h"
+#include	"../Execution/SimpleThread.h"
 #include	"../Time/DateUtils.h"
 
 #include	"FileAccessMode.h"

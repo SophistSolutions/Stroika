@@ -102,7 +102,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
@@ -156,7 +155,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
@@ -204,7 +202,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
