@@ -62,212 +62,6 @@ using	namespace	Stroika::Foundation::Memory;
 namespace	{
 	const char	BASE64_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 }
-#if		0
-namespace	{
-	const char	BASE64_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-#if		0
-	/**
-	 * encode three bytes using base64 (RFC 3548)
-	 *
-	 * @param triple three bytes that should be encoded
-	 * @param result buffer of four characters where the result is stored
-	 */  
-	void base64_encode_triple_ (unsigned char triple[3], char result[4])
-	{
-		int tripleValue = triple[0];
-		tripleValue *= 256;
-		tripleValue += triple[1];
-		tripleValue *= 256;
-		tripleValue += triple[2];
-		for (int i = 0; i < 4; i++) {
-			result[3-i] = BASE64_CHARS[tripleValue%64];
-			tripleValue /= 64;
-		}
-	} 
-
-	/**
-	 * encode an array of bytes using Base64 (RFC 3548)
-	 *
-	 * @param source the source buffer
-	 * @param sourcelen the length of the source buffer
-	 * @param target the target buffer
-	 * @param targetlen the length of the target buffer
-	 * @return 1 on success, 0 otherwise
-	 */  
-	int	base64_encode_ (unsigned char *source, size_t sourcelen, char *target, size_t targetlen)
-	{
-		/* check if the result will fit in the target buffer */
-		if ((sourcelen+2)/3*4 > targetlen-1) {
-			return 0;
-		}
-
-		/* encode all full triples */
-		while (sourcelen >= 3) {
-			base64_encode_triple_ (source, target);
-			sourcelen -= 3;
-			source += 3;
-			target += 4;
-		}
-
-		/* encode the last one or two characters */
-		if (sourcelen > 0) {
-			unsigned char temp[3];
-			memset(temp, 0, sizeof(temp));
-			memcpy(temp, source, sourcelen);
-			base64_encode_triple_ (temp, target);
-			target[3] = '=';
-			if (sourcelen == 1) {
-				target[2] = '=';
-			}
-			target += 4;
-		}
-
-		/* terminate the string */
-		target[0] = 0;
-
-		return 1;
-	}
-#endif
-
-
-	/**
-	 * determine the value of a base64 encoding character
-	 *
-	 * @param base64char the character of which the value is searched
-	 * @return the value in case of success (0-63), -1 on failure
-	 */  
-	int base64_char_value_ (char base64char)
-	{
-		if (base64char >= 'A' && base64char <= 'Z') {
-			return base64char-'A';
-		}
-		if (base64char >= 'a' && base64char <= 'z') {
-			return base64char-'a'+26;
-		}
-		if (base64char >= '0' && base64char <= '9') {
-			return base64char-'0'+2*26;
-		}
-		if (base64char == '+') {
-			return 2*26+10;
-		}
-		if (base64char == '/') {
-			return 2*26+11;
-		}
-		return -1;	// cuz we SKIP prefixing / trialing invalid characters - use to find end of series
-	} 
-
-	/**
-	 * decode a 4 char base64 encoded byte triple
-	 *
-	 * @param quadruple the 4 characters that should be decoded
-	 * @param result the decoded data
-	 * @return lenth of the result (1, 2 or 3), 0 on failure
-	 */  
-	int base64_decode_triple_ (const char quadruple[4], unsigned char* result)
-	{
-		int triple_value, bytes_to_decode = 3, only_equals_yet = 1;
-		int char_value[4];
-
-		for (int i = 0; i < 4; i++) {
-			char_value[i] = base64_char_value_ (quadruple[i]);
-		}
-
-		/* check if the characters are valid */
-		for (int i = 3; i >= 0; i--) {
-			if (char_value[i]<0) {
-				if (only_equals_yet && quadruple[i]=='=') {
-					/* we will ignore this character anyway, make it something
-					* that does not break our calculations */
-					char_value[i]=0;
-					bytes_to_decode--;
-					continue;
-				}
-				return 0;
-			}
-			/* after we got a real character, no other '=' are allowed anymore */
-			only_equals_yet = 0;
-		}
-
-		/* if we got "====" as input, bytes_to_decode is -1 */
-		if (bytes_to_decode < 0) {
-			bytes_to_decode = 0;
-		}
-
-		/* make one big value out of the partial values */
-		triple_value = char_value[0];
-		triple_value *= 64;
-		triple_value += char_value[1];
-		triple_value *= 64;
-		triple_value += char_value[2];
-		triple_value *= 64;
-		triple_value += char_value[3];
-
-		/* break the big value into bytes */
-		for (int i = bytes_to_decode; i < 3; i++) {
-			triple_value /= 256;
-		}
-		for (int i = bytes_to_decode - 1; i >= 0; i--) {
-			result[i] = triple_value%256;
-			triple_value /= 256;
-		}
-		return bytes_to_decode;
-	} 
-
-	/**
-	 * decode base64 encoded data
-	 *
-	 * @param source the encoded data (zero terminated)
-	 * @param target pointer to the target buffer
-	 * @param targetlen length of the target buffer
-	 * @return length of converted data on success, -1 otherwise
-	 */  
-	size_t base64_decode_X_ (const char *source, size_t sourceLen, unsigned char *target, size_t targetlen)
-	{
-		size_t converted = 0;
-
-		/* concatinate '===' to the source to handle unpadded base64 data */
-		Memory::SmallStackBuffer<char>	src (sourceLen + 5);
-		memcpy (src, source, sourceLen);
-		memcpy (src + sourceLen, "===", 3);
-
-		const char*	tmpptr = src;
-
-		/* convert as long as we get a full result */
-		size_t tmplen = 3;
-		while (tmplen == 3) {
-			char quadruple[4];
-			/* get 4 characters to convert */
-			for (int i = 0; i < 4; i++) {
-				/* skip invalid characters - we won't reach the end */
-				while (*tmpptr != '=' and base64_char_value_ (*tmpptr) < 0) {
-					tmpptr++;
-				}
-				quadruple[i] = *(tmpptr++);
-			}
-
-			/* convert the characters */
-			unsigned char tmpresult[3];
-			tmplen = base64_decode_triple_ (quadruple, (unsigned char*)tmpresult);
-
-			/* check if the fit in the result buffer */
-			if (targetlen < tmplen) {
-				Assert (false);	// cuz only called from place that assures buffer big enuf
-				return -1;
-			}
-
-			/* put the partial result in the result buffer */
-			memcpy (target, tmpresult, tmplen);
-			target += tmplen;
-			targetlen -= tmplen;
-			converted += tmplen;
-		}
-
-		return converted;
-	} 
-}
-#endif
-
 
 #if 1
 //PUBLIC DOMAIN IMPL OF DECODE libb64
@@ -363,13 +157,9 @@ vector<Byte>	Cryptography::DecodeBase64 (const string& s)
 {
 	size_t dataSize1 = s.length ();
 	SmallStackBuffer<Byte>	buf1 (dataSize1);	// MUCH more than big enuf
-#if 1
 	base64_decodestate _state;
 	base64_init_decodestate(&_state);
 	int r = base64_decode_block(s.c_str (), s.length (), (char*)buf1.begin (), &_state);
-#else
-	size_t r = base64_decode_X_ (s.c_str (), s.length (), buf1.begin (), dataSize1);
-#endif
 	Assert (r <= dataSize1);
 	return vector<Byte> (buf1.begin (), buf1.begin () + r);
 }
@@ -443,13 +233,163 @@ namespace	{
 	}
 }
 
+
+
+
+namespace	{
+	// FROM PUBLC DOMAIN LIB64 ....
+	typedef enum
+	{
+		step_A, step_B, step_C
+	} base64_encodestep;
+
+	typedef struct
+	{
+		base64_encodestep step;
+		char result;
+		int stepcount;
+
+
+LineBreak lb;
+	} base64_encodestate;
+
+//	const int CHARS_PER_LINE = 72;
+	const int CHARS_PER_LINE = 76;
+
+	void base64_init_encodestate(base64_encodestate* state_in)
+	{
+		state_in->step = step_A;
+		state_in->result = 0;
+		state_in->stepcount = 0;
+	}
+
+	char base64_encode_value(char value_in)
+	{
+		static const char* encoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		if (value_in > 63) return '=';
+		return encoding[(int)value_in];
+	}
+
+	int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in)
+	{
+		const char* plainchar = plaintext_in;
+		const char* const plaintextend = plaintext_in + length_in;
+		char* codechar = code_out;
+		char result;
+		char fragment;
+	
+		result = state_in->result;
+	
+		switch (state_in->step)
+		{
+			while (1)
+			{
+		case step_A:
+				if (plainchar == plaintextend)
+				{
+					state_in->result = result;
+					state_in->step = step_A;
+					return codechar - code_out;
+				}
+				fragment = *plainchar++;
+				result = (fragment & 0x0fc) >> 2;
+				*codechar++ = base64_encode_value(result);
+				result = (fragment & 0x003) << 4;
+		case step_B:
+				if (plainchar == plaintextend)
+				{
+					state_in->result = result;
+					state_in->step = step_B;
+					return codechar - code_out;
+				}
+				fragment = *plainchar++;
+				result |= (fragment & 0x0f0) >> 4;
+				*codechar++ = base64_encode_value(result);
+				result = (fragment & 0x00f) << 2;
+		case step_C:
+				if (plainchar == plaintextend)
+				{
+					state_in->result = result;
+					state_in->step = step_C;
+					return codechar - code_out;
+				}
+				fragment = *plainchar++;
+				result |= (fragment & 0x0c0) >> 6;
+				*codechar++ = base64_encode_value(result);
+				result  = (fragment & 0x03f) >> 0;
+				*codechar++ = base64_encode_value(result);
+			
+				++(state_in->stepcount);
+				if (state_in->stepcount == CHARS_PER_LINE/4)
+				{
+//					*codechar++ = '\n';
+					switch (state_in->lb) {
+						case	eLF_LB: *codechar++ = '\n'; break;
+						case	eCRLF_LB: *codechar++ = '\r'; *codechar++ = '\n'; break;
+					}
+					state_in->stepcount = 0;
+				}
+			}
+		}
+		/* control should not reach here */
+		return codechar - code_out;
+	}
+
+	int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
+	{
+		char* codechar = code_out;
+	
+		switch (state_in->step)
+		{
+		case step_B:
+			*codechar++ = base64_encode_value(state_in->result);
+			*codechar++ = '=';
+			*codechar++ = '=';
+			break;
+		case step_C:
+			*codechar++ = base64_encode_value(state_in->result);
+			*codechar++ = '=';
+			break;
+		case step_A:
+			break;
+		}
+#if 0
+//		*codechar++ = '\n';
+					switch (state_in->lb) {
+						case	eLF_LB: *codechar++ = '\n'; break;
+						case	eCRLF_LB: *codechar++ = '\r'; *codechar++ = '\n'; break;
+					}
+#endif
+	
+		return codechar - code_out;
+	}
+
+}
+
 string	Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
 {
+#if 1
+	base64_encodestate _state;
+	base64_init_encodestate(&_state);
+	_state.lb = lb;
+	int srcLen = end - start;
+	int bufSize = 4 * srcLen;
+	SmallStackBuffer<char>	data (bufSize);
+	int r = 	 base64_encode_block((char*)start, (end-start), data.begin (), &_state);
+	int extraBytes = base64_encode_blockend(data.begin () + r, &_state);
+	int totalBytes = r + extraBytes;
+	return string (data.begin (), data.begin () + totalBytes);
+#else
 	return base64_encode_ (start, end-start, lb);
+#endif
 }
 
 string	Cryptography::EncodeBase64 (const vector<Byte>& b, LineBreak lb)
 {
+#if 1
+	return EncodeBase64 (Containers::Start (b), Containers::End (b), lb);
+#else
 	return base64_encode_ (Containers::Start (b), b.size (), lb);
+#endif
 }
 
