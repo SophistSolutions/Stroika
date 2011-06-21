@@ -35,9 +35,9 @@ namespace	{
 namespace	{
 	vector<Byte>	DecodeBase64_ATL_ (const string& s)
 		{
-			int						dataSize1	=	ATL::Base64DecodeGetRequiredLength (s.length ());
+			int						dataSize1	=	ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
 			Memory::SmallStackBuffer<Byte>	buf1 (dataSize1);
-			if (ATL::Base64Decode (s.c_str (), s.length (), buf1, &dataSize1)) {
+			if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), buf1, &dataSize1)) {
 				return vector<Byte> (buf1.begin (), buf1.begin () + dataSize1);
 			}
 			return vector<Byte> ();
@@ -47,9 +47,9 @@ namespace	{
 			size_t	totalSize		=	b.size ();
 			if (totalSize != 0) {
 				Memory::SmallStackBuffer<char>	relBuf (0);
-				int						relEncodedSize	=	ATL::Base64EncodeGetRequiredLength (totalSize);
+				int						relEncodedSize	=	ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
 				relBuf.GrowToSize (relEncodedSize);
-				Verify (ATL::Base64Encode (Containers::Start (b), totalSize, relBuf, &relEncodedSize));
+				Verify (ATL::Base64Encode (Containers::Start (b), static_cast<int> (totalSize), relBuf, &relEncodedSize));
 				relBuf[relEncodedSize] = '\0';
 				if (lb == Cryptography::eCRLF_LB) {
 					return (static_cast<const char*> (relBuf));
@@ -116,31 +116,31 @@ namespace	{
 	void	DoRegressionTests_ ()
 		{
 			{
-				char	Src1[] = "This is a very good test of a very good test";
-				char	Val1[] = "08c8888b86d6300ade93a10095a9083a";
-				Verify (Cryptography::ComputeMD5Digest ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)) == Val1);
+				const	char	kSrc[] = "This is a very good test of a very good test";
+				const	char	kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
+				Verify (Cryptography::ComputeMD5Digest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == kEncodedVal);
 			}
 
 			{
-				char	Src1[] = 
+				const	char	kSrc[] = 
 					"This is a good test\r\n"
 					"We eat wiggly worms.\r\n"
 					"\r\n"
 					"That is a very good thing.****^^^#$#AS\r\n"
 					;
-				char	encodedVal1[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGluZy4qKioqXl5eIyQjQVMNCg==";
-				DO_ONE_REGTEST_BASE64_ (encodedVal1, vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)));
+				const	char	kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGluZy4qKioqXl5eIyQjQVMNCg==";
+				DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)));
 			}
 
 			{
-				char	Src1[]	=	
+				const	char	kSrc[]	=	
 					"{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
 					"{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 \\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab \\tx720 }\\listid292 }}\r\n"
 					"{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
 					"{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever today. Not terrible, but several times. And I think a bit yesterda\r\n"
 					"y.}"
 					;
-				char	encodedVal1[] = 
+				const	char	kEncodedVal[] = 
 					"e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
 					"Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
 					"aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
@@ -153,7 +153,13 @@ namespace	{
 					"IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
 					"dCB5ZXN0ZXJkYQ0KeS59"
 					;
-				DO_ONE_REGTEST_BASE64_ (encodedVal1, vector<Byte> ((const Byte*)Src1, (const Byte*)Src1 + ::strlen(Src1)));
+				DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)));
+			}
+
+			{
+				const	char	kSrc[]			=	"()'asdf***Adasdf a";
+				const	char	kEncodedVal[]	=	"KCknYXNkZioqKkFkYXNkZiBh";
+				DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)));
 			}
 
 		}
