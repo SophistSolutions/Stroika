@@ -5,4 +5,4 @@
 
 #include	"../Configuration/StroikaConfig.h"
 
-#include	"ThreadUtils.h"
+#include	"CopyableCriticalSection.h"

@@ -88,6 +88,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.cpp" />
@@ -140,6 +142,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h" />
@@ -150,6 +153,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.h" />
@@ -188,6 +192,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Event.inl" />
@@ -196,6 +201,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.inl" />
