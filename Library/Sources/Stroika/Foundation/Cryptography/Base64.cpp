@@ -2,38 +2,9 @@
  * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
 /*
- * Portions of code from http://freecode-freecode.blogspot.com/2008/02/base64c.html (not copyrighted).
+ * Note - used PUBLIC DOMAIN http://sourceforge.net/projects/libb64/files/libb64/libb64/libb64-1.2.src.zip/download
+ * code as a starting point.
  */
-/*
- * Portions of code from http://www.adp-gmbh.ch/cpp/common/base64.html
- *
- *  Copyright (C) 2004-2008 René Nyffenegger
- * 
-   base64.cpp and base64.h
-
-   Copyright (C) 2004-2008 René Nyffenegger
-
-   This source code is provided 'as-is', without any express or implied
-   warranty. In no event will the author be held liable for any damages
-   arising from the use of this software.
-
-   Permission is granted to anyone to use this software for any purpose,
-   including commercial applications, and to alter it and redistribute it
-   freely, subject to the following restrictions:
-
-   1. The origin of this source code must not be misrepresented; you must not
-      claim that you wrote the original source code. If you use this source code
-      in a product, an acknowledgment in the product documentation would be
-      appreciated but is not required.
-
-   2. Altered source versions must be plainly marked as such, and must not be
-      misrepresented as being the original source code.
-
-   3. This notice may not be removed or altered from any source distribution.
-
-   René Nyffenegger rene.nyffenegger@adp-gmbh.ch
-*/
-
 #include	"../StroikaPreComp.h"
 
 #include	"../Containers/Common.h"
@@ -53,6 +24,19 @@ using	namespace	Stroika::Foundation::Memory;
 
 
 
+/*
+ *	IMPLEMENTATION NOTES:
+ *
+ *		The public domain (private) code in this file - is designed to operate in a STREAM mode. I've preserved that
+ *	internally, evne though my current API doesnt work that way, because we will soon support a STREAM based API here,
+ *	and that will fit perfectly.
+ *		-- LGP 2011-06-21
+ */
+
+
+
+
+
 
 /*
  ********************************************************************************
@@ -60,18 +44,12 @@ using	namespace	Stroika::Foundation::Memory;
  ********************************************************************************
  */
 namespace	{
-	const char	BASE64_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-}
-
-#if 1
-//PUBLIC DOMAIN IMPL OF DECODE libb64
-namespace	{
 	enum base64_decodestep {
 		step_a, step_b, step_c, step_d
 	};
 	struct base64_decodestate {
-		base64_decodestep step;
-		char plainchar;
+		base64_decodestep	step;
+		char				plainchar;
 	};
 	void base64_init_decodestate(base64_decodestate* state_in)
 		{
@@ -86,7 +64,7 @@ namespace	{
 			if (value_in < 0 || value_in > decoding_size) return -1;
 			return decoding[(int)value_in];
 		}
-	int base64_decode_block(const char* code_in, const int length_in, char* plaintext_out, base64_decodestate* state_in)
+	int base64_decode_block (const char* code_in, const int length_in, char* plaintext_out, base64_decodestate* state_in)
 		{
 			const char* codechar = code_in;
 			char* plainchar = plaintext_out;
@@ -150,8 +128,6 @@ namespace	{
 			return plainchar - plaintext_out;
 		}
 }
-#endif
-
 
 vector<Byte>	Cryptography::DecodeBase64 (const string& s)
 {
@@ -171,204 +147,126 @@ vector<Byte>	Cryptography::DecodeBase64 (const string& s)
 
 
 
+
+
 /*
  ********************************************************************************
  *********************** Cryptography::EncodeBase64 *****************************
  ********************************************************************************
  */
 namespace	{
-	std::string base64_encode_ (unsigned char const* bytes_to_encode, size_t in_len, LineBreak lb)
-	{
-		string ret;
-		ret.reserve ((in_len / 4) + 3);
-		int i = 0;
-		unsigned char char_array_3[3];
-		unsigned char char_array_4[4];
-
-		int rowLen = 0;
-		while (in_len--) {
-			char_array_3[i++] = *(bytes_to_encode++);
-			if (i == 3) {
-				char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-				char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-				char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-				char_array_4[3] = char_array_3[2] & 0x3f;
-
-				for (i = 0; (i <4) ; i++) {
-					ret += BASE64_CHARS[char_array_4[i]];
-				}
-
-				rowLen += 4;
-				i = 0;
-				if ((rowLen %76) == 0) {
-					switch (lb) {
-						case	eLF_LB: ret += "\n";; break;
-						case	eCRLF_LB: ret += "\r\n"; break;
-					}
-					rowLen=0;
-				}
-			}
-		}
-
-		if (i != 0) {
-			for (int j = i; j < 3; j++) {
-				char_array_3[j] = '\0';
-			}
-
-			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-			char_array_4[3] = char_array_3[2] & 0x3f;
-
-			for (int j = 0; (j < i + 1); j++) {
-				ret += BASE64_CHARS[char_array_4[j]];
-			}
-
-			while ((i++ < 3)) {
-				ret += '=';
-			}
-		}
-
-		return ret;
-	}
-}
-
-
-
-
-namespace	{
-	// FROM PUBLC DOMAIN LIB64 ....
-	typedef enum
-	{
+	enum base64_encodestep {
 		step_A, step_B, step_C
-	} base64_encodestep;
-
-	typedef struct
-	{
+	};
+	struct base64_encodestate {
 		base64_encodestep step;
 		char result;
 		int stepcount;
-
-
-LineBreak lb;
-	} base64_encodestate;
-
-//	const int CHARS_PER_LINE = 72;
-	const int CHARS_PER_LINE = 76;
+		LineBreak lb;
+	};
 
 	void base64_init_encodestate(base64_encodestate* state_in)
-	{
-		state_in->step = step_A;
-		state_in->result = 0;
-		state_in->stepcount = 0;
-	}
+		{
+			state_in->step = step_A;
+			state_in->result = 0;
+			state_in->stepcount = 0;
+		}
 
 	char base64_encode_value(char value_in)
-	{
-		static const char* encoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		if (value_in > 63) return '=';
-		return encoding[(int)value_in];
-	}
+		{
+			const char	BASE64_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+			if (value_in > 63) return '=';
+			return BASE64_CHARS[(int)value_in];
+		}
 
 	int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in)
-	{
-		const char* plainchar = plaintext_in;
-		const char* const plaintextend = plaintext_in + length_in;
-		char* codechar = code_out;
-		char result;
-		char fragment;
-	
-		result = state_in->result;
-	
-		switch (state_in->step)
 		{
-			while (1)
+			const int CHARS_PER_LINE = 76;
+			const char* plainchar = plaintext_in;
+			const char* const plaintextend = plaintext_in + length_in;
+			char* codechar = code_out;
+			char result;
+			char fragment;
+	
+			result = state_in->result;
+	
+			switch (state_in->step)
 			{
-		case step_A:
-				if (plainchar == plaintextend)
+				while (1)
 				{
-					state_in->result = result;
-					state_in->step = step_A;
-					return codechar - code_out;
-				}
-				fragment = *plainchar++;
-				result = (fragment & 0x0fc) >> 2;
-				*codechar++ = base64_encode_value(result);
-				result = (fragment & 0x003) << 4;
-		case step_B:
-				if (plainchar == plaintextend)
-				{
-					state_in->result = result;
-					state_in->step = step_B;
-					return codechar - code_out;
-				}
-				fragment = *plainchar++;
-				result |= (fragment & 0x0f0) >> 4;
-				*codechar++ = base64_encode_value(result);
-				result = (fragment & 0x00f) << 2;
-		case step_C:
-				if (plainchar == plaintextend)
-				{
-					state_in->result = result;
-					state_in->step = step_C;
-					return codechar - code_out;
-				}
-				fragment = *plainchar++;
-				result |= (fragment & 0x0c0) >> 6;
-				*codechar++ = base64_encode_value(result);
-				result  = (fragment & 0x03f) >> 0;
-				*codechar++ = base64_encode_value(result);
-			
-				++(state_in->stepcount);
-				if (state_in->stepcount == CHARS_PER_LINE/4)
-				{
-//					*codechar++ = '\n';
-					switch (state_in->lb) {
-						case	eLF_LB: *codechar++ = '\n'; break;
-						case	eCRLF_LB: *codechar++ = '\r'; *codechar++ = '\n'; break;
+			case step_A:
+					if (plainchar == plaintextend)
+					{
+						state_in->result = result;
+						state_in->step = step_A;
+						return codechar - code_out;
 					}
-					state_in->stepcount = 0;
+					fragment = *plainchar++;
+					result = (fragment & 0x0fc) >> 2;
+					*codechar++ = base64_encode_value(result);
+					result = (fragment & 0x003) << 4;
+			case step_B:
+					if (plainchar == plaintextend)
+					{
+						state_in->result = result;
+						state_in->step = step_B;
+						return codechar - code_out;
+					}
+					fragment = *plainchar++;
+					result |= (fragment & 0x0f0) >> 4;
+					*codechar++ = base64_encode_value(result);
+					result = (fragment & 0x00f) << 2;
+			case step_C:
+					if (plainchar == plaintextend)
+					{
+						state_in->result = result;
+						state_in->step = step_C;
+						return codechar - code_out;
+					}
+					fragment = *plainchar++;
+					result |= (fragment & 0x0c0) >> 6;
+					*codechar++ = base64_encode_value(result);
+					result  = (fragment & 0x03f) >> 0;
+					*codechar++ = base64_encode_value(result);
+			
+					++(state_in->stepcount);
+					if (state_in->stepcount == CHARS_PER_LINE/4)
+					{
+						switch (state_in->lb) {
+							case	eLF_LB: *codechar++ = '\n'; break;
+							case	eCRLF_LB: *codechar++ = '\r'; *codechar++ = '\n'; break;
+						}
+						state_in->stepcount = 0;
+					}
 				}
 			}
+			return codechar - code_out;
 		}
-		/* control should not reach here */
-		return codechar - code_out;
-	}
-
 	int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
-	{
-		char* codechar = code_out;
-	
-		switch (state_in->step)
 		{
-		case step_B:
-			*codechar++ = base64_encode_value(state_in->result);
-			*codechar++ = '=';
-			*codechar++ = '=';
-			break;
-		case step_C:
-			*codechar++ = base64_encode_value(state_in->result);
-			*codechar++ = '=';
-			break;
-		case step_A:
-			break;
-		}
-#if 0
-//		*codechar++ = '\n';
-					switch (state_in->lb) {
-						case	eLF_LB: *codechar++ = '\n'; break;
-						case	eCRLF_LB: *codechar++ = '\r'; *codechar++ = '\n'; break;
-					}
-#endif
+			char* codechar = code_out;
 	
-		return codechar - code_out;
-	}
-
+			switch (state_in->step)
+			{
+			case step_B:
+				*codechar++ = base64_encode_value(state_in->result);
+				*codechar++ = '=';
+				*codechar++ = '=';
+				break;
+			case step_C:
+				*codechar++ = base64_encode_value(state_in->result);
+				*codechar++ = '=';
+				break;
+			case step_A:
+				break;
+			}
+	
+			return codechar - code_out;
+		}
 }
 
 string	Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
 {
-#if 1
 	base64_encodestate _state;
 	base64_init_encodestate(&_state);
 	_state.lb = lb;
@@ -379,17 +277,10 @@ string	Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak
 	int extraBytes = base64_encode_blockend(data.begin () + r, &_state);
 	int totalBytes = r + extraBytes;
 	return string (data.begin (), data.begin () + totalBytes);
-#else
-	return base64_encode_ (start, end-start, lb);
-#endif
 }
 
 string	Cryptography::EncodeBase64 (const vector<Byte>& b, LineBreak lb)
 {
-#if 1
 	return EncodeBase64 (Containers::Start (b), Containers::End (b), lb);
-#else
-	return base64_encode_ (Containers::Start (b), b.size (), lb);
-#endif
 }
 
