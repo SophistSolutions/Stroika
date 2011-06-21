@@ -10,6 +10,7 @@
 
 #include	"../Configuration/Common.h"
 #include	"../Memory/RefCntPtr.h"
+#include	"../Time/RealTime.h"
 
 #include	"CriticalSection.h"
 #include	"Exceptions.h"
@@ -69,12 +70,12 @@ namespace	Stroika {
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
 					nonvirtual	void	Stop ();				// send ThreadAbortException if not forced, and TerminateThread if forced - does NOT block until Stop successful
 					nonvirtual	void	Stop_Forced_Unsafe ();	// like Stop () - but less safe, and more forceful
-					nonvirtual	void	WaitForDone (float timeout = -1.0f) const;	// wait until thread is done (use Stop to request termination) - throws if timeout
-					nonvirtual	void	StopAndWaitForDone (float timeout = -1.0f);	// throws if timeout
+					nonvirtual	void	WaitForDone (Time::DurationSecondsType timeout = -1.0f) const;	// wait until thread is done (use Stop to request termination) - throws if timeout
+					nonvirtual	void	StopAndWaitForDone (Time::DurationSecondsType timeout = -1.0f);	// throws if timeout
 					// Look pumping messages until either time2Pump is exceeded or the thread completes. Its NOT an erorr if the
 					// timeout is exceeded
-					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump = -1.0f) const;
-					nonvirtual	void	WaitForDoneWhilePumpingMessages (float timeout = -1.0f) const;	// throws if timeout
+					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = -1.0f) const;
+					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = -1.0f) const;	// throws if timeout
 
 				public:
 					nonvirtual	void	SetThreadPriority (int nPriority = THREAD_PRIORITY_NORMAL);

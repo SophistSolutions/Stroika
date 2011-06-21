@@ -46,7 +46,7 @@ namespace	Stroika {
 				{
 					return fRep < rhs.fRep;
 				}
-			inline	void	SimpleThread::StopAndWaitForDone (float timeout)
+			inline	void	SimpleThread::StopAndWaitForDone (Time::DurationSecondsType timeout)
 				{
 					Stop ();
 					WaitForDone (timeout);

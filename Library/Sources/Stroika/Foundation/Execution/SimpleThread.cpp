@@ -397,7 +397,7 @@ void	SimpleThread::Stop_Forced_Unsafe ()
 	}
 }
 
-void	SimpleThread::WaitForDone (float timeout) const
+void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 {
 	RequireNotNil (fRep);
 	bool	doWait	=	false;
@@ -417,7 +417,7 @@ void	SimpleThread::WaitForDone (float timeout) const
 	}
 }
 
-void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) const
+void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
 {
 	HANDLE	thread	=	NULL;
 	{
@@ -431,7 +431,7 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (float timeToPump) c
 	}
 }
 
-void	SimpleThread::WaitForDoneWhilePumpingMessages (float timeout) const
+void	SimpleThread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
 	DurationSecondsType	timeoutAt	=	Time::GetTickCount () + timeout;
 	// CRUDDY impl - but decent enuf for first draft
@@ -444,7 +444,7 @@ void	SimpleThread::WaitForDoneWhilePumpingMessages (float timeout) const
 			if (time2Wait <= 0) {
 				Win32ErrorException::DoThrow (WAIT_TIMEOUT);
 			}
-			PumpMessagesAndReturnWhenDoneOrAfterTime (static_cast<float> (time2Wait));
+			PumpMessagesAndReturnWhenDoneOrAfterTime (time2Wait);
 		}
 	}
 }

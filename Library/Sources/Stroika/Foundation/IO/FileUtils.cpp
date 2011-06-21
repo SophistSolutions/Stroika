@@ -326,7 +326,7 @@ TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)
 
 /*
  ********************************************************************************
- ****************** IO::FileSizeToDisplayString **************************
+ ************************* IO::FileSizeToDisplayString **************************
  ********************************************************************************
  */
 wstring	IO::FileSizeToDisplayString (FileOffset_t bytes)
@@ -335,10 +335,10 @@ wstring	IO::FileSizeToDisplayString (FileOffset_t bytes)
 		return Format (L"%d bytes", static_cast<int> (bytes));
 	}
 	else if (bytes < 1000 * 1024) {
-		return Format (L"%.1f K", static_cast<float> (bytes)/1024.0f);
+		return Format (L"%.1f K", static_cast<double> (bytes)/1024.0f);
 	}
 	else {
-		return Format (L"%.1f MB", static_cast<float> (bytes)/(1024*1024.0f));
+		return Format (L"%.1f MB", static_cast<double> (bytes)/(1024*1024.0f));
 	}
 }
 
@@ -348,7 +348,7 @@ wstring	IO::FileSizeToDisplayString (FileOffset_t bytes)
 
 /*
  ********************************************************************************
- ****************************** IO::GetFileSize **************************
+ *********************************** IO::GetFileSize ****************************
  ********************************************************************************
  */
 FileOffset_t	IO::GetFileSize (const TString& fileName)
