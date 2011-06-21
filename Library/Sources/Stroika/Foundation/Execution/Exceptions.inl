@@ -74,18 +74,6 @@ namespace	Stroika {
 
 
 
-
-		//	class	StringException
-			inline	StringException::StringException (const wstring& reasonForError):
-				fError (reasonForError)
-				{
-				}
-			inline	StringException::operator wstring () const
-				{
-					return fError;
-				}
-
-		
 		//	class	FileBusyException
 			inline	FileBusyException::FileBusyException (const TString& fileName):
 				fFileName (fileName)

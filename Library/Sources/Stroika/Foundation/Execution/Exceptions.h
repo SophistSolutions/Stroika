@@ -15,6 +15,7 @@
 #include	"../Characters/StringUtils.h"
 #include	"../Configuration/Basics.h"
 #include	"../Debug/Trace.h"
+#include	"StringException.h"
 
 
 
@@ -100,16 +101,6 @@ namespace	Execution {
 			HRESULT	fHResult;
 	};
 
-
-	class	StringException {
-		public:
-			StringException (const wstring& reasonForError);
-
-			operator wstring () const;
-
-		private:
-			wstring	fError;
-	};
 
 	class	errno_ErrorException : public StringException {
 		public:

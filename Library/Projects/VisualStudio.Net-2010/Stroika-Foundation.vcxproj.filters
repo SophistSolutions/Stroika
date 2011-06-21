@@ -52,6 +52,9 @@
     <Filter Include="Sources\Execution\Platform\Windows">
       <UniqueIdentifier>{4aeb5339-ebc3-4aa8-a44b-749d9af47704}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Streams">
+      <UniqueIdentifier>{eba5ee5b-1eff-4a84-b2ad-88df60b433bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -167,6 +170,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp">
+      <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,6 +318,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -409,6 +424,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
       <Filter>Sources\Memory\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
 </Project>

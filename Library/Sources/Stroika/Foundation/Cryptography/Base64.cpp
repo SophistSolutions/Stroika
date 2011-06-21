@@ -38,7 +38,9 @@
 
 #include	"../Containers/Basics.h"
 #include	"../Debug/Assertions.h"
+#include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
+#include	"../Streams/BadFormatException.h"
 
 #include	"Base64.h"
 
@@ -124,6 +126,7 @@ namespace	{
 	}
 #endif
 
+
 	/**
 	 * determine the value of a base64 encoding character
 	 *
@@ -147,9 +150,7 @@ namespace	{
 		if (base64char == '/') {
 			return 2*26+11;
 		}
-// DEFINE COMMON EXCEPTION AND THROW HERE FOR BAD FORMAT
-
-		return -1;
+		return -1;	// cuz we SKIP prefixing / trialing invalid characters - use to find end of series
 	} 
 
 	/**
@@ -219,23 +220,21 @@ namespace	{
 	 */  
 	size_t base64_decode_X_ (const char *source, size_t sourceLen, unsigned char *target, size_t targetlen)
 	{
-		//char *src;
-		int i;
 		size_t converted = 0;
 
 		/* concatinate '===' to the source to handle unpadded base64 data */
 		Memory::SmallStackBuffer<char>	src (sourceLen + 5);
-		memcpy(src, source, sourceLen);
+		memcpy (src, source, sourceLen);
 		memcpy (src + sourceLen, "===", 3);
 
-		const char *tmpptr = src;
+		const char*	tmpptr = src;
 
 		/* convert as long as we get a full result */
 		size_t tmplen = 3;
 		while (tmplen == 3) {
 			char quadruple[4];
 			/* get 4 characters to convert */
-			for (i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++) {
 				/* skip invalid characters - we won't reach the end */
 				while (*tmpptr != '=' and base64_char_value_ (*tmpptr) < 0) {
 					tmpptr++;
@@ -249,12 +248,12 @@ namespace	{
 
 			/* check if the fit in the result buffer */
 			if (targetlen < tmplen) {
-// MUST RAISE EXCEPTION HERE!!!
+				Assert (false);	// cuz only called from place that assures buffer big enuf
 				return -1;
 			}
 
 			/* put the partial result in the result buffer */
-			memcpy(target, tmpresult, tmplen);
+			memcpy (target, tmpresult, tmplen);
 			target += tmplen;
 			targetlen -= tmplen;
 			converted += tmplen;
@@ -268,8 +267,8 @@ namespace	{
 
 vector<Byte>	Cryptography::DecodeBase64 (const string& s)
 {
-	size_t dataSize1= s.length ();
-	SmallStackBuffer<Byte>	buf1 (dataSize1);
+	size_t dataSize1 = s.length ();
+	SmallStackBuffer<Byte>	buf1 (dataSize1);	// MUCH more than big enuf
 	size_t r = base64_decode_X_ (s.c_str (), s.length (), buf1.begin (), dataSize1);
 	Assert (r <= dataSize1);
 	return vector<Byte> (buf1.begin (), buf1.begin () + r);

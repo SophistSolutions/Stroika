@@ -98,6 +98,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp" />
@@ -111,6 +112,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
   </ItemGroup>
@@ -145,6 +147,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.h" />
@@ -159,6 +162,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
@@ -185,6 +189,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.inl" />
@@ -195,6 +200,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
   </ItemGroup>
