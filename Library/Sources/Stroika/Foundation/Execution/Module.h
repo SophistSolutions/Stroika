@@ -7,7 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Characters/TString.h"
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 
 

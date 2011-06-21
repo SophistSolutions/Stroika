@@ -8,7 +8,7 @@
 
 #include	<cstddef>
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 #include	"../Execution/ModuleInit.h"
 

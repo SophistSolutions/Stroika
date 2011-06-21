@@ -10,8 +10,8 @@
 #endif
 
 #include	"../../../Characters/StringUtils.h"
-#include	"../../../Configuration/Basics.h"
-#include	"../../../Containers/Basics.h"
+#include	"../../../Configuration/Common.h"
+#include	"../../../Containers/Common.h"
 #include	"../../../Debug/Trace.h"
 #include	"../../../Time/Realtime.h"
 

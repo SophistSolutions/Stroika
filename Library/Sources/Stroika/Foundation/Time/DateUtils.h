@@ -14,7 +14,7 @@
 #endif
 
 #include	"../Characters/TString.h"
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 namespace	Stroika {
 	namespace	Foundation {

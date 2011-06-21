@@ -12,7 +12,7 @@
 //MOVE INLINE CODE BELOW INTO .INL file - and then we can lose this #include for assertions here..
 #include	"../Debug/Assertions.h"
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 
 

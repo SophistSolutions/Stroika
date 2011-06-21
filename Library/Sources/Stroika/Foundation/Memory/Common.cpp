@@ -10,7 +10,7 @@
 
 #include	"MemoryAllocator.h"
 
-#include	"Basics.h"
+#include	"Common.h"
 
 
 using	namespace	Stroika;

@@ -15,7 +15,7 @@
 #include	<tchar.h>
 
 #include	"../Characters/StringUtils.h"
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Execution/ThreadUtils.h"

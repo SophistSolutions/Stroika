@@ -8,7 +8,7 @@
 
 #include	<vector>
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 
 /// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING

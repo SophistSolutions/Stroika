@@ -21,7 +21,7 @@
 	#include	<Windows.h>
 #endif
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 
 

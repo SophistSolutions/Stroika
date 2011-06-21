@@ -18,7 +18,7 @@
 #include	<tchar.h>
 
 #include	"../Execution/Exceptions.h"
-#include	"../Containers/Basics.h"
+#include	"../Containers/Common.h"
 #include	"../Containers/SetUtils.h"
 #include	"../Debug/Trace.h"
 #include	"../IO/FileAccessException.h"
@@ -941,7 +941,7 @@ wstring	IO::ReadString (istream& in)
 
 /*
  ********************************************************************************
- ******************************* IO::ReadBytes ***************************
+ *********************************** IO::ReadBytes ******************************
  ********************************************************************************
  */
 vector<Byte>	IO::ReadBytes (istream& in)
@@ -950,7 +950,7 @@ vector<Byte>	IO::ReadBytes (istream& in)
 	in.seekg (0, ios_base::end);
 	streamoff	end		=	in.tellg ();
 	Assert (start <= end);
-	if ((end - start) > numeric_limits<size_t>::max ()) {
+	if (streamoff (end - start) > streamoff (numeric_limits<size_t>::max ())) {
 		Execution::DoThrow (StringException (L"stream too large"));
 	}
 	size_t	len	=	static_cast<size_t> (end-start);

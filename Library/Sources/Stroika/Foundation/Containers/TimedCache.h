@@ -9,7 +9,7 @@
 #include	<tchar.h>
 #include	<map>
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Time/Realtime.h"
 

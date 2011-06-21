@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
 
 

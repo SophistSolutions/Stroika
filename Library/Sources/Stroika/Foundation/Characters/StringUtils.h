@@ -14,9 +14,8 @@
 #include	<tchar.h>
 #endif
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"CodePage.h"
-//#include	"TString.h"
 
 
 

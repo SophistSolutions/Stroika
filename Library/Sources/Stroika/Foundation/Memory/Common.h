@@ -8,7 +8,7 @@
 
 #include	<memory>
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 
 #if		qDebug
@@ -73,4 +73,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Basics.inl"
+#include	"Common.inl"

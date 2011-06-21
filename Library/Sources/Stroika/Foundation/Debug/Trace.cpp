@@ -12,7 +12,7 @@
 
 
 #include	"../Execution/CriticalSection.h"
-#include	"../Memory/Basics.h"
+#include	"../Memory/Common.h"
 #include	"../Time/Realtime.h"
 
 #if		qTraceToFile

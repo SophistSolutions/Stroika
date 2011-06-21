@@ -12,7 +12,7 @@
 	#error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include	"../../../Configuration/Basics.h"
+#include	"../../../Configuration/Common.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

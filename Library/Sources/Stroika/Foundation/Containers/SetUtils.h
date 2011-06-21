@@ -8,7 +8,7 @@
 
 #include	<set>
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 
 
 

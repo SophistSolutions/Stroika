@@ -13,7 +13,7 @@
 #endif
 
 #include	"../Characters/StringUtils.h"
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"../Debug/Trace.h"
 #include	"../IO/FileBusyException.h"
 #include	"../IO/FileFormatException.h"

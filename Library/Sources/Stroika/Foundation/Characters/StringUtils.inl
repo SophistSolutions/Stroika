@@ -10,7 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"../Containers/Basics.h"
+#include	"../Containers/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 
 namespace	Stroika {	

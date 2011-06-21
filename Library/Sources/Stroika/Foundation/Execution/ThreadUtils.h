@@ -10,7 +10,7 @@
 	#include	<Windows.h>
 #endif
 
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"../Memory/RefCntPtr.h"
 
 #include	"CriticalSection.h"

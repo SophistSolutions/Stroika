@@ -10,7 +10,7 @@
 	#include	<atlenc.h>
 #endif
 
-#include	"Stroika/Foundation/Containers/Basics.h"
+#include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Cryptography/Base64.h"
 #include	"Stroika/Foundation/Cryptography/MD5.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"

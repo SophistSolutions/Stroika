@@ -6,10 +6,10 @@
 #include	<iomanip>
 #include	<sstream>
 
-#include	"../Containers/Basics.h"
+#include	"../Containers/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Debug/Trace.h"
-#include	"../Math/Basics.h"
+#include	"../Math/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 #include	"CodePage.h"
 

@@ -108,9 +108,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Basics.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -186,6 +183,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -239,20 +239,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h">
       <Filter>Sources\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Basics.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Basics.h">
-      <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Basics.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h">
@@ -345,6 +333,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -392,20 +392,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.inl">
       <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Basics.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
       <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Basics.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Basics.inl">
-      <Filter>Sources\Math</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Basics.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl">
       <Filter>Sources\Execution</Filter>
@@ -460,6 +448,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
       <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl">
+      <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl">
+      <Filter>Sources\Math</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>

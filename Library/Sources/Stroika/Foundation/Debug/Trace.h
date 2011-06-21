@@ -13,7 +13,7 @@
 
 #include	"../Characters/StringUtils.h"
 #include	"../Characters/TString.h"
-#include	"../Configuration/Basics.h"
+#include	"../Configuration/Common.h"
 #include	"../Execution/ModuleInit.h"
 #include	"../Time/Realtime.h"
 
