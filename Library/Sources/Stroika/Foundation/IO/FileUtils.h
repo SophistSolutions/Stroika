@@ -21,6 +21,8 @@
 #include	"../Execution/ThreadUtils.h"
 #include	"../Time/DateUtils.h"
 
+#include	"FileAccessMode.h"
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -43,47 +45,6 @@ namespace	Stroika {
 
 
 
-			// First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
-			// But this will do for now...
-			//		-- LGP 2009-08-15
-			enum FileAccessMode {
-				eRead_FAM	= 0x1,
-				eWrite_FAM	= 0x2,
-
-				// composite values
-				eReadWrite_FAM	= eRead_FAM | eWrite_FAM,
-			};
-
-			// This exception is thrown when a given file is opened, or creation attempted, etc. It is a failure due to
-			// file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
-			// on a given file (which is usually given in the object). It also is the result of a perticular operation/access
-			// failure (like read, write, or list).
-			//
-			// For now inherits from StringException so places that currently don't refer to this will still be caught in a 
-			// list of exceptions. Probably should do separate handler so can customize messages...
-			class	FileAccessException : public Execution::StringException {
-				public:
-					FileAccessException (const TString& fileName = TString (), FileAccessMode fileAccessMode = eReadWrite_FAM);
-
-				public:
-					TString			fFileName;
-					FileAccessMode	fFileAccessMode;
-			};
-
-
-			// Use can use this utility macro to 'fill in' the filename for a block of code that could throw a FileAccessException
-			// on a given filename (but where that code may not know the filename)
-			#define	FileAccessException_FILENAME_UPDATE_HELPER(_FILENAME_,_CODE_)\
-				try {\
-					_CODE_;\
-				}\
-				catch (const FileAccessException& prevFAE) {\
-					if (prevFAE.fFileName.empty ()) {\
-						Execution::DoThrow (FileAccessException (_FILENAME_, prevFAE.fFileAccessMode));\
-					}\
-					Execution::DoReThrow ();\
-				}\
-		
 
 
 			// doesn't actually open the file. It's purely advisory. But its helpful to assure

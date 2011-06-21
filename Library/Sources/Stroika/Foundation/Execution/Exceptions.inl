@@ -74,19 +74,6 @@ namespace	Stroika {
 
 
 
-		//	class	FileBusyException
-			inline	FileBusyException::FileBusyException (const TString& fileName):
-				fFileName (fileName)
-				{
-				}
-
-		//	class	FileFormatException
-			inline	FileFormatException::FileFormatException (const TString& fileName):
-				fFileName (fileName)
-				{
-				}
-
-
 			template	<typename T>
 				inline	__declspec(noreturn)	void	DoThrow (const T& e2Throw)
 					{
@@ -147,7 +134,7 @@ namespace	Stroika {
 						throw e2Throw;
 					}
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const FileFormatException& e2Throw)
+				inline	__declspec(noreturn)	void	DoThrow (const IO::FileFormatException& e2Throw)
 					{
 						DbgTrace (_T ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;
@@ -165,7 +152,7 @@ namespace	Stroika {
 						throw e2Throw;
 					}
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const FileBusyException& e2Throw)
+				inline	__declspec(noreturn)	void	DoThrow (const IO::FileBusyException& e2Throw)
 					{
 						DbgTrace (_T ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;

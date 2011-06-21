@@ -177,6 +177,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp">
+      <Filter>Sources\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp">
+      <Filter>Sources\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
+      <Filter>Sources\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -324,6 +333,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -430,6 +451,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl">
+      <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl">
+      <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
+      <Filter>Sources\IO</Filter>
     </None>
   </ItemGroup>
 </Project>

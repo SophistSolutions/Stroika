@@ -21,6 +21,7 @@
 #include	"../Containers/Basics.h"
 #include	"../Containers/SetUtils.h"
 #include	"../Debug/Trace.h"
+#include	"../IO/FileAccessException.h"
 #include	"../Memory/SmallStackBuffer.h"
 
 #include	"FileUtils.h"
@@ -170,41 +171,6 @@ TString	IO::GetSpecialDir_GetTempDir ()
 
 
 
-
-
-/*
- ********************************************************************************
- ********************* IO::FileAccessException ***************************
- ********************************************************************************
- */
-namespace	{
-	wstring	mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode)
-		{
-			wstring	message;
-			if ((fileAccessMode & eRead_FAM) and (fileAccessMode & eWrite_FAM)) {
-				message = L"Cannot read from or write to file";
-			}
-			else if (fileAccessMode & eRead_FAM) {
-				message = L"Cannot read from file";
-			}
-			else if (fileAccessMode & eWrite_FAM) {
-				message = L"Cannot write to file";
-			}
-			else {
-				message = L"Access failure for file";
-			}
-			if (not fileName.empty ()) {
-				message = Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (TString2Wide (fileName), 100, false).c_str ());
-			}
-			return message;
-		}
-}
-FileAccessException::FileAccessException (const TString& fileName, FileAccessMode fileAccessMode)
-	:StringException (mkMessage_ (fileName, fileAccessMode))
-	,fFileName (fileName)
-	,fFileAccessMode (fileAccessMode)
-{
-}
 
 
 

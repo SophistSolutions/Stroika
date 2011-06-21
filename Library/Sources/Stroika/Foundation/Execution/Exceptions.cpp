@@ -13,6 +13,7 @@
 
 #include	"../Characters/StringUtils.h"
 #include	"../Debug/Trace.h"
+#include	"../IO/FileAccessException.h"
 #include	"../IO/FileUtils.h"
 
 #include	"Exceptions.h"
@@ -120,7 +121,7 @@ void	Win32ErrorException::DoThrow (DWORD error)
 		}
 		case	ERROR_SHARING_VIOLATION: {
 			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileBusyException", error);
-			throw FileBusyException ();
+			throw IO::FileBusyException ();
 		}
 		case ERROR_FILE_NOT_FOUND: {
 			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileAccessException", error);
