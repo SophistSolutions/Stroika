@@ -68,10 +68,14 @@ namespace	{
 			if (value_in < 0 || value_in >= NEltsOf (kDecoding)) {
 				return -1;
 			}
+			Assert (0 <= value_in and value_in < NEltsOf (kDecoding));
 			return kDecoding[(int)value_in];
 		}
 	size_t base64_decode_block_ (const char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
 		{
+			RequireNotNil (code_in);
+			RequireNotNil (plaintext_out);
+			
 			const char* codechar	=	code_in;
 			Byte*		plainchar	=	plaintext_out;
 			char		fragment	=	'\0';
@@ -131,6 +135,9 @@ namespace	{
 
 vector<Byte>	Cryptography::DecodeBase64 (const string& s)
 {
+	if (s.empty ()) {
+		return vector<Byte> ();
+	}
 	size_t dataSize1 = s.length ();
 	SmallStackBuffer<Byte>	buf1 (dataSize1);	// MUCH more than big enuf
 	base64_decodestate_ state;
