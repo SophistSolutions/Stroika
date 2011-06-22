@@ -53,7 +53,7 @@ namespace	{
 	};
 	struct base64_decodestate_ {
 		base64_decodestep_	step;
-		char				plainchar;
+		Byte				plainchar;
 
 		base64_decodestate_ ()
 			: step (step_a)
@@ -65,14 +65,16 @@ namespace	{
 		{
 			static const char kDecoding[] = {62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-2,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51};
 			value_in -= 43;
-			if (value_in < 0 || value_in > NEltsOf (kDecoding)) return -1;
+			if (value_in < 0 || value_in >= NEltsOf (kDecoding)) {
+				return -1;
+			}
 			return kDecoding[(int)value_in];
 		}
-	size_t base64_decode_block_ (const char* code_in, size_t length_in, char* plaintext_out, base64_decodestate_* state)
+	size_t base64_decode_block_ (const char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
 		{
-			const char* codechar = code_in;
-			char* plainchar = plaintext_out;
-			char fragment;
+			const char* codechar	=	code_in;
+			Byte*		plainchar	=	plaintext_out;
+			char		fragment	=	'\0';
 	
 			*plainchar = state->plainchar;
 	
@@ -81,8 +83,7 @@ namespace	{
 				{
 			case step_a:
 					do {
-						if (codechar == code_in+length_in)
-						{
+						if (codechar == code_in + length_in) {
 							state->step = step_a;
 							state->plainchar = *plainchar;
 							return plainchar - plaintext_out;
@@ -92,8 +93,7 @@ namespace	{
 					*plainchar    = (fragment & 0x03f) << 2;
 			case step_b:
 					do {
-						if (codechar == code_in+length_in)
-						{
+						if (codechar == code_in + length_in) {
 							state->step = step_b;
 							state->plainchar = *plainchar;
 							return plainchar - plaintext_out;
@@ -104,8 +104,7 @@ namespace	{
 					*plainchar    = (fragment & 0x00f) << 4;
 			case step_c:
 					do {
-						if (codechar == code_in+length_in)
-						{
+						if (codechar == code_in + length_in) {
 							state->step = step_c;
 							state->plainchar = *plainchar;
 							return plainchar - plaintext_out;
@@ -116,8 +115,7 @@ namespace	{
 					*plainchar    = (fragment & 0x003) << 6;
 			case step_d:
 					do {
-						if (codechar == code_in+length_in)
-						{
+						if (codechar == code_in + length_in) {
 							state->step = step_d;
 							state->plainchar = *plainchar;
 							return plainchar - plaintext_out;
@@ -127,7 +125,6 @@ namespace	{
 					*plainchar++   |= (fragment & 0x03f);
 				}
 			}
-			/* control should not reach here */
 			return plainchar - plaintext_out;
 		}
 }
@@ -137,7 +134,7 @@ vector<Byte>	Cryptography::DecodeBase64 (const string& s)
 	size_t dataSize1 = s.length ();
 	SmallStackBuffer<Byte>	buf1 (dataSize1);	// MUCH more than big enuf
 	base64_decodestate_ state;
-	size_t r = base64_decode_block_ (s.c_str (), s.length (), (char*)buf1.begin (), &state);
+	size_t r = base64_decode_block_ (Containers::Start (s), s.length (), buf1.begin (), &state);
 	Assert (r <= dataSize1);
 	return vector<Byte> (buf1.begin (), buf1.begin () + r);
 }
@@ -185,16 +182,16 @@ namespace	{
 			return BASE64_CHARS_[(int)value_in];
 		}
 
-	size_t base64_encode_block_ (const char* plaintext_in, size_t length_in, char* code_out, base64_encodestate* state)
+	size_t base64_encode_block_ (const Byte* plaintext_in, size_t length_in, char* code_out, base64_encodestate* state)
 		{
 			const int CHARS_PER_LINE = 76;
 			
-			const char*			plainchar		= plaintext_in;
-			const char* const	plaintextend	= plaintext_in + length_in;
+			const Byte*			plainchar		=	plaintext_in;
+			const Byte* const	plaintextend	=	plaintext_in + length_in;
 			char*				codechar		=	code_out;
 			char				result			=	state->result;
-	
-			char fragment;
+
+			char fragment	=	'\0';
 			switch (state->step) {
 				while (1) {
 			case step_A:
@@ -218,8 +215,7 @@ namespace	{
 					*codechar++ = base64_encode_value_ (result);
 					result = (fragment & 0x00f) << 2;
 			case step_C:
-					if (plainchar == plaintextend)
-					{
+					if (plainchar == plaintextend) {
 						state->result = result;
 						state->step = step_C;
 						return codechar - code_out;
@@ -264,13 +260,17 @@ namespace	{
 
 string	Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
 {
+	Require (start == end or start != NULL);
+	Require (start == end or end != NULL);
+
 	base64_encodestate state (lb);
 	size_t srcLen = end - start;
 	size_t bufSize = 4 * srcLen;
+	Assert (bufSize > srcLen);	// no overflow!
 	SmallStackBuffer<char>	data (bufSize);
-	size_t r = 	 base64_encode_block_ ((char*)start, (end-start), data.begin (), &state);
-	size_t extraBytes = base64_encode_blockend_ (data.begin () + r, &state);
-	size_t totalBytes = r + extraBytes;
+	size_t mostBytesCopied = 	 base64_encode_block_ (start, srcLen, data.begin (), &state);
+	size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+	size_t totalBytes = mostBytesCopied + extraBytes;
 	Assert (totalBytes <= bufSize);
 	return string (data.begin (), data.begin () + totalBytes);
 }

@@ -181,4 +181,3 @@ int main(int argc, const char* argv[])
 	cout << "Succeeded" << endl;
 	return EXIT_SUCCESS;
 }
-
