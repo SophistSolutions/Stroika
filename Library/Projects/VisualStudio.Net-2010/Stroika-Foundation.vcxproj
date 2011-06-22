@@ -117,6 +117,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
   </ItemGroup>
@@ -172,6 +177,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
@@ -214,6 +224,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
   </ItemGroup>
