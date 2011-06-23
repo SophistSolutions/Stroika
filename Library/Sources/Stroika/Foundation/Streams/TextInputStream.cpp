@@ -3,16 +3,19 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include	"../Containers/Common.h"
+
 #include	"TextInputStream.h"
 
 
 
 
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Streams;
 
 
 /*
  ********************************************************************************
- *********************** Streams::BadFormatException ****************************
+ ************************** Streams::TextInputStream ****************************
  ********************************************************************************
  */

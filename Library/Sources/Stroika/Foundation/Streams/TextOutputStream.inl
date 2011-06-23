@@ -10,9 +10,22 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Debug/Assertions.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	Streams {
 
+			inline	TextOutputStream::TextOutputStream ()
+				{
+				}
+			void	TextOutputStream::Write (const wchar_t* buffer, size_t bufSize)
+				{
+					RequireNotNil (buffer);
+					Require (bufSize >= 1);
+					Write_ (buffer, bufSize);
+				}
+		}
 	}
 }
 #endif	/*_Stroika_Foundation_Streams_TextOutputStream_inl_*/

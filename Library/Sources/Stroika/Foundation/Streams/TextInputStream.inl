@@ -10,9 +10,29 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Debug/Assertions.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	Streams {
 
+			inline	TextInputStream::TextInputStream ()
+				{
+				}
+			inline	size_t	TextInputStream::Read (wchar_t* buffer, size_t bufSize)
+				{
+					RequireNotNil (buffer);
+					Require (bufSize >= 1);
+					return Read_ (buffer, bufSize);
+				}
+			inline	wchar_t	TextInputStream::Read ()
+				{
+					wchar_t	c	=	'\0';
+					size_t	n	=	Read_ (&c, 1);
+					Assert (n == 0 or n == 1);
+					return (n == 0)? '\0': c;
+				}
+		}
 	}
 }
 #endif	/*_Stroika_Foundation_Streams_TextInputStream_inl_*/

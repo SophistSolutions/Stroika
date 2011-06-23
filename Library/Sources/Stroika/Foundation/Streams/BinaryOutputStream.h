@@ -15,12 +15,25 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Streams {
 
-			// Use when reading from a structured stream the data is ill-formed
+			/*
+			 * Design Overview:
+			 *
+			 *		o	BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an input/output stream. Simlarly, they can both be
+			 *			mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+			 */
 			class	BinaryOutputStream {
+				protected:
+					BinaryOutputStream ();
+				
 				public:
 					// pointer must refer to valid memory at least bufSize long, and cannot be NULL. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					virtual	void	Write (const Byte* buffer, size_t bufSize)			=	0;
+					nonvirtual	void	Write (const Byte* buffer, size_t bufSize);
+
+				protected:
+					// pointer must refer to valid memory at least bufSize long, and cannot be NULL. BufSize must always be >= 1.
+					// Writes always succeed fully or throw.
+					virtual	void	Write_ (const Byte* buffer, size_t bufSize)			=	0;
 			};
 
 		}

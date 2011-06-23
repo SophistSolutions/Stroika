@@ -10,9 +10,23 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Debug/Assertions.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
+		namespace	Streams {
 
+			inline	BinaryOutputStream::BinaryOutputStream ()
+				{
+				}
+			inline	void	BinaryOutputStream::Write (const Byte* buffer, size_t bufSize)
+				{
+					RequireNotNil (buffer);
+					Require (bufSize >= 1);
+					Write_ (buffer, bufSize);
+				}
+
+		}
 	}
 }
 #endif	/*_Stroika_Foundation_Streams_BinaryOutputStream_inl_*/
