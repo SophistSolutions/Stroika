@@ -19,6 +19,16 @@
 /// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
 
 
+
+// THIS CODE NEEDS BIG CLEANUP. USE 'TRAITS' style stuff 
+
+// ALSO - KDJ - suggestion/hint - provide MAYBE OPTIONAL HASH function (through traits). THEN - the LRUCache mechanism can 
+// store more elements efficeintly. Right now - LRU cache really just works for small numbers of items
+// NOTE - if user uses HASHING - then its not stricly LRU - just LRU per-hash element/value
+// Discuss with KDJ since it was his idea (indirectly) Maybe have HashedLRUCache as a separate impl? Maybe generically
+// do LRUCache (liek stroika style containers) and have differnt impls)
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Containers {
