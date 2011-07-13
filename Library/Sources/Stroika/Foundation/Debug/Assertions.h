@@ -139,6 +139,12 @@ namespace	Stroika {
 			#define	EnsureNotNil(p)		Ensure (p!=NULL)
 
 
+
+			#define	AssertNotReached()		Assert (false)
+			#define	RequiretNotReached()	Assert (false)
+			#define	EnsureNotReached()		Assert (false)
+
+
 			/*
 			@DESCRIPTION:	<p>Verify () is an assertion like Assert, except its argument is ALWAYS EVALUATED, even if
 				debug is OFF. This is useful for cases where you just want todo an assertion about the result
