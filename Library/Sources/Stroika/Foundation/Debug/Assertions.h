@@ -141,7 +141,7 @@ namespace	Stroika {
 
 
 			#define	AssertNotReached()		Assert (false)
-			#define	RequiretNotReached()	Assert (false)
+			#define	RequireNotReached()		Assert (false)
 			#define	EnsureNotReached()		Assert (false)
 
 
