@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 #ifndef	_Stroika_Foundation_Containers_LRUCache_h_
 #define	_Stroika_Foundation_Containers_LRUCache_h_	1

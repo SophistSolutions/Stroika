@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Records For Living, Inc. 1990-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 #ifndef	_Stroika_Foundation_Math_Angle_inl_
 #define	_Stroika_Foundation_Math_Angle_inl_	1

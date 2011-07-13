@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 /*
  ********************************************************************************
