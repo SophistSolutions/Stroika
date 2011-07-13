@@ -75,6 +75,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp" />
@@ -127,6 +128,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h" />
@@ -189,6 +191,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl" />

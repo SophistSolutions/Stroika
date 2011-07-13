@@ -207,6 +207,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Angle.cpp">
       <Filter>Sources\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -387,6 +390,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -523,6 +529,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl">
       <Filter>Sources\Math</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>
