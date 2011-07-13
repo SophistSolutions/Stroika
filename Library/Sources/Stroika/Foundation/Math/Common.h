@@ -6,16 +6,16 @@
 
 #include	"../StroikaPreComp.h"
 
-
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Math {
 
 			double	nan ();
 
-		}
+			const	double	kE	=	2.71828182845904523536;
+			const	double	kPi	=	3.14159265358979323846;
 
+		}
 	}
 }
 #endif	/*_Stroika_Foundation_Math_Basic_h_*/
