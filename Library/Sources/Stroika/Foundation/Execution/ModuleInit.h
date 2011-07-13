@@ -127,6 +127,17 @@ namespace	Stroika {
 			 *		const ModuleInit::ConstantViaGetter<Enumeration,&Private::kTypeHiddenFilter_>	kTypeHiddenFilter;
 			 *
 			 *	See http://bugzilla/show_bug.cgi?id=439 for details.
+			 *
+			 *	Note: it would be HIGHLY DESIRABLE if C++ allowed operator. overloading, as accessing one of these values without
+			 *	assinging to a temporary first - means that you cannot directly call its methods. Thats a bit awkward.
+			 *
+			 *	So if you have a type T, with method m(), and variable of type T t.
+			 *		Your starter code might be:
+			 *			T	t;
+			 *			t.m ();
+			 *	When you replace 'T t' with
+			 *		ConstViaGetter<T,...> t;
+			 *			you must call t->m();
 			 */
 			template	<typename BASETYPE, const typename BASETYPE& (*ValueGetter) ()> 
 				struct ConstantViaGetter {
