@@ -213,6 +213,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperation.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Shared.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -399,6 +402,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Shared.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -543,6 +549,9 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Shared.inl">
       <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>

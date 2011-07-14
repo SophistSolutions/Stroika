@@ -11,6 +11,16 @@
 
 
 
+/*
+ * Description:
+ *
+ *	...
+ *
+ * TODO:
+ *		+	SERIOUSLY CONSIDER relationship between this class and Shared<>
+ *
+ *
+ */
 
 
 namespace	Stroika {	

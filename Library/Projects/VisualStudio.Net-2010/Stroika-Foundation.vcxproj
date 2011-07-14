@@ -118,6 +118,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Optional.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Shared.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Shared.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
@@ -232,6 +234,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Shared.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
