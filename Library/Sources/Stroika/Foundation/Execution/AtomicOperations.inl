@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_Event_inl_
-#define	_Stroika_Foundation_Execution_Event_inl_	1
+#ifndef	_Stroika_Foundation_Execution_AtomicOperations_inl_
+#define	_Stroika_Foundation_Execution_AtomicOperations_inl_	1
 
 
 /*
@@ -11,7 +11,7 @@
  ********************************************************************************
  */
 #if		qPlatform_Windows
-#include	<windows.h>
+	#include	<windows.h>
 #endif
 
 #include	"../Debug/Assertions.h"
@@ -152,4 +152,4 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Execution_Event_inl_*/
+#endif	/*_Stroika_Foundation_Execution_AtomicOperations_inl_*/

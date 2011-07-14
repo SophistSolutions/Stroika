@@ -6,10 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
-
-#include	"../Configuration/Common.h"
-
+#include	<cstdint>
 
 namespace	Stroika {	
 	namespace	Foundation {
