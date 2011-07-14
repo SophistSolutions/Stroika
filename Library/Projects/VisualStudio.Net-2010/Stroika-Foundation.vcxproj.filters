@@ -542,5 +542,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.inl">
       <Filter>Sources\Execution</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
   </ItemGroup>
 </Project>

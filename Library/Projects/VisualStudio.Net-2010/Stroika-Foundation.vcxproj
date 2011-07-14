@@ -229,6 +229,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
