@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Execution/AtomicOperations.h"
+
 #include	"BlockAllocated.h"
 
 namespace	Stroika {	
@@ -57,11 +59,7 @@ namespace	Stroika {
 						if (from != NULL) {
 							fCountHolder = DEBUG_NEW RefCntPtrNS::Private::SimpleRefCntPtrBase ();
 							Assert (fCountHolder->fCount_DONT_ACCESS == 0);
-							#if		qUseInterlockedIncrement
-								::InterlockedIncrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS));
-							#else
-								fCountHolder->fCount_DONT_ACCESS++;
-							#endif
+							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T>
@@ -70,11 +68,7 @@ namespace	Stroika {
 					fCountHolder (from)
 					{
 						if (fCountHolder != NULL) {
-							#if		qUseInterlockedIncrement
-								::InterlockedIncrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS));
-							#else
-								fCountHolder->fCount_DONT_ACCESS++;
-							#endif
+							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T>
@@ -83,11 +77,7 @@ namespace	Stroika {
 					fCountHolder (from == NULL? NULL: useCounter)
 					{
 						if (fCountHolder != NULL) {
-							#if		qUseInterlockedIncrement
-								::InterlockedIncrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS));
-							#else
-								fCountHolder->fCount_DONT_ACCESS++;
-							#endif
+							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T>
@@ -97,11 +87,7 @@ namespace	Stroika {
 					{
 						if (fPtr != NULL) {
 							RequireNotNil (fCountHolder);
-							#if		qUseInterlockedIncrement
-								::InterlockedIncrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS));
-							#else
-								fCountHolder->fCount_DONT_ACCESS++;
-							#endif
+							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T>
@@ -111,13 +97,7 @@ namespace	Stroika {
 							if (fPtr != NULL) {
 								AssertNotNil (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
-								if (
-									#if		qUseInterlockedIncrement
-										::InterlockedDecrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS)) == 0
-									#else
-										--fCountHolder->fCount_DONT_ACCESS == 0
-									#endif
-									) {
+								if (Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0) {
 									fCountHolder->DO_DELETE_REF_CNT ();
 									delete fPtr;
 									fCountHolder = NULL;
@@ -129,11 +109,7 @@ namespace	Stroika {
 							if (fPtr != NULL) {
 								AssertNotNil (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
-								#if		qUseInterlockedIncrement
-									::InterlockedIncrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS));
-								#else
-									fCountHolder->fCount_DONT_ACCESS++;
-								#endif
+								Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 							}
 						}
 						return *this;
@@ -145,11 +121,7 @@ namespace	Stroika {
 							AssertNotNil (fCountHolder);
 							Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 							if (
-								#if		qUseInterlockedIncrement
-									::InterlockedDecrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS)) == 0
-								#else
-									--fCountHolder->fCount_DONT_ACCESS == 0
-								#endif
+								Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0
 								) {
 								fCountHolder->DO_DELETE_REF_CNT ();
 								delete fPtr;

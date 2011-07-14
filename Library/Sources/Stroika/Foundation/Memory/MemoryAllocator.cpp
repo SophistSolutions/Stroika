@@ -3,10 +3,14 @@
  */
 #include	"../StroikaPreComp.h"
 
+#if		qPlatform_Windows
 #include	<windows.h>
+#endif
+
 #include	<new>
 #include	<set>
 
+#include	"../Execution/AtomicOperations.h"
 #include	"../Execution/ModuleInit.h"
 
 #include	"MemoryAllocator.h"
@@ -157,8 +161,8 @@ void*	SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
 	p->fPreGuard = kPreGUARD;
 	p->fBlockSize = size;
 	memcpy (reinterpret_cast<Byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
-	::InterlockedIncrement (&fNetAllocationCount);
-	::InterlockedExchangeAdd (&fNetAllocatedByteCount, static_cast<LONG> (size));
+	Execution::AtomicIncrement (&fNetAllocationCount);
+	Execution::AtomicAdd (&fNetAllocatedByteCount, static_cast<int32_t> (size));
 	return (reinterpret_cast<Byte*> (p) + sizeof (MemWithExtraStuff));
 }
 
@@ -168,8 +172,8 @@ void	SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr)
 	MemWithExtraStuff*	p	=	reinterpret_cast<MemWithExtraStuff*> (reinterpret_cast<Byte*> (ptr) - sizeof (MemWithExtraStuff));
 	SUPER_ASSERT_ (p->fPreGuard == kPreGUARD);
 	SUPER_ASSERT_ (::memcmp (reinterpret_cast<Byte*> (p) + p->fBlockSize + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD)) == 0);
-	::InterlockedDecrement (&fNetAllocationCount);
-	::InterlockedExchangeAdd (&fNetAllocatedByteCount, -(int)p->fBlockSize);
+	Execution::AtomicDecrement (&fNetAllocationCount);
+	Execution::AtomicSubtract (&fNetAllocatedByteCount, p->fBlockSize);
 	fBaseAllocator.Deallocate (p);
 }
 

@@ -10,9 +10,6 @@
 #include	"../Execution/Exceptions.h"
 
 
-#ifndef	qUseInterlockedIncrement
-#define	qUseInterlockedIncrement	1
-#endif
 
 
 
@@ -88,11 +85,7 @@ namespace	Stroika {
 							{
 								if (fPtr != NULL) {
 									RequireNotNil (fCountHolder);
-									#if		qUseInterlockedIncrement
-										::InterlockedIncrement (reinterpret_cast<LONG*> (&fCountHolder->fCount_DONT_ACCESS));
-									#else
-										fCountHolder->fCount_DONT_ACCESS++;
-									#endif
+									Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 								}
 							}
 

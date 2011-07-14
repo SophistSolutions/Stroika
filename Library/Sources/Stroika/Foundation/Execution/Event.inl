@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"AtomicOperations.h"
 #include	"WaitAbandonedException.h"
 #include	"WaitTimedOutException.h"
 
@@ -25,14 +26,14 @@ namespace	Stroika {
 			{
 				ThrowIfFalseGetLastError (fEventHandle != NULL);
 				#if		qTrack_Execution_HandleCounts
-					::InterlockedIncrement (&sCurAllocatedHandleCount);
+					Execution::AtomicIncrement (&sCurAllocatedHandleCount);
 				#endif
 			}
 		inline	Event::~Event ()
 			{
 				Verify (::CloseHandle (fEventHandle));
 				#if		qTrack_Execution_HandleCounts
-					::InterlockedDecrement (&sCurAllocatedHandleCount);
+					AtomicDecrement (&sCurAllocatedHandleCount);
 				#endif
 			}
 		inline	void	Event::Pulse() throw ()

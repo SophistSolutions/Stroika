@@ -123,8 +123,8 @@ namespace	Stroika {
 
 				private:
 					AbstractGeneralPurposeAllocator&	fBaseAllocator;
-					LONG								fNetAllocationCount;
-					LONG								fNetAllocatedByteCount;
+					uint32_t							fNetAllocationCount;
+					size_t								fNetAllocatedByteCount;
 			};
 
 

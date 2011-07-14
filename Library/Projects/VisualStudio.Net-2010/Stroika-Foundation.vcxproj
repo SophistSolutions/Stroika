@@ -89,6 +89,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperation.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
@@ -205,6 +207,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
