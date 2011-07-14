@@ -144,6 +144,7 @@ namespace	Stroika {
 			#define	RequireNotReached()		Assert (false)
 			#define	EnsureNotReached()		Assert (false)
 
+			#define	AssertNotImplemented()	Assert (false)
 
 			/*
 			@DESCRIPTION:	<p>Verify () is an assertion like Assert, except its argument is ALWAYS EVALUATED, even if
