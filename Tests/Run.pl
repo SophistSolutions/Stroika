@@ -1,3 +1,4 @@
 #!/usr/bin/perl 
 
 system ("cd 1; perl Run.pl");
+system ("cd 2; perl Run.pl");

@@ -6,3 +6,4 @@ if ($BLD_TRG eq '') {
 }
 
 system ("cd 1; perl buildall.pl $BLD_TRG");
+system ("cd 2; perl buildall.pl $BLD_TRG");

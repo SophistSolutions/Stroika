@@ -55,6 +55,9 @@
     <Filter Include="Sources\Streams">
       <UniqueIdentifier>{eba5ee5b-1eff-4a84-b2ad-88df60b433bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Streams\JSON">
+      <UniqueIdentifier>{58b5278d-41fb-45aa-98e9-a95500a34e63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -215,6 +218,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Shared.cpp">
       <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.cpp">
+      <Filter>Sources\Streams\JSON</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -405,6 +414,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Shared.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.h">
+      <Filter>Sources\Streams\JSON</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -553,6 +568,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Shared.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.inl">
+      <Filter>Sources\Streams\JSON</Filter>
     </None>
   </ItemGroup>
 </Project>
