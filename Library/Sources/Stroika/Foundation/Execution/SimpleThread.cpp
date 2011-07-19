@@ -361,10 +361,14 @@ void	SimpleThread::Start ()
 
 void	SimpleThread::Stop ()
 {
+	if (fRep.IsNull ()) {
+		// then its effectively already stopped.
+		return;
+	}
+
 	// I'm not sure this is 100% thread-friendly, in case two people from two differnt threads tried
 	// to stop the same (third) thread at the same time. But its probably good enough for starters.
 	//		-- LGP 2009-01-14
-	RequireNotNil (fRep);
 
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
 	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
@@ -382,6 +386,11 @@ void	SimpleThread::Stop ()
 
 void	SimpleThread::Stop_Forced_Unsafe ()
 {
+	if (fRep.IsNull ()) {
+		// then its effectively already stopped.
+		return;
+	}
+
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
 	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
 
@@ -399,7 +408,11 @@ void	SimpleThread::Stop_Forced_Unsafe ()
 
 void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 {
-	RequireNotNil (fRep);
+	if (fRep.IsNull ()) {
+		// then its effectively already done.
+		return;
+	}
+
 	bool	doWait	=	false;
 	HANDLE	thread	=	NULL;
 	{
@@ -419,6 +432,11 @@ void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 
 void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
 {
+	if (fRep.IsNull ()) {
+		// then its effectively already done.
+		return;
+	}
+
 	HANDLE	thread	=	NULL;
 	{
 		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
@@ -449,8 +467,9 @@ void	SimpleThread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType ti
 	}
 }
 
-SimpleThread::Status	SimpleThread::GetStatus () const
+SimpleThread::Status	SimpleThread::GetStatus_ () const
 {
+	Require (not fRep.IsNull ());
 	if (fRep.IsNull ()) {
 		return eNull;
 	}

@@ -55,6 +55,13 @@ namespace	Stroika {
 				{
 					return fRep->fThreadName;
 				}
+			inline	SimpleThread::Status	SimpleThread::GetStatus () const
+				{
+					if (fRep.IsNull ()) {
+						return eNull;
+					}
+					return GetStatus_ ();
+				}
 
 
 
