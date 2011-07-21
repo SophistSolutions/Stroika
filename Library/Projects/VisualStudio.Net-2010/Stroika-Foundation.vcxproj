@@ -124,7 +124,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp" />
@@ -190,7 +191,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.h" />
@@ -244,7 +246,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />

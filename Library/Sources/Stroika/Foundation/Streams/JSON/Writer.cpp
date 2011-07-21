@@ -7,7 +7,7 @@
 
 #include	"../../Characters/StringUtils.h"
 
-#include	"Serializer.h"
+#include	"Writer.h"
 
 
 using	namespace	Stroika::Foundation;

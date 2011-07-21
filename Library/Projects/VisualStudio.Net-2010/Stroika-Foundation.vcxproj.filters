@@ -222,7 +222,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.cpp">
+      <Filter>Sources\Streams\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.cpp">
       <Filter>Sources\Streams\JSON</Filter>
     </ClCompile>
   </ItemGroup>
@@ -417,7 +420,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.h">
+      <Filter>Sources\Streams\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.h">
       <Filter>Sources\Streams\JSON</Filter>
     </ClInclude>
   </ItemGroup>
@@ -572,7 +578,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Serializer.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.inl">
+      <Filter>Sources\Streams\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.inl">
       <Filter>Sources\Streams\JSON</Filter>
     </None>
   </ItemGroup>

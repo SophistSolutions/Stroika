@@ -9,7 +9,8 @@
 #include	"Stroika/Foundation/Containers/VectorUtils.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Memory/VariantValue.h"
-#include	"Stroika/Foundation/Streams/JSON/Serializer.h"
+#include	"Stroika/Foundation/Streams/JSON/Reader.h"
+#include	"Stroika/Foundation/Streams/JSON/Writer.h"
 
 
 using	namespace	Stroika::Foundation;
