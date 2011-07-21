@@ -162,6 +162,10 @@ namespace	{
 				}
 				else {
 					// any other character signals end of number (not a syntax error)
+					// but if we read anything at all, backup - don't consume next character - not part of number
+					if (!tmp.empty ()) {
+						(*i)--;
+					}
 					break;
 				}
 			}

@@ -425,6 +425,36 @@ bool	Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
 		case	VariantValue::eDate:		return static_cast<Date> (lhs) == static_cast<Date> (rhs);
 		case	VariantValue::eDateTime:	return static_cast<DateTime> (lhs) == static_cast<DateTime> (rhs);
 		case	VariantValue::eString:		return static_cast<wstring> (lhs) == static_cast<wstring> (rhs);
+		case	VariantValue::eArray: {
+			// same iff all elts same
+			vector<VariantValue>	lhsV	=	lhs;
+			vector<VariantValue>	rhsV	=	rhs;
+			if (lhsV.size () != rhsV.size ()) {
+				return false;
+			}
+			for (size_t i = 0; i < lhsV.size (); ++i) {
+				if (lhsV[i] != rhsV[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
+		case	VariantValue::eMap: {
+			// same iff all elts same
+			map<wstring,VariantValue>	lhsM	=	lhs;
+			map<wstring,VariantValue>	rhsM	=	rhs;
+			if (lhsM.size () != rhsM.size ()) {
+				return false;
+			}
+			map<wstring,VariantValue>::const_iterator li = lhsM.begin ();
+			map<wstring,VariantValue>::const_iterator ri = rhsM.begin ();
+			for (; li != lhsM.end (); ++li, ++ri) {
+				if (*li != *ri) {
+					return false;
+				}
+			}
+			return true;
+		}
 		default:	AssertNotReached ();	return false;
 	}
 }
