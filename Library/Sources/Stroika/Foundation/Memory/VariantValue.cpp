@@ -453,6 +453,8 @@ bool	Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
 					return false;
 				}
 			}
+			Ensure (li == lhsM.end ());
+			Ensure (ri == rhsM.end ());
 			return true;
 		}
 		default:	AssertNotReached ();	return false;

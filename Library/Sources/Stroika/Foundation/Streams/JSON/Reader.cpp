@@ -46,7 +46,7 @@ namespace	{
 			in.seekg (0, ios_base::end);
 			streamoff	end		=	in.tellg ();
 			Assert (start <= end);
-			if (end - start > static_cast<streamoff> (numeric_limits<size_t>::max ())) {
+			if (end - start > numeric_limits<ptrdiff_t>::max ()) {
 				Execution::DoThrow (Execution::StringException (L"stream too large"));
 			}
 			size_t	bufLen	=	static_cast<size_t> (end - start);
@@ -64,7 +64,7 @@ namespace	{
 			in.seekg (0, ios_base::end);
 			streamoff	end		=	in.tellg ();
 			Assert (start <= end);
-			if (end - start > static_cast<streamoff> (numeric_limits<size_t>::max ())) {
+			if (end - start > numeric_limits<ptrdiff_t>::max ()) {
 				Execution::DoThrow (Execution::StringException (L"stream too large"));
 			}
 			size_t	bufLen	=	static_cast<size_t> (end - start);
