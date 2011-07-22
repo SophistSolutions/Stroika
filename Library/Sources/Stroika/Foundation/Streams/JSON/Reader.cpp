@@ -317,7 +317,7 @@ namespace	{
 				case	't': {
 					if (*i + 4 < end and
 						*((*i)+1) == 'r' and
-						*((*i)+2) == 'e' and
+						*((*i)+2) == 'u' and
 						*((*i)+3) == 'e'
 						)
 					{
