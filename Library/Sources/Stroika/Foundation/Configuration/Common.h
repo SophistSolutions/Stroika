@@ -20,24 +20,6 @@ namespace	Stroika {
 
 			#define	Nil		NULL
 
-#if 0
-			// Sterl - what compilers do we need this for - if none - lets leave it out til needed
-			#if !qCompilerSupportsISO646Operators
-				#if  !defined(and)
-					 #define and	&&
-					 #define and_eq	&=
-					 #define bitand	&
-					 #define bitor	|
-					 #define compl	~
-					 #define not	!
-					 #define not_eq	!=
-					 #define or		||
-					 #define or_eq	|=
-					 #define xor	^
-					 #define xor_eq	^=
-				#endif /* !defined(and) */
-			#endif /* !qCompilerSupportsISO646Operators */
-#endif
 			#define	nonvirtual
 			#define override		virtual
 

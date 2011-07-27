@@ -31,7 +31,6 @@
 
 #include	"StroikaConfig_qTargetPlatformSDKUsesWchar_.h"
 
-#include	"StroikaConfig_qCompilerSupportsISO646Operators.h"
 
 
 ////CREATE SEP FILES FOR MAJOR DEFINE
