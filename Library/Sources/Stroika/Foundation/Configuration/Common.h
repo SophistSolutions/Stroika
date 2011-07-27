@@ -6,12 +6,7 @@
 
 #include	<cstddef>
 #include	<cstdint>
-
-#if qCompilerSupportsISO646Operators
-	#include	<ciso646.h>
-#else
-	#include	<iso646.h>
-#endif
+#include	<ciso646>
 
 
 namespace	Stroika {
@@ -25,6 +20,8 @@ namespace	Stroika {
 
 			#define	Nil		NULL
 
+#if 0
+			// Sterl - what compilers do we need this for - if none - lets leave it out til needed
 			#if !qCompilerSupportsISO646Operators
 				#if  !defined(and)
 					 #define and	&&
@@ -40,13 +37,13 @@ namespace	Stroika {
 					 #define xor_eq	^=
 				#endif /* !defined(and) */
 			#endif /* !qCompilerSupportsISO646Operators */
-
+#endif
 			#define	nonvirtual
 			#define override		virtual
 
-			#define	NEltsOf(X)		(sizeof(X)/sizeof(X[0]))
-			#define	StartOfArray(X)	(&X[0])
-			#define	EndOfArray(X)	(&X[NEltsOf(X)])
+			#define	NEltsOf(X)		(sizeof((X))/sizeof((X)[0]))
+			#define	StartOfArray(X)	(&(X)[0])
+			#define	EndOfArray(X)	(&(X)[NEltsOf(X)])
 
 
 			/*
