@@ -7,7 +7,11 @@
 #include	<cstddef>
 #include	<cstdint>
 
-#include	<iso646.h>
+#if qCompilerSupportsISO646Operators
+	#include	<ciso646.h>
+#else
+	#include	<iso646.h>
+#endif
 
 
 namespace	Stroika {
