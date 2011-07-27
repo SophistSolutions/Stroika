@@ -7,8 +7,10 @@
 #include	<cstddef>
 #include	<cstdint>
 
+#include	<iso646.h>
 
-namespace	Stroika {	
+
+namespace	Stroika {
 	namespace	Foundation {
 
 		using	namespace	std;
@@ -19,9 +21,21 @@ namespace	Stroika {
 
 			#define	Nil		NULL
 
-			#define	and	&&
-			#define	or	||
-			#define	not	!
+			#if !qCompilerSupportsISO646Operators
+				#if  !defined(and)
+					 #define and	&&
+					 #define and_eq	&=
+					 #define bitand	&
+					 #define bitor	|
+					 #define compl	~
+					 #define not	!
+					 #define not_eq	!=
+					 #define or		||
+					 #define or_eq	|=
+					 #define xor	^
+					 #define xor_eq	^=
+				#endif /* !defined(and) */
+			#endif /* !qCompilerSupportsISO646Operators */
 
 			#define	nonvirtual
 			#define override		virtual
