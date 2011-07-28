@@ -14,6 +14,10 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Streams;
 
 
+/*
+ * TODO:
+ *		(1)	Must add support for quoted characters like '"' etc - which cause trouble inside json. Also - quoted utf-8 characters.
+ */
 
 
 
