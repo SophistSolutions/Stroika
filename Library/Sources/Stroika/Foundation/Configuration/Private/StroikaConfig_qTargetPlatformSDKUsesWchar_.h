@@ -11,15 +11,14 @@
 	 */
 
 
-// First DEFINE qTargetPlatformSDKUseswchar_t
-#ifndef	qTargetPlatformSDKUseswchar_t
-	#if		(defined(_UNICODE) || defined(UNICODE))
-		#define	qTargetPlatformSDKUseswchar_t	1
-	#else
-		#define	qTargetPlatformSDKUseswchar_t	0
+	// First DEFINE qTargetPlatformSDKUseswchar_t
+	#ifndef	qTargetPlatformSDKUseswchar_t
+		#if		(defined(_UNICODE) || defined(UNICODE))
+			#define	qTargetPlatformSDKUseswchar_t	1
+		#else
+			#define	qTargetPlatformSDKUseswchar_t	0
+		#endif
 	#endif
-#endif
-
 
 
 	// Then VALIDATE qTargetPlatformSDKUseswchar_t with respect to other common defines
