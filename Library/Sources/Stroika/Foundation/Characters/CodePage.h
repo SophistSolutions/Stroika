@@ -81,7 +81,7 @@ namespace	Stroika {
 
 			CodePage	Win32CharSetToCodePage (unsigned char lfCharSet);
 
-			CodePage	Win32PrimaryLangIDToCodePage (unsigned short languageIdenifier);
+			CodePage	Win32PrimaryLangIDToCodePage (USHORT languageIdenifier);
 
 			/*
 			@CLASS:			CodePageConverter

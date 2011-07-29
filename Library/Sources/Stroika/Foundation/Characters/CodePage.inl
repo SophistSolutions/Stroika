@@ -188,7 +188,7 @@ namespace	Stroika {
 			@METHOD:		Win32PrimaryLangIDToCodePage
 			@DESCRIPTION:	<p>Map from a Win32 language identifier to a code page.</p>
 			*/
-			inline	CodePage	Win32PrimaryLangIDToCodePage (unsigned short languageIdenifier)
+			inline	CodePage	Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
 				{
 					/*
 					 *	I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesnt provide their own
