@@ -14,20 +14,20 @@ namespace	Stroika {
 		namespace	Containers {
 
 			template	<typename T>
-				inline	vector<T>	mkV ()
+				inline	vector<typename T>	mkV ()
 					{
 						vector<T>	v;
 						return v;
 					}
 			template	<typename T>
-				inline	vector<T>	mkV (const T& t1)
+				inline	vector<typename T>	mkV (const T& t1)
 					{
 						vector<T>	v;
 						v.push_back (t1);
 						return v;
 					}
 			template	<typename T>
-				inline	vector<T>	mkV (const T& t1, const T& t2)
+				inline	vector<typename T>	mkV (const T& t1, const T& t2)
 					{
 						vector<T>	v;
 						v.reserve (2);
@@ -36,7 +36,7 @@ namespace	Stroika {
 						return v;
 					}
 			template	<typename T>
-				inline	vector<T>	mkV (const T& t1, const T& t2, const T& t3)
+				inline	vector<typename T>	mkV (const T& t1, const T& t2, const T& t3)
 					{
 						vector<T>	v;
 						v.reserve (3);
@@ -46,7 +46,7 @@ namespace	Stroika {
 						return v;
 					}
 			template	<typename T>
-				inline	vector<T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4)
+				inline	vector<typename T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4)
 					{
 						vector<T>	v;
 						v.reserve (4);
@@ -57,7 +57,7 @@ namespace	Stroika {
 						return v;
 					}
 			template	<typename T>
-				inline	vector<T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4, const T& t5)
+				inline	vector<typename T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4, const T& t5)
 					{
 						vector<T>	v;
 						v.reserve (5);
@@ -70,11 +70,11 @@ namespace	Stroika {
 					}
 
 			template	<typename T, typename ContainerOfT>
-				vector<T>	mkVC (const ContainerOfT& ts)
+				vector<typename T>	mkVC (const ContainerOfT& ts)
 					{
 						vector<T>	result;
 						result.reserve (ts.size ());
-						for (typename ContainerOfT::const_iterator i = ts.begin (); i != ts.end (); ++i) {
+						for (ContainerOfT::const_iterator i = ts.begin (); i != ts.end (); ++i) {
 							result.push_back (*i);
 						}
 						return result;
@@ -82,47 +82,47 @@ namespace	Stroika {
 
 
 			template	<typename T>
-				void	Append2Vector (vector<T>* v, const vector<T>& v2)
+				void	Append2Vector (vector<typename T>* v, const vector<typename T>& v2)
 					{
 						RequireNotNil (v);
 						size_t	c	=	max (v->capacity (), v->size () + v2.size ());
 						v->reserve (c);
-						for (typename vector<T>::const_iterator i = v2.begin (); i != v2.end (); ++i) {
+						for (vector<typename T>::const_iterator i = v2.begin (); i != v2.end (); ++i) {
 							v->push_back (*i);
 						}
 					}
 			template	<typename T, typename ContainerOfT>
-				void	Append2Vector (vector<T>* v, const ContainerOfT& v2)
+				void	Append2Vector (vector<typename T>* v, const typename ContainerOfT& v2)
 					{
 						RequireNotNil (v);
 						size_t	c	=	max (v->capacity (), v->size () + v2.size ());
 						v->reserve (c);
-						for (typename ContainerOfT::const_iterator i = v2.begin (); i != v2.end (); ++i) {
+						for (ContainerOfT::const_iterator i = v2.begin (); i != v2.end (); ++i) {
 							v->push_back (*i);
 						}
 					}
 
 			template	<typename T>
-				inline	vector<T>	operator+ (const vector<T>& l, const vector<T>& r)
+				inline	vector<typename T>	operator+ (const vector<typename T>& l, const vector<typename T>& r)
 					{
-						vector<T>	result	=	l;
+						vector<typename T>	result	=	l;
 						Append2Vector (&result, r);
 						return result;
 					}
 
 			template	<typename T>
-				inline	vector<T>&	operator+= (vector<T>& l, const vector<T>& r)
+				inline	vector<typename T>&	operator+= (vector<typename T>& l, const vector<typename T>& r)
 					{
 						Append2Vector (&l, r);
 						return l;
 					}
 
 			template	<typename T>
-				vector<T>	Intersection (const vector<T>& s1, const vector<T>& s2)
+				vector<typename T>	Intersection (const vector<T>& s1, const vector<T>& s2)
 					{
 						vector<T>	result;
 						result.reserve (min (s1.size (), s2.size ()));
-						for (typename vector<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
+						for (vector<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
 							if (std::find (s2.begin (), s2.end (), *i) != s2.end ()) {
 								result.push_back (*i);
 							}

@@ -13,22 +13,22 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-			template	<typename T>
-				set<T>	operator- (const set<T>& lhs, const set<T>& rhs)
+			template	<class T>
+				set<typename T>	operator- (const set<typename T>& lhs, const set<typename T>& rhs)
 					{
-						set<T>	result;
-						for (typename set<T>::const_iterator i = lhs.begin (); i != lhs.end (); ++i) {
+						set<typename T>	result;
+						for (set<typename T>::const_iterator i = lhs.begin (); i != lhs.end (); ++i) {
 							if (rhs.find (*i) == rhs.end ()) {
 								result.insert (*i);
 							}
 						}
 						return result;
 					}
-			template	<typename T>
-				set<T>	operator+ (const set<T>& lhs, const set<T>& rhs)
+			template	<class T>
+				set<typename T>	operator+ (const set<typename T>& lhs, const set<typename T>& rhs)
 					{
-						set<T>	result	=	lhs;
-						for (typename set<T>::const_iterator i = rhs.begin (); i != rhs.end (); ++i) {
+						set<typename T>	result	=	lhs;
+						for (set<typename T>::const_iterator i = rhs.begin (); i != rhs.end (); ++i) {
 							if (result.find (*i) == result.end ()) {
 								result.insert (*i);
 							}
@@ -36,9 +36,9 @@ namespace	Stroika {
 						return result;
 					}
 			template	<typename T, typename FROMCONTAINER>
-				set<T>&	operator+= (set<T>& lhs, const FROMCONTAINER& rhs)
+				set<typename T>&	operator+= (set<typename T>& lhs, const FROMCONTAINER& rhs)
 					{
-						for (typename FROMCONTAINER::const_iterator i = rhs.begin (); i != rhs.end (); ++i) {
+						for (FROMCONTAINER::const_iterator i = rhs.begin (); i != rhs.end (); ++i) {
 							if (lhs.find (*i) == lhs.end ()) {
 								lhs.insert (*i);
 							}
@@ -46,10 +46,10 @@ namespace	Stroika {
 						return lhs;
 					}
 			template	<typename T, typename FROMCONTAINER>
-				set<T>&	operator-= (set<T>& lhs, const FROMCONTAINER& rhs)
+				set<typename T>&	operator-= (set<typename T>& lhs, const FROMCONTAINER& rhs)
 					{
-						for (typename FROMCONTAINER::const_iterator i = rhs.begin (); i != rhs.end (); ++i) {
-							typename set<T>::iterator fi	=	lhs.find (*i);
+						for (FROMCONTAINER::const_iterator i = rhs.begin (); i != rhs.end (); ++i) {
+							set<typename T>::iterator fi	=	lhs.find (*i);
 							if (fi != lhs.end ()) {
 								lhs.erase (fi);
 							}
@@ -59,20 +59,20 @@ namespace	Stroika {
 
 
 			template	<typename T>
-				inline	set<T>	mkS ()
+				inline	set<typename T>	mkS ()
 					{
 						set<T>	v;
 						return v;
 					}
 			template	<typename T>
-				inline	set<T>	mkS (const T& t1)
+				inline	set<typename T>	mkS (const T& t1)
 					{
 						set<T>	s;
 						s.insert (t1);
 						return s;
 					}
 			template	<typename T>
-				inline	set<T>	mkS (const T& t1, const T& t2)
+				inline	set<typename T>	mkS (const T& t1, const T& t2)
 					{
 						set<T>	s;
 						s.insert (t1);
@@ -80,7 +80,7 @@ namespace	Stroika {
 						return s;
 					}
 			template	<typename T>
-				inline	set<T>	mkS (const T& t1, const T& t2, const T& t3)
+				inline	set<typename T>	mkS (const T& t1, const T& t2, const T& t3)
 					{
 						set<T>	s;
 						s.insert (t1);
@@ -89,7 +89,7 @@ namespace	Stroika {
 						return s;
 					}
 			template	<typename T>
-				inline	set<T>	mkS (const T& t1, const T& t2, const T& t3, const T& t4)
+				inline	set<typename T>	mkS (const T& t1, const T& t2, const T& t3, const T& t4)
 					{
 						set<T>	s;
 						s.insert (t1);
@@ -99,9 +99,9 @@ namespace	Stroika {
 						return s;
 					}
 			template	<typename T, typename FROMCONTAINER>
-				inline	set<T>	mkSfromC (const FROMCONTAINER& rhs)
+				inline	set<typename T>	mkSfromC (const FROMCONTAINER& rhs)
 					{
-						return set<T> (rhs.begin (), rhs.end ());
+						return set<typename T> (rhs.begin (), rhs.end ());
 					}
 
 
@@ -119,10 +119,10 @@ namespace	Stroika {
 
 
 			template	<typename T>
-				set<T>	Intersection (const set<T>& s1, const set<T>& s2)
+				set<typename T>	Intersection (const set<T>& s1, const set<T>& s2)
 					{
 						set<T>	result;
-						for (typename set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
+						for (set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
 							if (s2.find (*i) != s2.end ()) {
 								result.insert (*i);
 							}
@@ -132,7 +132,7 @@ namespace	Stroika {
 			template	<typename T>
 				bool	Intersect (const set<T>& s1, const set<T>& s2)
 					{
-						for (typename set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
+						for (set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
 							if (s2.find (*i) != s2.end ()) {
 								return true;
 							}
@@ -143,7 +143,7 @@ namespace	Stroika {
 			template	<typename T>
 				void	Union (set<T>* s1, const set<T>& s2)
 					{
-						for (typename set<T>::const_iterator i = s2.begin (); i != s2.end (); ++i) {
+						for (set<T>::const_iterator i = s2.begin (); i != s2.end (); ++i) {
 							if (s1->find (*i) == s1->end ()) {
 								s1->insert (*i);
 							}
@@ -151,7 +151,7 @@ namespace	Stroika {
 					}
 
 			template	<typename T>
-				set<T>	Union (const set<T>& s1, const set<T>& s2)
+				set<typename T>	Union (const set<T>& s1, const set<T>& s2)
 					{
 						set<T>	result	=	s1;
 						Union (&result, s2);
