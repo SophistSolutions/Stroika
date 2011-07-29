@@ -6,6 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<algorithm>
 #include	<vector>
 
 #include	"../Configuration/Common.h"
@@ -20,36 +21,36 @@ namespace	Stroika {
 		namespace	Containers {
 
 			template	<typename T>
-				vector<typename T>	mkV ();
+				vector<T>	mkV ();
 			template	<typename T>
-				vector<typename T>	mkV (const T& t1);
+				vector<T>	mkV (const T& t1);
 			template	<typename T>
-				vector<typename T>	mkV (const T& t1, const T& t2);
+				vector<T>	mkV (const T& t1, const T& t2);
 			template	<typename T>
-				vector<typename T>	mkV (const T& t1, const T& t2, const T& t3);
+				vector<T>	mkV (const T& t1, const T& t2, const T& t3);
 			template	<typename T>
-				vector<typename T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4);
+				vector<T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4);
 			template	<typename T>
-				vector<typename T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4, const T& t5);
+				vector<T>	mkV (const T& t1, const T& t2, const T& t3, const T& t4, const T& t5);
 
 			template	<typename T, typename ContainerOfT>
-				vector<typename T>	mkVC (const ContainerOfT& ts);
+				vector<T>	mkVC (const ContainerOfT& ts);
 
 
 			template	<typename T>
-				void	Append2Vector (vector<typename T>* v, const vector<typename T>& v2);
+				void	Append2Vector (vector<T>* v, const vector<T>& v2);
 			template	<typename T, typename ContainerOfT>
-				void	Append2Vector (vector<typename T>* v, const typename ContainerOfT& v2);
+				void	Append2Vector (vector<T>* v, const ContainerOfT& v2);
 
 
 			template	<typename T>
-				vector<typename T>	operator+ (const vector<typename T>& l, const vector<typename T>& r);
+				vector<T>	operator+ (const vector<T>& l, const vector<T>& r);
 
 			template	<typename T>
-				vector<typename T>&	operator+= (vector<typename T>& l, const vector<typename T>& r);
+				vector<T>&	operator+= (vector<T>& l, const vector<T>& r);
 
 			template	<typename T>
-				vector<typename T>	Intersection (const vector<T>& s1, const vector<T>& s2);
+				vector<T>	Intersection (const vector<T>& s1, const vector<T>& s2);
 
 		}
 	}

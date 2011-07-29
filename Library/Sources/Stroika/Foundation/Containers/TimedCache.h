@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<tchar.h>
+//#include	<tchar.h>
 #include	<map>
 
 #include	"../Configuration/Common.h"

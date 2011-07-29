@@ -6,7 +6,8 @@
 
 #include	<cstddef>
 #include	<cstdint>
-#include	<ciso646>
+
+#include	<iso646.h>
 
 
 namespace	Stroika {
@@ -20,12 +21,14 @@ namespace	Stroika {
 
 			#define	Nil		NULL
 
+
+
 			#define	nonvirtual
 			#define override		virtual
 
-			#define	NEltsOf(X)		(sizeof((X))/sizeof((X)[0]))
-			#define	StartOfArray(X)	(&(X)[0])
-			#define	EndOfArray(X)	(&(X)[NEltsOf(X)])
+			#define	NEltsOf(X)		(sizeof(X)/sizeof(X[0]))
+			#define	StartOfArray(X)	(&X[0])
+			#define	EndOfArray(X)	(&X[NEltsOf(X)])
 
 
 			/*
@@ -39,7 +42,7 @@ namespace	Stroika {
 
 
 			template	<typename	ENUM>
-				ENUM	Inc (typename ENUM e);
+				ENUM	Inc (ENUM e);
 
 		}
 
