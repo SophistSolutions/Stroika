@@ -58,6 +58,9 @@
     <Filter Include="Sources\Streams\JSON">
       <UniqueIdentifier>{58b5278d-41fb-45aa-98e9-a95500a34e63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Configuration\Private">
+      <UniqueIdentifier>{27d4da00-63dc-4f7b-be10-46c6afd89e74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -303,9 +306,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_Win32_.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h">
       <Filter>Sources\Cryptography</Filter>
     </ClInclude>
@@ -330,20 +330,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qDebug_.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qEndian_.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig_qTargetPlatformSDKUsesWchar_.h">
-      <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h">
       <Filter>Sources\Memory\Platform\Windows</Filter>
@@ -425,6 +416,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.h">
       <Filter>Sources\Streams\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\StroikaConfig_qDebug_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\StroikaConfig_qEndian_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\StroikaConfig_qTargetPlatformSDKUsesWchar_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\StroikaConfig_Win32_.h">
+      <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

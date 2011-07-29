@@ -23,13 +23,13 @@
  *
  *		-- LGP 2011-06-08
  */
-#include	"StroikaConfig_qDebug_.h"
+#include	"Private/StroikaConfig_qDebug_.h"
 
-#include	"StroikaConfig_qEndian_.h"
+#include	"Private/StroikaConfig_qEndian_.h"
 
-#include	"StroikaConfig_Win32_.h"
+#include	"Private/StroikaConfig_Win32_.h"
 
-#include	"StroikaConfig_qTargetPlatformSDKUsesWchar_.h"
+#include	"Private/StroikaConfig_qTargetPlatformSDKUsesWchar_.h"
 
 
 
