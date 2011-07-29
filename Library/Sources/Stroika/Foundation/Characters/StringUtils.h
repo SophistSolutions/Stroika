@@ -45,21 +45,26 @@ namespace	Stroika {
 			string	WideStringToACP (const wstring& ws);
 			wstring	ACPStringToWide (const string& ws);
 
+
+		#if		qPlatform_Windows
 			string	BSTRStringToUTF8 (const BSTR bstr);
+		#endif
 			string	WideStringToUTF8 (const wstring& ws);
 			void	UTF8StringToWide (const char* s, wstring* intoStr);
 			void	UTF8StringToWide (const string& s, wstring* intoStr);
 			wstring	UTF8StringToWide (const char* ws);
 			wstring	UTF8StringToWide (const string& ws);
 
+		#if		qPlatform_Windows
 			BSTR	UTF8StringToBSTR (const char* ws);
-
+		#endif
 			wstring	ASCIIStringToWide (const string& s);
 			string	WideStringToASCII (const wstring& s);
 
+		#if		qPlatform_Windows
 			wstring	BSTR2wstring (BSTR b);
 			wstring	BSTR2wstring (VARIANT b);
-
+		#endif
 			string	Format (const char* format, ...);
 			wstring	Format (const wchar_t* format, ...);
 
@@ -173,31 +178,31 @@ namespace	Stroika {
 			// return #bytes in output buffer (NO NULL TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
-				size_t	CRLFToNL (const typename TCHAR* srcText, size_t srcTextBytes, typename TCHAR* outBuf, size_t outBufSize);
+				size_t	CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
 			template	<typename TCHAR>
-				void	CRLFToNL (basic_string<typename TCHAR>* text);	// modified in-place
+				void	CRLFToNL (basic_string<TCHAR>* text);	// modified in-place
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	CRLFToNL (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	CRLFToNL (const basic_string<TCHAR>& text);
 
 			template	<typename TCHAR>
 				size_t	NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	NLToCRLF (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	NLToCRLF (const basic_string<TCHAR>& text);
 
 
 			template	<typename TCHAR>
 				size_t	NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	NLToNative (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	NLToNative (const basic_string<TCHAR>& text);
 
 			// return #bytes in output buffer (NO NULL TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
-				size_t	NormalizeTextToNL (const typename TCHAR* srcText, size_t srcTextBytes, typename TCHAR* outBuf, size_t outBufSize);
+				size_t	NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
 			template	<typename TCHAR>
-				void	NormalizeTextToNL (basic_string<typename TCHAR>* text);	// modified in-place
+				void	NormalizeTextToNL (basic_string<TCHAR>* text);	// modified in-place
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	NormalizeTextToNL (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	NormalizeTextToNL (const basic_string<TCHAR>& text);
 
 
 
@@ -206,11 +211,11 @@ namespace	Stroika {
 
 
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	LTrim (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	LTrim (const basic_string<TCHAR>& text);
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	RTrim (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	RTrim (const basic_string<TCHAR>& text);
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	Trim (const basic_string<typename TCHAR>& text);
+				basic_string<TCHAR>	Trim (const basic_string<TCHAR>& text);
 
 
 
