@@ -171,20 +171,28 @@ namespace	Stroika {
 					RequireNotNil (intoResult);
 					Require (wsStart <= wsEnd);
 					size_t	wsLen	=	(wsEnd - wsStart);
+			#if		qPlatform_Windows
 					int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), NULL, NULL, NULL, NULL);
 					intoResult->resize (stringLength);
 					if (stringLength != 0) {
 						Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
 					}
+			#else
+					AssertNotImplemented ();
+			#endif
 				}
 			inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
 				{
 					RequireNotNil (intoResult);
+			#if		qPlatform_Windows
 					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), NULL, NULL, NULL, NULL);
 					intoResult->resize (stringLength);
 					if (stringLength != 0) {
 						Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
 					}
+			#else
+					AssertNotImplemented ();
+			#endif
 				}
 			inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
 				{
@@ -197,20 +205,28 @@ namespace	Stroika {
 					RequireNotNil (intoResult);
 					Require (sStart <= sEnd);
 					size_t	sLen	=	(sEnd - sStart);
+			#if		qPlatform_Windows
 					int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), NULL, NULL);
 					intoResult->resize (newStrLen);
 					if (newStrLen != 0) {
 						Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
 					}
+			#else
+					AssertNotImplemented ();
+			#endif
 				}
 			inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
 				{
 					RequireNotNil (intoResult);
+			#if		qPlatform_Windows
 					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), NULL, NULL);
 					intoResult->resize (newStrLen);
 					if (newStrLen != 0) {
 						Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), Containers::Start (*intoResult), newStrLen) == newStrLen);
 					}
+			#else
+					AssertNotImplemented ();
+			#endif
 				}
 			inline	wstring	NarrowStringToWide (const string& s, int codePage)
 				{
@@ -244,8 +260,14 @@ namespace	Stroika {
 				}
 			inline	string	WideStringToACP (const wstring& ws)
 				{
+		#if		qPlatform_Windows
 					return WideStringToNarrow (ws, ::GetACP ());
+		#else
+					AssertNotImplemented ();
+					return WideStringToNarrow (ws, kCodePage_ANSI);	
+		#endif
 				}
+		#if		qPlatform_Windows
 			inline	string	BSTRStringToUTF8 (const BSTR bstr)
 				{
 					if (bstr == NULL) {
@@ -260,6 +282,8 @@ namespace	Stroika {
 						return result;
 					}
 				}
+		#endif
+
 			inline	string	WideStringToUTF8 (const wstring& ws)
 				{
 					return WideStringToNarrow (ws, kCodePage_UTF8);
@@ -284,6 +308,7 @@ namespace	Stroika {
 				{
 					return NarrowStringToWide (s, kCodePage_UTF8);
 				}
+		#if		qPlatform_Windows
 			inline	wstring	BSTR2wstring (BSTR b)
 				{
 					if (b == NULL) {
@@ -293,6 +318,9 @@ namespace	Stroika {
 						return wstring (b);
 					}
 				}
+		#endif
+	
+		#if		qPlatform_Windows
 			inline	wstring	BSTR2wstring (VARIANT b)
 				{
 					if (b.vt == VT_BSTR) {
@@ -302,6 +330,7 @@ namespace	Stroika {
 						return wstring ();
 					}
 				}
+		#endif
 
 
 
@@ -321,8 +350,8 @@ namespace	Stroika {
 					RequireNotNil (prefix);
 					size_t	prefixLen	=	::wcslen (prefix);
 					switch (co) {
-						case	eWithCase_CO:			return  wcsncmp (l, prefix, prefixLen) == 0;
-						case	eCaseInsensitive_CO:	return _wcsnicmp (l, prefix, prefixLen) == 0;
+						case	eWithCase_CO:			return wcsncmp (l, prefix, prefixLen) == 0;
+						case	eCaseInsensitive_CO:	return wcsncasecmp (l, prefix, prefixLen) == 0;
 					}
 					Assert (false);	return false; // not reached
 				}
@@ -335,7 +364,7 @@ namespace	Stroika {
 					}
 					switch (co) {
 						case	eWithCase_CO:			return wcsncmp (l.c_str (), prefix.c_str (), prefixLen) == 0;
-						case	eCaseInsensitive_CO:	return _wcsnicmp (l.c_str (), prefix.c_str (), prefixLen) == 0;
+						case	eCaseInsensitive_CO:	return wcsncasecmp (l.c_str (), prefix.c_str (), prefixLen) == 0;
 					}
 					Assert (false);	return false; // not reached
 				}
@@ -353,7 +382,7 @@ namespace	Stroika {
 					size_t	i	=	lLen - suffixLen;
 					switch (co) {
 						case	eWithCase_CO:			return wcsncmp (l.c_str () + i, suffix.c_str (), suffixLen) == 0;
-						case	eCaseInsensitive_CO:	return _wcsnicmp (l.c_str () + i, suffix.c_str (), suffixLen) == 0;
+						case	eCaseInsensitive_CO:	return wcsncasecmp (l.c_str () + i, suffix.c_str (), suffixLen) == 0;
 					}
 					Assert (false);	return false; // not reached
 				}
@@ -364,19 +393,19 @@ namespace	Stroika {
 			// class	CaseInsensativeLess
 			inline	bool CaseInsensativeLess::operator()(const wstring& _Left, const wstring& _Right) const
 				{
-					return ::_wcsicmp (_Left.c_str (), _Right.c_str ()) < 0;
+					return wcscasecmp (_Left.c_str (), _Right.c_str ()) < 0;
 				}
 
 
 
 			template	<typename TCHAR>
-				size_t	CRLFToNL (const typename TCHAR* srcText, size_t srcTextBytes, typename TCHAR* outBuf, size_t outBufSize)
+				size_t	CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
 					{
 						RequireNotNil (srcText);
 						RequireNotNil (outBuf);
-						typename TCHAR*	outPtr	=	outBuf;
+						TCHAR*	outPtr	=	outBuf;
 						for (size_t i = 1; i <= srcTextBytes; i++) {
-							typename TCHAR	c	 = srcText[i-1];
+							TCHAR	c	 = srcText[i-1];
 							if (c == '\r') {
 								// peek at next character - and if we have a CRLF sequence - then advance pointer
 								// (so we skip next NL) and pretend this was an NL..
@@ -394,7 +423,7 @@ namespace	Stroika {
 						return (nBytes);
 					}
 			template	<typename TCHAR>
-				inline	void	CRLFToNL (basic_string<typename TCHAR>* text)
+				inline	void	CRLFToNL (basic_string<TCHAR>* text)
 					{
 						size_t	origLen	=	text->length ();
 						size_t	newLen	=	CRLFToNL (Containers::Start (*text), origLen, Containers::Start (*text), origLen);
@@ -402,9 +431,9 @@ namespace	Stroika {
 						text->resize (newLen);
 					}
 			template	<typename TCHAR>
-				inline	basic_string<typename TCHAR>	CRLFToNL (const basic_string<typename TCHAR>& text)
+				inline	basic_string<TCHAR>	CRLFToNL (const basic_string<TCHAR>& text)
 					{
-						basic_string<typename TCHAR>	r	=	text;
+						basic_string<TCHAR>	r	=	text;
 						CRLFToNL (&r);
 						return r;
 					}
@@ -430,7 +459,7 @@ namespace	Stroika {
 						return (nBytes);
 					}
 			template	<typename TCHAR>
-				inline	basic_string<typename TCHAR>	NLToCRLF (const basic_string<typename TCHAR>& text)
+				inline	basic_string<TCHAR>	NLToCRLF (const basic_string<TCHAR>& text)
 					{
 						size_t	outBufSize	=	(text.length () + 1) * 2;
 						Memory::SmallStackBuffer<TCHAR>	outBuf (outBufSize);
@@ -468,7 +497,7 @@ namespace	Stroika {
 						return (nBytes);
 					}
 			template	<typename TCHAR>
-				inline	basic_string<typename TCHAR>	NLToNative (const basic_string<typename TCHAR>& text)
+				inline	basic_string<TCHAR>	NLToNative (const basic_string<TCHAR>& text)
 					{
 						size_t	outBufSize	=	(text.length () + 1) * 2;
 						Memory::SmallStackBuffer<TCHAR>	outBuf (outBufSize);
@@ -480,16 +509,16 @@ namespace	Stroika {
 
 
 			template	<typename TCHAR>
-				size_t	NormalizeTextToNL (const typename TCHAR* srcText, size_t srcTextBytes, typename TCHAR* outBuf, size_t outBufSize)
+				size_t	NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
 					{
 						Require (srcTextBytes == 0 or srcText != NULL);
 						Require (outBufSize == 0 or outBuf != NULL);
 						// Require outBufSize big enough to hold the converted srcTextBytes (best to just make sizes the same)
 
 						// NB: We DO Support the case where srcText == outBuf!!!!
-						typename TCHAR*	outPtr	=	outBuf;
+						TCHAR*	outPtr	=	outBuf;
 						for (size_t i = 0; i < srcTextBytes; i++) {
-							typename TCHAR	c	=	srcText[i];
+							TCHAR	c	=	srcText[i];
 							if (c == '\r') {
 								// peek at next character - and if we have a CRLF sequence - then advance pointer
 								// (so we skip next NL) and pretend this was an NL..
@@ -507,18 +536,18 @@ namespace	Stroika {
 						return (nBytes);
 					}
 			template	<typename TCHAR>
-				inline	void	NormalizeTextToNL (basic_string<typename TCHAR>* text)
+				inline	void	NormalizeTextToNL (basic_string<TCHAR>* text)
 					{
 						RequireNotNil (text);
 						size_t	origLen	=	text->length ();
-						size_t	newLen	=	NormalizeTextToNL (static_cast<const typename TCHAR*> (Containers::Start (*text)), origLen, static_cast<typename TCHAR*> (Containers::Start (*text)), origLen);
+						size_t	newLen	=	NormalizeTextToNL (static_cast<const TCHAR*> (Containers::Start (*text)), origLen, static_cast<TCHAR*> (Containers::Start (*text)), origLen);
 						Assert (newLen <= origLen);
 						text->resize (newLen);
 					}
 			template	<typename TCHAR>
-				inline	basic_string<typename TCHAR>	NormalizeTextToNL (const basic_string<typename TCHAR>& text)
+				inline	basic_string<TCHAR>	NormalizeTextToNL (const basic_string<TCHAR>& text)
 					{
-						basic_string<typename TCHAR>	r	=	text;
+						basic_string<TCHAR>	r	=	text;
 						NormalizeTextToNL (&r);
 						return r;
 					}
@@ -527,42 +556,42 @@ namespace	Stroika {
 
 			inline	bool	StringsCILess (const wstring& l, const wstring& r)
 				{
-					return ::_wcsicmp (l.c_str (), r.c_str ()) < 0;
+					return ::wcscasecmp (l.c_str (), r.c_str ()) < 0;
 				}
 			inline	bool	StringsCIEqual (const wstring& l, const wstring& r)
 				{
-					return ::_wcsicmp (l.c_str (), r.c_str ()) == 0;
+					return ::wcscasecmp (l.c_str (), r.c_str ()) == 0;
 				}
 			inline	int		StringsCICmp (const wstring& l, const wstring& r)
 				{
-					return ::_wcsicmp (l.c_str (), r.c_str ());
+					return ::wcscasecmp (l.c_str (), r.c_str ());
 				}
 
 
 
 
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	LTrim (const basic_string<typename TCHAR>& text)
+				basic_string<TCHAR>	LTrim (const basic_string<TCHAR>& text)
 					{
 						std::locale loc1;	// default locale
-						const ctype<typename TCHAR>& ct = use_facet<ctype<typename TCHAR> >(loc1);
-						basic_string<typename TCHAR>::const_iterator i = text.begin ();
+						const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
+						typename basic_string<TCHAR>::const_iterator i = text.begin ();
 						for (; i != text.end () and ct.is (ctype<TCHAR>::space, *i); ++i)
 							;
 						return basic_string<TCHAR> (i, text.end ());
 					}
 			template	<typename TCHAR>
-				basic_string<typename TCHAR>	RTrim (const basic_string<typename TCHAR>& text)
+				basic_string<TCHAR>	RTrim (const basic_string<TCHAR>& text)
 					{
 						std::locale loc1;	// default locale
-						const ctype<typename TCHAR>& ct = use_facet<ctype<typename TCHAR> >(loc1);
-						basic_string<typename TCHAR>::const_iterator i = text.end ();
+						const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
+						typename basic_string<TCHAR>::const_iterator i = text.end ();
 						for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
 							;
 						return basic_string<TCHAR> (text.begin (), i);
 					}
 			template	<typename TCHAR>
-				inline	basic_string<typename TCHAR>	Trim (const basic_string<typename TCHAR>& text)
+				inline	basic_string<TCHAR>	Trim (const basic_string<TCHAR>& text)
 					{
 						return LTrim (RTrim (text));
 					}
@@ -572,8 +601,8 @@ namespace	Stroika {
 				vector<STRING> Tokenize (const STRING& str, const STRING& delimiters)
 					{
 						vector<STRING>	result;
-						STRING::size_type	lastPos = str.find_first_not_of (delimiters, 0);		// Skip delimiters at beginning
-						STRING::size_type	pos     = str.find_first_of (delimiters, lastPos);		// Find first "non-delimiter"
+						typename STRING::size_type	lastPos = str.find_first_not_of (delimiters, 0);		// Skip delimiters at beginning
+						typename STRING::size_type	pos     = str.find_first_of (delimiters, lastPos);		// Find first "non-delimiter"
 						while (STRING::npos != pos || STRING::npos != lastPos) {
 							Containers::ReserveSpeedTweekAdd1 (result);
 							// Found a token, add it to the vector.
