@@ -24,12 +24,12 @@ namespace	Stroika {
 					{
 					}
 			template	<typename T>
-				inline	const typename T&	SingletonObjActualInitializer<T>::THE () const
+				inline	const T&	SingletonObjActualInitializer<T>::THE () const
 					{
 						return fThe;
 					}
 			template	<typename T>
-				inline	typename T&	SingletonObjActualInitializer<T>::THE ()
+				inline	T&	SingletonObjActualInitializer<T>::THE ()
 					{
 						return fThe;
 					}
@@ -55,7 +55,7 @@ namespace	Stroika {
 						}
 					}
 			template	<typename	ACTUAL_MODULE_INITIALIZER>
-				inline	typename	ACTUAL_MODULE_INITIALIZER&	ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::Actual ()
+				inline	ACTUAL_MODULE_INITIALIZER&	ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::Actual ()
 					{
 						Assert (sInitCnt > 0);	// we've been initialized, and not yet destroyed...
 						return *reinterpret_cast<ACTUAL_MODULE_INITIALIZER*> (&sActualModuleInitializer_Storage);
