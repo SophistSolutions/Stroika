@@ -4,34 +4,48 @@
 #ifndef	_Stroika_Foundation_Configuration_qDebug_h_
 #define	_Stroika_Foundation_Configuration_qDebug_h_	1
 
-
-	////PRIVATE IMPL DETAIL - DONT INCLUDE DIRECTLY
+/*
+ * This file is a private Stroika implementation detail, and shouldn't be included directly. 
+ * Its used by StroikaConfig.h - optionally included there -
+ * to help implement the set of Stroika public configuration defines.
+ */
 
 
 /*
  *	Assume the define _DEBUG is used throughout the code to indicate DEBUG mode (assertions on). Assure NDEBUG flag
  *	is set consistently (even if its not explicitly checked).
  */
-#if		defined(_DEBUG)
-	#define	qDebug	1
-#else
-	#define	qDebug	0
+#if		!defined (qDebug)
+	#if		defined(_DEBUG)
+		#define	qDebug	1
+	#elif	defined (NDEBUG)
+		#define	qDebug	0
+	#else
+		// DEFAULT if we have no idea?
+		#define	qDebug	0
+	#endif
 #endif
+
+
 
 // Check for consistent defines
 #if		qDebug
 	#if		!defined(_DEBUG)
-		#error	INCONSISTENT DEFINES
+		// NB #warning is a non-standard extension - maybe we shouldnt use?
+		// Maybe get rid of this?
+		#warning 	Perhaps _DEBUG should also have been defined?
 	#endif
 	#if		defined (NDEBUG)
-		#error	INCONSISTENT DEFINES
+		#error	INCONSISTENT DEFINES (NDEBUG and qDebug=1)
 	#endif
 #else
 	#if		defined(_DEBUG)
-		#error	INCONSISTENT DEFINES
+		#error	INCONSISTENT DEFINES (_DEBUG and qDebug=0)
 	#endif
 	#if		!defined (NDEBUG)
-		#error	INCONSISTENT DEFINES
+		// NB #warning is a non-standard extension - maybe we shouldnt use?
+		// Maybe get rid of this?
+		#warning	Perhaps NDEBUG should aslo have been defined
 	#endif
 #endif
 

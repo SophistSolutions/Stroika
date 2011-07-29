@@ -4,8 +4,11 @@
 #ifndef	_Stroika_Foundation_Configuration_StroikaConfig_qEndian_h_
 #define	_Stroika_Foundation_Configuration_StroikaConfig_qEndian_h_	1
 
-
-	////PRIVATE IMPL DETAIL - DONT INCLUDE DIRECTLY
+	/*
+	 * This file is a private Stroika implementation detail, and shouldn't be included directly. 
+	 * Its used by StroikaConfig.h - optionally included there -
+	 * to help implement the set of Stroika public configuration defines.
+	 */
 
 
 	// We should automate detecing this, but I don't know any portable way todo so at compile time - just runtime.

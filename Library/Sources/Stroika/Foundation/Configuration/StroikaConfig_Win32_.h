@@ -4,22 +4,33 @@
 #ifndef	_Stroika_Foundation_Configuration_StroikaConfig_Win32_h_
 #define	_Stroika_Foundation_Configuration_StroikaConfig_Win32_h_	1
 
+	/*
+	 * This file is a private Stroika implementation detail, and shouldn't be included directly. 
+	 * Its used by StroikaConfig.h - optionally included there -
+	 * to help implement the set of Stroika public configuration defines.
+	 */
 
-	////PRIVATE IMPL DETAIL - DONT INCLUDE DIRECTLY
 
-	#if		defined(_WINDOWS)
-		#define	qPlatform_Windows	1
+	// Define qPlatform_Windows (by inference from other defines)
+	#if		!defined (qPlatform_Windows)
+		#if		defined(_WINDOWS)
+			#define	qPlatform_Windows	1
+		#endif
 	#endif
-	#if		defined(_WIN64)
-		#define	qPlatform_Win64		1
-		#define	qPlatform_Win32		0
-		// in case only _WIN32 defined
-		#define	qPlatform_Windows	1
-	#elif		defined(_WIN32)
-		#define	qPlatform_Win64		0
-		#define	qPlatform_Win32		1
-		// in case only _WIN32 defined
-		#define	qPlatform_Windows	1
+
+	// Define qPlatform_Win32 and qPlatform_Win64 (by inference from other defines)
+	#if		!defined (qPlatform_Win32) || !defined (qPlatform_Win64)
+		#if		defined(_WIN64)
+			#define	qPlatform_Win64		1
+			#define	qPlatform_Win32		0
+			// in case only _WIN32 defined
+			#define	qPlatform_Windows	1
+		#elif		defined(_WIN32)
+			#define	qPlatform_Win64		0
+			#define	qPlatform_Win32		1
+			// in case only _WIN32 defined
+			#define	qPlatform_Windows	1
+		#endif
 	#endif
 
 
