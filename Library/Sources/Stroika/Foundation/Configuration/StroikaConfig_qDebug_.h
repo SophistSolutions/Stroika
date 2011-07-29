@@ -22,6 +22,7 @@
 		#define	qDebug	0
 	#else
 		// DEFAULT if we have no idea?
+		#warning Neither qDebug nor _DEBUG no NDEBUG defined, defaulting to no debug (qDebug=0)
 		#define	qDebug	0
 	#endif
 #endif
