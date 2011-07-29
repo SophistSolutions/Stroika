@@ -23,9 +23,9 @@ namespace	Stroika {
 			*/
 			inline	CodePage	GetDefaultSDKCodePage ()
 				{
-					#if		qMacOS
+					#if		qPlatform_MacOS
 						return kCodePage_MAC;	// there maybe a better answer than this??? Some Mac SDK API?
-					#elif	qWindows
+					#elif	qPlatform_Windows
 						return CP_ACP;			// special windows define which maps to the current OS code page
 					#elif	qXWindows
 						// Need some sort of TMPHACK answer for UNIX - eventually do better ;-) Maybe using locale calls?
@@ -183,7 +183,7 @@ namespace	Stroika {
 						default:						return CP_ACP;
 					}
 				}
-		#if		qWindows
+		#if		qPlatform_Windows
 			/*
 			@METHOD:		Win32PrimaryLangIDToCodePage
 			@DESCRIPTION:	<p>Map from a Win32 language identifier to a code page.</p>
@@ -333,9 +333,9 @@ namespace	Stroika {
 			*/
 			inline	CodePage	CodePagesInstalled::GetDefaultCodePage ()
 				{
-					#if		qMacOS
+					#if		qPlatform_MacOS
 						return kCodePage_MAC;
-					#elif	qWindows
+					#elif	qPlatform_Windows
 						return ::GetACP ();
 					#else
 						return kCodePage_ANSI;	// not sure what else to return by default
