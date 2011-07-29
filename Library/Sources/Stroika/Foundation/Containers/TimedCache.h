@@ -6,10 +6,12 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<tchar.h>
+
+
 #include	<map>
 
 #include	"../Configuration/Common.h"
+#include	"../Characters/TChar.h"
 #include	"../Debug/Assertions.h"
 #include	"../Time/Realtime.h"
 
@@ -71,7 +73,7 @@ namespace	Stroika {
 
 			#if		qKeepTimedCacheStats
 			public:
-				void	DbgTraceStats (const TCHAR* label) const;
+				void	DbgTraceStats (const Stroika::Foundation::Characters::TChar* label) const;
 			public:
 				size_t		fCachedCollected_Hits;
 				size_t		fCachedCollected_Misses;

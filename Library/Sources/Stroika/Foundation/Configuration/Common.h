@@ -39,7 +39,7 @@ namespace	Stroika {
 
 
 			template	<typename	ENUM>
-				ENUM	Inc (typename ENUM e);
+				ENUM	Inc (ENUM e);
 
 		}
 

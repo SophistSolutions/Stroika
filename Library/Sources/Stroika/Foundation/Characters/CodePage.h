@@ -81,8 +81,7 @@ namespace	Stroika {
 
 			CodePage	Win32CharSetToCodePage (unsigned char lfCharSet);
 
-			CodePage	Win32PrimaryLangIDToCodePage (USHORT languageIdenifier);
-
+			CodePage	Win32PrimaryLangIDToCodePage (unsigned short languageIdenifier);
 
 			/*
 			@CLASS:			CodePageConverter
@@ -263,9 +262,10 @@ namespace	Stroika {
 				private:
 					static	void	Init ();
 					static	void	AddIfNotPresent (CodePage cp);
-
-				private:
-					static	BOOL FAR	PASCAL	EnumCodePagesProc (LPTSTR lpCodePageString);
+				#if qPlatform_Windows
+					private:
+						static	BOOL FAR	PASCAL	EnumCodePagesProc (LPTSTR lpCodePageString);
+				#endif
 
 				private:
 					static	vector<CodePage>	sCodePages;

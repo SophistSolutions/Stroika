@@ -17,25 +17,25 @@ namespace	Stroika {
 		namespace	Containers {
 
 			template	<typename CONTAINER>
-				inline	typename	CONTAINER::value_type*	Start (CONTAINER& c)
+				inline	typename CONTAINER::value_type*	Start (CONTAINER& c)
 					{
 						size_t	cnt	=	c.size ();
 						return cnt==0? NULL: &c[0];
 					}
 			template	<typename CONTAINER>
-				inline	typename	typename const CONTAINER::value_type*	Start (const CONTAINER& c)
+				inline	 const typename CONTAINER::value_type*	Start (const CONTAINER& c)
 					{
 						size_t	cnt	=	c.size ();
 						return cnt==0? NULL: &c[0];
 					}
 			template	<typename CONTAINER>
-				inline	typename	CONTAINER::value_type*	End (CONTAINER& c)
+				inline	typename CONTAINER::value_type*	End (CONTAINER& c)
 					{
 						size_t	cnt	=	c.size ();
 						return cnt == 0? NULL: &c[0] + cnt;
 					}
 			template	<typename CONTAINER>
-				inline	typename	typename const CONTAINER::value_type*	End (const CONTAINER& c)
+				inline	const typename CONTAINER::value_type*	End (const CONTAINER& c)
 					{
 						size_t	cnt	=	c.size ();
 						return cnt == 0? NULL: &c[0] + cnt;
@@ -44,7 +44,7 @@ namespace	Stroika {
 
 
 			template	<typename	CONTAINER>
-				inline	void	ReserveSpeedTweekAdd1 (typename CONTAINER& c, size_t kMinChunk)
+				inline	void	ReserveSpeedTweekAdd1 (CONTAINER& c, size_t kMinChunk)
 					{
 						size_t	size	=	c.size ();
 						//Assert (size <= c.capacity ());	we don't want to include the assertion library in this .h file.... for now... --LGP 2007-03-08
@@ -56,7 +56,7 @@ namespace	Stroika {
 					}
 
 			template	<typename	CONTAINER>
-				inline	void	ReserveSpeedTweekAddN (typename CONTAINER& c, size_t n, size_t kMinChunk)
+				inline	void	ReserveSpeedTweekAddN (CONTAINER& c, size_t n, size_t kMinChunk)
 					{
 						size_t	size	=	c.size () + n;
 						if (size >= c.capacity ()) {

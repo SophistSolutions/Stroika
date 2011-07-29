@@ -70,7 +70,7 @@ namespace	Stroika {
 						~ModuleInitializer ();
 
 					public:
-						static	typename ACTUAL_MODULE_INITIALIZER&	Actual ();
+						static	ACTUAL_MODULE_INITIALIZER&	Actual ();
 
 					private:
 						static	Byte				sActualModuleInitializer_Storage[sizeof (ACTUAL_MODULE_INITIALIZER)];	// avoid actual memory allocation call - since only one of these
@@ -87,10 +87,10 @@ namespace	Stroika {
 						SingletonObjActualInitializer ();
 						~SingletonObjActualInitializer ();
 					public:
-						nonvirtual const typename T& THE () const;
-						nonvirtual typename T&	THE ();
+						nonvirtual const T& THE () const;
+						nonvirtual T&	THE ();
 					private:
-						typename	T	fThe;
+						T	fThe;
 				};
 
 
@@ -139,13 +139,13 @@ namespace	Stroika {
 			 *		ConstViaGetter<T,...> t;
 			 *			you must call t->m();
 			 */
-			template	<typename BASETYPE, const typename BASETYPE& (*ValueGetter) ()> 
+			template	<typename BASETYPE, const BASETYPE& (*ValueGetter) ()> 
 				struct ConstantViaGetter {
-					inline	operator const typename BASETYPE () const
+					inline	operator const BASETYPE () const
 						{
 							return (ValueGetter) ();
 						}
-					inline	const typename BASETYPE* operator-> () const
+					inline	const BASETYPE* operator-> () const
 						{
 							return &(ValueGetter) ();
 						}

@@ -10,32 +10,25 @@
 
 #include	"../Configuration/Common.h"
 
-
-#if		qDebug
+/* 
+ * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
+ * to 'new' so it can be safely used in places where the global new operator would have been used.
+ *		-- LGP 2009-05-25
+ */
+#if		qDebug && qPlatform_Windows
 	#define		_CRTDBG_MAP_ALLOC
 	#include	<crtdbg.h>
+	#define DEBUG_NEW	new (_NORMAL_BLOCK, __FILE__, __LINE__)
+#else
+   #define DEBUG_NEW	new
 #endif // _DEBUG
+
 
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Memory {
-
-			/* 
-			 * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
-			 * to 'new' so it can be safely used in places where the global new operator would have been used.
-			 *		-- LGP 2009-05-25
-			 */
-			#if		qDebug
-				#define		_CRTDBG_MAP_ALLOC
-				#include	<crtdbg.h>
-				#define DEBUG_NEW	new (_NORMAL_BLOCK, __FILE__, __LINE__)
-			#else
-			   #define DEBUG_NEW	new
-			#endif // _DEBUG
-
-
 			/*
 			 *	API to return memory allocation statistics. Generally - these will be inaccurate,
 			 *	unless certain defines are set in Memory.cpp - but at least some stats can be
