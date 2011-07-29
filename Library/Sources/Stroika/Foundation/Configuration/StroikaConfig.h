@@ -27,7 +27,7 @@
 
 #include	"Private/StroikaConfig_qEndian_.h"
 
-#include	"Private/StroikaConfig_Win32_.h"
+#include	"Private/StroikaConfig_qPlatformWindows_.h"
 
 #include	"Private/StroikaConfig_qTargetPlatformSDKUsesWchar_.h"
 
