@@ -6,6 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+
+
 #include	<map>
 
 #include	"../Configuration/Common.h"

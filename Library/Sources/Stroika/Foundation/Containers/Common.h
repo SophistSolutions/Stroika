@@ -6,6 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Containers {
