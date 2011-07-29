@@ -79,9 +79,13 @@ namespace	Stroika {
 
 			CodePage	GetDefaultSDKCodePage ();
 
+		#if		qPlatform_Windows
 			CodePage	Win32CharSetToCodePage (unsigned char lfCharSet);
+		#endif
 
+		#if		qPlatform_Windows
 			CodePage	Win32PrimaryLangIDToCodePage (USHORT languageIdenifier);
+		#endif
 
 			/*
 			@CLASS:			CodePageConverter
