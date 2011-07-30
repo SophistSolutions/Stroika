@@ -55,6 +55,18 @@ namespace	Stroika {
 				#define _T(x)    x
 			#endif
 
+			#if !qPlatform_Windows
+				/*
+					This will need changing, but needs discussion. We could declare our own routines, or map all the MS
+					_t versions, which just trivially choose between char/wchar_t versions. Complicating things is the MS 
+					range checking versions
+                */
+				#if qTargetPlatformSDKUseswchar_t
+					#define	_tcsncpy_s	wcsncpy
+				#else
+					#define	_tcsncpy_s	strncpy
+				#endif
+			#endif
 		}
 	}
 }

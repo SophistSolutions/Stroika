@@ -25,10 +25,11 @@
 
 /*
 This should be moved after discussion
-Case insensitve string comparisons are poorly supported. For single character there are a least 3 possible names: strcasecmp, strcmpi, stricmp and _stricmp. strcasecmp is POSIX, others are non-standard but MSVS only supports _stricmp (plus stricmp but deprecated). _stricmp adds mandatory memory verification stuff, to avoid various hacker exploits.
+Case insensitve string comparisons are poorly supported. For single character there are a least 4 possible names: strcasecmp, strcmpi, stricmp and _stricmp. strcasecmp is POSIX, others are non-standard but MSVS only supports _stricmp (plus stricmp but deprecated). _stricmp adds mandatory memory verification stuff, to avoid various hacker exploits.
 Situation even worse for wide characters, as apparently NOTHING is POSIX currentlty. GCC supports wcscasecmp and MS supports _wcsnicmp.
 
 For now: stick with GCC names, as at least one of them is POSIX.
+
 */
 
 #if		qPlatform_Windows

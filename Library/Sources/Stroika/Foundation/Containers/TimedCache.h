@@ -23,6 +23,8 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Containers {
+	
+			using Stroika::Foundation::Characters::TChar;
 
 
 			/*

@@ -43,7 +43,7 @@ namespace	Stroika {
 				bool	TimedCache<KEY,RESULT>::AccessElement (const KEY& key, RESULT* result)
 					{
 						ClearIfNeeded_ ();
-						map<KEY,MyResult>::iterator i = fMap.find (key);
+						typename map<KEY,MyResult>::iterator i = fMap.find (key);
 						if (i == fMap.end ()) {
 							#if		qKeepTimedCacheStats
 								fCachedCollected_Misses++;
@@ -67,7 +67,7 @@ namespace	Stroika {
 				void	TimedCache<KEY,RESULT>::AddElement (const KEY& key, const RESULT& result)
 					{
 						ClearIfNeeded_ ();
-						map<KEY,MyResult>::iterator i = fMap.find (key);
+						typename map<KEY,MyResult>::iterator i = fMap.find (key);
 						if (i == fMap.end ()) {
 							fMap.insert (map<KEY,MyResult>::value_type (key, MyResult (result)));
 						}
@@ -93,7 +93,7 @@ namespace	Stroika {
 						Stroika::Foundation::Time::DurationSecondsType	now	=	Time::GetTickCount ();
 						fNextAutoClearAt = now + fTimeout/2.0f;	// somewhat arbitrary how far into the future we do this...
 						Stroika::Foundation::Time::DurationSecondsType	lastAccessThreshold	=	now - fTimeout;
-						for (map<KEY,MyResult>::iterator i = fMap.begin (); i != fMap.end (); ) {
+						for (typename map<KEY,MyResult>::iterator i = fMap.begin (); i != fMap.end (); ) {
 							if (i->second.fLastAccessedAt < lastAccessThreshold) {
 								i = fMap.erase (i);
 							}
@@ -104,7 +104,7 @@ namespace	Stroika {
 					}
 			#if		qKeepTimedCacheStats
 			template	<typename	KEY, typename RESULT>
-				void	TimedCache<KEY,RESULT>::DbgTraceStats (const TCHAR* label) const
+				void	TimedCache<KEY,RESULT>::DbgTraceStats (const TChar* label) const
 					{
 						size_t	total	=	fCachedCollected_Hits + fCachedCollected_Misses;
 						if (total == 0) {
