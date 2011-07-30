@@ -30,7 +30,7 @@ namespace	Stroika {
 						IncCount ();
 					#endif
 				}
-			inline	TraceContextBumper::TraceContextBumper (const TCHAR* contextName)
+			inline	TraceContextBumper::TraceContextBumper (const TChar* contextName)
 				#if		qDefaultTracingOn
 					: fDoEndMarker (true)
 					//,fSavedContextName ()

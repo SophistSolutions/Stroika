@@ -12,6 +12,7 @@
 #endif
 
 #include	"../Characters/StringUtils.h"
+#include	"../Characters/TChar.h"
 #include	"../Characters/TString.h"
 #include	"../Configuration/Common.h"
 #include	"../Execution/ModuleInit.h"
@@ -25,6 +26,7 @@ namespace	Stroika {
 
 
 			using	Characters::TString;
+			using	Characters::TChar;
 
 
 			/*
@@ -113,14 +115,14 @@ namespace	Stroika {
 			class	TraceContextBumper {
 				public:
 					TraceContextBumper ();
-					TraceContextBumper (const TCHAR* contextName);
+					TraceContextBumper (const TChar* contextName);
 					~TraceContextBumper ();
 
 			#if		qDefaultTracingOn
 				public:
 					bool	fDoEndMarker;
 				private:
-					TCHAR										fSavedContextName[50];
+					TChar										fSavedContextName[50];
 					Emitter::TraceLastBufferedWriteTokenType	fLastWriteToken;			// used to COMBINE items into a single line if they happen quickly enuf
 
 				public:
