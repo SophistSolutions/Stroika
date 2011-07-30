@@ -4,6 +4,7 @@
 #include	"../StroikaPreComp.h"
 
 #include <stdarg.h>
+#include <stdlib.h>
 
 #include	<iomanip>
 #include	<sstream>
@@ -703,7 +704,7 @@ int	Characters::String2Int (const string& s)
 
 int	Characters::String2Int (const wstring& s)
 {
-	return _wtol (s.c_str ());
+	return wtol (s.c_str ());
 }
 
 

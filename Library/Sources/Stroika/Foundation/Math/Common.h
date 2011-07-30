@@ -11,6 +11,7 @@
 #if		qPlatform_Windows
 	#include <float.h>
 	#define isnan _isnan
+	#define	wtol _wtol
 #endif
 
 namespace	Stroika {	
