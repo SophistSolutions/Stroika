@@ -211,6 +211,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />

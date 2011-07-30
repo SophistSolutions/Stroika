@@ -599,5 +599,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.inl">
       <Filter>Sources\Streams\JSON</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt">
+      <Filter>Sources\Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>
