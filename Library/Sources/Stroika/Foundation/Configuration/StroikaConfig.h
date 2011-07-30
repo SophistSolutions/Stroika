@@ -23,13 +23,12 @@
  *
  *		-- LGP 2011-06-08
  */
-#include	"Private/StroikaConfig_qDebug_.h"
 
-#include	"Private/StroikaConfig_qEndian_.h"
 
-#include	"Private/StroikaConfig_qPlatformWindows_.h"
+#include	"Private/Defaults_Configuration_Common_.h"
 
-#include	"Private/StroikaConfig_qTargetPlatformSDKUsesWchar_.h"
+#include	"Private/Defaults_Characters_TChar_.h"
+#include	"Private/Defaults_Execution_Assertions_.h"
 
 
 
