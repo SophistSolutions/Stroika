@@ -529,12 +529,16 @@ wstring	Characters::Format (const wchar_t* format, ...)
 	wchar_t		msgBuf [10*1024];	// no idea how big to make it...
 	va_list		argsList;
 	va_start (argsList, format);
+#if		qPlatform_Windows
 	#if		__STDC_WANT_SECURE_LIB__
 	//	(void)::vswprintf_s (msgBuf, format, argsList);
 		(void)::_vsnwprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
 	#else
-		(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
+		(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList); 
 	#endif
+#else
+		(void)::vswprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
+#endif
 	va_end (argsList);
 	Assert (::wcslen (msgBuf) < NEltsOf (msgBuf));
 	return msgBuf;
@@ -667,8 +671,6 @@ vector<Byte>	Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
 
 
 
-
-
 /*
  ********************************************************************************
  ****************************** HexString2Int ***********************************
@@ -677,14 +679,14 @@ vector<Byte>	Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
 int	Characters::HexString2Int (const string& s)
 {
 	int	v	=	0;
-	(void)::sscanf_s (s.c_str (), "%x", &v);
+	(void)::sscanf (s.c_str (), "%x", &v);
 	return v;
 }
 
 int	Characters::HexString2Int (const wstring& s)
 {
 	int	v	=	0;
-	(void)::swscanf_s (s.c_str (), L"%x", &v);
+	(void)::swscanf (s.c_str (), L"%x", &v);
 	return v;
 }
 
@@ -725,7 +727,7 @@ float	Characters::String2Float (const wstring& s)
 float	Characters::String2Float (const wstring& s, float returnValIfInvalidString)
 {
 	float	num	=	returnValIfInvalidString;
-	if (::swscanf_s (s.c_str (), L"%f", &num) == 1) {
+	if (::swscanf (s.c_str (), L"%f", &num) == 1) {
 		return num;
 	}
 	return returnValIfInvalidString;

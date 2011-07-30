@@ -37,9 +37,16 @@ For now: stick with GCC names, as at least one of them is POSIX.
 	#define	strncasecmp	_strnicmp
 	#define	wcscasecmp	_wcsicmp
 	#define	wcsncasecmp	_wcsnicmp
+
+
+
 #endif
 
-
+#if		qPlatform_Windows
+	// not sure what to do about "safe" versions yet
+	#define		sscanf	sscanf_s
+	#define		swscanf	swscanf_s
+#endif
 
 
 namespace	Stroika {	
