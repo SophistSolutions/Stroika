@@ -49,8 +49,12 @@ namespace	Stroika {
 				#define TSTR(x)    _TEXT(x)
 			#else
 				#define TSTR(x)    x
+			#endif
+
+			#ifndef _T
 				#define _T(x)    x
 			#endif
+
 		}
 	}
 }
