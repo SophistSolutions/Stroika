@@ -37,10 +37,9 @@ namespace	Stroika {
 			/*
 			@CONFIGVAR:		qKeepLRUCacheStats
 			@DESCRIPTION:	<p>Defines whether or not we capture statistics (for debugging purposes) in @'LRUCache<ELEMENT>'.
-						This should be ON by default - iff @'qDebug' is true.</p>
 			 */
 			#if		!defined (qKeepLRUCacheStats)
-			#error "SB DEFINED IN CONFIG"
+				#error "qKeepLRUCacheStats should normally be defined indirectly by StroikaConfig.h"
 			#endif
 
 

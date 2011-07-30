@@ -24,9 +24,16 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-#if		!defined (qKeepTimedCacheStats)
-#error "SB defined in CONFIG"
-#endif
+
+			/*
+			@CONFIGVAR:		qKeepTimedCacheStats
+			@DESCRIPTION:	<p>Defines whether or not we capture statistics (for debugging purposes) in @'TimedCache<KEY,RESULT>'.
+						This should be ON by default - iff @'qDebug' is true.</p>
+			 */
+			#if		!defined (qKeepTimedCacheStats)
+				#error "qKeepTimedCacheStats should normally be defined indirectly by StroikaConfig.h"
+			#endif
+
 
 
 			// Keeps track of all items - indexed by Key - but throws away items which are any more

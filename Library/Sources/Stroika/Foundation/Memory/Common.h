@@ -10,12 +10,21 @@
 
 #include	"../Configuration/Common.h"
 
+
+
+
+#if		!defined (qMSVisualStudioCRTMemoryDebug)
+	#error	"qMSVisualStudioCRTMemoryDebug should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+
 /* 
  * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
  * to 'new' so it can be safely used in places where the global new operator would have been used.
  *		-- LGP 2009-05-25
  */
-#if		qDebug && qPlatform_Windows
+#if		qMSVisualStudioCRTMemoryDebug
 	#define		_CRTDBG_MAP_ALLOC
 	#include	<crtdbg.h>
 	#define DEBUG_NEW	new (_NORMAL_BLOCK, __FILE__, __LINE__)

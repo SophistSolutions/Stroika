@@ -32,7 +32,7 @@ namespace	Stroika {
 			 *	to help debug problems we cannot reproduce.
 			 */
 			#if		!defined (qTraceToFile)
-				#error Must be Defined in Stroika/Foundation/Configuration/StroikaConfig.h
+				#error "qTraceToFile should normally be defined indirectly by StroikaConfig.h"
 			#endif
 
 
@@ -45,7 +45,7 @@ namespace	Stroika {
 							<p>See also @'qDebug' and @'DebugTrace'</p>
 			 */
 			#if		!defined (qDefaultTracingOn)
-				#error Must be Defined in Stroika/Foundation/Configuration/StroikaConfig.h
+				#error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 			#endif
 
 			namespace	Private {
