@@ -6,6 +6,13 @@
 
 #include	"../StroikaPreComp.h"
 
+#include <math.h>
+
+#if		qPlatform_Windows
+	#include <float.h>
+	#define isnan _isnan
+#endif
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Math {

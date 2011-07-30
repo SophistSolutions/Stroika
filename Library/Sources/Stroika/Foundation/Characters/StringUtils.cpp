@@ -3,6 +3,8 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include <stdarg.h>
+
 #include	<iomanip>
 #include	<sstream>
 
@@ -32,11 +34,15 @@ using	namespace	Stroika::Foundation::Memory;
  */
 wstring	Characters::ACPStringToWide (const string& ws)
 {
+#if		qPlatform_Windows
 	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), NULL, NULL);
 	wstring	result;
 	result.resize (newStrLen);
 	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (result), newStrLen) == newStrLen);
 	return result;
+#else
+		AssertNotImplemented ();
+#endif
 }
 
 
@@ -49,6 +55,7 @@ wstring	Characters::ACPStringToWide (const string& ws)
  **************************** UTF8StringToBSTR **********************************
  ********************************************************************************
  */
+#if		qPlatform_Windows
 BSTR	Characters::UTF8StringToBSTR (const char* ws)
 {
 	RequireNotNil (ws);
@@ -62,7 +69,7 @@ BSTR	Characters::UTF8StringToBSTR (const char* ws)
 	Verify (::MultiByteToWideChar (kCodePage_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
 	return result;
 }
-
+#endif
 
 
 
@@ -143,7 +150,7 @@ bool	Characters::Contains (const wstring& string2Search, const wstring& substr, 
 		// sloppy but workable implementation
 		size_t	maxL	=	string2Search.length () - substr.length ();
 		for (size_t i = 0; i <= maxL; ++i) {
-			if (::_wcsnicmp (string2Search.c_str () + i, substr.c_str (), substr.length ()) == 0) {
+			if (::wcsncasecmp (string2Search.c_str () + i, substr.c_str (), substr.length ()) == 0) {
 				return true;
 			}
 		}
@@ -228,7 +235,7 @@ namespace	{
 
 				// toupper each lower-case character preceeded by a space
 				bool	prevCharSpace	=	true;	// so we upper first char
-				for (STR::iterator i = r.begin (); i != r.end (); ++i) {
+				for (typename STR::iterator i = r.begin (); i != r.end (); ++i) {
 					if (prevCharSpace) {
 						*i = TOUPPER (*i);
 					}
@@ -266,7 +273,7 @@ namespace	{
 
 				// toupper each lower-case character preceeded by a ENDOFSENTECE PUNCT
 				bool	nextCharStartsSentence	=	true;	// so we upper first char
-				for (STR::iterator i = r.begin (); i != r.end (); ++i) {
+				for (typename STR::iterator i = r.begin (); i != r.end (); ++i) {
 					if (nextCharStartsSentence and !ISSPACE (*i)) {
 						*i = TOUPPER (*i);
 						nextCharStartsSentence = false;
@@ -736,7 +743,7 @@ float	Characters::String2Float (const wstring& s, float returnValIfInvalidString
  */
 wstring	Characters::Float2String (float f, unsigned int precision)
 {
-	if (_isnan (f)) {
+	if (isnan (f)) {
 		return wstring ();
 	}
 	stringstream s;
