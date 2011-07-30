@@ -1,0 +1,33 @@
+CFLAGS= -c -std=c++0x -DqDebug=1
+
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../Sources/Stroika/Foundation/Execution/
+Includes                        =       -I.
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)AtomicOperation.o\
+	$(ObjDir)CopyableCriticalSection.o\
+	$(ObjDir)CriticalSection.o\
+	$(ObjDir)DLLSupport.o\
+	$(ObjDir)Event.o\
+	$(ObjDir)Exceptions.o\
+	$(ObjDir)IRunnable.o\
+	$(ObjDir)Module.o\
+	$(ObjDir)ModuleInit.o\
+	$(ObjDir)SimpleThread.o\
+	$(ObjDir)Sleep.o\
+	$(ObjDir)StringException.o\
+	$(ObjDir)ThreadAbortException.o\
+	$(ObjDir)WaitAbandonedException.o\
+	$(ObjDir)WaitTimeoutException.o\
+
+.cpp.o:
+	@echo "Compiling $<"
+	gcc $(CFLAGS) $< -o $@
+
+all:	$(Objs)
+	echo do ar here

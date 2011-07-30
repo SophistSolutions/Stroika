@@ -1,0 +1,26 @@
+CFLAGS= -c -std=c++0x -DqDebug=1
+
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../Sources/Stroika/Foundation/Memory/
+Includes                        =       -I.
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)BlockAllocated.o\
+	$(ObjDir)Common.o\
+	$(ObjDir)MemoryAllocator.o\
+	$(ObjDir)Optional.o\
+	$(ObjDir)RefCntPtr.o\
+	$(ObjDir)Shared.o\
+	$(ObjDir)SmallStackBuffer.o\
+	$(ObjDir)VariantValue.o\
+
+.cpp.o:
+	@echo "Compiling $<"
+	gcc $(CFLAGS) $< -o $@
+
+all:	$(Objs)
+	echo do ar here

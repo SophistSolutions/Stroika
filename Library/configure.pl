@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl -w
 
 # MUST FIX TO CHECK FOR --only-if-unconfigured - for now thats all the logic we'll support
 # but should check flag...
@@ -11,6 +11,50 @@
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileName	=	"Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
+
+
+my $intermediateFiles	=	"IntermediateFiles/";
+my $platform		=	"Platform_Linux";
+
+
+sub mkDirWithLinks
+{
+	local $relPath = $_[0];
+	local $makefileName = $_[1];
+
+	mkdir "$intermediateFiles/$platform/$relPath";
+	system ("ln -s ../../../Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
+}
+
+
+sub MakeUnixDirs {
+
+#primitive tmphack - delete if exists so we re-create - later add options to check if exists and warn etc
+if (-e $intermediateFiles) {
+	system ("rm -rf $intermediateFiles");
+}
+
+unless (-e $intermediateFiles) {
+	mkdir "$intermediateFiles";
+	mkdir "$intermediateFiles/$platform";
+	mkdir "$intermediateFiles/$platform/";
+	system ("ln -s ../../Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Makefile");
+	
+	mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
+	mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
+	mkDirWithLinks("Containers", "Makefile-Foundation-Containers");
+	mkDirWithLinks("Cryptography", "Makefile-Foundation-Cryptography");
+	mkDirWithLinks("Database", "Makefile-Foundation-Database");
+	mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
+	mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
+	mkDirWithLinks("IO", "Makefile-Foundation-IO");
+	mkDirWithLinks("Math", "Makefile-Foundation-Math");
+	mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
+	mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
+	mkDirWithLinks("Time", "Makefile-Foundation-Time");
+}
+}
+
 
 
 
@@ -47,4 +91,10 @@ sub WriteDefault
 unless (-e $configFileName) {
 	print("Writing \"$configFileName\"...\n");
 	WriteDefault ();
+}
+
+print ("OS: $^O\n");
+
+if ("$^O" eq "linux") {
+    MakeUnixDirs ();
 }

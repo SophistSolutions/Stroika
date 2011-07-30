@@ -1,0 +1,22 @@
+CFLAGS= -c -std=c++0x -DqDebug=1
+
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../Sources/Stroika/Foundation/IO/
+Includes                        =       -I.
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)FileAccessException.o\
+	$(ObjDir)FileBusyException.o\
+	$(ObjDir)FileFormatException.o\
+	$(ObjDir)FileUtils.o\
+
+.cpp.o:
+	@echo "Compiling $<"
+	gcc $(CFLAGS) $< -o $@
+
+all:	$(Objs)
+	echo do ar here

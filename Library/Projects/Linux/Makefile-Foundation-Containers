@@ -1,0 +1,22 @@
+CFLAGS= -c -std=c++0x -DqDebug=1
+
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../Sources/Stroika/Foundation/Containers/
+Includes                        =       -I.
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)LRUCache.o\
+	$(ObjDir)SetUtils.o\
+	$(ObjDir)TimedCache.o\
+	$(ObjDir)VectorUtils.o\
+
+.cpp.o:
+	@echo "Compiling $<"
+	gcc $(CFLAGS) $< -o $@
+
+all:	$(Objs)
+	echo do ar here
