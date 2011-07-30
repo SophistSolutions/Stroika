@@ -25,11 +25,11 @@
 	#if		defined(_WINDOWS)
 		#if		qTargetPlatformSDKUseswchar_t
 			#if !defined(_UNICODE) || !defined(UNICODE)
-	#error "INCONSITENT VALS"
+				#error "INCONSITENT VALS"
 			#endif
 		#else
 			#if defined(_UNICODE) || defined(UNICODE)
-	#error "INCONSITENT VALS"
+				#error "INCONSITENT VALS"
 			#endif
 		#endif
 	#endif

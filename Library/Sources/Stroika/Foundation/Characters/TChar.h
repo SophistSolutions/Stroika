@@ -28,14 +28,12 @@ namespace	Stroika {
 		namespace	Characters {
 
 
-			#if		qTargetPlatformSDKUseswchar_t
-				#if !defined(_UNICODE) || !defined(UNICODE)
-#error "INCONSITENT VALS"
-				#endif
-			#else
-				#if defined(_UNICODE) || defined(UNICODE)
-#error "INCONSITENT VALS"
-				#endif
+			/*
+			@CONFIGVAR:		qTargetPlatformSDKUseswchar_t
+			@DESCRIPTION:	<p>defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)</p>
+			 */
+			#if		!defined (qTargetPlatformSDKUseswchar_t)
+				#error "qTargetPlatformSDKUseswchar_t should normally be defined indirectly by StroikaConfig.h"
 			#endif
 
 

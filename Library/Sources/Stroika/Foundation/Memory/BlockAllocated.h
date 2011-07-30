@@ -27,7 +27,7 @@ namespace	Stroika {
 					<p>Defaults to true.</p>
 			 */
 			#if		!defined (qAllowBlockAllocation)
-				#error Must be Defined in Stroika/Foundation/Configuration/StroikaConfig.h
+				#error "qAllowBlockAllocation should normally be defined indirectly by StroikaConfig.h"
 			#endif
 
 
