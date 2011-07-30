@@ -10,6 +10,9 @@
 
 #include	"../Configuration/Common.h"
 
+// This is temporarily needed in .h file because we do Require() stuff in .h - but move to .inl before long....
+#include	"../Debug/Assertions.h"
+
 
 
 /// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
