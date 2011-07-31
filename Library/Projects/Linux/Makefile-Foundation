@@ -1,4 +1,4 @@
-CFLAGS= -c -std=c++0x -DqDebug=1
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
 
 ObjDir                          =       ./
@@ -25,6 +25,6 @@ SubDirs=	\
 all:
 	for i in $(SubDirs);\
 	do\
-	    cd $$i; make;\
+	    cd $$i; make; cd ..;\
 	done
 

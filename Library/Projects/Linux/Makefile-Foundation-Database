@@ -1,4 +1,4 @@
-CFLAGS= -c -std=c++0x -DqDebug=1
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
 
 ObjDir                          =       ./
