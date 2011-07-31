@@ -7,6 +7,10 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include <stdlib.h>
+
+#include <algorithm>
+
 #include	"../Containers/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"

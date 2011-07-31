@@ -21,6 +21,11 @@
 #include	"StringException.h"
 
 
+#if		!qPlatform_Windows
+// in gcc the syntax is sadly after the function name, not before: __attribute__ ((noreturn)
+// we will probably have to use two separate defines to achieve this, very ugly
+#define	__declspec(noreturn)	
+#endif
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -39,6 +44,7 @@ namespace	Stroika {
 			};
 
 
+		#if		qPlatform_Windows
 			class	Win32ErrorException {
 				public:
 					Win32ErrorException (DWORD error);
@@ -65,10 +71,10 @@ namespace	Stroika {
 					static	const	DWORD	kERROR_INTERNET_PROTOCOL_NOT_FOUND			=	12008;
 					static	const	DWORD	kERROR_INTERNET_CANNOT_CONNECT				=	12029;
 			};
+		#endif
 
 
-
-
+		#if		qPlatform_Windows
 			class	Win32StructuredException {
 				private:
 					unsigned int fSECode;
@@ -86,8 +92,10 @@ namespace	Stroika {
 				private:
 					static	void	trans_func (unsigned int u, EXCEPTION_POINTERS* pExp);
 			};
+		#endif
 
 
+		#if		qPlatform_Windows
 			class	HRESULTErrorException {
 				public:
 					HRESULTErrorException (HRESULT hresult);
@@ -101,8 +109,10 @@ namespace	Stroika {
 				private:
 					HRESULT	fHResult;
 			};
+		#endif
 
 
+		#if		qPlatform_Windows
 			class	errno_ErrorException : public StringException {
 				public:
 					errno_ErrorException (errno_t e);
@@ -121,6 +131,7 @@ namespace	Stroika {
 				private:
 					errno_t	fError;
 			};
+		#endif
 
 
 
@@ -167,16 +178,20 @@ namespace	Stroika {
 
 
 			void	ThrowIfFalseGetLastError (bool test);
+		#if		qPlatform_Windows
 			void	ThrowIfFalseGetLastError (BOOL test);
 			void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
 			void	ThrowIfErrorHRESULT (HRESULT hr);
 			void	ThrowIfError_errno_t (errno_t e = errno);
 			void	ThrowIfShellExecError (HINSTANCE r);
+		#endif
 
 			template	<typename E>
 				void	ThrowIfNull (const void* p, const E& e = E ());
+		#if		qPlatform_Windows
 			template<>
 				void	ThrowIfNull (const void* p, const HRESULT& hr);
+		#endif
 			void	ThrowIfNull (const void* p);
 
 
@@ -221,8 +236,10 @@ namespace	Stroika {
 					virtual	void	RethrowIfAnyCaught () const;
 
 				public:
+		#if		qPlatform_Windows
 					auto_ptr<HRESULTErrorException>					fHRESULTErrorException;
 					auto_ptr<Win32ErrorException>					fWin32ErrorException;
+		#endif
 					auto_ptr<RequiredComponentMissingException>		fRequiredComponentMissingException;
 					auto_ptr<StringException>						fStringException;
 					auto_ptr<IO::FileFormatException>				fFileFormatException;
