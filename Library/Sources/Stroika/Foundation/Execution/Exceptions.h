@@ -21,10 +21,12 @@
 #include	"StringException.h"
 
 
-#if		!qPlatform_Windows
 // in gcc the syntax is sadly after the function name, not before: __attribute__ ((noreturn)
 // we will probably have to use two separate defines to achieve this, very ugly
-#define	__declspec(noreturn)	
+#if qPlatform_Windows
+	#define	__atttribute__((noreturn))
+#else
+	#define	__declspec(noreturn)
 #endif
 
 namespace	Stroika {	
@@ -164,7 +166,7 @@ namespace	Stroika {
 
 			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
 			template	<typename T>
-				__declspec(noreturn)	void	DoThrow (const T& e2Throw);
+				__declspec(noreturn)	void	DoThrow (const T& e2Throw);	__atttribute__((noreturn))
 			template	<typename T>
 				__declspec(noreturn)	void	DoThrow (const T& e2Throw, const char* traceMsg);
 			template	<typename T>
