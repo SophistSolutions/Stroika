@@ -24,7 +24,7 @@
 // in gcc the syntax is sadly after the function name, not before: __attribute__ ((noreturn)
 // we will probably have to use two separate defines to achieve this, very ugly
 #if qPlatform_Windows
-	#define	__atttribute__((noreturn))
+	#define	__atttribute__(noreturn)
 #else
 	#define	__declspec(noreturn)
 #endif
