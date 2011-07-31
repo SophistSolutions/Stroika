@@ -166,7 +166,7 @@ namespace	Stroika {
 
 			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
 			template	<typename T>
-				__declspec(noreturn)	void	DoThrow (const T& e2Throw);	__atttribute__((noreturn))
+				__declspec(noreturn)	void	DoThrow (const T& e2Throw);	__atttribute__(noreturn)
 			template	<typename T>
 				__declspec(noreturn)	void	DoThrow (const T& e2Throw, const char* traceMsg);
 			template	<typename T>
