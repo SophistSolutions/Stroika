@@ -513,7 +513,11 @@ void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCh
 	RequireNotNil (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != NULL);
 //	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
+#if		qPlatform_Windows
 	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
+#else
+	AssertNotImplemented ();
+#endif
 #if 0
 // enable to debug cases (e.g. caused when you read a CRLF file with fstream
 // in text mode, and get - somehow - stuff that triggers this ??? - with convert to
@@ -532,7 +536,11 @@ void	Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inC
 	Require (inCharCnt == 0 or inChars != NULL);
 	RequireNotNil (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != NULL);
+#if		qPlatform_Windows
 	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), NULL, NULL);
+#else
+	AssertNotImplemented ();
+#endif
 }
 
 
@@ -1410,16 +1418,20 @@ void	UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, ch
  */
 vector<CodePage>	CodePagesInstalled::sCodePages;
 
+#if qPlatform_Windows
 BOOL FAR	PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageString)
 {
 	sCodePages.push_back (_ttoi (lpCodePageString));
 	return (1);
 }
+#endif
 
 void	CodePagesInstalled::Init ()
 {
 	Assert (sCodePages.size () == 0);
+#if qPlatform_Windows
 	::EnumSystemCodePages (EnumCodePagesProc, CP_INSTALLED);
+#endif
 	// Add these 'fake' code pages - which I believe are always available, but never listed by this procedure
 	AddIfNotPresent (kCodePage_UNICODE_WIDE);
 	AddIfNotPresent (kCodePage_UNICODE_WIDE_BIGENDIAN);
@@ -1527,7 +1539,11 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 	if (confidence != NULL) {
 		*confidence = eLow;
 	}
+#if		qPlatform_Windows
 	return ::GetACP ();
+#else
+	return kCodePage_UTF8;	// not at all obvious yet what to do for Linux/Mac
+#endif
 }
 
 
