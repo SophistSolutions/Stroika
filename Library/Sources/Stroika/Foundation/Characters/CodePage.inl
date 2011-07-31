@@ -179,7 +179,7 @@ namespace	Stroika {
 						case	EASTEUROPE_CHARSET:		return kCodePage_EasternEuropean;	//	aka 'central european'?
 						case	254:					return kCodePage_PC; break;
 						case	OEM_CHARSET:			return kCodePage_PCA; break;
-						case	256:					return kCodePage_MAC; break;
+//						case	256:					return kCodePage_MAC; break;
 						default:						return CP_ACP;
 					}
 				}
