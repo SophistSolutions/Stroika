@@ -8,11 +8,21 @@
 
 #include <math.h>
 
-#if		qPlatform_Windows
+#ifndef	qUseVSNonStandardLibraryNames
+	#if defined(_MSC_VER)
+		#define	qUseVSNonStandardLibraryNames	1
+	#else
+		#define	qUseVSNonStandardLibraryNames	0
+	#endif
+#endif
+
+#if		qUseVSNonStandardLibraryNames
 	#include <float.h>
 	#define isnan _isnan
 	#define	wtol _wtol
+#else
 #endif
+
 
 namespace	Stroika {	
 	namespace	Foundation {

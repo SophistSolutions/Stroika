@@ -12,12 +12,7 @@
  */
 #include	<limits>
 
-#if !qPlatform_Windows
-inline	long	wtol (const wchar_t *str )
-{
-	return wcstol (str, 0, 10);
-}
-#endif
+
 
 namespace	Stroika {	
 	namespace	Foundation {
