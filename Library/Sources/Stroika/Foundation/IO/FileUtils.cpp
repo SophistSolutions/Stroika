@@ -902,7 +902,7 @@ void	IO::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
  */
 void	IO::WriteString (ostream& out, const wstring& s)
 {
-	string	s1 = WideStringToNarrow (s, CP_UTF8);
+	string	s1 = WideStringToNarrow (s, kCodePage_UTF8);
 	out << s1.size ();
 	out << ' ';
 	out << s1 << '\t';
@@ -929,7 +929,7 @@ wstring	IO::ReadString (istream& in)
 	for (int i = 0; i < strlen; ++i) {
 		s += in.get ();
 	}
-	return NarrowStringToWide (s, CP_UTF8);
+	return NarrowStringToWide (s, kCodePage_UTF8);
 }
 
 

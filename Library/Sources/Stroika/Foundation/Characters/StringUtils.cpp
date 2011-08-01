@@ -59,7 +59,7 @@ BSTR	Characters::UTF8StringToBSTR (const char* ws)
 		DbgTrace ("UTF8StringToBSTR () out of memory - throwing bad_alloc");
 		throw bad_alloc ();
 	}
-	Verify (::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
+	Verify (::MultiByteToWideChar (kCodePage_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
 	return result;
 }
 

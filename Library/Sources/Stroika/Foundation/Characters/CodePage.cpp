@@ -235,7 +235,7 @@ void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
 	CodePagesGuesser::Confidence	confidence	=	CodePagesGuesser::eLow;
 	CodePage						cp			=	CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, &confidence, NULL);
 	if (confidence <= CodePagesGuesser::eLow) {
-		cp = CP_UTF8;
+		cp = kCodePage_UTF8;
 	}
 	CodePageConverter cpCvt (cp, CodePageConverter::eHandleBOM);
 	cpCvt.MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);

@@ -253,36 +253,36 @@ namespace	Stroika {
 					}
 					else {
 						int	srcStrLen	=	::SysStringLen (bstr);
-						int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, bstr, srcStrLen, NULL, NULL, NULL, NULL);
+						int stringLength = ::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, NULL, NULL, NULL, NULL);
 						string	result;
 						result.resize (stringLength);
-						Verify (::WideCharToMultiByte (CP_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, NULL, NULL) == stringLength);
+						Verify (::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, NULL, NULL) == stringLength);
 						return result;
 					}
 				}
 			inline	string	WideStringToUTF8 (const wstring& ws)
 				{
-					return WideStringToNarrow (ws, CP_UTF8);
+					return WideStringToNarrow (ws, kCodePage_UTF8);
 				}
 			inline	void	UTF8StringToWide (const char* s, wstring* intoStr)
 				{
 					RequireNotNil (s);
-					NarrowStringToWide (s, s + ::strlen (s), CP_UTF8, intoStr);
+					NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, intoStr);
 				}
 			inline	void	UTF8StringToWide (const string& s, wstring* intoStr)
 				{
-					NarrowStringToWide (s, CP_UTF8, intoStr);
+					NarrowStringToWide (s, kCodePage_UTF8, intoStr);
 				}
 			inline	wstring	UTF8StringToWide (const char* s)
 				{
 					RequireNotNil (s);
 					wstring	result;
-					NarrowStringToWide (s, s + ::strlen (s), CP_UTF8, &result);
+					NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, &result);
 					return result;
 				}
 			inline	wstring	UTF8StringToWide (const string& s)
 				{
-					return NarrowStringToWide (s, CP_UTF8);
+					return NarrowStringToWide (s, kCodePage_UTF8);
 				}
 			inline	wstring	BSTR2wstring (BSTR b)
 				{
