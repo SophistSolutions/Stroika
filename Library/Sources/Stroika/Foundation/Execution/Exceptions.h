@@ -21,6 +21,7 @@
 #include	"StringException.h"
 
 
+
 // this will need to be moved to configuration and auto-generated
 // can't #define attribute(( because of the double paren, which is required in gcc, so we need our own name in all cases
 #if defined(_MSC_VER)
@@ -31,8 +32,8 @@
 
 #if qUseDeclSpecRatherThanAttribute
 	#define	_NoReturn_	__declspec(noreturn)
-#elif 
-	#define	_NoReturn_	__atttribute__((noreturn))
+#else
+	#define	_NoReturn_	__attribute__((noreturn))
 #endif
 
 namespace	Stroika {	
@@ -169,10 +170,9 @@ namespace	Stroika {
 
 
 
-
 			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
 			template	<typename T>
-				void	 _NoReturn_	DoThrow (const T& e2Throw) ;
+				void	 	DoThrow (const T& e2Throw) __atttribute__((noreturn));
 			template	<typename T>
 				void	_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg);
 			template	<typename T>
