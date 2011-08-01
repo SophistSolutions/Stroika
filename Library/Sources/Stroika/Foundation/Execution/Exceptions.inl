@@ -80,34 +80,34 @@ namespace	Stroika {
 
 
 			template	<typename T>
-				inline	__declspec(noreturn)	void	DoThrow (const T& e2Throw)
+				inline		void	 DoThrow (const T& e2Throw) 
 					{
 						DbgTrace ("Throwing exception: %s", typeid (T).name ());
 						throw e2Throw;
 					}
 			template	<typename T>
-				inline	__declspec(noreturn)	void	DoThrow (const T& e2Throw, const char* traceMsg)
+				inline	void		DoThrow (const T& e2Throw, const char* traceMsg)
 					{
 						DbgTrace ("%s", traceMsg);
 						throw e2Throw;
 					}
 			template	<typename T>
-				inline	__declspec(noreturn)	void	DoThrow (const T& e2Throw, const wchar_t* traceMsg)
+				inline	void		DoThrow (const T& e2Throw, const wchar_t* traceMsg)
 					{
 						DbgTrace (L"%s", traceMsg);
 						throw e2Throw;
 					}
-			inline	__declspec(noreturn)	void	DoReThrow ()
+			inline	void	DoReThrow ()
 				{
 					DbgTrace ("DoReThrow");
 					throw;
 				}
-			inline	__declspec(noreturn)	void	DoReThrow (const char* traceMsg)
+			inline	void	DoReThrow (const char* traceMsg)
 				{
 					DbgTrace ("DoReThrow: %s", traceMsg);
 					throw;
 				}
-			inline	__declspec(noreturn)	void	DoReThrow (const wchar_t* traceMsg)
+			inline	void	DoReThrow (const wchar_t* traceMsg)
 				{
 					DbgTrace (L"DoReThrow: %s", traceMsg);
 					throw;
@@ -116,21 +116,21 @@ namespace	Stroika {
 
 			#if		qPlatform_Windows
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const Win32ErrorException& e2Throw)
+				inline	void	DoThrow (const Win32ErrorException& e2Throw)
 					{
 						DbgTrace ("Throwing Win32ErrorException: DWORD = 0x%x", static_cast<DWORD> (e2Throw));
 						throw e2Throw;
 					}
 			#endif
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const StringException& e2Throw)
+				inline	void	DoThrow (const StringException& e2Throw)
 					{
 						DbgTrace (L"Throwing StringException: '%s'", static_cast<wstring> (e2Throw).substr (0, 20).c_str ());
 						throw e2Throw;
 					}
 		#if		qPlatform_Windows
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const Win32StructuredException& e2Throw)
+				inline	void	_DoThrow (const Win32StructuredException& e2Throw)
 					{
 						DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
 						throw e2Throw;
@@ -138,32 +138,32 @@ namespace	Stroika {
 		#endif
 		#if		qPlatform_Windows
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const HRESULTErrorException& e2Throw)
+				inline	void	__atttribute__((noreturn))	DoThrow (const HRESULTErrorException& e2Throw)
 					{
 						DbgTrace ("Throwing HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
 						throw e2Throw;
 					}
 		#endif
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const IO::FileFormatException& e2Throw)
+				inline	void	DoThrow (const IO::FileFormatException& e2Throw)
 					{
 						DbgTrace (_T ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;
 					}
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const SilentException& e2Throw)
+				inline	void	DoThrow (const SilentException& e2Throw)
 					{
 						DbgTrace (_T ("Throwing SilentException"));
 						throw e2Throw;
 					}
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const UserCanceledException& e2Throw)
+				inline	void	DoThrow (const UserCanceledException& e2Throw)
 					{
 						DbgTrace (_T ("Throwing UserCanceledException"));
 						throw e2Throw;
 					}
 			template	<>
-				inline	__declspec(noreturn)	void	DoThrow (const IO::FileBusyException& e2Throw)
+				inline	void	DoThrow (const IO::FileBusyException& e2Throw)
 					{
 						DbgTrace (_T ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;

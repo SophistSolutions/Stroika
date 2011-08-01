@@ -113,13 +113,13 @@ namespace	Stroika {
 
 
 		template	<>
-			inline	__declspec(noreturn)	void	Execution::DoThrow (const Time::Date::FormatException& e2Throw)
+			inline	void	__atttribute__((noreturn))	Execution::DoThrow (const Time::Date::FormatException& e2Throw)
 				{
 					DbgTrace (L"Throwing Date::FormatException");
 					throw e2Throw;
 				}
 		template	<>
-			inline	__declspec(noreturn)	void	Execution::DoThrow (const Time::TimeOfDay::FormatException& e2Throw)
+			inline	void	__atttribute__((noreturn))	Execution::DoThrow (const Time::TimeOfDay::FormatException& e2Throw)
 				{
 					DbgTrace (L"Throwing TimeOfDay::FormatException");
 					throw e2Throw;

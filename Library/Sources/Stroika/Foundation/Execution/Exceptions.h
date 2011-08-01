@@ -24,9 +24,8 @@
 // in gcc the syntax is sadly after the function name, not before: __attribute__ ((noreturn)
 // we will probably have to use two separate defines to achieve this, very ugly
 #if qPlatform_Windows
-	#define	__atttribute__(noreturn)
+	#define	__atttribute__((noreturn)) __declspec(noreturn)
 #else
-	#define	__declspec(noreturn)
 #endif
 
 namespace	Stroika {	
@@ -166,16 +165,16 @@ namespace	Stroika {
 
 			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
 			template	<typename T>
-				__declspec(noreturn)	void	DoThrow (const T& e2Throw);	__atttribute__(noreturn)
+				void	 __attribute__((noreturn))	DoThrow (const T& e2Throw) ;
 			template	<typename T>
-				__declspec(noreturn)	void	DoThrow (const T& e2Throw, const char* traceMsg);
+				void	__attribute__((noreturn))	DoThrow (const T& e2Throw, const char* traceMsg);
 			template	<typename T>
-				__declspec(noreturn)	void	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
+				void	__attribute__((noreturn)) 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
 			// Just a regular C++ rethrow, but with a DbgTrace message...
-			__declspec(noreturn)	void	DoReThrow ();
-			__declspec(noreturn)	void	DoReThrow (const char* traceMsg);
-			__declspec(noreturn)	void	DoReThrow (const wchar_t* traceMsg);
+			void	__attribute__((noreturn))	DoReThrow ();
+			void	__attribute__((noreturn))	DoReThrow (const char* traceMsg);
+			void	__attribute__((noreturn))	DoReThrow (const wchar_t* traceMsg);
 
 
 
