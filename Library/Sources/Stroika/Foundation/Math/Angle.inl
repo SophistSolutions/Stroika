@@ -94,35 +94,35 @@ namespace	Stroika {
 				{
 					return (Angle (lhs.AsRadians () / rhs));
 				}
-			inline	bool	Math::operator== (const Angle& lhs, const Angle& rhs)
+			inline	bool	operator== (const Angle& lhs, const Angle& rhs)
 				{
 					return (lhs.AsRadians () == rhs.AsRadians ());
 				}
-			inline	bool	Math::operator!= (const Angle& lhs, const Angle& rhs)
+			inline	bool	operator!= (const Angle& lhs, const Angle& rhs)
 				{
 					return (lhs.AsRadians () != rhs.AsRadians ());
 				}
-			inline	bool	Math::operator< (const Angle& lhs, const Angle& rhs)
+			inline	bool	operator< (const Angle& lhs, const Angle& rhs)
 				{
 					return (lhs.AsRadians () < rhs.AsRadians ());
 				}
-			inline	bool	Math::operator<= (const Angle& lhs, const Angle& rhs)
+			inline	bool	operator<= (const Angle& lhs, const Angle& rhs)
 				{
 					return (lhs.AsRadians () <= rhs.AsRadians ());
 				}
-			inline	bool	Math::operator> (const Angle& lhs, const Angle& rhs)
+			inline	bool	operator> (const Angle& lhs, const Angle& rhs)
 				{
 					return (lhs.AsRadians () > rhs.AsRadians ());
 				}
-			inline	bool	Math::operator>= (const Angle& lhs, const Angle& rhs)
+			inline	bool	operator>= (const Angle& lhs, const Angle& rhs)
 				{
 					return (lhs.AsRadians () >= rhs.AsRadians ());
 				}
-			inline	Angle	Math::Min (const Angle& a1, const Angle& a2)
+			inline	Angle	Min (const Angle& a1, const Angle& a2)
 				{
 					return ((a1 < a2)? a1: a2);
 				}
-			inline	Angle	Math::Max (const Angle& a1, const Angle& a2)
+			inline	Angle	Max (const Angle& a1, const Angle& a2)
 				{
 					return ((a1 > a2)? a1: a2);
 				}
