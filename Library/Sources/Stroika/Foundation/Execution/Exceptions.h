@@ -21,11 +21,15 @@
 #include	"StringException.h"
 
 
-// in gcc the syntax is sadly after the function name, not before: __attribute__ ((noreturn)
-// we will probably have to use two separate defines to achieve this, very ugly
-#if qPlatform_Windows
-	#define	__atttribute__((noreturn)) __declspec(noreturn)
+// this will need to be moved to configuration and auto-generated
+#if defined(_MSC_VER)
+#define	qUseDeclSpecRatherThanAttribute	1
 #else
+#define	qUseDeclSpecRatherThanAttribute	0
+#endif
+
+#if qUseDeclSpecRatherThanAttribute
+	#define	__atttribute__((noreturn)) __declspec(noreturn)
 #endif
 
 namespace	Stroika {	
