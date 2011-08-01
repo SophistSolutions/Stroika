@@ -3,6 +3,10 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include <stdlib.h>
+
+#include <algorithm>
+
 #include	"../Containers/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Memory/SmallStackBuffer.h"
@@ -115,7 +119,7 @@ namespace	{
 	/* #include "md5.h" */
 
 	/* forward declaration */
-	void	Transform (UINT4 *buf, UINT4 *in);
+	static	void	Transform (UINT4 *buf, UINT4 *in);
 
 	static unsigned char PADDING[64] = {
 	  0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
