@@ -15,13 +15,15 @@
 
 namespace	Stroika {
 	namespace	Foundation	{
+		namespace	Execution {
 
 		template	<>
-			inline	void	_NoReturn_	Execution::DoThrow (const IO::FileAccessException& e2Throw)
+			inline	void	_NoReturn_	DoThrow (const IO::FileAccessException& e2Throw)
 				{
 					DbgTrace (_T ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.fFileName.c_str (), e2Throw.fFileAccessMode);
 					throw e2Throw;
 				}
+		}
 	}
 }
 #endif	/*_Stroika_Foundation_IO_FileAccessException_inl_*/
