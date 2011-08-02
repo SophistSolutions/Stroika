@@ -6,8 +6,12 @@
 
 #include	"../StroikaPreComp.h"
 
-#if		qPlatform_Windows
+#define	qUseWindowsNativeThreadSupport	qPlatform_Windows
+
+#if		qUseWindowsNativeThreadSupport
 	#include	<windows.h>
+#else
+	typedef	int	CRITICAL_SECTION;
 #endif
 
 #include	"../Configuration/Common.h"
