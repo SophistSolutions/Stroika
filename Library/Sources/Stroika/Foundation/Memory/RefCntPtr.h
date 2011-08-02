@@ -7,6 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Configuration/Common.h"
+#include	"../Execution/AtomicOperations.h"
 #include	"../Execution/Exceptions.h"
 
 
@@ -154,13 +155,9 @@ namespace	Stroika {
 
 // REDO THIS - SB PaRTIAL TEMPLATE SPECIALIZATION
 template	<typename	T>
-	void	ThrowIfNull (const Memory::RefCntPtr<typename T>& p);
+	void	ThrowIfNull (const Memory::RefCntPtr<T>& p);
 	
 		}
-
-
-
-
 	}
 }
 #endif	/*_Stroika_Foundation_Memory_RefCntPtr_h_*/
