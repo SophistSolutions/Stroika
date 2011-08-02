@@ -9,31 +9,54 @@
 #if		qPlatform_Windows
 	#include	<tchar.h>
 	#include	<Windows.h>
+#else
+	#include <dlfcn.h>
 #endif
 
 #include	"../Characters/TString.h"
-
+#include	"../Execution/StringException.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
 
 			using	Characters::TString;
+			using	Characters::TChar;
+
+			#if		qPlatform_Windows
+				typedef	HMODULE	DLLHandle;
+				typedef	FARPROC	ProcAddress;
+			#else
+				typedef	void*	DLLHandle;
+				typedef	void*	ProcAddress;
+			#endif
+
+#if		!qPlatform_Windows
+			class	DLLException : public StringException {
+				public:
+					DLLException (const char* message);
+			};
+#endif
 
 			class	DLLLoader {
 				public:
-					DLLLoader (const TCHAR* dllName);
-					DLLLoader (const TCHAR* dllName, const vector<TString>& searchPath);
+					DLLLoader (const TChar* dllName);
+					DLLLoader (const TChar* dllName, const vector<TString>& searchPath);
 					~DLLLoader ();
 
 				public:
-					operator HMODULE ();
+					operator DLLHandle ();
 
 				public:
-					nonvirtual	FARPROC	GetProcAddress (__in LPCSTR lpProcName) const;
+					nonvirtual	ProcAddress	GetProcAddress (const TChar* procName) const;
 
+#if		!qPlatform_Windows
+					// ssw: not sure what to set for flags here, or if we should leave up to user
+					// see linux.die.net/man/3/dlopen
+					nonvirtual	DLLHandle	LoadDLL (const TChar* dllName, int flags = RTLD_NOW | RTLD_GLOBAL);
+#endif
 				private:
-					HMODULE	fModule;
+					DLLHandle	fModule;
 			};
 
 		}
