@@ -370,7 +370,7 @@ string	Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 	for (int i = 0; i < 16; ++i) {
 		char	b[10];
 		 b[0] = '\0';
-		sprintf_s (b, "%02x", ctx.digest[i]);
+		sprintf (b, "%02x", ctx.digest[i]);
 		result += b;
 	}
 	return result;

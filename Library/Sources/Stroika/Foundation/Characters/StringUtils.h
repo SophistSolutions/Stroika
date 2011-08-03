@@ -48,6 +48,7 @@ For now: stick with GCC names, as at least one of them is POSIX.
 	// not sure what to do about "safe" versions yet
 	#define		sscanf	sscanf_s
 	#define		swscanf	swscanf_s
+	#define		sprintf	sprintf_s
 #endif
 
 
