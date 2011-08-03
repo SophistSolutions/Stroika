@@ -36,7 +36,7 @@ namespace	Stroika {
 						fValue.clear ();
 					}
 			template	<typename T>
-				inline	const typename T*	Optional<T>::get () const
+				inline	const T*	Optional<T>::get () const
 					{
 						return fValue.IsNull ()? NULL : fValue.get ();
 					}

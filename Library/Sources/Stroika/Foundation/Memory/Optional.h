@@ -28,7 +28,7 @@ namespace	Stroika {
 
 					public:
 						// Unclear if we want a non-const version too?
-						nonvirtual	const typename T*	get () const;
+						nonvirtual	const T*	get () const;
 			
 					public:
 						nonvirtual	operator T () const;	// throws bad_alloc () if called when empty ()
