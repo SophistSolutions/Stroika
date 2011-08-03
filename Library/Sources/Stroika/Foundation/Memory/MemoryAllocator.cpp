@@ -27,11 +27,11 @@ using	Debug::TraceContextBumper;
 
 
 
-
+#if		qMSVisualStudioCRTMemoryDebug
 namespace	{
 	Execution::StaticSingletonObjectConstructionHelper<SimpleAllocator_CallLIBCMallocFree>	sDefaultAllocator;
 }
-
+#endif /*		qMSVisualStudioCRTMemoryDebug */
 
 
 // Since this code frequently gets used with 'DEBUG' turned off - and so no assert checking, we may
@@ -90,7 +90,7 @@ void	SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p)
 
 /*
  ********************************************************************************
- ************** Memory::SimpleAllocator_CallLIBCMallocFree *************
+ ************** Memory::SimpleAllocator_CallLIBCNewDelete *************
  ********************************************************************************
  */
 void*	SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size)
@@ -131,12 +131,14 @@ namespace	{
  ******** Memory::SimpleSizeCountingGeneralPurposeAllocator ************
  ********************************************************************************
  */
+#if		qMSVisualStudioCRTMemoryDebug
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ():
 	fBaseAllocator (sDefaultAllocator),
 	fNetAllocationCount (0),
 	fNetAllocatedByteCount (0)
 {
 }
+#endif
 
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator):
 	fBaseAllocator (baseAllocator),
@@ -202,7 +204,7 @@ size_t	SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () co
 
 
 
-
+#if		qMSVisualStudioCRTMemoryDebug
 /*
  ********************************************************************************
  ************** Memory::LeakTrackingGeneralPurposeAllocator ************
@@ -396,3 +398,5 @@ LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot (const PTRMAP& m):
 	fAllocations (m)
 {
 }
+
+#endif /*		qMSVisualStudioCRTMemoryDebug */
