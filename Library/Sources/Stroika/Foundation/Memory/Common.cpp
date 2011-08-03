@@ -3,9 +3,9 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
-#include	<Psapi.h>
-#include	<xmemory>
+//#include	<windows.h>
+//#include	<Psapi.h>
+//#include	<xmemory>
 #include	<new>
 
 #include	"MemoryAllocator.h"
@@ -198,6 +198,7 @@ void	operator delete[] (void* pUserData)
 Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 {
 	GlobalAllocationStatistics	s;
+#if		qMSVisualStudioCRTMemoryDebug
 	HANDLE	hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
 	if (hProcess != NULL) {
 		#pragma comment (lib, "Psapi.lib")
@@ -220,6 +221,7 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 		}
 		::CloseHandle (hProcess);
 	}
+#endif /* qMSVisualStudioCRTMemoryDebug */
 	return s;
 }
 
@@ -230,6 +232,7 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 
 
 
+#if		qMSVisualStudioCRTMemoryDebug
 
 
 /*
@@ -282,3 +285,5 @@ void	Memory::LeakChecker::DumpLeaksSinceLastCheckpoint ()
 		Assert (false);
 	#endif
 }
+#endif /* qMSVisualStudioCRTMemoryDebug */
+

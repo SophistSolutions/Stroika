@@ -19,7 +19,7 @@ namespace	Stroika {
 				{
 				}
 
-			
+#if		qMSVisualStudioCRTMemoryDebug			
 		// class	Memory::STLAllocator<T,BASE_ALLOCATOR>
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::address (typename STLAllocator<T,BASE_ALLOCATOR>::reference _Val) const
@@ -81,7 +81,7 @@ namespace	Stroika {
 						_SIZT _Count = (_SIZT)(-1) / sizeof (T);
 						return (0 < _Count ? _Count : 1);
 					}
-
+#endif /* qMSVisualStudioCRTMemoryDebug */
 		}
 	}
 }
