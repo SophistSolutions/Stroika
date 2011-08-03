@@ -6,6 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<cstddef>
+
 
 namespace	Stroika {	
 	namespace	Foundation {

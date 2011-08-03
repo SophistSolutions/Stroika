@@ -12,6 +12,9 @@
  */
 #include	<cstddef>
 
+#include	<algorithm>
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Containers {
