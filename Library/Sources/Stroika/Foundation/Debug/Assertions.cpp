@@ -3,11 +3,14 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include <cassert>
+
 #if		qPlatform_Windows
 	#include	<Windows.h>
 #endif
 
 #include	"Assertions.h"
+
 
 
 using	namespace	Stroika;
@@ -33,7 +36,11 @@ using	namespace	Stroika::Foundation::Debug;
 	void	Stroika::Foundation::Debug::_Debug_Trap_ (const char* fileName, int lineNum)
 	{
 		if (sLedAssertFailedCallback == NULL) {
-			DebugBreak ();
+			#if		qPlatform_Windows			
+				DebugBreak ();
+			#else
+				assert (false);
+			#endif
 		}
 		else {
 			(sLedAssertFailedCallback) (fileName, lineNum);
