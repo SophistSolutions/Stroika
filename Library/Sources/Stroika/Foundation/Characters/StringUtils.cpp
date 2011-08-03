@@ -705,7 +705,11 @@ int	Characters::String2Int (const string& s)
 
 int	Characters::String2Int (const wstring& s)
 {
+#if		qPlatform_Windows
 	return wtol (s.c_str ());
+#else
+	return swscanf (s.c_str (), 0, 10);
+#endif
 }
 
 

@@ -10,12 +10,11 @@
 #include	<locale>
 #include	<string>
 #include	<vector>
-#if		qPlatform_Windows
-#include	<tchar.h>
-#endif
+
 
 #include	"../Configuration/Common.h"
 #include	"CodePage.h"
+#include	"TChar.h"
 
 
 
@@ -37,9 +36,12 @@ For now: stick with GCC names, as at least one of them is POSIX.
 	#define	strncasecmp	_strnicmp
 	#define	wcscasecmp	_wcsicmp
 	#define	wcsncasecmp	_wcsnicmp
-
-
-
+#else
+	#if qTargetPlatformSDKUseswchar_t
+		#define	_tcsncpy_s	wcsncpy
+	#else
+		#define	_tcsncpy_s	strncpy
+	#endif
 #endif
 
 #if		qPlatform_Windows
