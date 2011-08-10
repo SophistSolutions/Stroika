@@ -17,7 +17,7 @@ namespace	Stroika {
 	namespace	Foundation	{
 
 		template	<>
-			inline	void	__atttribute__((noreturn))	Execution::DoThrow (const IO::FileAccessException& e2Throw)
+			inline	void	_NoReturn_	Execution::DoThrow (const IO::FileAccessException& e2Throw)
 				{
 					DbgTrace (_T ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.fFileName.c_str (), e2Throw.fFileAccessMode);
 					throw e2Throw;

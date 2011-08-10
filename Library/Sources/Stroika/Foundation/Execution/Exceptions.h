@@ -22,6 +22,7 @@
 
 
 // this will need to be moved to configuration and auto-generated
+// can't #define attribute(( because of the double paren, which is required in gcc, so we need our own name in all cases
 #if defined(_MSC_VER)
 #define	qUseDeclSpecRatherThanAttribute	1
 #else
@@ -29,7 +30,9 @@
 #endif
 
 #if qUseDeclSpecRatherThanAttribute
-	#define	__atttribute__((noreturn)) __declspec(noreturn)
+	#define	_NoReturn_	__declspec(noreturn)
+#elif 
+	#define	_NoReturn_	__atttribute__((noreturn))
 #endif
 
 namespace	Stroika {	
@@ -169,16 +172,16 @@ namespace	Stroika {
 
 			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
 			template	<typename T>
-				void	 __attribute__((noreturn))	DoThrow (const T& e2Throw) ;
+				void	 _NoReturn_	DoThrow (const T& e2Throw) ;
 			template	<typename T>
-				void	__attribute__((noreturn))	DoThrow (const T& e2Throw, const char* traceMsg);
+				void	_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg);
 			template	<typename T>
-				void	__attribute__((noreturn)) 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
+				void	_NoReturn_ 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
 			// Just a regular C++ rethrow, but with a DbgTrace message...
-			void	__attribute__((noreturn))	DoReThrow ();
-			void	__attribute__((noreturn))	DoReThrow (const char* traceMsg);
-			void	__attribute__((noreturn))	DoReThrow (const wchar_t* traceMsg);
+			void	_NoReturn_	DoReThrow ();
+			void	_NoReturn_	DoReThrow (const char* traceMsg);
+			void	_NoReturn_	DoReThrow (const wchar_t* traceMsg);
 
 
 

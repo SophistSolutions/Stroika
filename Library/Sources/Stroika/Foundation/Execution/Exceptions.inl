@@ -130,7 +130,7 @@ namespace	Stroika {
 					}
 		#if		qPlatform_Windows
 			template	<>
-				inline	void	_DoThrow (const Win32StructuredException& e2Throw)
+				inline	void	DoThrow (const Win32StructuredException& e2Throw)
 					{
 						DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
 						throw e2Throw;
@@ -138,7 +138,7 @@ namespace	Stroika {
 		#endif
 		#if		qPlatform_Windows
 			template	<>
-				inline	void	__atttribute__((noreturn))	DoThrow (const HRESULTErrorException& e2Throw)
+				inline	void	DoThrow (const HRESULTErrorException& e2Throw)
 					{
 						DbgTrace ("Throwing HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
 						throw e2Throw;
