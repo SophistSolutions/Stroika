@@ -38,6 +38,34 @@ namespace	Stroika {
 			#endif
 
 
+
+
+			/*
+			 *	Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
+			 *	This can allow the compiler to occasionally better optimize, but mostly avoid spurrious warnings.
+			 */
+			#if defined(_MSC_VER)
+				#define	_NoReturn_	__declspec(noreturn)
+			#elif defined (__GNUG__ )
+				#define	_NoReturn_	__attribute__((noreturn))
+			#else
+				#define	_NoReturn_
+			#endif
+
+
+
+
+			/*
+			 *	Sometimes its handy to mark a line of code as a no-op - so its arguments are not executed (as with
+			 * trace macros).
+			 */
+			#if defined(_MSC_VER)
+				#define	_NoOp_	__noop
+			#else
+				#define	_NoOp_
+			#endif
+
+
 			template	<typename	ENUM>
 				ENUM	Inc (ENUM e);
 

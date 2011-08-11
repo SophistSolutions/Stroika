@@ -144,7 +144,7 @@ namespace	Stroika {
 				#if		qDefaultTracingOn
 					#define	DbgTrace	Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage
 				#else
-					#define	DbgTrace	__noop
+					#define	DbgTrace	_NoOp_
 				#endif
 			#endif
 

@@ -22,20 +22,6 @@
 
 
 
-// this will need to be moved to configuration and auto-generated
-// can't #define attribute(( because of the double paren, which is required in gcc, so we need our own name in all cases
-#if defined(_MSC_VER)
-#define	qUseDeclSpecRatherThanAttribute	1
-#else
-#define	qUseDeclSpecRatherThanAttribute	0
-#endif
-
-#if qUseDeclSpecRatherThanAttribute
-	#define	_NoReturn_	__declspec(noreturn)
-#else
-	#define	_NoReturn_	__attribute__((noreturn))
-#endif
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
