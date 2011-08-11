@@ -1,0 +1,2 @@
+DEBUGFLAG=	-DqDebug=1
+

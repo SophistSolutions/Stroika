@@ -1,4 +1,6 @@
-CFLAGS= -c -std=c++0x -D_DEBUG
+include ../Configuration.mk
+
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
 
 ObjDir                          =       ./

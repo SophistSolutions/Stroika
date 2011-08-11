@@ -1,3 +1,5 @@
+include ../Configuration.mk
+
 CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
 

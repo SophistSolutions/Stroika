@@ -1,5 +1,6 @@
-CFLAGS= -c -std=c++0x $(DEBUGFLAG)
+include ../Configuration.mk
 
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
 ObjDir                          =       ./
 SrcDir                          =       ../../../Sources/Stroika/Foundation/Streams/
