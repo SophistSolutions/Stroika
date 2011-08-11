@@ -3,9 +3,8 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include <stdarg.h>
-#include <stdlib.h>
-
+#include	<cstdarg>
+#include	<cstdlib>
 #include	<iomanip>
 #include	<sstream>
 

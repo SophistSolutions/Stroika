@@ -3,9 +3,8 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include <stdlib.h>
-
-#include <algorithm>
+#include	<algorithm>
+#include	<cstdlib>
 
 #include	"../Containers/Common.h"
 #include	"../Debug/Assertions.h"

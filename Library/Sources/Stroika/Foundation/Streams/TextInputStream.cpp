@@ -3,10 +3,6 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include <stdlib.h>
-
-#include <algorithm>
-
 #include	"../Containers/Common.h"
 
 #include	"TextInputStream.h"
