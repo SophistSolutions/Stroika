@@ -3,9 +3,12 @@
  */
 #include	"../StroikaPreComp.h"
 
-//#include	<windows.h>
-//#include	<Psapi.h>
-//#include	<xmemory>
+#if		qMSVisualStudioCRTMemoryDebug
+#include	<windows.h>
+#include	<Psapi.h>
+#include	<xmemory>
+#endif
+
 #include	<new>
 
 #include	"MemoryAllocator.h"
