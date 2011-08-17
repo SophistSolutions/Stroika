@@ -48,7 +48,8 @@ namespace	Stroika {
 					operator DLLHandle ();
 
 				public:
-					nonvirtual	ProcAddress	GetProcAddress (const TChar* procName) const;
+					nonvirtual	ProcAddress	GetProcAddress (const char* procName) const;
+					nonvirtual	ProcAddress	GetProcAddress (const wchar_t* procName) const;
 
 #if		!qPlatform_Windows
 					// ssw: not sure what to set for flags here, or if we should leave up to user

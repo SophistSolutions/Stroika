@@ -22,7 +22,7 @@ namespace	Stroika {
 				EnsureNotNil (fModule);
 				return fModule;
 			}
-		inline	ProcAddress	DLLLoader::GetProcAddress (const TChar* procName) const
+		inline	ProcAddress	DLLLoader::GetProcAddress (const char* procName) const
 			{
 				AssertNotNil (fModule);
 				RequireNotNil (procName);
@@ -41,6 +41,12 @@ namespace	Stroika {
 				}
 				return addr;
 			#endif
+			}
+		inline	ProcAddress	DLLLoader::GetProcAddress (const wchar_t* procName) const
+			{
+				AssertNotNil (fModule);
+				RequireNotNil (procName);
+				return GetProcAddress (Characters::WideStringToASCII (procName).c_str ());
 			}
 #if		!qPlatform_Windows
 			inline	DLLException::DLLException (const char* message) :
