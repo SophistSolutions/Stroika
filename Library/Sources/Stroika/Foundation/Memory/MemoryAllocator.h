@@ -49,7 +49,6 @@ namespace	Stroika {
 
 
 
-#if		qMSVisualStudioCRTMemoryDebug
 			// For use integrating our allocators with STL
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
 				class	STLAllocator : public _Allocator_base<T> {
@@ -103,7 +102,6 @@ namespace	Stroika {
 					public:
 						nonvirtual	_SIZT	max_size() const throw ();
 				};
-#endif	/* qMSVisualStudioCRTMemoryDebug */
 
 
 
@@ -129,7 +127,6 @@ namespace	Stroika {
 
 
 
-#if		qMSVisualStudioCRTMemoryDebug
 			class	LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
 				public:
 					typedef	map<void*,size_t,less<void*>,STLAllocator<pair<void*,size_t> > >	PTRMAP;
@@ -166,7 +163,6 @@ namespace	Stroika {
 				private:
 					friend	class	LeakTrackingGeneralPurposeAllocator;
 			};
-#endif /* qMSVisualStudioCRTMemoryDebug */
 
 		}
 	}
