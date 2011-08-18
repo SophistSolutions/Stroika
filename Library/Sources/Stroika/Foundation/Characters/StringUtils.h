@@ -27,30 +27,36 @@
 
 	/*
 	@CONFIGVAR:		qPlatformSupports_SNPRINTF
-	@DESCRIPTION:	<p>Defines if the compiler stdC++ library supports the std::snprintf() function/p>
+	@DESCRIPTION:	<p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
 		*/
 	#ifndef	qPlatformSupports_SNPRINTF
 		#error "qPlatformSupports_SNPRINTF should normally be defined indirectly by StroikaConfig.h"
 	#endif
 
 
+	/*
+	@CONFIGVAR:		qPlatformSupports_wcscasecmp
+	@DESCRIPTION:	<p>Defines if the compiler supports the wcscasecmp function/p>
+		*/
+	#ifndef	qPlatformSupports_wcscasecmp
+		#error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
+	#endif
 
 
-/*
-This should be moved after discussion
-Case insensitve string comparisons are poorly supported. For single character there are a least 4 possible names: strcasecmp, strcmpi, stricmp and _stricmp. strcasecmp is POSIX, others are non-standard but MSVS only supports _stricmp (plus stricmp but deprecated). _stricmp adds mandatory memory verification stuff, to avoid various hacker exploits.
-Situation even worse for wide characters, as apparently NOTHING is POSIX currentlty. GCC supports wcscasecmp and MS supports _wcsnicmp.
+	/*
+	@CONFIGVAR:		qPlatformSupports_wcsncasecmp
+	@DESCRIPTION:	<p>Defines if the compiler supports the wcscasecmp function/p>
+		*/
+	#ifndef	qPlatformSupports_wcsncasecmp
+		#error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
+	#endif
 
-For now: stick with GCC names, as at least one of them is POSIX.
 
-*/
 
-#if		qPlatform_Windows
-	#define	strcasecmp	_stricmp
-	#define	strncasecmp	_strnicmp
-	#define	wcscasecmp	_wcsicmp
-	#define	wcsncasecmp	_wcsnicmp
-#else
+
+
+
+#if		!qPlatform_Windows
 	#if qTargetPlatformSDKUseswchar_t
 		#define	_tcsncpy_s	wcsncpy
 	#else

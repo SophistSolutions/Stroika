@@ -21,5 +21,26 @@
 		#endif
 	#endif
 
+	/*
+	 * See DOCS in Stroika/Foundation/Characters/StringUtils.h
+	 */
+	#ifndef	qPlatformSupports_wcscasecmp
+		#if		XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L
+			// This test from http://www.kernel.org/doc/man-pages/online/pages/man3/wcscasecmp.3.html
+			#define	qPlatformSupports_wcscasecmp	1
+		#elif	defined (_MSC_VER)
+			#define	qPlatformSupports_wcscasecmp	0
+		#else
+			// GUESS - if wrong, add appropriate check here
+			#define	qPlatformSupports_wcscasecmp	1
+		#endif
+	#endif
+
+	/*
+	 * See DOCS in Stroika/Foundation/Characters/StringUtils.h
+	 */
+	#ifndef	qPlatformSupports_wcsncasecmp
+		#define	qPlatformSupports_wcsncasecmp	qPlatformSupports_wcscasecmp
+	#endif
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_Chracters_Common_h_*/

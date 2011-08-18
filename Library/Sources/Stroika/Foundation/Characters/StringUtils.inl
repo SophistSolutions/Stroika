@@ -28,6 +28,21 @@ namespace	Stroika {
 				#endif
 			#endif
 
+			#if		!qPlatformSupports_wcscasecmp
+				#if _MSC_VER
+					#define	wcscasecmp	_wcsicmp
+				#else
+					#error "NYI"
+				#endif
+			#endif
+
+			#if		!qPlatformSupports_wcsncasecmp
+				#if _MSC_VER
+					#define	wcsncasecmp	_wcsnicmp
+				#else
+					#error "NYI"
+				#endif
+			#endif
 
 
 			//	TOLOWER
