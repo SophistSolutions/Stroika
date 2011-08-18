@@ -703,7 +703,14 @@ int	Characters::String2Int (const string& s)
 
 int	Characters::String2Int (const wstring& s)
 {
-	return ::wtol (s.c_str ());
+	#if		defined (_MSC_VER)
+		return ::_wtol (s.c_str ());
+	#else
+		// unclear if this is good/safe - cuz of - for example - funky wide japanese numbers etc... probaby must do better
+		// Also note use WideStringToACP() instead of WideStringToASCII - cuz the later asserts all valid ascii chars whcih may not be true here...
+		//		-- LGP 2011-08-18
+		return String2Int (WideStringToACP (s));
+	#endif
 }
 
 

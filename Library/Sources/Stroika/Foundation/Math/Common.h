@@ -6,22 +6,17 @@
 
 #include	"../StroikaPreComp.h"
 
-#include <math.h>
+#include	<cmath>			// though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
 
-#ifndef	qUseVSNonStandardLibraryNames
-	#if defined(_MSC_VER)
-		#define	qUseVSNonStandardLibraryNames	1
-	#else
-		#define	qUseVSNonStandardLibraryNames	0
-	#endif
+
+/*
+@CONFIGVAR:		qPlatformSupports_isnan
+@DESCRIPTION:	<p>Defines if the compiler stdC++/c99 library supports the std::isnan() function</p>
+	*/
+#ifndef	qPlatformSupports_isnan
+	#error "qPlatformSupports_isnan should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-#if		qUseVSNonStandardLibraryNames
-	#include <float.h>
-	#define isnan _isnan
-	#define	wtol _wtol
-#else
-#endif
 
 
 namespace	Stroika {	
@@ -29,13 +24,23 @@ namespace	Stroika {
 		namespace	Math {
 
 			double	nan ();
-
+			
 			const	double	kE	=	2.71828182845904523536;
 			const	double	kPi	=	3.14159265358979323846;
 
 		}
 	}
 }
+
+#if		!qPlatformSupports_isnan
+// SB in std namespace
+namespace	std {
+	bool	isnan (float f);
+	bool	isnan (double d);
+}
+#endif
+
+
 #endif	/*_Stroika_Foundation_Math_Basic_h_*/
 
 

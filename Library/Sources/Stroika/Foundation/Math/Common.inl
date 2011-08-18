@@ -26,6 +26,28 @@ namespace	Stroika {
 		}
 	}
 }
+
+#if		!qPlatformSupports_isnan
+namespace	std {
+	inline	bool	isnan (float f)
+		{
+			#if		qPlatformSupports__isnan
+				return static_cast<bool> (!!_isnan (f));
+			#else
+				return f != f;
+			#endif
+		}
+	inline	bool	isnan (double f)
+		{
+			#if		qPlatformSupports__isnan
+				return static_cast<bool> (!!_isnan (f));
+			#else
+				return f != f;
+			#endif
+		}
+}
+#endif
+
 #endif	/*_Stroika_Foundation_Math_Basic_inl_*/
 
 
