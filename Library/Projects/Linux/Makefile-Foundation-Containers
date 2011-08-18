@@ -1,4 +1,5 @@
 include ../Configuration.mk
+include	../SharedBuildRules.mk
 
 CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
@@ -16,9 +17,6 @@ Objs	=	\
 	$(ObjDir)TimedCache.o\
 	$(ObjDir)VectorUtils.o\
 
-.cpp.o:
-	@echo "Compiling $<"
-	gcc $(CFLAGS) $< -o $@
 
 all:	$(Objs)
 	echo do ar here

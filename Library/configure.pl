@@ -40,6 +40,7 @@ unless (-e $intermediateFiles) {
 	mkdir "$intermediateFiles/$platform/";
 	system ("ln -s ../../Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Makefile");
 	system ("cp Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Configuration.mk");
+	system ("cp Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/SharedBuildRules.mk");
 	
 	mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
 	mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");

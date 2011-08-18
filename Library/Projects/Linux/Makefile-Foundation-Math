@@ -1,4 +1,5 @@
 include ../Configuration.mk
+include	../SharedBuildRules.mk
 
 CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
@@ -13,9 +14,6 @@ VPATH = $(SrcDir)
 Objs	=	\
 	$(ObjDir)Angle.o\
 
-.cpp.o:
-	@echo "Compiling $<"
-	gcc $(CFLAGS) $< -o $@
 
 all:	$(Objs)
 	echo do ar here
