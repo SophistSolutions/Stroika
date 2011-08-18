@@ -21,6 +21,9 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+			/*
+			 * This defines a generic abstract 'Allocator' API - for allocating (and freeing) memory.
+			 */
 			class	AbstractGeneralPurposeAllocator {
 				protected:
 					virtual ~AbstractGeneralPurposeAllocator ();
@@ -33,6 +36,9 @@ namespace	Stroika {
 			};
 
 
+			/*
+			 * SimpleAllocator_CallLIBCMallocFree implements the AbstractGeneralPurposeAllocator just using malloc and free.
+			 */
 			class	SimpleAllocator_CallLIBCMallocFree : public AbstractGeneralPurposeAllocator {
 				public:
 					override	void*	Allocate (size_t size);
@@ -41,6 +47,9 @@ namespace	Stroika {
 
 
 
+			/*
+			 * SimpleAllocator_CallLIBCNewDelete implements the AbstractGeneralPurposeAllocator just using stdC++ new/delete.
+			 */
 			class	SimpleAllocator_CallLIBCNewDelete : public AbstractGeneralPurposeAllocator {
 				public:
 					override	void*	Allocate (size_t size);
@@ -49,7 +58,9 @@ namespace	Stroika {
 
 
 
-			// For use integrating our allocators with STL
+			/*
+			 * The STLAllocator takes a Stroika Allocator class (as template argument) and maps it for usage as an STL-style allocator.
+			 */
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
 				class	STLAllocator : public _Allocator_base<T> {
 					public:
@@ -106,6 +117,10 @@ namespace	Stroika {
 
 
 
+			/*
+			 * The SimpleSizeCountingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps statistics, and delegates to
+			 * some real allocator (constructor argument).
+			 */
 			class	SimpleSizeCountingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
 				public:
 					SimpleSizeCountingGeneralPurposeAllocator ();
@@ -127,6 +142,10 @@ namespace	Stroika {
 
 
 
+			/*
+			 * The LeakTrackingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps LOTS of statistics - it tracks all allocations,
+			 * and delegates to some real allocator (constructor argument).
+			 */
 			class	LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
 				public:
 					typedef	map<void*,size_t,less<void*>,STLAllocator<pair<void*,size_t> > >	PTRMAP;

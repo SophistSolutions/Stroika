@@ -11,6 +11,9 @@
 	 */
 
 
+	/*
+	 * See DOCS in Stroika/Foundation/Memory/Common.h
+	 */
 	#if		!defined (qMSVisualStudioCRTMemoryDebug)
 		#define	qMSVisualStudioCRTMemoryDebug	qDebug && qPlatform_Windows
 	#endif

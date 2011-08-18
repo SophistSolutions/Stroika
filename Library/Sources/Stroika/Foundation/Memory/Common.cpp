@@ -3,10 +3,9 @@
  */
 #include	"../StroikaPreComp.h"
 
-#if		qMSVisualStudioCRTMemoryDebug
-#include	<windows.h>
-#include	<Psapi.h>
-#include	<xmemory>
+#if		qPlatform_Windows
+	#include	<windows.h>
+	#include	<Psapi.h>
 #endif
 
 #include	<new>
@@ -201,7 +200,7 @@ void	operator delete[] (void* pUserData)
 Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 {
 	GlobalAllocationStatistics	s;
-#if		qMSVisualStudioCRTMemoryDebug
+	#if		qPlatform_Windows
 	HANDLE	hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
 	if (hProcess != NULL) {
 		#pragma comment (lib, "Psapi.lib")
@@ -224,7 +223,7 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 		}
 		::CloseHandle (hProcess);
 	}
-#endif /* qMSVisualStudioCRTMemoryDebug */
+	#endif
 	return s;
 }
 
@@ -235,7 +234,6 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 
 
 
-#if		qMSVisualStudioCRTMemoryDebug
 
 
 /*
@@ -249,7 +247,7 @@ namespace	{
 	Memory::LeakTrackingGeneralPurposeAllocator::Snapshot	sLastSnapshot;
 }
 #endif
-#if		qDebug
+#if		qMSVisualStudioCRTMemoryDebug
 namespace	{
 	_CrtMemState	sLastSnapshot;
 }
@@ -258,7 +256,7 @@ void	Memory::LeakChecker::ForceCheckpoint ()
 {
 	#if		qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
 		sLastSnapshot = GetAllocator_ ().GetSnapshot ();
-	#elif	qDebug
+	#elif	qMSVisualStudioCRTMemoryDebug
 		_CrtMemCheckpoint (&sLastSnapshot);
 	#else
 		Assert (false);
@@ -270,7 +268,7 @@ void	Memory::LeakChecker::DumpLeaksSinceLastCheckpoint ()
 	TraceContextBumper	ctx (_T ("LeakChecker::DumpLeaksSinceLastCheckpoint"));
 	#if		qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
 		GetAllocator_ ().DUMPCurMemStats (sLastSnapshot);
-	#elif	qDebug
+	#elif	qMSVisualStudioCRTMemoryDebug
 		_CrtMemState	memState;
 		_CrtMemCheckpoint (&memState);
 		_CrtMemState	diffState;
@@ -288,5 +286,4 @@ void	Memory::LeakChecker::DumpLeaksSinceLastCheckpoint ()
 		Assert (false);
 	#endif
 }
-#endif /* qMSVisualStudioCRTMemoryDebug */
 

@@ -12,7 +12,12 @@
 
 
 
-
+/*
+@CONFIGVAR:		qMSVisualStudioCRTMemoryDebug
+@DESCRIPTION:	<p>The qMSVisualStudioCRTMemoryDebug macro is '1' if Stroika is compiled using the Microsoft Visual Studio crtdbg facility. If so - many
+			places in Stroika will use a placement operator new - which gives the crtdbg code line number info about where something was allocated. 
+			This also enables some additional error checking in the C runtime memory allocator. But it has significant runtime overhead.</p>
+*/
 #if		!defined (qMSVisualStudioCRTMemoryDebug)
 	#error	"qMSVisualStudioCRTMemoryDebug should normally be defined indirectly by StroikaConfig.h"
 #endif

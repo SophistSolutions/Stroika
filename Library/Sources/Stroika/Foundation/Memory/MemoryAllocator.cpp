@@ -3,10 +3,6 @@
  */
 #include	"../StroikaPreComp.h"
 
-#if		qPlatform_Windows
-#include	<windows.h>
-#endif
-
 #include	<new>
 #include	<set>
 
@@ -14,6 +10,7 @@
 #include	"../Execution/ModuleInit.h"
 
 #include	"MemoryAllocator.h"
+
 
 
 using	namespace	Stroika;
@@ -27,11 +24,9 @@ using	Debug::TraceContextBumper;
 
 
 
-#if		qMSVisualStudioCRTMemoryDebug
 namespace	{
 	Execution::StaticSingletonObjectConstructionHelper<SimpleAllocator_CallLIBCMallocFree>	sDefaultAllocator;
 }
-#endif /*		qMSVisualStudioCRTMemoryDebug */
 
 
 // Since this code frequently gets used with 'DEBUG' turned off - and so no assert checking, we may
@@ -65,7 +60,7 @@ namespace	{
 
 /*
  ********************************************************************************
- ************** Memory::SimpleAllocator_CallLIBCMallocFree *************
+ ********************* Memory::SimpleAllocator_CallLIBCMallocFree ***************
  ********************************************************************************
  */
 void*	SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
@@ -90,7 +85,7 @@ void	SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p)
 
 /*
  ********************************************************************************
- ************** Memory::SimpleAllocator_CallLIBCNewDelete *************
+ ******************* Memory::SimpleAllocator_CallLIBCNewDelete ******************
  ********************************************************************************
  */
 void*	SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size)
@@ -126,19 +121,18 @@ namespace	{
 
 
 
+
 /*
  ********************************************************************************
- ******** Memory::SimpleSizeCountingGeneralPurposeAllocator ************
+ ************* Memory::SimpleSizeCountingGeneralPurposeAllocator ****************
  ********************************************************************************
  */
-#if		qMSVisualStudioCRTMemoryDebug
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ():
 	fBaseAllocator (sDefaultAllocator),
 	fNetAllocationCount (0),
 	fNetAllocatedByteCount (0)
 {
 }
-#endif
 
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator):
 	fBaseAllocator (baseAllocator),
@@ -204,10 +198,9 @@ size_t	SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () co
 
 
 
-#if		qMSVisualStudioCRTMemoryDebug
 /*
  ********************************************************************************
- ************** Memory::LeakTrackingGeneralPurposeAllocator ************
+ ********************* Memory::LeakTrackingGeneralPurposeAllocator **************
  ********************************************************************************
  */
 namespace	{
@@ -398,5 +391,3 @@ LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot (const PTRMAP& m):
 	fAllocations (m)
 {
 }
-
-#endif /*		qMSVisualStudioCRTMemoryDebug */
