@@ -62,16 +62,23 @@ namespace	Stroika {
 			 * The STLAllocator takes a Stroika Allocator class (as template argument) and maps it for usage as an STL-style allocator.
 			 */
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
-				class	STLAllocator : public _Allocator_base<T> {
+				class	STLAllocator : public allocator<T> {
 					public:
-						typedef _Allocator_base<T>			_Mybase;
+						typedef allocator<T>			_Mybase;
 						typedef typename _Mybase::value_type	value_type;
+					#if		qPlatform_Windows
 						typedef value_type _FARQ*				pointer;
 						typedef value_type _FARQ&				reference;
 						typedef const value_type _FARQ*			const_pointer;
 						typedef const value_type _FARQ&			const_reference;
-						typedef _SIZT							size_type;
-						typedef _PDFT							difference_type;
+					#else
+						typedef value_type*						pointer;
+						typedef value_type&						reference;
+						typedef const value_type*				const_pointer;
+						typedef const value_type&				const_reference;
+					#endif
+						typedef size_t							size_type;
+						typedef ptrdiff_t						difference_type;
 
 					public:
 						typename BASE_ALLOCATOR	fBaseAllocator;
