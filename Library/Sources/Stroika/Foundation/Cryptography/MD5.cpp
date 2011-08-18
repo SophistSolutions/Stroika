@@ -6,6 +6,7 @@
 #include	<algorithm>
 #include	<cstdlib>
 
+#include	"../Characters/StringUtils.h"
 #include	"../Containers/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Memory/SmallStackBuffer.h"
@@ -369,8 +370,8 @@ string	Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 	result.reserve (33);
 	for (int i = 0; i < 16; ++i) {
 		char	b[10];
-		 b[0] = '\0';
-		sprintf (b, "%02x", ctx.digest[i]);
+		b[0] = '\0';
+		snprintf (b, NEltsOf (b), "%02x", ctx.digest[i]);
 		result += b;
 	}
 	return result;

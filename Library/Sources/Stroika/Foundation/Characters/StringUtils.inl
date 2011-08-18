@@ -17,6 +17,19 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
+
+
+			#if		!qPlatformSupports_SNPRINTF
+				#if _MSC_VER
+					//#define snprintf _snprintf
+					#define snprintf _snprintf_s
+				#else
+					#error "NYI"
+				#endif
+			#endif
+
+
+
 			//	TOLOWER
 			inline	char	TOLOWER (char c)
 				{

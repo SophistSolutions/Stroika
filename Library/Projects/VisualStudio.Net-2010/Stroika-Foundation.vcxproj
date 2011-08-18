@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_StringUtils_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_TChar_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Configuration_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Containers_LRUCache_.h" />

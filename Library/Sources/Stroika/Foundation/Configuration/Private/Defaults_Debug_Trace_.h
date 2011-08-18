@@ -15,6 +15,10 @@
 		#define	qTraceToFile	0
 	#endif
 
+
+	/*
+	 * See DOCS in Stroika/Foundation/Debug/Trace.h
+	 */
 	#ifndef	qDefaultTracingOn
 		#if		qDebug
 			#define	qDefaultTracingOn	1
