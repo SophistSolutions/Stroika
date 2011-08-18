@@ -677,16 +677,14 @@ vector<Byte>	Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
  */
 int	Characters::HexString2Int (const string& s)
 {
-	int	v	=	0;
-	(void)::sscanf (s.c_str (), "%x", &v);
-	return v;
+	return ::strtol (s.c_str (), NULL, 16);
 }
 
 int	Characters::HexString2Int (const wstring& s)
 {
-	int	v	=	0;
-	(void)::swscanf (s.c_str (), L"%x", &v);
-	return v;
+	// http://msdn.microsoft.com/en-us/library/w4z2wdyc(v=vs.80).aspx
+	// http://pubs.opengroup.org/onlinepubs/009695399/functions/wcstol.html
+	return ::wcstol (s.c_str (), NULL, 16);
 }
 
 
@@ -700,16 +698,12 @@ int	Characters::HexString2Int (const wstring& s)
  */
 int	Characters::String2Int (const string& s)
 {
-	return atol (s.c_str ());
+	return ::atol (s.c_str ());
 }
 
 int	Characters::String2Int (const wstring& s)
 {
-#if		qPlatform_Windows
-	return wtol (s.c_str ());
-#else
-	return swscanf (s.c_str (), 0, 10);
-#endif
+	return ::wtol (s.c_str ());
 }
 
 
@@ -730,9 +724,15 @@ float	Characters::String2Float (const wstring& s)
 float	Characters::String2Float (const wstring& s, float returnValIfInvalidString)
 {
 	float	num	=	returnValIfInvalidString;
-	if (::swscanf (s.c_str (), L"%f", &num) == 1) {
-		return num;
-	}
+	#if		defined (_MSC_VER)
+		if (::swscanf_s (s.c_str (), L"%f", &num) == 1) {
+			return num;
+		}
+	#else
+		if (::swscanf (s.c_str (), L"%f", &num) == 1) {
+			return num;
+		}
+	#endif
 	return returnValIfInvalidString;
 }
 

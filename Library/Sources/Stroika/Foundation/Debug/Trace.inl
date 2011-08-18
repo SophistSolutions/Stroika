@@ -38,7 +38,8 @@ namespace	Stroika {
 				{
 					#if		qDefaultTracingOn
 						fLastWriteToken = Emitter::Get ().EmitTraceMessage (5, _T ("<%s> {\r\n"), contextName);
-						_tcsncpy_s (fSavedContextName, contextName, NEltsOf (fSavedContextName)-1);
+						char_traits<TChar>::copy (fSavedContextName, contextName, min (NEltsOf (fSavedContextName), char_traits<TChar>::length (contextName)));
+						*(EndOfArray (fSavedContextName)-1) = '\0';
 						fSavedContextName[NEltsOf(fSavedContextName)-1] = '\0';
 						IncCount ();
 					#endif

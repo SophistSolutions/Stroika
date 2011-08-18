@@ -25,51 +25,37 @@
 
 
 
-	/*
-	@CONFIGVAR:		qPlatformSupports_SNPRINTF
-	@DESCRIPTION:	<p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
-		*/
-	#ifndef	qPlatformSupports_SNPRINTF
-		#error "qPlatformSupports_SNPRINTF should normally be defined indirectly by StroikaConfig.h"
-	#endif
 
 
-	/*
-	@CONFIGVAR:		qPlatformSupports_wcscasecmp
-	@DESCRIPTION:	<p>Defines if the compiler supports the wcscasecmp function/p>
-		*/
-	#ifndef	qPlatformSupports_wcscasecmp
-		#error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
-	#endif
-
-
-	/*
-	@CONFIGVAR:		qPlatformSupports_wcsncasecmp
-	@DESCRIPTION:	<p>Defines if the compiler supports the wcscasecmp function/p>
-		*/
-	#ifndef	qPlatformSupports_wcsncasecmp
-		#error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
-	#endif
-
-
-
-
-
-
-#if		!qPlatform_Windows
-	#if qTargetPlatformSDKUseswchar_t
-		#define	_tcsncpy_s	wcsncpy
-	#else
-		#define	_tcsncpy_s	strncpy
-	#endif
+/*
+@CONFIGVAR:		qPlatformSupports_snprintf
+@DESCRIPTION:	<p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
+	*/
+#ifndef	qPlatformSupports_snprintf
+	#error "qPlatformSupports_snprintf should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-#if		qPlatform_Windows
-	// not sure what to do about "safe" versions yet
-	#define		sscanf	sscanf_s
-	#define		swscanf	swscanf_s
-	#define		sprintf	sprintf_s
+
+/*
+@CONFIGVAR:		qPlatformSupports_wcscasecmp
+@DESCRIPTION:	<p>Defines if the compiler supports the wcscasecmp function/p>
+	*/
+#ifndef	qPlatformSupports_wcscasecmp
+	#error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
 #endif
+
+
+/*
+@CONFIGVAR:		qPlatformSupports_wcsncasecmp
+@DESCRIPTION:	<p>Defines if the compiler supports the wcscasecmp function/p>
+	*/
+#ifndef	qPlatformSupports_wcsncasecmp
+	#error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+
+
 
 
 namespace	Stroika {	

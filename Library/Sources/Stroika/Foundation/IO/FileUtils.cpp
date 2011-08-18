@@ -1120,7 +1120,7 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 	while (attempts < 5) {
 		TString	s = fn;
 		char	buf[100];
-		sprintf_s (buf, "%d", ::rand ());
+		(void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
 		s.insert (suffixStart, ToTString (buf));
 		if (not FileExists (s.c_str ())) {
 			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1142,7 +1142,7 @@ TString	AppTempFileManager::GetTempDir (const TString& fileNameBase)
 	while (attempts < 5) {
 		TString	s = fn;
 		char	buf[100];
-		(void)::sprintf_s (buf, "%d\\", ::rand ());
+		(void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
 		s.append (ToTString  (buf));
 		if (not DirectoryExists (s)) {
 			CreateDirectory (s, true);
@@ -1220,7 +1220,7 @@ TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 	while (attempts < 5) {
 		TString	s = fn;
 		char	buf[100];
-		sprintf_s (buf, "%d", ::rand ());
+		(void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
 		s.insert (suffixStart, ToTString (buf));
 		if (not IO::FileExists (s.c_str ())) {
 			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1254,7 +1254,7 @@ TString	TempFileLibrarian::GetTempDir (const TString& fileNameBase)
 		{
 			// man page doesn't gaurantee thread-safety of rand ()
 			AutoCriticalSection enterCriticalSection (fCriticalSection);
-			(void)::sprintf_s (buf, "%d\\", ::rand ());
+			(void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
 		}
 		s.append (ToTString  (buf));
 		if (not IO::DirectoryExists (s)) {

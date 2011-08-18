@@ -316,25 +316,25 @@ template	<typename	CHARTYPE>
 					sMainThread = threadID;
 				}
 				if (sMainThread == threadID) {
-					::sprintf_s  (buf, "[-MAIN-][%08.3f]\t", curRelativeTime);
+					::snprintf  (buf, NEltsOf (buf), "[-MAIN-][%08.3f]\t", curRelativeTime);
 					if (sFirstTime) {
 						sFirstTime = false;
 						char buf2[1024];
 						if (threadID <= 0xffff) {
-							::sprintf_s  (buf2, "(REAL THREADID=0x%04x)\t", threadID);
+							::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=0x%04x)\t", threadID);
 						}
 						else {
-							::sprintf_s  (buf2, "(REAL THREADID=0x%08x)\t", threadID);
+							::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=0x%08x)\t", threadID);
 						}
 						strcat_s (buf, buf2);
 					}
 				}
 				else if (threadID <= 0xffff) {
 					// it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
-					::sprintf_s  (buf, "[0x%04x][%08.3f]\t", threadID, curRelativeTime);
+					::snprintf  (buf, NEltsOf (buf), "[0x%04x][%08.3f]\t", threadID, curRelativeTime);
 				}
 				else {
-					::sprintf_s  (buf, "[0x%08x][%08.3f]\t", threadID, curRelativeTime);
+					::snprintf  (buf, NEltsOf (buf), "[0x%08x][%08.3f]\t", threadID, curRelativeTime);
 				}
 				DoEmit_ (buf);
 			}

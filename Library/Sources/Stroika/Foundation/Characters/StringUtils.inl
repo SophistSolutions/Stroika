@@ -19,7 +19,7 @@ namespace	Stroika {
 
 
 
-			#if		!qPlatformSupports_SNPRINTF
+			#if		!qPlatformSupports_snprintf
 				#if _MSC_VER
 					//#define snprintf _snprintf
 					#define snprintf _snprintf_s
