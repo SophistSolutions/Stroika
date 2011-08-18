@@ -6,6 +6,7 @@
 #include	<sstream>
 
 #include	"../Characters/StringUtils.h"
+#include	"../Math/Common.h"
 
 #include	"VariantValue.h"
 
@@ -86,7 +87,7 @@ bool	VariantValue::empty () const
 		case	eFloat: {
 			TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
 			AssertNotNil (v);
-			return _isnan (v->fVal) != 0;
+			return isnan (v->fVal) != 0;
 		}
 		case	eDate: {
 			TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
