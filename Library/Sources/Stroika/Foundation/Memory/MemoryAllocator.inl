@@ -19,7 +19,6 @@ namespace	Stroika {
 				{
 				}
 
-#if		qMSVisualStudioCRTMemoryDebug			
 		// class	Memory::STLAllocator<T,BASE_ALLOCATOR>
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::address (typename STLAllocator<T,BASE_ALLOCATOR>::reference _Val) const
@@ -55,13 +54,13 @@ namespace	Stroika {
 						// check for integer overflow
 						if (_Count <= 0)
 							_Count = 0;
-						else if (((_SIZT)(-1) / _Count) < sizeof (T))
-							_THROW_NCEE(std::bad_alloc, NULL);
+						else if (((size_t)(-1) / _Count) < sizeof (T))
+						     throw std::bad_alloc ();
 						// allocate storage for _Count elements of type T
-						return ((T _FARQ *)fBaseAllocator.Allocate (_Count * sizeof (T)));
+						return ((T*)fBaseAllocator.Allocate (_Count * sizeof (T)));
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type _Count, const void _FARQ *)
+				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type _Count, const void*)
 					{
 						return (allocate (_Count));
 					}
@@ -76,12 +75,10 @@ namespace	Stroika {
 						_Destroy (_Ptr);
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	_SIZT	STLAllocator<T,BASE_ALLOCATOR>::max_size () const throw ()
+				inline	size_t	STLAllocator<T,BASE_ALLOCATOR>::max_size () const throw ()
 					{
-						_SIZT _Count = (_SIZT)(-1) / sizeof (T);
-						return (0 < _Count ? _Count : 1);
+						return std::numeric_limits<size_type>::max() / sizeof(T);
 					}
-#endif /* qMSVisualStudioCRTMemoryDebug */
 		}
 	}
 }

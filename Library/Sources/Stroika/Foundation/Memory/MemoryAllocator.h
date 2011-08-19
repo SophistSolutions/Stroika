@@ -62,29 +62,24 @@ namespace	Stroika {
 			 * The STLAllocator takes a Stroika Allocator class (as template argument) and maps it for usage as an STL-style allocator.
 			 */
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
-				class	STLAllocator : public allocator<T> {
+				class	STLAllocator  {
 					public:
-						typedef allocator<T>			_Mybase;
-						typedef typename _Mybase::value_type	value_type;
-					#if		qPlatform_Windows
-						typedef value_type _FARQ*				pointer;
-						typedef value_type _FARQ&				reference;
-						typedef const value_type _FARQ*			const_pointer;
-						typedef const value_type _FARQ&			const_reference;
-					#else
+#if 1
+					//						typedef allocator<T>			_Mybase;
+						typedef T	value_type;
 						typedef value_type*						pointer;
 						typedef value_type&						reference;
 						typedef const value_type*				const_pointer;
 						typedef const value_type&				const_reference;
-					#endif
 						typedef size_t							size_type;
 						typedef ptrdiff_t						difference_type;
+#endif
 
 					public:
-						typename BASE_ALLOCATOR	fBaseAllocator;
+						BASE_ALLOCATOR	fBaseAllocator;
 
 					public:
-						template <typename _Other, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
+						template <typename _Other>
 							struct rebind {
 								typedef STLAllocator<_Other,BASE_ALLOCATOR> other;
 							};
@@ -98,12 +93,12 @@ namespace	Stroika {
 						STLAllocator (const STLAllocator<T,BASE_ALLOCATOR>&);
 
 					public:
-						template	<typename _Other, typename BASE_ALLOCATOR>
+						template	<typename _Other>
 							STLAllocator(const STLAllocator<_Other, BASE_ALLOCATOR>& from):
 								fBaseAllocator (from.fBaseAllocator)
 								{
 								}
-						template	<typename _Other,typename BASE_ALLOCATOR>
+						template	<typename _Other>
 							STLAllocator<T,BASE_ALLOCATOR>& operator= (const STLAllocator<_Other,BASE_ALLOCATOR>& rhs)
 								{
 									fBaseAllocator = rhs.from.fBaseAllocator;
@@ -112,13 +107,13 @@ namespace	Stroika {
 
 					public:
 						nonvirtual	pointer allocate (size_type _Count);
-						nonvirtual	pointer allocate (size_type _Count, const void _FARQ *);
+						nonvirtual	pointer allocate (size_type _Count, const void*);
 						nonvirtual	void	deallocate (pointer _Ptr, size_type);
 					public:
 						nonvirtual	void	construct (pointer _Ptr, const T& _Val);
 						nonvirtual	void	destroy (pointer _Ptr);
 					public:
-						nonvirtual	_SIZT	max_size() const throw ();
+						nonvirtual	size_t	max_size() const throw ();
 				};
 
 
@@ -186,8 +181,6 @@ namespace	Stroika {
 					mutable	Execution::CriticalSection	fCritSection;
 					AbstractGeneralPurposeAllocator&		fBaseAllocator;
 					PTRMAP									fAllocations;
-				private:
-					friend	class	LeakTrackingGeneralPurposeAllocator;
 			};
 
 		}
