@@ -111,19 +111,20 @@ namespace	Stroika {
 		}
 
 
-
-		template	<>
-			inline	void	_NoReturn_	Execution::DoThrow (const Time::Date::FormatException& e2Throw)
-				{
-					DbgTrace (L"Throwing Date::FormatException");
-					throw e2Throw;
-				}
-		template	<>
-			inline	void	_NoReturn_	Execution::DoThrow (const Time::TimeOfDay::FormatException& e2Throw)
-				{
-					DbgTrace (L"Throwing TimeOfDay::FormatException");
-					throw e2Throw;
-				}
+		namespace	Execution {
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const Time::Date::FormatException& e2Throw)
+					{
+						DbgTrace (L"Throwing Date::FormatException");
+						throw e2Throw;
+					}
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const Time::TimeOfDay::FormatException& e2Throw)
+					{
+						DbgTrace (L"Throwing TimeOfDay::FormatException");
+						throw e2Throw;
+					}
+		}
 
 	}
 }
