@@ -92,6 +92,7 @@ Date::Date (const wstring& rep, XML)
 {
 // SHOULD TAKE INTO ACCOUNT TIMEZONE FIELD - IF ANY - AND NOT CURRENT TIMEZONE!!! (LOCALE_USER_DEFAULT IS WRONG) -  LGP 2005-10-31
 	if (not rep.empty ()) {
+#if		qPlatform_Windows
 		DATE		d;
 		(void)::memset (&d, 0, sizeof (d));
 		try {
@@ -105,12 +106,16 @@ Date::Date (const wstring& rep, XML)
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
+#else
+		Assert (false);//NYI
+#endif
 	}
 }
 
 Date::Date (const wstring& rep, Javascript)
 	: fJulianDateRep (kEmptyJulianRep)
 {
+#if		qPlatform_Windows
 	/*
 	 *	See also Format4JScript for javascript format info
 	 */
@@ -130,8 +135,12 @@ Date::Date (const wstring& rep, Javascript)
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
 	}
+#else
+	Assert (false);//NYI
+#endif
 }
 
+#if		qPlatform_Windows
 Date::Date (const wstring& rep, LCID lcid)
 	: fJulianDateRep (kEmptyJulianRep)
 {
@@ -151,16 +160,23 @@ Date::Date (const wstring& rep, LCID lcid)
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
 	}
 }
+#endif
 
 Date	Date::GetToday ()
 {
+#if		qPlatform_Windows
 	SYSTEMTIME	st;
 	memset (&st, 0, sizeof (st));
 	::GetLocalTime (&st);
 
 	return Date (Year (st.wYear), MonthOfYear (st.wMonth), DayOfMonth (st.wDay));
+#else
+	Assert (false);
+	return Date ();
+#endif
 }
 
+#if		qPlatform_Windows
 wstring	Date::Format (LCID lcid) const
 {
 	SYSTEMTIME	st	=	*this;
@@ -188,6 +204,7 @@ wstring	Date::Format (const TString& format, LCID lcid) const
 		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
+#endif
 
 wstring	Date::Format4XML () const
 {
@@ -200,7 +217,7 @@ wstring	Date::Format4XML () const
 		DayOfMonth	d	=	eEmptyDayOfMonth;
 		Year		y	=	eEmptyYear;
 		mdy (&m, &d, &y);
-		::swprintf_s (buf, L"%04d-%02d-%02d", y, m, d);
+		::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d);
 		return buf;
 	}
 }
@@ -227,11 +244,12 @@ wstring	Date::Format4JScript () const
 		DayOfMonth	d	=	eEmptyDayOfMonth;
 		Year		y	=	eEmptyYear;
 		mdy (&m, &d, &y);
-		::swprintf_s (buf, L"%02d/%02d/%04d", m, d, y);
+		::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y);
 		return buf;
 	}
 }
 
+#if		qPlatform_Windows
 wstring	Date::LongFormat (LCID lcid) const
 {
 	SYSTEMTIME	st	=	*this;
@@ -245,6 +263,7 @@ wstring	Date::LongFormat (LCID lcid) const
 		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
+#endif
 
 Date	Date::AddDays (int dayCount)
 {
@@ -267,6 +286,7 @@ Date::JulianRepType	Date::DaysSince () const
 	}
 }
 
+#if		qPlatform_Windows
 Date::operator SYSTEMTIME () const
 {
 	SYSTEMTIME	st;
@@ -280,6 +300,7 @@ Date::operator SYSTEMTIME () const
 	st.wDay = d;
 	return st;
 }
+#endif
 
 Date::Year	Date::GetYear () const
 {
@@ -492,18 +513,19 @@ wstring	Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathD
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-TimeOfDay::TimeOfDay ():
-	fTime (-1)
+TimeOfDay::TimeOfDay ()
+  : fTime (-1)
 {
 }
 
-TimeOfDay::TimeOfDay (unsigned int t):
-	fTime (-1)
+TimeOfDay::TimeOfDay (unsigned int t)
+  : fTime (-1)
 {
 	fTime = t;
 	fTime %= 60*60*24;				// assure small enuf to fit within a day
 }
 
+#if		qPlatform_Windows
 TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid):
 	fTime (-1)
 {
@@ -536,6 +558,7 @@ TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid):
 	Verify (::VariantTimeToSystemTime (d, &sysTime));
 	*this = TimeOfDay (sysTime);
 }
+#endif
 
 TimeOfDay::TimeOfDay (const wstring& rep, XML):
 	fTime (-1)
@@ -554,6 +577,7 @@ TimeOfDay::TimeOfDay (const wstring& rep, XML):
 	}
 }
 
+#if		qPlatform_Windows
 TimeOfDay::TimeOfDay (const SYSTEMTIME& sysTime):
 	fTime (-1)
 {
@@ -565,6 +589,7 @@ TimeOfDay::TimeOfDay (const SYSTEMTIME& sysTime):
 	secs = min (secs, static_cast<WORD> (59));
 	fTime = (hour * 60 + minute) * 60 + secs;
 }
+#endif
 
 TimeOfDay	TimeOfDay::Now ()
 {
@@ -582,6 +607,7 @@ void	TimeOfDay::ClearSecondsField ()
 	fTime -= secs;
 }
 
+#if		qPlatform_Windows
 namespace	{
 	wstring	GenTimeStr4TOD_ (unsigned int hour, unsigned int minutes, unsigned int seconds)
 		{
@@ -771,6 +797,7 @@ wstring	TimeOfDay::Format (LCID lcid) const
 		#endif
 	}
 }
+#endif
 
 wstring	TimeOfDay::Format4XML () const
 {
@@ -788,6 +815,7 @@ wstring	TimeOfDay::Format4XML () const
 	}
 }
 
+#if		qPlatform_Windows
 TimeOfDay::operator SYSTEMTIME () const
 {
 	SYSTEMTIME	t;
@@ -810,7 +838,7 @@ TimeOfDay::operator SYSTEMTIME () const
 	}
 	return t;
 }
-
+#endif
 
 
 
@@ -828,6 +856,7 @@ TimeOfDay::operator SYSTEMTIME () const
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
+#if		qPlatform_Windows
 DateTime::DateTime (const wstring& rep, LCID lcid):
 	fDate (),
 	fTimeOfDay ()
@@ -850,6 +879,7 @@ DateTime::DateTime (const wstring& rep, LCID lcid):
 		fTimeOfDay = TimeOfDay (sysTime);
 	}
 }
+#endif
 
 DateTime::DateTime (const wstring& rep, XML):
 	fDate (),
@@ -878,6 +908,7 @@ DateTime::DateTime (const wstring& rep, XML):
 	}
 }
 
+#if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime):
 	fDate (sysTime),
 	fTimeOfDay (sysTime)
@@ -899,11 +930,13 @@ DateTime::DateTime (const FILETIME& fileTime):
 		}
 	}
 }
+#endif
 
 DateTime::DateTime (time_t unixTime):
 	fDate (),
 	fTimeOfDay ()
 {
+#if		qPlatform_Windows
 	// From http://support.microsoft.com/kb/167296
 	FILETIME	ft;
 	LONGLONG ll;
@@ -911,6 +944,9 @@ DateTime::DateTime (time_t unixTime):
 	ft.dwLowDateTime = (DWORD)ll;
 	ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
 	*this = DateTime (ft);
+#else
+	Assert (false);
+#endif
 }
 
 
@@ -924,12 +960,18 @@ bool	DateTime::empty () const
 
 DateTime	DateTime::Now ()
 {
+#if		qPlatform_Windows
 	SYSTEMTIME	st;
 	memset (&st, 0, sizeof (st));
 	::GetLocalTime (&st);
 	return DateTime (st);
+#else
+	Assert (false);
+	return DateTime ();
+#endif
 }
 
+#if		qPlatform_Windows
 wstring	DateTime::Format (LCID lcid) const
 {
 	if (empty ()) {
@@ -945,6 +987,7 @@ wstring	DateTime::Format (LCID lcid) const
 		return r;
 	}
 }
+#endif
 
 wstring	DateTime::Format4XML () const
 {
@@ -969,6 +1012,7 @@ wstring	DateTime::Format4XML () const
 
 			wstring	tzBiasString;
 			{
+#if		qPlatform_Windows
 				TIME_ZONE_INFORMATION	tzInfo;
 				memset (&tzInfo, 0, sizeof (tzInfo));
 				(void)::GetTimeZoneInformation (&tzInfo);
@@ -976,6 +1020,9 @@ wstring	DateTime::Format4XML () const
 				int	hrs	=	unsignedBias / 60;
 				int mins = unsignedBias - hrs * 60;
 				tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
+#else
+				Assert (false);
+#endif
 			}
 			r += wstring (L"T") + buf + tzBiasString;
 		}
@@ -984,6 +1031,7 @@ wstring	DateTime::Format4XML () const
 	}
 }
 
+#if		qPlatform_Windows
 DateTime::operator SYSTEMTIME () const
 {
 	SYSTEMTIME	d	=	(SYSTEMTIME)fDate;
@@ -995,6 +1043,7 @@ DateTime::operator SYSTEMTIME () const
 	r.wMilliseconds = t.wMilliseconds;
 	return r;
 }
+#endif
 
 Date::JulianRepType	DateTime::DaysSince () const
 {
@@ -1009,6 +1058,7 @@ Date::JulianRepType	DateTime::DaysSince () const
 
 time_t	DateTime::GetUNIXEpochTime () const
 {
+#if		qPlatform_Windows
 	SYSTEMTIME	st	=	*this;
 	struct tm tm;
 	memset(&tm, 0, sizeof(tm));
@@ -1019,6 +1069,9 @@ time_t	DateTime::GetUNIXEpochTime () const
 	tm.tm_min = st.wMinute;
 	tm.tm_sec = st.wSecond;
 	return mktime (&tm);
+#else
+	Assert (false); return 0;
+#endif
 }
 
 void	DateTime::SetDate (const Date& d)

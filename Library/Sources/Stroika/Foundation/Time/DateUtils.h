@@ -183,7 +183,9 @@ namespace	Stroika {
 					TimeOfDay ();
 
 					explicit TimeOfDay (unsigned int t);		// we normalize to be within a given day (seconds since midnight)
+#if		qPlatform_Windows
 					explicit TimeOfDay (const wstring& rep, LCID lcid = LOCALE_USER_DEFAULT);
+#endif
 
 					/*
 					 * If a full date, just grab the time part, and ignore the rest.
