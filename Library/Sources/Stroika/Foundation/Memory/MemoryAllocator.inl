@@ -19,26 +19,26 @@ namespace	Stroika {
 				{
 				}
 
-		// class	Memory::STLAllocator<T,BASE_ALLOCATOR>
+
+			// class	Memory::STLAllocator<T,BASE_ALLOCATOR>
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::address (typename STLAllocator<T,BASE_ALLOCATOR>::reference _Val) const
 					{
 						return (&_Val);
 					}
-
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	typename	STLAllocator<T,BASE_ALLOCATOR>::const_pointer STLAllocator<T,BASE_ALLOCATOR>::address (typename STLAllocator<T,BASE_ALLOCATOR>::const_reference _Val) const
 					{
 						return (&_Val);
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator ():
-					fBaseAllocator ()
+				inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator ()
+					: fBaseAllocator ()
 					{
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator (const STLAllocator<T,BASE_ALLOCATOR>& from):
-					fBaseAllocator (from.fBaseAllocator)
+				inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator (const STLAllocator<T,BASE_ALLOCATOR>& from)
+					: fBaseAllocator (from.fBaseAllocator)
 					{
 					}
 			template <typename T, typename BASE_ALLOCATOR>
@@ -77,7 +77,7 @@ namespace	Stroika {
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	size_t	STLAllocator<T,BASE_ALLOCATOR>::max_size () const throw ()
 					{
-						return std::numeric_limits<size_type>::max() / sizeof(T);
+						return std::numeric_limits<size_type>::max () / sizeof (T);
 					}
 		}
 	}

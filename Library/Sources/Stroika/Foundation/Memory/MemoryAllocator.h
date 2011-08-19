@@ -64,8 +64,6 @@ namespace	Stroika {
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
 				class	STLAllocator  {
 					public:
-#if 1
-					//						typedef allocator<T>			_Mybase;
 						typedef T	value_type;
 						typedef value_type*						pointer;
 						typedef value_type&						reference;
@@ -73,7 +71,6 @@ namespace	Stroika {
 						typedef const value_type&				const_reference;
 						typedef size_t							size_type;
 						typedef ptrdiff_t						difference_type;
-#endif
 
 					public:
 						BASE_ALLOCATOR	fBaseAllocator;
