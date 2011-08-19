@@ -15,9 +15,5 @@ Objs	=	\
 	$(ObjDir)DateUtils.o\
 	$(ObjDir)Realtime.o\
 
-.cpp.o:
-	@echo "Compiling $<"
-	gcc $(CFLAGS) $< -o $@
-
 all:	$(Objs)
 	echo do ar here
