@@ -42,6 +42,19 @@ namespace	Stroika {
 					{
 					}
 			template <typename T, typename BASE_ALLOCATOR>
+				template	<typename OTHER>
+					inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from):
+						fBaseAllocator (from.fBaseAllocator)
+						{
+						}
+			template <typename T, typename BASE_ALLOCATOR>
+				template	<typename OTHER>
+					inline	STLAllocator<T,BASE_ALLOCATOR>& STLAllocator<T,BASE_ALLOCATOR>::operator= (const STLAllocator<OTHER,BASE_ALLOCATOR>& rhs)
+						{
+							fBaseAllocator = rhs.from.fBaseAllocator;
+							return (*this);
+						}
+			template <typename T, typename BASE_ALLOCATOR>
 				inline	void STLAllocator<T,BASE_ALLOCATOR>::deallocate (pointer _Ptr, size_type)
 					{
 						if (_Ptr != NULL) {

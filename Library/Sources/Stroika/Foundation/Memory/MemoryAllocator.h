@@ -64,13 +64,13 @@ namespace	Stroika {
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
 				class	STLAllocator  {
 					public:
-						typedef T	value_type;
-						typedef value_type*						pointer;
-						typedef value_type&						reference;
-						typedef const value_type*				const_pointer;
-						typedef const value_type&				const_reference;
-						typedef size_t							size_type;
-						typedef ptrdiff_t						difference_type;
+						typedef T							value_type;
+						typedef value_type*					pointer;
+						typedef value_type&					reference;
+						typedef const value_type*			const_pointer;
+						typedef const value_type&			const_reference;
+						typedef size_t						size_type;
+						typedef ptrdiff_t					difference_type;
 
 					public:
 						BASE_ALLOCATOR	fBaseAllocator;
@@ -88,19 +88,10 @@ namespace	Stroika {
 					public:
 						STLAllocator ();
 						STLAllocator (const STLAllocator<T,BASE_ALLOCATOR>&);
-
-					public:
-						template	<typename _Other>
-							STLAllocator(const STLAllocator<_Other, BASE_ALLOCATOR>& from):
-								fBaseAllocator (from.fBaseAllocator)
-								{
-								}
-						template	<typename _Other>
-							STLAllocator<T,BASE_ALLOCATOR>& operator= (const STLAllocator<_Other,BASE_ALLOCATOR>& rhs)
-								{
-									fBaseAllocator = rhs.from.fBaseAllocator;
-									return (*this);
-								}
+						template	<typename OTHER>
+							STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from);
+						template	<typename OTHER>
+							STLAllocator<T,BASE_ALLOCATOR>& operator= (const STLAllocator<OTHER,BASE_ALLOCATOR>& rhs);
 
 					public:
 						nonvirtual	pointer allocate (size_type _Count);
