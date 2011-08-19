@@ -5,7 +5,9 @@
 
 #include	<algorithm>
 
-#include	<atlbase.h>		// For CComBSTR
+#if		qPlatform_Windows
+	#include	<atlbase.h>		// For CComBSTR
+#endif
 
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
@@ -26,6 +28,7 @@ using	namespace	Time;
 
 
 
+#if		qPlatform_Windows
 namespace	{
 	wstring	GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
 		{
@@ -35,6 +38,7 @@ namespace	{
 			return wstring (buf);
 		}
 }
+#endif
 
 
 
@@ -62,6 +66,7 @@ Date::Date (Year year, MonthOfYear month, DayOfMonth day)
 {
 }
 
+#if		qPlatform_Windows
 Date::Date (const SYSTEMTIME& sysTime)
 	: fJulianDateRep (Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)))
 {
@@ -80,6 +85,7 @@ Date::Date (const FILETIME& fileTime)
 		}
 	}
 }
+#endif
 
 Date::Date (const wstring& rep, XML)
 	: fJulianDateRep (kEmptyJulianRep)

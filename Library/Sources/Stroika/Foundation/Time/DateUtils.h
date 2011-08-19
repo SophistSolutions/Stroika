@@ -98,10 +98,14 @@ namespace	Stroika {
 					enum Javascript { eJavascript };
 					explicit Date (const wstring& rep, XML);
 					explicit Date (const wstring& rep, Javascript);
+				#if		qPlatform_Windows
 					explicit Date (const wstring& rep, LCID lcid = LOCALE_USER_DEFAULT);
+				#endif
 					explicit Date (Year year, MonthOfYear month, DayOfMonth day);
+				#if		qPlatform_Windows
 					Date (const SYSTEMTIME& sysTime);
 					Date (const FILETIME& fileTime);
+				#endif
 
 				public:
 					static	Date	GetToday ();
@@ -116,15 +120,21 @@ namespace	Stroika {
 					nonvirtual	MonthOfYear		GetMonth () const;
 					nonvirtual	DayOfMonth		GetDayOfMonth () const;
 
+				#if		qPlatform_Windows
 				public:
 					operator SYSTEMTIME () const;
+				#endif
 
 				public:
+					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
 					nonvirtual	wstring	Format (const TString& format, LCID lcid = LOCALE_USER_DEFAULT) const;				// See GetDateFormat () format args
+					#endif
 					nonvirtual	wstring	Format4XML () const;
 					nonvirtual	wstring	Format4JScript () const;
+					#if		qPlatform_Windows
 					nonvirtual	wstring	LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
+					#endif
 
 				public:
 					nonvirtual	Date	AddDays (int dayCount);
@@ -180,8 +190,10 @@ namespace	Stroika {
 					 */
 					enum XML { eXML };
 					explicit TimeOfDay (const wstring& rep, XML);
+					#if		qPlatform_Windows
 					explicit TimeOfDay (const SYSTEMTIME& sysTime);
 					explicit TimeOfDay (const FILETIME& fileTime);
+					#endif
 
 				public:
 					static	TimeOfDay	Now ();
@@ -197,11 +209,15 @@ namespace	Stroika {
 					nonvirtual	void	ClearSecondsField ();
 
 				public:
+					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
+					#endif
 					nonvirtual	wstring	Format4XML () const;
 
+				#if		qPlatform_Windows
 				public:
 					nonvirtual	operator SYSTEMTIME () const;
+				#endif
 
 				private:
 					unsigned int	fTime;
@@ -227,11 +243,15 @@ namespace	Stroika {
 
 				public:
 					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay ());
+					#if		qPlatform_Windows
 					explicit DateTime (const wstring& rep, LCID lcid = LOCALE_USER_DEFAULT);
+					#endif
 					enum XML { eXML };
 					explicit DateTime (const wstring& rep, XML);
+					#if		qPlatform_Windows
 					DateTime (const SYSTEMTIME& sysTime);
 					DateTime (const FILETIME& fileTime);
+					#endif
 					explicit DateTime (time_t unixTime);
 
 				public:
@@ -241,15 +261,19 @@ namespace	Stroika {
 					static	DateTime	Now ();
 
 				public:
+					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
+					#endif
 					nonvirtual	wstring	Format4XML () const;
 
 				public:
 					// returns number of days since this point - relative to NOW. Never less than zero
 					nonvirtual	Date::JulianRepType	DaysSince () const;
 
+				#if		qPlatform_Windows
 				public:
 					nonvirtual	operator SYSTEMTIME () const;
+				#endif
 
 				public:
 					nonvirtual	time_t	GetUNIXEpochTime () const;	// seconds since midnight 1970 (its independent of timezone)
