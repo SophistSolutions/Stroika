@@ -59,7 +59,8 @@ namespace	Stroika {
 
 
 			/*
-			 * The STLAllocator takes a Stroika Allocator class (as template argument) and maps it for usage as an STL-style allocator.
+			 * The STLAllocator takes a Stroika Allocator class (as template argument) and maps it
+			 * for usage as an STL-style allocator.
 			 */
 			template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
 				class	STLAllocator  {
@@ -76,32 +77,38 @@ namespace	Stroika {
 						BASE_ALLOCATOR	fBaseAllocator;
 
 					public:
-						template <typename _Other>
+						template <typename OTHER>
 							struct rebind {
-								typedef STLAllocator<_Other,BASE_ALLOCATOR> other;
+								typedef STLAllocator<OTHER,BASE_ALLOCATOR> other;
 							};
 
 					public:
-						nonvirtual	pointer			address (reference _Val) const;
-						nonvirtual	const_pointer	address (const_reference _Val) const;
-
-					public:
-						STLAllocator ();
-						STLAllocator (const STLAllocator<T,BASE_ALLOCATOR>&);
+						explicit STLAllocator ();
+						STLAllocator (const STLAllocator<T,BASE_ALLOCATOR>& from);
 						template	<typename OTHER>
-							STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from);
+							explicit STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from);
 						template	<typename OTHER>
 							STLAllocator<T,BASE_ALLOCATOR>& operator= (const STLAllocator<OTHER,BASE_ALLOCATOR>& rhs);
 
 					public:
-						nonvirtual	pointer allocate (size_type _Count);
-						nonvirtual	pointer allocate (size_type _Count, const void*);
-						nonvirtual	void	deallocate (pointer _Ptr, size_type);
+						nonvirtual	pointer			address (reference v) const;
+						nonvirtual	const_pointer	address (const_reference v) const;
+
 					public:
-						nonvirtual	void	construct (pointer _Ptr, const T& _Val);
-						nonvirtual	void	destroy (pointer _Ptr);
+						nonvirtual	pointer allocate (size_type nElements);
+						nonvirtual	pointer allocate (size_type nElements, const void* ptr);
+						nonvirtual	void	deallocate (pointer ptr, size_type sz);
+
+					public:
+						nonvirtual	void	construct (pointer p, const T& v);
+						nonvirtual	void	destroy (pointer p);
+					
 					public:
 						nonvirtual	size_t	max_size() const throw ();
+					
+					public:
+						nonvirtual	bool	operator== (const STLAllocator<T,BASE_ALLOCATOR>& rhs) const;
+						nonvirtual	bool	operator!= (const STLAllocator<T,BASE_ALLOCATOR>& rhs) const;
 				};
 
 

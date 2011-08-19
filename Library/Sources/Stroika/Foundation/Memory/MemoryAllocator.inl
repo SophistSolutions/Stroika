@@ -43,8 +43,8 @@ namespace	Stroika {
 					}
 			template <typename T, typename BASE_ALLOCATOR>
 				template	<typename OTHER>
-					inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from):
-						fBaseAllocator (from.fBaseAllocator)
+					inline	STLAllocator<T,BASE_ALLOCATOR>::STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from)
+						: fBaseAllocator (from.fBaseAllocator)
 						{
 						}
 			template <typename T, typename BASE_ALLOCATOR>
@@ -55,42 +55,47 @@ namespace	Stroika {
 							return (*this);
 						}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	void STLAllocator<T,BASE_ALLOCATOR>::deallocate (pointer _Ptr, size_type)
+				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type nElements)
 					{
-						if (_Ptr != NULL) {
-							fBaseAllocator.Deallocate (_Ptr);
+						// allocate storage for _Count elements of type T
+						return ((T*)fBaseAllocator.Allocate (nElements * sizeof (T)));
+					}
+			template <typename T, typename BASE_ALLOCATOR>
+				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type nElements, const void*)
+					{
+						return (allocate (n));
+					}
+			template <typename T, typename BASE_ALLOCATOR>
+				inline	void STLAllocator<T,BASE_ALLOCATOR>::deallocate (pointer ptr, size_type)
+					{
+						if (ptr != NULL) {
+							fBaseAllocator.Deallocate (ptr);
 						}
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type _Count)
+				inline	void	STLAllocator<T,BASE_ALLOCATOR>::construct (pointer ptr, const T& v)
 					{
-						// check for integer overflow
-						if (_Count <= 0)
-							_Count = 0;
-						else if (((size_t)(-1) / _Count) < sizeof (T))
-						     throw std::bad_alloc ();
-						// allocate storage for _Count elements of type T
-						return ((T*)fBaseAllocator.Allocate (_Count * sizeof (T)));
+						new (ptr) T (v);
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type _Count, const void*)
+				inline	void	STLAllocator<T,BASE_ALLOCATOR>::destroy (pointer p)
 					{
-						return (allocate (_Count));
-					}
-			template <typename T, typename BASE_ALLOCATOR>
-				inline	void	STLAllocator<T,BASE_ALLOCATOR>::construct (pointer _Ptr, const T& _Val)
-					{
-						_Construct (_Ptr, _Val);
-					}
-			template <typename T, typename BASE_ALLOCATOR>
-				inline	void	STLAllocator<T,BASE_ALLOCATOR>::destroy (pointer _Ptr)
-					{
-						_Destroy (_Ptr);
+						p->~T ();
 					}
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	size_t	STLAllocator<T,BASE_ALLOCATOR>::max_size () const throw ()
 					{
-						return std::numeric_limits<size_type>::max () / sizeof (T);
+						return numeric_limits<size_type>::max () / sizeof (T);
+					}
+			template <typename T, typename BASE_ALLOCATOR>
+				inline	bool	STLAllocator<T,BASE_ALLOCATOR>::operator== (const STLAllocator<T,BASE_ALLOCATOR>& rhs) const
+					{
+						return true;
+					}
+			template <typename T, typename BASE_ALLOCATOR>
+				inline	bool	STLAllocator<T,BASE_ALLOCATOR>::operator!= (const STLAllocator<T,BASE_ALLOCATOR>& rhs) const
+					{
+						return !operator== (rhs);
 					}
 		}
 	}
