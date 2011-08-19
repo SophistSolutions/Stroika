@@ -566,7 +566,9 @@ TimeOfDay::TimeOfDay (const wstring& rep, XML):
 	int	hour	=	0;
 	int	minute	=	0;
 	int secs	=	0;
-	if (::swscanf_s (rep.c_str (), L"%d:%d:d", &hour, &minute, &secs) >= 2) {
+	#pragma	warning (push)
+	#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
+	if (::swscanf (rep.c_str (), L"%d:%d:d", &hour, &minute, &secs) >= 2) {
 		hour = max (hour, 0);
 		hour = min (hour, 23);
 		minute = max (minute, 0);
@@ -575,6 +577,7 @@ TimeOfDay::TimeOfDay (const wstring& rep, XML):
 		secs = min (secs, 59);
 		fTime = (hour * 60 + minute) * 60 + secs;
 	}
+	#pragma	warning (pop)
 }
 
 #if		qPlatform_Windows
@@ -894,7 +897,10 @@ DateTime::DateTime (const wstring& rep, XML):
 		int	second	=	0;
 		int	tzHr	=	0;
 		int	tzMn	=	0;
-		int	nItems	=	::swscanf_s (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
+		#pragma	warning (push)
+		#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
+		int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
+		#pragma warning (pop)
 		if (nItems >= 3) {
 			fDate = Date (::Format (L"%d-%d-%d", year, month, day), Date::eXML);
 		}

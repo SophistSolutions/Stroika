@@ -731,15 +731,12 @@ float	Characters::String2Float (const wstring& s)
 float	Characters::String2Float (const wstring& s, float returnValIfInvalidString)
 {
 	float	num	=	returnValIfInvalidString;
-	#if		defined (_MSC_VER)
-		if (::swscanf_s (s.c_str (), L"%f", &num) == 1) {
-			return num;
-		}
-	#else
-		if (::swscanf (s.c_str (), L"%f", &num) == 1) {
-			return num;
-		}
-	#endif
+	#pragma	warning (push)
+	#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
+	if (::swscanf (s.c_str (), L"%f", &num) == 1) {
+		return num;
+	}
+	#pragma warning (pop)
 	return returnValIfInvalidString;
 }
 
