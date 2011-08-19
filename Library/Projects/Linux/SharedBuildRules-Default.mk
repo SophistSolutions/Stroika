@@ -3,4 +3,8 @@
 	@gcc $(CFLAGS) $< -o $@
 
 
+clean::	$(Objs)
+	@rm -f $(Objs)
+
+
 

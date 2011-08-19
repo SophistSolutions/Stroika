@@ -23,8 +23,8 @@ SubDirs=	\
 	Time	\
 
 all:
-	for i in $(SubDirs);\
+	@for i in $(SubDirs);\
 	do\
-	    cd $$i; make; cd ..;\
+	    cd $$i; make all; cd ..;\
 	done
 
