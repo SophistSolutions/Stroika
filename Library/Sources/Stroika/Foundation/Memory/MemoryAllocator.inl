@@ -63,7 +63,7 @@ namespace	Stroika {
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	typename STLAllocator<T,BASE_ALLOCATOR>::pointer STLAllocator<T,BASE_ALLOCATOR>::allocate (size_type nElements, const void*)
 					{
-						return (allocate (n));
+						return (allocate (nElements));
 					}
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	void STLAllocator<T,BASE_ALLOCATOR>::deallocate (pointer ptr, size_type)
