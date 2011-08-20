@@ -3,6 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include	<cstdarg>
 #include	<cstdio>
 #include	<fstream>
 #include	<map>
@@ -49,7 +50,7 @@ namespace	{
 	#if		qPlatform_Windows
 		typedef	DWORD	ThreadID;
 	#else
-		typedef	void*	ThreadID;		//tmphack
+		typedef	int	ThreadID;		//tmphack
 	#endif
 	#if		qDefaultTracingOn
 		static	map<ThreadID,unsigned int>*	sCounts;
@@ -239,7 +240,7 @@ void	Emitter::EmitTraceMessage (const wchar_t* format, ...)
 		#if		__STDC_WANT_SECURE_LIB__
 			(void)::_vsnwprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
 		#else
-			(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
+			(void)::vswprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
 		#endif
 		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
@@ -297,7 +298,7 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 		#if		__STDC_WANT_SECURE_LIB__
 			(void)::_vsnwprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
 		#else
-			(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
+			(void)::vswprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
 		#endif
 		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
@@ -335,7 +336,12 @@ template	<typename	CHARTYPE>
 			Time::DurationSecondsType	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
 			{
 				char	buf[1024];
-				ThreadID	threadID	=	::GetCurrentThreadId ();
+				#if		qPlatform_Windows
+					ThreadID	threadID	=	::GetCurrentThreadId ();
+				#else
+					AssertNotImplemented ();
+					ThreadID	threadID	=	0;
+				#endif
 				if (sFirstTime) {
 					sMainThread = threadID;
 				}
@@ -391,7 +397,11 @@ void	Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
 	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR));
 	fLastNCharBufCharCount = bufferLastNChars;
-	strcpy_s (fLastNCharBuf_CHAR, p);
+	#if		__STDC_WANT_SECURE_LIB__
+		strcpy_s (fLastNCharBuf_CHAR, p);
+	#else
+		strcpy (fLastNCharBuf_CHAR, p);
+	#endif
 	fLastNCharBuf_WCHARFlag = false;
 }
 
@@ -399,7 +409,11 @@ void	Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
 	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR));
 	fLastNCharBufCharCount = bufferLastNChars;
-	::wcscpy_s (fLastNCharBuf_WCHAR, p);
+	#if		__STDC_WANT_SECURE_LIB__
+		::wcscpy_s (fLastNCharBuf_WCHAR, p);
+	#else
+		::wcscpy (fLastNCharBuf_WCHAR, p);
+	#endif
 	fLastNCharBuf_WCHARFlag = true;
 }
 
@@ -431,7 +445,9 @@ bool	Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTok
 
 void	Emitter::DoEmit_ (const char* p)
 {
-	::OutputDebugStringA (p);
+	#if		qPlatform_Windows
+		::OutputDebugStringA (p);
+	#endif
 	#if		qTraceToFile
 		Emit2File_ (p);
 	#endif
@@ -439,7 +455,9 @@ void	Emitter::DoEmit_ (const char* p)
 
 void	Emitter::DoEmit_ (const wchar_t* p)
 {
-	::OutputDebugStringW (p);
+	#if		qPlatform_Windows
+		::OutputDebugStringW (p);
+	#endif
 	#if		qTraceToFile
 		Emit2File_ (p);
 	#endif
