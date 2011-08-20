@@ -15,50 +15,58 @@ namespace	Stroika {
 		namespace	Execution {
 
 		#if		qPlatform_Windows
-		//	class	Win32ErrorException
-			inline	Win32ErrorException::Win32ErrorException (DWORD error):
-				fError (error)
-				{
+			namespace	Platform {
+				namespace	Windows {
+				//	class	Exception
+					inline	Exception::Exception (DWORD error)
+						: fError (error)
+						{
+						}
+					inline	Exception::operator DWORD () const
+						{
+							return fError;
+						}
+					inline	TString	Exception::LookupMessage () const
+						{
+							return LookupMessage (fError);
+						}
 				}
-			inline	Win32ErrorException::operator DWORD () const
-				{
-					return fError;
-				}
-			inline	TString	Win32ErrorException::LookupMessage () const
-				{
-					return LookupMessage (fError);
-				}
+			}
 		#endif
 
-		//	class	Win32StructuredException
 		#if		qPlatform_Windows
-			inline	Win32StructuredException::Win32StructuredException (unsigned int seCode):
-				fSECode (seCode)
-				{
+			namespace	Platform {
+				namespace	Windows {
+					//	class	StructuredException
+					inline	StructuredException::StructuredException (unsigned int seCode)
+						: fSECode (seCode)
+						{
+						}
+					inline	StructuredException::operator unsigned int () const
+						{
+							return fSECode;
+						}
+					inline	TString	StructuredException::LookupMessage () const
+						{
+							return LookupMessage (fSECode);
+						}
 				}
-			inline	Win32StructuredException::operator unsigned int () const
-				{
-					return fSECode;
-				}
-			inline	TString	Win32StructuredException::LookupMessage () const
-				{
-					return LookupMessage (fSECode);
-				}
+			}
 		#endif
 
 
 
 		//	class	HRESULTErrorException
 		#if		qPlatform_Windows
-			inline	HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
+			inline	Platform::Windows::HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
 				fHResult (hresult)
 				{
 				}
-			inline	HRESULTErrorException::operator HRESULT () const
+			inline	Platform::Windows::HRESULTErrorException::operator HRESULT () const
 				{
 					return fHResult;
 				}
-			inline	TString	HRESULTErrorException::LookupMessage () const
+			inline	TString	Platform::Windows::HRESULTErrorException::LookupMessage () const
 				{
 					return LookupMessage (fHResult);
 				}
@@ -116,9 +124,9 @@ namespace	Stroika {
 
 			#if		qPlatform_Windows
 			template	<>
-				inline	void	_NoReturn_	DoThrow (const Win32ErrorException& e2Throw)
+				inline	void	_NoReturn_	DoThrow (const Platform::Windows::Exception& e2Throw)
 					{
-						DbgTrace ("Throwing Win32ErrorException: DWORD = 0x%x", static_cast<DWORD> (e2Throw));
+						DbgTrace ("Throwing Platform::Windows::Exception: DWORD = 0x%x", static_cast<DWORD> (e2Throw));
 						throw e2Throw;
 					}
 			#endif
@@ -130,7 +138,7 @@ namespace	Stroika {
 					}
 		#if		qPlatform_Windows
 			template	<>
-				inline	void	_NoReturn_	DoThrow (const Win32StructuredException& e2Throw)
+				inline	void	_NoReturn_	DoThrow (const Platform::Windows::StructuredException& e2Throw)
 					{
 						DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
 						throw e2Throw;
@@ -138,9 +146,9 @@ namespace	Stroika {
 		#endif
 		#if		qPlatform_Windows
 			template	<>
-				inline	void	_NoReturn_	DoThrow (const HRESULTErrorException& e2Throw)
+				inline	void	_NoReturn_	DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw)
 					{
-						DbgTrace ("Throwing HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
+						DbgTrace ("Throwing Platform::Windows::HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
 						throw e2Throw;
 					}
 		#endif
@@ -175,7 +183,7 @@ namespace	Stroika {
 			inline	void	ThrowIfFalseGetLastError (bool test)
 				{
 					if (not test) {
-						Win32ErrorException::DoThrow (::GetLastError ());
+						Platform::Windows::Exception::DoThrow (::GetLastError ());
 					}
 				}
 		#endif
@@ -183,7 +191,7 @@ namespace	Stroika {
 			inline	void	ThrowIfFalseGetLastError (BOOL test)
 				{
 					if (not test) {
-						Win32ErrorException::DoThrow (::GetLastError ());
+						Platform::Windows::Exception::DoThrow (::GetLastError ());
 					}
 				}
 			#endif
@@ -191,7 +199,7 @@ namespace	Stroika {
 			inline	void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
 				{
 					if (win32ErrCode != ERROR_SUCCESS) {
-						Win32ErrorException::DoThrow (win32ErrCode);
+						Platform::Windows::Exception::DoThrow (win32ErrCode);
 					}
 				}
 			#endif
@@ -199,7 +207,7 @@ namespace	Stroika {
 			inline	void	ThrowIfErrorHRESULT (HRESULT hr)
 				{
 					if (not SUCCEEDED (hr)) {
-						DoThrow (HRESULTErrorException (hr));
+						DoThrow (Platform::Windows::HRESULTErrorException (hr));
 					}
 				}
 			#endif
@@ -228,7 +236,7 @@ namespace	Stroika {
 			template<>
 				inline	void	ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
 					{
-						ThrowIfNull (p, HRESULTErrorException (hr));
+						ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
 					}
 			#endif
 		}

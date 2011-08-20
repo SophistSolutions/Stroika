@@ -93,7 +93,7 @@ namespace {
 #if		qPlatform_Windows
 /*
  ********************************************************************************
- ******************************* Win32ErrorException ****************************
+ *********************** Platform::Windows::Exception ***************************
  ********************************************************************************
  */
 namespace	{
@@ -101,48 +101,48 @@ namespace	{
 		AssertionChecker ()
 		{
 // MOVE TO EXTERNAL REGRESSION TEST SUITE...
-			Assert (Win32ErrorException::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
-			Assert (Win32ErrorException::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
-			Assert (Win32ErrorException::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
-			Assert (Win32ErrorException::kERROR_INTERNET_NAME_NOT_RESOLVED == ERROR_INTERNET_NAME_NOT_RESOLVED);
-			Assert (Win32ErrorException::kERROR_INTERNET_PROTOCOL_NOT_FOUND == ERROR_INTERNET_PROTOCOL_NOT_FOUND);
-			Assert (Win32ErrorException::kERROR_INTERNET_CANNOT_CONNECT == ERROR_INTERNET_CANNOT_CONNECT);
+			Assert (Platform::Windows::Exception::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
+			Assert (Platform::Windows::Exception::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
+			Assert (Platform::Windows::Exception::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
+			Assert (Platform::Windows::Exception::kERROR_INTERNET_NAME_NOT_RESOLVED == ERROR_INTERNET_NAME_NOT_RESOLVED);
+			Assert (Platform::Windows::Exception::kERROR_INTERNET_PROTOCOL_NOT_FOUND == ERROR_INTERNET_PROTOCOL_NOT_FOUND);
+			Assert (Platform::Windows::Exception::kERROR_INTERNET_CANNOT_CONNECT == ERROR_INTERNET_CANNOT_CONNECT);
 		}
 	}	sAssertionChecker;
 }
-void	Win32ErrorException::DoThrow (DWORD error)
+void	Platform::Windows::Exception::DoThrow (DWORD error)
 {
 	switch (error) {
 		case	ERROR_SUCCESS: {
-			DbgTrace ("Win32ErrorException::DoThrow (ERROR_SUCCESS) - throwing Win32ErrorException (ERROR_NOT_SUPPORTED)");
-			throw Win32ErrorException (ERROR_NOT_SUPPORTED);	// unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
+			DbgTrace ("Platform::Windows::Exception::DoThrow (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
+			throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED);	// unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
 																// a bad reason code?
 		}
 		case	ERROR_NOT_ENOUGH_MEMORY:
 		case	ERROR_OUTOFMEMORY: {
-			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing bad_alloc", error);
+			DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing bad_alloc", error);
 			throw bad_alloc ();
 		}
 		case	ERROR_SHARING_VIOLATION: {
-			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileBusyException", error);
+			DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileBusyException", error);
 			throw IO::FileBusyException ();
 		}
 		case ERROR_FILE_NOT_FOUND: {
-			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileAccessException", error);
+			DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
 			throw IO::FileAccessException ();	// don't know if they were reading or writing at this level..., and don't know file name...
 		}
 		case ERROR_PATH_NOT_FOUND: {
-			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing FileAccessException", error);
+			DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
 			throw IO::FileAccessException ();	// don't know if they were reading or writing at this level..., and don't know file name...
 		}
 		default: {
-			DbgTrace ("Win32ErrorException::DoThrow (0x%x) - throwing Win32ErrorException", error);
-			throw Win32ErrorException (error);
+			DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing Platform::Windows::Exception", error);
+			throw Platform::Windows::Exception (error);
 		}
 	}
 }
 
-TString	Win32ErrorException::LookupMessage (DWORD dw)
+TString	Platform::Windows::Exception::LookupMessage (DWORD dw)
 {
 	return Win32Error2String_ (dw);
 }
@@ -157,17 +157,17 @@ TString	Win32ErrorException::LookupMessage (DWORD dw)
 #if		qPlatform_Windows
 /*
  ********************************************************************************
- ************************** Win32StructuredException ****************************
+ ************************** Platform::Windows::StructuredException ****************************
  ********************************************************************************
  */
-void	Win32StructuredException::RegisterHandler ()
+void	Platform::Windows::StructuredException::RegisterHandler ()
 {
 	_set_se_translator (trans_func);
 }
 
-void	Win32StructuredException::trans_func (unsigned int u, EXCEPTION_POINTERS* pExp)
+void	Platform::Windows::StructuredException::trans_func (unsigned int u, EXCEPTION_POINTERS* pExp)
 {
-	TraceContextBumper	ctx (_T ("Win32StructuredException::trans_func"));
+	TraceContextBumper	ctx (_T ("Platform::Windows::StructuredException::trans_func"));
 	{
 		// I wish I knew how to get a PROCNAME of where the caller was...
 		DbgTrace (_T ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
@@ -189,12 +189,12 @@ void	Win32StructuredException::trans_func (unsigned int u, EXCEPTION_POINTERS* p
 			}
 		}
 	}
-	DbgTrace ("Translating it into a Win32StructuredException::THROW()");
+	DbgTrace ("Translating it into a Platform::Windows::StructuredException::THROW()");
 	Assert (false);	// in case debug turned on, helpful to drop into the debugger here!
-	throw Win32StructuredException (u);
+	throw Platform::Windows::StructuredException (u);
 }
 
-TString	Win32StructuredException::LookupMessage (unsigned int u)
+TString	Platform::Windows::StructuredException::LookupMessage (unsigned int u)
 {
 	switch (u) {
 		case	EXCEPTION_ACCESS_VIOLATION:			return _T ("EXCEPTION_ACCESS_VIOLATION");
@@ -234,10 +234,10 @@ TString	Win32StructuredException::LookupMessage (unsigned int u)
 #if		qPlatform_Windows
 /*
  ********************************************************************************
- ***************************** HRESULTErrorException ****************************
+ ***************************** Platform::Windows::HRESULTErrorException ****************************
  ********************************************************************************
  */
-TString	HRESULTErrorException::LookupMessage (HRESULT hr)
+TString	Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
 {
 	switch (hr) {
 		case	E_FAIL:						return _T ("HRESULT failure (E_FAIL)");
@@ -309,9 +309,9 @@ TString	HRESULTErrorException::LookupMessage (HRESULT hr)
  ***************************** errno_ErrorException *****************************
  ********************************************************************************
  */
-errno_ErrorException::errno_ErrorException (errno_t e):
-	StringException (TString2Wide (LookupMessage (e))),
-	fError (e)
+errno_ErrorException::errno_ErrorException (errno_t e)
+	: StringException (TString2Wide (LookupMessage (e)))
+	, fError (e)
 {
 }
 
@@ -331,7 +331,7 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 	return buf;	
 }
 
-void	errno_ErrorException::DoThrow (DWORD error)
+void	errno_ErrorException::DoThrow (errno_t error)
 {
 	switch (error) {
 		case	ENOMEM: {
@@ -446,24 +446,24 @@ void	Execution::ThrowIfShellExecError (HINSTANCE r)
 	if (errCode <= 32) {
 		DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
 		switch (errCode) {
-			case	0:						Win32ErrorException::DoThrow (ERROR_NOT_ENOUGH_MEMORY);	// The operating system is out of memory or resources. 
-			case	ERROR_FILE_NOT_FOUND:	Win32ErrorException::DoThrow (ERROR_FILE_NOT_FOUND);	// The specified file was not found. 
-			case	ERROR_PATH_NOT_FOUND:	Win32ErrorException::DoThrow (ERROR_PATH_NOT_FOUND);	//  The specified path was not found. 
-			case	ERROR_BAD_FORMAT:		Win32ErrorException::DoThrow (ERROR_BAD_FORMAT);		//  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image). 
-			case	SE_ERR_ACCESSDENIED:	throw (HRESULTErrorException (E_ACCESSDENIED));			//  The operating system denied access to the specified file. 
-			case	SE_ERR_ASSOCINCOMPLETE:	Win32ErrorException::DoThrow (ERROR_NO_ASSOCIATION);	//  The file name association is incomplete or invalid. 
-			case	SE_ERR_DDEBUSY:			Win32ErrorException::DoThrow (ERROR_DDE_FAIL);			//  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed. 
-			case	SE_ERR_DDEFAIL:			Win32ErrorException::DoThrow (ERROR_DDE_FAIL);			//  The DDE transaction failed. 
-			case	SE_ERR_DDETIMEOUT:		Win32ErrorException::DoThrow (ERROR_DDE_FAIL);			//  The DDE transaction could not be completed because the request timed out. 
-			case	SE_ERR_DLLNOTFOUND:		Win32ErrorException::DoThrow (ERROR_DLL_NOT_FOUND);		//  The specified dynamic-link library (DLL) was not found. 
-			//case	SE_ERR_FNF:				throw (Win32ErrorException (ERROR_FILE_NOT_FOUND));		//  The specified file was not found. 
-			case	SE_ERR_NOASSOC:			Win32ErrorException::DoThrow (ERROR_NO_ASSOCIATION);	//  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable. 
-			case	SE_ERR_OOM:				Win32ErrorException::DoThrow (ERROR_NOT_ENOUGH_MEMORY);	//  There was not enough memory to complete the operation. 
-			//case	SE_ERR_PNF:				throw (Win32ErrorException (ERROR_PATH_NOT_FOUND));		//  The specified path was not found. 
-			case	SE_ERR_SHARE:			Win32ErrorException::DoThrow (ERROR_INVALID_SHARENAME);	//  
+			case	0:						Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);	// The operating system is out of memory or resources. 
+			case	ERROR_FILE_NOT_FOUND:	Platform::Windows::Exception::DoThrow (ERROR_FILE_NOT_FOUND);	// The specified file was not found. 
+			case	ERROR_PATH_NOT_FOUND:	Platform::Windows::Exception::DoThrow (ERROR_PATH_NOT_FOUND);	//  The specified path was not found. 
+			case	ERROR_BAD_FORMAT:		Platform::Windows::Exception::DoThrow (ERROR_BAD_FORMAT);		//  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image). 
+			case	SE_ERR_ACCESSDENIED:	throw (Platform::Windows::HRESULTErrorException (E_ACCESSDENIED));			//  The operating system denied access to the specified file. 
+			case	SE_ERR_ASSOCINCOMPLETE:	Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);	//  The file name association is incomplete or invalid. 
+			case	SE_ERR_DDEBUSY:			Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);			//  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed. 
+			case	SE_ERR_DDEFAIL:			Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);			//  The DDE transaction failed. 
+			case	SE_ERR_DDETIMEOUT:		Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);			//  The DDE transaction could not be completed because the request timed out. 
+			case	SE_ERR_DLLNOTFOUND:		Platform::Windows::Exception::DoThrow (ERROR_DLL_NOT_FOUND);		//  The specified dynamic-link library (DLL) was not found. 
+			//case	SE_ERR_FNF:				throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));		//  The specified file was not found. 
+			case	SE_ERR_NOASSOC:			Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);	//  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable. 
+			case	SE_ERR_OOM:				Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);	//  There was not enough memory to complete the operation. 
+			//case	SE_ERR_PNF:				throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));		//  The specified path was not found. 
+			case	SE_ERR_SHARE:			Platform::Windows::Exception::DoThrow (ERROR_INVALID_SHARENAME);	//  
 			default: {
 				// Not sure what error to report here...
-				Win32ErrorException::DoThrow (ERROR_NO_ASSOCIATION);
+				Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);
 			}
 		}
 	}
@@ -491,7 +491,7 @@ void	Execution::ThrowIfShellExecError (HINSTANCE r)
 				TraceContextBumper	trcCtx (_T ("invalid_parameter_handler"));
 				DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
 				Assert (false);
-				throw Win32ErrorException (ERROR_INVALID_PARAMETER);
+				throw Platform::Windows::Exception (ERROR_INVALID_PARAMETER);
 			}
 	}
 void	Execution::RegisterDefaultHandler_invalid_parameter ()
@@ -515,7 +515,7 @@ void	Execution::RegisterDefaultHandler_invalid_parameter ()
 			{
 				TraceContextBumper	trcCtx (_T ("purecall_handler_"));
 				Assert (false);
-				throw Win32ErrorException (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
+				throw Platform::Windows::Exception (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
 			}
 	}
 void	Execution::RegisterDefaultHandler_pure_function_call ()

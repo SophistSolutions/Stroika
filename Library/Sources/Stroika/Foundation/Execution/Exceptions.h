@@ -40,74 +40,94 @@ namespace	Stroika {
 
 
 		#if		qPlatform_Windows
-			class	Win32ErrorException {
-				public:
-					Win32ErrorException (DWORD error);
+			// MOVE TO SEP FILE
+			namespace	Platform {
+				namespace	Windows {
+					class	Exception {
+						public:
+							explicit Exception (DWORD error);
 
-					operator DWORD () const;
+							operator DWORD () const;
 
-				public:
-					// throw Win32ErrorException () - if error is a real error, and map SOME (like #8 to bad_alloc) - but ALWAYS throw
-					// someting, regardless of error#
-					static	void	DoThrow (DWORD error);
+						public:
+							// throw Platform::Windows::Exception () - if error is a real error, and map SOME (like #8 to bad_alloc) - but ALWAYS throw
+							// someting, regardless of error#
+							static	void	DoThrow (DWORD error);
 
-				public:
-					static	TString	LookupMessage (DWORD hr);
-					nonvirtual	TString	LookupMessage () const;
+						public:
+							static	TString	LookupMessage (DWORD hr);
+							nonvirtual	TString	LookupMessage () const;
 
-				private:
-					DWORD	fError;
+						private:
+							DWORD	fError;
 
-				public:
-					static	const	DWORD	kERROR_INTERNET_TIMEOUT						=	12002;
-					static	const	DWORD	kERROR_INTERNET_INVALID_URL					=	12005;
-					static	const	DWORD	kERROR_INTERNET_UNRECOGNIZED_SCHEME			=	12006;
-					static	const	DWORD	kERROR_INTERNET_NAME_NOT_RESOLVED			=	12007;
-					static	const	DWORD	kERROR_INTERNET_PROTOCOL_NOT_FOUND			=	12008;
-					static	const	DWORD	kERROR_INTERNET_CANNOT_CONNECT				=	12029;
-			};
+						public:
+							static	const	DWORD	kERROR_INTERNET_TIMEOUT						=	12002;
+							static	const	DWORD	kERROR_INTERNET_INVALID_URL					=	12005;
+							static	const	DWORD	kERROR_INTERNET_UNRECOGNIZED_SCHEME			=	12006;
+							static	const	DWORD	kERROR_INTERNET_NAME_NOT_RESOLVED			=	12007;
+							static	const	DWORD	kERROR_INTERNET_PROTOCOL_NOT_FOUND			=	12008;
+							static	const	DWORD	kERROR_INTERNET_CANNOT_CONNECT				=	12029;
+					};
+				}
+			}
+//tmphack backward compat - til HF converted
+typedef	Platform::Windows::Exception	Win32ErrorException;
 		#endif
 
 
 		#if		qPlatform_Windows
-			class	Win32StructuredException {
-				private:
-					unsigned int fSECode;
+			// MOVE TO SEP FILE
+			namespace	Platform {
+				namespace	Windows {
+					class	StructuredException {
+						private:
+							unsigned int fSECode;
 
-				public:
-					explicit Win32StructuredException (unsigned int n);
-					operator unsigned int () const;
+						public:
+							explicit StructuredException (unsigned int n);
+							operator unsigned int () const;
 
-				public:
-					static	TString	LookupMessage (unsigned int n);
-					nonvirtual	TString	LookupMessage () const;
+						public:
+							static	TString	LookupMessage (unsigned int n);
+							nonvirtual	TString	LookupMessage () const;
 
-				public:
-					static	void	RegisterHandler ();
-				private:
-					static	void	trans_func (unsigned int u, EXCEPTION_POINTERS* pExp);
-			};
+						public:
+							static	void	RegisterHandler ();
+						private:
+							static	void	trans_func (unsigned int u, EXCEPTION_POINTERS* pExp);
+					};
+				}
+			}
+//tmphack backward compat - til HF converted
+typedef	Platform::Windows::StructuredException	Win32StructuredException;
 		#endif
 
 
 		#if		qPlatform_Windows
-			class	HRESULTErrorException {
-				public:
-					HRESULTErrorException (HRESULT hresult);
+			// MOVE TO SEP FILE
+			namespace	Platform {
+				namespace	Windows {
+					class	HRESULTErrorException {
+						public:
+							HRESULTErrorException (HRESULT hresult);
 
-					operator HRESULT () const;
+							operator HRESULT () const;
 
-				public:
-					static	TString	LookupMessage (HRESULT hr);
-					nonvirtual	TString	LookupMessage () const;
+						public:
+							static	TString	LookupMessage (HRESULT hr);
+							nonvirtual	TString	LookupMessage () const;
 
-				private:
-					HRESULT	fHResult;
-			};
+						private:
+							HRESULT	fHResult;
+					};
+				}
+			}
+//tmphack backward compat - til HF converted
+typedef	Platform::Windows::HRESULTErrorException	HRESULTErrorException;
 		#endif
 
 
-		#if		qPlatform_Windows
 			class	errno_ErrorException : public StringException {
 				public:
 					errno_ErrorException (errno_t e);
@@ -121,12 +141,11 @@ namespace	Stroika {
 				public:
 					// throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
 					// as good a fit.
-					static	void	DoThrow (DWORD error);
+					static	void	DoThrow (errno_t error);
 
 				private:
 					errno_t	fError;
 			};
-		#endif
 
 
 
@@ -196,10 +215,10 @@ namespace	Stroika {
 				catch (HRESULT hr) {\
 					return hr;\
 				}\
-				catch (const Stroika::Foundation::Execution::Win32ErrorException& we) {\
+				catch (const Stroika::Foundation::Execution::Platform::Windows::Exception& we) {\
 					return (HRESULT_FROM_WIN32 (we));\
 				}\
-				catch (const Stroika::Foundation::Execution::HRESULTErrorException& h) {\
+				catch (const Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException& h) {\
 					return static_cast<HRESULT> (h);\
 				}\
 				catch (const bad_alloc&) {\
@@ -230,16 +249,30 @@ namespace	Stroika {
 					virtual	void	RethrowIfAnyCaught () const;
 
 				public:
-					auto_ptr<RequiredComponentMissingException>		fRequiredComponentMissingException;
-					auto_ptr<StringException>						fStringException;
-					auto_ptr<IO::FileFormatException>				fFileFormatException;
-					auto_ptr<IO::FileBusyException>					fFileBusyException;
-					auto_ptr<SilentException>						fSilentException;
+					auto_ptr<RequiredComponentMissingException>			fRequiredComponentMissingException;
+					auto_ptr<StringException>							fStringException;
+					auto_ptr<IO::FileFormatException>					fFileFormatException;
+					auto_ptr<IO::FileBusyException>						fFileBusyException;
+					auto_ptr<SilentException>							fSilentException;
 				#if		qPlatform_Windows
-					auto_ptr<HRESULTErrorException>					fHRESULTErrorException;
-					auto_ptr<Win32ErrorException>					fWin32ErrorException;
+					auto_ptr<Platform::Windows::HRESULTErrorException>	fHRESULTErrorException;
+					auto_ptr<Platform::Windows::Exception>				fWin32ErrorException;
 				#endif
 			};
+
+
+
+			#if		qPlatform_Windows
+				#define	CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)\
+					catch (const Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException& e) {\
+						(CE).fHRESULTErrorException = auto_ptr<Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException> (DEBUG_NEW Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException (e));\
+					}\
+					catch (const Stroika::Foundation::Execution::Platform::Windows::Exception& e) {\
+						(CE).fWin32ErrorException = auto_ptr<Stroika::Foundation::Execution::Platform::Windows::Exception> (DEBUG_NEW Stroika::Foundation::Execution::Platform::Windows::Exception (e));\
+					}
+			#else
+				#define	CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)
+			#endif
 
 
 			#define	CATCH_AND_CAPTURE_CATCH_BLOCK(CE)\
@@ -249,12 +282,7 @@ namespace	Stroika {
 				catch (const Stroika::Foundation::Execution::StringException& e) {\
 					(CE).fStringException = auto_ptr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (e));\
 				}\
-				catch (const Stroika::Foundation::Execution::HRESULTErrorException& e) {\
-					(CE).fHRESULTErrorException = auto_ptr<Stroika::Foundation::Execution::HRESULTErrorException> (DEBUG_NEW Stroika::Foundation::Execution::HRESULTErrorException (e));\
-				}\
-				catch (const Stroika::Foundation::Execution::Win32ErrorException& e) {\
-					(CE).fWin32ErrorException = auto_ptr<Stroika::Foundation::Execution::Win32ErrorException> (DEBUG_NEW Stroika::Foundation::Execution::Win32ErrorException (e));\
-				}\
+				CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)\
 				catch (const Stroika::Foundation::IO::FileFormatException& e) {\
 					(CE).fFileFormatException = auto_ptr<Stroika::Foundation::IO::FileFormatException> (DEBUG_NEW Stroika::Foundation::IO::FileFormatException (e));\
 				}\
@@ -270,10 +298,12 @@ namespace	Stroika {
 
 
 
+			#if		qPlatform_Windows
 				// these map invalid parameters etc to Execution (with assertions and appropriate
 				// logging)
 				void	RegisterDefaultHandler_invalid_parameter ();
 				void	RegisterDefaultHandler_pure_function_call ();
+			#endif
 
 		}
 	}

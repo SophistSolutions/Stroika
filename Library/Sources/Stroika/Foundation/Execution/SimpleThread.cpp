@@ -142,7 +142,7 @@ SimpleThread::Rep::Rep ()
 	fThread = reinterpret_cast<HANDLE> (::_beginthreadex (NULL, 0, &Rep::ThreadProc, this, 0, NULL));
 	if (fThread == NULL) {
 		ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
-		Win32ErrorException::DoThrow (::GetLastError ());
+		Platform::Windows::Exception::DoThrow (::GetLastError ());
 	}
 	try {
 		fRefCountBumpedEvent.Wait ();	// assure we wait for this, so we don't ever let refcount go to zero before the
@@ -454,7 +454,7 @@ void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 	if (doWait) {
 		DWORD	dTimeout	=	timeout < 0.0f? UINT_MAX: (DWORD)(timeout * 1000);
 		if (::WaitForSingleObject (thread, dTimeout) == WAIT_TIMEOUT) {
-			Win32ErrorException::DoThrow (WAIT_TIMEOUT);
+			Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
 		}
 	}
 #endif
@@ -493,7 +493,7 @@ void	SimpleThread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType ti
 		else {
 			DurationSecondsType	time2Wait	=	timeoutAt - Time::GetTickCount ();
 			if (time2Wait <= 0) {
-				Win32ErrorException::DoThrow (WAIT_TIMEOUT);
+				Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
 			}
 			PumpMessagesAndReturnWhenDoneOrAfterTime (time2Wait);
 		}

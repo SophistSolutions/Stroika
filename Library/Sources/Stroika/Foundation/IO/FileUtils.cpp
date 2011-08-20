@@ -485,7 +485,7 @@ void	IO::CreateDirectory (const TString& directoryPath, bool createParentCompone
 	if (not ::CreateDirectory (directoryPath.c_str (), NULL)) {
 		DWORD error = ::GetLastError ();
 		if (error != ERROR_ALREADY_EXISTS) {
-			Execution::DoThrow (Execution::Win32ErrorException (error));
+			Execution::DoThrow (Execution::Platform::Windows::Exception (error));
 		}
 	}
 }
@@ -504,7 +504,7 @@ void	IO::CreateDirectory (const TString& directoryPath, bool createParentCompone
 void	IO::CreateDirectoryForFile (const TString& filePath)
 {
 	if (filePath.empty ()) {
-		Execution::DoThrow (Execution::Win32ErrorException (ERROR_FILE_NOT_FOUND));
+		Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));
 	}
 	if (FileExists (filePath)) {
 		// were done
@@ -851,7 +851,7 @@ vector<TString>	IO::FindFilesOneDirUnder (const TString& path, const TString& fi
 void	IO::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
 {
 	if (path.empty ()) {
-		Execution::DoThrow (Execution::Win32ErrorException (ERROR_INVALID_NAME));
+		Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_NAME));
 	}
 	TString	dir2Use	=	AssureDirectoryPathSlashTerminated (path);
 
@@ -1094,7 +1094,7 @@ AppTempFileManager::AppTempFileManager ():
 			}
 			else {
 				DbgTrace ("bad news if we cannot create AppTempFileManager::fTmpDir: %d", error);
-				Execution::DoThrow (Win32ErrorException (error));
+				Execution::DoThrow (Platform::Windows::Exception (error));
 			}
 		}
 		// we succeeded - good! Done...
@@ -1360,7 +1360,7 @@ void	ThroughTmpFileWriter::Commit ()
 	try {
 		ThrowIfFalseGetLastError (::MoveFileEx (fTmpFilePath.c_str (), fRealFilePath.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
 	}
-	catch (const Win32ErrorException& we) {
+	catch (const Platform::Windows::Exception& we) {
 		// On Win9x - this fails cuz OS not impl...
 		if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
 			::DeleteFile (fRealFilePath.c_str ());
