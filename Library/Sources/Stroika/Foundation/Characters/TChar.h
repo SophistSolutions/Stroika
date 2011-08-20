@@ -44,19 +44,12 @@ namespace	Stroika {
 			#endif
 
 
-			// MACRO to wrap strings to get const TCHAR*
+			// MACRO to wrap strings to get const TChar*
 			#if		qTargetPlatformSDKUseswchar_t
 				#define TSTR(x)    _TEXT(x)
 			#else
 				#define TSTR(x)    x
 			#endif
-
-#if 0
-// windows uses this but Stroika uses TSTR() instead (windows also uses _TEXT)
-			#ifndef _T
-				#define _T(x)    x
-			#endif
-#endif
 
 		}
 	}

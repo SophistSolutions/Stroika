@@ -20,7 +20,7 @@ namespace	Stroika {
 		template	<>
 			inline	void	_NoReturn_	DoThrow (const IO::FileAccessException& e2Throw)
 				{
-					DbgTrace (_T ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.fFileName.c_str (), e2Throw.fFileAccessMode);
+					DbgTrace (TSTR ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.fFileName.c_str (), e2Throw.fFileAccessMode);
 					throw e2Throw;
 				}
 		}

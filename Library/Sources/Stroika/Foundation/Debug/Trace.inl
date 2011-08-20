@@ -37,7 +37,7 @@ namespace	Stroika {
 				#endif
 				{
 					#if		qDefaultTracingOn
-						fLastWriteToken = Emitter::Get ().EmitTraceMessage (5, _T ("<%s> {\r\n"), contextName);
+						fLastWriteToken = Emitter::Get ().EmitTraceMessage (5, TSTR ("<%s> {\r\n"), contextName);
 						char_traits<TChar>::copy (fSavedContextName, contextName, min (NEltsOf (fSavedContextName), char_traits<TChar>::length (contextName)));
 						*(EndOfArray (fSavedContextName)-1) = '\0';
 						fSavedContextName[NEltsOf(fSavedContextName)-1] = '\0';
@@ -53,7 +53,7 @@ namespace	Stroika {
 								Emitter::Get ().EmitUnadornedText ("/>\r\n");
 							}
 							else {
-								Emitter::Get ().EmitTraceMessage (_T ("} </%s>"), fSavedContextName);
+								Emitter::Get ().EmitTraceMessage (TSTR ("} </%s>"), fSavedContextName);
 							}
 						}
 					#endif

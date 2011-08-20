@@ -8,6 +8,7 @@
 
 #include	<exception>
 #include	<string>
+#include	<cerrno>
 #if		qPlatform_Windows
 	#include	<Windows.h>
 #endif

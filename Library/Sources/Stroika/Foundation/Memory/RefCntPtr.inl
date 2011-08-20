@@ -286,7 +286,7 @@ template	<typename	T>
 	inline	void	ThrowIfNull (const Memory::RefCntPtr<T>& p)
 		{
 			if (p.get () == NULL) {
-				Execution::DoThrow (bad_alloc (), _T ("ThrowIfNull (RefCntPtr<typename T> ()) - throwing bad_alloc ()"));
+				Execution::DoThrow (bad_alloc (), TSTR ("ThrowIfNull (RefCntPtr<typename T> ()) - throwing bad_alloc ()"));
 			}
 		}
 

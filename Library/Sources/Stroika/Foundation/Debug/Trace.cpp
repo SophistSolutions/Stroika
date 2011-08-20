@@ -148,7 +148,7 @@ TString	Emitter::GetTraceFileName () const
 				*i = '-';
 			}
 		}
-		sTraceFileName = IO::GetSpecialDir_GetTempDir () + Format (_T ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
+		sTraceFileName = IO::GetSpecialDir_GetTempDir () + Format (TSTR ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
 	}
 	return sTraceFileName;
 }

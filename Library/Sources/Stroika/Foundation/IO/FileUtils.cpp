@@ -139,7 +139,7 @@ TString	IO::GetSpecialDir_WinSxS ()
 	if (result.empty ()) {
 		return result;
 	}
-	result = AssureDirectoryPathSlashTerminated (result) + _T ("WinSxS");
+	result = AssureDirectoryPathSlashTerminated (result) + TSTR ("WinSxS");
 	result = AssureDirectoryPathSlashTerminated (result);
 	if (not DirectoryExists (result)) {
 		result.clear ();
@@ -163,7 +163,7 @@ TString	IO::GetSpecialDir_GetTempDir ()
 	TString	tempPath;
 	TCHAR	buf[1024];
 	if (::GetTempPath (NEltsOf (buf), buf) == 0) {
-		tempPath = _T ("c:\\Temp\\");
+		tempPath = TSTR ("c:\\Temp\\");
 	}
 	else {
 		tempPath = buf;
@@ -209,13 +209,13 @@ TString	IO::AssureDirectoryPathSlashTerminated (const TString& dirPath)
 		Assert (false);	// not sure if this is an error or not. Not sure how code used.
 						// put assert in there to find out... Probably should THROW!
 						//		-- LGP 2009-05-12
-		return _T ("\\");
+		return TSTR ("\\");
 	}
 	else {
 		TChar	lastChar = dirPath[dirPath.length ()-1];
 		return (lastChar == '\\')?
 				dirPath: 
-				(dirPath + _T ("\\"))
+				(dirPath + TSTR ("\\"))
 			;
 	}
 }
@@ -474,7 +474,7 @@ void	IO::CreateDirectory (const TString& directoryPath, bool createParentCompone
 		// walk path and break into parts, and from top down - try to create parent directory structure.
 		// Ignore any failures - and just let the report of failure (if any must result) come from original basic
 		// CreateDirectory call.
-		size_t	index	=	directoryPath.find (_T ("\\"));
+		size_t	index	=	directoryPath.find (TSTR ("\\"));
 		while (index != -1 and index + 1 < directoryPath.length ()) {
 			TString	parentPath = directoryPath.substr (0, index);
 			IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
@@ -817,14 +817,14 @@ vector<TString>	IO::FindFilesOneDirUnder (const TString& path, const TString& fi
 	TString	usePath	=	AssureDirectoryPathSlashTerminated (path);
 	WIN32_FIND_DATA fd;
 	memset (&fd, 0, sizeof (fd));
-	HANDLE hFind = ::FindFirstFile ((usePath + _T ("*")).c_str (), &fd);
+	HANDLE hFind = ::FindFirstFile ((usePath + TSTR ("*")).c_str (), &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
 			TString fileName = (LPCTSTR) &fd.cFileName;
 			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				TString fileName = (LPCTSTR) &fd.cFileName;
-				const	TString	kDOT	=	_T (".");
-				const	TString	kDOTDOT	=	_T ("..");
+				const	TString	kDOT	=	TSTR (".");
+				const	TString	kDOTDOT	=	TSTR ("..");
 				if ((fileName != kDOT) and (fileName != kDOTDOT)) {
 					vector<TString>	subdirFiles	=	FindFiles (usePath + fileName, fileNameToMatch);
 					resultSet = resultSet + set<TString> (subdirFiles.begin (), subdirFiles.end ());
@@ -857,19 +857,19 @@ void	IO::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
 
 	WIN32_FIND_DATA	fd;
 	(void)::memset (&fd, 0, sizeof (fd));
-	HANDLE			hFind = ::FindFirstFile ((LPCTSTR) (dir2Use + _T ("*")).c_str (), &fd);
+	HANDLE			hFind = ::FindFirstFile ((LPCTSTR) (dir2Use + TSTR ("*")).c_str (), &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		try {
 			do {
 				TString	fileName = fd.cFileName;
 				if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-					if ((fileName != _T (".")) and (fileName != _T (".."))) {
-						DeleteAllFilesInDirectory (dir2Use + fileName + _T ("\\"), ignoreErrors);
+					if ((fileName != TSTR (".")) and (fileName != TSTR (".."))) {
+						DeleteAllFilesInDirectory (dir2Use + fileName + TSTR ("\\"), ignoreErrors);
 						try {
 							ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).c_str ()));
 						}
 						catch (...) {
-							DbgTrace (_T ("Exception %s calling RemoveDirectory on file '%s'"), ignoreErrors? _T ("(ignored)"): _T (""), (dir2Use + fileName).c_str ());
+							DbgTrace (TSTR ("Exception %s calling RemoveDirectory on file '%s'"), ignoreErrors? TSTR ("(ignored)"): TSTR (""), (dir2Use + fileName).c_str ());
 							if (!ignoreErrors) {
 								Execution::DoReThrow ();
 							}
@@ -881,7 +881,7 @@ void	IO::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
 						ThrowIfFalseGetLastError (::DeleteFile ((dir2Use + fileName).c_str ()));
 					}
 					catch (...) {
-						DbgTrace (_T ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors? _T ("(ignored)"): _T (""), (dir2Use + fileName).c_str ());
+						DbgTrace (TSTR ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors? TSTR ("(ignored)"): TSTR (""), (dir2Use + fileName).c_str ());
 						if (!ignoreErrors) {
 							Execution::DoReThrow ();
 						}
@@ -1058,7 +1058,7 @@ AppTempFileManager::AppTempFileManager ():
 
 	TString	exeFileName	=	exePath;
 	{
-		size_t	i	=	exeFileName.rfind (_T ("\\"));
+		size_t	i	=	exeFileName.rfind (TSTR ("\\"));
 		if (i != TString::npos) {
 			exeFileName = exeFileName.substr (i + 1);
 		}
@@ -1083,10 +1083,10 @@ AppTempFileManager::AppTempFileManager ():
 	// But whatever we do, the DLL may do also, so we must use what is in the filesystem
 	// to disambiguiate.
 	//
-	tmpDir += _T ("HealthFrameWorks\\");
+	tmpDir += TSTR ("HealthFrameWorks\\");
 	CreateDirectory (tmpDir);
 	for (int i = 0; i < INT_MAX; ++i) {
-		TString	d	=	tmpDir + Format (_T ("%s-%d-%d\\"), exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
+		TString	d	=	tmpDir + Format (TSTR ("%s-%d-%d\\"), exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
 		if (not ::CreateDirectory (d.c_str (), NULL)) {
 			DWORD error = ::GetLastError ();
 			if (error == ERROR_ALREADY_EXISTS) {
@@ -1102,12 +1102,12 @@ AppTempFileManager::AppTempFileManager ():
 		break;
 	}
 	fTmpDir = tmpDir;
-	DbgTrace (_T ("AppTempFileManager::CTOR: created '%s'"), fTmpDir.c_str ());
+	DbgTrace (TSTR ("AppTempFileManager::CTOR: created '%s'"), fTmpDir.c_str ());
 }
 
 AppTempFileManager::~AppTempFileManager ()
 {
-	DbgTrace (_T ("AppTempFileManager::DTOR: clearing '%s'"), fTmpDir.c_str ());
+	DbgTrace (TSTR ("AppTempFileManager::DTOR: clearing '%s'"), fTmpDir.c_str ());
 	DeleteAllFilesInDirectory (fTmpDir, true);
 	Verify (::RemoveDirectory (fTmpDir.c_str ()));
 }
@@ -1119,7 +1119,7 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 
 	TString::size_type	suffixStart = fn.rfind ('.');
 	if (suffixStart == TString::npos) {
-		fn += _T (".txt");
+		fn += TSTR (".txt");
 		suffixStart = fn.rfind ('.');
 	}
 	int	attempts = 0;
@@ -1132,7 +1132,7 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (f != NULL) {
 				::CloseHandle (f);
-				DbgTrace (_T ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
+				DbgTrace (TSTR ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
 				return s;
 			}
 		}
@@ -1152,7 +1152,7 @@ TString	AppTempFileManager::GetTempDir (const TString& fileNameBase)
 		s.append (ToTString  (buf));
 		if (not DirectoryExists (s)) {
 			CreateDirectory (s, true);
-			DbgTrace (_T ("AppTempFileManager::GetTempDir (): returning '%s'"), s.c_str ());
+			DbgTrace (TSTR ("AppTempFileManager::GetTempDir (): returning '%s'"), s.c_str ());
 			return s;
 		}
 	}
@@ -1181,7 +1181,7 @@ TempFileLibrarian::TempFileLibrarian (const TString& privateDirectory, bool purg
 {
 	::srand (static_cast<unsigned int> (::time (0)));
 	if (purgeDirectory and fPrivateDirectory.size () > 0) {
-		DeleteAllFilesInDirectory (AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + _T ("\\"));
+		DeleteAllFilesInDirectory (AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + TSTR ("\\"));
 	}
 }
 
@@ -1197,7 +1197,7 @@ TempFileLibrarian::~TempFileLibrarian ()
 			}
 		}
 		if (fPrivateDirectory.size () > 0) {
-			(void)::RemoveDirectory ((AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + _T ("\\")).c_str ());
+			(void)::RemoveDirectory ((AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + TSTR ("\\")).c_str ());
 		}
 	}
 }
@@ -1207,7 +1207,7 @@ TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 	TString	fn	=	fileNameBase;
 	if (fn.find (':') == -1) {
 		if (fPrivateDirectory.size () > 0) {
-			fn = fPrivateDirectory + _T ("\\") + fn;
+			fn = fPrivateDirectory + TSTR ("\\") + fn;
 		}
 
 		if (fMakeTMPDIRRel) {
@@ -1218,7 +1218,7 @@ TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 
 	TString::size_type	suffixStart = fn.rfind ('.');
 	if (suffixStart == TString::npos) {
-		fn += _T (".txt");
+		fn += TSTR (".txt");
 		suffixStart = fn.rfind ('.');
 	}
 	
@@ -1246,7 +1246,7 @@ TString	TempFileLibrarian::GetTempDir (const TString& fileNameBase)
 	TString	fn	=	fileNameBase;
 	if (fn.find (':') == -1) {
 		if (fPrivateDirectory.size () > 0) {
-			fn = fPrivateDirectory + _T ("\\") + fn;
+			fn = fPrivateDirectory + TSTR ("\\") + fn;
 		}
 		if (fMakeTMPDIRRel) {
 			fn = AppTempFileManager::Get ().GetMasterTempDir () + fn;
@@ -1292,7 +1292,7 @@ ScopedTmpDir::ScopedTmpDir (const TString& fileNameBase)
 ScopedTmpDir::~ScopedTmpDir ()
 {
 	try {
-		DbgTrace (_T ("ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'"), fTmpDir.c_str ());
+		DbgTrace (TSTR ("ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'"), fTmpDir.c_str ());
 		DeleteAllFilesInDirectory (fTmpDir);
 		Verify (::RemoveDirectory (fTmpDir.c_str ()));
 	}
@@ -1319,7 +1319,7 @@ ScopedTmpFile::ScopedTmpFile (const TString& fileNameBase):
 ScopedTmpFile::~ScopedTmpFile ()
 {
 	try {
-		DbgTrace (_T ("ScopedTmpFile::~ScopedTmpFile - removing '%s'"), fTmpFile.c_str ());
+		DbgTrace (TSTR ("ScopedTmpFile::~ScopedTmpFile - removing '%s'"), fTmpFile.c_str ());
 		ThrowIfFalseGetLastError (::DeleteFile (fTmpFile.c_str ()));
 	}
 	catch (...) {
@@ -1348,7 +1348,7 @@ ThroughTmpFileWriter::ThroughTmpFileWriter (const TString& realFileName, const T
 ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 {
 	if (not fRealFilePath.empty ()) {
-		DbgTrace (_T ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to '%s'"), fRealFilePath.c_str ());
+		DbgTrace (TSTR ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to '%s'"), fRealFilePath.c_str ());
 		(void)::DeleteFile (fTmpFilePath.c_str ());
 	}
 }

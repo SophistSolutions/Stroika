@@ -110,7 +110,7 @@ namespace	Stroika {
 						if (total == 0) {
 							total = 1;	// avoid divide by zero
 						}
-						DbgTrace (_T ("%s stats: hits=%d, misses=%d, hit%% %f."), label, fCachedCollected_Hits, fCachedCollected_Misses, float (fCachedCollected_Hits)/(float (total)));
+						DbgTrace (TSTR ("%s stats: hits=%d, misses=%d, hit%% %f."), label, fCachedCollected_Hits, fCachedCollected_Misses, float (fCachedCollected_Hits)/(float (total)));
 					}
 			#endif
 

@@ -74,7 +74,6 @@ namespace	Stroika {
 
 	
 		//	class	errno_ErrorException
-		#if		qPlatform_Windows
 			inline	errno_ErrorException::operator errno_t () const
 				{
 					return fError;
@@ -83,7 +82,6 @@ namespace	Stroika {
 				{
 					return LookupMessage (fError);
 				}
-		#endif
 
 
 
@@ -155,25 +153,25 @@ namespace	Stroika {
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw)
 					{
-						DbgTrace (_T ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
+						DbgTrace (TSTR ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;
 					}
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const SilentException& e2Throw)
 					{
-						DbgTrace (_T ("Throwing SilentException"));
+						DbgTrace (TSTR ("Throwing SilentException"));
 						throw e2Throw;
 					}
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const UserCanceledException& e2Throw)
 					{
-						DbgTrace (_T ("Throwing UserCanceledException"));
+						DbgTrace (TSTR ("Throwing UserCanceledException"));
 						throw e2Throw;
 					}
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const IO::FileBusyException& e2Throw)
 					{
-						DbgTrace (_T ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
+						DbgTrace (TSTR ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;
 					}
 
@@ -222,14 +220,14 @@ namespace	Stroika {
 			inline	void	ThrowIfNull (const void* p)
 				{
 					if (p == NULL) {
-						DoThrow (bad_alloc (), _T ("ThrowIfNull (NULL) - throwing bad_alloc"));
+						DoThrow (bad_alloc (), TSTR ("ThrowIfNull (NULL) - throwing bad_alloc"));
 					}
 				}
 			template	<typename E>
 				inline	void	ThrowIfNull (const void* p, const E& e)
 					{
 						if (p == NULL) {
-							DoThrow (e, _T ("ThrowIfNull (NULL,X) - throwing X"));
+							DoThrow (e, TSTR ("ThrowIfNull (NULL,X) - throwing X"));
 						}
 					}
 			#if		qPlatform_Windows

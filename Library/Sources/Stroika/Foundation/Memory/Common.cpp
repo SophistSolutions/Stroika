@@ -265,7 +265,7 @@ void	Memory::LeakChecker::ForceCheckpoint ()
 
 void	Memory::LeakChecker::DumpLeaksSinceLastCheckpoint ()
 {
-	TraceContextBumper	ctx (_T ("LeakChecker::DumpLeaksSinceLastCheckpoint"));
+	TraceContextBumper	ctx (TSTR ("LeakChecker::DumpLeaksSinceLastCheckpoint"));
 	#if		qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
 		GetAllocator_ ().DUMPCurMemStats (sLastSnapshot);
 	#elif	qMSVisualStudioCRTMemoryDebug

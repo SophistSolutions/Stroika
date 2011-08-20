@@ -40,31 +40,31 @@ namespace {
 	inline	TString	Win32Error2String_ (DWORD win32Err)
 		{
 			switch (win32Err) {
-				case	ERROR_NOT_ENOUGH_MEMORY:	return _T ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
-				case	ERROR_OUTOFMEMORY:			return _T ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
+				case	ERROR_NOT_ENOUGH_MEMORY:	return TSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
+				case	ERROR_OUTOFMEMORY:			return TSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
 			}
 			if (INTERNET_ERROR_BASE <= win32Err and win32Err < INTERNET_ERROR_BASE + INTERNET_ERROR_LAST) {
 				switch (win32Err) {
-					case	ERROR_INTERNET_INVALID_URL:					return _T ("ERROR_INTERNET_INVALID_URL");
-					case	ERROR_INTERNET_CANNOT_CONNECT:				return _T ("Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)");
-					case	ERROR_INTERNET_NAME_NOT_RESOLVED:			return _T ("ERROR_INTERNET_NAME_NOT_RESOLVED");
-					case	ERROR_INTERNET_INCORRECT_HANDLE_STATE:		return _T ("ERROR_INTERNET_INCORRECT_HANDLE_STATE");
-					case	ERROR_INTERNET_TIMEOUT:						return _T ("Operation timed out (ERROR_INTERNET_TIMEOUT)");
-					case	ERROR_INTERNET_CONNECTION_ABORTED:			return _T ("ERROR_INTERNET_CONNECTION_ABORTED");
-					case	ERROR_INTERNET_CONNECTION_RESET:			return _T ("ERROR_INTERNET_CONNECTION_RESET");
-					case	ERROR_HTTP_INVALID_SERVER_RESPONSE:			return _T ("Invalid Server Response (ERROR_HTTP_INVALID_SERVER_RESPONSE)");
+					case	ERROR_INTERNET_INVALID_URL:					return TSTR ("ERROR_INTERNET_INVALID_URL");
+					case	ERROR_INTERNET_CANNOT_CONNECT:				return TSTR ("Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)");
+					case	ERROR_INTERNET_NAME_NOT_RESOLVED:			return TSTR ("ERROR_INTERNET_NAME_NOT_RESOLVED");
+					case	ERROR_INTERNET_INCORRECT_HANDLE_STATE:		return TSTR ("ERROR_INTERNET_INCORRECT_HANDLE_STATE");
+					case	ERROR_INTERNET_TIMEOUT:						return TSTR ("Operation timed out (ERROR_INTERNET_TIMEOUT)");
+					case	ERROR_INTERNET_CONNECTION_ABORTED:			return TSTR ("ERROR_INTERNET_CONNECTION_ABORTED");
+					case	ERROR_INTERNET_CONNECTION_RESET:			return TSTR ("ERROR_INTERNET_CONNECTION_RESET");
+					case	ERROR_HTTP_INVALID_SERVER_RESPONSE:			return TSTR ("Invalid Server Response (ERROR_HTTP_INVALID_SERVER_RESPONSE)");
 					case	ERROR_INTERNET_PROTOCOL_NOT_FOUND: {
 						DWORD	r = 0;
 						if (::InternetGetConnectedState (&r, 0) and (r & INTERNET_CONNECTION_OFFLINE)==0) {
-							return _T ("ERROR_INTERNET_PROTOCOL_NOT_FOUND");
+							return TSTR ("ERROR_INTERNET_PROTOCOL_NOT_FOUND");
 						}
 						else {
-							return _T ("ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)");
+							return TSTR ("ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)");
 						}
 					}
 					default: {
 						TCHAR	buf[1024];
-						(void)::_stprintf_s (buf, _T ("INTERNET error code: %d"), win32Err);
+						(void)::_stprintf_s (buf, TSTR ("INTERNET error code: %d"), win32Err);
 						return buf;
 					}
 				}
@@ -78,7 +78,7 @@ namespace {
 									0,
 									NULL)
 				) {
-				return Format (_T ("Win32 error# %d"), static_cast<DWORD> (win32Err));
+				return Format (TSTR ("Win32 error# %d"), static_cast<DWORD> (win32Err));
 			}
 			TString	result	=	lpMsgBuf;
 			::LocalFree (lpMsgBuf);
@@ -167,13 +167,13 @@ void	Platform::Windows::StructuredException::RegisterHandler ()
 
 void	Platform::Windows::StructuredException::trans_func (unsigned int u, EXCEPTION_POINTERS* pExp)
 {
-	TraceContextBumper	ctx (_T ("Platform::Windows::StructuredException::trans_func"));
+	TraceContextBumper	ctx (TSTR ("Platform::Windows::StructuredException::trans_func"));
 	{
 		// I wish I knew how to get a PROCNAME of where the caller was...
-		DbgTrace (_T ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
+		DbgTrace (TSTR ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
 		if (pExp != NULL) {
 			if (pExp->ContextRecord != NULL) {
-				TraceContextBumper	ctx (_T ("ContextRecord"));
+				TraceContextBumper	ctx (TSTR ("ContextRecord"));
 				DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
 				DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
 			#if		qPlatform_Win32
@@ -181,7 +181,7 @@ void	Platform::Windows::StructuredException::trans_func (unsigned int u, EXCEPTI
 			#endif
 			}
 			if (pExp->ExceptionRecord != NULL) {
-				TraceContextBumper	ctx (_T ("ExceptionRecord"));
+				TraceContextBumper	ctx (TSTR ("ExceptionRecord"));
 				DbgTrace ("ExceptionRecord->ExceptionAddress = 0x%x", pExp->ExceptionRecord->ExceptionAddress);
 				DbgTrace ("ExceptionRecord->ExceptionCode = 0x%x", pExp->ExceptionRecord->ExceptionCode);
 				DbgTrace ("ExceptionRecord->ExceptionFlags = 0x%x", pExp->ExceptionRecord->ExceptionFlags);
@@ -197,29 +197,29 @@ void	Platform::Windows::StructuredException::trans_func (unsigned int u, EXCEPTI
 TString	Platform::Windows::StructuredException::LookupMessage (unsigned int u)
 {
 	switch (u) {
-		case	EXCEPTION_ACCESS_VIOLATION:			return _T ("EXCEPTION_ACCESS_VIOLATION");
-		case	EXCEPTION_DATATYPE_MISALIGNMENT:	return _T ("EXCEPTION_DATATYPE_MISALIGNMENT");
-		case	EXCEPTION_ARRAY_BOUNDS_EXCEEDED:	return _T ("EXCEPTION_ARRAY_BOUNDS_EXCEEDED");
-		case	EXCEPTION_FLT_DENORMAL_OPERAND:		return _T ("EXCEPTION_FLT_DENORMAL_OPERAND");
-		case	EXCEPTION_FLT_DIVIDE_BY_ZERO:		return _T ("EXCEPTION_FLT_DENORMAL_OPERAND");
-		case	EXCEPTION_FLT_INEXACT_RESULT:		return _T ("EXCEPTION_FLT_INEXACT_RESULT");
-		case	EXCEPTION_FLT_INVALID_OPERATION:	return _T ("EXCEPTION_FLT_INVALID_OPERATION");
-		case	EXCEPTION_FLT_OVERFLOW:				return _T ("EXCEPTION_FLT_OVERFLOW");
-		case	EXCEPTION_FLT_STACK_CHECK:			return _T ("EXCEPTION_FLT_STACK_CHECK");
-		case	EXCEPTION_FLT_UNDERFLOW:			return _T ("EXCEPTION_FLT_UNDERFLOW");
-		case	EXCEPTION_INT_DIVIDE_BY_ZERO:		return _T ("EXCEPTION_INT_DIVIDE_BY_ZERO");
-		case	EXCEPTION_INT_OVERFLOW:				return _T ("EXCEPTION_INT_OVERFLOW");
-		case	EXCEPTION_PRIV_INSTRUCTION:			return _T ("EXCEPTION_PRIV_INSTRUCTION");
-		case	EXCEPTION_IN_PAGE_ERROR:			return _T ("EXCEPTION_IN_PAGE_ERROR");
-		case	EXCEPTION_ILLEGAL_INSTRUCTION:		return _T ("EXCEPTION_ILLEGAL_INSTRUCTION");
-		case	EXCEPTION_NONCONTINUABLE_EXCEPTION:	return _T ("EXCEPTION_NONCONTINUABLE_EXCEPTION");
-		case	EXCEPTION_STACK_OVERFLOW:			return _T ("EXCEPTION_STACK_OVERFLOW");
-		case	EXCEPTION_INVALID_DISPOSITION:		return _T ("EXCEPTION_INVALID_DISPOSITION");
-		case	EXCEPTION_GUARD_PAGE:				return _T ("EXCEPTION_GUARD_PAGE");
-		case	EXCEPTION_INVALID_HANDLE:			return _T ("EXCEPTION_INVALID_HANDLE");
+		case	EXCEPTION_ACCESS_VIOLATION:			return TSTR ("EXCEPTION_ACCESS_VIOLATION");
+		case	EXCEPTION_DATATYPE_MISALIGNMENT:	return TSTR ("EXCEPTION_DATATYPE_MISALIGNMENT");
+		case	EXCEPTION_ARRAY_BOUNDS_EXCEEDED:	return TSTR ("EXCEPTION_ARRAY_BOUNDS_EXCEEDED");
+		case	EXCEPTION_FLT_DENORMAL_OPERAND:		return TSTR ("EXCEPTION_FLT_DENORMAL_OPERAND");
+		case	EXCEPTION_FLT_DIVIDE_BY_ZERO:		return TSTR ("EXCEPTION_FLT_DENORMAL_OPERAND");
+		case	EXCEPTION_FLT_INEXACT_RESULT:		return TSTR ("EXCEPTION_FLT_INEXACT_RESULT");
+		case	EXCEPTION_FLT_INVALID_OPERATION:	return TSTR ("EXCEPTION_FLT_INVALID_OPERATION");
+		case	EXCEPTION_FLT_OVERFLOW:				return TSTR ("EXCEPTION_FLT_OVERFLOW");
+		case	EXCEPTION_FLT_STACK_CHECK:			return TSTR ("EXCEPTION_FLT_STACK_CHECK");
+		case	EXCEPTION_FLT_UNDERFLOW:			return TSTR ("EXCEPTION_FLT_UNDERFLOW");
+		case	EXCEPTION_INT_DIVIDE_BY_ZERO:		return TSTR ("EXCEPTION_INT_DIVIDE_BY_ZERO");
+		case	EXCEPTION_INT_OVERFLOW:				return TSTR ("EXCEPTION_INT_OVERFLOW");
+		case	EXCEPTION_PRIV_INSTRUCTION:			return TSTR ("EXCEPTION_PRIV_INSTRUCTION");
+		case	EXCEPTION_IN_PAGE_ERROR:			return TSTR ("EXCEPTION_IN_PAGE_ERROR");
+		case	EXCEPTION_ILLEGAL_INSTRUCTION:		return TSTR ("EXCEPTION_ILLEGAL_INSTRUCTION");
+		case	EXCEPTION_NONCONTINUABLE_EXCEPTION:	return TSTR ("EXCEPTION_NONCONTINUABLE_EXCEPTION");
+		case	EXCEPTION_STACK_OVERFLOW:			return TSTR ("EXCEPTION_STACK_OVERFLOW");
+		case	EXCEPTION_INVALID_DISPOSITION:		return TSTR ("EXCEPTION_INVALID_DISPOSITION");
+		case	EXCEPTION_GUARD_PAGE:				return TSTR ("EXCEPTION_GUARD_PAGE");
+		case	EXCEPTION_INVALID_HANDLE:			return TSTR ("EXCEPTION_INVALID_HANDLE");
 		default: {
 			TCHAR	buf[1024];
-			(void)::_stprintf_s (buf, _T ("Win32 Structured Exception Code - 0x%x"), u);
+			(void)::_stprintf_s (buf, TSTR ("Win32 Structured Exception Code - 0x%x"), u);
 			return buf;	
 		}
 	}
@@ -234,25 +234,25 @@ TString	Platform::Windows::StructuredException::LookupMessage (unsigned int u)
 #if		qPlatform_Windows
 /*
  ********************************************************************************
- ***************************** Platform::Windows::HRESULTErrorException ****************************
+ ********** Platform::Windows::HRESULTErrorException ****************************
  ********************************************************************************
  */
 TString	Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
 {
 	switch (hr) {
-		case	E_FAIL:						return _T ("HRESULT failure (E_FAIL)");
-		case	E_ACCESSDENIED:				return _T ("HRESULT failure (E_ACCESSDENIED)");
-		case	E_INVALIDARG:				return _T ("HRESULT failure (E_INVALIDARG)");
-		case	E_NOINTERFACE:				return _T ("HRESULT failure (E_NOINTERFACE)");
-		case	E_POINTER:					return _T ("HRESULT failure (E_POINTER)");
-		case	E_HANDLE:					return _T ("HRESULT failure (E_HANDLE)");
-		case	E_ABORT:					return _T ("HRESULT failure (E_ABORT)");
-		case	DISP_E_TYPEMISMATCH:		return _T ("HRESULT failure (DISP_E_TYPEMISMATCH)");
-		case	DISP_E_EXCEPTION:			return _T ("HRESULT failure (DISP_E_EXCEPTION)");
-		case	INET_E_RESOURCE_NOT_FOUND:	return _T ("HRESULT failure (INET_E_RESOURCE_NOT_FOUND)");
-		case	REGDB_E_CLASSNOTREG:		return _T ("HRESULT failure (REGDB_E_CLASSNOTREG)");
-		case	ERROR_NOT_ENOUGH_MEMORY:	return _T ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
-		case	ERROR_OUTOFMEMORY:			return _T ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
+		case	E_FAIL:						return TSTR ("HRESULT failure (E_FAIL)");
+		case	E_ACCESSDENIED:				return TSTR ("HRESULT failure (E_ACCESSDENIED)");
+		case	E_INVALIDARG:				return TSTR ("HRESULT failure (E_INVALIDARG)");
+		case	E_NOINTERFACE:				return TSTR ("HRESULT failure (E_NOINTERFACE)");
+		case	E_POINTER:					return TSTR ("HRESULT failure (E_POINTER)");
+		case	E_HANDLE:					return TSTR ("HRESULT failure (E_HANDLE)");
+		case	E_ABORT:					return TSTR ("HRESULT failure (E_ABORT)");
+		case	DISP_E_TYPEMISMATCH:		return TSTR ("HRESULT failure (DISP_E_TYPEMISMATCH)");
+		case	DISP_E_EXCEPTION:			return TSTR ("HRESULT failure (DISP_E_EXCEPTION)");
+		case	INET_E_RESOURCE_NOT_FOUND:	return TSTR ("HRESULT failure (INET_E_RESOURCE_NOT_FOUND)");
+		case	REGDB_E_CLASSNOTREG:		return TSTR ("HRESULT failure (REGDB_E_CLASSNOTREG)");
+		case	ERROR_NOT_ENOUGH_MEMORY:	return TSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
+		case	ERROR_OUTOFMEMORY:			return TSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
 	}
 	if (HRESULT_FACILITY (hr) == FACILITY_WIN32) {
 		return Win32Error2String_ (HRESULT_CODE (hr));
@@ -264,34 +264,9 @@ TString	Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
 												// included in the constants below...
 		}
 		return Win32Error2String_ (wCode);
-#if 0
-		switch (wCode) {
-			case	ERROR_INTERNET_INVALID_URL:					return _T ("ERROR_INTERNET_INVALID_URL");
-			case	ERROR_INTERNET_CANNOT_CONNECT:				return _T ("Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)");
-			case	ERROR_INTERNET_NAME_NOT_RESOLVED:			return _T ("ERROR_INTERNET_NAME_NOT_RESOLVED");
-			case	ERROR_INTERNET_INCORRECT_HANDLE_STATE:		return _T ("ERROR_INTERNET_INCORRECT_HANDLE_STATE");
-			case	ERROR_INTERNET_TIMEOUT:						return _T ("Operation timed out (ERROR_INTERNET_TIMEOUT)");
-			case	ERROR_INTERNET_CONNECTION_ABORTED:			return _T ("ERROR_INTERNET_CONNECTION_ABORTED");
-			case	ERROR_INTERNET_CONNECTION_RESET:			return _T ("ERROR_INTERNET_CONNECTION_RESET");
-			case	ERROR_INTERNET_PROTOCOL_NOT_FOUND: {
-				DWORD	r = 0;
-				if (::InternetGetConnectedState (&r, 0) and (r & INTERNET_CONNECTION_OFFLINE)==0) {
-					return _T ("ERROR_INTERNET_PROTOCOL_NOT_FOUND");
-				}
-				else {
-					return _T ("ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)");
-				}
-			}
-			default: {
-				TCHAR	buf[1024];
-				(void)::_stprintf_s (buf, _T ("HRESULT FACILITY_INTERNET error code: %d"), HRESULT_CODE (hr));
-				return buf;
-			}
-		}
-#endif
 	}
 	TCHAR	buf[1024];
-	(void)::_stprintf_s (buf, _T ("HRESULT error code: 0x%x"), hr);
+	(void)::_stprintf_s (buf, TSTR ("HRESULT error code: 0x%x"), hr);
 	return buf;	
 }
 #endif
@@ -319,7 +294,7 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 {
 #if 0
 	switch (hr) {
-		case	E_FAIL:						return _T ("HRESULT failure (E_FAIL)");
+		case	E_FAIL:						return TSTR ("HRESULT failure (E_FAIL)");
 	}
 #endif
 	TCHAR	buf[2048];
@@ -327,7 +302,7 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 	if (_tcserror_s (buf, e) != 0) {
 		return buf;
 	}
-	(void)::_stprintf_s (buf, _T ("errno_t error code: 0x%x"), e);
+	(void)::_stprintf_s (buf, TSTR ("errno_t error code: 0x%x"), e);
 	return buf;	
 }
 
@@ -488,7 +463,7 @@ void	Execution::ThrowIfShellExecError (HINSTANCE r)
 		 */
 		void	invalid_parameter_handler_ (const wchar_t * expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved)
 			{
-				TraceContextBumper	trcCtx (_T ("invalid_parameter_handler"));
+				TraceContextBumper	trcCtx (TSTR ("invalid_parameter_handler"));
 				DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
 				Assert (false);
 				throw Platform::Windows::Exception (ERROR_INVALID_PARAMETER);
@@ -513,7 +488,7 @@ void	Execution::RegisterDefaultHandler_invalid_parameter ()
 	namespace	{
 		void	purecall_handler_ ()
 			{
-				TraceContextBumper	trcCtx (_T ("purecall_handler_"));
+				TraceContextBumper	trcCtx (TSTR ("purecall_handler_"));
 				Assert (false);
 				throw Platform::Windows::Exception (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
 			}
