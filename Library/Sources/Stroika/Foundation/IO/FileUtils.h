@@ -109,7 +109,8 @@ namespace	Stroika {
 			void			WriteBytes (ostream& out, const vector<Byte>& s);
 
 
-
+		// COULD be made portable but alot of changes needed
+		#if			qPlatform_Windows
 			class	DirectoryChangeWatcher {
 				private:
 					DirectoryChangeWatcher (const DirectoryChangeWatcher&);		// declare but not defined, to prevent copies
@@ -127,11 +128,12 @@ namespace	Stroika {
 				private:
 					TString						fDirectory;
 					bool						fWatchSubTree;
-					Execution::SimpleThread	fThread;
+					Execution::SimpleThread		fThread;
 					HANDLE						fDoneEvent;
 					HANDLE						fWatchEvent;
 					bool						fQuitting;
 			};
+		#endif
 
 
 
@@ -171,10 +173,10 @@ namespace	Stroika {
 					nonvirtual	TString	GetTempDir (const TString& fileNameBase);
 
 				private:
-					set<TString>					fFiles;
-					TString							fPrivateDirectory;
-					bool							fMakeTMPDIRRel;
-					bool							fDeleteFilesOnDescruction;
+					set<TString>				fFiles;
+					TString						fPrivateDirectory;
+					bool						fMakeTMPDIRRel;
+					bool						fDeleteFilesOnDescruction;
 					Execution::CriticalSection	fCriticalSection;
 			};
 
@@ -287,8 +289,10 @@ namespace	Stroika {
 				private:
 					const Byte*	fFileDataStart;
 					const Byte*	fFileDataEnd;
+				#if			qPlatform_Windows
 					HANDLE		fFileHandle;
 					HANDLE		fFileMapping;
+				#endif
 			};
 
 			class	DirectoryContentsIterator {
@@ -304,19 +308,24 @@ namespace	Stroika {
 					nonvirtual	TString	operator *() const;
 					nonvirtual	void	operator++ ();
 
+			#if			qPlatform_Windows
 				private:
 					HANDLE			fHandle;
 					WIN32_FIND_DATA	fFindFileData;
 					TString			fDirectory;
+			#endif
 			};
 
 
+			// Should be in a PLATFORM_WINDOWS subfile or sub-namespace... And DOCUMENT!!!!
+			#if			qPlatform_Windows
 			struct	AdjustSysErrorMode {
 				static	UINT	GetErrorMode ();
 				AdjustSysErrorMode (UINT newErrorMode);
 				~AdjustSysErrorMode ();
 				UINT	fSavedErrorMode;
 			};
+			#endif
 		}
 
 	}
