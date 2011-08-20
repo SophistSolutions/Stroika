@@ -271,7 +271,7 @@ namespace	{
 				{
 				}
 		protected:
-			override	void	Run ()
+			OVERRIDE	void	Run ()
 				{
 					(fFun2CallOnce) (fArg);
 				}
@@ -293,7 +293,7 @@ namespace	{
 				{
 				}
 		protected:
-			override	void	Run ()
+			OVERRIDE	void	Run ()
 				{
 					fRunnable->Run ();
 				}

@@ -21,7 +21,13 @@ namespace	Stroika {
 			#define	Nil		NULL
 
 			#define	nonvirtual
+
+// Support new C++ Spec for how todo OVERRIDE - to transition - change all my code to use OVERRIDE - and then
+// change 'override' #deifne to be empty (until using a compiler that support sit) - and then fix
+// all code calling OVERRIDE to append 'override' at the end, and THEN replace all instances of OVERRIDE with virtual, and THEN
+// get rid of OVERRIDE define (slow process....)
 			#define override		virtual
+			#define OVERRIDE		virtual
 
 			#define	NEltsOf(X)		(sizeof((X))/sizeof((X)[0]))
 			#define	StartOfArray(X)	(&(X)[0])
