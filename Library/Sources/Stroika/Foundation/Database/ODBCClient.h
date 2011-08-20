@@ -21,64 +21,69 @@ namespace	Stroika {
 		namespace	Database {
 
 
+/*
+@CONFIGVAR:		qHasLibrary_ODBC
+@DESCRIPTION:	<p>Defines if Stroika is built supporting ODBC (only do if ODBC headers in -I path)/p>
+*/
+#ifndef	qHasLibrary_ODBC
+	#error "qHasLibrary_ODBC should normally be defined indirectly by StroikaConfig.h"
+#endif
 
-		  // fix this define
-#define qHas_ODBC qPlatform_Windows
+			using	namespace	std;
+			using	namespace	Stroika::Foundation;
+			using	namespace	Stroika::Foundation::Execution;
+			using	namespace	Stroika::Foundation::Memory;
 
 
-	using	namespace	std;
-	using	namespace	Stroika::Foundation;
-	using	namespace	Stroika::Foundation::Execution;
-	using	namespace	Stroika::Foundation::Memory;
+			class	Exception : public StringException {
+				public:
+					Exception (const wstring& message);
+			};
+			class	NoDataException : public Exception {
+				public:
+					NoDataException ();
+			};
 
-	class	Exception : public StringException {
-		public:
-			Exception (const wstring& message);
-	};
-	class	NoDataException : public Exception {
-		public:
-			NoDataException ();
-	};
-
-#if	qHas_ODBC
-	class	DBConnection {
-		private:
-			class	Rep;
-		public:
-			DBConnection (const wstring& dsn);
-			virtual ~DBConnection () ;
+		#if		qHasLibrary_ODBC
+			class	DBConnection {
+				private:
+					class	Rep;
+				public:
+					DBConnection (const wstring& dsn);
+					virtual ~DBConnection () ;
 		
-		public:
-			nonvirtual	unsigned int GetNestedTransactionCount () const;
+				public:
+					nonvirtual	unsigned int GetNestedTransactionCount () const;
 
-		private:
-			RefCntPtr<Rep>	fRep;
-	};
-#endif
+				private:
+					RefCntPtr<Rep>	fRep;
+			};
+		#endif
 
-#if	qHas_ODBC
-	// Maybe pattern this more after an 'iterator'?
-	class	Query {
-		public:
-			class	AbstractColumn;
-		private:
-			class	Rep;
-		public:
-			Query (DBConnection database);
 
-		public:
-			void	Bind (RefCntPtr<AbstractColumn>* columns, size_t numberColumns);
+		#if		qHasLibrary_ODBC
+			// Maybe pattern this more after an 'iterator'?
+			class	Query {
+				public:
+					class	AbstractColumn;
+				private:
+					class	Rep;
+				public:
+					Query (DBConnection database);
 
-		public:
-			void	Execute (const wstring& sqlQuery);
+				public:
+					void	Bind (RefCntPtr<AbstractColumn>* columns, size_t numberColumns);
 
-		public:
-			bool	FetchRow ();
+				public:
+					void	Execute (const wstring& sqlQuery);
 
-		private:
-			RefCntPtr<Rep>	fRep;
-	};
-#endif
+				public:
+					bool	FetchRow ();
+
+				private:
+					RefCntPtr<Rep>	fRep;
+			};
+		#endif
 
 		}
 	}

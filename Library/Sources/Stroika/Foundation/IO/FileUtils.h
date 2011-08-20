@@ -31,6 +31,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	IO {
 
+			using	Characters::TChar;
 			using	Characters::TString;
 			using	Time::DateTime;
 

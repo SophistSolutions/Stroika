@@ -7,16 +7,9 @@
 	#include	<windows.h>
 #endif
 
-#if	qHas_ODBC
+#if		qHasLibrary_ODBC
 	#include	<sql.h>
 	#include	<sqlext.h>
-#endif
-
-#if 0
-#include	"Stroika/Foundation/Characters/StringUtils.h"
-#include	"Stroika/Foundation/Debug/Assertions.h"
-#include	"Stroika/Foundation/Debug/Trace.h"
-#include	"Stroika/Foundation/Execution/Exceptions.h"
 #endif
 
 #include	"ODBCClient.h"
@@ -28,9 +21,6 @@ using	namespace	Stroika::Foundation::Characters;
 using	namespace	Stroika::Foundation::Database;
 
 
-
-
-//using	namespace	ODBCSupport;
 
 
 
@@ -49,6 +39,7 @@ Database::Exception::Exception (const wstring& message):
 
 
 
+
 /*
  ********************************************************************************
  ************************* ODBCSupport::NoDataException *************************
@@ -60,7 +51,9 @@ Database::NoDataException::NoDataException ():
 }
 
 
-#if	qHas_ODBC
+
+
+#if		qHasLibrary_ODBC
 /*
  ********************************************************************************
  ************************* ODBCSupport::DBConnection ****************************

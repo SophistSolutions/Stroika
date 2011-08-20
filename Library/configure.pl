@@ -89,6 +89,7 @@ sub WriteDefault
 	print (OUT "#include	\"Private/Defaults_Characters_TChar_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Containers_LRUCache_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Containers_TimedCache_.h\"\n");
+	print (OUT "#include	\"Private/Defaults_Database_ODBCClient_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Trace_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Math_Common_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Memory_Common_.h\"\n");
