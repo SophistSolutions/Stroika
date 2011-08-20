@@ -40,13 +40,14 @@ TString	Execution::GetEXEDir ()
  */
 TString	Execution::GetEXEPath ()
 {
+#if		qPlatform_Windows
 	Characters::TChar	buf[MAX_PATH];
 	memset (buf, 0, sizeof (buf));
-#if		qPlatform_Windows
 	Verify (::GetModuleFileName (NULL, buf, NEltsOf (buf)));
+	return buf;
 #else
 	AssertNotImplemented ();
+	return TString ();
 #endif
-	return buf;
 }
 
