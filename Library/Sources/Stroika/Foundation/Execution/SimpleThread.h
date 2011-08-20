@@ -6,11 +6,13 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
+#if			qPlatform_Windows
+	#include	<windows.h>
+#endif
 
 #include	"../Configuration/Common.h"
 #include	"../Memory/RefCntPtr.h"
-#include	"../Time/RealTime.h"
+#include	"../Time/Realtime.h"
 
 #include	"CriticalSection.h"
 #include	"Exceptions.h"

@@ -7,8 +7,10 @@
 	#include	<windows.h>
 #endif
 
-#include	<sql.h>
-#include	<sqlext.h>
+#if	qHas_ODBC
+	#include	<sql.h>
+	#include	<sqlext.h>
+#endif
 
 #if 0
 #include	"Stroika/Foundation/Characters/StringUtils.h"
@@ -58,6 +60,7 @@ Database::NoDataException::NoDataException ():
 }
 
 
+#if	qHas_ODBC
 /*
  ********************************************************************************
  ************************* ODBCSupport::DBConnection ****************************
@@ -165,4 +168,4 @@ unsigned int Database::DBConnection::GetNestedTransactionCount () const
 {
 	return fRep->fNestedTransactionCount;
 }
-
+#endif

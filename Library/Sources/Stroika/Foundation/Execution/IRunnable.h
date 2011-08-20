@@ -6,8 +6,6 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
-
 #include	"../Configuration/Common.h"
 #include	"../Memory/RefCntPtr.h"
 
@@ -22,8 +20,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-
-
 			/// More TODO - Improve use of RUNNABLE CLASS - SEE http://bugzilla/show_bug.cgi?id=746
 			class	IRunnable {
 				public:
@@ -31,7 +27,6 @@ namespace	Stroika {
 				public:
 					virtual	void	Run () = 0;
 			};
-
 
 		}
 	}

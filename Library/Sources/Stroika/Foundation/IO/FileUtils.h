@@ -11,8 +11,11 @@
 #include	<set>
 #include	<vector>
 
-#include	<Windows.h>
-#include	<tchar.h>
+
+#if			qPlatform_Windows
+	#include	<Windows.h>
+	#include	<tchar.h>
+#endif
 
 #include	"../Characters/StringUtils.h"
 #include	"../Configuration/Common.h"
@@ -39,7 +42,9 @@ namespace	Stroika {
 			//
 			TString	GetSpecialDir_MyDocuments (bool createIfNotPresent = true);
 			TString	GetSpecialDir_AppData (bool createIfNotPresent = true);
+#if			qPlatform_Windows
 			TString	GetSpecialDir_WinSxS ();	// empty string if doesn't exist
+#endif
 
 			TString	GetSpecialDir_GetTempDir ();
 
@@ -82,11 +87,11 @@ namespace	Stroika {
 			TString	StripFileSuffix (const TString& pathName);		// get the full path WITHOUT the file suffix at the end
 			TString	GetFileDirectory (const TString& pathName);		// get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
 
-			bool	FileExists (const TCHAR* filePath);
+			bool	FileExists (const TChar* filePath);
 			bool	FileExists (const TString& filePath);
 
 			// returns true iff given path exists, is accessible, and is a directory
-			bool	DirectoryExists (const TCHAR* filePath);
+			bool	DirectoryExists (const TChar* filePath);
 			bool	DirectoryExists (const TString& filePath);
 
 			vector<TString>	FindFiles (const TString& path, const TString& fileNameToMatch = _T ("*.*"));

@@ -48,6 +48,11 @@ namespace	Stroika {
 					// Set the event to the signaled state
 					nonvirtual	void	Set () throw ();
 
+//tmphack for LINUX
+#ifndef INFINITE
+#define INFINITE 1000000
+#endif
+
 					// Simple wait. Can use operator HANDLE() to do fancier waits
 					nonvirtual	void	Wait (float timeout = float (INFINITE)/1000) const;
 

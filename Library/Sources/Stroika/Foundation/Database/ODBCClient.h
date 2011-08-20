@@ -21,6 +21,11 @@ namespace	Stroika {
 		namespace	Database {
 
 
+
+		  // fix this define
+#define qHas_ODBC qPlatform_Windows
+
+
 	using	namespace	std;
 	using	namespace	Stroika::Foundation;
 	using	namespace	Stroika::Foundation::Execution;
@@ -35,6 +40,7 @@ namespace	Stroika {
 			NoDataException ();
 	};
 
+#if	qHas_ODBC
 	class	DBConnection {
 		private:
 			class	Rep;
@@ -48,8 +54,9 @@ namespace	Stroika {
 		private:
 			RefCntPtr<Rep>	fRep;
 	};
+#endif
 
-
+#if	qHas_ODBC
 	// Maybe pattern this more after an 'iterator'?
 	class	Query {
 		public:
@@ -71,6 +78,7 @@ namespace	Stroika {
 		private:
 			RefCntPtr<Rep>	fRep;
 	};
+#endif
 
 		}
 	}
