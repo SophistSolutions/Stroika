@@ -26,7 +26,7 @@ Objs	=	\
 	$(ObjDir)StringException.o\
 	$(ObjDir)ThreadAbortException.o\
 	$(ObjDir)WaitAbandonedException.o\
-	$(ObjDir)WaitTimeoutException.o\
+	$(ObjDir)WaitTimedOutException.o\
 
 all:	$(Objs)
 	echo do ar here
