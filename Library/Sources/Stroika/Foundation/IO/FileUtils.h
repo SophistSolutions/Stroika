@@ -95,8 +95,8 @@ namespace	Stroika {
 			bool	DirectoryExists (const TChar* filePath);
 			bool	DirectoryExists (const TString& filePath);
 
-			vector<TString>	FindFiles (const TString& path, const TString& fileNameToMatch = _T ("*.*"));
-			vector<TString>	FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch = _T ("*.*"));
+			vector<TString>	FindFiles (const TString& path, const TString& fileNameToMatch = TSTR ("*.*"));
+			vector<TString>	FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch = TSTR ("*.*"));
 
 			void	DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors = true);
 
@@ -227,7 +227,7 @@ namespace	Stroika {
 			 */
 			class	ThroughTmpFileWriter {
 				public:
-					ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix = _T (".tmp"));
+					ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix = TSTR (".tmp"));
 					~ThroughTmpFileWriter ();
 
 				private:	// NOT IMPLEMENTED

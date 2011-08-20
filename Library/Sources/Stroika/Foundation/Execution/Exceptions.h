@@ -172,11 +172,11 @@ namespace	Stroika {
 
 
 			void	ThrowIfFalseGetLastError (bool test);
+			void	ThrowIfError_errno_t (errno_t e = errno);
 		#if		qPlatform_Windows
 			void	ThrowIfFalseGetLastError (BOOL test);
 			void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
 			void	ThrowIfErrorHRESULT (HRESULT hr);
-			void	ThrowIfError_errno_t (errno_t e = errno);
 			void	ThrowIfShellExecError (HINSTANCE r);
 		#endif
 
@@ -230,15 +230,15 @@ namespace	Stroika {
 					virtual	void	RethrowIfAnyCaught () const;
 
 				public:
-		#if		qPlatform_Windows
-					auto_ptr<HRESULTErrorException>					fHRESULTErrorException;
-					auto_ptr<Win32ErrorException>					fWin32ErrorException;
-		#endif
 					auto_ptr<RequiredComponentMissingException>		fRequiredComponentMissingException;
 					auto_ptr<StringException>						fStringException;
 					auto_ptr<IO::FileFormatException>				fFileFormatException;
 					auto_ptr<IO::FileBusyException>					fFileBusyException;
 					auto_ptr<SilentException>						fSilentException;
+				#if		qPlatform_Windows
+					auto_ptr<HRESULTErrorException>					fHRESULTErrorException;
+					auto_ptr<Win32ErrorException>					fWin32ErrorException;
+				#endif
 			};
 
 

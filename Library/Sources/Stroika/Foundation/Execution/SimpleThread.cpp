@@ -101,7 +101,7 @@ int MyGetThreadId (HANDLE thread)
 			// See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
 			// GetThreadId (HANDLE) in Win 2003 Server or later
 			using namespace XXX;
-			static	DLLLoader	ntdll (_T ("ntdll.dll"));
+			static	DLLLoader	ntdll (TSTR ("ntdll.dll"));
 			static	pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
 			if (NtQueryInformationThread == NULL)
 				return 0;	// failed to get proc address
@@ -137,7 +137,7 @@ SimpleThread::Rep::Rep ()
 	, fOK2StartEvent (false, false)
 	, fRefCountBumpedEvent (false, false)
 {
-	TraceContextBumper ctx (_T ("SimpleThread::Rep::Rep"));
+	TraceContextBumper ctx (TSTR ("SimpleThread::Rep::Rep"));
 #if			qPlatform_Windows
 	fThread = reinterpret_cast<HANDLE> (::_beginthreadex (NULL, 0, &Rep::ThreadProc, this, 0, NULL));
 	if (fThread == NULL) {
@@ -243,7 +243,7 @@ void	SimpleThread::Rep::NotifyOfAbort ()
 #if			qPlatform_Windows
 void	CALLBACK	SimpleThread::Rep::AbortProc_ (ULONG_PTR lpParameter)
 {
-	TraceContextBumper ctx (_T ("SimpleThread::Rep::AbortProc_"));
+	TraceContextBumper ctx (TSTR ("SimpleThread::Rep::AbortProc_"));
 	SimpleThread::Rep*	rep	=	reinterpret_cast<SimpleThread::Rep*> (lpParameter);
 	Require (rep->fStatus == eAborting || rep->fStatus == eCompleted);
 	rep->ThrowAbortIfNeeded ();
@@ -345,7 +345,7 @@ void	SimpleThread::SetThreadPriority (int nPriority)
 void	SimpleThread::SetThreadName (const wstring& threadName)
 {
 	if (fRep->fThreadName != threadName) {
-		TraceContextBumper	ctx (_T ("Execution::SimpleThread::SetThreadName"));
+		TraceContextBumper	ctx (TSTR ("Execution::SimpleThread::SetThreadName"));
 		DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
 		fRep->fThreadName = threadName;
 		#if		qSupportSetThreadNameDebuggerCall

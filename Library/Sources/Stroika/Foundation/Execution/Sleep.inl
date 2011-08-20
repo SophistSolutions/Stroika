@@ -14,6 +14,8 @@
 #if		qPlatform_Windows
 	#include	<windows.h>
 #endif
+#include	"../Debug/Assertions.h"
+
 
 namespace	Stroika {	
 	namespace	Foundation {

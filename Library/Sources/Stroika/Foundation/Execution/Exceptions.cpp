@@ -35,6 +35,7 @@ using	namespace	Execution;
 using	Debug::TraceContextBumper;
 
 
+#if		qPlatform_Windows
 namespace {
 	inline	TString	Win32Error2String_ (DWORD win32Err)
 		{
@@ -84,10 +85,12 @@ namespace {
 			return Trim (result);
 		}
 }
+#endif
 
 
 
 
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ******************************* Win32ErrorException ****************************
@@ -97,6 +100,7 @@ namespace	{
 	struct	AssertionChecker {
 		AssertionChecker ()
 		{
+// MOVE TO EXTERNAL REGRESSION TEST SUITE...
 			Assert (Win32ErrorException::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
 			Assert (Win32ErrorException::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
 			Assert (Win32ErrorException::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
@@ -142,12 +146,15 @@ TString	Win32ErrorException::LookupMessage (DWORD dw)
 {
 	return Win32Error2String_ (dw);
 }
+#endif
 
 
 
 
 
 
+
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ************************** Win32StructuredException ****************************
@@ -217,12 +224,14 @@ TString	Win32StructuredException::LookupMessage (unsigned int u)
 		}
 	}
 }
+#endif
 
 
 
 
 
 
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ***************************** HRESULTErrorException ****************************
@@ -285,6 +294,7 @@ TString	HRESULTErrorException::LookupMessage (HRESULT hr)
 	(void)::_stprintf_s (buf, _T ("HRESULT error code: 0x%x"), hr);
 	return buf;	
 }
+#endif
 
 
 
@@ -411,9 +421,9 @@ RequiredComponentVersionMismatchException::RequiredComponentVersionMismatchExcep
  **************** FeatureNotSupportedInThisVersionException *********************
  ********************************************************************************
  */
-FeatureNotSupportedInThisVersionException::FeatureNotSupportedInThisVersionException (const wstring& feature):
-	StringException (Format (L"%s is not supported in this version of HealthFrame: see the documentation (F1) on features in this version", feature.c_str ())),
-	fFeature (feature)
+FeatureNotSupportedInThisVersionException::FeatureNotSupportedInThisVersionException (const wstring& feature)
+	: StringException (Format (L"%s is not supported in this version of HealthFrame: see the documentation (F1) on features in this version", feature.c_str ()))
+	, fFeature (feature)
 {
 }
 
@@ -424,6 +434,7 @@ FeatureNotSupportedInThisVersionException::FeatureNotSupportedInThisVersionExcep
 
 
 
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ***************************** ThrowIfShellExecError ****************************
@@ -457,11 +468,13 @@ void	Execution::ThrowIfShellExecError (HINSTANCE r)
 		}
 	}
 }
+#endif
 
 
 
 
 
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ********** Execution::RegisterDefaultHandler_invalid_parameter ****************
@@ -485,9 +498,13 @@ void	Execution::RegisterDefaultHandler_invalid_parameter ()
 {
 	(void)_set_invalid_parameter_handler (invalid_parameter_handler_);
 }
+#endif
 
 
 
+
+
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ********** Execution::RegisterDefaultHandler_pure_function_call ***************
@@ -505,6 +522,7 @@ void	Execution::RegisterDefaultHandler_pure_function_call ()
 {
 	(void)_set_purecall_handler (purecall_handler_);
 }
+#endif
 
 
 
@@ -512,13 +530,15 @@ void	Execution::RegisterDefaultHandler_pure_function_call ()
 
 //	class	CatchAndCaptureExceptionHelper
 CatchAndCaptureExceptionHelper::CatchAndCaptureExceptionHelper ()
-	: fHRESULTErrorException ()
-	, fWin32ErrorException ()
-	, fStringException ()
+	: fStringException ()
 	, fFileFormatException ()
 	, fFileBusyException ()
 	, fSilentException ()
 	, fRequiredComponentMissingException ()
+#if		qPlatform_Windows
+	, fHRESULTErrorException ()
+	, fWin32ErrorException ()
+#endif
 {
 }
 
@@ -536,24 +556,28 @@ void	CatchAndCaptureExceptionHelper::DoRunWithCatchRePropagate (Callback* callba
 bool	CatchAndCaptureExceptionHelper::AnyExceptionCaught () const
 {
 	return 
-		fHRESULTErrorException.get () != NULL or 
-		fWin32ErrorException.get () != NULL or 
-		fStringException.get () != NULL or 
-		fFileFormatException.get () != NULL or
-		fFileBusyException.get () != NULL or
-		fSilentException.get () != NULL or
-		fRequiredComponentMissingException.get () != NULL
+		fStringException.get () != NULL
+		or fFileFormatException.get () != NULL
+		or fFileBusyException.get () != NULL
+		or fSilentException.get () != NULL
+		or fRequiredComponentMissingException.get () != NULL
+#if		qPlatform_Windows
+		or fHRESULTErrorException.get () != NULL
+		or fWin32ErrorException.get () != NULL
+#endif
 		;
 }
 
 void	CatchAndCaptureExceptionHelper::RethrowIfAnyCaught () const
 {
+#if		qPlatform_Windows
 	if (fHRESULTErrorException.get () != NULL) {
 		throw *fHRESULTErrorException.get ();
 	}
 	if (fWin32ErrorException.get () != NULL) {
 		throw *fWin32ErrorException.get ();
 	}
+#endif
 	if (fStringException.get () != NULL) {
 		throw *fStringException.get ();
 	}
