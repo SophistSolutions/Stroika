@@ -25,7 +25,9 @@ namespace	Stroika {
 				}
 			inline	void	SimpleThread::Rep::ThrowAbortIfNeeded () const
 				{
+				#if			qPlatform_Windows
 					Require (::GetCurrentThreadId () == MyGetThreadId_ ());
+				#endif
 					AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
 					if (fStatus == eAborting) {
 						DoThrow (ThreadAbortException ());
@@ -34,10 +36,12 @@ namespace	Stroika {
 
 
 		// class	SimpleThread
+		#if			qPlatform_Windows
 			inline	HANDLE	SimpleThread::GetOSThreadHandle () const
 				{
 					return fRep->fThread;
 				}
+		#endif
 			inline	RefCntPtr<SimpleThread::Rep>	SimpleThread::GetRep () const
 				{
 					return fRep;

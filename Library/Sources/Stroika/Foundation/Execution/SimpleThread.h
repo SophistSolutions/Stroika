@@ -65,7 +65,9 @@ namespace	Stroika {
 					explicit SimpleThread (const RefCntPtr<IRunnable>& runnable);
 
 				public:
+				#if			qPlatform_Windows
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
+				#endif
 					nonvirtual	RefCntPtr<Rep>	GetRep () const;
 
 				public:
@@ -90,8 +92,10 @@ namespace	Stroika {
 					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = -1.0f) const;
 					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = -1.0f) const;	// throws if timeout
 
+			#if			qPlatform_Windows
 				public:
 					nonvirtual	void	SetThreadPriority (int nPriority = THREAD_PRIORITY_NORMAL);
+			#endif
 
 				public:
 					enum Status { 
@@ -145,11 +149,13 @@ namespace	Stroika {
 				public:
 					override	void	DO_DELETE_REF_CNT ();
 
+			#if			qPlatform_Windows
 				private:
 					static	unsigned int	__stdcall	ThreadProc (void* lpParameter);
 
 				private:
 					static	void	CALLBACK	AbortProc_ (ULONG_PTR lpParameter);
+			#endif
 
 				private:
 					nonvirtual	int	MyGetThreadId_ () const;
@@ -158,7 +164,9 @@ namespace	Stroika {
 					friend class	SimpleThread;
 
 				private:
+				#if			qPlatform_Windows
 					HANDLE					fThread;
+				#endif
 					mutable	CriticalSection	fStatusCriticalSection;
 					Status					fStatus;
 					Event					fRefCountBumpedEvent;

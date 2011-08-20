@@ -14,7 +14,10 @@
 #include	"../Debug/Trace.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Time/Realtime.h"
-#include	"Platform/Windows/WaitSupport.h"
+
+#if		qPlatform_Windows
+	#include	"Platform/Windows/WaitSupport.h"
+#endif
 
 #include	"SimpleThread.h"
 
@@ -34,7 +37,7 @@ using	Time::DurationSecondsType;
 //
 //#define	qSupportSetThreadNameDebuggerCall	0
 #ifndef	qSupportSetThreadNameDebuggerCall
-	#if		qDebug
+	#if		qDebug && qPlatform_Windows
 		#define	qSupportSetThreadNameDebuggerCall	1
 	#endif
 #endif
@@ -55,7 +58,7 @@ using	namespace	Execution;
 #define	qUseTLSForSAbortingFlag		0
 #endif
 #ifndef	qUseSleelExForSAbortingFlag
-#define	qUseSleelExForSAbortingFlag	1
+#define	qUseSleelExForSAbortingFlag	qPlatform_Windows
 #endif
 
 
@@ -65,6 +68,7 @@ __declspec( thread )	bool	s_Aborting	=	false;
 
 
 
+#if			qPlatform_Windows
 namespace	{
 	#if (_WIN32_WINNT < 0x0502)
 	namespace XXX {
@@ -110,6 +114,7 @@ int MyGetThreadId (HANDLE thread)
 		#endif
 	}
 }
+#endif
 
 
 
@@ -122,13 +127,18 @@ using	Debug::TraceContextBumper;
  ********************************************************************************
  */
 SimpleThread::Rep::Rep ()
-	:fThread (INVALID_HANDLE_VALUE)
-	,fStatusCriticalSection ()
-	,fStatus (eNotYetRunning)
-	,fOK2StartEvent (false, false)
-	,fRefCountBumpedEvent (false, false)
+#if			qPlatform_Windows
+	: fThread (INVALID_HANDLE_VALUE)
+	, fStatusCriticalSection ()
+#else
+	: fStatusCriticalSection ()
+#endif
+	, fStatus (eNotYetRunning)
+	, fOK2StartEvent (false, false)
+	, fRefCountBumpedEvent (false, false)
 {
 	TraceContextBumper ctx (_T ("SimpleThread::Rep::Rep"));
+#if			qPlatform_Windows
 	fThread = reinterpret_cast<HANDLE> (::_beginthreadex (NULL, 0, &Rep::ThreadProc, this, 0, NULL));
 	if (fThread == NULL) {
 		ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
@@ -142,14 +152,17 @@ SimpleThread::Rep::Rep ()
 		::CloseHandle (fThread);
 		Execution::DoReThrow ();
 	}
+#endif
 }
 
 SimpleThread::Rep::~Rep ()
 {
 	Assert (fStatus != eRunning);
+#if			qPlatform_Windows
 	if (fThread != INVALID_HANDLE_VALUE) {
 		::CloseHandle (fThread);
 	}
+#endif
 }
 
 void	SimpleThread::Rep::DO_DELETE_REF_CNT ()
@@ -158,6 +171,7 @@ void	SimpleThread::Rep::DO_DELETE_REF_CNT ()
 	// See docs for RefCntPtr<>
 }
 
+#if			qPlatform_Windows
 unsigned int	__stdcall	SimpleThread::Rep::ThreadProc (void* lpParameter)
 {
 	RequireNotNil (lpParameter);
@@ -206,12 +220,14 @@ unsigned int	__stdcall	SimpleThread::Rep::ThreadProc (void* lpParameter)
 		return -1;
 	}
 }
+#endif
 
 void	SimpleThread::Rep::NotifyOfAbort ()
 {
 	Require (fStatus == eAborting or fStatus == eCompleted);
 	// CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
 	AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
+#if			qPlatform_Windows
 	if (::GetCurrentThreadId () == MyGetThreadId_ ()) {
 		ThrowAbortIfNeeded ();
 	}
@@ -221,8 +237,10 @@ void	SimpleThread::Rep::NotifyOfAbort ()
 		#endif
 		Verify (::QueueUserAPC (&AbortProc_, fThread, reinterpret_cast<ULONG_PTR> (this)));
 	}
+#endif
 }
 
+#if			qPlatform_Windows
 void	CALLBACK	SimpleThread::Rep::AbortProc_ (ULONG_PTR lpParameter)
 {
 	TraceContextBumper ctx (_T ("SimpleThread::Rep::AbortProc_"));
@@ -238,7 +256,7 @@ int	SimpleThread::Rep::MyGetThreadId_ () const
 {
 	return MyGetThreadId (fThread);
 }
-
+#endif
 
 
 
@@ -291,13 +309,13 @@ namespace	{
  *********************************** SimpleThread *******************************
  ********************************************************************************
  */
-SimpleThread::SimpleThread ():
-	fRep ()
+SimpleThread::SimpleThread ()
+	: fRep ()
 {
 }
 
-SimpleThread::SimpleThread (const RefCntPtr<Rep>& threadObj):
-	fRep (threadObj)
+SimpleThread::SimpleThread (const RefCntPtr<Rep>& threadObj)
+	: fRep (threadObj)
 {
 }
 
@@ -316,11 +334,13 @@ SimpleThread::SimpleThread (const RefCntPtr<IRunnable>& runnable)
 {
 }
 
+#if			qPlatform_Windows
 void	SimpleThread::SetThreadPriority (int nPriority)
 {
 	RequireNotNil (fRep);
 	Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
 }
+#endif
 
 void	SimpleThread::SetThreadName (const wstring& threadName)
 {
@@ -354,8 +374,10 @@ void	SimpleThread::SetThreadName (const wstring& threadName)
 void	SimpleThread::Start ()
 {
 	RequireNotNil (fRep);
+#if			qPlatform_Windows
 	Assert (fRep->fThread != INVALID_HANDLE_VALUE);
 	DbgTrace (L"SimpleThread::Start: (thread = 0x%x, name='%s')", MyGetThreadId (fRep->fThread), fRep->fThreadName.c_str ());
+#endif
 	fRep->fOK2StartEvent.Set ();
 }
 
@@ -366,12 +388,14 @@ void	SimpleThread::Stop ()
 		return;
 	}
 
+#if			qPlatform_Windows
 	// I'm not sure this is 100% thread-friendly, in case two people from two differnt threads tried
 	// to stop the same (third) thread at the same time. But its probably good enough for starters.
 	//		-- LGP 2009-01-14
 
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
 	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
+#endif
 
 	// first try to send abort exception, and then - if force - get serious!
 	AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
@@ -391,8 +415,10 @@ void	SimpleThread::Stop_Forced_Unsafe ()
 		return;
 	}
 
+#if			qPlatform_Windows
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
 	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
+#endif
 
 	Stop ();
 
@@ -402,7 +428,9 @@ void	SimpleThread::Stop_Forced_Unsafe ()
 	if (fRep->fStatus != eCompleted and fRep->fThread != INVALID_HANDLE_VALUE) {
 		// This is VERY bad to do. Put assert here that it never happens...
 		Assert (false);
+#if			qPlatform_Windows
 		::TerminateThread (fRep->fThread, -1);
+#endif
 	}
 }
 
@@ -414,6 +442,7 @@ void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 	}
 
 	bool	doWait	=	false;
+#if			qPlatform_Windows
 	HANDLE	thread	=	NULL;
 	{
 		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
@@ -428,6 +457,7 @@ void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 			Win32ErrorException::DoThrow (WAIT_TIMEOUT);
 		}
 	}
+#endif
 }
 
 void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
@@ -437,6 +467,7 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecon
 		return;
 	}
 
+#if			qPlatform_Windows
 	HANDLE	thread	=	NULL;
 	{
 		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
@@ -447,8 +478,10 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecon
 	if (thread != NULL) {
 		Platform::Windows::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
 	}
+#endif
 }
 
+#if			qPlatform_Windows
 void	SimpleThread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
 	DurationSecondsType	timeoutAt	=	Time::GetTickCount () + timeout;
@@ -466,6 +499,7 @@ void	SimpleThread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType ti
 		}
 	}
 }
+#endif
 
 SimpleThread::Status	SimpleThread::GetStatus_ () const
 {
