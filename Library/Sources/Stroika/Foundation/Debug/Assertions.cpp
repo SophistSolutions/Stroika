@@ -36,7 +36,7 @@ using	namespace	Stroika::Foundation::Debug;
 	void	Stroika::Foundation::Debug::_Debug_Trap_ (const char* fileName, int lineNum)
 	{
 		if (sLedAssertFailedCallback == NULL) {
-			#if		qPlatform_Windows			
+			#if		qPlatform_Windows
 				DebugBreak ();
 			#else
 				assert (false);

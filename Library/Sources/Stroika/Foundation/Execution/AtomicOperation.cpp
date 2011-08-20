@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#if		qPlatform_Win32
+#if		qPlatform_Windows
 	#include	"CriticalSection.h"
 #endif
 
@@ -16,7 +16,7 @@ using	namespace	Stroika::Foundation::Execution;
 
 
 
-#if		qPlatform_Win32
+#if		qPlatform_Windows
 namespace	{
 	CriticalSection	sCritSec_;
 }

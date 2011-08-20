@@ -6,7 +6,9 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
+#if			qPlatform_Windows
+	#include	<windows.h>
+#endif
 
 #include	"../Configuration/Common.h"
 #include	"../Memory/RefCntPtr.h"
@@ -26,7 +28,7 @@ namespace	Stroika {
 			class	Event {
 			#if		qTrack_ThreadUtils_HandleCounts
 				public:
-					static	LONG	sCurAllocatedHandleCount;
+					static	uint32_t	sCurAllocatedHandleCount;
 			#endif
 				public:
 					Event (bool manualReset, bool initialState);
@@ -49,11 +51,13 @@ namespace	Stroika {
 					// Simple wait. Can use operator HANDLE() to do fancier waits
 					nonvirtual	void	Wait (float timeout = float (INFINITE)/1000) const;
 
+				#if			qPlatform_Windows
 				public:
 					operator HANDLE () const;
 
 				private:
 					HANDLE	fEventHandle;
+				#endif
 			};
 
 		}

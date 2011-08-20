@@ -17,7 +17,7 @@
 #include	<vector>
 
 // CURRENTLY NEEDED FOR TYPE 'USHORT' - but could avoid that dependency!!!
-#if		defined(_WIN32)
+#if		qPlatform_Windows
 	#include	<Windows.h>
 #endif
 

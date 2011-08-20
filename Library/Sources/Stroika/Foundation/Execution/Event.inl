@@ -20,56 +20,84 @@ namespace	Stroika {
 
 
 
-	// class	Event
-		inline	Event::Event (bool manualReset, bool initialState):
-			fEventHandle (::CreateEvent (NULL, manualReset, initialState, NULL))
-			{
-				ThrowIfFalseGetLastError (fEventHandle != NULL);
-				#if		qTrack_Execution_HandleCounts
-					Execution::AtomicIncrement (&sCurAllocatedHandleCount);
-				#endif
-			}
-		inline	Event::~Event ()
-			{
-				Verify (::CloseHandle (fEventHandle));
-				#if		qTrack_Execution_HandleCounts
-					AtomicDecrement (&sCurAllocatedHandleCount);
-				#endif
-			}
-		inline	void	Event::Pulse() throw ()
-			{
-				AssertNotNil (fEventHandle);
-				Verify (::PulseEvent (fEventHandle));
-			}
-		inline	void	Event::Reset () throw ()
-			{
-				AssertNotNil (fEventHandle);
-				Verify (::ResetEvent (fEventHandle));
-			}
-		inline	void	Event::Set () throw ()
-			{
-				AssertNotNil (fEventHandle);
-				Verify (::SetEvent (fEventHandle));
-			}
-		inline	void	Event::Wait (float timeout) const
-			{
-				AssertNotNil (fEventHandle);
-				DWORD	milliseconds	=	static_cast<DWORD> (timeout * 1000);
-				if (timeout > 1000) {
-					milliseconds = INFINITE;	// must be careful about rounding errors in int->float->int
+		// class	Event
+			inline	Event::Event (bool manualReset, bool initialState)
+#if			qPlatform_Windows
+				: fEventHandle (::CreateEvent (NULL, manualReset, initialState, NULL))
+#endif
+				{
+					#if			qPlatform_Windows
+						ThrowIfFalseGetLastError (fEventHandle != NULL);
+						#if		qTrack_Execution_HandleCounts
+							Execution::AtomicIncrement (&sCurAllocatedHandleCount);
+						#endif
+					#else
+						AssertNotImplemented ();
+					#endif
 				}
-				DWORD	result	=	::WaitForSingleObject (fEventHandle, milliseconds);
-				switch (result) {
-					case	WAIT_TIMEOUT:	DoThrow (WaitTimedOutException ());
-					case	WAIT_ABANDONED:	DoThrow (WaitAbandonedException ());
+			inline	Event::~Event ()
+				{
+					#if			qPlatform_Windows
+						Verify (::CloseHandle (fEventHandle));
+						#if		qTrack_Execution_HandleCounts
+							AtomicDecrement (&sCurAllocatedHandleCount);
+						#endif
+					#else
+						AssertNotImplemented ();
+					#endif
 				}
-				Verify (result == WAIT_OBJECT_0);
-			}
-		inline	Event::operator HANDLE () const
-			{
-				AssertNotNil (fEventHandle);
-				return fEventHandle;
-			}
+			inline	void	Event::Pulse() throw ()
+				{
+					#if			qPlatform_Windows
+						AssertNotNil (fEventHandle);
+						Verify (::PulseEvent (fEventHandle));
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	void	Event::Reset () throw ()
+				{
+					#if			qPlatform_Windows
+						AssertNotNil (fEventHandle);
+						Verify (::ResetEvent (fEventHandle));
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	void	Event::Set () throw ()
+				{
+					#if			qPlatform_Windows
+						AssertNotNil (fEventHandle);
+						Verify (::SetEvent (fEventHandle));
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	void	Event::Wait (float timeout) const
+				{
+					#if			qPlatform_Windows
+						AssertNotNil (fEventHandle);
+						DWORD	milliseconds	=	static_cast<DWORD> (timeout * 1000);
+						if (timeout > 1000) {
+							milliseconds = INFINITE;	// must be careful about rounding errors in int->float->int
+						}
+						DWORD	result	=	::WaitForSingleObject (fEventHandle, milliseconds);
+						switch (result) {
+							case	WAIT_TIMEOUT:	DoThrow (WaitTimedOutException ());
+							case	WAIT_ABANDONED:	DoThrow (WaitAbandonedException ());
+						}
+						Verify (result == WAIT_OBJECT_0);
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			#if			qPlatform_Windows
+			inline	Event::operator HANDLE () const
+				{
+					AssertNotNil (fEventHandle);
+					return fEventHandle;
+				}
+			#endif
 
 
 		}

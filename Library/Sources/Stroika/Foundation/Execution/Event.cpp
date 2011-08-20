@@ -18,5 +18,5 @@ using	namespace	Stroika::Foundation::Execution;
  ********************************************************************************
  */
 #if		qTrack_ThreadUtils_HandleCounts
-LONG	Event::sCurAllocatedHandleCount		=	0;
+uint32_t	Event::sCurAllocatedHandleCount		=	0;
 #endif

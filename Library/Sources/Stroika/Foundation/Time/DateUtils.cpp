@@ -107,7 +107,7 @@ Date::Date (const wstring& rep, XML)
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
 #else
-		Assert (false);//NYI
+		AssertNotImplemented ();
 #endif
 	}
 }
@@ -136,7 +136,7 @@ Date::Date (const wstring& rep, Javascript)
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
 	}
 #else
-	Assert (false);//NYI
+	AssertNotImplemented ();
 #endif
 }
 

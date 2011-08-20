@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#ifdef	_WIN32
+#if		qPlatform_Windows
 	#include	<windows.h>
 	#include	<tchar.h>
 #endif

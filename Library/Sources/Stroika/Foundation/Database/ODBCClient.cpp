@@ -3,8 +3,8 @@
  */
 #include	"../StroikaPreComp.h"
 
-#ifdef _WIN32
-#include	<windows.h>
+#if		qPlatform_Windows
+	#include	<windows.h>
 #endif
 
 #include	<sql.h>

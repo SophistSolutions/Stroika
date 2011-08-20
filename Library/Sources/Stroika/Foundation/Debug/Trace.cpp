@@ -46,7 +46,11 @@ namespace	{
 	#if		qTraceToFile
 		static	ofstream*	sTraceFile	=	NULL;
 	#endif
-	typedef	DWORD	ThreadID;
+	#if		qPlatform_Windows
+		typedef	DWORD	ThreadID;
+	#else
+		typedef	void*	ThreadID;		//tmphack
+	#endif
 	#if		qDefaultTracingOn
 		static	map<ThreadID,unsigned int>*	sCounts;
 	#endif
@@ -114,23 +118,27 @@ TString	Emitter::GetTraceFileName () const
 		// Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
 		TString	mfname;
 		{
-			TCHAR	mfbuf[MAX_PATH];
-			memset (mfbuf, 0, sizeof (mfbuf));
-			Verify (::GetModuleFileName (NULL, mfbuf, NEltsOf (mfbuf)));
-			mfname = mfbuf;
-			size_t i = mfname.rfind ('\\');
-			if (i != TString::npos) {
-				mfname = mfname.substr (i + 1);
-			}
-			i = mfname.rfind ('.');
-			if (i != TString::npos) {
-				mfname.erase (i);
-			}
-			for (TString::iterator i = mfname.begin (); i != mfname.end (); ++i) {
-				if (*i == ' ') {
-					*i = '-';
+			#if		qPlatform_Windows
+				TCHAR	mfbuf[MAX_PATH];
+				memset (mfbuf, 0, sizeof (mfbuf));
+				Verify (::GetModuleFileName (NULL, mfbuf, NEltsOf (mfbuf)));
+				mfname = mfbuf;
+				size_t i = mfname.rfind ('\\');
+				if (i != TString::npos) {
+					mfname = mfname.substr (i + 1);
 				}
-			}
+				i = mfname.rfind ('.');
+				if (i != TString::npos) {
+					mfname.erase (i);
+				}
+				for (TString::iterator i = mfname.begin (); i != mfname.end (); ++i) {
+					if (*i == ' ') {
+						*i = '-';
+					}
+				}
+			#else
+				AssertNotImplemented ();
+			#endif
 		}
 		TString nowstr	=	ToTString (Time::DateTime::Now ().Format4XML ());
 		for (TString::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
@@ -206,7 +214,11 @@ void	Emitter::EmitTraceMessage (const char* format, ...)
 		#endif
 		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			(void)::strcat_s (msgBuf, "\r\n");
+			#if		__STDC_WANT_SECURE_LIB__
+				(void)::strcat_s (msgBuf, "\r\n");
+			#else
+				(void)::strcat (msgBuf, "\r\n");
+			#endif
 		}
 		va_end (argsList);
 		DoEmitMessage_ (0, msgBuf);
@@ -231,7 +243,11 @@ void	Emitter::EmitTraceMessage (const wchar_t* format, ...)
 		#endif
 		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			(void)::wcscat_s (msgBuf, L"\r\n");
+			#if		__STDC_WANT_SECURE_LIB__
+				(void)::wcscat_s (msgBuf, L"\r\n");
+			#else
+				(void)::wcscat (msgBuf, L"\r\n");
+			#endif
 		}
 		va_end (argsList);
 		DoEmitMessage_ (0, msgBuf);
@@ -255,7 +271,11 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 		#endif
 		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			(void)::strcat_s (msgBuf, "\r\n");
+			#if		__STDC_WANT_SECURE_LIB__
+				(void)::strcat_s (msgBuf, "\r\n");
+			#else
+				(void)::strcat (msgBuf, "\r\n");
+			#endif
 		}
 		va_end (argsList);
 		return DoEmitMessage_ (bufferLastNChars, msgBuf);
@@ -281,7 +301,11 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 		#endif
 		size_t	len	=	Characters::Length (msgBuf);
 		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			(void)::wcscat_s (msgBuf, L"\r\n");
+			#if		__STDC_WANT_SECURE_LIB__
+				(void)::wcscat_s (msgBuf, L"\r\n");
+			#else
+				(void)::wcscat (msgBuf, L"\r\n");
+			#endif
 		}
 		va_end (argsList);
 		return DoEmitMessage_ (bufferLastNChars, msgBuf);
@@ -326,7 +350,11 @@ template	<typename	CHARTYPE>
 						else {
 							::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=0x%08x)\t", threadID);
 						}
-						strcat_s (buf, buf2);
+						#if		__STDC_WANT_SECURE_LIB__
+							strcat_s (buf, buf2);
+						#else
+							strcat (buf, buf2);
+						#endif
 					}
 				}
 				else if (threadID <= 0xffff) {
@@ -440,7 +468,12 @@ namespace	{
 	//		-- LGP 2009-05-27
 	inline	unsigned int	GetCount_ ()
 		{
-			ThreadID	threadID	=	::GetCurrentThreadId ();
+			#if		qPlatform_Windows
+				ThreadID	threadID	=	::GetCurrentThreadId ();
+			#else
+				AssertNotImplemented ();
+				ThreadID	threadID = 0;
+			#endif
 			AutoCriticalSection critSec (GetCritSection_ ());
 			map<ThreadID,unsigned int>::const_iterator	i	=	sCounts->find (threadID);
 			if (i == sCounts->end ()) {
@@ -451,7 +484,12 @@ namespace	{
 		}
 	inline	void	IncCount_ ()
 		{
-			ThreadID	threadID	=	::GetCurrentThreadId ();
+			#if		qPlatform_Windows
+				ThreadID	threadID	=	::GetCurrentThreadId ();
+			#else
+				AssertNotImplemented ();
+				ThreadID	threadID = 0;
+			#endif
 			AutoCriticalSection critSec (GetCritSection_ ());
 			map<ThreadID,unsigned int>::iterator	i	=	sCounts->find (threadID);
 			if (i == sCounts->end ()) {
@@ -464,7 +502,12 @@ namespace	{
 		}
 	inline	void	DecrCount_ ()
 		{
-			ThreadID	threadID	=	::GetCurrentThreadId ();
+			#if		qPlatform_Windows
+				ThreadID	threadID	=	::GetCurrentThreadId ();
+			#else
+				AssertNotImplemented ();
+				ThreadID	threadID = 0;
+			#endif
 			AutoCriticalSection critSec (GetCritSection_ ());
 			map<ThreadID,unsigned int>::iterator	i	=	sCounts->find (threadID);
 			Assert (i != sCounts->end ());

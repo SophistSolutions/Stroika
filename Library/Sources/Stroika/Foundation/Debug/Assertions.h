@@ -144,6 +144,8 @@ namespace	Stroika {
 			#define	RequireNotReached()		Assert (false)
 			#define	EnsureNotReached()		Assert (false)
 
+			// Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
+			// makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
 			#define	AssertNotImplemented()	Assert (false)
 
 			/*

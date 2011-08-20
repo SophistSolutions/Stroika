@@ -508,7 +508,7 @@ namespace	Stroika {
 							Assert (outPtr < outBuf+outBufSize);
 							#if		defined (macintosh)
 								TCHAR	c	 = (srcText[i-1] == '\n')? '\r': srcText[i-1];
-							#elif	(defined (_WIN32) || defined (WIN32))
+							#elif	qPlatform_Windows
 								TCHAR	c	 = srcText[i-1];
 								if (c == '\n') {
 									*outPtr++ = '\r';
