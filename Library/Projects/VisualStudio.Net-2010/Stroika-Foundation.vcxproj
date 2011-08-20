@@ -147,7 +147,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Database_ODBCClient_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Assertions_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Trace_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Exceptions.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Exceptions_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Math_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_BlockAllocated_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_Common_.h" />

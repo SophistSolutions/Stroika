@@ -450,7 +450,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Database_ODBCClient_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Exceptions.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Exceptions_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
   </ItemGroup>

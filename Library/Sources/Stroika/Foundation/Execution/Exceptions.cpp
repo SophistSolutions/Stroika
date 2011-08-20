@@ -297,12 +297,16 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 		case	E_FAIL:						return TSTR ("HRESULT failure (E_FAIL)");
 	}
 #endif
-	TCHAR	buf[2048];
+	TChar	buf[2048];
 	buf[0] = '\0';
+#if		qPlatform_Windows
 	if (_tcserror_s (buf, e) != 0) {
 		return buf;
 	}
 	(void)::_stprintf_s (buf, TSTR ("errno_t error code: 0x%x"), e);
+#else
+	AssertNotImplemented ();
+#endif
 	return buf;	
 }
 

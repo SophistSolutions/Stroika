@@ -145,7 +145,7 @@ typedef	Platform::Windows::HRESULTErrorException	HRESULTErrorException;
 
 
 			#if		!qCompilerSupports_errno_t
-				typedef	int	errnot_t;
+				typedef	int	errno_t;
 			#endif
 
 			class	errno_ErrorException : public StringException {
