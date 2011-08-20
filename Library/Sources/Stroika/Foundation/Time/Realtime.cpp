@@ -21,8 +21,17 @@ using	namespace	Stroika::Foundation::Time;
 
 
 
+
+
+const	DurationSecondsType	Time::kInfinite		=	numeric_limits<DurationSecondsType>::max ();
+
+
+
+
+
+
 /*
-@METHOD:		Led_GetTickCount
+@METHOD:		GetTickCount
 @DESCRIPTION:	<p>Get the number of seconds since some constant, system-specified reference time. This is used
 			to tell how much time has elapsed since a particular event.</p>
 				<p>Note - though this is based on the same reference time as an time values packed into event records,

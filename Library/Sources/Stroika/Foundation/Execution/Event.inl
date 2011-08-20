@@ -73,13 +73,13 @@ namespace	Stroika {
 						AssertNotImplemented ();
 					#endif
 				}
-			inline	void	Event::Wait (float timeout) const
+			inline	void	Event::Wait (Time::DurationSecondsType timeout) const
 				{
 					#if			qPlatform_Windows
 						AssertNotNil (fEventHandle);
 						DWORD	milliseconds	=	static_cast<DWORD> (timeout * 1000);
 						if (timeout > 1000) {
-							milliseconds = INFINITE;	// must be careful about rounding errors in int->float->int
+							milliseconds = INFINITE;	// must be careful about rounding errors in int->DurationSecondsType->int
 						}
 						DWORD	result	=	::WaitForSingleObject (fEventHandle, milliseconds);
 						switch (result) {

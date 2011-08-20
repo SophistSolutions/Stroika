@@ -14,6 +14,9 @@ namespace	Stroika {
 
 			DurationSecondsType	GetTickCount ();
 
+
+			extern	const	DurationSecondsType	kInfinite;
+
 		}
 	}
 }
