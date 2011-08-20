@@ -51,9 +51,12 @@ namespace	Stroika {
 				#define TSTR(x)    x
 			#endif
 
+#if 0
+// windows uses this but Stroika uses TSTR() instead (windows also uses _TEXT)
 			#ifndef _T
 				#define _T(x)    x
 			#endif
+#endif
 
 		}
 	}

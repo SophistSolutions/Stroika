@@ -7,7 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Configuration/Common.h"
-#include	"../Time/RealTime.h"
+#include	"../Time/Realtime.h"
 
 
 namespace	Stroika {	

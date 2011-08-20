@@ -3,15 +3,18 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	<windows.h>
-#include	<tchar.h>
+#if		qPlatform_Windows
+	#include	<windows.h>
+#endif
 
 #include	"../IO/FileUtils.h"
 
 #include	"Module.h"
 
+
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
+
 
 
 
@@ -28,6 +31,8 @@ TString	Execution::GetEXEDir ()
 
 
 
+
+
 /*
  ********************************************************************************
  **************************** Execution::GetEXEPath *****************************
@@ -35,7 +40,7 @@ TString	Execution::GetEXEDir ()
  */
 TString	Execution::GetEXEPath ()
 {
-	TCHAR	buf[MAX_PATH];
+	Characters::TChar	buf[MAX_PATH];
 	memset (buf, 0, sizeof (buf));
 	Verify (::GetModuleFileName (NULL, buf, NEltsOf (buf)));
 	return buf;

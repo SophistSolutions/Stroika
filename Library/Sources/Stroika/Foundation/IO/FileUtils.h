@@ -14,10 +14,10 @@
 
 #if			qPlatform_Windows
 	#include	<Windows.h>
-	#include	<tchar.h>
 #endif
 
 #include	"../Characters/StringUtils.h"
+#include	"../Characters/TChar.h"
 #include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
@@ -35,7 +35,7 @@ namespace	Stroika {
 			using	Characters::TString;
 			using	Time::DateTime;
 
-			typedef	__int64	FileOffset_t;
+			typedef	int64_t	FileOffset_t;
 
 
 			// These GetSpecialDir_XXX routines always return a valid directory (if createIfNotPresent) - and
@@ -251,7 +251,7 @@ namespace	Stroika {
 
 			class	FileReader {
 				public:
-					FileReader (const TCHAR* fileName);
+					FileReader (const TChar* fileName);
 					~FileReader ();
 
 				public:
@@ -265,7 +265,7 @@ namespace	Stroika {
 			};
 			class	FileWriter {
 				public:
-					FileWriter (const TCHAR* fileName);
+					FileWriter (const TChar* fileName);
 					~FileWriter ();
 
 				public:
@@ -278,7 +278,7 @@ namespace	Stroika {
 
 			class	MemoryMappedFileReader {
 				public:
-					MemoryMappedFileReader (const TCHAR* fileName);
+					MemoryMappedFileReader (const TChar* fileName);
 					~MemoryMappedFileReader ();
 
 				public:

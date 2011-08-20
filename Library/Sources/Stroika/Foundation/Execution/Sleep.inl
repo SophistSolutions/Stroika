@@ -22,7 +22,11 @@ namespace	Stroika {
 			// class	Sleep
 				inline	void	Sleep (Time::DurationSecondsType seconds2Wait)
 					{
-						::SleepEx (static_cast<int> (seconds2Wait * 1000), true);
+						#if		qPlatform_Windows
+							::SleepEx (static_cast<int> (seconds2Wait * 1000), true);
+						#else
+							AssertNotImplemented ();
+						#endif
 					}
 
 		}

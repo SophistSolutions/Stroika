@@ -138,6 +138,7 @@ TString	Emitter::GetTraceFileName () const
 					}
 				}
 			#else
+// redo above portably using Execution::GetEXEPath () and portable code to find filepath separator char and GetBaseFileName...
 				AssertNotImplemented ();
 			#endif
 		}
