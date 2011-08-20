@@ -425,13 +425,15 @@ void	SimpleThread::Stop_Forced_Unsafe ()
 	// Wait some reasonable amount of time for the thread to abort
 	IgnoreExceptionsForCall (WaitForDone (5.0f));
 	AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
+#if			qPlatform_Windows
 	if (fRep->fStatus != eCompleted and fRep->fThread != INVALID_HANDLE_VALUE) {
 		// This is VERY bad to do. Put assert here that it never happens...
 		Assert (false);
-#if			qPlatform_Windows
 		::TerminateThread (fRep->fThread, -1);
-#endif
 	}
+#else
+	AssertNotImplemented ();
+#endif
 }
 
 void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
