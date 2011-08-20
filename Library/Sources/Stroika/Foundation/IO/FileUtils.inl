@@ -23,7 +23,7 @@ namespace	Stroika {
 						AppTempFileManager	fAppTempFileManager;
 
 					private:
-						friend	AppTempFileManager;
+						friend	class	IO::AppTempFileManager;		// so AppTempFileManager::Get () can reference fAppTempFileManager
 				};
 			}
 		}
