@@ -253,13 +253,14 @@ LeakTrackingGeneralPurposeAllocator::~LeakTrackingGeneralPurposeAllocator ()
 void*	LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 {
 	void*	memptr	=	fBaseAllocator.Allocate (size);
+	AssertNotNil (memptr);
 	AutoCriticalSection enterCriticalSection (fCritSection);
 	try {
 		fAllocations.insert (PTRMAP::value_type (memptr, size));
 		return memptr;
 	}
 	catch (...) {
-		delete memptr;
+		fBaseAllocator.Deallocate (memptr);
 		Execution::DoReThrow ();
 	}
 }
