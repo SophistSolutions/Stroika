@@ -31,6 +31,20 @@ namespace	Stroika {
 			using	Characters::TString;
 
 
+
+
+			/*
+			@CONFIGVAR:		qCompilerSupports_errno_t
+			@DESCRIPTION:	<p>Controls whether or not the compiler provides an implementation of errno_t (gcc for example just assumes its int)</p>
+				*/
+			#ifndef	qCompilerSupports_errno_t
+				#error "qCompilerSupports_errno_t should normally be defined indirectly by StroikaConfig.h"
+			#endif
+
+
+
+
+
 			// Throw this when an error has already been reported - so that it isn't reported again
 			class	SilentException {
 			};
@@ -129,9 +143,14 @@ typedef	Platform::Windows::HRESULTErrorException	HRESULTErrorException;
 		#endif
 
 
+
+			#if		!qCompilerSupports_errno_t
+				typedef	int	errnot_t;
+			#endif
+
 			class	errno_ErrorException : public StringException {
 				public:
-					errno_ErrorException (errno_t e);
+					explicit errno_ErrorException (errno_t e);
 
 					operator errno_t () const;
 
