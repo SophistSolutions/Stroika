@@ -12,7 +12,7 @@ system ("cd Library; perl buildall.pl $BLD_TRG");
 system ("cd Tests; perl buildall.pl $BLD_TRG");
 
 system ("sh -c 'date'");
-if ($BLD_TRG ne 'Clean') {
+if (lc ($BLD_TRG) ne 'clean') {
 	system ("perl checkall.pl");
 	system ("cd Tests; perl checkall.pl");
 	system ("cd Tests; perl run.pl");
