@@ -75,7 +75,7 @@ namespace	Stroika {
 					VariantValue (const vector<VariantValue>& val);
 
 				private:
-					VariantValue (const string& val);		// not implemneted - declared to avoid confusing automatic type conversions - use wstring/wchar_t*
+					VariantValue (const string& val);		// not implemented - declared to avoid confusing automatic type conversions - use wstring/wchar_t*
 					VariantValue (const char* val);			// ""
 
 				public:
@@ -83,7 +83,7 @@ namespace	Stroika {
 					nonvirtual	bool	empty () const;
 
 				/*
-				 * Only these types supported. No generic 'As<>' implementation. There is no generic As<T> implementation.
+				 * Only these (enum Type) types supported. No generic 'As<>' implementation. There is no generic As<T> implementation.
 				 */
 				public:
 					template	<typename	RETURNTYPE>

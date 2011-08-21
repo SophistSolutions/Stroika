@@ -77,10 +77,8 @@ namespace	Stroika {
 				{
 					#if			qPlatform_Windows
 						AssertNotNil (fEventHandle);
-						DWORD	milliseconds	=	static_cast<DWORD> (timeout * 1000);
-						if (timeout > 1000) {
-							milliseconds = INFINITE;	// must be careful about rounding errors in int->DurationSecondsType->int
-						}
+						// must be careful about rounding errors in int->DurationSecondsType->int
+						DWORD	milliseconds	=	(timeout > numeric_limits<DWORD>::max ()/2)? INFINITE: static_cast<DWORD> (timeout * 1000);
 						DWORD	result	=	::WaitForSingleObject (fEventHandle, milliseconds);
 						switch (result) {
 							case	WAIT_TIMEOUT:	DoThrow (WaitTimedOutException ());
