@@ -25,6 +25,12 @@ all:
 	    cd $$i; make $(.DEFAULT_GOAL); cd ..;\
 	done
 
+clean:
+	@for i in $(SubDirs);\
+	do\
+	    cd $$i; make clean; cd ..;\
+	done
+
 Build:	all
 
 
