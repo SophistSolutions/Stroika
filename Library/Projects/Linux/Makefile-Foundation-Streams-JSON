@@ -15,6 +15,6 @@ Objs	=	\
 	$(ObjDir)Writer.o\
 
 all:	$(Objs)
-	echo do ar here (must  fix subdir stuff - not right way todo dependcies - .phony)
+	@echo do ar here
 
 
