@@ -73,9 +73,9 @@ IO::Private::UsingModuleHelper::~UsingModuleHelper ()
  */
 TString	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 {
+#if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
-#if		qPlatform_Windows
 	ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
 	TString	result = fileBuf;
 	// Assure non-empty result
@@ -87,11 +87,12 @@ TString	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 		result += TSTR("\\");
 	}
 	Ensure (result[result.size ()-1] == '\\');
-#else
-	AssertNotImplemented ();
-#endif
 	Ensure (not createIfNotPresent or DirectoryExists (result));
 	return result;
+#else
+	AssertNotImplemented ();
+	return TString ();
+#endif
 }
 
 
@@ -106,9 +107,9 @@ TString	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
  */
 TString	IO::GetSpecialDir_AppData (bool createIfNotPresent)
 {
+#if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
-#if		qPlatform_Windows
 	Verify (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
 	TString	result = fileBuf;
 	// Assure non-empty result
@@ -120,11 +121,12 @@ TString	IO::GetSpecialDir_AppData (bool createIfNotPresent)
 		result += TSTR ("\\");
 	}
 	Ensure (result[result.size ()-1] == '\\');
-#else
-	AssertNotImplemented ();
-#endif
 	Ensure (not createIfNotPresent or DirectoryExists (result));
 	return result;
+#else
+	AssertNotImplemented ();
+	return TString ();
+#endif
 }
 
 
@@ -171,8 +173,8 @@ TString	IO::GetSpecialDir_WinSxS ()
 TString	IO::GetSpecialDir_GetTempDir ()
 {
 	TString	tempPath;
-	TCHAR	buf[1024];
 #if		qPlatform_Windows
+	TChar	buf[1024];
 	if (::GetTempPath (NEltsOf (buf), buf) == 0) {
 		tempPath = TSTR ("c:\\Temp\\");
 	}
@@ -1638,7 +1640,7 @@ FileWriter::~FileWriter ()
 
 void	FileWriter::Append (const Byte* data, size_t count)
 {
-	RequireNotNil (fFD != -1);
+	Require (fFD != -1);
 #if		qPlatform_Windows
 	ThrowIfFalseGetLastError (::_write (fFD, data, static_cast<unsigned int> (count)) == static_cast<int> (count));
 #else
