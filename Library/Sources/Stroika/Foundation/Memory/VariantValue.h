@@ -88,22 +88,6 @@ namespace	Stroika {
 				public:
 					template	<typename	RETURNTYPE>
 						nonvirtual RETURNTYPE As () const;
-					template	<>
-						nonvirtual bool As () const;
-					template	<>
-						nonvirtual int As () const;
-					template	<>
-						nonvirtual float As () const;
-					template	<>
-						nonvirtual Date As () const;
-					template	<>
-						nonvirtual DateTime As () const;
-					template	<>
-						nonvirtual wstring As () const;
-					template	<>
-						nonvirtual map<wstring,VariantValue> As () const;
-					template	<>
-						nonvirtual vector<VariantValue> As () const;
 						
 				public:
 					// bad name - historical - not sure whats better??? RETHINK - LGP 2011-07-16
@@ -118,6 +102,23 @@ namespace	Stroika {
 			};
 			bool	operator== (const VariantValue& lhs, const VariantValue& rhs);
 			bool	operator!= (const VariantValue& lhs, const VariantValue& rhs);
+
+			template	<>
+				nonvirtual bool VariantValue::As () const;
+			template	<>
+				nonvirtual int VariantValue::As () const;
+			template	<>
+				nonvirtual float VariantValue::As () const;
+			template	<>
+				nonvirtual Date VariantValue::As () const;
+			template	<>
+				nonvirtual DateTime VariantValue::As () const;
+			template	<>
+				nonvirtual wstring VariantValue::As () const;
+			template	<>
+				nonvirtual map<wstring,VariantValue> VariantValue::As () const;
+			template	<>
+				nonvirtual vector<VariantValue> VariantValue::As () const;
 
 		}
 	}
