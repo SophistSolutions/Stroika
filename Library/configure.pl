@@ -7,6 +7,12 @@
 #use warnings;
 
 
+
+use constant false => 0;
+use constant true  => 1;
+
+
+
 #
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
@@ -15,6 +21,8 @@ my $configFileName	=	"Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
 
 my $intermediateFiles	=	"IntermediateFiles/";
 my $platform		=	"Platform_Linux";
+
+my $forceRecreate = false;
 
 
 sub mkDirWithLinks
@@ -29,8 +37,7 @@ sub mkDirWithLinks
 
 sub MakeUnixDirs {
 
-#primitive tmphack - delete if exists so we re-create - later add options to check if exists and warn etc
-if (-e $intermediateFiles) {
+if ($forceRecreate) {
 	system ("rm -rf $intermediateFiles");
 }
 
@@ -98,6 +105,22 @@ sub WriteDefault
 	print (OUT "\n");
 	print (OUT "#endif	/*_Stroika_Foundation_Configuration_StroikaConfig_h_*/\n");
 	close(OUT);
+}
+
+
+foreach $var (@ARGV)
+{
+    if (lc ($var) eq "-force" or lc ($var) eq "--force") {
+	$forceRecreate = true;
+	print "Forcing recreate...\n";
+    }
+}
+
+
+
+
+if ($forceRecreate) {
+    system ("rm $configFileName");
 }
 
 unless (-e $configFileName) {
