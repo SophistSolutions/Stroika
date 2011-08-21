@@ -9,13 +9,6 @@
 #include	<cmath>			// though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
 
 
-/*
-@CONFIGVAR:		qPlatformSupports_isnan
-@DESCRIPTION:	<p>Defines if the compiler stdC++/c99 library supports the std::isnan() function</p>
-	*/
-#ifndef	qPlatformSupports_isnan
-	#error "qPlatformSupports_isnan should normally be defined indirectly by StroikaConfig.h"
-#endif
 
 
 
@@ -32,7 +25,7 @@ namespace	Stroika {
 	}
 }
 
-#if		!qPlatformSupports_isnan
+#if		!qCompilerAndStdLib_isnan
 // SB in std namespace
 namespace	std {
 	bool	isnan (float f);

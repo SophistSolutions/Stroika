@@ -17,13 +17,11 @@ namespace	Stroika {
 
 			DurationSecondsType	GetTickCount ();
 
-
-#if 1
-			// NEED NEW COMPILER DEFINE qCompiler_Supports_constexpr
-			const	DurationSecondsType	kInfinite	=	DBL_MAX;
-#else
-			constexpr	DurationSecondsType	kInfinite	=	numeric_limits<DurationSecondsType>::max ();
-#endif
+			#if		qCompilerAndStdLib_Supports_constexpr
+				constexpr	DurationSecondsType	kInfinite	=	numeric_limits<DurationSecondsType>::max ();
+			#else
+				const	DurationSecondsType	kInfinite		=	DBL_MAX;
+			#endif
 
 		}
 	}

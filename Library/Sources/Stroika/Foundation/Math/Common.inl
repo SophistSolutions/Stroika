@@ -27,11 +27,11 @@ namespace	Stroika {
 	}
 }
 
-#if		!qPlatformSupports_isnan
+#if		!qCompilerAndStdLib_isnan
 namespace	std {
 	inline	bool	isnan (float f)
 		{
-			#if		qPlatformSupports__isnan
+			#if		qCompilerAndStdLib__isnan
 				return static_cast<bool> (!!_isnan (f));
 			#else
 				return f != f;
@@ -39,7 +39,7 @@ namespace	std {
 		}
 	inline	bool	isnan (double f)
 		{
-			#if		qPlatformSupports__isnan
+			#if		qCompilerAndStdLib__isnan
 				return static_cast<bool> (!!_isnan (f));
 			#else
 				return f != f;

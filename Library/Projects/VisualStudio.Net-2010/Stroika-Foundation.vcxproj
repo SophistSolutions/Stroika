@@ -141,14 +141,13 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_StringUtils_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_TChar_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_CompilerAndStdLib_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Configuration_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Containers_LRUCache_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Containers_TimedCache_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Database_ODBCClient_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Assertions_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Trace_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Exceptions_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Math_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_BlockAllocated_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />

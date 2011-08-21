@@ -11,18 +11,5 @@
 	 */
 
 
-	/*
-	 * See DOCS in Stroika/Foundation/Execution/Exceptions.h
-	 */
-	#if		!defined (qCompilerSupports_errno_t)
-		#if		defined (__GNUC__)
-			#define	qCompilerSupports_errno_t	0
-		#elif	defined (_MSC_VER)
-			#define	qCompilerSupports_errno_t	1
-		#else
-			// GUESS
-			#define	qCompilerSupports_errno_t	0
-		#endif
-	#endif
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_Execution_Exceptions_h_*/
