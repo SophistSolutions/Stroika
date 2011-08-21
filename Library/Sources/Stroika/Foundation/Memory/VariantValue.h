@@ -82,16 +82,29 @@ namespace	Stroika {
 					nonvirtual	Type	GetType () const;
 					nonvirtual	bool	empty () const;
 
+				/*
+				 * Only these types supported. No generic 'As<>' implementation. There is no generic As<T> implementation.
+				 */
 				public:
-					nonvirtual operator bool () const;
-					nonvirtual operator int () const;
-					nonvirtual operator float () const;
-					nonvirtual operator Date () const;
-					nonvirtual operator DateTime () const;
-					nonvirtual operator wstring () const;
-					nonvirtual operator map<wstring,VariantValue> () const;
-					nonvirtual operator vector<VariantValue> () const;
-
+					template	<typename	RETURNTYPE>
+						nonvirtual RETURNTYPE As () const;
+					template	<>
+						nonvirtual bool As () const;
+					template	<>
+						nonvirtual int As () const;
+					template	<>
+						nonvirtual float As () const;
+					template	<>
+						nonvirtual Date As () const;
+					template	<>
+						nonvirtual DateTime As () const;
+					template	<>
+						nonvirtual wstring As () const;
+					template	<>
+						nonvirtual map<wstring,VariantValue> As () const;
+					template	<>
+						nonvirtual vector<VariantValue> As () const;
+						
 				public:
 					// bad name - historical - not sure whats better??? RETHINK - LGP 2011-07-16
 					nonvirtual	wstring	FormatXML () const;

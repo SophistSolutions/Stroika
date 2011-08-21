@@ -239,7 +239,7 @@ namespace	{
 				}
 				else {
 					if (lf == eName) {
-						curName = Reader_String_ (i, end);
+						curName = Reader_String_ (i, end).As<wstring> ();
 						lf = eColon;
 					}
 					else if (lf == eValue) {

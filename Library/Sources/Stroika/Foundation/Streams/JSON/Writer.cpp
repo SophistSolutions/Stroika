@@ -108,12 +108,12 @@ namespace	{
 		{
 			switch (v.GetType ()) {
 				case	Memory::VariantValue::eNull:		PrettyPrint_Null_ (out); break;
-				case	Memory::VariantValue::eBoolean:		PrettyPrint_ (static_cast<bool> (v), out); break;
-				case	Memory::VariantValue::eInteger:		PrettyPrint_ (static_cast<int> (v), out); break;
-				case	Memory::VariantValue::eFloat:		PrettyPrint_ (static_cast<float> (v), out); break;
-				case	Memory::VariantValue::eString:		PrettyPrint_ (static_cast<wstring> (v), out); break;
-				case	Memory::VariantValue::eMap:			PrettyPrint_ (static_cast<map<wstring, Memory::VariantValue>> (v), out, indentLevel); break;
-				case	Memory::VariantValue::eArray:		PrettyPrint_ (static_cast<vector<Memory::VariantValue>> (v), out, indentLevel); break;
+				case	Memory::VariantValue::eBoolean:		PrettyPrint_ (v.As<bool> (), out); break;
+				case	Memory::VariantValue::eInteger:		PrettyPrint_ (v.As<int> (), out); break;
+				case	Memory::VariantValue::eFloat:		PrettyPrint_ (v.As<float> (), out); break;
+				case	Memory::VariantValue::eString:		PrettyPrint_ (v.As<wstring> (), out); break;
+				case	Memory::VariantValue::eMap:			PrettyPrint_ (v.As<map<wstring, Memory::VariantValue>> (), out, indentLevel); break;
+				case	Memory::VariantValue::eArray:		PrettyPrint_ (v.As<vector<Memory::VariantValue>> (), out, indentLevel); break;
 				default:	RequireNotReached ();		// only certain types allowed
 			}
 		}
