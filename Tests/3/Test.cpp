@@ -20,6 +20,8 @@ using	Execution::AutoCriticalSection;
 using	Execution::SimpleThread;
 
 
+
+
 namespace	{
 	void	_ASSERT_HANDLER_(const char* fileName, int lineNum)
 		{
@@ -88,6 +90,62 @@ namespace	{
 
 
 
+
+
+
+namespace	{
+	Execution::Event	sRegTest3Event_T1_ (false, false);
+	Execution::Event	sRegTest3Event_T2_ (false, false);
+	void	RegressionTest3_ ()
+		{
+
+			// Make 2 concurrent threads, which share a critical section object to take turns updating a variable
+			struct	FRED1 { 
+				static	void	DoIt (void* ignored)
+					{
+						int*	argP	=	reinterpret_cast<int*> (ignored);
+						for (int i = 0; i < 10; i++) {
+							sRegTest3Event_T1_.Wait ();
+							int	tmp = *argP;
+							Execution::Sleep (.01);
+							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							*argP = tmp + 1;
+							sRegTest3Event_T2_.Set ();
+						}
+					}
+			};
+			struct	FRED2 { 
+				static	void	DoIt (void* ignored)
+					{
+						int*	argP	=	reinterpret_cast<int*> (ignored);
+						for (int i = 0; i < 10; i++) {
+							sRegTest3Event_T2_.Wait ();
+							int	tmp = *argP;
+							Execution::Sleep (.01);
+							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							*argP = tmp + 1;
+							sRegTest3Event_T1_.Set ();
+						}
+					}
+			};
+
+			sRegTest3Event_T1_.Reset ();
+			sRegTest3Event_T2_.Reset ();
+			int	updaterValue	=	0;
+			SimpleThread	thread1 (&FRED1::DoIt, &updaterValue);
+			SimpleThread	thread2 (&FRED2::DoIt, &updaterValue);
+			thread1.Start ();
+			thread2.Start ();
+			sRegTest3Event_T1_.Set ();
+			thread1.WaitForDone ();
+			thread2.WaitForDone ();
+			Assert (updaterValue == 2 * 10);
+		}
+}
+
+
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -95,6 +153,7 @@ namespace	{
 			try {
 				RegressionTest1_ ();
 				RegressionTest2_ ();
+				RegressionTest3_ ();
 			}
 			catch (...) {
 				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
