@@ -23,9 +23,6 @@ using	namespace	Stroika::Foundation::Time;
 
 
 
-const	DurationSecondsType	Time::kInfinite		=	numeric_limits<DurationSecondsType>::max ();
-
-
 
 
 
