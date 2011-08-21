@@ -6,6 +6,9 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<limits>
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Time {
@@ -15,7 +18,7 @@ namespace	Stroika {
 			DurationSecondsType	GetTickCount ();
 
 
-			extern	const	DurationSecondsType	kInfinite;
+			const	DurationSecondsType	kInfinite	=	numeric_limits<DurationSecondsType>::max ();
 
 		}
 	}
