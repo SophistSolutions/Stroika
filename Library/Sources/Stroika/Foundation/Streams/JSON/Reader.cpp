@@ -412,13 +412,13 @@ namespace	{
 Memory::VariantValue	Streams::JSON::Reader (istream& in)
 {
 	wstring	tmp	=	Prepass2UNICODE_ (in);
-	wstring::iterator i = tmp.begin ();
+	wstring::const_iterator i = tmp.begin ();
 	return Reader_value_ (&i, tmp.end ());
 }
 
 Memory::VariantValue	Streams::JSON::Reader (wistream& in)
 {
 	wstring	tmp	=	Prepass2UNICODE_ (in);
-	wstring::iterator i = tmp.begin ();
+	wstring::const_iterator i = tmp.begin ();
 	return Reader_value_ (&i, tmp.end ());
 }
