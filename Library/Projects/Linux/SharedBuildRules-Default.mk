@@ -11,3 +11,6 @@ clean::	$(Objs)
 
 
 
+# default build rule - map (windowsish) top-level build arg to unixish name 'all'
+Build:	all
+
