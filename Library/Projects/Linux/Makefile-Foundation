@@ -1,6 +1,3 @@
-CFLAGS= -c -std=c++0x $(DEBUGFLAG)
-
-
 ObjDir                          =       ./
 SrcDir                          =       ../../../Sources/Stroika/Foundation/
 Includes                        =       -I.
@@ -25,6 +22,9 @@ SubDirs=	\
 all:
 	@for i in $(SubDirs);\
 	do\
-	    cd $$i; make all; cd ..;\
+	    cd $$i; make $(.DEFAULT_GOAL); cd ..;\
 	done
+
+Build:	all
+
 
