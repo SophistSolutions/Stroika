@@ -140,6 +140,31 @@ Date::Date (const wstring& rep, Javascript)
 #endif
 }
 
+Date::Date (const wstring& rep)
+	: fJulianDateRep (kEmptyJulianRep)
+{
+	if (not rep.empty ()) {
+		#if		qPlatform_Wiindows
+			LCID lcid = LOCALE_USER_DEFAULT;
+			DATE		d;
+			(void)::memset (&d, 0, sizeof (d));
+			try {
+				ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
+			}
+			catch (...) {
+				Execution::DoThrow (FormatException ());
+			}
+			// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+			SYSTEMTIME	sysTime;
+			memset (&sysTime, 0, sizeof (sysTime));
+			Verify (::VariantTimeToSystemTime (d, &sysTime));
+			fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
+		#else
+			AssertNotImplemented ();
+		#endif
+	}
+}
+
 #if		qPlatform_Windows
 Date::Date (const wstring& rep, LCID lcid)
 	: fJulianDateRep (kEmptyJulianRep)

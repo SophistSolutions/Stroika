@@ -98,8 +98,9 @@ namespace	Stroika {
 					enum Javascript { eJavascript };
 					explicit Date (const wstring& rep, XML);
 					explicit Date (const wstring& rep, Javascript);
+					explicit Date (const wstring& rep);
 				#if		qPlatform_Windows
-					explicit Date (const wstring& rep, LCID lcid = LOCALE_USER_DEFAULT);
+					explicit Date (const wstring& rep, LCID lcid);
 				#endif
 					explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 				#if		qPlatform_Windows
