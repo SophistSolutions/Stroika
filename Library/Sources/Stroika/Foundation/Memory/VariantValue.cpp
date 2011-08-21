@@ -404,6 +404,23 @@ wstring	VariantValue::FormatXML () const
 	}
 }
 
+#ifndef	qGCC_StaticCastWithConversionOperationBug
+#define	qGCC_StaticCastWithConversionOperationBug		defined(__GNUC__)
+#endif
+
+#if		qGCC_StaticCastWithConversionOperationBug
+	template <typename TARGET_TYPE, typename SOURCE_TYPE>
+		inline	TARGET_TYPE myStaticCast (SOURCE_TYPE v)
+			{
+				TARGET_TYPE vv = v;
+				return vv;
+			}
+	#define	COMPILER_BWA_STATICCASTCNVOP(TARGET_TYPE,SOURCE_TYPE,SOURCE_VALUE)	myStaticCast<TARGET_TYPE,SOURCE_TYPE> (SOURCE_VALUE)
+#else
+	#define	COMPILER_BWA_STATICCASTCNVOP(TARGET_TYPE,SOURCE_TYPE,SOURCE_VALUE)	static_cast<TARGET_TYPE> (SOURCE_VALUE)
+#endif
+
+
 bool	Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
 {
 	VariantValue::Type	lt	=	lhs.GetType ();
@@ -423,8 +440,8 @@ bool	Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
 		case	VariantValue::eBoolean:		return static_cast<bool> (lhs) == static_cast<bool> (rhs);
 		case	VariantValue::eInteger:		return static_cast<int> (lhs) == static_cast<int> (rhs);
 		case	VariantValue::eFloat:		return static_cast<float> (lhs) == static_cast<float> (rhs);
-		case	VariantValue::eDate:		return static_cast<Date> (lhs) == static_cast<Date> (rhs);
-		case	VariantValue::eDateTime:	return static_cast<DateTime> (lhs) == static_cast<DateTime> (rhs);
+		case	VariantValue::eDate:		return COMPILER_BWA_STATICCASTCNVOP(Date, VariantValue, lhs) == COMPILER_BWA_STATICCASTCNVOP(Date, VariantValue, rhs);
+		case	VariantValue::eDateTime:	return COMPILER_BWA_STATICCASTCNVOP(DateTime, VariantValue, lhs) == COMPILER_BWA_STATICCASTCNVOP(DateTime, VariantValue, rhs);
 		case	VariantValue::eString:		return static_cast<wstring> (lhs) == static_cast<wstring> (rhs);
 		case	VariantValue::eArray: {
 			// same iff all elts same
