@@ -176,6 +176,16 @@ Date	Date::GetToday ()
 #endif
 }
 
+wstring	Date::Format () const
+{
+	#if		qPlatform_Windows
+		return Format (LOCALE_USER_DEFAULT);
+	#else
+		AssertNotImplemented ();
+		return wstring ();
+	#endif
+}
+
 #if		qPlatform_Windows
 wstring	Date::Format (LCID lcid) const
 {
@@ -525,9 +535,47 @@ TimeOfDay::TimeOfDay (unsigned int t)
 	fTime %= 60*60*24;				// assure small enuf to fit within a day
 }
 
+TimeOfDay::TimeOfDay (const wstring& rep)
+	: fTime (-1)
+{
+	if (rep.empty ()) {
+		Ensure (empty ());
+		return;		// if empty string - just no time specified...
+	}
 #if		qPlatform_Windows
-TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid):
-	fTime (-1)
+	LCID lcid = LOCALE_USER_DEFAULT;
+	DATE		d;
+	(void)::memset (&d, 0, sizeof (d));
+	try {
+		ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+	}
+	catch (...) {
+		// Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
+		// Detect that - and try to interpret it appropriately.
+		wstring	newRep = rep;
+		if (newRep.length () == 4 and
+			iswdigit (newRep[0]) and iswdigit (newRep[1]) and iswdigit (newRep[2]) and iswdigit (newRep[3])
+			) {
+			newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
+			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+		}
+		else {
+			Execution::DoThrow (FormatException ());
+		}
+	}
+	// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+	SYSTEMTIME	sysTime;
+	memset (&sysTime, 0, sizeof (sysTime));
+	Verify (::VariantTimeToSystemTime (d, &sysTime));
+	*this = TimeOfDay (sysTime);
+#else
+	AssertNotImplemented ();
+#endif
+}
+
+#if		qPlatform_Windows
+TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid)
+	: fTime (-1)
 {
 	if (rep.empty ()) {
 		Ensure (empty ());
@@ -859,10 +907,39 @@ TimeOfDay::operator SYSTEMTIME () const
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
+
+DateTime::DateTime (const wstring& rep)
+	: fDate ()
+	, fTimeOfDay ()
+{
+	if (not rep.empty ()) {
+#if			qPlatform_Windows
+		LCID lcid = LOCALE_USER_DEFAULT;
+		DATE		d;
+		(void)::memset (&d, 0, sizeof (d));
+		try {
+			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, 0, &d));
+		}
+		catch (...) {
+			// though COULD be time format exception?
+			Execution::DoThrow (Date::FormatException ());
+		}
+		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+		SYSTEMTIME	sysTime;
+		memset (&sysTime, 0, sizeof (sysTime));
+		Verify (::VariantTimeToSystemTime (d, &sysTime));
+		fDate = Date (sysTime);
+		fTimeOfDay = TimeOfDay (sysTime);
+#else
+		AssertNotImplemented ();
+#endif
+	}
+}
+
 #if		qPlatform_Windows
-DateTime::DateTime (const wstring& rep, LCID lcid):
-	fDate (),
-	fTimeOfDay ()
+DateTime::DateTime (const wstring& rep, LCID lcid)
+	: fDate ()
+	, fTimeOfDay ()
 {
 	if (not rep.empty ()) {
 		DATE		d;
@@ -955,7 +1032,6 @@ DateTime::DateTime (time_t unixTime):
 #endif
 }
 
-
 bool	DateTime::empty () const
 {
 	// Risky change so late in the game - but this logic seems wrong (and causes some trouble).
@@ -974,6 +1050,16 @@ DateTime	DateTime::Now ()
 #else
 	Assert (false);
 	return DateTime ();
+#endif
+}
+
+wstring	DateTime::Format () const
+{
+#if		qPlatform_Windows
+	return Format (LOCALE_USER_DEFAULT);
+#else
+	AssertNotImplemented ();
+	return wstring ();
 #endif
 }
 

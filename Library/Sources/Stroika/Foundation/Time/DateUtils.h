@@ -126,8 +126,9 @@ namespace	Stroika {
 				#endif
 
 				public:
+					nonvirtual	wstring	Format () const;
 					#if		qPlatform_Windows
-					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
+					nonvirtual	wstring	Format (LCID lcid) const;
 					nonvirtual	wstring	Format (const TString& format, LCID lcid = LOCALE_USER_DEFAULT) const;				// See GetDateFormat () format args
 					#endif
 					nonvirtual	wstring	Format4XML () const;
@@ -183,9 +184,10 @@ namespace	Stroika {
 					TimeOfDay ();
 
 					explicit TimeOfDay (unsigned int t);		// we normalize to be within a given day (seconds since midnight)
-#if		qPlatform_Windows
-					explicit TimeOfDay (const wstring& rep, LCID lcid = LOCALE_USER_DEFAULT);
-#endif
+					explicit TimeOfDay (const wstring& rep);
+				#if		qPlatform_Windows
+					explicit TimeOfDay (const wstring& rep, LCID lcid);
+				#endif
 
 					/*
 					 * If a full date, just grab the time part, and ignore the rest.
@@ -245,8 +247,9 @@ namespace	Stroika {
 
 				public:
 					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay ());
+					explicit DateTime (const wstring& rep);
 					#if		qPlatform_Windows
-					explicit DateTime (const wstring& rep, LCID lcid = LOCALE_USER_DEFAULT);
+					explicit DateTime (const wstring& rep, LCID lcid);
 					#endif
 					enum XML { eXML };
 					explicit DateTime (const wstring& rep, XML);
@@ -263,8 +266,9 @@ namespace	Stroika {
 					static	DateTime	Now ();
 
 				public:
+					nonvirtual	wstring	Format () const;
 					#if		qPlatform_Windows
-					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
+					nonvirtual	wstring	Format (LCID lcid) const;
 					#endif
 					nonvirtual	wstring	Format4XML () const;
 
