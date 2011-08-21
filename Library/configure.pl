@@ -33,6 +33,14 @@ sub mkDirWithLinks
 	mkdir "$intermediateFiles/$platform/$relPath";
 	system ("ln -s ../../../Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
 }
+sub mkDirWithLinks2
+{
+	local $relPath = $_[0];
+	local $makefileName = $_[1];
+
+	mkdir "$intermediateFiles/$platform/$relPath";
+	system ("ln -s ../../../../Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
+}
 
 
 sub MakeUnixDirs {
@@ -60,6 +68,7 @@ unless (-e $intermediateFiles) {
 	mkDirWithLinks("Math", "Makefile-Foundation-Math");
 	mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
 	mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
+	mkDirWithLinks2("Streams/JSON", "Makefile-Foundation-Streams-JSON");
 	mkDirWithLinks("Time", "Makefile-Foundation-Time");
 }
 }
