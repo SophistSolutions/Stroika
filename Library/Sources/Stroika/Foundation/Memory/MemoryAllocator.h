@@ -41,8 +41,8 @@ namespace	Stroika {
 			 */
 			class	SimpleAllocator_CallLIBCMallocFree : public AbstractGeneralPurposeAllocator {
 				public:
-					OVERRIDE	void*	Allocate (size_t size);
-					OVERRIDE	void	Deallocate (void* p);
+					OVERRIDE	void*	Allocate (size_t size) NEW_OVERRIDE_ANNOTATION;
+					OVERRIDE	void	Deallocate (void* p) NEW_OVERRIDE_ANNOTATION;
 			};
 
 
@@ -52,8 +52,8 @@ namespace	Stroika {
 			 */
 			class	SimpleAllocator_CallLIBCNewDelete : public AbstractGeneralPurposeAllocator {
 				public:
-					OVERRIDE	void*	Allocate (size_t size);
-					OVERRIDE	void	Deallocate (void* p);
+					OVERRIDE	void*	Allocate (size_t size) NEW_OVERRIDE_ANNOTATION;
+					OVERRIDE	void	Deallocate (void* p) NEW_OVERRIDE_ANNOTATION;
 			};
 
 
@@ -124,8 +124,8 @@ namespace	Stroika {
 					SimpleSizeCountingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator);
 					~SimpleSizeCountingGeneralPurposeAllocator ();
 				public:
-					OVERRIDE	void*	Allocate (size_t size);
-					OVERRIDE	void	Deallocate (void* p);
+					OVERRIDE	void*	Allocate (size_t size) NEW_OVERRIDE_ANNOTATION;
+					OVERRIDE	void	Deallocate (void* p) NEW_OVERRIDE_ANNOTATION;
 
 				public:
 					nonvirtual	size_t	GetNetAllocationCount () const;
@@ -152,8 +152,8 @@ namespace	Stroika {
 					LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator);
 					~LeakTrackingGeneralPurposeAllocator ();
 				public:
-					OVERRIDE	void*	Allocate (size_t size);
-					OVERRIDE	void	Deallocate (void* p);
+					OVERRIDE	void*	Allocate (size_t size) NEW_OVERRIDE_ANNOTATION;
+					OVERRIDE	void	Deallocate (void* p) NEW_OVERRIDE_ANNOTATION;
 
 				public:
 					nonvirtual	size_t	GetNetAllocationCount () const;
