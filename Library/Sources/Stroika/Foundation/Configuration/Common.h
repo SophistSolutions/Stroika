@@ -18,59 +18,15 @@ namespace	Stroika {
 
 			typedef	unsigned char	Byte;
 
-			#define	Nil		NULL
+
+//GET RID OF Nil - use nullptr instead -- LGP 2011-08-21
+			#define	Nil		nullptr
 
 			#define	nonvirtual
-
-// Support new C++ Spec for how todo OVERRIDE - to transition - change all my code to use OVERRIDE - and then
-// change 'override' #deifne to be empty (until using a compiler that support sit) - and then fix
-// all code calling OVERRIDE to append 'override' at the end, and THEN replace all instances of OVERRIDE with virtual, and THEN
-// get rid of OVERRIDE define (slow process....)
-			#define override		virtual
-			#define OVERRIDE		virtual
 
 			#define	NEltsOf(X)		(sizeof((X))/sizeof((X)[0]))
 			#define	StartOfArray(X)	(&(X)[0])
 			#define	EndOfArray(X)	(&(X)[NEltsOf(X)])
-
-
-			/*
-			 *	The StandaredC++ mechanism of commenting out unused parameters isn't good enuf
-			 *	in the case where the parameters might be used conditionally. This hack is
-			 *	to shutup compiler warnings in those cases.
-			 */
-			#ifndef	Arg_Unused
-			#define	Arg_Unused(x)	((void) &x)
-			#endif
-
-
-
-
-			/*
-			 *	Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
-			 *	This can allow the compiler to occasionally better optimize, but mostly avoid spurrious warnings.
-			 */
-			#if defined(_MSC_VER)
-				#define	_NoReturn_	__declspec(noreturn)
-			#elif defined (__GNUG__ )
-				#define	_NoReturn_	__attribute__((noreturn))
-			#else
-				#define	_NoReturn_
-			#endif
-
-
-
-
-			/*
-			 *	Sometimes its handy to mark a line of code as a no-op - so its arguments are not executed (as with
-			 * trace macros).
-			 */
-			#if defined(_MSC_VER)
-				#define	_NoOp_	__noop
-			#else
-				#define	_NoOp_
-			#endif
-
 
 			template	<typename	ENUM>
 				ENUM	Inc (ENUM e);

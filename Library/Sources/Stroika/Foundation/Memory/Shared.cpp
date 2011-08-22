@@ -14,7 +14,7 @@ using	namespace	Stroika::Foundation::Memory;
 
 
 // Hack because of qTemplatesHasRepository problem...
-Counter_Shared*		Memory::sCounterList_Shared	=	Nil;
+Counter_Shared*		Memory::sCounterList_Shared	=	nullptr;
 
 void	Memory::GetMem_Shared ()
 {
@@ -29,7 +29,7 @@ void	Memory::GetMem_Shared ()
 		*(Counter_Shared**)curLink = sCounterList_Shared + i;
 		curLink = *(Counter_Shared**)curLink;
 	}
-	(*(Counter_Shared**)curLink) = Nil;
+	(*(Counter_Shared**)curLink) = nullptr;
 	EnsureNotNil (sCounterList_Shared);
 }
 

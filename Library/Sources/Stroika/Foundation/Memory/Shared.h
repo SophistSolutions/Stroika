@@ -20,11 +20,11 @@
  *	Copying one of these Shared<T> just increments the referce count,
  *	and destroying/overwriting one decrements it.
  *
- *		You can have a ptr having a Nil value, and it can be copied.
+ *		You can have a ptr having a nullptr value, and it can be copied.
  *	(Implementation detail - the reference count itself is NEVER nil except upon
  *	failure of alloction of memory in ctor and then only valid op on class is
  *	destruction). You can access the value with GetPointer () but this is not
- *	advised - only if it may be legitimately Nil do you want to do this.
+ *	advised - only if it may be legitimately nullptr do you want to do this.
  *	Generaly just use ptr-> to access the data, and this will do the
  *	RequireNotNil (POINTER) for you.
  *
@@ -52,7 +52,7 @@ namespace	Stroika {
 						Shared ();	// illegal - dont call this...
 
 					public:
-						Shared (T* (*cloneFunction) (const T&), T* ptr);	// OK to pass Nil for ptr but assign before use
+						Shared (T* (*cloneFunction) (const T&), T* ptr);	// OK to pass nullptr for ptr but assign before use
 						Shared (const Shared<T>& src);
 
 						~Shared ();											// nonvirtual DTOR cuz we always keep these by value
@@ -85,7 +85,7 @@ namespace	Stroika {
 
 
 						/*
-						 * GetPointer () returns the real underlying ptr we store. It can be Nil. This should
+						 * GetPointer () returns the real underlying ptr we store. It can be nullptr. This should
 						 * rarely be used - use operator-> in preference. This is only for dealing with cases where
 						 * the ptr could legitimately be nil.
 						 */

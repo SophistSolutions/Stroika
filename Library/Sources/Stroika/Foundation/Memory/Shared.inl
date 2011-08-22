@@ -28,7 +28,7 @@ namespace	Stroika {
 					 */
 					Assert (sizeof (Counter_Shared) >= sizeof (Counter_Shared*));
 	
-					if (sCounterList_Shared == Nil) {
+					if (sCounterList_Shared == nullptr) {
 						GetMem_Shared ();
 					}
 					AssertNotNil (sCounterList_Shared);
@@ -54,7 +54,7 @@ namespace	Stroika {
 			template <class T> 
 				inline	Shared<T>::Shared (T* (*cloneFunction) (const T&), T* ptr) : 
 					fPtr (ptr),
-					fCount (Nil),
+					fCount (nullptr),
 					fCloner (cloneFunction)
 					{
 						Assert (sizeof (Counter_Shared) == sizeof (Counter));
@@ -113,13 +113,13 @@ namespace	Stroika {
 			template <class T>
 				Shared<T>::~Shared ()
 					{
-						if (fCount != Nil) {	// could be Nil in presence of exceptions
+						if (fCount != nullptr) {	// could be nullptr in presence of exceptions
 							Require (*fCount >= 1);
 							(*fCount)--;
 							/*
 							 * When reference count drops to zero, delete both the counter,
 							 * and the item we are reference counting. NB: fPtr could be
-							 * Nil at this point.
+							 * nullptr at this point.
 							 */
 							if (*fCount == 0) {
 								DeleteCounter_Shared (fCount);
@@ -136,7 +136,7 @@ namespace	Stroika {
 							* Unreference old item (deleting if ours is the last reference) and
 							* add a new reference to the rhs.
 							*
-							* NB: fPtr can still be Nil here.
+							* NB: fPtr can still be nullptr here.
 							*/
 						if (fPtr != src.fPtr) {
 							RequireNotNil (fCount);
@@ -145,7 +145,7 @@ namespace	Stroika {
 							/*
 								* When reference count drops to zero, delete both the counter,
 								* and the item we are reference counting. NB: fPtr could be
-								* Nil at this point.
+								* nullptr at this point.
 								*/
 							if (*fCount == 0) {
 								DeleteCounter_Shared (fCount);
@@ -167,7 +167,7 @@ namespace	Stroika {
 						 * Unreference old item (deleting if ours is the last reference) and
 						 * add a new reference to the rhs.
 						 *
-						 * NB: fPtr and pointer can still be Nil here.
+						 * NB: fPtr and pointer can still be nullptr here.
 						 */
 						if (fPtr != pointer) {
 							RequireNotNil (fCount);
@@ -217,12 +217,12 @@ namespace	Stroika {
 					{
 						/*
 						 * For non-const pointing, we must clone ourselves (if there are
-						 * extra referneces). If we are a Nil pointer, nobody could actually
+						 * extra referneces). If we are a nullptr pointer, nobody could actually
 						 * rereference it anyhow, so don't bother with the Assure1Reference()
 						 * in that case.
 						 */
-						if (fPtr == Nil) {
-							return (Nil);
+						if (fPtr == nullptr) {
+							return (nullptr);
 						}
 						Assure1Reference ();
 						EnsureNotNil (fPtr);
@@ -240,7 +240,7 @@ namespace	Stroika {
 						 *	item, and end up with our having the sole reference to the new copy of fPtr.
 						 *
 						 *		Since we will be cloning the given pointer, we assume(assert) that
-						 *	it is non-Nil.
+						 *	it is non-nullptr.
 						 */
 						RequireNotNil (fPtr);
 						RequireNotNil (fCloner);
