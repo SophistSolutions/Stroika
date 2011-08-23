@@ -96,42 +96,70 @@
 
 
 
-			/*
-			 *	The StandaredC++ mechanism of commenting out unused parameters isn't good enuf
-			 *	in the case where the parameters might be used conditionally. This hack is
-			 *	to shutup compiler warnings in those cases.
-			 */
-			#ifndef	Arg_Unused
-			#define	Arg_Unused(x)	((void) &x)
-			#endif
+	/*
+		*	The StandaredC++ mechanism of commenting out unused parameters isn't good enuf
+		*	in the case where the parameters might be used conditionally. This hack is
+		*	to shutup compiler warnings in those cases.
+		*/
+	#ifndef	Arg_Unused
+	#define	Arg_Unused(x)	((void) &x)
+	#endif
 
 
 
 
-			/*
-			 *	Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
-			 *	This can allow the compiler to occasionally better optimize, but mostly avoid spurrious warnings.
-			 */
-			#if defined(_MSC_VER)
-				#define	_NoReturn_	__declspec(noreturn)
-			#elif defined (__GNUG__ )
-				#define	_NoReturn_	__attribute__((noreturn))
+	/*
+		*	Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
+		*	This can allow the compiler to occasionally better optimize, but mostly avoid spurrious warnings.
+		*/
+	#if defined(_MSC_VER)
+		#define	_NoReturn_	__declspec(noreturn)
+	#elif defined (__GNUG__ )
+		#define	_NoReturn_	__attribute__((noreturn))
+	#else
+		#define	_NoReturn_
+	#endif
+
+
+
+
+	/*
+		*	Sometimes its handy to mark a line of code as a no-op - so its arguments are not executed (as with
+		* trace macros).
+		*/
+	#if defined(_MSC_VER)
+		#define	_NoOp_	__noop
+	#else
+		#define	_NoOp_
+	#endif
+
+
+
+
+	/*
+	@CONFIGVAR:		qCompilerAndStdLib_Supports_nullptr
+	@DESCRIPTION:	<p>Controls whether or not the compiler supports the nullptr value (added in C++11).</p>
+	*/
+	#if		!defined (qCompilerAndStdLib_Supports_nullptr)
+		#if		defined (__GNUC__)
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6)
+				#define	qCompilerAndStdLib_Supports_nullptr	1
 			#else
-				#define	_NoReturn_
+				#define	qCompilerAndStdLib_Supports_nullptr	0
 			#endif
+		#elif	defined (_MSC_VER)
+			#define	qCompilerAndStdLib_Supports_nullptr		1
+		#else
+			// GUESS
+			#define	qCompilerAndStdLib_Supports_nullptr	1
+		#endif
+	#endif
 
 
+	#if		!qCompilerAndStdLib_Supports_nullptr
+		#define	nullptr	NULL
+	#endif
 
-
-			/*
-			 *	Sometimes its handy to mark a line of code as a no-op - so its arguments are not executed (as with
-			 * trace macros).
-			 */
-			#if defined(_MSC_VER)
-				#define	_NoOp_	__noop
-			#else
-				#define	_NoOp_
-			#endif
 
 
 
