@@ -171,7 +171,11 @@
 	*/
 	#if		!defined (qCompilerAndStdLib_Supports_override)
 		#if		defined (__GNUC__)
-			#define	qCompilerAndStdLib_Supports_override	1
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7))
+				#define	qCompilerAndStdLib_Supports_override	1
+			#else
+				#define	qCompilerAndStdLib_Supports_override	0
+			#endif
 		#elif	defined (_MSC_VER)
 			#define	qCompilerAndStdLib_Supports_override	0
 		#else
