@@ -142,7 +142,7 @@
 	*/
 	#if		!defined (qCompilerAndStdLib_Supports_nullptr)
 		#if		defined (__GNUC__)
-			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6)
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
 				#define	qCompilerAndStdLib_Supports_nullptr	1
 			#else
 				#define	qCompilerAndStdLib_Supports_nullptr	0
