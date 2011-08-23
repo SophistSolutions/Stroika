@@ -188,17 +188,5 @@
 
 
 
-// Support new C++ Spec for how todo OVERRIDE - to transition - change all my code to use OVERRIDE - and then
-// change 'override' #deifne to be empty (until using a compiler that support sit) - and then fix
-// all code calling OVERRIDE to append 'override' at the end, and THEN replace all instances of OVERRIDE with virtual, and THEN
-// get rid of OVERRIDE define (slow process....)
-
-//#define override		virtual
-#define OVERRIDE		virtual
-#define NEW_OVERRIDE_ANNOTATION		
-//#define NEW_OVERRIDE_ANNOTATION		override
-
-
-
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_*/

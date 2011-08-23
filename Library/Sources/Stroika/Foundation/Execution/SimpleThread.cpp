@@ -271,7 +271,7 @@ namespace	{
 				{
 				}
 		protected:
-			virtual	void	Run () NEW_OVERRIDE_ANNOTATION
+			virtual	void	Run () override
 				{
 					(fFun2CallOnce) (fArg);
 				}
@@ -293,7 +293,7 @@ namespace	{
 				{
 				}
 		protected:
-			virtual	void	Run () NEW_OVERRIDE_ANNOTATION
+			virtual	void	Run () override
 				{
 					fRunnable->Run ();
 				}
