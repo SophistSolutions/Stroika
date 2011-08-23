@@ -147,7 +147,7 @@ namespace	Stroika {
 					nonvirtual	void	ThrowAbortIfNeeded () const;
 
 				public:
-					OVERRIDE	void	DO_DELETE_REF_CNT () NEW_OVERRIDE_ANNOTATION;
+					virtual	void	DO_DELETE_REF_CNT () NEW_OVERRIDE_ANNOTATION;
 
 			#if			qPlatform_Windows
 				private:

@@ -137,16 +137,38 @@
 
 
 
+	/*
+	@CONFIGVAR:		qCompilerAndStdLib_Supports_override
+	@DESCRIPTION:	<p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
+	*/
+	#if		!defined (qCompilerAndStdLib_Supports_override)
+		#if		defined (__GNUC__)
+			#define	qCompilerAndStdLib_Supports_override	1
+		#elif	defined (_MSC_VER)
+			#define	qCompilerAndStdLib_Supports_override	0
+		#else
+			// GUESS
+			#define	qCompilerAndStdLib_Supports_override	1
+		#endif
+	#endif
+
+
+	// If override is not supported, just stubbing it out but leaving it there for compilers that do support it, and/or documentation purposes
+	#if		!qCompilerAndStdLib_Supports_override
+		#define	override
+	#endif
+
+
 
 // Support new C++ Spec for how todo OVERRIDE - to transition - change all my code to use OVERRIDE - and then
 // change 'override' #deifne to be empty (until using a compiler that support sit) - and then fix
 // all code calling OVERRIDE to append 'override' at the end, and THEN replace all instances of OVERRIDE with virtual, and THEN
 // get rid of OVERRIDE define (slow process....)
-			//#define override		virtual
-			#define OVERRIDE		virtual
-			#define NEW_OVERRIDE_ANNOTATION		
-			//#define NEW_OVERRIDE_ANNOTATION		override
 
+//#define override		virtual
+#define OVERRIDE		virtual
+#define NEW_OVERRIDE_ANNOTATION		
+//#define NEW_OVERRIDE_ANNOTATION		override
 
 
 
