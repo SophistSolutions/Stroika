@@ -14,63 +14,8 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-		#if		qPlatform_Windows
-			namespace	Platform {
-				namespace	Windows {
-				//	class	Exception
-					inline	Exception::Exception (DWORD error)
-						: fError (error)
-						{
-						}
-					inline	Exception::operator DWORD () const
-						{
-							return fError;
-						}
-					inline	TString	Exception::LookupMessage () const
-						{
-							return LookupMessage (fError);
-						}
-				}
-			}
-		#endif
-
-		#if		qPlatform_Windows
-			namespace	Platform {
-				namespace	Windows {
-					//	class	StructuredException
-					inline	StructuredException::StructuredException (unsigned int seCode)
-						: fSECode (seCode)
-						{
-						}
-					inline	StructuredException::operator unsigned int () const
-						{
-							return fSECode;
-						}
-					inline	TString	StructuredException::LookupMessage () const
-						{
-							return LookupMessage (fSECode);
-						}
-				}
-			}
-		#endif
 
 
-
-		//	class	HRESULTErrorException
-		#if		qPlatform_Windows
-			inline	Platform::Windows::HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
-				fHResult (hresult)
-				{
-				}
-			inline	Platform::Windows::HRESULTErrorException::operator HRESULT () const
-				{
-					return fHResult;
-				}
-			inline	TString	Platform::Windows::HRESULTErrorException::LookupMessage () const
-				{
-					return LookupMessage (fHResult);
-				}
-		#endif
 
 	
 		//	class	errno_ErrorException

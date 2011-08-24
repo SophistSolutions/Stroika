@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_
-#define	_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_	1
+#ifndef	_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_
+#define	_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_	1
 
 #include	"../../../StroikaPreComp.h"
 
@@ -36,4 +36,4 @@ namespace	Stroika {
  ********************************************************************************
  */
 
-#endif	/*_Stroika_Foundation_Execution_OS_Win32_WaitSupport_h_*/
+#endif	/*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_*/

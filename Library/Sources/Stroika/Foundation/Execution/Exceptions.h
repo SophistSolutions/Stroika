@@ -9,9 +9,6 @@
 #include	<exception>
 #include	<string>
 #include	<cerrno>
-#if		qPlatform_Windows
-	#include	<Windows.h>
-#endif
 
 #include	"../Characters/StringUtils.h"
 #include	"../Configuration/Common.h"
@@ -20,6 +17,12 @@
 #include	"../IO/FileFormatException.h"
 
 #include	"StringException.h"
+
+#if		qPlatform_Windows
+	#include	"Platform/Windows/Exception.h"
+	#include	"Platform/Windows/HRESULTErrorException.h"
+	#include	"Platform/Windows/StructuredException.h"
+#endif
 
 
 
@@ -32,8 +35,6 @@ namespace	Stroika {
 
 
 
-
-
 			// Throw this when an error has already been reported - so that it isn't reported again
 			class	SilentException {
 			};
@@ -41,95 +42,6 @@ namespace	Stroika {
 			// mostly treat the same as SilentException
 			class	UserCanceledException : public SilentException {
 			};
-
-
-		#if		qPlatform_Windows
-			// MOVE TO SEP FILE
-			namespace	Platform {
-				namespace	Windows {
-					class	Exception {
-						public:
-							explicit Exception (DWORD error);
-
-							operator DWORD () const;
-
-						public:
-							// throw Platform::Windows::Exception () - if error is a real error, and map SOME (like #8 to bad_alloc) - but ALWAYS throw
-							// someting, regardless of error#
-							static	void	DoThrow (DWORD error);
-
-						public:
-							static	TString	LookupMessage (DWORD hr);
-							nonvirtual	TString	LookupMessage () const;
-
-						private:
-							DWORD	fError;
-
-						public:
-							static	const	DWORD	kERROR_INTERNET_TIMEOUT						=	12002;
-							static	const	DWORD	kERROR_INTERNET_INVALID_URL					=	12005;
-							static	const	DWORD	kERROR_INTERNET_UNRECOGNIZED_SCHEME			=	12006;
-							static	const	DWORD	kERROR_INTERNET_NAME_NOT_RESOLVED			=	12007;
-							static	const	DWORD	kERROR_INTERNET_PROTOCOL_NOT_FOUND			=	12008;
-							static	const	DWORD	kERROR_INTERNET_CANNOT_CONNECT				=	12029;
-					};
-				}
-			}
-//tmphack backward compat - til HF converted
-typedef	Platform::Windows::Exception	Win32ErrorException;
-		#endif
-
-
-		#if		qPlatform_Windows
-			// MOVE TO SEP FILE
-			namespace	Platform {
-				namespace	Windows {
-					class	StructuredException {
-						private:
-							unsigned int fSECode;
-
-						public:
-							explicit StructuredException (unsigned int n);
-							operator unsigned int () const;
-
-						public:
-							static	TString	LookupMessage (unsigned int n);
-							nonvirtual	TString	LookupMessage () const;
-
-						public:
-							static	void	RegisterHandler ();
-						private:
-							static	void	trans_func (unsigned int u, EXCEPTION_POINTERS* pExp);
-					};
-				}
-			}
-//tmphack backward compat - til HF converted
-typedef	Platform::Windows::StructuredException	Win32StructuredException;
-		#endif
-
-
-		#if		qPlatform_Windows
-			// MOVE TO SEP FILE
-			namespace	Platform {
-				namespace	Windows {
-					class	HRESULTErrorException {
-						public:
-							HRESULTErrorException (HRESULT hresult);
-
-							operator HRESULT () const;
-
-						public:
-							static	TString	LookupMessage (HRESULT hr);
-							nonvirtual	TString	LookupMessage () const;
-
-						private:
-							HRESULT	fHResult;
-					};
-				}
-			}
-//tmphack backward compat - til HF converted
-typedef	Platform::Windows::HRESULTErrorException	HRESULTErrorException;
-		#endif
 
 
 

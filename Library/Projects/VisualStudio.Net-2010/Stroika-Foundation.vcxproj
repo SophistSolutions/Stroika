@@ -98,7 +98,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
@@ -170,7 +173,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
@@ -232,6 +238,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />

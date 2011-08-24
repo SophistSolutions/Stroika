@@ -25,6 +25,9 @@ using	namespace	Stroika::Foundation::Execution::Platform;
 using	namespace	Stroika::Foundation::Execution::Platform::Windows;
 
 
+
+
+
 /*
  ********************************************************************************
  *************************** ResourceAccessor ***********************************

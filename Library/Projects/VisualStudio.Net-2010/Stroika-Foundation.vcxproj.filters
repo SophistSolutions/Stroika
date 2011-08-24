@@ -231,6 +231,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.cpp">
       <Filter>Sources\Streams\JSON</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -450,6 +459,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_CompilerAndStdLib_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -610,6 +628,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt">
       <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.inl">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>
