@@ -19,4 +19,4 @@ Objs	=	\
 	$(ObjDir)TString.o\
 
 all:	$(Objs)
-	echo do ar here
+

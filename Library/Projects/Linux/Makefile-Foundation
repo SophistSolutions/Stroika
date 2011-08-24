@@ -19,17 +19,40 @@ SubDirs=	\
 	Streams	\
 	Time	\
 
-all:
+
+.DEFAULT_GOAL := all
+
+
+
+all-objs:
 	@for i in $(SubDirs);\
 	do\
-	    cd $$i; make $(.DEFAULT_GOAL); cd ..;\
+	    (cd $$i; make all)\
 	done
+
+
+Stroika-Foundation.a:	all-objs
+	@echo "PROBABLY WRONG HANDLING OF OVERLAPPING NAMESPACES (eg common in two dirs) - but a decent start"
+	@rm -f Stroika-Foundation.a
+	@for i in $(SubDirs);\
+	do\
+	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq Stroika-Foundation.a $$i/$$oo); done )\
+	done
+	ranlib Stroika-Foundation.a
+
+
+all:	Stroika-Foundation.a
+
 
 clean:
 	@for i in $(SubDirs);\
 	do\
-	    cd $$i; make clean; cd ..;\
+	    (cd $$i; make clean;)\
 	done
+
+clobber::
+	rm Stroika-Foundation.a
+
 
 Build:	all
 

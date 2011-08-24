@@ -23,7 +23,7 @@ SubDirs	=	\
 	JSON
 
 all:	$(Objs) $(SubDirs)
-	@echo "do ar here (must  fix subdir stuff - not right way todo dependcies - .phony)"
+
 
 
 JSON:

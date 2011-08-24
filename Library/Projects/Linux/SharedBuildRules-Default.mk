@@ -6,9 +6,16 @@
 .DEFAULT_GOAL := all
 
 
-clean::	$(Objs)
+clean::
 	@rm -f $(Objs)
 
+
+clobber::	clean
+
+
+
+list-objs:
+	echo $(Objs)
 
 
 # default build rule - map (windowsish) top-level build arg to unixish name 'all'

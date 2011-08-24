@@ -16,4 +16,5 @@ Objs	=	\
 
 
 all:	$(Objs)
-	echo do ar here
+
+

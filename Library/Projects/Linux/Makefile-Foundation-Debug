@@ -16,4 +16,3 @@ Objs	=	\
 	$(ObjDir)Trace.o\
 
 all:	$(Objs)
-	echo do ar here

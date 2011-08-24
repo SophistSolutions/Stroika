@@ -16,4 +16,4 @@ Objs	=	\
 	$(ObjDir)Realtime.o\
 
 all:	$(Objs)
-	echo do ar here
+

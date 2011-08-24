@@ -15,4 +15,3 @@ Objs	=	\
 	$(ObjDir)ODBCClient.o\
 
 all:	$(Objs)
-	echo do ar here

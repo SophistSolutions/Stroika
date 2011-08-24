@@ -29,4 +29,4 @@ Objs	=	\
 	$(ObjDir)WaitTimedOutException.o\
 
 all:	$(Objs)
-	echo do ar here
+

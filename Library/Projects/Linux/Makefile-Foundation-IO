@@ -18,4 +18,3 @@ Objs	=	\
 	$(ObjDir)FileUtils.o\
 
 all:	$(Objs)
-	echo do ar here
