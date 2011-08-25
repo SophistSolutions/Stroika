@@ -1,0 +1,17 @@
+include ../../Configuration.mk
+include	../../SharedBuildRules.mk
+
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../../Sources/Stroika/Foundation/IO/Network/
+Includes                        =       -I.
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)URL.o\
+
+all:	$(Objs)
+

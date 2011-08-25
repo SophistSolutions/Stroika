@@ -3,10 +3,12 @@
  */
 #include	"../../StroikaPreComp.h"
 
-#include	<atlbase.h>
+#if	qPlatform_Windows
+	#include	<atlbase.h>
 
-#include	<Windows.h>
-#include	<URLMon.h>
+	#include	<Windows.h>
+	#include	<URLMon.h>
+#endif
 
 #include	"../../Execution/Exceptions.h"
 
@@ -15,7 +17,9 @@
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
+#if	qPlatform_Windows
 using	Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
+#endif
 
 using	namespace	Stroika::Foundation::IO;
 using	namespace	Stroika::Foundation::IO::Network;
@@ -42,7 +46,7 @@ namespace	{
 
 /*
  ********************************************************************************
- ****************** Network::GetDefaultPortForProtocol ***********************
+ ********************* Network::GetDefaultPortForProtocol ***********************
  ********************************************************************************
  */
 int		Network::GetDefaultPortForProtocol (const wstring& proto)
@@ -69,6 +73,7 @@ int		Network::GetDefaultPortForProtocol (const wstring& proto)
  ********************************** URLCracker **********************************
  ********************************************************************************
  */
+#if	qPlatform_Windows
 namespace	{
 	void	OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
 	{
@@ -119,6 +124,7 @@ namespace	{
 		}
 	}
 }
+#endif
 URLCracker::URLCracker (const wstring& w):
 	fProtocol (),
 	fHost (),
@@ -186,7 +192,7 @@ URLCracker::URLCracker (const wstring& w):
 						++i;
 					}
 					if (!num.empty ()) {
-						fPort = ::_wtoi (num.c_str ());
+						fPort = String2Int (num);
 					}
 				}
 			}
@@ -218,7 +224,7 @@ URLCracker::URLCracker (const wstring& w):
 	}
 
 
-#if		qDebug
+#if		qDebug && qPlatform_Windows
 	{
 		wstring	testProtocol;
 		wstring	testHost;
