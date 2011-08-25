@@ -62,13 +62,14 @@ unless (-e $intermediateFiles) {
 	mkDirWithLinks("Containers", "Makefile-Foundation-Containers");
 	mkDirWithLinks("Cryptography", "Makefile-Foundation-Cryptography");
 	mkDirWithLinks("Database", "Makefile-Foundation-Database");
+	mkDirWithLinks("DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
+	mkDirWithLinks2("DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
 	mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
 	mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
 	mkDirWithLinks("IO", "Makefile-Foundation-IO");
 	mkDirWithLinks("Math", "Makefile-Foundation-Math");
 	mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
 	mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
-	mkDirWithLinks2("Streams/JSON", "Makefile-Foundation-Streams-JSON");
 	mkDirWithLinks("Time", "Makefile-Foundation-Time");
 }
 }

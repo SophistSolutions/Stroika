@@ -7,26 +7,14 @@ ObjDir                          =       ./
 SrcDir                          =       ../../../Sources/Stroika/Foundation/Streams/
 Includes                        =       -I.
 
-.PHONY:				JSON
-
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)BadFormatException.o\
 	$(ObjDir)BinaryInputStream.o\
 	$(ObjDir)BinaryOutputStream.o\
 	$(ObjDir)Seekable.o\
 	$(ObjDir)TextInputStream.o\
 	$(ObjDir)TextOutputStream.o\
 
-SubDirs	=	\
-	JSON
-
-all:	$(Objs) $(SubDirs)
-
-
-
-JSON:
-	(cd JSON; make)
-
+all:	$(Objs)
 

@@ -6,18 +6,19 @@ VPATH = $(SrcDir)
 
 
 SubDirs=	\
-	Characters	\
-	Configuration	\
-	Containers	\
-	Cryptography	\
-	Database	\
-	Debug	\
-	Execution	\
-	IO	\
-	Math	\
-	Memory	\
-	Streams	\
-	Time	\
+	Characters		\
+	Configuration		\
+	Containers		\
+	Cryptography		\
+	Database			\
+	DataExchangeFormat	\
+	Debug			\
+	Execution			\
+	IO				\
+	Math				\
+	Memory			\
+	Streams			\
+	Time				\
 
 
 .DEFAULT_GOAL := all

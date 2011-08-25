@@ -1,0 +1,27 @@
+include ../Configuration.mk
+include	../SharedBuildRules.mk
+
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../Sources/Stroika/Foundation/DataFormatException/
+Includes                        =       -I.
+
+.PHONY:				JSON
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)BadFormatException.o\
+
+SubDirs	=	\
+	JSON
+
+all:	$(Objs) $(SubDirs)
+
+
+
+JSON:
+	(cd JSON; make)
+
+
