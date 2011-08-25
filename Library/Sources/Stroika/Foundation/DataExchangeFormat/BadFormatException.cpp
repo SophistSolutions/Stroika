@@ -13,16 +13,16 @@ using	namespace	Stroika::Foundation;
 
 /*
  ********************************************************************************
- *********************** Streams::BadFormatException ****************************
+ *********************** DataExchangeFormat::BadFormatException ****************************
  ********************************************************************************
  */
-Streams::BadFormatException::BadFormatException ()
+DataExchangeFormat::BadFormatException::BadFormatException ()
 	: StringException (L"Badly formatted input")
 	, fDetails_ ()
 {
 }
 
-Streams::BadFormatException::BadFormatException (const wstring& details)
+DataExchangeFormat::BadFormatException::BadFormatException (const wstring& details)
 	: StringException (L"Badly formatted input: " + details)
 	, fDetails_ (details)
 {

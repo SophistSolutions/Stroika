@@ -11,10 +11,10 @@
 #include	<cstdlib>
 
 #include	"../Containers/Common.h"
+#include	"../DataExchangeFormat/BadFormatException.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
-#include	"../Streams/BadFormatException.h"
 
 #include	"Base64.h"
 

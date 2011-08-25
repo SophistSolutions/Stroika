@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Streams_Writer_h_
-#define	_Stroika_Foundation_Streams_Writer_h_	1
+#ifndef	_Stroika_Foundation_DataExchangeFormat_Writer_h_
+#define	_Stroika_Foundation_DataExchangeFormat_Writer_h_	1
 
 #include	"../../StroikaPreComp.h"
 
@@ -14,7 +14,7 @@
 
 namespace	Stroika {	
 	namespace	Foundation {
-		namespace	Streams {
+		namespace	DataExchangeFormat {
 			namespace	JSON {
 
 // MUST RE-IMPLEMENT USING STROIKA TEXT_STREAM OUTPUT!!! BUT THATS NOT IMPLEMENTED/SHAKEN OUT ENUF!!! and needs tie-in to 
@@ -26,7 +26,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Streams_Writer_h_*/
+#endif	/*_Stroika_Foundation_DataExchangeFormat_Writer_h_*/
 
 
 

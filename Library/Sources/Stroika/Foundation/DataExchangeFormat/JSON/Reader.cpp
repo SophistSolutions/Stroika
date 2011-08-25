@@ -12,7 +12,7 @@
 
 
 using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Streams;
+using	namespace	Stroika::Foundation::DataExchangeFormat;
 
 
 /*
@@ -406,17 +406,17 @@ namespace	{
 
 /*
  ********************************************************************************
- ******************************* Streams::JSON::Reader **************************
+ ******************** DataExchangeFormat::JSON::Reader **************************
  ********************************************************************************
  */
-Memory::VariantValue	Streams::JSON::Reader (istream& in)
+Memory::VariantValue	DataExchangeFormat::JSON::Reader (istream& in)
 {
 	wstring	tmp	=	Prepass2UNICODE_ (in);
 	wstring::const_iterator i = tmp.begin ();
 	return Reader_value_ (&i, tmp.end ());
 }
 
-Memory::VariantValue	Streams::JSON::Reader (wistream& in)
+Memory::VariantValue	DataExchangeFormat::JSON::Reader (wistream& in)
 {
 	wstring	tmp	=	Prepass2UNICODE_ (in);
 	wstring::const_iterator i = tmp.begin ();

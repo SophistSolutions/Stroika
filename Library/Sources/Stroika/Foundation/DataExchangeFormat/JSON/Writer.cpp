@@ -11,7 +11,7 @@
 
 
 using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Streams;
+using	namespace	Stroika::Foundation::DataExchangeFormat;
 
 
 /*
@@ -23,7 +23,7 @@ using	namespace	Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- ************************** Streams::JSON::PrettyPrint **************************
+ *************** DataExchangeFormat::JSON::PrettyPrint **************************
  ********************************************************************************
  */
 namespace	{
@@ -119,7 +119,7 @@ namespace	{
 		}
 }
 
-void	Streams::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
+void	DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
 {
 	PrettyPrint_ (v, out, 0);
 }

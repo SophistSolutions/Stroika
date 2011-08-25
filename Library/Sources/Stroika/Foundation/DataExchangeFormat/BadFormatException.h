@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Streams_BadFormatException_h_
-#define	_Stroika_Foundation_Streams_BadFormatException_h_	1
+#ifndef	_Stroika_Foundation_DataExchangeFormat_BadFormatException_h_
+#define	_Stroika_Foundation_DataExchangeFormat_BadFormatException_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -10,7 +10,7 @@
 
 namespace	Stroika {	
 	namespace	Foundation {
-		namespace	Streams {
+		namespace	DataExchangeFormat {
 
 			// Use when reading from a structured stream the data is ill-formed
 			class	BadFormatException : public Execution::StringException {
@@ -28,7 +28,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Streams_BadFormatException_h_*/
+#endif	/*_Stroika_Foundation_DataExchangeFormat_BadFormatException_h_*/
 
 
 

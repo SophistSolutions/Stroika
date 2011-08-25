@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperation.cpp" />
@@ -124,11 +127,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Shared.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp" />
@@ -162,6 +162,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.h" />
@@ -201,11 +204,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Shared.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.h" />
@@ -228,6 +228,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.inl" />
@@ -261,11 +264,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Shared.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />

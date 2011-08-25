@@ -55,11 +55,17 @@
     <Filter Include="Sources\Streams">
       <UniqueIdentifier>{eba5ee5b-1eff-4a84-b2ad-88df60b433bc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Streams\JSON">
-      <UniqueIdentifier>{58b5278d-41fb-45aa-98e9-a95500a34e63}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Configuration\Private">
       <UniqueIdentifier>{27d4da00-63dc-4f7b-be10-46c6afd89e74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchangeFormat">
+      <UniqueIdentifier>{e1bf59e1-abe8-43cc-8855-ba489e000bdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchangeFormat\JSON">
+      <UniqueIdentifier>{e42a91d3-64ce-4f8a-938b-4b1c118549a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchangeFormat\XML">
+      <UniqueIdentifier>{f5abe5eb-bc4d-4e08-9e2a-92cfa9dbcc74}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -174,9 +180,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>
@@ -225,12 +228,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.cpp">
-      <Filter>Sources\Streams\JSON</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.cpp">
-      <Filter>Sources\Streams\JSON</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>
@@ -239,6 +236,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.cpp">
+      <Filter>Sources\DataExchangeFormat\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.cpp">
+      <Filter>Sources\DataExchangeFormat\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.cpp">
+      <Filter>Sources\DataExchangeFormat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -357,9 +363,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
@@ -420,12 +423,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.h">
-      <Filter>Sources\Streams\JSON</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.h">
-      <Filter>Sources\Streams\JSON</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_TChar_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
@@ -467,6 +464,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.h">
+      <Filter>Sources\DataExchangeFormat\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.h">
+      <Filter>Sources\DataExchangeFormat\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.h">
+      <Filter>Sources\DataExchangeFormat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -557,9 +563,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BadFormatException.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl">
       <Filter>Sources\IO</Filter>
     </None>
@@ -620,12 +623,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Reader.inl">
-      <Filter>Sources\Streams\JSON</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\JSON\Writer.inl">
-      <Filter>Sources\Streams\JSON</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt">
       <Filter>Sources\Configuration</Filter>
     </None>
@@ -640,6 +637,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.inl">
+      <Filter>Sources\DataExchangeFormat\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.inl">
+      <Filter>Sources\DataExchangeFormat\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl">
+      <Filter>Sources\DataExchangeFormat</Filter>
     </None>
   </ItemGroup>
 </Project>
