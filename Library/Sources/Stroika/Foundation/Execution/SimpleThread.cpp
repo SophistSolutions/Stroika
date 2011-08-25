@@ -57,8 +57,8 @@ using	namespace	Execution;
 #ifndef	qUseTLSForSAbortingFlag
 #define	qUseTLSForSAbortingFlag		0
 #endif
-#ifndef	qUseSleelExForSAbortingFlag
-#define	qUseSleelExForSAbortingFlag	qPlatform_Windows
+#ifndef	qUseSleepExForSAbortingFlag
+#define	qUseSleepExForSAbortingFlag	qPlatform_Windows
 #endif
 
 
@@ -530,7 +530,7 @@ void	Execution::CheckForThreadAborting ()
 		if (s_Aborting) {
 			Execution::DoThrow (ThreadAbortException ());
 		}
-	#elif	qUseSleelExForSAbortingFlag
+	#elif	qUseSleepExForSAbortingFlag
 		::SleepEx (0, true);
 	#else
 		Assert (false);
