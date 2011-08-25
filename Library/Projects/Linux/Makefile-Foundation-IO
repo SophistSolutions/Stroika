@@ -9,6 +9,12 @@ SrcDir                          =       ../../../Sources/Stroika/Foundation/IO/
 Includes                        =       -I.
 
 
+.PHONY:				Network
+
+SubDirs	=	\
+	Network
+
+
 VPATH = $(SrcDir)
 
 Objs	=	\
@@ -17,4 +23,11 @@ Objs	=	\
 	$(ObjDir)FileFormatException.o\
 	$(ObjDir)FileUtils.o\
 
-all:	$(Objs)
+all:	$(Objs) $(SubDirs)
+
+
+
+Network:
+	(cd Network; make)
+
+

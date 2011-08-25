@@ -65,6 +65,7 @@ unless (-e $intermediateFiles) {
 	mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
 	mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
 	mkDirWithLinks("IO", "Makefile-Foundation-IO");
+	mkDirWithLinks2("IO/Network", "Makefile-Foundation-IO-Network");
 	mkDirWithLinks("Math", "Makefile-Foundation-Math");
 	mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
 	mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
