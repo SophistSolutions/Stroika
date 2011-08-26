@@ -19,7 +19,7 @@
 			#define	qHasLibrary_ODBC		1
 		#else
 			#define	qHasLibrary_ODBC		0
-	#endif
+		#endif
 	#endif
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_Database_ODBCClient_h_*/

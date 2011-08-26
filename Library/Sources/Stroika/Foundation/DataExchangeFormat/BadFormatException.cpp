@@ -13,7 +13,7 @@ using	namespace	Stroika::Foundation;
 
 /*
  ********************************************************************************
- *********************** DataExchangeFormat::BadFormatException ****************************
+ ****************** DataExchangeFormat::BadFormatException **********************
  ********************************************************************************
  */
 DataExchangeFormat::BadFormatException::BadFormatException ()
