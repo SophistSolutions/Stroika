@@ -64,6 +64,7 @@ unless (-e $intermediateFiles) {
 	mkDirWithLinks("Database", "Makefile-Foundation-Database");
 	mkDirWithLinks("DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
 	mkDirWithLinks2("DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
+	mkDirWithLinks2("DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
 	mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
 	mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
 	mkDirWithLinks("IO", "Makefile-Foundation-IO");

@@ -8,6 +8,7 @@ SrcDir                          =       ../../../Sources/Stroika/Foundation/Data
 Includes                        =       -I.
 
 .PHONY:				JSON
+.PHONY:				XML
 
 VPATH = $(SrcDir)
 
@@ -15,13 +16,18 @@ Objs	=	\
 	$(ObjDir)BadFormatException.o\
 
 SubDirs	=	\
-	JSON
+	JSON \
+	XML \
+
 
 all:	$(Objs) $(SubDirs)
 
 
 
 JSON:
-	(cd JSON; make)
+	(cd JSON; make -s)
+
+XML:
+	(cd XML; make -s)
 
 

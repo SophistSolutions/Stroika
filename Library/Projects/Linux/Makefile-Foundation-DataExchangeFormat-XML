@@ -1,0 +1,20 @@
+include ../../Configuration.mk
+include	../../SharedBuildRules.mk
+
+CFLAGS= -c -std=c++0x $(DEBUGFLAG)
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../../Sources/Stroika/Foundation/DataExchangeFormat/XML/
+Includes                        =       -I.
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Namespace.o\
+	$(ObjDir)SAXReader.o\
+
+all:	$(Objs)
+
+
+
