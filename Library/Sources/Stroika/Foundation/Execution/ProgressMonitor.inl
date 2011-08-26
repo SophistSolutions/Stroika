@@ -12,7 +12,7 @@
  */
 #include	"../Debug/Assertions.h"
 
-#include	"ThreadAbortException.h"
+#include	"Exceptions.h"
 
 
 namespace	Stroika {	
@@ -39,7 +39,8 @@ namespace	Stroika {
 			inline	void	ProgressMontior::ThrowIfAborted ()
 				{
 					if (fAborted_) {
-						DoThrow<ThreadAbortException> (ThreadAbortException ());
+						DoThrow (UserCanceledException ());
+						//DoThrow<ThreadAbortException> (ThreadAbortException ());
 					}
 				}
 			inline	wstring	ProgressMontior::GetCurrentTaskDescription () const
