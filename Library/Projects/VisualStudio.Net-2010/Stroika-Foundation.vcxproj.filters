@@ -249,6 +249,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.cpp">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.cpp">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -480,6 +486,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_DataExchangeFormat_XML_Common_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Common.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -655,6 +673,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.inl">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.inl">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
     </None>
   </ItemGroup>
 </Project>
