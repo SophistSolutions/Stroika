@@ -21,6 +21,7 @@ Objs	=	\
 	$(ObjDir)IRunnable.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
+	$(ObjDir)ProgressMonitor.o\
 	$(ObjDir)SimpleThread.o\
 	$(ObjDir)Sleep.o\
 	$(ObjDir)StringException.o\
