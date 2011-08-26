@@ -5,6 +5,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
+print ("Building Tests...\n");
 system ("cd 1; perl buildall.pl $BLD_TRG");
 system ("cd 2; perl buildall.pl $BLD_TRG");
 system ("cd 3; perl buildall.pl $BLD_TRG");
