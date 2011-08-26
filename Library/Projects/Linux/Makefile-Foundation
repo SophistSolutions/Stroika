@@ -28,7 +28,7 @@ SubDirs=	\
 all-objs:
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make all)\
+	    (cd $$i; make -s all)\
 	done
 
 
@@ -48,11 +48,11 @@ all:	Stroika-Foundation.a
 clean:
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make clean;)\
+	    (cd $$i; make -s clean;)\
 	done
 
 clobber::
-	rm Stroika-Foundation.a
+	@rm Stroika-Foundation.a
 
 
 Build:	all
