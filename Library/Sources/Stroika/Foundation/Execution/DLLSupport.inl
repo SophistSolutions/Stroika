@@ -30,12 +30,12 @@ namespace	Stroika {
 				return ::GetProcAddress (fModule, procName);
 			#else
 				ProcAddress	addr = dlsym (fModule, procName);
-				if (addr == NULL) {
+				if (addr == nullptr) {
 					dlerror ();	// clear any old error
 					addr = dlsym (fModule, procName);
 					// interface seems to be defined only for char*, not wide strings: may need to map procName as well
 					const char*	err = dlerror ();
-					if (err != NULL) {
+					if (err != nullptr) {
 						throw DLLException (err);
 					}
 				}

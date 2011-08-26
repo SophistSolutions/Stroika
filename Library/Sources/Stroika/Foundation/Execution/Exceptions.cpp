@@ -290,14 +290,14 @@ void	CatchAndCaptureExceptionHelper::DoRunWithCatchRePropagate (Callback* callba
 bool	CatchAndCaptureExceptionHelper::AnyExceptionCaught () const
 {
 	return 
-		fStringException.get () != NULL
-		or fFileFormatException.get () != NULL
-		or fFileBusyException.get () != NULL
-		or fSilentException.get () != NULL
-		or fRequiredComponentMissingException.get () != NULL
+		fStringException.get () != nullptr
+		or fFileFormatException.get () != nullptr
+		or fFileBusyException.get () != nullptr
+		or fSilentException.get () != nullptr
+		or fRequiredComponentMissingException.get () != nullptr
 #if		qPlatform_Windows
-		or fHRESULTErrorException.get () != NULL
-		or fWin32ErrorException.get () != NULL
+		or fHRESULTErrorException.get () != nullptr
+		or fWin32ErrorException.get () != nullptr
 #endif
 		;
 }
@@ -305,26 +305,26 @@ bool	CatchAndCaptureExceptionHelper::AnyExceptionCaught () const
 void	CatchAndCaptureExceptionHelper::RethrowIfAnyCaught () const
 {
 #if		qPlatform_Windows
-	if (fHRESULTErrorException.get () != NULL) {
+	if (fHRESULTErrorException.get () != nullptr) {
 		throw *fHRESULTErrorException.get ();
 	}
-	if (fWin32ErrorException.get () != NULL) {
+	if (fWin32ErrorException.get () != nullptr) {
 		throw *fWin32ErrorException.get ();
 	}
 #endif
-	if (fStringException.get () != NULL) {
+	if (fStringException.get () != nullptr) {
 		throw *fStringException.get ();
 	}
-	if (fFileFormatException.get () != NULL) {
+	if (fFileFormatException.get () != nullptr) {
 		throw *fFileFormatException.get ();
 	}
-	if (fFileBusyException.get () != NULL) {
+	if (fFileBusyException.get () != nullptr) {
 		throw *fFileBusyException.get ();
 	}
-	if (fSilentException.get () != NULL) {
+	if (fSilentException.get () != nullptr) {
 		throw *fSilentException.get ();
 	}
-	if (fRequiredComponentMissingException.get () != NULL) {
+	if (fRequiredComponentMissingException.get () != nullptr) {
 		throw *fRequiredComponentMissingException.get ();
 	}
 }

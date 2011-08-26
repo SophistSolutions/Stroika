@@ -43,7 +43,7 @@ TString	Execution::GetEXEPath ()
 #if		qPlatform_Windows
 	Characters::TChar	buf[MAX_PATH];
 	memset (buf, 0, sizeof (buf));
-	Verify (::GetModuleFileName (NULL, buf, NEltsOf (buf)));
+	Verify (::GetModuleFileName (nullptr, buf, NEltsOf (buf)));
 	return buf;
 #else
 	AssertNotImplemented ();

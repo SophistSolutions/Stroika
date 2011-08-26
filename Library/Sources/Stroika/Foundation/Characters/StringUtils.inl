@@ -200,10 +200,10 @@ namespace	Stroika {
 					Require (wsStart <= wsEnd);
 					size_t	wsLen	=	(wsEnd - wsStart);
 			#if		qPlatform_Windows
-					int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), NULL, NULL, NULL, NULL);
+					int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), nullptr, 0, nullptr, nullptr);
 					intoResult->resize (stringLength);
 					if (stringLength != 0) {
-						Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
+						Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
 					}
 			#else
 					AssertNotImplemented ();
@@ -213,10 +213,10 @@ namespace	Stroika {
 				{
 					RequireNotNil (intoResult);
 			#if		qPlatform_Windows
-					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), NULL, NULL, NULL, NULL);
+					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), nullptr, 0, nullptr, nullptr);
 					intoResult->resize (stringLength);
 					if (stringLength != 0) {
-						Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (*intoResult), stringLength, NULL, NULL) == stringLength);
+						Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
 					}
 			#else
 					AssertNotImplemented ();
@@ -234,7 +234,7 @@ namespace	Stroika {
 					Require (sStart <= sEnd);
 					size_t	sLen	=	(sEnd - sStart);
 			#if		qPlatform_Windows
-					int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), NULL, NULL);
+					int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), nullptr, 0);
 					intoResult->resize (newStrLen);
 					if (newStrLen != 0) {
 						Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
@@ -247,7 +247,7 @@ namespace	Stroika {
 				{
 					RequireNotNil (intoResult);
 			#if		qPlatform_Windows
-					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), NULL, NULL);
+					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), nullptr, 0);
 					intoResult->resize (newStrLen);
 					if (newStrLen != 0) {
 						Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), Containers::Start (*intoResult), newStrLen) == newStrLen);
@@ -298,15 +298,15 @@ namespace	Stroika {
 		#if		qPlatform_Windows
 			inline	string	BSTRStringToUTF8 (const BSTR bstr)
 				{
-					if (bstr == NULL) {
+					if (bstr == nullptr) {
 						return string ();
 					}
 					else {
 						int	srcStrLen	=	::SysStringLen (bstr);
-						int stringLength = ::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, NULL, NULL, NULL, NULL);
+						int stringLength = ::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, nullptr, 0, nullptr, nullptr);
 						string	result;
 						result.resize (stringLength);
-						Verify (::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, NULL, NULL) == stringLength);
+						Verify (::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, nullptr, nullptr) == stringLength);
 						return result;
 					}
 				}
@@ -339,7 +339,7 @@ namespace	Stroika {
 		#if		qPlatform_Windows
 			inline	wstring	BSTR2wstring (BSTR b)
 				{
-					if (b == NULL) {
+					if (b == nullptr) {
 						return wstring ();
 					}
 					else {
@@ -539,8 +539,8 @@ namespace	Stroika {
 			template	<typename TCHAR>
 				size_t	NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
 					{
-						Require (srcTextBytes == 0 or srcText != NULL);
-						Require (outBufSize == 0 or outBuf != NULL);
+						Require (srcTextBytes == 0 or srcText != nullptr);
+						Require (outBufSize == 0 or outBuf != nullptr);
 						// Require outBufSize big enough to hold the converted srcTextBytes (best to just make sizes the same)
 
 						// NB: We DO Support the case where srcText == outBuf!!!!

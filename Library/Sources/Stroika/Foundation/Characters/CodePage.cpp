@@ -233,7 +233,7 @@ void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
 	RequireNotNil (outCharCnt);
 	size_t							outBufSize	=	*outCharCnt;
 	CodePagesGuesser::Confidence	confidence	=	CodePagesGuesser::eLow;
-	CodePage						cp			=	CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, &confidence, NULL);
+	CodePage						cp			=	CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
 	if (confidence <= CodePagesGuesser::eLow) {
 		cp = kCodePage_UTF8;
 	}
@@ -298,13 +298,13 @@ size_t	CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
 */
 void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
-	Require (inMBCharCnt == 0 or inMBChars != NULL);
+	Require (inMBCharCnt == 0 or inMBChars != nullptr);
 	RequireNotNil (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != NULL);
+	Require (*outCharCnt == 0 or outChars != nullptr);
 
 	if (GetHandleBOM ()) {
 		size_t			bytesToStrip	=	0;
-		if (CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, NULL, &bytesToStrip) == fCodePage) {
+		if (CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, nullptr, &bytesToStrip) == fCodePage) {
 			Assert (inMBCharCnt >= bytesToStrip);
 			inMBChars += bytesToStrip;
 			inMBCharCnt -= bytesToStrip;
@@ -372,9 +372,9 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 
 void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-	Require (inCharCnt == 0 or inChars != NULL);
+	Require (inCharCnt == 0 or inChars != nullptr);
 	RequireNotNil (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != NULL);
+	Require (*outCharCnt == 0 or outChars != nullptr);
 	switch (fCodePage) {
 		case	kCodePage_ANSI:		TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
 		case	kCodePage_MAC:		TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
@@ -509,9 +509,9 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
  */
 void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
-	Require (inMBCharCnt == 0 or inMBChars != NULL);
+	Require (inMBCharCnt == 0 or inMBChars != nullptr);
 	RequireNotNil (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != NULL);
+	Require (*outCharCnt == 0 or outChars != nullptr);
 //	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
 #if		qPlatform_Windows
 	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
@@ -533,11 +533,11 @@ void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCh
 
 void	Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-	Require (inCharCnt == 0 or inChars != NULL);
+	Require (inCharCnt == 0 or inChars != nullptr);
 	RequireNotNil (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != NULL);
+	Require (*outCharCnt == 0 or outChars != nullptr);
 #if		qPlatform_Windows
-	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), NULL, NULL);
+	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
 #else
 	AssertNotImplemented ();
 #endif
@@ -1165,9 +1165,9 @@ void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar
 
 void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
-	Require (inMBCharCnt == 0 or inMBChars != NULL);
+	Require (inMBCharCnt == 0 or inMBChars != nullptr);
 	RequireNotNil (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != NULL);
+	Require (*outCharCnt == 0 or outChars != nullptr);
 	
 	/*
 	 *	NOTE - based on ConvertUTF8toUTF16 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
@@ -1471,35 +1471,35 @@ bool	CodePagesInstalled::IsCodePageAvailable (CodePage cp)
 /*
 @METHOD:		CodePagesGuesser::Guess
 @DESCRIPTION:	<p>Guess the code page of the given snippet of text. Return that codepage. Always make some guess,
-			and return the level of quality of the guess in the optional parameter 'confidence' - unless its NULL (which it is by default),
+			and return the level of quality of the guess in the optional parameter 'confidence' - unless its nullptr (which it is by default),
 			and return the number of bytes of BOM (byte-order-mark) prefix to strip from teh source in 'bytesFromFrontToStrip'
-			unless it is NULL (which it is by default).</p>
+			unless it is nullptr (which it is by default).</p>
 */
 CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* confidence, size_t* bytesFromFrontToStrip)
 {
-	if (confidence != NULL) {
+	if (confidence != nullptr) {
 		*confidence = eLow;
 	}
-	if (bytesFromFrontToStrip != NULL) {
+	if (bytesFromFrontToStrip != nullptr) {
 		*bytesFromFrontToStrip = 0;
 	}
 	if (nBytes >= 2) {
 		unsigned char	c0	=	reinterpret_cast<const unsigned char*> (input)[0];
 		unsigned char	c1	=	reinterpret_cast<const unsigned char*> (input)[1];
 		if (c0 == 0xff and c1 == 0xfe) {
-			if (confidence != NULL) {
+			if (confidence != nullptr) {
 				*confidence = eHigh;
 			}
-			if (bytesFromFrontToStrip != NULL) {
+			if (bytesFromFrontToStrip != nullptr) {
 				*bytesFromFrontToStrip = 2;
 			}
 			return kCodePage_UNICODE_WIDE;
 		}
 		if (c0 == 0xfe and c1 == 0xff) {
-			if (confidence != NULL) {
+			if (confidence != nullptr) {
 				*confidence = eHigh;
 			}
-			if (bytesFromFrontToStrip != NULL) {
+			if (bytesFromFrontToStrip != nullptr) {
 				*bytesFromFrontToStrip = 2;
 			}
 			return kCodePage_UNICODE_WIDE_BIGENDIAN;
@@ -1507,10 +1507,10 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 		if (nBytes >= 3) {
 			unsigned char	c2	=	reinterpret_cast<const unsigned char*> (input)[2];
 			if (c0 == 0xef and c1 == 0xbb and c2 == 0xbf) {
-				if (confidence != NULL) {
+				if (confidence != nullptr) {
 					*confidence = eHigh;
 				}
-				if (bytesFromFrontToStrip != NULL) {
+				if (bytesFromFrontToStrip != nullptr) {
 					*bytesFromFrontToStrip = 3;
 				}
 				return kCodePage_UTF8;
@@ -1521,10 +1521,10 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 			unsigned char	c3	=	reinterpret_cast<const unsigned char*> (input)[3];
 			unsigned char	c4	=	reinterpret_cast<const unsigned char*> (input)[4];
 			if (c0 == 0x2b and c1 == 0x2f and c2 == 0x76 and c3 == 0x38 and c4 == 0x2d) {
-				if (confidence != NULL) {
+				if (confidence != nullptr) {
 					*confidence = eHigh;
 				}
-				if (bytesFromFrontToStrip != NULL) {
+				if (bytesFromFrontToStrip != nullptr) {
 					*bytesFromFrontToStrip = 5;
 				}
 				return kCodePage_UTF7;
@@ -1536,7 +1536,7 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 	/*
 	 * Final ditch efforts if we don't recognize any prefix.
 	 */
-	if (confidence != NULL) {
+	if (confidence != nullptr) {
 		*confidence = eLow;
 	}
 #if		qPlatform_Windows

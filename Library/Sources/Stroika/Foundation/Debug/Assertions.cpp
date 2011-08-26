@@ -20,7 +20,7 @@ using	namespace	Stroika::Foundation::Debug;
 
 #if		qDebug
 	namespace {
-		void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	NULL;
+		void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	nullptr;
 	}
 
 	void	(*Stroika::Foundation::Debug::GetAssertionHandler ()) (const char* fileName, int lineNum)
@@ -35,7 +35,7 @@ using	namespace	Stroika::Foundation::Debug;
 
 	void	Stroika::Foundation::Debug::_Debug_Trap_ (const char* fileName, int lineNum)
 	{
-		if (sLedAssertFailedCallback == NULL) {
+		if (sLedAssertFailedCallback == nullptr) {
 			#if		qPlatform_Windows
 				DebugBreak ();
 			#else

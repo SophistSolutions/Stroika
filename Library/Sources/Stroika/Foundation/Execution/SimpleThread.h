@@ -74,17 +74,17 @@ namespace	Stroika {
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
 					
 					// send ThreadAbortException if not forced, and TerminateThread if forced - does NOT block until Stop successful
-					// Note that its legal to call Stop on a thread in any state - including NULL. Some may just have no effect
+					// Note that its legal to call Stop on a thread in any state - including nullptr. Some may just have no effect
 					nonvirtual	void	Stop ();
 
-					// Note that its legal to call Stop_Forced_Unsafe on a thread in any state - including NULL. Some may just have no effect
+					// Note that its legal to call Stop_Forced_Unsafe on a thread in any state - including nullptr. Some may just have no effect
 					nonvirtual	void	Stop_Forced_Unsafe ();	// like Stop () - but less safe, and more forceful
 
 					// wait until thread is done (use Stop to request termination) - throws if timeout
-					// Note that its legal to call WaitForDone on a thread in any state - including NULL. Some may just have no effect
+					// Note that its legal to call WaitForDone on a thread in any state - including nullptr. Some may just have no effect
 					nonvirtual	void	WaitForDone (Time::DurationSecondsType timeout = -1.0f) const;
 
-					// Note that its legal to call StopAndWaitForDone on a thread in any state - including NULL. Some may just have no effect
+					// Note that its legal to call StopAndWaitForDone on a thread in any state - including nullptr. Some may just have no effect
 					nonvirtual	void	StopAndWaitForDone (Time::DurationSecondsType timeout = -1.0f);	// throws if timeout
 
 					// Look pumping messages until either time2Pump is exceeded or the thread completes. Its NOT an erorr if the

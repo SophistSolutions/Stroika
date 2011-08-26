@@ -75,8 +75,8 @@ class	Database::DBConnection::Rep {
 	
 	public:
 		Rep (const wstring& dsn):
-			fConnectionHandle (NULL),
-			fODBCEnvironmentHandle (NULL),
+			fConnectionHandle (nullptr),
+			fODBCEnvironmentHandle (nullptr),
 			fNestedTransactionCount (0)
 		{
 			try {
@@ -93,8 +93,8 @@ class	Database::DBConnection::Rep {
 							fConnectionHandle, 
 							reinterpret_cast<SQLTCHAR*>(const_cast<TCHAR*>(ToTString (dsn).c_str())), 
 							SQL_NTS,
-							NULL, SQL_NTS,
-							NULL, SQL_NTS
+							nullptr, SQL_NTS,
+							nullptr, SQL_NTS
 						);
 					if ((return_value != SQL_SUCCESS) && (return_value != SQL_SUCCESS_WITH_INFO)) {
 // This logic for producing an erorr message completely sucks and is largely incorrect
@@ -128,22 +128,22 @@ class	Database::DBConnection::Rep {
 				}
 			}
 			catch (...) {
-				if (fConnectionHandle != NULL) {
+				if (fConnectionHandle != nullptr) {
 					SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
-					fConnectionHandle = NULL;
+					fConnectionHandle = nullptr;
 				}
-				if (fODBCEnvironmentHandle != NULL) {
+				if (fODBCEnvironmentHandle != nullptr) {
 					SQLFreeHandle (SQL_HANDLE_ENV, fODBCEnvironmentHandle);
-					fODBCEnvironmentHandle = NULL;
+					fODBCEnvironmentHandle = nullptr;
 				}
 			}
 		}
 		virtual ~Rep ()
 		{
-			if (fConnectionHandle != NULL) {
+			if (fConnectionHandle != nullptr) {
 				SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
 			}
-			if (fODBCEnvironmentHandle != NULL) {
+			if (fODBCEnvironmentHandle != nullptr) {
 				SQLFreeHandle (SQL_HANDLE_ENV, fODBCEnvironmentHandle);
 			}
 		}

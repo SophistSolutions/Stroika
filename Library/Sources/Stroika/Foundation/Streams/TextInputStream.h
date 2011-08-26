@@ -43,7 +43,7 @@ namespace	Stroika {
 					TextInputStream ();
 				
 				public:
-					// Pointer must refer to valid memory at least bufSize long, and cannot be NULL. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
+					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
 					nonvirtual	size_t	Read (wchar_t* buffer, size_t bufSize);
 					
@@ -56,7 +56,7 @@ namespace	Stroika {
 					//nonvirtual	wstring	ReadLine ();
 
 				protected:
-					// Pointer must refer to valid memory at least bufSize long, and cannot be NULL. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
+					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
 					virtual	size_t	Read_ (wchar_t* buffer, size_t bufSize)			=	0;
 			};

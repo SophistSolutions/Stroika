@@ -43,9 +43,9 @@ using	namespace	Execution;
  ********************************************************************************
  */
 namespace	{
-	static	CriticalSection*	sEmitTraceCritSec	=	NULL;
+	static	CriticalSection*	sEmitTraceCritSec	=	nullptr;
 	#if		qTraceToFile
-		static	ofstream*	sTraceFile	=	NULL;
+		static	ofstream*	sTraceFile	=	nullptr;
 	#endif
 	#if		qPlatform_Windows
 		typedef	DWORD	ThreadID;
@@ -60,14 +60,14 @@ namespace	{
 
 Private::MODULE_INIT::MODULE_INIT ()
 {
-	Assert (sEmitTraceCritSec == NULL);
+	Assert (sEmitTraceCritSec == nullptr);
 	sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
 	#if		qDefaultTracingOn
-		Assert (sCounts == NULL);
+		Assert (sCounts == nullptr);
 		sCounts = DEBUG_NEW map<ThreadID,unsigned int> ();
 	#endif
 	#if		qTraceToFile
-		Assert (sTraceFile == NULL);
+		Assert (sTraceFile == nullptr);
 		sTraceFile = DEBUG_NEW ofstream ();
 		sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 	#endif
@@ -76,7 +76,7 @@ Private::MODULE_INIT::MODULE_INIT ()
 Private::MODULE_INIT::~MODULE_INIT ()
 {
 	delete sEmitTraceCritSec;
-	sEmitTraceCritSec = NULL;
+	sEmitTraceCritSec = nullptr;
 	#if		qTraceToFile
 		AssertNotNil (sTraceFile);
 		sTraceFile->close ();
@@ -122,7 +122,7 @@ TString	Emitter::GetTraceFileName () const
 			#if		qPlatform_Windows
 				TCHAR	mfbuf[MAX_PATH];
 				memset (mfbuf, 0, sizeof (mfbuf));
-				Verify (::GetModuleFileName (NULL, mfbuf, NEltsOf (mfbuf)));
+				Verify (::GetModuleFileName (nullptr, mfbuf, NEltsOf (mfbuf)));
 				mfname = mfbuf;
 				size_t i = mfname.rfind ('\\');
 				if (i != TString::npos) {

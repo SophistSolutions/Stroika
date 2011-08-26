@@ -76,7 +76,7 @@ TString	IO::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 #if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
-	ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
+	ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
 	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {
@@ -110,7 +110,7 @@ TString	IO::GetSpecialDir_AppData (bool createIfNotPresent)
 #if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
-	Verify (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
+	Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
 	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {
@@ -144,7 +144,7 @@ TString	IO::GetSpecialDir_WinSxS ()
 {
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
-	Verify (::SHGetSpecialFolderPath (NULL, fileBuf, CSIDL_WINDOWS, false));
+	Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_WINDOWS, false));
 	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {
@@ -297,10 +297,10 @@ TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)
 	}
 
     // obtain the IShellLink interface
-    IShellLink*		psl	=	NULL;
-    IPersistFile*	ppf	=	NULL;
+    IShellLink*		psl	=	nullptr;
+    IPersistFile*	ppf	=	nullptr;
 	try {
-		if (FAILED (::CoCreateInstance (CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl))) {
+		if (FAILED (::CoCreateInstance (CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl))) {
 			return path2FileOrShortcut;
 		}
 		if (SUCCEEDED (psl->QueryInterface (IID_IPersistFile, (LPVOID*)&ppf))) {
@@ -309,11 +309,11 @@ TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)
 				if (SUCCEEDED (psl->Resolve(0, SLR_NO_UI))) {
 					TChar	path[MAX_PATH+1];
 					memset (path, 0, sizeof (path));
-					if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), NULL, 0))) {
+					if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), nullptr, 0))) {
 						ppf->Release ();
-						ppf = NULL;
+						ppf = nullptr;
 						psl->Release ();
-						psl = NULL;
+						psl = nullptr;
 						return path;
 					}
 				}
@@ -321,18 +321,18 @@ TString	IO::ResolveShortcut (const TString& path2FileOrShortcut)
 		}
 	}
 	catch (...) {
-		if (ppf != NULL) {
+		if (ppf != nullptr) {
 			ppf->Release ();
 		}
-		if (psl != NULL) {
+		if (psl != nullptr) {
 			psl->Release ();
 		}
 		Execution::DoReThrow ();
 	}
-	if (ppf != NULL) {
+	if (ppf != nullptr) {
 		ppf->Release ();
 	}
-	if (psl != NULL) {
+	if (psl != nullptr) {
 		psl->Release ();
 	}
 	return path2FileOrShortcut;
@@ -454,9 +454,9 @@ DateTime	IO::GetFileLastAccessDate (const TString& fileName)
 void	IO::SetFileAccessWideOpened (const TString& filePathName)
 {
 #if		qPlatform_Windows
-	static	PACL pACL = NULL;	// Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
-	if (pACL == NULL) {
-		PSID pSIDEveryone = NULL;
+	static	PACL pACL = nullptr;	// Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
+	if (pACL == nullptr) {
+		PSID pSIDEveryone = nullptr;
 
 		{
 			// Specify the DACL to use.
@@ -478,7 +478,7 @@ void	IO::SetFileAccessWideOpened (const TString& filePathName)
 		ea[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
 		ea[0].Trustee.ptstrName = (LPTSTR) pSIDEveryone;
 
-		if (ERROR_SUCCESS != ::SetEntriesInAcl (NEltsOf (ea), ea, NULL, &pACL)) {
+		if (ERROR_SUCCESS != ::SetEntriesInAcl (NEltsOf (ea), ea, nullptr, &pACL)) {
 			::FreeSid (pSIDEveryone);
 			return;	// silently ignore errors - probably just old OS etc....
 		}
@@ -490,9 +490,9 @@ void	IO::SetFileAccessWideOpened (const TString& filePathName)
 			const_cast<TChar*> (filePathName.c_str ()),          // name of the object
 			SE_FILE_OBJECT,              // type of object
 			DACL_SECURITY_INFORMATION,   // change only the object's DACL
-			NULL, NULL,                  // don't change owner or group
+			nullptr, nullptr,                  // don't change owner or group
 			pACL,                        // DACL specified
-			NULL
+			nullptr
 		);                       // don't change SACL
 	// ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
 #else
@@ -527,7 +527,7 @@ void	IO::CreateDirectory (const TString& directoryPath, bool createParentCompone
 		}
 	}
 
-	if (not ::CreateDirectory (directoryPath.c_str (), NULL)) {
+	if (not ::CreateDirectory (directoryPath.c_str (), nullptr)) {
 		DWORD error = ::GetLastError ();
 		if (error != ERROR_ALREADY_EXISTS) {
 			Execution::DoThrow (Execution::Platform::Windows::Exception (error));
@@ -591,7 +591,7 @@ TString	IO::GetVolumeName (const TString& driveLetterAbsPath)
 							AssureDirectoryPathSlashTerminated (driveLetterAbsPath).c_str (),
 							volNameBuf,
 							NEltsOf (volNameBuf),
-							NULL,
+							nullptr,
 							&ignored,
 							&ignored,
 							igBuf,
@@ -618,7 +618,7 @@ TString	IO::GetVolumeName (const TString& driveLetterAbsPath)
 TString	IO::AssureLongFileName (const TString& fileName)
 {
 	#if		qPlatform_Windows
-		DWORD	r	=	::GetLongPathName (fileName.c_str (), NULL, 0);
+		DWORD	r	=	::GetLongPathName (fileName.c_str (), nullptr, 0);
 		if (r != 0) {
 			SmallStackBuffer<TChar>	buf (r);
 			r = ::GetLongPathName (fileName.c_str (), buf, r);
@@ -1095,7 +1095,7 @@ IO::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& directoryName
 	fDirectory (directoryName),
 	fWatchSubTree (watchSubTree),
 	fThread (),
-	fDoneEvent (::CreateEvent (NULL, false, false, NULL)),
+	fDoneEvent (::CreateEvent (nullptr, false, false, nullptr)),
 	fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter)),
 	fQuitting (false)
 {
@@ -1156,7 +1156,7 @@ AppTempFileManager::AppTempFileManager ():
 
 	TChar	exePath[MAX_PATH];
 	memset (exePath, 0, sizeof exePath);
-	Verify (::GetModuleFileName (NULL, exePath, NEltsOf (exePath)));
+	Verify (::GetModuleFileName (nullptr, exePath, NEltsOf (exePath)));
 
 	TString	exeFileName	=	exePath;
 	{
@@ -1189,7 +1189,7 @@ AppTempFileManager::AppTempFileManager ():
 	CreateDirectory (tmpDir);
 	for (int i = 0; i < INT_MAX; ++i) {
 		TString	d	=	tmpDir + Format (TSTR ("%s-%d-%d\\"), exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
-		if (not ::CreateDirectory (d.c_str (), NULL)) {
+		if (not ::CreateDirectory (d.c_str (), nullptr)) {
 			DWORD error = ::GetLastError ();
 			if (error == ERROR_ALREADY_EXISTS) {
 				continue;	// try again
@@ -1239,8 +1239,8 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 		(void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
 		s.insert (suffixStart, ToTString (buf));
 		if (not FileExists (s.c_str ())) {
-			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
-			if (f != NULL) {
+			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (f != nullptr) {
 				::CloseHandle (f);
 				DbgTrace (TSTR ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
 				return s;
@@ -1347,8 +1347,8 @@ TString	TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 		(void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
 		s.insert (suffixStart, ToTString (buf));
 		if (not IO::FileExists (s.c_str ())) {
-			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
-			if (f != NULL) {
+			HANDLE	f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (f != nullptr) {
 				CloseHandle (f);
 				AutoCriticalSection enterCriticalSection (fCriticalSection);
 				fFiles.insert (s);
@@ -1540,22 +1540,22 @@ FileReader::FileReader (const TChar* fileName)
 	if (kUseWIN32FILEIOAPI) {
 		// OPEN
 		// FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
-		HANDLE	fd = ::CreateFile (fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE	fd = ::CreateFile (fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 		ThrowIfFalseGetLastError (fd != INVALID_HANDLE_VALUE);
 
-		Byte*	fileData	=	NULL;
+		Byte*	fileData	=	nullptr;
 		size_t	fileLen		=	0;
 		try {
 			// Get LENGTH
-			fileLen	=	::SetFilePointer (fd, 0, NULL, FILE_END);
+			fileLen	=	::SetFilePointer (fd, 0, nullptr, FILE_END);
 			ThrowIfFalseGetLastError (fileLen != INVALID_SET_FILE_POINTER);
-			ThrowIfFalseGetLastError (::SetFilePointer (fd, 0, NULL, FILE_BEGIN) == 0);
+			ThrowIfFalseGetLastError (::SetFilePointer (fd, 0, nullptr, FILE_BEGIN) == 0);
 
 			fileData = DEBUG_NEW Byte [fileLen];
 //BAD CODE - WONT WORK FOR FILES > 4GB
 			// READ IN DATA
 			DWORD	osRead	=	0;
-			ThrowIfFalseGetLastError (::ReadFile (fd, fileData, static_cast<DWORD> (fileLen), &osRead, NULL));
+			ThrowIfFalseGetLastError (::ReadFile (fd, fileData, static_cast<DWORD> (fileLen), &osRead, nullptr));
 			ThrowIfFalseGetLastError (osRead == fileLen);
 		}
 		catch (...) {
@@ -1578,7 +1578,7 @@ FileReader::FileReader (const TChar* fileName)
 		// Get LENGTH
 		size_t	fileLen	= ::_lseek (fd, 0, SEEK_END);
 
-		Byte*	fileData	=	NULL;
+		Byte*	fileData	=	nullptr;
 		try {
 			fileData = DEBUG_NEW Byte [fileLen];
 
@@ -1659,8 +1659,8 @@ void	FileWriter::Append (const Byte* data, size_t count)
  ********************************************************************************
  */
 MemoryMappedFileReader::MemoryMappedFileReader (const TChar* fileName)
-	: fFileDataStart (NULL)
-	, fFileDataEnd (NULL)
+	: fFileDataStart (nullptr)
+	, fFileDataEnd (nullptr)
 #if			qPlatform_Windows
 	, fFileHandle (INVALID_HANDLE_VALUE)
 	, fFileMapping (INVALID_HANDLE_VALUE)
@@ -1669,14 +1669,14 @@ MemoryMappedFileReader::MemoryMappedFileReader (const TChar* fileName)
 #if			qPlatform_Windows
 	try {
 		// FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
-		fFileHandle = ::CreateFile (fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		fFileHandle = ::CreateFile (fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 		ThrowIfFalseGetLastError (fFileHandle != INVALID_HANDLE_VALUE);
-		DWORD	fileSize	=	::GetFileSize (fFileHandle, NULL);
+		DWORD	fileSize	=	::GetFileSize (fFileHandle, nullptr);
 		if (fileSize != 0) {
-			fFileMapping = ::CreateFileMapping (fFileHandle, NULL, PAGE_READONLY, 0, fileSize, 0);
-			ThrowIfFalseGetLastError (fFileMapping != NULL);
-			fFileDataStart = reinterpret_cast<const Byte*> (::MapViewOfFile (fFileMapping, FILE_MAP_READ, 0, 0, NULL));
-			ThrowIfFalseGetLastError (fFileDataStart != NULL);
+			fFileMapping = ::CreateFileMapping (fFileHandle, nullptr, PAGE_READONLY, 0, fileSize, 0);
+			ThrowIfFalseGetLastError (fFileMapping != nullptr);
+			fFileDataStart = reinterpret_cast<const Byte*> (::MapViewOfFile (fFileMapping, FILE_MAP_READ, 0, 0, 0));
+			ThrowIfFalseGetLastError (fFileDataStart != nullptr);
 			fFileDataEnd = fFileDataStart + fileSize;
 		}
 	}
@@ -1697,7 +1697,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const TChar* fileName)
 MemoryMappedFileReader::~MemoryMappedFileReader ()
 {
 #if			qPlatform_Windows
-	if (fFileDataStart != NULL) {
+	if (fFileDataStart != nullptr) {
 		(void)::UnmapViewOfFile (fFileDataStart);
 	}
 	if (fFileMapping != INVALID_HANDLE_VALUE) {

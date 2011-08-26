@@ -30,7 +30,7 @@ DLLLoader::DLLLoader (const TChar* dllName)
 	DbgTrace (TSTR ("DLLLoader - loading DLL %s"), dllName);
 	RequireNotNil (dllName);
 #if		qPlatform_Windows
-	ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != NULL);
+	ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
 #else
 	fModule = LoadDLL (dllName);
 #endif
@@ -42,7 +42,7 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
 	RequireNotNil (dllName);
 	try {
 #if		qPlatform_Windows
-		ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != NULL);
+		ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
 #else
 		fModule = LoadDLL (dllName);
 #endif
@@ -55,7 +55,7 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
 #else
 			IgnoreExceptionsForCall (fModule = LoadDLL (modulePath.c_str ()));
 #endif
-			if (fModule != NULL) {
+			if (fModule != nullptr) {
 				return;
 			}
 		}
@@ -72,10 +72,10 @@ DLLHandle	DLLLoader::LoadDLL (const TChar* dllName, int flags)
 	DLLHandle module = dlopen (dllName, flags);
 #endif
 
-	if (module == NULL) {
+	if (module == nullptr) {
 		// either main module or not found
 		const char*	err = dlerror ();
-		if (err != NULL) {
+		if (err != nullptr) {
 			throw DLLException (err);
 		}
 	}
@@ -92,7 +92,7 @@ DLLLoader::~DLLLoader ()
 #else
 	if (dlclose (fModule) != 0) {
 		const char*	err = dlerror ();
-		if (err != NULL) {
+		if (err != nullptr) {
 			throw DLLException (err);
 		}
 	}

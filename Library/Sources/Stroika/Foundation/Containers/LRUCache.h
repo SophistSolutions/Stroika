@@ -82,8 +82,8 @@ namespace	Stroika {
 						struct	CacheElement {
 							public:
 								CacheElement ():
-									fNext (NULL),
-									fPrev (NULL),
+									fNext (nullptr),
+									fPrev (nullptr),
 									fElement ()
 									{
 									}
@@ -128,7 +128,7 @@ namespace	Stroika {
 								}
 						};
 						nonvirtual	CacheIterator	begin ()	{ return fCachedElts_First; }
-						nonvirtual	CacheIterator	end ()		{ return NULL; }
+						nonvirtual	CacheIterator	end ()		{ return nullptr; }
 
 					public:
 						nonvirtual	void	ClearCache ();

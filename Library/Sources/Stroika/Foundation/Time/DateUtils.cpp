@@ -32,7 +32,7 @@ using	namespace	Time;
 namespace	{
 	wstring	GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
 		{
-			int	sizeNeeded	=	::GetLocaleInfoW (Locale, LCType, NULL, 0);
+			int	sizeNeeded	=	::GetLocaleInfoW (Locale, LCType, nullptr, 0);
 			SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
 			Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
 			return wstring (buf);
@@ -215,13 +215,13 @@ wstring	Date::Format () const
 wstring	Date::Format (LCID lcid) const
 {
 	SYSTEMTIME	st	=	*this;
-	int	nTChars	=	::GetDateFormat (lcid, DATE_SHORTDATE, &st, NULL, NULL, 0);
+	int	nTChars	=	::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, nullptr, 0);
 	if (nTChars == 0) {
 		return wstring ();
 	}
 	else {
 		SmallStackBuffer<TCHAR> buf (nTChars + 1);
-		(void)::GetDateFormat (lcid, DATE_SHORTDATE, &st, NULL, buf, nTChars+1);
+		(void)::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, buf, nTChars+1);
 		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
@@ -229,7 +229,7 @@ wstring	Date::Format (LCID lcid) const
 wstring	Date::Format (const TString& format, LCID lcid) const
 {
 	SYSTEMTIME	st	=	*this;
-	int	nTChars	=	::GetDateFormat (lcid, 0, &st, format.c_str (), NULL, 0);
+	int	nTChars	=	::GetDateFormat (lcid, 0, &st, format.c_str (), nullptr, 0);
 	if (nTChars == 0) {
 		return wstring ();
 	}
@@ -288,13 +288,13 @@ wstring	Date::Format4JScript () const
 wstring	Date::LongFormat (LCID lcid) const
 {
 	SYSTEMTIME	st	=	*this;
-	int	nTChars	=	::GetDateFormat (lcid, DATE_LONGDATE, &st, NULL, NULL, 0);
+	int	nTChars	=	::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
 	if (nTChars == 0) {
 		return wstring ();
 	}
 	else {
 		SmallStackBuffer<TCHAR> buf (nTChars + 1);
-		(void)::GetDateFormat (lcid, DATE_LONGDATE, &st, NULL, buf, nTChars+1);
+		(void)::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, buf, nTChars+1);
 		return TString2Wide (static_cast<const TCHAR*> (buf));
 	}
 }
@@ -831,7 +831,7 @@ wstring	TimeOfDay::Format (LCID lcid) const
 			// remove trailing zeros...
 			DATE	variantDate	=	0.0;
 			ThrowIfErrorHRESULT (::SystemTimeToVariantTime (&operator SYSTEMTIME (), &variantDate));
-			BSTR	tmpStr	=	NULL;
+			BSTR	tmpStr	=	nullptr;
 			ThrowIfErrorHRESULT (::VarBstrFromDate (variantDate, lcid, VAR_TIMEVALUEONLY, &tmpStr));
 			wstring	result	=	BSTR2wstring (tmpStr);
 			::SysFreeString (tmpStr);

@@ -68,7 +68,7 @@ namespace	{
 void*	SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
 {
 	void*	p	=	malloc (size);
-	if (p == NULL) {
+	if (p == nullptr) {
 		throw bad_alloc ();
 	}
 	return p;

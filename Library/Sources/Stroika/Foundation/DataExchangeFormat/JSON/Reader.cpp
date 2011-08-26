@@ -107,7 +107,7 @@ namespace	{
 	 */
 	bool	IsAtEOF_ (wstring::const_iterator* i, wstring::const_iterator end)
 		{
-			Require (i != NULL);
+			Require (i != nullptr);
 			Require (*i <= end);
 			return *i == end;
 		}
@@ -125,7 +125,7 @@ namespace	{
 	// 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
 	Memory::VariantValue	Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end)
 		{
-			Require (i != NULL);
+			Require (i != nullptr);
 			Require (*i < end);
 			wchar_t	c	=	NextChar_ (i, end);
 			if (c != '\"') {
@@ -151,7 +151,7 @@ namespace	{
 	// 'in' is positioned to the start of number, and we read, leaving in possitioned just after end of number
 	Memory::VariantValue	Reader_Number_ (wstring::const_iterator* i, wstring::const_iterator end)
 		{
-			Require (i != NULL);
+			Require (i != nullptr);
 			Require (*i < end);
 
 			bool	containsDot	=	false;
@@ -191,7 +191,7 @@ namespace	{
 
 	Memory::VariantValue	Reader_Object_ (wstring::const_iterator* i, wstring::const_iterator end)
 		{
-			Require (i != NULL);
+			Require (i != nullptr);
 			Require (*i < end);
 			map<wstring,Memory::VariantValue>	result;
 
@@ -257,7 +257,7 @@ namespace	{
 
 	Memory::VariantValue	Reader_Array_ (wstring::const_iterator* i, wstring::const_iterator end)
 		{
-			Require (i != NULL);
+			Require (i != nullptr);
 			Require (*i < end);
 			vector<Memory::VariantValue>	result;
 
@@ -305,7 +305,7 @@ namespace	{
 
 	Memory::VariantValue	Reader_SpecialToken_ (wstring::const_iterator* i, wstring::const_iterator end)
 		{
-			Require (i != NULL);
+			Require (i != nullptr);
 			Require (*i < end);
 			switch (**i) {
 				case	'f': {

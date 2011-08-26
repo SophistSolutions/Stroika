@@ -163,7 +163,7 @@ void*	operator new[] (size_t size) throw (std::bad_alloc)
 
 void	operator delete (void* pUserData)
 {
-	if (pUserData != NULL) {
+	if (pUserData != nullptr) {
 		if (sInitialized) {
 			GetAllocator_ ().Deallocate (pUserData);
 		}
@@ -175,7 +175,7 @@ void	operator delete (void* pUserData)
 
 void	operator delete[] (void* pUserData)
 {
-	if (pUserData != NULL) {
+	if (pUserData != nullptr) {
 		if (sInitialized) {
 			GetAllocator_ ().Deallocate (pUserData);
 		}
@@ -202,7 +202,7 @@ Memory::GlobalAllocationStatistics	Memory::GetGlobalAllocationStatistics ()
 	GlobalAllocationStatistics	s;
 	#if		qPlatform_Windows
 	HANDLE	hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
-	if (hProcess != NULL) {
+	if (hProcess != nullptr) {
 		#pragma comment (lib, "Psapi.lib")
 		PROCESS_MEMORY_COUNTERS	pmc;
 		memset (&pmc, 0, sizeof (pmc));

@@ -23,11 +23,11 @@ namespace	Stroika {
 		// class	Event
 			inline	Event::Event (bool manualReset, bool initialState)
 #if			qPlatform_Windows
-				: fEventHandle (::CreateEvent (NULL, manualReset, initialState, NULL))
+				: fEventHandle (::CreateEvent (nullptr, manualReset, initialState, nullptr))
 #endif
 				{
 					#if			qPlatform_Windows
-						ThrowIfFalseGetLastError (fEventHandle != NULL);
+						ThrowIfFalseGetLastError (fEventHandle != nullptr);
 						#if		qTrack_Execution_HandleCounts
 							Execution::AtomicIncrement (&sCurAllocatedHandleCount);
 						#endif

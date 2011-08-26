@@ -164,15 +164,15 @@ namespace	Stroika {
 			#endif
 			inline	void	ThrowIfNull (const void* p)
 				{
-					if (p == NULL) {
-						DoThrow (bad_alloc (), TSTR ("ThrowIfNull (NULL) - throwing bad_alloc"));
+					if (p == nullptr) {
+						DoThrow (bad_alloc (), TSTR ("ThrowIfNull (nullptr) - throwing bad_alloc"));
 					}
 				}
 			template	<typename E>
 				inline	void	ThrowIfNull (const void* p, const E& e)
 					{
-						if (p == NULL) {
-							DoThrow (e, TSTR ("ThrowIfNull (NULL,X) - throwing X"));
+						if (p == nullptr) {
+							DoThrow (e, TSTR ("ThrowIfNull (nullptr,X) - throwing X"));
 						}
 					}
 			#if		qPlatform_Windows

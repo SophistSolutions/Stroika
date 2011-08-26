@@ -68,7 +68,7 @@ namespace	Stroika {
 			template <typename T, typename BASE_ALLOCATOR>
 				inline	void STLAllocator<T,BASE_ALLOCATOR>::deallocate (pointer ptr, size_type)
 					{
-						if (ptr != NULL) {
+						if (ptr != nullptr) {
 							fBaseAllocator.Deallocate (ptr);
 						}
 					}

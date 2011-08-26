@@ -24,7 +24,7 @@ namespace	Stroika {
 					NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring ());
 
 					wstring	fURI;				// required non-null
-					wstring	fPrefix;			// can be NULL
+					wstring	fPrefix;			// can be nullptr
 				};
 				// order by URI, but equal requires both equal
 				bool	operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);

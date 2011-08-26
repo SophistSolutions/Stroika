@@ -19,7 +19,7 @@ namespace	Stroika {
 				//	class	ResourceAccessor
 				inline	bool	ResourceAccessor::GetFound () const
 					{
-						return fDataStart != NULL;
+						return fDataStart != nullptr;
 					}
 				inline	const Byte*	ResourceAccessor::GetDataStart () const
 					{

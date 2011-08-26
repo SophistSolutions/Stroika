@@ -165,14 +165,14 @@ namespace	{
 						}
 					virtual		const XMLCh* getContentType () const override
 						{
-							return NULL;
+							return nullptr;
 						}
 				protected:
 					istream&	fSource;
 			};
 
 		public :
-			StdIStream_InputSource (istream& in, const XMLCh* const bufId = NULL):
+			StdIStream_InputSource (istream& in, const XMLCh* const bufId = nullptr):
 				InputSource (bufId),
 				fSource (in)
 			{
@@ -226,7 +226,7 @@ namespace	{
 			};
 
 		public :
-			StdIStream_InputSourceWithProgress (istream& in, ProgressStatusCallback* progressCallback, const XMLCh* const bufId = NULL):
+			StdIStream_InputSourceWithProgress (istream& in, ProgressStatusCallback* progressCallback, const XMLCh* const bufId = nullptr):
 				StdIStream_InputSource (in, bufId),
 				fProgressCallback (progressCallback)
 			{
@@ -309,9 +309,9 @@ namespace	{
 		public:
 			virtual		void startElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes& attributes) override
 				{
-					Require (uri != NULL);
-					Require (localname != NULL);
-					Require (qname != NULL);
+					Require (uri != nullptr);
+					Require (localname != nullptr);
+					Require (qname != nullptr);
 					map<wstring,Value>	attrs;
 					for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
 						const XMLCh* localAttrName = attributes.getLocalName (i);
@@ -322,14 +322,14 @@ namespace	{
 				}
 			virtual		void	endElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname) override
 				{
-					Require (uri != NULL);
-					Require (localname != NULL);
-					Require (qname != NULL);
+					Require (uri != nullptr);
+					Require (localname != nullptr);
+					Require (qname != nullptr);
 					fCallback.EndElement (uri, localname, qname);
 				}
 			virtual		void	characters (const XMLCh* const chars, const XMLSize_t length) override
 				{
-					Require (chars != NULL);
+					Require (chars != nullptr);
 					Require (length != 0);
 					fCallback.CharactersInsideElement (wstring (chars, chars + length));
 				}

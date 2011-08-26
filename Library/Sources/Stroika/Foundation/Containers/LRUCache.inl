@@ -23,8 +23,8 @@ namespace	Stroika {
 							fCachedCollected_Misses (0),
 							#endif
 							fCachedElts_BUF (),
-							fCachedElts_First (NULL),
-							fCachedElts_fLast (NULL)
+							fCachedElts_First (nullptr),
+							fCachedElts_fLast (nullptr)
 						{
 							SetMaxCacheSize (maxCacheSize);
 						}
@@ -42,12 +42,12 @@ namespace	Stroika {
 								// Initially link LRU together.
 								fCachedElts_First = Containers::Start (fCachedElts_BUF);
 								fCachedElts_fLast = fCachedElts_First + maxCacheSize-1;
-								fCachedElts_BUF[0].fPrev = NULL;
+								fCachedElts_BUF[0].fPrev = nullptr;
 								for (size_t i = 0; i < maxCacheSize-1; ++i) {
 									fCachedElts_BUF[i].fNext = fCachedElts_First + (i+1);
 									fCachedElts_BUF[i+1].fPrev = fCachedElts_First + (i);
 								}
-								fCachedElts_BUF[maxCacheSize-1].fNext = NULL;
+								fCachedElts_BUF[maxCacheSize-1].fNext = nullptr;
 							}
 						}
 				template	<typename	ELEMENT>
@@ -55,14 +55,14 @@ namespace	Stroika {
 						{
 							AssertNotNil (b);
 							if (b == fCachedElts_First) {
-								Assert (b->fPrev == NULL);
+								Assert (b->fPrev == nullptr);
 								return;	// already at head
 							}
 							CacheElement*	prev	=	b->fPrev;
 							AssertNotNil (prev);					// don't call this if already at head
 							// patch following and preceeding blocks to point to each other
 							prev->fNext = b->fNext;
-							if (b->fNext == NULL) {
+							if (b->fNext == nullptr) {
 								Assert (b == fCachedElts_fLast);
 								fCachedElts_fLast = b->fPrev;
 							}
@@ -75,30 +75,30 @@ namespace	Stroika {
 							AssertNotNil (oldFirst);
 							b->fNext = oldFirst;
 							oldFirst->fPrev = b;
-							b->fPrev = NULL;
+							b->fPrev = nullptr;
 							fCachedElts_First = b;
 
-							Ensure (fCachedElts_fLast != NULL and fCachedElts_fLast->fNext == NULL);
-							Ensure (fCachedElts_First != NULL and fCachedElts_First == b and fCachedElts_First->fPrev == NULL and fCachedElts_First->fNext != NULL);
+							Ensure (fCachedElts_fLast != nullptr and fCachedElts_fLast->fNext == nullptr);
+							Ensure (fCachedElts_First != nullptr and fCachedElts_First == b and fCachedElts_First->fPrev == nullptr and fCachedElts_First->fNext != nullptr);
 						}
 				template	<typename	ELEMENT>
 					inline	void	LRUCache<ELEMENT>::ClearCache ()
 						{
-							for (CacheElement* cur = fCachedElts_First; cur != NULL; cur = cur->fNext) {
+							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
 								cur->fElement.Clear ();
 							}
 						}
 				template	<typename	ELEMENT>
 					/*
 					@METHOD:		LRUCache<ELEMENT>::LookupElement
-					@DESCRIPTION:	<p>Check and see if the given element is in the cache. Return that element if its tehre, and NULL otherwise.
+					@DESCRIPTION:	<p>Check and see if the given element is in the cache. Return that element if its tehre, and nullptr otherwise.
 								Note that this routine re-orders the cache so that the most recently looked up element is first, and because
 								of this re-ordering, its illegal to do a Lookup while a @'LRUCache<ELEMENT>::CacheIterator' exists
 								for this LRUCache.</p>
 					*/
 					inline	ELEMENT*	LRUCache<ELEMENT>::LookupElement (const COMPARE_ITEM& item)
 						{
-							for (CacheElement* cur = fCachedElts_First; cur != NULL; cur = cur->fNext) {
+							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
 								if (ELEMENT::Equal (cur->fElement, item)) {
 									ShuffleToHead (cur);
 									#if		qKeepLRUCacheStats
@@ -110,7 +110,7 @@ namespace	Stroika {
 							#if		qKeepLRUCacheStats
 								fCachedCollected_Misses++;
 							#endif
-							return NULL;
+							return nullptr;
 						}
 				template	<typename	ELEMENT>
 					/*

@@ -62,7 +62,7 @@ namespace	Stroika {
 					<p>This implementation would be slightly more efficient, and slightly less flexible, if we assumed
 				T had a base-class which contained the reference count. Right now, places where I'm using this don't warrant
 				the worry about efficiency.</p>
-					<p>NB: - we do allow for a refCntPtr to be NULL. But any call to GetRep() assert its non-null. Check with call
+					<p>NB: - we do allow for a refCntPtr to be nullptr. But any call to GetRep() assert its non-null. Check with call
 				to IsNull() first if you aren't sure.</p>
 					<P>Since this class is strictly more powerful than the STL template auto_ptr<>, but many people may already be
 				using auto_ptr<>, I've provided some mimicing routines to make the transition easier if you want to make some of your
@@ -94,7 +94,7 @@ namespace	Stroika {
 							fPtr (from.get ()),
 							fCountHolder (from._PEEK_CNT_PTR_ ())
 							{
-								if (fPtr != NULL) {
+								if (fPtr != nullptr) {
 									RequireNotNil (fCountHolder);
 									Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 								}
@@ -118,7 +118,7 @@ namespace	Stroika {
 					nonvirtual	T*		get () const;
 					nonvirtual	void	release ();
 					nonvirtual	void	clear ();
-					nonvirtual	void	reset (T* p = NULL);
+					nonvirtual	void	reset (T* p = nullptr);
 
 				public:
 					template <typename T2>

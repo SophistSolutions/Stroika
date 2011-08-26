@@ -358,8 +358,8 @@ namespace	{
 
 string	Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 {
-	Require (s == e or s != NULL);
-	Require (s == e or e != NULL);
+	Require (s == e or s != nullptr);
+	Require (s == e or e != nullptr);
 	MD5_CTX	ctx;
 	memset (&ctx, 0, sizeof (ctx));
 	MD5Init (&ctx);

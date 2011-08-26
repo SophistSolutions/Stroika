@@ -17,7 +17,7 @@ namespace	Stroika {
 			//	class	Optional::Optional<T>
 			template	<typename T>
 				inline	Optional<T>::Optional ()
-					: fValue (NULL)
+					: fValue (nullptr)
 					{
 					}
 			template	<typename T>
@@ -38,7 +38,7 @@ namespace	Stroika {
 			template	<typename T>
 				inline	const T*	Optional<T>::get () const
 					{
-						return fValue.IsNull ()? NULL : fValue.get ();
+						return fValue.IsNull ()? nullptr : fValue.get ();
 					}
 			template	<typename T>
 				inline	bool	Optional<T>::empty () const

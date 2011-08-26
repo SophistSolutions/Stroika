@@ -270,8 +270,8 @@ namespace	{
 
 string	Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
 {
-	Require (start == end or start != NULL);
-	Require (start == end or end != NULL);
+	Require (start == end or start != nullptr);
+	Require (start == end or end != nullptr);
 
 	base64_encodestate state (lb);
 	size_t srcLen = end - start;

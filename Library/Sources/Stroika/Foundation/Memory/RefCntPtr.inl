@@ -47,16 +47,16 @@ namespace	Stroika {
 		//	class	RefCntPtr<T>
 			template	<typename T>
 				inline	RefCntPtr<T>::RefCntPtr ():
-					fPtr (NULL),
-					fCountHolder (NULL)
+					fPtr (nullptr),
+					fCountHolder (nullptr)
 					{
 					}
 			template	<typename T>
 				inline	RefCntPtr<T>::RefCntPtr (T* from):
 					fPtr (from),
-					fCountHolder (NULL)
+					fCountHolder (nullptr)
 					{
-						if (from != NULL) {
+						if (from != nullptr) {
 							fCountHolder = DEBUG_NEW RefCntPtrNS::Private::SimpleRefCntPtrBase ();
 							Assert (fCountHolder->fCount_DONT_ACCESS == 0);
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
@@ -67,16 +67,16 @@ namespace	Stroika {
 					fPtr (from),
 					fCountHolder (from)
 					{
-						if (fCountHolder != NULL) {
+						if (fCountHolder != nullptr) {
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T>
 				inline	RefCntPtr<T>::RefCntPtr (T* from, RefCntPtrBase* useCounter):
 					fPtr (from),
-					fCountHolder (from == NULL? NULL: useCounter)
+					fCountHolder (from == nullptr? nullptr: useCounter)
 					{
-						if (fCountHolder != NULL) {
+						if (fCountHolder != nullptr) {
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
@@ -85,7 +85,7 @@ namespace	Stroika {
 					fPtr (from.fPtr),
 					fCountHolder (from.fCountHolder)
 					{
-						if (fPtr != NULL) {
+						if (fPtr != nullptr) {
 							RequireNotNil (fCountHolder);
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
@@ -94,19 +94,19 @@ namespace	Stroika {
 				inline	RefCntPtr<T>& RefCntPtr<T>::operator= (const RefCntPtr<T>& rhs)
 					{
 						if (rhs.fPtr != fPtr) {
-							if (fPtr != NULL) {
+							if (fPtr != nullptr) {
 								AssertNotNil (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 								if (Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0) {
 									fCountHolder->DO_DELETE_REF_CNT ();
 									delete fPtr;
-									fCountHolder = NULL;
-									fPtr = NULL;
+									fCountHolder = nullptr;
+									fPtr = nullptr;
 								}
 							}
 							fPtr = rhs.fPtr;
 							fCountHolder = rhs.fCountHolder;
-							if (fPtr != NULL) {
+							if (fPtr != nullptr) {
 								AssertNotNil (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 								Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
@@ -117,7 +117,7 @@ namespace	Stroika {
 			template	<typename T>
 				inline	RefCntPtr<T>::~RefCntPtr ()
 					{
-						if (fPtr != NULL) {
+						if (fPtr != nullptr) {
 							AssertNotNil (fCountHolder);
 							Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 							if (
@@ -131,12 +131,12 @@ namespace	Stroika {
 			template	<typename T>
 				inline	bool	RefCntPtr<T>::IsNull () const
 					{
-						return fPtr == NULL;
+						return fPtr == nullptr;
 					}
 			template	<typename T>
 				/*
 				@METHOD:		RefCntPtr<T>::GetRep
-				@DESCRIPTION:	<p>Asserts that the pointer is non-NULL.</p>
+				@DESCRIPTION:	<p>Asserts that the pointer is non-nullptr.</p>
 				*/
 				inline	T&	RefCntPtr<T>::GetRep () const
 					{
@@ -148,7 +148,7 @@ namespace	Stroika {
 			template	<typename T>
 				/*
 				@METHOD:		RefCntPtr<T>::operator->
-				@DESCRIPTION:	<p>Note - this CAN NOT return NULL (because -> semantics are typically invalid for a logically null pointer)</p>
+				@DESCRIPTION:	<p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
 				*/
 				inline	T* RefCntPtr<T>::operator-> () const
 					{
@@ -166,7 +166,7 @@ namespace	Stroika {
 			template	<typename T>
 				/*
 				@METHOD:		RefCntPtr<T>::operator->
-				@DESCRIPTION:	<p>Note - this CAN return NULL</p>
+				@DESCRIPTION:	<p>Note - this CAN return nullptr</p>
 				*/
 				inline	RefCntPtr<T>::operator T* () const
 					{
@@ -185,7 +185,7 @@ namespace	Stroika {
 			template	<typename T>
 				/*
 				@METHOD:		RefCntPtr<T>::release
-				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer NULL, but first return the
+				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
 							pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
 							<br>
 							NO - Changed API to NOT return old pointer, since COULD have been destroyed, and leads to buggy coding.
@@ -194,7 +194,7 @@ namespace	Stroika {
 				*/
 				inline	void	RefCntPtr<T>::release ()
 					{
-						*this = RefCntPtr<T> (NULL);
+						*this = RefCntPtr<T> (nullptr);
 					}
 			template	<typename T>
 				/*
@@ -226,7 +226,7 @@ namespace	Stroika {
 				*/
 				inline	size_t	RefCntPtr<T>::CurrentRefCount () const
 					{
-						return fCountHolder==NULL? 0: fCountHolder->fCount_DONT_ACCESS;
+						return fCountHolder==nullptr? 0: fCountHolder->fCount_DONT_ACCESS;
 					}
 			template	<typename T>
 				bool	RefCntPtr<T>::operator< (const RefCntPtr<T>& rhs) const
@@ -285,7 +285,7 @@ namespace	Stroika {
 template	<typename	T>
 	inline	void	ThrowIfNull (const Memory::RefCntPtr<T>& p)
 		{
-			if (p.get () == NULL) {
+			if (p.get () == nullptr) {
 				Execution::DoThrow (bad_alloc (), TSTR ("ThrowIfNull (RefCntPtr<typename T> ()) - throwing bad_alloc ()"));
 			}
 		}

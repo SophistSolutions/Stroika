@@ -70,7 +70,7 @@ namespace	Stroika {
 							*curLink = &(((char*)newLinks)[i*sz]);
 							curLink = (void**)*curLink;
 						}
-						*curLink = NULL;		// NULL-terminate the link list
+						*curLink = nullptr;		// nullptr-terminate the link list
 						return (newLinks);
 					}
 
@@ -211,7 +211,7 @@ namespace	Stroika {
 					 * To implement linked list of BlockAllocated(T)'s before they are
 					 * actually alloced, re-use the begining of this as a link pointer.
 					 */
-					if (GetNextLink_ () == NULL) {
+					if (GetNextLink_ () == nullptr) {
 						GetMem_ ();
 					}
 					void*	result = GetNextLink_ ();
@@ -225,7 +225,7 @@ namespace	Stroika {
 		template	<typename	T>	inline	void	BlockAllocated<T>::operator delete (void* p)
 			{
 				#if		qAllowBlockAllocation
-					if (p != NULL) {
+					if (p != nullptr) {
 						Execution::AutoCriticalSection	critSec (Private::GetCritSection_ ());
 						(*(void**)p) = GetNextLink_ ();
 						SetNextLink_ (p);
@@ -285,7 +285,7 @@ namespace	Stroika {
 				#endif
 			}
 
-		template	<typename	T>	void*	BlockAllocated<T>::sNextLink = NULL;
+		template	<typename	T>	void*	BlockAllocated<T>::sNextLink = nullptr;
 #endif
 
 		}

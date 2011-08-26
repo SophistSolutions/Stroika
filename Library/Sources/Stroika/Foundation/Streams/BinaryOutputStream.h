@@ -26,12 +26,12 @@ namespace	Stroika {
 					BinaryOutputStream ();
 				
 				public:
-					// pointer must refer to valid memory at least bufSize long, and cannot be NULL. BufSize must always be >= 1.
+					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
 					nonvirtual	void	Write (const Byte* buffer, size_t bufSize);
 
 				protected:
-					// pointer must refer to valid memory at least bufSize long, and cannot be NULL. BufSize must always be >= 1.
+					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
 					virtual	void	Write_ (const Byte* buffer, size_t bufSize)			=	0;
 			};

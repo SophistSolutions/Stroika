@@ -54,7 +54,7 @@ namespace	Stroika {
 							if (fAccessFreshensDate) {
 								i->second.fLastAccessedAt = Time::GetTickCount ();
 							}
-							if (result != NULL) {
+							if (result != nullptr) {
 								*result = i->second.fResult;
 							}
 							#if		qKeepTimedCacheStats

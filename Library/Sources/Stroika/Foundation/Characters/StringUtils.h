@@ -210,7 +210,7 @@ namespace	Stroika {
 
 
 
-			// return #bytes in output buffer (NO NULL TERM) - assert buffer big enough - output buf as big is input buf
+			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
 				size_t	CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
@@ -230,7 +230,7 @@ namespace	Stroika {
 			template	<typename TCHAR>
 				basic_string<TCHAR>	NLToNative (const basic_string<TCHAR>& text);
 
-			// return #bytes in output buffer (NO NULL TERM) - assert buffer big enough - output buf as big is input buf
+			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
 				size_t	NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);

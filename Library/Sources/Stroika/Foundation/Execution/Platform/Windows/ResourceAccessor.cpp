@@ -34,13 +34,13 @@ using	namespace	Stroika::Foundation::Execution::Platform::Windows;
  ********************************************************************************
  */
 ResourceAccessor::ResourceAccessor (HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType):
-	fDataStart (NULL),
-	fDataEnd (NULL)
+	fDataStart (nullptr),
+	fDataEnd (nullptr)
 {
 	HRSRC	hres	=	::FindResource (hModule, lpName, lpType);
-	if (hres != NULL) {
+	if (hres != nullptr) {
 		HGLOBAL	lglbl	=	::LoadResource (hModule, hres);
-		if (lglbl != NULL) {
+		if (lglbl != nullptr) {
 			const void*	lr	=	::LockResource (lglbl);
 			AssertNotNil (lr);
 			fDataStart = reinterpret_cast<const Byte*> (lr);

@@ -35,7 +35,7 @@ using	namespace	Stroika::Foundation::Memory;
 wstring	Characters::ACPStringToWide (const string& ws)
 {
 #if		qPlatform_Windows
-	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), NULL, NULL);
+	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), nullptr, 0);
 	wstring	result;
 	result.resize (newStrLen);
 	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (result), newStrLen) == newStrLen);
@@ -60,9 +60,9 @@ BSTR	Characters::UTF8StringToBSTR (const char* ws)
 {
 	RequireNotNil (ws);
 	size_t	wsLen	=	::strlen (ws);
-	int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), NULL, NULL);
-	BSTR result	= ::SysAllocStringLen (NULL, stringLength);
-	if (result == NULL) {
+	int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), nullptr, 0);
+	BSTR result	= ::SysAllocStringLen (nullptr, stringLength);
+	if (result == nullptr) {
 		DbgTrace ("UTF8StringToBSTR () out of memory - throwing bad_alloc");
 		throw bad_alloc ();
 	}
@@ -677,14 +677,14 @@ vector<Byte>	Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
  */
 int	Characters::HexString2Int (const string& s)
 {
-	return ::strtol (s.c_str (), NULL, 16);
+	return ::strtol (s.c_str (), nullptr, 16);
 }
 
 int	Characters::HexString2Int (const wstring& s)
 {
 	// http://msdn.microsoft.com/en-us/library/w4z2wdyc(v=vs.80).aspx
 	// http://pubs.opengroup.org/onlinepubs/009695399/functions/wcstol.html
-	return ::wcstol (s.c_str (), NULL, 16);
+	return ::wcstol (s.c_str (), nullptr, 16);
 }
 
 

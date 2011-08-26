@@ -115,28 +115,28 @@ namespace	Stroika {
 			@METHOD:		AssertMember
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	AssertMember(p,c)	Assert (dynamic_cast<c*>(p) != NULL)
+			#define	AssertMember(p,c)	Assert (dynamic_cast<c*>(p) != nullptr)
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	RequireMember(p,c)	Require (dynamic_cast<c*>(p) != NULL)
+			#define	RequireMember(p,c)	Require (dynamic_cast<c*>(p) != nullptr)
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	EnsureMember(p,c)	Ensure (dynamic_cast<c*>(p) != NULL)
+			#define	EnsureMember(p,c)	Ensure (dynamic_cast<c*>(p) != nullptr)
 
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	AssertNotNil(p)		Assert (p!=NULL)
+			#define	AssertNotNil(p)		Assert (p!=nullptr)
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	RequireNotNil(p)	Require (p!=NULL)
+			#define	RequireNotNil(p)	Require (p!=nullptr)
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	EnsureNotNil(p)		Ensure (p!=NULL)
+			#define	EnsureNotNil(p)		Ensure (p!=nullptr)
 
 
 

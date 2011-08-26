@@ -28,7 +28,7 @@ namespace	Stroika {
 				protected:
 					virtual ~AbstractGeneralPurposeAllocator ();
 		
-				// Allocate never returns NULL and Deallocate () should not be called with NULL
+				// Allocate never returns nullptr and Deallocate () should not be called with nullptr
 				// Allocate throws bad_alloc () on failure to allocate
 				public:
 					virtual	void*	Allocate (size_t size)		=	0;

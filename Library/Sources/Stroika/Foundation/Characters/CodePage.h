@@ -289,7 +289,7 @@ namespace	Stroika {
 					enum	Confidence { eLow = 0, eMedium = 10, eHigh=100 };
 
 				public:
-					nonvirtual	CodePage	Guess (const void* input, size_t nBytes, Confidence* confidence = NULL, size_t* bytesFromFrontToStrip = NULL);
+					nonvirtual	CodePage	Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
 			};
 
 

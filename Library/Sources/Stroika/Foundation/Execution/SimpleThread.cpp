@@ -103,11 +103,11 @@ int MyGetThreadId (HANDLE thread)
 			using namespace XXX;
 			static	DLLLoader	ntdll (TSTR ("ntdll.dll"));
 			static	pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
-			if (NtQueryInformationThread == NULL)
+			if (NtQueryInformationThread == nullptr)
 				return 0;	// failed to get proc address
 			THREAD_BASIC_INFORMATION	tbi;
 			THREAD_INFORMATION_CLASS	tic = ThreadBasicInformation;
-			if (NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), NULL) != STATUS_SUCCESS) {
+			if (NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
 				return 0;
 			}
 			return tbi.ClientId.UniqueThread;
@@ -139,8 +139,8 @@ SimpleThread::Rep::Rep ()
 {
 	TraceContextBumper ctx (TSTR ("SimpleThread::Rep::Rep"));
 #if			qPlatform_Windows
-	fThread = reinterpret_cast<HANDLE> (::_beginthreadex (NULL, 0, &Rep::ThreadProc, this, 0, NULL));
-	if (fThread == NULL) {
+	fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep::ThreadProc, this, 0, nullptr));
+	if (fThread == nullptr) {
 		ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
 		Platform::Windows::Exception::DoThrow (::GetLastError ());
 	}
@@ -445,7 +445,7 @@ void	SimpleThread::WaitForDone (Time::DurationSecondsType timeout) const
 
 	bool	doWait	=	false;
 #if			qPlatform_Windows
-	HANDLE	thread	=	NULL;
+	HANDLE	thread	=	nullptr;
 	{
 		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
 		if (fRep->fThread != INVALID_HANDLE_VALUE and fRep->fStatus != eCompleted) {
@@ -470,15 +470,15 @@ void	SimpleThread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecon
 	}
 
 #if			qPlatform_Windows
-	HANDLE	thread	=	NULL;
+	HANDLE	thread	=	nullptr;
 	{
 		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
 		if (fRep->fThread != INVALID_HANDLE_VALUE and fRep->fStatus != eCompleted) {
 			thread = fRep->fThread;
 		}
 	}
-	if (thread != NULL) {
-		Platform::Windows::WaitAndPumpMessages (NULL, Containers::mkV<HANDLE> (thread), timeToPump);
+	if (thread != nullptr) {
+		Platform::Windows::WaitAndPumpMessages (nullptr, Containers::mkV<HANDLE> (thread), timeToPump);
 	}
 #endif
 }
@@ -540,7 +540,7 @@ void	Execution::CheckForThreadAborting ()
 			* I think its a lower-cost way to check for a thread being aborted...
 			*			-- LGP 2010-10-26
 			*/
-//				(void)::WaitForMultipleObjectsEx (0, NULL, false, 0, true);
+//				(void)::WaitForMultipleObjectsEx (0, nullptr, false, 0, true);
 	#endif
 }
 

@@ -50,9 +50,9 @@ void	Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Ti
 	for (DurationSecondsType timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
 		(void)::MsgWaitForMultipleObjectsEx (static_cast<DWORD> (waitOn.size ()), Containers::Start (waitOn), static_cast<int> (timeLeft * 1000), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
 		MSG msg;
-		while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
+		while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
 			try {
-				if (dialog == NULL or not ::IsDialogMessage (dialog, &msg)) {
+				if (dialog == nullptr or not ::IsDialogMessage (dialog, &msg)) {
 					::TranslateMessage (&msg);
 					::DispatchMessage (&msg);
 				}
@@ -77,9 +77,9 @@ void	Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSecond
 	DurationSecondsType	endAt	=	startAt + atMostNSecs;
 
 	MSG msg;
-	while (::PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
+	while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
 		try {
-			if (dialog == NULL or not ::IsDialogMessage (dialog, &msg)) {
+			if (dialog == nullptr or not ::IsDialogMessage (dialog, &msg)) {
 				::TranslateMessage (&msg);
 				::DispatchMessage (&msg);
 			}
