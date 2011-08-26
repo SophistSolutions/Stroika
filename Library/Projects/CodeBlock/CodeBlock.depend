@@ -1,0 +1,1016 @@
+# depslib dependency file v1.0
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/Character.cpp
+	"../StroikaPreComp.h"
+	"Character.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/StroikaPreComp.h
+	"Configuration/StroikaConfig.h"
+
+1314379900 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h
+	"Private/Defaults_Configuration_Common_.h"
+	"Private/Defaults_Debug_Assertions_.h"
+	"Private/Defaults_Characters_StringUtils_.h"
+	"Private/Defaults_Characters_TChar_.h"
+	"Private/Defaults_CompilerAndStdLib_.h"
+	"Private/Defaults_Containers_LRUCache_.h"
+	"Private/Defaults_Containers_TimedCache_.h"
+	"Private/Defaults_Database_ODBCClient_.h"
+	"Private/Defaults_DataExchangeFormat_XML_Common_.h"
+	"Private/Defaults_Debug_Trace_.h"
+	"Private/Defaults_Memory_Common_.h"
+	"Private/Defaults_Memory_BlockAllocated_.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Configuration_Common_.h
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Debug_Assertions_.h
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Characters_StringUtils_.h
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Characters_TChar_.h
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_CompilerAndStdLib_.h
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Containers_LRUCache_.h
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Containers_TimedCache_.h
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Database_ODBCClient_.h
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_DataExchangeFormat_XML_Common_.h
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Debug_Trace_.h
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Memory_Common_.h
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_Memory_BlockAllocated_.h
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/Character.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"Character.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Common.h
+	<cstddef>
+	<cstdint>
+	<ciso646>
+	"Common.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Configuration/Common.inl
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/Character.inl
+	"../Debug/Assertions.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Debug/Assertions.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/CodePage.cpp
+	"../StroikaPreComp.h"
+	<algorithm>
+	<cstdio>
+	<tchar.h>
+	"../Configuration/Common.h"
+	"../Memory/SmallStackBuffer.h"
+	"CodePage.h"
+	<fstream>
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/SmallStackBuffer.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"SmallStackBuffer.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/SmallStackBuffer.inl
+	<string.h>
+	"../Debug/Assertions.h"
+	"Common.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Common.h
+	"../StroikaPreComp.h"
+	<memory>
+	"../Configuration/Common.h"
+	<crtdbg.h>
+	"Common.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Common.inl
+	"../Debug/Assertions.h"
+	"../Execution/ModuleInit.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ModuleInit.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"../Debug/Assertions.h"
+	"ModuleInit.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ModuleInit.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/CodePage.h
+	"../StroikaPreComp.h"
+	<cctype>
+	<vector>
+	<Windows.h>
+	"../Configuration/Common.h"
+	"CodePage.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/CodePage.inl
+	"../Debug/Assertions.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/StringUtils.cpp
+	"../StroikaPreComp.h"
+	<cstdarg>
+	<cstdlib>
+	<iomanip>
+	<sstream>
+	"../Containers/Common.h"
+	"../Debug/Assertions.h"
+	"../Debug/Trace.h"
+	"../Math/Common.h"
+	"../Memory/SmallStackBuffer.h"
+	"CodePage.h"
+	"StringUtils.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/Common.h
+	"../StroikaPreComp.h"
+	<cstddef>
+	"Common.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/Common.inl
+	<algorithm>
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Debug/Trace.h
+	"../StroikaPreComp.h"
+	<windows.h>
+	<tchar.h>
+	"../Characters/StringUtils.h"
+	"../Characters/TChar.h"
+	"../Characters/TString.h"
+	"../Configuration/Common.h"
+	"../Execution/ModuleInit.h"
+	"../Time/Realtime.h"
+	"Trace.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/StringUtils.h
+	"../StroikaPreComp.h"
+	<cctype>
+	<locale>
+	<string>
+	<vector>
+	"../Configuration/Common.h"
+	"CodePage.h"
+	"TChar.h"
+	"StringUtils.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/TChar.h
+	"../StroikaPreComp.h"
+	<cstdlib>
+	<tchar.h>
+	"../Configuration/Common.h"
+	"TChar.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/TChar.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/StringUtils.inl
+	"../Containers/Common.h"
+	"../Memory/SmallStackBuffer.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/TString.h
+	"../StroikaPreComp.h"
+	<string>
+	"TChar.h"
+	"TString.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/TString.inl
+	"StringUtils.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Time/Realtime.h
+	"../StroikaPreComp.h"
+	<limits>
+	"Realtime.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Time/Realtime.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Debug/Trace.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Math/Common.h
+	"../StroikaPreComp.h"
+	<cmath>
+	"Common.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Math/Common.inl
+	<limits>
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/TChar.cpp
+	"../StroikaPreComp.h"
+	"TChar.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Characters/TString.cpp
+	"../StroikaPreComp.h"
+	"TString.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/LRUCache.cpp
+	"../StroikaPreComp.h"
+	"LRUCache.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/LRUCache.h
+	"../StroikaPreComp.h"
+	<vector>
+	"../Configuration/Common.h"
+	"../Debug/Assertions.h"
+	"LRUCache.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/LRUCache.inl
+	"Common.h"
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/SetUtils.cpp
+	"../StroikaPreComp.h"
+	"SetUtils.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/SetUtils.h
+	"../StroikaPreComp.h"
+	<set>
+	"../Configuration/Common.h"
+	"SetUtils.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/SetUtils.inl
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/TimedCache.cpp
+	"../StroikaPreComp.h"
+	"TimedCache.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/TimedCache.h
+	"../StroikaPreComp.h"
+	<map>
+	"../Configuration/Common.h"
+	"../Characters/TChar.h"
+	"../Debug/Assertions.h"
+	"../Time/Realtime.h"
+	"TimedCache.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/TimedCache.inl
+	"../Debug/Assertions.h"
+	"../Debug/Trace.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/VectorUtils.cpp
+	"../StroikaPreComp.h"
+	"VectorUtils.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/VectorUtils.h
+	"../StroikaPreComp.h"
+	<algorithm>
+	<vector>
+	"../Configuration/Common.h"
+	"VectorUtils.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Containers/VectorUtils.inl
+	"../Debug/Assertions.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Cryptography/Base64.cpp
+	"../StroikaPreComp.h"
+	<algorithm>
+	<cstdlib>
+	"../Containers/Common.h"
+	"../DataExchangeFormat/BadFormatException.h"
+	"../Debug/Assertions.h"
+	"../Execution/Exceptions.h"
+	"../Memory/SmallStackBuffer.h"
+	"Base64.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.h
+	"../StroikaPreComp.h"
+	"../Execution/StringException.h"
+	"BadFormatException.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/StringException.h
+	"../StroikaPreComp.h"
+	<string>
+	"../Configuration/Common.h"
+	"StringException.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/StringException.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Exceptions.h
+	"../StroikaPreComp.h"
+	<exception>
+	<string>
+	<cerrno>
+	"../Characters/StringUtils.h"
+	"../Configuration/Common.h"
+	"../Debug/Trace.h"
+	"../IO/FileBusyException.h"
+	"../IO/FileFormatException.h"
+	"StringException.h"
+	"Platform/Windows/Exception.h"
+	"Platform/Windows/HRESULTErrorException.h"
+	"Platform/Windows/StructuredException.h"
+	"Exceptions.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileBusyException.h
+	"../StroikaPreComp.h"
+	"../Characters/TString.h"
+	"FileBusyException.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileBusyException.inl
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileFormatException.h
+	"../StroikaPreComp.h"
+	"../Characters/TString.h"
+	"FileFormatException.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileFormatException.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/Exception.h
+	"../../../StroikaPreComp.h"
+	<Windows.h>
+	"../../../Configuration/Common.h"
+	"Exception.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/Exception.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h
+	"../../../StroikaPreComp.h"
+	<Windows.h>
+	"../../../Configuration/Common.h"
+	"HRESULTErrorException.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/StructuredException.h
+	"../../../StroikaPreComp.h"
+	<Windows.h>
+	"../../../Configuration/Common.h"
+	"StructuredException.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/StructuredException.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Exceptions.inl
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Cryptography/Base64.h
+	"../StroikaPreComp.h"
+	<string>
+	<vector>
+	"../Configuration/Common.h"
+	"Base64.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Cryptography/Base64.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Cryptography/MD5.cpp
+	"../StroikaPreComp.h"
+	<algorithm>
+	<cstdlib>
+	"../Characters/StringUtils.h"
+	"../Containers/Common.h"
+	"../Debug/Assertions.h"
+	"../Memory/SmallStackBuffer.h"
+	"MD5.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Cryptography/MD5.h
+	"../StroikaPreComp.h"
+	<string>
+	<vector>
+	"../Configuration/Common.h"
+	"MD5.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Cryptography/MD5.inl
+	<ostream>
+	<sstream>
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.cpp
+	"../StroikaPreComp.h"
+	"BadFormatException.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/Reader.cpp
+	"../../StroikaPreComp.h"
+	<sstream>
+	"../../Characters/StringUtils.h"
+	"../BadFormatException.h"
+	"Reader.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/Reader.h
+	"../../StroikaPreComp.h"
+	<istream>
+	"../../Configuration/Common.h"
+	"../../Memory/VariantValue.h"
+	"Reader.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/VariantValue.h
+	"../StroikaPreComp.h"
+	<map>
+	<vector>
+	"../Configuration/Common.h"
+	"../Time/DateUtils.h"
+	"RefCntPtr.h"
+	"VariantValue.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Time/DateUtils.h
+	"../StroikaPreComp.h"
+	<climits>
+	<string>
+	<Windows.h>
+	"../Characters/TString.h"
+	"../Configuration/Common.h"
+	"DateUtils.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Time/DateUtils.inl
+	"../Execution/Exceptions.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/RefCntPtr.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"../Execution/AtomicOperations.h"
+	"../Execution/Exceptions.h"
+	"RefCntPtr.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/AtomicOperations.h
+	"../StroikaPreComp.h"
+	<cstdint>
+	"AtomicOperations.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/AtomicOperations.inl
+	<windows.h>
+	"../Debug/Assertions.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/RefCntPtr.inl
+	"../Execution/AtomicOperations.h"
+	"BlockAllocated.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/BlockAllocated.h
+	"../StroikaPreComp.h"
+	<cstddef>
+	"../Configuration/Common.h"
+	"../Execution/ModuleInit.h"
+	"BlockAllocated.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/BlockAllocated.inl
+	<algorithm>
+	"../Debug/Assertions.h"
+	"../Execution/CriticalSection.h"
+	"Common.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/CriticalSection.h
+	"../StroikaPreComp.h"
+	<windows.h>
+	"../Configuration/Common.h"
+	"CriticalSection.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/CriticalSection.inl
+	"Exceptions.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/VariantValue.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/Reader.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/Writer.cpp
+	"../../StroikaPreComp.h"
+	<sstream>
+	"../../Characters/StringUtils.h"
+	"Writer.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/Writer.h
+	"../../StroikaPreComp.h"
+	<ostream>
+	"../../Configuration/Common.h"
+	"../../Memory/VariantValue.h"
+	"Writer.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/Writer.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.cpp
+	"../../StroikaPreComp.h"
+	<sstream>
+	"../../Characters/StringUtils.h"
+	"../BadFormatException.h"
+	"Namespace.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.h
+	"../../StroikaPreComp.h"
+	<istream>
+	"../../Configuration/Common.h"
+	"../../Memory/VariantValue.h"
+	"Common.h"
+	"Namespace.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Common.h
+	"../../StroikaPreComp.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.cpp
+	"../../StroikaPreComp.h"
+	<sstream>
+	"../../Characters/StringUtils.h"
+	"../BadFormatException.h"
+	"SAXReader.h"
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/BinInputStream.hpp>
+	<xercesc/dom/DOM.hpp>
+	<xercesc/framework/MemBufInputSource.hpp>
+	<xercesc/framework/MemBufFormatTarget.hpp>
+	<xercesc/util/XMLUni.hpp>
+	<xercesc/util/OutOfMemoryException.hpp>
+	<xercesc/sax2/XMLReaderFactory.hpp>
+	<xercesc/sax2/SAX2XMLReader.hpp>
+	<xercesc/sax2/DefaultHandler.hpp>
+	<xercesc/validators/common/Grammar.hpp>
+	<xercesc/parsers/XercesDOMParser.hpp>
+	<xercesc/framework/LocalFileFormatTarget.hpp>
+	<xercesc/framework/XMLGrammarPoolImpl.hpp>
+	<xercesc/util/XMLEntityResolver.hpp>
+	<xercesc/sax/InputSource.hpp>
+	<xercesc/parsers/SAX2XMLReaderImpl.hpp>
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h
+	"../../StroikaPreComp.h"
+	<istream>
+	"../../Configuration/Common.h"
+	"../../Execution/ProgressMonitor.h"
+	"../../Memory/VariantValue.h"
+	"Common.h"
+	"SAXReader.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.h
+	"../StroikaPreComp.h"
+	<string>
+	"../Configuration/Common.h"
+	"../Memory/RefCntPtr.h"
+	"CriticalSection.h"
+	"ProgressMonitor.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.inl
+	"../Debug/Assertions.h"
+	"Exceptions.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Database/ODBCClient.cpp
+	"../StroikaPreComp.h"
+	<windows.h>
+	<sql.h>
+	<sqlext.h>
+	"ODBCClient.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Database/ODBCClient.h
+	"../StroikaPreComp.h"
+	<Windows.h>
+	<string>
+	"../Characters/StringUtils.h"
+	"../Execution/Exceptions.h"
+	"../Memory/RefCntPtr.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Debug/Assertions.cpp
+	"../StroikaPreComp.h"
+	<cassert>
+	<Windows.h>
+	"Assertions.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Debug/Trace.cpp
+	"../StroikaPreComp.h"
+	<cstdarg>
+	<cstdio>
+	<fstream>
+	<map>
+	<cmath>
+	"../Configuration/StroikaConfig.h"
+	"../Execution/CriticalSection.h"
+	"../Memory/Common.h"
+	"../Time/Realtime.h"
+	"../IO/FileUtils.h"
+	"../Time/DateUtils.h"
+	"Trace.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileUtils.h
+	"../StroikaPreComp.h"
+	<fstream>
+	<sstream>
+	<set>
+	<vector>
+	<Windows.h>
+	"../Characters/StringUtils.h"
+	"../Characters/TChar.h"
+	"../Configuration/Common.h"
+	"../Debug/Assertions.h"
+	"../Execution/Exceptions.h"
+	"../Execution/SimpleThread.h"
+	"../Time/DateUtils.h"
+	"FileAccessMode.h"
+	"FileUtils.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/SimpleThread.h
+	"../StroikaPreComp.h"
+	<windows.h>
+	"../Configuration/Common.h"
+	"../Memory/RefCntPtr.h"
+	"../Time/Realtime.h"
+	"CriticalSection.h"
+	"Exceptions.h"
+	"Event.h"
+	"IRunnable.h"
+	"SimpleThread.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Event.h
+	"../StroikaPreComp.h"
+	<windows.h>
+	"../Configuration/Common.h"
+	"../Memory/RefCntPtr.h"
+	"CriticalSection.h"
+	"Exceptions.h"
+	"Event.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Event.inl
+	"AtomicOperations.h"
+	"WaitAbandonedException.h"
+	"WaitTimedOutException.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/WaitAbandonedException.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"Exceptions.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/WaitTimedOutException.h
+	"../StroikaPreComp.h"
+	"Exceptions.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/IRunnable.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"../Memory/RefCntPtr.h"
+	"CriticalSection.h"
+	"Exceptions.h"
+	"Event.h"
+	"IRunnable.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/IRunnable.inl
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/SimpleThread.inl
+	"ThreadAbortException.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ThreadAbortException.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"Exceptions.h"
+	"ThreadAbortException.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ThreadAbortException.inl
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileAccessMode.h
+	"../StroikaPreComp.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileUtils.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/AtomicOperation.cpp
+	"../StroikaPreComp.h"
+	"CriticalSection.h"
+	"AtomicOperations.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/CopyableCriticalSection.cpp
+	"../StroikaPreComp.h"
+	"../Configuration/StroikaConfig.h"
+	"CopyableCriticalSection.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/CopyableCriticalSection.h
+	"../StroikaPreComp.h"
+	<Windows.h>
+	"../Configuration/Common.h"
+	"../Memory/RefCntPtr.h"
+	"CriticalSection.h"
+	"CopyableCriticalSection.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/CopyableCriticalSection.inl
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/CriticalSection.cpp
+	"../StroikaPreComp.h"
+	"CriticalSection.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/DLLSupport.cpp
+	"../StroikaPreComp.h"
+	"../Debug/Assertions.h"
+	"../Debug/Trace.h"
+	"Exceptions.h"
+	"DLLSupport.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/DLLSupport.h
+	"../StroikaPreComp.h"
+	<tchar.h>
+	<Windows.h>
+	<dlfcn.h>
+	"../Characters/TString.h"
+	"../Execution/StringException.h"
+	"DLLSupport.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/DLLSupport.inl
+	"../Debug/Assertions.h"
+	"../Characters/StringUtils.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Event.cpp
+	"../StroikaPreComp.h"
+	"Event.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Exceptions.cpp
+	"../StroikaPreComp.h"
+	<errno.h>
+	"../Characters/StringUtils.h"
+	"../Debug/Trace.h"
+	"../IO/FileAccessException.h"
+	"../IO/FileUtils.h"
+	"Exceptions.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileAccessException.h
+	"../StroikaPreComp.h"
+	"../Characters/TString.h"
+	"../Execution/StringException.h"
+	"FileAccessMode.h"
+	"FileAccessException.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileAccessException.inl
+	"../Debug/Trace.h"
+	"../Execution/Exceptions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/IRunnable.cpp
+	"../StroikaPreComp.h"
+	"IRunnable.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Module.cpp
+	"../StroikaPreComp.h"
+	<windows.h>
+	"../IO/FileUtils.h"
+	"Module.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Module.h
+	"../StroikaPreComp.h"
+	"../Characters/TString.h"
+	"../Configuration/Common.h"
+	"Module.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Module.inl
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ModuleInit.cpp
+	"../StroikaPreComp.h"
+	"ModuleInit.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ProgressMonitor.cpp
+	"../StroikaPreComp.h"
+	"ProgressMonitor.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/SimpleThread.cpp
+	"../StroikaPreComp.h"
+	"../Configuration/StroikaConfig.h"
+	<process.h>
+	<windows.h>
+	"DLLSupport.h"
+	"../Debug/Trace.h"
+	"../Containers/VectorUtils.h"
+	"../Time/Realtime.h"
+	"Platform/Windows/WaitSupport.h"
+	"SimpleThread.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Platform/Windows/WaitSupport.h
+	"../../../StroikaPreComp.h"
+	<Windows.h>
+	"../../../Configuration/Common.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Sleep.cpp
+	"../StroikaPreComp.h"
+	"../Configuration/StroikaConfig.h"
+	"Sleep.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Sleep.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"../Time/Realtime.h"
+	"Sleep.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/Sleep.inl
+	<windows.h>
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/StringException.cpp
+	"../StroikaPreComp.h"
+	"StringException.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/ThreadAbortException.cpp
+	"../StroikaPreComp.h"
+	"ThreadAbortException.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/WaitAbandonedException.cpp
+	"../StroikaPreComp.h"
+	"WaitAbandonedException.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Execution/WaitTimedOutException.cpp
+	"../StroikaPreComp.h"
+	"WaitTimedOutException.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp
+	"../StroikaPreComp.h"
+	"../Characters/StringUtils.h"
+	"FileAccessException.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileBusyException.cpp
+	"../StroikaPreComp.h"
+	"FileBusyException.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileFormatException.cpp
+	"../StroikaPreComp.h"
+	"FileFormatException.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/FileUtils.cpp
+	"../StroikaPreComp.h"
+	<sys/stat.h>
+	<ctime>
+	<limits>
+	<fstream>
+	<fcntl.h>
+	<cstdio>
+	<aclapi.h>
+	<io.h>
+	<shlobj.h>
+	<windows.h>
+	"../Execution/Exceptions.h"
+	"../Containers/Common.h"
+	"../Containers/SetUtils.h"
+	"../Debug/Trace.h"
+	"../IO/FileAccessException.h"
+	"../Memory/SmallStackBuffer.h"
+	"FileUtils.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/Network/URL.cpp
+	"../../StroikaPreComp.h"
+	<atlbase.h>
+	<Windows.h>
+	<URLMon.h>
+	"../../Execution/Exceptions.h"
+	"URL.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/IO/Network/URL.h
+	"../../StroikaPreComp.h"
+	<map>
+	<string>
+	"../../Configuration/Common.h"
+	"../../Characters/StringUtils.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Math/Angle.cpp
+	"../StroikaPreComp.h"
+	"../Debug/Assertions.h"
+	"Common.h"
+	"Angle.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Math/Angle.h
+	"../StroikaPreComp.h"
+	"Angle.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Math/Angle.inl
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/BlockAllocated.cpp
+	"../StroikaPreComp.h"
+	"../Execution/CriticalSection.h"
+	"RefCntPtr.h"
+	"BlockAllocated.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Common.cpp
+	"../StroikaPreComp.h"
+	<windows.h>
+	<Psapi.h>
+	<new>
+	"MemoryAllocator.h"
+	"Common.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/MemoryAllocator.h
+	"../StroikaPreComp.h"
+	<map>
+	<memory>
+	"../Execution/CriticalSection.h"
+	"Common.h"
+	"MemoryAllocator.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/MemoryAllocator.inl
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/MemoryAllocator.cpp
+	"../StroikaPreComp.h"
+	<new>
+	<set>
+	"../Execution/AtomicOperations.h"
+	"../Execution/ModuleInit.h"
+	"MemoryAllocator.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Optional.cpp
+	"../StroikaPreComp.h"
+	"Optional.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Optional.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"RefCntPtr.h"
+	"Optional.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Optional.inl
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/RefCntPtr.cpp
+	"../StroikaPreComp.h"
+	"RefCntPtr.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Shared.cpp
+	"../StroikaPreComp.h"
+	"Shared.h"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Shared.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"BlockAllocated.h"
+	"Shared.inl"
+
+1314379885 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/Shared.inl
+	"BlockAllocated.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/SmallStackBuffer.cpp
+	"../StroikaPreComp.h"
+	"SmallStackBuffer.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Memory/VariantValue.cpp
+	"../StroikaPreComp.h"
+	<sstream>
+	"../Characters/StringUtils.h"
+	"../Math/Common.h"
+	"VariantValue.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/BinaryInputStream.cpp
+	"../StroikaPreComp.h"
+	"BinaryInputStream.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/BinaryInputStream.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"BinaryInputStream.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/BinaryInputStream.inl
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/BinaryOutputStream.cpp
+	"../StroikaPreComp.h"
+	"BinaryOutputStream.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/BinaryOutputStream.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"BinaryOutputStream.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/BinaryOutputStream.inl
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/Seekable.cpp
+	"../StroikaPreComp.h"
+	"Seekable.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/Seekable.h
+	"../StroikaPreComp.h"
+	<cstdint>
+	"../Configuration/Common.h"
+	"Seekable.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/Seekable.inl
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/TextInputStream.cpp
+	"../StroikaPreComp.h"
+	"../Containers/Common.h"
+	"TextInputStream.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/TextInputStream.h
+	"../StroikaPreComp.h"
+	<string>
+	"../Configuration/Common.h"
+	"TextInputStream.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/TextInputStream.inl
+	"../Debug/Assertions.h"
+
+1314379854 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/TextOutputStream.cpp
+	"../StroikaPreComp.h"
+	"TextOutputStream.h"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/TextOutputStream.h
+	"../StroikaPreComp.h"
+	"../Configuration/Common.h"
+	"TextOutputStream.inl"
+
+1314379854 /home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Streams/TextOutputStream.inl
+	"../Debug/Assertions.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Time/DateUtils.cpp
+	"../StroikaPreComp.h"
+	<algorithm>
+	<atlbase.h>
+	"../Debug/Assertions.h"
+	"../Execution/Exceptions.h"
+	"../Memory/SmallStackBuffer.h"
+	"DateUtils.h"
+
+1314379885 source:/home/sterling/Develop/Stroika/Library/Sources/Stroika/Foundation/Time/Realtime.cpp
+	"../StroikaPreComp.h"
+	<algorithm>
+	<Windows.h>
+	"../Debug/Assertions.h"
+	"../Memory/SmallStackBuffer.h"
+	"Realtime.h"
+
