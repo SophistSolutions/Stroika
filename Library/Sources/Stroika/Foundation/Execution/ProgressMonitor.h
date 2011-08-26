@@ -21,24 +21,36 @@ namespace	Stroika {
 			typedef	float	ProgressRangeType;
 
 			
-/*
-	* This class is the basic interface used for progress tracking. Progress tracking both measures progress,
-	* and supports the notion of canceling. The reason progres and cancelability are tied together is that its
-	* only for 'long lived' tasks one might want to measure the progress of, that one might want to allow canceling.
-<<REDO BELOW COMMENTS>>
-*
-* This class is not meant to be subclassed to revieve notification (again, perhaps that should
-* be re-thought) - but instead - its meant to be an abstraction of the progress watcher (e.g. progress tracker).
-*
-* Its meant to be used by a using the tracker - and have that periodically check if its been canceled or not.
-	*/
-	 
+			/*
+			 * This class is the basic interface used for progress tracking. Progress tracking both measures progress,
+			 * and supports the notion of aborting (canceling). The reason progres and abortability are tied together is that its
+			 * only for 'long lived' tasks one might want to measure the progress of, that one might want to allow aborting.
+			 *
+			 * An instance of ProgressMontior can be passed to any function which supports progress measurement (by pointer typically,
+			 * or reference). That function can then run off and do a long-lived computation (often in another thread), and the user
+			 * of this class can monitor the progress (e.g. updating a ui display), and can cancel it at any point (by calling Abort).
+			 *
+			 * Though this CAN all be used from a single threaded application (using some sort of co-operative multitasking) its intended
+			 * use is with threads: one working, and the other controlling/monitoring (e.g. ui).
+			 *
+			 * The caller (in the control thread) can call GetProgress() repeatedly - to find out whats changed, or can register a callback,
+			 * that will be notified on any change. But NOTE - the callback maybe called on a different thread than the ProgressMontitor was
+			 * originally created on!
+			 */
 			class	ProgressMontior {
+//ADD NO-COPY-NO-MOVE DECLARATIONMS!!! AND NO ASSIGN-OVER(?)
 				public:
 					class	ICallback {
 						public:
 							virtual	~ICallback ();
 						public:
+							// WARNING: this progress notification call will typically be invoked from a different thread than the one which created
+							// the ProgressMonitor (typically from the running thread performing the action). So overrides must be careful about
+							// updating data structures. Probably best not to do too much in this override, because of the thread issue and because
+							// this call is blocking progress of that other thread doing the actual work
+							//
+							// Probaly best practice to have a shared event, and just have this call event.Set() and have the other (GUI/monitoring)
+							// thread do a timed wait on that event.
 							virtual	void	NotifyOfProgress (const ProgressMontior& pm)	=	0;
 					};
 
@@ -57,24 +69,35 @@ namespace	Stroika {
 					nonvirtual	ProgressRangeType	GetProgress () const;
 					nonvirtual	void				SetProgress (ProgressRangeType p);
 
-				// Cancelability. Anyone can call SetCanceled() on this progress object. If the progress object is handed to
+				// Cancelability. Anyone can call Abort() on this progress object. If the progress object is handed to
 				// some long-lived task, that task may (at its discretion) - check the progress callback, and abort its operation
-				// by throwing a CANCEED exception (GET EXACT NAME RIGHT)
+				// by throwing a UserCanceledException.
 				//
 				public:
-					nonvirtual	void	Abort ();	// causes this 'progress callback' to be marked for aborting. If already abortd, it does nothing
+					nonvirtual	void	Abort ();	// causes this 'progress callback' to be marked for aborting. If already aborted, it does nothing
 
 				public:
 					// Called from the context of a thread which has been given this progress object. This method will check
-					// if the thread has been aborted, or if this progress object has been aborted, and in either case, throw???? EXEDCPTIONNAME?
+					// if this progress object has been aborted, and in either case, throw UserCanceledException.
+					// 
+					// Note - this function does NOT check if the itself thread has been aborted (as that is usually taken care of automatically or via 
+					// CheckForThreadAborting)
 					nonvirtual	void	ThrowIfAborted ();
 				
+				// Often in displaying progress, its useful to have a notion of what the system is doing, and thats usually displayed far away
+				// from where the notion of progress stage resides. This API is usually called by the bit of code performing actions (to set the current task)
+				// and by the calling GUI to Get the current task description.
 				public:
-					virtual		wstring	GetCurrentTaskDescription () const;
-					virtual		void	SetCurrentTaskDescription (const wstring& taskDescription);
+					nonvirtual	wstring	GetCurrentTaskDescription () const;
+					nonvirtual	void	SetCurrentTaskDescription (const wstring& taskDescription);
 			
+				/*
+				 * SetCurrentProgressAndThrowIfCanceled () overloads are handy helpers for code performing long-lived tasks to deal with being passed a
+				 * null progress object (often) and do that check, and if non-null, then update the progress and check for aborts.
+				 */
 				public:
 					nonvirtual	void	SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
+					static		void	SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress);
 
 				private:
 					mutable CriticalSection		fCritSect_;

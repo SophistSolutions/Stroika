@@ -56,6 +56,12 @@ namespace	Stroika {
 					SetProgress (currentProgress);
 					ThrowIfAborted ();
 				}
+			inline	void	ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress)
+				{
+					if (objOrNull != nullptr) {
+						objOrNull->SetCurrentProgressAndThrowIfCanceled (currentProgress);
+					}
+				}
 
 		}
 	}
