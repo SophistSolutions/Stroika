@@ -32,29 +32,29 @@ namespace	Stroika {
 						CallNotifyProgress_ ();
 					}
 				}
-			inline	void	ProgressMontior::Abort ()
+			inline	void	ProgressMontior::Cancel ()
 				{
-					fAborted_ = true;
+					fCanceled_ = true;
 				}
-			inline	void	ProgressMontior::ThrowIfAborted ()
+			inline	void	ProgressMontior::ThrowIfCanceled ()
 				{
-					if (fAborted_) {
+					if (fCanceled_) {
 						DoThrow (UserCanceledException ());
 						//DoThrow<ThreadAbortException> (ThreadAbortException ());
 					}
 				}
-			inline	wstring	ProgressMontior::GetCurrentTaskDescription () const
+			inline	ProgressMontior::CurrentTaskInfo	ProgressMontior::GetCurrentTaskInfo () const
 				{
-					return fCurrentTaskDescription_;
+					return fCurrentTaskInfo_;
 				}
-			inline	void	ProgressMontior::SetCurrentTaskDescription (const wstring& taskDescription)
+			inline	void	ProgressMontior::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
 				{
-					fCurrentTaskDescription_ = taskDescription;
+					fCurrentTaskInfo_ = taskInfo;
 				}
 			inline	void	ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
 				{
 					SetProgress (currentProgress);
-					ThrowIfAborted ();
+					ThrowIfCanceled ();
 				}
 			inline	void	ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress)
 				{

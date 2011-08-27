@@ -25,18 +25,18 @@ using	namespace	Stroika::Foundation::Execution;
 ProgressMontior::ProgressMontior ()
 	: fCritSect_ ()
 	, fCallbacks ()
-	, fAborted_ (false)
+	, fCanceled_ (false)
 	, fCurrentProgress_ (0.0)
-	, fCurrentTaskDescription_ ()
+	, fCurrentTaskInfo_ ()
 {
 }
 
 ProgressMontior::ProgressMontior (const Memory::RefCntPtr<ICallback>& callback)
 	: fCritSect_ ()
 	, fCallbacks ()
-	, fAborted_ (false)
+	, fCanceled_ (false)
 	, fCurrentProgress_ (0.0)
-	, fCurrentTaskDescription_ ()
+	, fCurrentTaskInfo_ ()
 {
 	AddCallback (callback);
 }
