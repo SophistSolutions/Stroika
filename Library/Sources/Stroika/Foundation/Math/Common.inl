@@ -14,15 +14,45 @@
 
 
 
-namespace	Stroika {	
+namespace	Stroika {
 	namespace	Foundation {
 		namespace	Math {
-
+            using	namespace	std;
 			inline	double	nan ()
 				{
 					return numeric_limits<double>::quiet_NaN ();
 				}
 
+
+
+            inline	int			RoundUpTo (unsigned x, unsigned toNearest)
+            {
+                return (((x+toNearest-1u)/toNearest)*toNearest);
+            }
+
+            inline	int			RoundDownTo (unsigned x, unsigned toNearest)
+            {
+                return ((x/toNearest)*toNearest);
+            }
+
+            inline	int			RoundUpTo (int x, unsigned toNearest)
+            {
+                if (x < 0) {
+                    return (- RoundDownTo (unsigned (-x), toNearest));
+                }
+                else {
+                    return (RoundUpTo (unsigned (x), toNearest));
+                }
+            }
+            inline	int			RoundDownTo (int x, unsigned toNearest)
+            {
+                if (x < 0) {
+                    return (- RoundUpTo (unsigned (-x), toNearest));
+                }
+                else {
+                    return (RoundDownTo (unsigned (x), toNearest));
+                }
+            }
 		}
 	}
 }
