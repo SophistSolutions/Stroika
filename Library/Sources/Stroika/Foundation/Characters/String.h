@@ -97,8 +97,6 @@
 
 #include	"../Memory/Shared.h"
 
-using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Characters;
 
 
 

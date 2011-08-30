@@ -15,10 +15,8 @@
 
 
 
-using	namespace	Characters;
-
-
-//extern	bool	operator== (const Memory::Shared<String::StringRep>&, const Memory::Shared<String::StringRep>&);
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Characters;
 
 
 
@@ -122,7 +120,7 @@ void	String::Remove (Character c)
 
 size_t	String::IndexOf (Character c) const
 {
-	register	size_t length = GetLength ();
+	size_t length = GetLength ();
 	for (size_t i = 1; i <= length; i++) {
 		if (fRep->GetAt (i) == c) {
 			return (i);
@@ -157,7 +155,7 @@ nogood:
 
 size_t	String::RIndexOf (Character c) const
 {
-	register	size_t length = GetLength ();
+	size_t length = GetLength ();
 	for (size_t i = length; i >= 1; i--) {
 		if (fRep->GetAt (i) == c) {
 			return (i);
@@ -425,8 +423,8 @@ void	StringRep_CharArray::InsertAt (Character item, size_t index)
 
 	SetLength (GetLength () + 1);
 	if (index < fLength) {
-		register	char*	lhs	=	&fStorage [fLength-1];
-		register	char*	rhs	=	&fStorage [fLength-2];
+		char*	lhs	=	&fStorage [fLength-1];
+		char*	rhs	=	&fStorage [fLength-2];
 		size_t i = fLength-1;
 		for (; i >= index; i--) {
 			*lhs-- = *rhs--;
@@ -443,8 +441,8 @@ void	StringRep_CharArray::RemoveAt (size_t index, size_t amountToRemove)
 	Require (index <= fLength);
 
 	if (index < fLength) {
-		register	char*	lhs	=	&fStorage [index-1];
-		register	char*	rhs	=	&fStorage [index+amountToRemove-1];
+		char*	lhs	=	&fStorage [index-1];
+		char*	rhs	=	&fStorage [index+amountToRemove-1];
 		for (size_t i = fLength - index - amountToRemove + 1; i > 0; i--) {
 			*lhs++ = *rhs++;
 		}
