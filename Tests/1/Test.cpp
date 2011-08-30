@@ -22,7 +22,7 @@ using	namespace	Stroika::Foundation;
 
 
 namespace	{
-	void	_ASSERT_HANDLER_(const char* fileName, int lineNum)
+	void	_ASSERT_HANDLER_(const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 		{
 			cerr << "FAILED: " << fileName << ": " << lineNum << endl;
 			_exit (EXIT_FAILURE);
@@ -173,7 +173,7 @@ namespace	{
 
 int main(int argc, const char* argv[])
 {
-#if		defined (_DEBUG)
+#if		qDebug
 	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
 	DoRegressionTests_ ();

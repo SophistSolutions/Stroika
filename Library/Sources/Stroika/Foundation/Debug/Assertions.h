@@ -14,6 +14,9 @@ namespace	Stroika {
 		namespace	Debug {
 
 			#if		qDebug
+				// Note: Some any paramater could be null, if no suitable value is available
+				typedef	void	(*AssertionHandlerType) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
+
 				/*
 				@DESCRIPTION:	<p>Led makes very heavy use of assertions (to some extent inspired and patterend after
 					Bertrand Meyers Eiffel assertion mechanism). Assertions are logical statements about function parameters,
@@ -80,31 +83,40 @@ namespace	Stroika {
 					functions which allow the programmer to specify an alternate assertion handling scheme. The
 					only assumption Led mkaes about this scheme is that the assertion handling funciton not return
 					(so itmust either exit the program, or longjump/throw). Led makes no gaurantee that attempts
-					to throw out past an assertion will succeed.</p>
+					to throw out past an assertion will succeed.
+					
+					GetAssertionHandler() never returns NULL - it always returns some handler.
+					</p>
 				*/
-				void	(*GetAssertionHandler ()) (const char* fileName, int lineNum);
+				AssertionHandlerType	GetAssertionHandler ();
+
 				/*
 				@METHOD:		SetAssertionHandler
-				@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
+				@DESCRIPTION:	<p>See @'GetAssertionHandler'. If SetAssertionHandler() is called with nullptr, then this merely selects the default assertion handler.</p>
 				*/
-				void	SetAssertionHandler (void (*assertionHandler) (const char* fileName, int lineNum));
+				void	SetAssertionHandler (AssertionHandlerType assertionHandler);
 	
-				void	_Debug_Trap_ (const char* fileName, int lineNum);	// don't call directly - implementation detail...
+
+				namespace	Private {
+					void	Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);	// don't call directly - implementation detail...
+				}
+
+
 				/*
 				@METHOD:		Assert
 				@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 				*/
-				#define	Assert(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
+				#define	Assert(c)			{if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, nullptr); }}
 				/*
 				@METHOD:		Require
 				@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 				*/
-				#define	Require(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
+				#define	Require(c)			{if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", #c, __FILE__, __LINE__, nullptr); }}
 				/*
 				@METHOD:		Ensure
 				@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 				*/
-				#define	Ensure(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
+				#define	Ensure(c)			{if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", #c, __FILE__, __LINE__, nullptr); }}
 			#else
 				#define	Assert(c)
 				#define	Require(c)

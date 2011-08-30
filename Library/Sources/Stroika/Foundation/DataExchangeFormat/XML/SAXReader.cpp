@@ -35,7 +35,7 @@
 	#include	<xercesc/sax/InputSource.hpp>
 	#include	<xercesc/parsers/SAX2XMLReaderImpl.hpp>
 	#if		defined (_DEBUG)
-		#define	Assert(c)			{if (!(c)) { Stroika::Foundation::Debug::_Debug_Trap_ (__FILE__, __LINE__); }}
+		#define	Assert(c)			{if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ (__FILE__, __LINE__); }}
 	#else
 		#define	Assert(c)
 	#endif

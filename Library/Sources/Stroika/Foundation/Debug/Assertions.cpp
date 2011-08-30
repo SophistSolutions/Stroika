@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include <cassert>
+#include	<cassert>
 
 #if		qPlatform_Windows
 	#include	<Windows.h>
@@ -19,32 +19,38 @@ using	namespace	Stroika::Foundation::Debug;
 
 
 #if		qDebug
+
+	namespace	{
+		void	DefaultAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
+			{
+				#if		qPlatform_Windows
+					DebugBreak ();
+				#elif	defined (__GNUC__)
+					__assert_fail (assertionText, fileName, lineNum, functionName);
+				#else
+					assert (false);
+				#endif
+			}
+	}
+
 	namespace {
-		void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	nullptr;
+		AssertionHandlerType	sAssertFailureHandler_		=	DefaultAssertionHandler_;
 	}
 
-	void	(*Stroika::Foundation::Debug::GetAssertionHandler ()) (const char* fileName, int lineNum)
+
+	AssertionHandlerType	Stroika::Foundation::Debug::GetAssertionHandler ()
 	{
-		return sLedAssertFailedCallback;
+		return sAssertFailureHandler_;
 	}
 
-	void	Stroika::Foundation::Debug::SetAssertionHandler (void (*assertionHandler) (const char* fileName, int lineNum))
+	void	Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType assertionHandler)
 	{
-		sLedAssertFailedCallback = assertionHandler;
+		sAssertFailureHandler_ = (assertionHandler == nullptr)? DefaultAssertionHandler_ : assertionHandler;
 	}
 
-	void	Stroika::Foundation::Debug::_Debug_Trap_ (const char* fileName, int lineNum)
+	void	Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 	{
-		if (sLedAssertFailedCallback == nullptr) {
-			#if		qPlatform_Windows
-				DebugBreak ();
-			#else
-				assert (false);
-			#endif
-		}
-		else {
-			(sLedAssertFailedCallback) (fileName, lineNum);
-		}
+		(sAssertFailureHandler_) (assertCategory, assertionText, fileName, lineNum, functionName);
 	}
 #endif
 
