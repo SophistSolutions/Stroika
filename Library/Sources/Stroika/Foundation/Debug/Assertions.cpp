@@ -26,7 +26,7 @@ using	namespace	Stroika::Foundation::Debug;
 				#if		qPlatform_Windows
 					DebugBreak ();
 				#elif	defined (__GNUC__)
-					__assert_fail (assertionText, fileName, lineNum, functionName);
+					__assert_fail (assertionText==nullptr? "": assertionText, fileName, lineNum, functionName==nullptr? "": functionName);
 				#else
 					assert (false);
 				#endif
