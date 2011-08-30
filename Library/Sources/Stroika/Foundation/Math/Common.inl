@@ -25,6 +25,8 @@ namespace	Stroika {
 				}
 
 			namespace	Private {
+				template	<typename T>
+					T	RoundUpTo_UnSignedHelper_ (T x, T toNearest);
 				template	<typename T, typename UNSIGNED_T>
 					inline	T	RoundUpTo_SignedHelper_ (T x, T toNearest)
 						{
@@ -92,7 +94,7 @@ namespace	Stroika {
 						return Private::RoundUpTo_UnSignedHelper_<unsigned long long> (x, toNearest);
 					}
 
-				
+
 
 			template	<>
 				inline	int	RoundDownTo (int x, int toNearest)
