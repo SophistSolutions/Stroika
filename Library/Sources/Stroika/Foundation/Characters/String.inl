@@ -18,7 +18,7 @@ namespace	Stroika {
 
             class	StringRep_CharArray : public String::StringRep {
                 public:
-                    StringRep_CharArray (const void* arrayOfBytes, size_t nBytes);
+                    StringRep_CharArray (const Character* arrayOfCharacters, size_t nBytes);
                     ~StringRep_CharArray ();
 
                     virtual		StringRep*	Clone () const override;
@@ -34,15 +34,15 @@ namespace	Stroika {
 
                     virtual		void	SetLength (size_t newLength) override;
 
-                    virtual		const void*	Peek () const override;
+                    virtual		const Character*	Peek () const override;
 
                 protected:
                     StringRep_CharArray ();
-                    nonvirtual	void	SetStorage (char* storage, size_t length);
+                    nonvirtual	void	SetStorage (Character* storage, size_t length);
 
                 private:
-                    size_t	fLength;
-                    char*			fStorage;
+                    wchar_t*	fStorage;
+                    size_t	    fLength;
 
                     virtual	size_t	CalcAllocSize (size_t requested);
             };
@@ -60,7 +60,7 @@ namespace	Stroika {
              */
             class	StringRep_BufferedCharArray : public StringRep_CharArray {
                 public:
-                    StringRep_BufferedCharArray (const void* arrayOfBytes, size_t nBytes);
+                    StringRep_BufferedCharArray (const Character* arrayOfCharacters, size_t nBytes);
 
                     virtual		StringRep*	Clone () const override;
 
@@ -87,7 +87,7 @@ namespace	Stroika {
              */
             class	StringRep_ReadOnlyChar : public StringRep_CharArray {
                 public:
-                    StringRep_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes);
+                    StringRep_ReadOnlyChar (const Character* arrayOfCharacters, size_t nBytes);
                     ~StringRep_ReadOnlyChar ();
 
                     virtual		void	RemoveAll () override;
@@ -127,7 +127,7 @@ namespace	Stroika {
 
                     virtual		void	SetLength (size_t newLength) override;
 
-                    virtual		const void*	Peek () const override;
+                    virtual		const Character*	Peek () const override;
 
                 private:
                     Memory::Shared<StringRep>	fBase;
@@ -154,7 +154,7 @@ namespace	Stroika {
 
                     virtual		void	SetLength (size_t newLength) override;
 
-                    virtual		const void*	Peek () const override;
+                    virtual		const Character*	Peek () const override;
 
                 private:
                     String			fLeft;
@@ -165,109 +165,128 @@ namespace	Stroika {
             };
 
             inline	String::StringRep::StringRep ()
-				{
-				}
+            {
+            }
 
-            
+
 			inline	String::String (const String& from)
 				: fRep (from.fRep)
-				{
-				}
-            inline	String::String (const void* arrayOfBytes, size_t nBytes)
+            {
+            }
+
+
+            inline	String::String (const std::wstring& r)
                 : fRep (&Clone_, 0)
-				{
-					fRep = new StringRep_CharArray (arrayOfBytes, nBytes);
-				}
+            {
+                fRep = new StringRep_CharArray ((const Character*)r.c_str (), r.length ());
+            }
+
             inline	String&	String::operator= (const String& newString)
-				{
-					fRep = newString.fRep;
-					return (*this);
-				}
+            {
+                fRep = newString.fRep;
+                return (*this);
+            }
+
             inline	String::~String ()
-				{
-				}
+            {
+            }
 			inline	String::StringRep*	String::Clone_ (const StringRep& rep)
-				{
-					return (rep.Clone ()); 
-				}
+            {
+                return (rep.Clone ());
+            }
+
             inline	void	String::RemoveAt (size_t i)
-				{
-					RemoveAt (i, 1);
-				}
-            inline	const void*	String::Peek () const
-				{
-					return (fRep->Peek ());
-				}
+            {
+                RemoveAt (i, 1);
+            }
+
+            inline	const Character*	String::Peek () const
+            {
+                return (fRep->Peek ());
+            }
+
             inline	size_t	String::GetLength () const
-				{
-					return (fRep->GetLength ());
-				}
+            {
+                return (fRep->GetLength ());
+            }
+
             inline	Character	String::operator[] (size_t i) const
-				{
-					Require (i >= 1);
-					Require (i <= GetLength ());
-					return (fRep->GetAt (i));
-				}
+            {
+                Require (i >= 0);
+                Require (i < GetLength ());
+                return (fRep->GetAt (i));
+            }
+
             inline	void	String::SetRep (StringRep* rep)
-				{
-					fRep = rep;
-				}
+            {
+                fRep = rep;
+            }
+
             inline	const String::StringRep*	String::GetRep () const
-				{
-					return (fRep.GetPointer ());
-				}
+            {
+                return (fRep.GetPointer ());
+            }
+
             inline	String::StringRep*			String::GetRep ()
-				{
-					return (fRep.GetPointer ());
-				}
+            {
+                return (fRep.GetPointer ());
+            }
 
-			
+
 			inline	bool	operator!= (const String& lhs, const String& rhs)
-				{
-					return (bool (not (lhs == rhs)));
-				}
-            inline	bool	operator!= (const char* lhs, const String& rhs)
-				{
-					return (bool (not (lhs == rhs)));
-				}
-            inline	bool	operator!= (const String& lhs, const char* rhs)
-				{
-					return (bool (not (lhs == rhs)));
-				}
-            inline	bool	operator> (const String& lhs, const String& rhs)
-				{
-					return (bool (not (lhs <= rhs)));
-				}
-            inline	bool	operator> (const char* lhs, const String& rhs)
-				{
-					return (bool (not (lhs <= rhs)));
-				}
-            inline	bool	operator> (const String& lhs, const char* rhs)
-				{
-					return (bool (not (lhs <= rhs)));
-				}
-            inline	bool	operator>= (const String& lhs, const String& rhs)
-				{
-					return (bool (not (lhs < rhs)));
-				}
-            inline	bool	operator>= (const char* lhs, const String& rhs)
-				{
-					return (bool (not (lhs < rhs)));
-				}
-            inline	bool	operator>= (const String& lhs, const char* rhs)
-				{
-					return (bool (not (lhs < rhs)));
-				}
+            {
+                return (bool (not (lhs == rhs)));
+            }
 
-            
+            inline	bool	operator!= (const wchar_t* lhs, const String& rhs)
+            {
+                return (bool (not (lhs == rhs)));
+            }
+
+            inline	bool	operator!= (const String& lhs, const wchar_t* rhs)
+            {
+                return (bool (not (lhs == rhs)));
+            }
+
+            inline	bool	operator> (const String& lhs, const String& rhs)
+            {
+                return (bool (not (lhs <= rhs)));
+            }
+
+            inline	bool	operator> (const wchar_t* lhs, const String& rhs)
+            {
+                return (bool (not (lhs <= rhs)));
+            }
+
+            inline	bool	operator> (const String& lhs, const wchar_t* rhs)
+            {
+                return (bool (not (lhs <= rhs)));
+            }
+
+            inline	bool	operator>= (const String& lhs, const String& rhs)
+            {
+                return (bool (not (lhs < rhs)));
+            }
+
+            inline	bool	operator>= (const wchar_t* lhs, const String& rhs)
+            {
+                return (bool (not (lhs < rhs)));
+            }
+
+            inline	bool	operator>= (const String& lhs, const wchar_t* rhs)
+            {
+                return (bool (not (lhs < rhs)));
+            }
+
+
 			inline	String_CharArray::String_CharArray (const String_CharArray& s)	: String (s)	{}
             inline	String_CharArray& String_CharArray::operator= (const String_CharArray& s)	{	String::operator= (s);	return (*this); }
 
-            
+
 			inline	String_BufferedCharArray::String_BufferedCharArray (const String_BufferedCharArray& s)	: String (s)	{}
             inline	String_BufferedCharArray& String_BufferedCharArray::operator= (const String_BufferedCharArray& s)	{	String::operator= (s);	return (*this); }
 
-            
+
 			inline	String_ReadOnlyChar::String_ReadOnlyChar (const String_ReadOnlyChar& s)	: String (s)	{}
             inline	String_ReadOnlyChar& String_ReadOnlyChar::operator= (const String_ReadOnlyChar& s)	{	String::operator= (s);	return (*this); }
 		}
