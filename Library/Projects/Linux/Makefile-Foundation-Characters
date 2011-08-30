@@ -14,6 +14,7 @@ VPATH = $(SrcDir)
 Objs	=	\
 	$(ObjDir)Character.o\
 	$(ObjDir)CodePage.o\
+	$(ObjDir)String.o\
 	$(ObjDir)StringUtils.o\
 	$(ObjDir)TChar.o\
 	$(ObjDir)TString.o\
