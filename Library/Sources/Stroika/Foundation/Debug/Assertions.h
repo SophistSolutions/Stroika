@@ -128,15 +128,15 @@ namespace	Stroika {
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	AssertNotNil(p)		Assert (p!=nullptr)
+			#define	AssertNotNull(p)		Assert (p!=nullptr)
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	RequireNotNil(p)	Require (p!=nullptr)
+			#define	RequireNotNull(p)	Require (p!=nullptr)
 			/*
 			@DESCRIPTION:	<p>See @'GetAssertionHandler'</p>
 			*/
-			#define	EnsureNotNil(p)		Ensure (p!=nullptr)
+			#define	EnsureNotNull(p)		Ensure (p!=nullptr)
 
 
 

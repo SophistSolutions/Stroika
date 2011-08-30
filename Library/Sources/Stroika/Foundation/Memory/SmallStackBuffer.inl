@@ -144,20 +144,20 @@ namespace	Stroika {
 			template	<typename	T, size_t BUF_SIZE>
 				inline	SmallStackBuffer<T,BUF_SIZE>::operator T* () const
 					{
-						AssertNotNil (fPointer);
+						AssertNotNull (fPointer);
 						return (const_cast<T*> (fPointer));
 					}
 			#else
 			template	<typename	T, size_t BUF_SIZE>
 				inline	SmallStackBuffer<T,BUF_SIZE>::operator T* ()
 					{
-						AssertNotNil (fPointer);
+						AssertNotNull (fPointer);
 						return (fPointer);
 					}
 			template	<typename	T, size_t BUF_SIZE>
 				inline	SmallStackBuffer<T,BUF_SIZE>::operator const T* () const
 					{
-						AssertNotNil (fPointer);
+						AssertNotNull (fPointer);
 						return (fPointer);
 					}
 			#endif

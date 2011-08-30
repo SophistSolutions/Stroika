@@ -280,7 +280,7 @@ void	CatchAndCaptureExceptionHelper::DoRunWithCatchRePropagate (Callback* callba
 {
 	// Subclassers add additional 'Execution' as data members, and override this to catch additioanl fields, and
 	// AnyExceptionCaught/RethrowIfAnyCaught to rethrow each
-	RequireNotNil (callback);
+	RequireNotNull (callback);
 	try {
 		callback->DoItInsideCatcher ();
 	}

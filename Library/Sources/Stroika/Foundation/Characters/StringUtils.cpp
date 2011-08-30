@@ -58,7 +58,7 @@ wstring	Characters::ACPStringToWide (const string& ws)
 #if		qPlatform_Windows
 BSTR	Characters::UTF8StringToBSTR (const char* ws)
 {
-	RequireNotNil (ws);
+	RequireNotNull (ws);
 	size_t	wsLen	=	::strlen (ws);
 	int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), nullptr, 0);
 	BSTR result	= ::SysAllocStringLen (nullptr, stringLength);
@@ -80,7 +80,7 @@ BSTR	Characters::UTF8StringToBSTR (const char* ws)
  */
 void	Characters::tolower (wstring* s)
 {
-	RequireNotNil (s);
+	RequireNotNull (s);
 	wstring::iterator	end	=	s->end ();
 	for (wstring::iterator i = s->begin (); i != end; ++i) {
 		*i = TOLOWER (*i);
@@ -89,7 +89,7 @@ void	Characters::tolower (wstring* s)
 
 void	Characters::tolower (string* s)
 {
-	RequireNotNil (s);
+	RequireNotNull (s);
 	string::iterator	end	=	s->end ();
 	for (string::iterator i = s->begin (); i != end; ++i) {
 		*i = TOLOWER (*i);
@@ -107,7 +107,7 @@ void	Characters::tolower (string* s)
  */
 void	Characters::toupper (wstring* s)
 {
-	RequireNotNil (s);
+	RequireNotNull (s);
 	wstring::iterator	end	=	s->end ();
 	for (wstring::iterator i = s->begin (); i != end; ++i) {
 		*i = TOUPPER (*i);
@@ -116,7 +116,7 @@ void	Characters::toupper (wstring* s)
 
 void	Characters::toupper (string* s)
 {
-	RequireNotNil (s);
+	RequireNotNull (s);
 	string::iterator	end	=	s->end ();
 	for (string::iterator i = s->begin (); i != end; ++i) {
 		*i = TOUPPER (*i);
@@ -851,7 +851,7 @@ namespace	{
 	// return true iff resultChar is a valid character (has nothing to do with if more chars available)
 	bool	DECODE (wstring::const_iterator* i, wstring::const_iterator end, wchar_t* resultChar)
 		{
-			RequireNotNil (resultChar);
+			RequireNotNull (resultChar);
 			if (*i == end) {
 				return false;
 			}

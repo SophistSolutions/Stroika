@@ -42,7 +42,7 @@ ResourceAccessor::ResourceAccessor (HMODULE hModule, LPCTSTR lpName, LPCTSTR lpT
 		HGLOBAL	lglbl	=	::LoadResource (hModule, hres);
 		if (lglbl != nullptr) {
 			const void*	lr	=	::LockResource (lglbl);
-			AssertNotNil (lr);
+			AssertNotNull (lr);
 			fDataStart = reinterpret_cast<const Byte*> (lr);
 			fDataEnd = fDataStart + ::SizeofResource (hModule, hres);
 		}

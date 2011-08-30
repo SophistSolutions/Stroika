@@ -36,7 +36,7 @@ ActualModuleInit::ActualModuleInit ()
 
 ActualModuleInit::~ActualModuleInit ()
 {
-	RequireNotNil (sCritSection_);
+	RequireNotNull (sCritSection_);
 	delete sCritSection_;
 	sCritSection_ = nullptr;
 }

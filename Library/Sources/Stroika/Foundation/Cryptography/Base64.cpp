@@ -76,8 +76,8 @@ namespace	{
 		}
 	size_t base64_decode_block_ (const char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
 		{
-			RequireNotNil (code_in);
-			RequireNotNil (plaintext_out);
+			RequireNotNull (code_in);
+			RequireNotNull (plaintext_out);
 			
 			const char* codechar	=	code_in;
 			Byte*		plainchar	=	plaintext_out;

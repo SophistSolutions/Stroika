@@ -19,13 +19,13 @@ namespace	Stroika {
 	//	class	DLLLoader
 		inline	DLLLoader::operator DLLHandle ()
 			{
-				EnsureNotNil (fModule);
+				EnsureNotNull (fModule);
 				return fModule;
 			}
 		inline	ProcAddress	DLLLoader::GetProcAddress (const char* procName) const
 			{
-				AssertNotNil (fModule);
-				RequireNotNil (procName);
+				AssertNotNull (fModule);
+				RequireNotNull (procName);
 			#if		qPlatform_Windows
 				return ::GetProcAddress (fModule, procName);
 			#else
@@ -44,8 +44,8 @@ namespace	Stroika {
 			}
 		inline	ProcAddress	DLLLoader::GetProcAddress (const wchar_t* procName) const
 			{
-				AssertNotNil (fModule);
-				RequireNotNil (procName);
+				AssertNotNull (fModule);
+				RequireNotNull (procName);
 				return GetProcAddress (Characters::WideStringToASCII (procName).c_str ());
 			}
 #if		!qPlatform_Windows

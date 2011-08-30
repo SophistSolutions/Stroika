@@ -21,7 +21,7 @@ namespace	Stroika {
 				}
 			inline	size_t	BinaryInputStream::Read (Byte* buffer, size_t bufSize)
 				{
-					RequireNotNil (buffer);
+					RequireNotNull (buffer);
 					Require (bufSize >= 1);
 					return Read_ (buffer, bufSize);
 				}

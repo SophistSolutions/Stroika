@@ -174,7 +174,7 @@ void	SimpleThread::Rep::DO_DELETE_REF_CNT ()
 #if			qPlatform_Windows
 unsigned int	__stdcall	SimpleThread::Rep::ThreadProc (void* lpParameter)
 {
-	RequireNotNil (lpParameter);
+	RequireNotNull (lpParameter);
 	/*
 	 * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
 	 * RefCntPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
@@ -337,7 +337,7 @@ SimpleThread::SimpleThread (const RefCntPtr<IRunnable>& runnable)
 #if			qPlatform_Windows
 void	SimpleThread::SetThreadPriority (int nPriority)
 {
-	RequireNotNil (fRep);
+	RequireNotNull (fRep);
 	Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
 }
 #endif
@@ -373,7 +373,7 @@ void	SimpleThread::SetThreadName (const wstring& threadName)
 
 void	SimpleThread::Start ()
 {
-	RequireNotNil (fRep);
+	RequireNotNull (fRep);
 #if			qPlatform_Windows
 	Assert (fRep->fThread != INVALID_HANDLE_VALUE);
 	DbgTrace (L"SimpleThread::Start: (thread = 0x%x, name='%s')", MyGetThreadId (fRep->fThread), fRep->fThreadName.c_str ());

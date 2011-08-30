@@ -42,7 +42,7 @@ String::String ()
 String::String (const char* cString)
 	: fRep (&Clone_, nullptr)
 {
-	RequireNotNil (cString);
+	RequireNotNull (cString);
 	fRep = new StringRep_CharArray (cString, strlen (cString));
 }
 
@@ -384,7 +384,7 @@ size_t	StringRep_CharArray::GetLength () const
 
 bool	StringRep_CharArray::Contains (Character item) const
 {
-	AssertNotNil (fStorage);
+	AssertNotNull (fStorage);
 
 	char asciiItem = item.GetAsciiCode ();
 	for (size_t i = 0; i < fLength; i++) {
@@ -404,7 +404,7 @@ Character	StringRep_CharArray::GetAt (size_t index) const
 {
 	Require (index >= 1);
 	Require (index <= GetLength ());
-	AssertNotNil (fStorage);
+	AssertNotNull (fStorage);
 
 	return (fStorage[index-1]);
 }
@@ -413,7 +413,7 @@ void	StringRep_CharArray::SetAt (Character item, size_t index)
 {
 	Require (index >= 1);
 	Require (index <= GetLength ());
-	AssertNotNil (fStorage);
+	AssertNotNull (fStorage);
 
 	fStorage[index-1] = item.GetAsciiCode ();
 }
@@ -454,7 +454,7 @@ void	StringRep_CharArray::RemoveAt (size_t index, size_t amountToRemove)
 
 void	StringRep_CharArray::SetLength (size_t newLength)
 {
-	AssertNotNil (fStorage);
+	AssertNotNull (fStorage);
 
 	size_t	oldAllocSize	=	CalcAllocSize (fLength);
 	size_t	newAllocSize	=	CalcAllocSize (newLength);
@@ -496,7 +496,7 @@ size_t	StringRep_CharArray::CalcAllocSize (size_t requested)
 StringRep_BufferedCharArray::StringRep_BufferedCharArray (const void* arrayOfBytes, size_t nBytes)
 	: StringRep_CharArray ()
 {
-	RequireNotNil (arrayOfBytes);
+	RequireNotNull (arrayOfBytes);
 
 	char*	storage = ::new char [CalcAllocSize (nBytes)];
 	memcpy (storage, arrayOfBytes, nBytes);
@@ -528,7 +528,7 @@ StringRep_ReadOnlyChar::StringRep_ReadOnlyChar (const void* arrayOfBytes, size_t
 	: StringRep_CharArray ()
 	, fAllocedMem (false)
 {
-	RequireNotNil (arrayOfBytes);
+	RequireNotNull (arrayOfBytes);
 	SetStorage ((char*)arrayOfBytes, nBytes);
 }
 
@@ -830,7 +830,7 @@ bool	Stroika::Foundation::Characters::operator== (const String& lhs, const Strin
 
 bool	Stroika::Foundation::Characters::operator== (const char* lhs, const String& rhs)
 {
-    RequireNotNil (lhs);
+    RequireNotNull (lhs);
     size_t length = ::strlen (lhs);
 
     if (length != rhs.GetLength ()) {
@@ -847,7 +847,7 @@ bool	Stroika::Foundation::Characters::operator== (const char* lhs, const String&
 
 bool	Stroika::Foundation::Characters::operator== (const String& lhs, const char* rhs)
 {
-    RequireNotNil (rhs);
+    RequireNotNull (rhs);
     size_t length = lhs.GetLength ();
 
     if (length != ::strlen (rhs)) {
@@ -884,13 +884,13 @@ bool	Stroika::Foundation::Characters::operator< (const String& lhs, const String
 
 bool	Stroika::Foundation::Characters::operator< (const char* lhs, const String& rhs)
 {
-    RequireNotNil (lhs);
+    RequireNotNull (lhs);
     return (String (lhs) < rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator< (const String& lhs, const char* rhs)
 {
-    RequireNotNil (rhs);
+    RequireNotNull (rhs);
     return (lhs < String (rhs));
 }
 
@@ -918,14 +918,14 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const Strin
 
 bool	Stroika::Foundation::Characters::operator<= (const char* lhs, const String& rhs)
 {
-    RequireNotNil (lhs);
+    RequireNotNull (lhs);
     return (String (lhs) <= rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const char* rhs)
 {
-    RequireNotNil (rhs);
-    RequireNotNil (rhs);
+    RequireNotNull (rhs);
+    RequireNotNull (rhs);
     return (lhs <= String (rhs));
 }
 

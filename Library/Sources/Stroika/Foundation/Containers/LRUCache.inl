@@ -53,13 +53,13 @@ namespace	Stroika {
 				template	<typename	ELEMENT>
 					inline	void	LRUCache<ELEMENT>::ShuffleToHead (CacheElement* b)
 						{
-							AssertNotNil (b);
+							AssertNotNull (b);
 							if (b == fCachedElts_First) {
 								Assert (b->fPrev == nullptr);
 								return;	// already at head
 							}
 							CacheElement*	prev	=	b->fPrev;
-							AssertNotNil (prev);					// don't call this if already at head
+							AssertNotNull (prev);					// don't call this if already at head
 							// patch following and preceeding blocks to point to each other
 							prev->fNext = b->fNext;
 							if (b->fNext == nullptr) {
@@ -72,7 +72,7 @@ namespace	Stroika {
 
 							// Now patch us into the head of the list
 							CacheElement*	oldFirst	=	fCachedElts_First;
-							AssertNotNil (oldFirst);
+							AssertNotNull (oldFirst);
 							b->fNext = oldFirst;
 							oldFirst->fPrev = b;
 							b->fPrev = nullptr;

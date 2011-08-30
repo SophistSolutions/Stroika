@@ -49,7 +49,7 @@ namespace	Stroika {
 			inline	void	Event::Pulse() throw ()
 				{
 					#if			qPlatform_Windows
-						AssertNotNil (fEventHandle);
+						AssertNotNull (fEventHandle);
 						Verify (::PulseEvent (fEventHandle));
 					#else
 						AssertNotImplemented ();
@@ -58,7 +58,7 @@ namespace	Stroika {
 			inline	void	Event::Reset () throw ()
 				{
 					#if			qPlatform_Windows
-						AssertNotNil (fEventHandle);
+						AssertNotNull (fEventHandle);
 						Verify (::ResetEvent (fEventHandle));
 					#else
 						AssertNotImplemented ();
@@ -67,7 +67,7 @@ namespace	Stroika {
 			inline	void	Event::Set () throw ()
 				{
 					#if			qPlatform_Windows
-						AssertNotNil (fEventHandle);
+						AssertNotNull (fEventHandle);
 						Verify (::SetEvent (fEventHandle));
 					#else
 						AssertNotImplemented ();
@@ -76,7 +76,7 @@ namespace	Stroika {
 			inline	void	Event::Wait (Time::DurationSecondsType timeout) const
 				{
 					#if			qPlatform_Windows
-						AssertNotNil (fEventHandle);
+						AssertNotNull (fEventHandle);
 						// must be careful about rounding errors in int->DurationSecondsType->int
 						DWORD	milliseconds	=	(timeout > numeric_limits<DWORD>::max ()/2)? INFINITE: static_cast<DWORD> (timeout * 1000);
 						DWORD	result	=	::WaitForSingleObject (fEventHandle, milliseconds);
@@ -92,7 +92,7 @@ namespace	Stroika {
 			#if			qPlatform_Windows
 			inline	Event::operator HANDLE () const
 				{
-					AssertNotNil (fEventHandle);
+					AssertNotNull (fEventHandle);
 					return fEventHandle;
 				}
 			#endif

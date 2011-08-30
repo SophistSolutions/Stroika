@@ -423,9 +423,9 @@ Date::JulianRepType	Date::Safe_jday (MonthOfYear month, DayOfMonth day, Year yea
  */
 void	Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
 {
-	RequireNotNil (month);
-	RequireNotNil (day);
-	RequireNotNil (year);
+	RequireNotNull (month);
+	RequireNotNull (day);
+	RequireNotNull (year);
 	if (fJulianDateRep == kEmptyJulianRep) {
 		*month = eEmptyMonthOfYear;
 		*day = eEmptyDayOfMonth;

@@ -196,7 +196,7 @@ namespace	Stroika {
 
 			inline	void	WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
 				{
-					RequireNotNil (intoResult);
+					RequireNotNull (intoResult);
 					Require (wsStart <= wsEnd);
 					size_t	wsLen	=	(wsEnd - wsStart);
 			#if		qPlatform_Windows
@@ -211,7 +211,7 @@ namespace	Stroika {
 				}
 			inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
 				{
-					RequireNotNil (intoResult);
+					RequireNotNull (intoResult);
 			#if		qPlatform_Windows
 					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), nullptr, 0, nullptr, nullptr);
 					intoResult->resize (stringLength);
@@ -230,7 +230,7 @@ namespace	Stroika {
 				}
 			inline	void	NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
 				{
-					RequireNotNil (intoResult);
+					RequireNotNull (intoResult);
 					Require (sStart <= sEnd);
 					size_t	sLen	=	(sEnd - sStart);
 			#if		qPlatform_Windows
@@ -245,7 +245,7 @@ namespace	Stroika {
 				}
 			inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
 				{
-					RequireNotNil (intoResult);
+					RequireNotNull (intoResult);
 			#if		qPlatform_Windows
 					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), nullptr, 0);
 					intoResult->resize (newStrLen);
@@ -318,7 +318,7 @@ namespace	Stroika {
 				}
 			inline	void	UTF8StringToWide (const char* s, wstring* intoStr)
 				{
-					RequireNotNil (s);
+					RequireNotNull (s);
 					NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, intoStr);
 				}
 			inline	void	UTF8StringToWide (const string& s, wstring* intoStr)
@@ -327,7 +327,7 @@ namespace	Stroika {
 				}
 			inline	wstring	UTF8StringToWide (const char* s)
 				{
-					RequireNotNil (s);
+					RequireNotNull (s);
 					wstring	result;
 					NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, &result);
 					return result;
@@ -374,8 +374,8 @@ namespace	Stroika {
 			inline	bool	StartsWith (const wchar_t* l, const wchar_t* prefix, StringCompareOptions co)
 				{
 					// This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
-					RequireNotNil (l);
-					RequireNotNil (prefix);
+					RequireNotNull (l);
+					RequireNotNull (prefix);
 					size_t	prefixLen	=	::wcslen (prefix);
 					switch (co) {
 						case	eWithCase_CO:			return wcsncmp (l, prefix, prefixLen) == 0;
@@ -429,8 +429,8 @@ namespace	Stroika {
 			template	<typename TCHAR>
 				size_t	CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
 					{
-						RequireNotNil (srcText);
-						RequireNotNil (outBuf);
+						RequireNotNull (srcText);
+						RequireNotNull (outBuf);
 						TCHAR*	outPtr	=	outBuf;
 						for (size_t i = 1; i <= srcTextBytes; i++) {
 							TCHAR	c	 = srcText[i-1];
@@ -566,7 +566,7 @@ namespace	Stroika {
 			template	<typename TCHAR>
 				inline	void	NormalizeTextToNL (basic_string<TCHAR>* text)
 					{
-						RequireNotNil (text);
+						RequireNotNull (text);
 						size_t	origLen	=	text->length ();
 						size_t	newLen	=	NormalizeTextToNL (static_cast<const TCHAR*> (Containers::Start (*text)), origLen, static_cast<TCHAR*> (Containers::Start (*text)), origLen);
 						Assert (newLen <= origLen);
@@ -648,13 +648,13 @@ namespace	Stroika {
 			template	<>
 				inline	size_t	Length (const char* p)
 					{
-						RequireNotNil (p);
+						RequireNotNull (p);
 						return ::strlen (p);
 					}
 			template	<>
 				inline	size_t	Length (const wchar_t* p)
 					{
-						RequireNotNil (p);
+						RequireNotNull (p);
 						return ::wcslen (p);
 					}
 		}

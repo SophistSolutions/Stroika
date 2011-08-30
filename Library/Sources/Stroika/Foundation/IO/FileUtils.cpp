@@ -765,7 +765,7 @@ TString	IO::GetFileDirectory (const TString& pathName)
 bool	IO::FileExists (const TChar* filePath)
 {
 #if		qPlatform_Windows
-	RequireNotNil (filePath);
+	RequireNotNull (filePath);
 	DWORD attribs = ::GetFileAttributes (filePath);
 	if (attribs == INVALID_FILE_ATTRIBUTES) {
 		return false;
@@ -796,7 +796,7 @@ bool	IO::FileExists (const TString& filePath)
 bool	IO::DirectoryExists (const TChar* filePath)
 {
 #if		qPlatform_Windows
-	RequireNotNil (filePath);
+	RequireNotNull (filePath);
 	DWORD attribs = ::GetFileAttributes (filePath);
 	if (attribs == INVALID_FILE_ATTRIBUTES) {
 		return false;

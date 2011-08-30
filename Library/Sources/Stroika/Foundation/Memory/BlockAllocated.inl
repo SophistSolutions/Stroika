@@ -38,7 +38,7 @@ namespace	Stroika {
 
 				inline	CriticalSection&	GetCritSection_ ()
 					{
-						AssertNotNil (sCritSection_);	// automatically initailized by BlockAllocated::Private::ActualModuleInit
+						AssertNotNull (sCritSection_);	// automatically initailized by BlockAllocated::Private::ActualModuleInit
 						return *sCritSection_;
 					}
 			}

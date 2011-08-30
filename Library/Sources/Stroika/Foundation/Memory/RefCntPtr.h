@@ -95,7 +95,7 @@ namespace	Stroika {
 							fCountHolder (from._PEEK_CNT_PTR_ ())
 							{
 								if (fPtr != nullptr) {
-									RequireNotNil (fCountHolder);
+									RequireNotNull (fCountHolder);
 									Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 								}
 							}

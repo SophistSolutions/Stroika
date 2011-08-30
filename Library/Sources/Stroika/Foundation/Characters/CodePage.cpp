@@ -229,8 +229,8 @@ namespace {
  */
 void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
 {
-	RequireNotNil (outChars);
-	RequireNotNil (outCharCnt);
+	RequireNotNull (outChars);
+	RequireNotNull (outCharCnt);
 	size_t							outBufSize	=	*outCharCnt;
 	CodePagesGuesser::Confidence	confidence	=	CodePagesGuesser::eLow;
 	CodePage						cp			=	CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
@@ -299,7 +299,7 @@ size_t	CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
 void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
 	Require (inMBCharCnt == 0 or inMBChars != nullptr);
-	RequireNotNil (outCharCnt);
+	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 
 	if (GetHandleBOM ()) {
@@ -373,7 +373,7 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
 	Require (inCharCnt == 0 or inChars != nullptr);
-	RequireNotNil (outCharCnt);
+	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 	switch (fCodePage) {
 		case	kCodePage_ANSI:		TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
@@ -510,7 +510,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
 	Require (inMBCharCnt == 0 or inMBChars != nullptr);
-	RequireNotNil (outCharCnt);
+	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 //	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
 #if		qPlatform_Windows
@@ -534,7 +534,7 @@ void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCh
 void	Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
 	Require (inCharCnt == 0 or inChars != nullptr);
-	RequireNotNil (outCharCnt);
+	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 #if		qPlatform_Windows
 	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
@@ -1166,7 +1166,7 @@ void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar
 void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
 	Require (inMBCharCnt == 0 or inMBChars != nullptr);
-	RequireNotNil (outCharCnt);
+	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 	
 	/*

@@ -76,7 +76,7 @@ void*	SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
 
 void	SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	free (p);
 }
 
@@ -97,7 +97,7 @@ void*	SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size)
 
 void	SimpleAllocator_CallLIBCNewDelete::Deallocate (void* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	::operator delete (p);
 }
 
@@ -166,7 +166,7 @@ void*	SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
 
 void	SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr)
 {
-	RequireNotNil (ptr);
+	RequireNotNull (ptr);
 	MemWithExtraStuff*	p	=	reinterpret_cast<MemWithExtraStuff*> (reinterpret_cast<Byte*> (ptr) - sizeof (MemWithExtraStuff));
 	SUPER_ASSERT_ (p->fPreGuard == kPreGUARD);
 	SUPER_ASSERT_ (::memcmp (reinterpret_cast<Byte*> (p) + p->fBlockSize + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD)) == 0);
@@ -209,8 +209,8 @@ namespace	{
 	typedef	LeakTrackingGeneralPurposeAllocator::PTRMAP	PTRMAP;
 	void	ExtractInfo_ (const PTRMAP& m, set<size_t>* sizeSet, size_t* totalAllocated)
 		{
-			RequireNotNil (sizeSet);
-			RequireNotNil (totalAllocated);
+			RequireNotNull (sizeSet);
+			RequireNotNull (totalAllocated);
 			sizeSet->clear ();
 			*totalAllocated = 0;
 			for (PTRMAP::const_iterator i = m.begin (); i != m.end (); ++i) {
@@ -255,7 +255,7 @@ LeakTrackingGeneralPurposeAllocator::~LeakTrackingGeneralPurposeAllocator ()
 void*	LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 {
 	void*	memptr	=	fBaseAllocator.Allocate (size);
-	AssertNotNil (memptr);
+	AssertNotNull (memptr);
 	AutoCriticalSection enterCriticalSection (fCritSection);
 	try {
 		fAllocations.insert (PTRMAP::value_type (memptr, size));
@@ -269,7 +269,7 @@ void*	LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 
 void	LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection enterCriticalSection (fCritSection);
 	PTRMAP::iterator	i	=	fAllocations.find (p);
 	SUPER_ASSERT_ (i != fAllocations.end ());

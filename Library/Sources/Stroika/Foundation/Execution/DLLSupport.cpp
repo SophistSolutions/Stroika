@@ -28,7 +28,7 @@ using	Debug::TraceContextBumper;
 DLLLoader::DLLLoader (const TChar* dllName)
 {
 	DbgTrace (TSTR ("DLLLoader - loading DLL %s"), dllName);
-	RequireNotNil (dllName);
+	RequireNotNull (dllName);
 #if		qPlatform_Windows
 	ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
 #else
@@ -39,7 +39,7 @@ DLLLoader::DLLLoader (const TChar* dllName)
 DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
 {
 	DbgTrace (TSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
-	RequireNotNil (dllName);
+	RequireNotNull (dllName);
 	try {
 #if		qPlatform_Windows
 		ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
@@ -86,7 +86,7 @@ DLLHandle	DLLLoader::LoadDLL (const TChar* dllName, int flags)
 DLLLoader::~DLLLoader ()
 {
 	DbgTrace (TSTR ("DLLLoader - unloading dll"));
-	AssertNotNil (fModule);
+	AssertNotNull (fModule);
 #if		qPlatform_Windows
 	::FreeLibrary (fModule);
 #else

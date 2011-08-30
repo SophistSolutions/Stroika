@@ -109,7 +109,7 @@ namespace	Stroika {
 			template	<typename T>
 				void	Intersect (set<T>* s1, const set<T>& s2)
 					{
-						RequireNotNil (s1);
+						RequireNotNull (s1);
 						// Sloppy - but hopefully adequate implementation
 						if (not s1->empty () and not s2.empty ()) {
 							*s1 = Intersection (*s1, s2);

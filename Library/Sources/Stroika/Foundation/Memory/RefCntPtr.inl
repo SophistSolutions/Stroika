@@ -86,7 +86,7 @@ namespace	Stroika {
 					fCountHolder (from.fCountHolder)
 					{
 						if (fPtr != nullptr) {
-							RequireNotNil (fCountHolder);
+							RequireNotNull (fCountHolder);
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
@@ -95,7 +95,7 @@ namespace	Stroika {
 					{
 						if (rhs.fPtr != fPtr) {
 							if (fPtr != nullptr) {
-								AssertNotNil (fCountHolder);
+								AssertNotNull (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 								if (Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0) {
 									fCountHolder->DO_DELETE_REF_CNT ();
@@ -107,7 +107,7 @@ namespace	Stroika {
 							fPtr = rhs.fPtr;
 							fCountHolder = rhs.fCountHolder;
 							if (fPtr != nullptr) {
-								AssertNotNil (fCountHolder);
+								AssertNotNull (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 								Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 							}
@@ -118,7 +118,7 @@ namespace	Stroika {
 				inline	RefCntPtr<T>::~RefCntPtr ()
 					{
 						if (fPtr != nullptr) {
-							AssertNotNil (fCountHolder);
+							AssertNotNull (fCountHolder);
 							Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 							if (
 								Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0
@@ -140,8 +140,8 @@ namespace	Stroika {
 				*/
 				inline	T&	RefCntPtr<T>::GetRep () const
 					{
-						AssertNotNil (fPtr);
-						AssertNotNil (fCountHolder);
+						AssertNotNull (fPtr);
+						AssertNotNull (fCountHolder);
 						Assert (fCountHolder->fCount_DONT_ACCESS >= 1);
 						return *fPtr;
 					}

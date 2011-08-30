@@ -26,7 +26,7 @@ namespace	{
 #if		qPlatform_Win32
 int64_t	Execution::AtomicIncrement (volatile int64_t* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p)++;
 	return *p;
@@ -34,7 +34,7 @@ int64_t	Execution::AtomicIncrement (volatile int64_t* p)
 
 uint64_t	Execution::AtomicIncrement (volatile uint64_t* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p)++;
 	return *p;
@@ -42,7 +42,7 @@ uint64_t	Execution::AtomicIncrement (volatile uint64_t* p)
 
 int64_t	Execution::AtomicDecrement (volatile int64_t* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p)--;
 	return *p;
@@ -50,7 +50,7 @@ int64_t	Execution::AtomicDecrement (volatile int64_t* p)
 
 uint64_t	Execution::AtomicDecrement (volatile uint64_t* p)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p)--;
 	return *p;
@@ -58,7 +58,7 @@ uint64_t	Execution::AtomicDecrement (volatile uint64_t* p)
 
 int64_t	Execution::AtomicAdd (volatile int64_t* p, int64_t arg)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p) += arg;
 	return *p;
@@ -66,7 +66,7 @@ int64_t	Execution::AtomicAdd (volatile int64_t* p, int64_t arg)
 
 uint64_t	Execution::AtomicAdd (volatile uint64_t* p, uint64_t arg)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p) += arg;
 	return *p;
@@ -74,7 +74,7 @@ uint64_t	Execution::AtomicAdd (volatile uint64_t* p, uint64_t arg)
 
 int64_t	Execution::AtomicSubtract (volatile int64_t* p, int64_t arg)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p) += arg;
 	return *p;
@@ -82,7 +82,7 @@ int64_t	Execution::AtomicSubtract (volatile int64_t* p, int64_t arg)
 
 uint64_t	Execution::AtomicSubtract (volatile uint64_t* p, uint64_t arg)
 {
-	RequireNotNil (p);
+	RequireNotNull (p);
 	AutoCriticalSection	critSec (sCritSec_);
 	(*p) -= arg;
 	return *p;

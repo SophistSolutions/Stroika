@@ -109,13 +109,13 @@ namespace	Stroika {
 							CacheElement*	fCur;
 							CacheIterator& operator++ ()
 								{
-									RequireNotNil (fCur);
+									RequireNotNull (fCur);
 									fCur = fCur->fNext;
 									return *this;
 								}
 							ELEMENT& operator* ()
 								{
-									RequireNotNil (fCur);
+									RequireNotNull (fCur);
 									return fCur->fElement;
 								}
 							bool operator== (CacheIterator rhs)

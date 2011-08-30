@@ -21,7 +21,7 @@ namespace	Stroika {
 				}
 			void	TextOutputStream::Write (const wchar_t* buffer, size_t bufSize)
 				{
-					RequireNotNil (buffer);
+					RequireNotNull (buffer);
 					Require (bufSize >= 1);
 					Write_ (buffer, bufSize);
 				}

@@ -86,32 +86,32 @@ bool	VariantValue::empty () const
 		}
 		case	eFloat: {
 			TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return isnan (v->fVal) != 0;
 		}
 		case	eDate: {
 			TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.empty ();
 		}
 		case	eDateTime: {
 			TValRep<DateTime,eDateTime>*	v	=	dynamic_cast<TValRep<DateTime,eDateTime>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.empty ();
 		}
 		case	eString: {
 			TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.empty ();
 		}
 		case	eMap: {
 			TValRep<map<wstring,VariantValue>,eMap>*	v	=	dynamic_cast<TValRep<map<wstring,VariantValue>,eMap>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.empty ();
 		}
 		case	eArray: {
 			TValRep<vector<VariantValue>,eArray>*	v	=	dynamic_cast<TValRep<vector<VariantValue>,eArray>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.empty ();
 		}
 		default: {
@@ -129,7 +129,7 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eBoolean: {
 					TValRep<bool,eBoolean>*	v	=	dynamic_cast<TValRep<bool,eBoolean>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				case	eString: {
@@ -155,17 +155,17 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eFloat: {
 					TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return static_cast<int> (v->fVal);
 				}
 				case	eInteger: {
 					TValRep<int,eInteger>*	v	=	dynamic_cast<TValRep<int,eInteger>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				case	eString: {
 					TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return Characters::String2Int (v->fVal);
 				}
 				default: {
@@ -184,17 +184,17 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eInteger: {
 					TValRep<int,eInteger>*	v	=	dynamic_cast<TValRep<int,eInteger>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return static_cast<float> (v->fVal);
 				}
 				case	eFloat: {
 					TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				case	eString: {
 					TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					// NB. this may return NAN if string not a well-formed number (including empty string case)
 					return Characters::String2Float (v->fVal);
 				}
@@ -214,17 +214,17 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eDate: {
 					TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				case	eDateTime: {
 					TValRep<DateTime,eDateTime>*	v	=	dynamic_cast<TValRep<DateTime,eDateTime>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal.GetDate ();
 				}
 				case	eString: {
 					TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return Date (v->fVal, Date::eXML);
 				}
 				default: {
@@ -243,17 +243,17 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eDate: {
 					TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return DateTime (v->fVal);
 				}
 				case	eDateTime: {
 					TValRep<DateTime,eDateTime>*	v	=	dynamic_cast<TValRep<DateTime,eDateTime>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				case	eString: {
 					TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return DateTime (v->fVal, DateTime::eXML);
 				}
 				default: {
@@ -272,37 +272,37 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eDate: {
 					TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal.Format ();
 				}
 				case	eDateTime: {
 					TValRep<DateTime,eDateTime>*	v	=	dynamic_cast<TValRep<DateTime,eDateTime>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal.Format ();
 				}
 				case	eString: {
 					TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				case	eBoolean: {
 					TValRep<bool,eBoolean>*	v	=	dynamic_cast<TValRep<bool,eBoolean>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal? L"true": L"false";
 				}
 				case	eInteger: {
 					TValRep<int,eInteger>*	v	=	dynamic_cast<TValRep<int,eInteger>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return Characters::Format (L"%d", v->fVal);
 				}
 				case	eFloat: {
 					TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return Characters::Float2String (v->fVal);
 				}
 				case	eMap: {
 					TValRep<map<wstring,VariantValue>,eMap>*	v	=	dynamic_cast<TValRep<map<wstring,VariantValue>,eMap>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					wstringstream tmp;
 					tmp << L"map[";
 					for (map<wstring,VariantValue>::const_iterator i = v->fVal.begin (); i != v->fVal.end (); ++i) {
@@ -316,7 +316,7 @@ template	<>
 				}
 				case	eArray: {
 					TValRep<vector<VariantValue>,eArray>*	v	=	dynamic_cast<TValRep<vector<VariantValue>,eArray>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					wstringstream tmp;
 					tmp << L"[";
 					for (vector<VariantValue>::const_iterator i = v->fVal.begin (); i != v->fVal.end (); ++i) {
@@ -344,7 +344,7 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eMap: {
 					TValRep<map<wstring,VariantValue> ,eMap>*	v	=	dynamic_cast<TValRep<map<wstring,VariantValue> ,eMap>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				default: {
@@ -363,7 +363,7 @@ template	<>
 			switch (fVal->GetType ()) {
 				case	eArray: {
 					TValRep<vector<VariantValue>,eArray>*	v	=	dynamic_cast<TValRep<vector<VariantValue>,eArray>*> (fVal.get ());
-					AssertNotNil (v);
+					AssertNotNull (v);
 					return v->fVal;
 				}
 				default: {
@@ -381,27 +381,27 @@ wstring	VariantValue::FormatXML () const
 	switch (fVal->GetType ()) {
 		case	eDate: {
 			TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.Format4XML ();
 		}
 		case	eDateTime: {
 			TValRep<DateTime,eDateTime>*	v	=	dynamic_cast<TValRep<DateTime,eDateTime>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal.Format4XML ();
 		}
 		case	eString: {
 			TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal;
 		}
 		case	eBoolean: {
 			TValRep<bool,eBoolean>*	v	=	dynamic_cast<TValRep<bool,eBoolean>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return v->fVal? L"true": L"false";
 		}
 		case	eFloat: {
 			TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
-			AssertNotNil (v);
+			AssertNotNull (v);
 			return Characters::Float2String (v->fVal);
 		}
 		default: {

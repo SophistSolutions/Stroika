@@ -31,7 +31,7 @@ namespace	Stroika {
 					if (sCounterList_Shared == nullptr) {
 						GetMem_Shared ();
 					}
-					AssertNotNil (sCounterList_Shared);
+					AssertNotNull (sCounterList_Shared);
 					Counter_Shared*	result = sCounterList_Shared;
 					sCounterList_Shared = *(Counter_Shared**)sCounterList_Shared;
 					return (result);
@@ -45,7 +45,7 @@ namespace	Stroika {
 					 */
 					Assert (sizeof (Counter_Shared) >= sizeof (Counter_Shared*));
 	
-					RequireNotNil (counter);
+					RequireNotNull (counter);
 					(*(Counter_Shared**)counter) = sCounterList_Shared;
 					sCounterList_Shared = counter;
 				}
@@ -59,7 +59,7 @@ namespace	Stroika {
 					{
 						Assert (sizeof (Counter_Shared) == sizeof (Counter));
 						fCount = NewCounter_Shared ();
-						AssertNotNil (fCount);
+						AssertNotNull (fCount);
 						(*fCount) = 1;
 					}
 			template <class T>
@@ -69,19 +69,19 @@ namespace	Stroika {
 					fCloner (src.fCloner)
 					{
 						Assert (sizeof (Counter_Shared) == sizeof (Counter));
-						RequireNotNil (fCount);
+						RequireNotNull (fCount);
 						(*fCount)++;
 					}
 			template <class T>
 				inline	const T*	Shared<T>::operator-> () const
 					{
-						EnsureNotNil (fPtr);
+						EnsureNotNull (fPtr);
 						return (fPtr);
 					}
 			template <class T> 
 				inline	const T&	Shared<T>::operator* () const
 					{
-						EnsureNotNil (fPtr);
+						EnsureNotNull (fPtr);
 						return (*fPtr);
 					}
 			template	<class T>
@@ -139,7 +139,7 @@ namespace	Stroika {
 							* NB: fPtr can still be nullptr here.
 							*/
 						if (fPtr != src.fPtr) {
-							RequireNotNil (fCount);
+							RequireNotNull (fCount);
 							Require (*fCount >= 1);
 							(*fCount)--;
 							/*
@@ -170,7 +170,7 @@ namespace	Stroika {
 						 * NB: fPtr and pointer can still be nullptr here.
 						 */
 						if (fPtr != pointer) {
-							RequireNotNil (fCount);
+							RequireNotNull (fCount);
 							Require (*fCount >= 1);
 							(*fCount)--;
 							/*
@@ -198,7 +198,7 @@ namespace	Stroika {
 						 * extra referneces).
 						 */
 						Assure1Reference ();
-						EnsureNotNil (fPtr);
+						EnsureNotNull (fPtr);
 						return (fPtr); 
 					}
 			template <class T>
@@ -209,7 +209,7 @@ namespace	Stroika {
 						 * extra referneces).
 						 */
 						Assure1Reference ();
-						EnsureNotNil (fPtr);
+						EnsureNotNull (fPtr);
 						return (*fPtr); 
 					}
 			template <class T>
@@ -225,7 +225,7 @@ namespace	Stroika {
 							return (nullptr);
 						}
 						Assure1Reference ();
-						EnsureNotNil (fPtr);
+						EnsureNotNull (fPtr);
 						return (fPtr); 
 					}
 			template <class T>
@@ -242,9 +242,9 @@ namespace	Stroika {
 						 *		Since we will be cloning the given pointer, we assume(assert) that
 						 *	it is non-nullptr.
 						 */
-						RequireNotNil (fPtr);
-						RequireNotNil (fCloner);
-						AssertNotNil (fCount);
+						RequireNotNull (fPtr);
+						RequireNotNull (fCloner);
+						AssertNotNull (fCount);
 
 						Require (CountReferences () > 1);
 						*this = ((*fCloner) (*fPtr));

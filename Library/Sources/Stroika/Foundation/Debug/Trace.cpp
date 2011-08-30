@@ -78,7 +78,7 @@ Private::MODULE_INIT::~MODULE_INIT ()
 	delete sEmitTraceCritSec;
 	sEmitTraceCritSec = nullptr;
 	#if		qTraceToFile
-		AssertNotNil (sTraceFile);
+		AssertNotNull (sTraceFile);
 		sTraceFile->close ();
 		delete sTraceFile;
 	#endif
@@ -101,7 +101,7 @@ namespace	{
 			// can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
 			// someone might do a trace message.
 			//		-- LGP 2008-12-21
-			EnsureNotNil (sEmitTraceCritSec);
+			EnsureNotNull (sEmitTraceCritSec);
 			return *sEmitTraceCritSec;
 		}
 }
@@ -159,8 +159,8 @@ TString	Emitter::GetTraceFileName () const
 namespace	{
 	void	Emit2File_ (const char* text)
 		{
-			RequireNotNil (text);
-			RequireNotNil (sTraceFile);
+			RequireNotNull (text);
+			RequireNotNull (sTraceFile);
 			try {
 				if (sTraceFile->is_open ()) {
 					(*sTraceFile) << text;
@@ -173,7 +173,7 @@ namespace	{
 		}
 	void	Emit2File_ (const wchar_t* text)
 		{
-			RequireNotNil (text);
+			RequireNotNull (text);
 			Emit2File_ (WideStringToUTF8 (text).c_str ());
 		}
 }

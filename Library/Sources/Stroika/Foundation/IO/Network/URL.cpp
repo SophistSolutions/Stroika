@@ -77,10 +77,10 @@ int		Network::GetDefaultPortForProtocol (const wstring& proto)
 namespace	{
 	void	OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
 	{
-		RequireNotNil (protocol);
-		RequireNotNil (host);
-		RequireNotNil (relPath);
-		RequireNotNil (query);
+		RequireNotNull (protocol);
+		RequireNotNull (host);
+		RequireNotNull (relPath);
+		RequireNotNull (query);
 
 		DWORD	ingored	=	0;
 		wchar_t	outBuf[10*1024];

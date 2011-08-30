@@ -21,7 +21,7 @@ namespace	Stroika {
 				}
 			inline	void	BinaryOutputStream::Write (const Byte* buffer, size_t bufSize)
 				{
-					RequireNotNil (buffer);
+					RequireNotNull (buffer);
 					Require (bufSize >= 1);
 					Write_ (buffer, bufSize);
 				}

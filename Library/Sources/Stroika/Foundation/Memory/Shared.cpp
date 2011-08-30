@@ -30,7 +30,7 @@ void	Memory::GetMem_Shared ()
 		curLink = *(Counter_Shared**)curLink;
 	}
 	(*(Counter_Shared**)curLink) = nullptr;
-	EnsureNotNil (sCounterList_Shared);
+	EnsureNotNull (sCounterList_Shared);
 }
 
 

@@ -26,7 +26,7 @@
  *	destruction). You can access the value with GetPointer () but this is not
  *	advised - only if it may be legitimately nullptr do you want to do this.
  *	Generaly just use ptr-> to access the data, and this will do the
- *	RequireNotNil (POINTER) for you.
+ *	RequireNotNull (POINTER) for you.
  *
  *		This class can be enourmously useful in implementing letter/envelope -
  *	type data structures - see String, or Shapes, for examples.
@@ -81,7 +81,7 @@ namespace	Stroika {
 						 * the return type with broken, stupid compilers.
 						 */
 						typedef	uint32_t	Counter;
-						nonvirtual	Counter	CountReferences () const	{ AssertNotNil (fCount); return (*fCount); }
+						nonvirtual	Counter	CountReferences () const	{ AssertNotNull (fCount); return (*fCount); }
 
 
 						/*
