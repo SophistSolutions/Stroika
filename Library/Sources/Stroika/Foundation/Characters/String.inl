@@ -21,20 +21,20 @@ namespace	Stroika {
                     StringRep_CharArray (const void* arrayOfBytes, size_t nBytes);
                     ~StringRep_CharArray ();
 
-                    override	StringRep*	Clone () const;
+                    virtual		StringRep*	Clone () const override;
 
-                    override	size_t	GetLength () const;
-                    override	bool	Contains (Character item) const;
-                    override	void	RemoveAll ();
+                    virtual		size_t	GetLength () const override;
+                    virtual		bool	Contains (Character item) const override;
+                    virtual		void	RemoveAll () override;
 
-                    override	Character	GetAt (size_t index) const;
-                    override	void		SetAt (Character item, size_t index);
-                    override	void		InsertAt (Character item, size_t index);
-                    override	void		RemoveAt (size_t index, size_t amountToRemove);
+                    virtual		Character	GetAt (size_t index) const override;
+                    virtual		void		SetAt (Character item, size_t index) override;
+                    virtual		void		InsertAt (Character item, size_t index) override;
+                    virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
 
-                    override	void	SetLength (size_t newLength);
+                    virtual		void	SetLength (size_t newLength) override;
 
-                    override	const void*	Peek () const;
+                    virtual		const void*	Peek () const override;
 
                 protected:
                     StringRep_CharArray ();
@@ -62,10 +62,10 @@ namespace	Stroika {
                 public:
                     StringRep_BufferedCharArray (const void* arrayOfBytes, size_t nBytes);
 
-                    override	StringRep*	Clone () const;
+                    virtual		StringRep*	Clone () const override;
 
                 private:
-                    override	size_t	CalcAllocSize (size_t requested);
+                    virtual		size_t	CalcAllocSize (size_t requested) override;
             };
 
             /*
@@ -90,13 +90,13 @@ namespace	Stroika {
                     StringRep_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes);
                     ~StringRep_ReadOnlyChar ();
 
-                    override	void	RemoveAll ();
+                    virtual		void	RemoveAll () override;
 
-                    override	void	SetAt (Character item, size_t index);
-                    override	void	InsertAt (Character item, size_t index);
-                    override	void	RemoveAt (size_t index, size_t amountToRemove);
+                    virtual		void	SetAt (Character item, size_t index) override;
+                    virtual		void	InsertAt (Character item, size_t index) override;
+                    virtual		void	RemoveAt (size_t index, size_t amountToRemove) override;
 
-                    override	void	SetLength (size_t newLength);
+                    virtual		void	SetLength (size_t newLength) override;
 
                 private:
                     bool	fAllocedMem;
@@ -114,20 +114,20 @@ namespace	Stroika {
                     StringRep_Substring (const Memory::Shared<StringRep>& baseString, size_t from, size_t length);
 
 
-                    override	StringRep*	Clone () const;
+                    virtual		StringRep*	Clone () const override;
 
-                    override	size_t	GetLength () const;
-                    override	bool	Contains (Character item) const;
-                    override	void	RemoveAll ();
+                    virtual		size_t	GetLength () const;
+                    virtual		bool	Contains (Character item) const override;
+                    virtual		void	RemoveAll () override;
 
-                    override	Character	GetAt (size_t index) const;
-                    override	void		SetAt (Character item, size_t index);
-                    override	void		InsertAt (Character item, size_t index);
-                    override	void		RemoveAt (size_t index, size_t amountToRemove);
+                    virtual		Character	GetAt (size_t index) const override;
+                    virtual		void		SetAt (Character item, size_t index) override;
+                    virtual		void		InsertAt (Character item, size_t index) override;
+                    virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
 
-                    override	void	SetLength (size_t newLength);
+                    virtual		void	SetLength (size_t newLength) override;
 
-                    override	const void*	Peek () const;
+                    virtual		const void*	Peek () const override;
 
                 private:
                     Memory::Shared<StringRep>	fBase;
@@ -141,20 +141,20 @@ namespace	Stroika {
                 public:
                     StringRep_Catenate (const String& lhs, const String& rhs);
 
-                    override	StringRep*	Clone () const;
+                    virtual		StringRep*	Clone () const override;
 
-                    override	size_t	GetLength () const;
-                    override	bool	Contains (Character item) const;
-                    override	void	RemoveAll ();
+                    virtual		size_t	GetLength () const override;
+                    virtual		bool	Contains (Character item) const override;
+                    virtual		void	RemoveAll () override;
 
-                    override	Character	GetAt (size_t index) const;
-                    override	void		SetAt (Character item, size_t index);
-                    override	void		InsertAt (Character item, size_t index);
-                    override	void		RemoveAt (size_t index, size_t amountToRemove);
+                    virtual		Character	GetAt (size_t index) const override;
+                    virtual		void		SetAt (Character item, size_t index) override;
+                    virtual		void		InsertAt (Character item, size_t index) override;
+                    virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
 
-                    override	void	SetLength (size_t newLength);
+                    virtual		void	SetLength (size_t newLength) override;
 
-                    override	const void*	Peek () const;
+                    virtual		const void*	Peek () const override;
 
                 private:
                     String			fLeft;
@@ -165,112 +165,107 @@ namespace	Stroika {
             };
 
             inline	String::StringRep::StringRep ()
-            {
-            }
+				{
+				}
 
-            inline	String::String (const String& from):	fRep (from.fRep)	{}
-
-            inline	String::String (const void* arrayOfBytes, size_t nBytes):
-                fRep (&Clone, 0)
-            {
-                fRep = new StringRep_CharArray (arrayOfBytes, nBytes);
-            }
-
+            
+			inline	String::String (const String& from)
+				: fRep (from.fRep)
+				{
+				}
+            inline	String::String (const void* arrayOfBytes, size_t nBytes)
+                : fRep (&Clone_, 0)
+				{
+					fRep = new StringRep_CharArray (arrayOfBytes, nBytes);
+				}
             inline	String&	String::operator= (const String& newString)
-            {
-                fRep = newString.fRep;
-                return (*this);
-            }
-
+				{
+					fRep = newString.fRep;
+					return (*this);
+				}
+			inline	String::StringRep*	String::Clone_ (const StringRep& rep)
+				{
+					return (rep.Clone ()); 
+				}
             inline	void	String::RemoveAt (size_t i)
-            {
-                RemoveAt (i, 1);
-            }
-
+				{
+					RemoveAt (i, 1);
+				}
             inline	const void*	String::Peek () const
-            {
-                return (fRep->Peek ());
-            }
-
+				{
+					return (fRep->Peek ());
+				}
             inline	size_t	String::GetLength () const
-            {
-                return (fRep->GetLength ());
-            }
-
+				{
+					return (fRep->GetLength ());
+				}
             inline	Character	String::operator[] (size_t i) const
-            {
-                Require (i >= 1);
-                Require (i <= GetLength ());
-                return (fRep->GetAt (i));
-            }
-
+				{
+					Require (i >= 1);
+					Require (i <= GetLength ());
+					return (fRep->GetAt (i));
+				}
             inline	void	String::SetRep (StringRep* rep)
-            {
-                fRep = rep;
-            }
-
+				{
+					fRep = rep;
+				}
             inline	const String::StringRep*	String::GetRep () const
-            {
-                return (fRep.GetPointer ());
-            }
-
+				{
+					return (fRep.GetPointer ());
+				}
             inline	String::StringRep*			String::GetRep ()
-            {
-                return (fRep.GetPointer ());
-            }
+				{
+					return (fRep.GetPointer ());
+				}
 
-            inline	bool	operator!= (const String& lhs, const String& rhs)
-            {
-                return (bool (not (lhs == rhs)));
-            }
-
+			
+			inline	bool	operator!= (const String& lhs, const String& rhs)
+				{
+					return (bool (not (lhs == rhs)));
+				}
             inline	bool	operator!= (const char* lhs, const String& rhs)
-            {
-                return (bool (not (lhs == rhs)));
-            }
-
+				{
+					return (bool (not (lhs == rhs)));
+				}
             inline	bool	operator!= (const String& lhs, const char* rhs)
-            {
-                return (bool (not (lhs == rhs)));
-            }
-
+				{
+					return (bool (not (lhs == rhs)));
+				}
             inline	bool	operator> (const String& lhs, const String& rhs)
-            {
-                return (bool (not (lhs <= rhs)));
-            }
-
+				{
+					return (bool (not (lhs <= rhs)));
+				}
             inline	bool	operator> (const char* lhs, const String& rhs)
-            {
-                return (bool (not (lhs <= rhs)));
-            }
-
+				{
+					return (bool (not (lhs <= rhs)));
+				}
             inline	bool	operator> (const String& lhs, const char* rhs)
-            {
-                return (bool (not (lhs <= rhs)));
-            }
-
+				{
+					return (bool (not (lhs <= rhs)));
+				}
             inline	bool	operator>= (const String& lhs, const String& rhs)
-            {
-                return (bool (not (lhs < rhs)));
-            }
-
+				{
+					return (bool (not (lhs < rhs)));
+				}
             inline	bool	operator>= (const char* lhs, const String& rhs)
-            {
-                return (bool (not (lhs < rhs)));
-            }
-
+				{
+					return (bool (not (lhs < rhs)));
+				}
             inline	bool	operator>= (const String& lhs, const char* rhs)
-            {
-                return (bool (not (lhs < rhs)));
-            }
+				{
+					return (bool (not (lhs < rhs)));
+				}
 
-            inline	String_CharArray::String_CharArray (const String_CharArray& s)	: String (s)	{}
+            
+			inline	String_CharArray::String_CharArray (const String_CharArray& s)	: String (s)	{}
             inline	String_CharArray& String_CharArray::operator= (const String_CharArray& s)	{	String::operator= (s);	return (*this); }
 
-            inline	String_BufferedCharArray::String_BufferedCharArray (const String_BufferedCharArray& s)	: String (s)	{}
+            
+			inline	String_BufferedCharArray::String_BufferedCharArray (const String_BufferedCharArray& s)	: String (s)	{}
             inline	String_BufferedCharArray& String_BufferedCharArray::operator= (const String_BufferedCharArray& s)	{	String::operator= (s);	return (*this); }
 
-            inline	String_ReadOnlyChar::String_ReadOnlyChar (const String_ReadOnlyChar& s)	: String (s)	{}
+            
+			inline	String_ReadOnlyChar::String_ReadOnlyChar (const String_ReadOnlyChar& s)	: String (s)	{}
             inline	String_ReadOnlyChar& String_ReadOnlyChar::operator= (const String_ReadOnlyChar& s)	{	String::operator= (s);	return (*this); }
 		}
 	}

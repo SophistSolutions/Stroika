@@ -1,6 +1,8 @@
-/* Copyright(c) Sophist Solutions Inc. 1990-1992.  All rights reserved */
-#ifndef	__String__
-#define	__String__
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
+#ifndef	_Stroika_Foundation_Characters_String_h_
+#define	_Stroika_Foundation_Characters_String_h_	1
 
 /*
  *
@@ -137,9 +139,19 @@ namespace	Stroika {
                      * if none found.
                      */
                     nonvirtual	size_t	IndexOf (Character c) const;
+					/*
+					 * IndexOf (substring) returns the index of the first occurance of the given substring in this string. This function
+					 * always returns a valid string index, which is followed by the given substring, or kBadStringIndex otherwise.
+					 */
                     nonvirtual	size_t	IndexOf (const String& subString) const;
                     nonvirtual	size_t	RIndexOf (Character c) const;
+					
+					/*
+					 * RIndexOf (substring) returns the index of the last occurance of the given substring in this string. This function
+					 * always returns a valid string index, which is followed by the given substring, or kBadStringIndex otherwise.
+					 */
                     nonvirtual	size_t	RIndexOf (const String& subString) const;
+
                     nonvirtual	bool	Contains (Character c) const;
                     nonvirtual	bool	Contains (const String& subString) const;
 
@@ -217,7 +229,7 @@ namespace	Stroika {
                 private:
                     Memory::Shared<StringRep>	fRep;
 
-                    static	StringRep*	Clone (const StringRep& rep)	{ return (rep.Clone ()); }
+                    static	StringRep*	Clone_ (const StringRep& rep);
 
                 /*
                  * These are made friends so they can peek at the shared part, as an optimization/
@@ -316,9 +328,6 @@ namespace	Stroika {
 
 
 
-
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -328,6 +337,5 @@ namespace	Stroika {
 
 
 
-
-#endif	/*__String__*/
+#endif	/*_Stroika_Foundation_Characters_String_h_*/
 

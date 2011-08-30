@@ -9,15 +9,16 @@
 #include    <istream>
 #include	<string>
 
-
 #include	"../Math/Common.h"
+
 #include	"String.h"
+
 
 
 using	namespace	Characters;
 
 
-extern	bool	operator== (const Memory::Shared<String::StringRep>&, const Memory::Shared<String::StringRep>&);
+//extern	bool	operator== (const Memory::Shared<String::StringRep>&, const Memory::Shared<String::StringRep>&);
 
 
 
@@ -29,25 +30,24 @@ extern	bool	operator== (const Memory::Shared<String::StringRep>&, const Memory::
  ************************************* String ***********************************
  ********************************************************************************
  */
-String::String ():
-	fRep (&Clone, nullptr)
+String::String ()
+	: fRep (&Clone_, nullptr)
 {
-	static	Memory::Shared<StringRep>	sSharedBuffer (&Clone, new StringRep_CharArray (nullptr, 0));
-
+	static	Memory::Shared<StringRep>	sSharedBuffer (&Clone_, new StringRep_CharArray (nullptr, 0));
 
 	fRep = sSharedBuffer;
 	Assert (fRep.CountReferences () > 1);
 }
 
-String::String (const char* cString) :
-	fRep (&Clone, nullptr)
+String::String (const char* cString)
+	: fRep (&Clone_, nullptr)
 {
 	RequireNotNil (cString);
 	fRep = new StringRep_CharArray (cString, strlen (cString));
 }
 
-String::String (StringRep* sharedPart, bool):
-	fRep (&Clone, sharedPart)
+String::String (StringRep* sharedPart, bool)
+	: fRep (&Clone_, sharedPart)
 {
 	Require (fRep.CountReferences () == 1);
 }
@@ -133,12 +133,9 @@ size_t	String::IndexOf (Character c) const
 
 size_t	String::IndexOf (const String& subString) const
 {
-// SSW: changed definition here, as former seems really el bizarro
-#if 0
-	if (subString == kEmptyString) {
+	if (subString.GetLength () == 0) {
 		return ((GetLength () == 0) ? kBadStringIndex : 1);
 	}
-#endif
 	if (GetLength () < subString.GetLength ()) {
 		return (kBadStringIndex);	// important test cuz size_t is unsigned
 	}
@@ -241,32 +238,34 @@ char*	String::ToCStringTrunc (char buf [], size_t bufferSize) const
 }
 
 
+
+
 /*
  ********************************************************************************
  ******************************** String_CharArray ******************************
  ********************************************************************************
  */
-String_CharArray::String_CharArray () :
-	String (nullptr, false)
+String_CharArray::String_CharArray ()
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_CharArray (nullptr, 0));
 }
 
-String_CharArray::String_CharArray (const char* cString) :
-	String (nullptr, false)
+String_CharArray::String_CharArray (const char* cString)
+	: String (nullptr, false)
 {
 	size_t length = strlen (cString);
 	SetRep (new StringRep_CharArray (cString, length));
 }
 
-String_CharArray::String_CharArray (const void* arrayOfBytes, size_t nBytes) :
-	String (nullptr, false)
+String_CharArray::String_CharArray (const void* arrayOfBytes, size_t nBytes)
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_CharArray (arrayOfBytes, nBytes));
 }
 
-String_CharArray::String_CharArray (const String& from) :
-	String (nullptr, false)
+String_CharArray::String_CharArray (const String& from)
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_CharArray (from.Peek (), from.GetLength ()));
 }
@@ -280,30 +279,31 @@ String_CharArray::String_CharArray (const String& from) :
  **************************** String_BufferedCharArray **************************
  ********************************************************************************
  */
-String_BufferedCharArray::String_BufferedCharArray () :
-	String (nullptr, false)
+String_BufferedCharArray::String_BufferedCharArray ()
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_BufferedCharArray (nullptr, 0));
 }
 
-String_BufferedCharArray::String_BufferedCharArray (const char* cString) :
-	String (nullptr, false)
+String_BufferedCharArray::String_BufferedCharArray (const char* cString)
+	: String (nullptr, false)
 {
 	size_t length = strlen (cString);
 	SetRep (new StringRep_BufferedCharArray (cString, length));
 }
 
-String_BufferedCharArray::String_BufferedCharArray (const void* arrayOfBytes, size_t nBytes) :
-	String (nullptr, false)
+String_BufferedCharArray::String_BufferedCharArray (const void* arrayOfBytes, size_t nBytes)
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_BufferedCharArray (arrayOfBytes, nBytes));
 }
 
-String_BufferedCharArray::String_BufferedCharArray (const String& from) :
-	String (nullptr, false)
+String_BufferedCharArray::String_BufferedCharArray (const String& from)
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_BufferedCharArray (from.Peek (), from.GetLength ()));
 }
+
 
 
 
@@ -313,15 +313,15 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from) :
  ****************************** String_ReadOnlyChar *****************************
  ********************************************************************************
  */
-String_ReadOnlyChar::String_ReadOnlyChar (const char* cString) :
-	String (nullptr, false)
+String_ReadOnlyChar::String_ReadOnlyChar (const char* cString)
+	: String (nullptr, false)
 {
 	size_t length = strlen (cString);
 	SetRep (new StringRep_ReadOnlyChar (cString, length));
 }
 
-String_ReadOnlyChar::String_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes) :
-	String (nullptr, false)
+String_ReadOnlyChar::String_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes)
+	: String (nullptr, false)
 {
 	SetRep (new StringRep_ReadOnlyChar (arrayOfBytes, nBytes));
 }
@@ -348,10 +348,10 @@ String::StringRep::~StringRep ()
  ******************************** StringRep_CharArray ***************************
  ********************************************************************************
  */
-StringRep_CharArray::StringRep_CharArray (const void* arrayOfBytes, size_t nBytes):
-	StringRep (),
-	fStorage (nullptr),
-	fLength (0)
+StringRep_CharArray::StringRep_CharArray (const void* arrayOfBytes, size_t nBytes)
+	: StringRep ()
+	, fStorage (nullptr)
+	, fLength (0)
 {
 	fLength = nBytes;
 	fStorage = ::new char [CalcAllocSize (fLength)];
@@ -360,9 +360,10 @@ StringRep_CharArray::StringRep_CharArray (const void* arrayOfBytes, size_t nByte
 	}
 }
 
-StringRep_CharArray::StringRep_CharArray () :
-	fLength (0),
-	fStorage (nullptr)
+StringRep_CharArray::StringRep_CharArray ()
+	: StringRep ()
+	, fStorage (nullptr)
+	, fLength (0)
 {
 }
 
@@ -492,8 +493,8 @@ size_t	StringRep_CharArray::CalcAllocSize (size_t requested)
  **************************** StringRep_BufferedCharArray ***********************
  ********************************************************************************
  */
-StringRep_BufferedCharArray::StringRep_BufferedCharArray (const void* arrayOfBytes, size_t nBytes) :
-	StringRep_CharArray ()
+StringRep_BufferedCharArray::StringRep_BufferedCharArray (const void* arrayOfBytes, size_t nBytes)
+	: StringRep_CharArray ()
 {
 	RequireNotNil (arrayOfBytes);
 
@@ -516,14 +517,16 @@ size_t	StringRep_BufferedCharArray::CalcAllocSize (size_t requested)
 
 
 
+
+
 /*
  ********************************************************************************
  ****************************** StringRep_ReadOnlyChar **************************
  ********************************************************************************
  */
-StringRep_ReadOnlyChar::StringRep_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes) :
-	StringRep_CharArray (),
-	fAllocedMem (false)
+StringRep_ReadOnlyChar::StringRep_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes)
+	: StringRep_CharArray ()
+	, fAllocedMem (false)
 {
 	RequireNotNil (arrayOfBytes);
 	SetStorage ((char*)arrayOfBytes, nBytes);
@@ -579,15 +582,17 @@ void	StringRep_ReadOnlyChar::AssureMemAllocated ()
 
 
 
+
+
 /*
  ********************************************************************************
  ******************************** StringRep_Substring ***************************
  ********************************************************************************
  */
-StringRep_Substring::StringRep_Substring (const Memory::Shared<StringRep>& baseString, size_t from, size_t length) :
-	fBase (baseString),
-	fFrom (from),
-	fLength (length)
+StringRep_Substring::StringRep_Substring (const Memory::Shared<StringRep>& baseString, size_t from, size_t length)
+	: fBase (baseString)
+	, fFrom (from)
+	, fLength (length)
 {
 	Require (from >= 1);
 	Require (length >= 0);
@@ -678,11 +683,10 @@ const void*	StringRep_Substring::Peek () const
  ******************************** StringRep_Catenate ****************************
  ********************************************************************************
  */
-
-StringRep_Catenate::StringRep_Catenate (const String& lhs, const String& rhs) :
-	fLeft (lhs),
-	fRight (rhs),
-	fLength (lhs.GetLength () + rhs.GetLength ())
+StringRep_Catenate::StringRep_Catenate (const String& lhs, const String& rhs)
+	: fLeft (lhs)
+	, fRight (rhs)
+	, fLength (lhs.GetLength () + rhs.GetLength ())
 {
 }
 
@@ -751,7 +755,6 @@ void	StringRep_Catenate::SetLength (size_t newLength)
 	fLength = newLength;
 }
 
-
 const void*	StringRep_Catenate::Peek () const
 {
 	// ~const
@@ -776,6 +779,8 @@ void	StringRep_Catenate::Normalize ()
 
 
 
+
+
 /*
  ********************************************************************************
  ************************************* operator+ ********************************
@@ -794,6 +799,9 @@ String	Stroika::Foundation::Characters::operator+ (const String& lhs, const Stri
     return (String (new StringRep_Catenate (lhs, rhs), false));
 #endif
 }
+
+
+
 
 
 /*
