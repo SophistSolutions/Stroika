@@ -183,6 +183,9 @@ namespace	Stroika {
 					fRep = newString.fRep;
 					return (*this);
 				}
+            inline	String::~String ()
+				{
+				}
 			inline	String::StringRep*	String::Clone_ (const StringRep& rep)
 				{
 					return (rep.Clone ()); 

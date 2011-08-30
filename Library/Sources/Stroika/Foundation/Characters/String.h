@@ -111,11 +111,14 @@ namespace	Stroika {
             class	String {
                 public:
                     String ();
+// SERIOUSLY CONSIDER LOSING THIS
                     String (const char* cString);
+// SERIOUSLY CONSIDER LOSING THIS
                     String (const void* arrayOfBytes, size_t nBytes);	// if arrayOfBytes 0 then not copied from, and initial data in string undefined
-                    String (const String& from);
 
-                    ~String ()	{}		// NOTE: NON-VIRTUAL!!!!!
+					String (const String& from);
+
+                    ~String ();
 
                     nonvirtual	String&	operator= (const String& newString);
 
@@ -169,7 +172,7 @@ namespace	Stroika {
                     nonvirtual	const void* Peek () const;
 
                     /*
-                     * Some useful conversion routines to C/Pascal strings. Note that
+                     * Some useful conversion routines to C strings. Note that
                      * if you specify a buffer, we fill in no more than that amount, and
                      * otherwise we alloc a string for you, and you must then dispose of
                      * it when you are thru (with delete).
@@ -195,6 +198,33 @@ namespace	Stroika {
                     nonvirtual	char*	ToCString (char buf [], size_t bufferSize) const;
                     nonvirtual	char*	ToCStringTrunc (char buf [], size_t bufferSize) const;
 
+
+
+#if 0
+// Sterl: Please consider these possible new APIs
+                    String (const wchar_t* cString);
+					String (const std::wstring& r);
+
+					static	String	FromUTF8 (const char*);
+					static	String	FromUTF8 (const std::string&);
+
+					nonvirtual	wstring	ToStdStr () const;
+					nonvirtual	const wstring&	ToStdStr (wstring* into) const;
+					nonvirtual	const wchar_t*	c_str () const;
+					nonvirtual	string	ToStdStrUTF8 () const;
+					nonvirtual	const string&	ToStdStrUTF8 (string* into) const;
+					nonvirtual	const char*	ToUTF8_c_str () const;		// unsure we want
+					nonvirtual	string	ToStdStrASCII () const;	// Requires that each Character is 'ASCII' - more efficent than using UTF8 impl - but will assert out if values not valid ASCII
+
+
+//ALSO - VERY IMPORTANT - when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
+
+#endif
+
+
+				protected:	// PROBABLY SHOULD MAKE THIS PROTECTED - but must be careful about making REPs be nested classes inside subclasses of String
+							//	-- LGP 2011-08-29
+				public:
                     class	StringRep {
                         protected:
                             StringRep ();
