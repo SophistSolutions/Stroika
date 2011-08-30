@@ -510,7 +510,7 @@ String::StringRep*	StringRep_BufferedCharArray::Clone () const
 size_t	StringRep_BufferedCharArray::CalcAllocSize (size_t requested)
 {
 	// round up to buffer block size
-	return (Stroika::Foundation::Math::RoundUpTo (requested, 32));
+	return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
 }
 
 
@@ -812,7 +812,7 @@ bool	Stroika::Foundation::Characters::operator== (const String& lhs, const Strin
         return (false);
     }
 
-    for (int i = 1; i <= length; i++) {
+    for (size_t i = 1; i <= length; i++) {
         if (lhs[i] != rhs[i]) {
             return (false);
         }
@@ -900,7 +900,7 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const Strin
         return (true);
     }
     size_t length = min (lhs.GetLength (), rhs.GetLength ());
-    for (int i = 1; i <= length; i++) {
+    for (size_t i = 1; i <= length; i++) {
         if (lhs[i] != rhs[i]) {
             return (bool (lhs[i] < rhs[i]));
         }
@@ -952,7 +952,7 @@ istream&	operator>> (istream& in, String& s)
     char	bigBuf [2048];
     bigBuf[0] = '\0';
     // Do same as operator>> (istream&, char*)...
-    int oldWidth = in.width (sizeof (bigBuf)-1);	// prevent overflow (I hope thats what this does??)
+	std::streamsize oldWidth = in.width (sizeof (bigBuf)-1);	// prevent overflow (I hope thats what this does??)
     in >> bigBuf;
     in.width (oldWidth);							// maybe unncessary - reset automatically???
 

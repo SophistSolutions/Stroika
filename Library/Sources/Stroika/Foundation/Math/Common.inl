@@ -12,6 +12,7 @@
  */
 #include	<limits>
 
+#include	"../Debug/Assertions.h"
 
 
 namespace	Stroika {
@@ -23,36 +24,107 @@ namespace	Stroika {
 					return numeric_limits<double>::quiet_NaN ();
 				}
 
+			namespace	Private {
+				template	<typename T, typename UNSIGNED_T>
+					inline	T	RoundUpTo_SignedHelper_ (T x, T toNearest)
+						{
+							Require (toNearest > 0);
+							if (x < 0) {
+								return (- static_cast<T> (RoundDownTo (static_cast<UNSIGNED_T> (-x), static_cast<UNSIGNED_T> (toNearest))));
+							}
+							else {
+								return static_cast<T> (RoundUpTo_UnSignedHelper_<UNSIGNED_T> (x, toNearest));
+							}
+						}
+				template	<typename T>
+					inline	T	RoundUpTo_UnSignedHelper_ (T x, T toNearest)
+						{
+							return (((x+toNearest-1u)/toNearest)*toNearest);
+						}
+				template	<typename T, typename UNSIGNED_T>
+					inline	T	RoundDownTo_SignedHelper_ (T x, T toNearest)
+						{
+							Require (toNearest > 0);
+							if (x < 0) {
+								return (- static_cast<T> (RoundUpTo (static_cast<UNSIGNED_T> (-x), static_cast<UNSIGNED_T> (toNearest))));
+							}
+							else {
+								return (RoundDownTo (static_cast<UNSIGNED_T> (x), static_cast<UNSIGNED_T> (toNearest)));
+							}
+						}
+				template	<typename T>
+					inline	T	RoundDownTo_UnSignedHelper_ (T x, T toNearest)
+						{
+							return ((x/toNearest)*toNearest);
+						}
+			}
 
 
-            inline	int			RoundUpTo (unsigned x, unsigned toNearest)
-            {
-                return (((x+toNearest-1u)/toNearest)*toNearest);
-            }
 
-            inline	int			RoundDownTo (unsigned x, unsigned toNearest)
-            {
-                return ((x/toNearest)*toNearest);
-            }
+			template	<>
+				inline	int	RoundUpTo (int x, int toNearest)
+					{
+						return Private::RoundUpTo_SignedHelper_<int, unsigned int> (x, toNearest);
+					}
+			template	<>
+				inline	long	RoundUpTo (long x, long toNearest)
+					{
+						return Private::RoundUpTo_SignedHelper_<long, unsigned long> (x, toNearest);
+					}
+			template	<>
+				inline	long long	RoundUpTo (long long x, long long toNearest)
+					{
+						return Private::RoundUpTo_SignedHelper_<long long, unsigned long long> (x, toNearest);
+					}
+			template	<>
+				inline	unsigned int	RoundUpTo (unsigned int x, unsigned int toNearest)
+					{
+						return Private::RoundUpTo_UnSignedHelper_<unsigned int> (x, toNearest);
+					}
+			template	<>
+				inline	unsigned long	RoundUpTo (unsigned long x, unsigned long toNearest)
+					{
+						return Private::RoundUpTo_UnSignedHelper_<unsigned long> (x, toNearest);
+					}
+			template	<>
+				inline	unsigned long long	RoundUpTo (unsigned long long x, unsigned long long toNearest)
+					{
+						return Private::RoundUpTo_UnSignedHelper_<unsigned long long> (x, toNearest);
+					}
 
-            inline	int			RoundUpTo (int x, unsigned toNearest)
-            {
-                if (x < 0) {
-                    return (- RoundDownTo (unsigned (-x), toNearest));
-                }
-                else {
-                    return (RoundUpTo (unsigned (x), toNearest));
-                }
-            }
-            inline	int			RoundDownTo (int x, unsigned toNearest)
-            {
-                if (x < 0) {
-                    return (- RoundUpTo (unsigned (-x), toNearest));
-                }
-                else {
-                    return (RoundDownTo (unsigned (x), toNearest));
-                }
-            }
+				
+
+			template	<>
+				inline	int	RoundDownTo (int x, int toNearest)
+					{
+						return Private::RoundDownTo_SignedHelper_<int, unsigned int> (x, toNearest);
+					}
+			template	<>
+				inline	long	RoundDownTo (long x, long toNearest)
+					{
+						return Private::RoundDownTo_SignedHelper_<long, unsigned long> (x, toNearest);
+					}
+			template	<>
+				inline	long long	RoundDownTo (long long x, long long toNearest)
+					{
+						return Private::RoundDownTo_SignedHelper_<long long, unsigned long long> (x, toNearest);
+					}
+			template	<>
+				inline	unsigned int	RoundDownTo (unsigned int x, unsigned int toNearest)
+					{
+						return Private::RoundDownTo_UnSignedHelper_<unsigned int> (x, toNearest);
+					}
+			template	<>
+				inline	unsigned long	RoundDownTo (unsigned long x, unsigned long toNearest)
+					{
+						return Private::RoundDownTo_UnSignedHelper_<unsigned long> (x, toNearest);
+					}
+			template	<>
+				inline	unsigned long long	RoundDownTo (unsigned long long x, unsigned long long toNearest)
+					{
+						return Private::RoundDownTo_UnSignedHelper_<unsigned long long> (x, toNearest);
+					}
+
 		}
 	}
 }

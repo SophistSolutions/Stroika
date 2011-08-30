@@ -21,14 +21,22 @@ namespace	Stroika {
 			const	double	kE	=	2.71828182845904523536;
 			const	double	kPi	=	3.14159265358979323846;
 
+
              /*
-             * RoundUpTo() - round towards posative infinity.
+              * RoundUpTo() - round towards posative infinity.
+			  * T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
+			  *		(after review of this API/implementation, probably should add short/char with unsigned variants to this list)
+              */
+			template	<typename T>
+				T	RoundUpTo (T x, T toNearest);
+
+			/*
              * RoundDownTo() - round towards negative infinity.
+			 * T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
+			 *		(after review of this API/implementation, probably should add short/char with unsigned variants to this list)
              */
-            int			RoundUpTo (unsigned x, unsigned toNearest);
-            int			RoundDownTo (unsigned x, unsigned toNearest);
-            int			RoundUpTo (int x, unsigned toNearest);
-            int			RoundDownTo (int x, unsigned toNearest);
+			template	<typename T>
+				T	RoundDownTo (T x, T toNearest);
 
         }
 	}
