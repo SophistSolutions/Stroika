@@ -134,14 +134,14 @@ namespace	Stroika {
 				public:
 					static	T*	DefaultElementCopier (const T& t);
 					/*
-						*		<<< MUST FIX DOCS OBSOLETE>>
-						* This routine is automatically called whenever a non-const method is called, to ensure
-						* that only the current copy, and no shared references, are affected by a modification.
-						* Users should never need to call this method directly, although class implementers may
-						* occasionally call this method directly. One plausible example of when this is needed
-						* is when the type T being wrapped does not make correct use of const.
-						*/
+					 * Assure1Reference () can be called when implementing copy-on-write. A typical use would be to call Assure1Reference () on
+					 * all non-const methods of envelope objects which use RefCntPtr<> to share a common read-only copy and only clone it when they need write.
+					 *
+					 * The 'copier' function must make a logical copy (presumably suitable for update) of the given object already pointed to. A generally appropriate
+					 * default implementation is provided.
+					 */
 					nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = DefaultElementCopier);
+
 				private:
 					nonvirtual	void	BreakReferences_ (T* (*copier) (const T&));
 
