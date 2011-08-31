@@ -1,0 +1,22 @@
+*.inf text eol=crlf diff
+*.bat text eol=crlf diff
+*.sln text eol=crlf diff
+*.wixproj text eol=crlf diff
+*.wxi text eol=crlf diff
+*.wxs text eol=crlf diff
+*.rtf binary
+*.hphr text eol=crlf diff
+*.xsd text eol=crlf diff
+*.wsdl text eol=crlf diff
+README text diff
+Makefile* text diff
+*.h text diff
+*.inl text diff
+*.cpp text diff
+*.txt text diff
+*.htm text diff
+*.ico binary
+*.bmp binary
+*.xml text eol=crlf diff
+*.manifest text eol=crlf diff
+*.rc text eol=crlf diff
