@@ -100,6 +100,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
@@ -250,6 +252,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Event.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />

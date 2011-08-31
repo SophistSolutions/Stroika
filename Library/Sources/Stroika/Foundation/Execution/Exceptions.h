@@ -132,6 +132,7 @@ namespace	Stroika {
 			#define	IgnoreExceptionsForCall(theCode)		try {theCode;} catch (...) {}
 
 
+		#if		qPlatform_Windows
 			#define	CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()\
 				catch (HRESULT hr) {\
 					return hr;\
@@ -149,73 +150,9 @@ namespace	Stroika {
 					return DISP_E_EXCEPTION;\
 				}\
 
+		#endif
 
 
-			/*
-			 *	Utility class to support catch and re-throw of exceptions.
-			 */
-			struct	CatchAndCaptureExceptionHelper {
-				public:
-					CatchAndCaptureExceptionHelper ();
-
-				public:
-					// This function need not be run, but CAN be run to allow subclasses to specify additional 
-					struct	Callback {
-						virtual	void	DoItInsideCatcher () = 0;
-					};
-					virtual	void	DoRunWithCatchRePropagate (Callback* callback);
-
-				public:
-					virtual	bool	AnyExceptionCaught () const;
-					virtual	void	RethrowIfAnyCaught () const;
-
-				public:
-					auto_ptr<RequiredComponentMissingException>			fRequiredComponentMissingException;
-					auto_ptr<StringException>							fStringException;
-					auto_ptr<IO::FileFormatException>					fFileFormatException;
-					auto_ptr<IO::FileBusyException>						fFileBusyException;
-					auto_ptr<SilentException>							fSilentException;
-				#if		qPlatform_Windows
-					auto_ptr<Platform::Windows::HRESULTErrorException>	fHRESULTErrorException;
-					auto_ptr<Platform::Windows::Exception>				fWin32ErrorException;
-				#endif
-			};
-
-
-
-			#if		qPlatform_Windows
-				#define	CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)\
-					catch (const Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException& e) {\
-						(CE).fHRESULTErrorException = auto_ptr<Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException> (DEBUG_NEW Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException (e));\
-					}\
-					catch (const Stroika::Foundation::Execution::Platform::Windows::Exception& e) {\
-						(CE).fWin32ErrorException = auto_ptr<Stroika::Foundation::Execution::Platform::Windows::Exception> (DEBUG_NEW Stroika::Foundation::Execution::Platform::Windows::Exception (e));\
-					}
-			#else
-				#define	CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)
-			#endif
-
-
-			#define	CATCH_AND_CAPTURE_CATCH_BLOCK(CE)\
-				catch (const Stroika::Foundation::Execution::RequiredComponentMissingException& e) {\
-					(CE).fRequiredComponentMissingException = auto_ptr<Stroika::Foundation::Execution::RequiredComponentMissingException> (DEBUG_NEW Stroika::Foundation::Execution::RequiredComponentMissingException (e));\
-				}\
-				catch (const Stroika::Foundation::Execution::StringException& e) {\
-					(CE).fStringException = auto_ptr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (e));\
-				}\
-				CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)\
-				catch (const Stroika::Foundation::IO::FileFormatException& e) {\
-					(CE).fFileFormatException = auto_ptr<Stroika::Foundation::IO::FileFormatException> (DEBUG_NEW Stroika::Foundation::IO::FileFormatException (e));\
-				}\
-				catch (const Stroika::Foundation::IO::FileBusyException& e) {\
-					(CE).fFileBusyException = auto_ptr<Stroika::Foundation::IO::FileBusyException> (DEBUG_NEW Stroika::Foundation::IO::FileBusyException (e));\
-				}\
-				catch (const Stroika::Foundation::Execution::SilentException& e) {\
-					(CE).fSilentException = auto_ptr<Stroika::Foundation::Execution::SilentException> (DEBUG_NEW Stroika::Foundation::Execution::SilentException (e));\
-				}\
-				catch (...) {\
-					(CE).fStringException = auto_ptr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (L"Unknown Exception"));\
-				}\
 
 
 

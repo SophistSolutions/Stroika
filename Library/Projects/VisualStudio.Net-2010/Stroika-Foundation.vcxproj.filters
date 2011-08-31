@@ -258,6 +258,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -504,6 +507,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -688,6 +694,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>

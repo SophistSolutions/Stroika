@@ -18,6 +18,7 @@ Objs	=	\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)Event.o\
 	$(ObjDir)Exceptions.o\
+	$(ObjDir)ExceptionPropagate.o\
 	$(ObjDir)IRunnable.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
