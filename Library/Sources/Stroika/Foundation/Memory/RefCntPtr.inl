@@ -14,7 +14,7 @@
 
 #include	"BlockAllocated.h"
 
-namespace	Stroika {	
+namespace	Stroika {
 	namespace	Foundation {
 		namespace	Memory {
 
@@ -247,11 +247,9 @@ namespace	Stroika {
 						 *	it is non-nullptr.
 						 */
 						RequireNotNull (fPtr);
-						RequireNotNull (fCloner);
-						AssertNotNull (fCount);
 
 						Require (CurrentRefCount () > 1);
-						*this = ((*fCloner) (*fPtr));
+						*this = ((*copier) (*fPtr));
 						Ensure (CurrentRefCount () == 1);
 					}
 			template	<typename T>
@@ -267,7 +265,7 @@ namespace	Stroika {
 			template	<typename T>
 				inline	bool	RefCntPtr<T>::IsUnique () const
 					{
-						RequireNotNil (fCountHolder);
+						RequireNotNull (fCountHolder);
 						return fCountHolder->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T>
