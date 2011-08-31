@@ -131,12 +131,27 @@ namespace	Stroika {
 								return RefCntPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
 							}
 
+				public:
+					static	T*	DefaultElementCopier (const T& t);
+					/*
+						*		<<< MUST FIX DOCS OBSOLETE>>
+						* This routine is automatically called whenever a non-const method is called, to ensure
+						* that only the current copy, and no shared references, are affected by a modification.
+						* Users should never need to call this method directly, although class implementers may
+						* occasionally call this method directly. One plausible example of when this is needed
+						* is when the type T being wrapped does not make correct use of const.
+						*/
+					nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = DefaultElementCopier);
+				private:
+					nonvirtual	void	BreakReferences_ (T* (*copier) (const T&));
 
 				protected:
 					T*				fPtr;
 					RefCntPtrBase*	fCountHolder;
 
 				public:
+					nonvirtual	bool	IsUnique () const;
+					nonvirtual	bool	unique () const;
 					nonvirtual	size_t	CurrentRefCount () const;
 
 				public:

@@ -219,6 +219,42 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T>
+				inline	T*	RefCntPtr<T>::DefaultElementCopier (const T& t)
+					{
+						return new T (t);
+					}
+			template	<typename T>
+				inline	void	RefCntPtr<T>::Assure1Reference (T* (*copier) (const T&))
+					{
+						RequireNotNil (copier);
+						if (not IsUnique ()) {
+							BreakReferences_ (copier);
+						}
+					}
+			template <class T>
+				void	RefCntPtr<T>::BreakReferences_ (T* (*copier) (const T&))
+					{
+						RequireNotNil (copier);
+						/*
+						 *		For a valid pointer that is reference counted and multiply shared,
+						 *	make a copy of that pointer via our fCloner function, and assign
+						 *	that cloned reference to this.
+						 *
+						 *		Note that by doing so, we remove any references to the current
+						 *	item, and end up with our having the sole reference to the new copy of fPtr.
+						 *
+						 *		Since we will be cloning the given pointer, we assume(assert) that
+						 *	it is non-nullptr.
+						 */
+						RequireNotNull (fPtr);
+						RequireNotNull (fCloner);
+						AssertNotNull (fCount);
+
+						Require (CurrentRefCount () > 1);
+						*this = ((*fCloner) (*fPtr));
+						Ensure (CurrentRefCount () == 1);
+					}
+			template	<typename T>
 				/*
 				@METHOD:		RefCntPtr<T>::CurrentRefCount
 				@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
@@ -227,6 +263,18 @@ namespace	Stroika {
 				inline	size_t	RefCntPtr<T>::CurrentRefCount () const
 					{
 						return fCountHolder==nullptr? 0: fCountHolder->fCount_DONT_ACCESS;
+					}
+			template	<typename T>
+				inline	bool	RefCntPtr<T>::IsUnique () const
+					{
+						RequireNotNil (fCountHolder);
+						return fCountHolder->fCount_DONT_ACCESS == 1;
+					}
+			template	<typename T>
+				bool	RefCntPtr<T>::unique () const
+					{
+						RequireNotNil (fCountHolder);
+						return fCountHolder->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T>
 				bool	RefCntPtr<T>::operator< (const RefCntPtr<T>& rhs) const
