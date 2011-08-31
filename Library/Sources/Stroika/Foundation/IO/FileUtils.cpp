@@ -1110,7 +1110,7 @@ IO::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
 	if (fDoneEvent != INVALID_HANDLE_VALUE) {
 		Verify (::SetEvent (fDoneEvent));
 	}
-	IgnoreExceptionsForCall (fThread.StopAndWaitForDone ());
+	IgnoreExceptionsForCall (fThread.AbortAndWaitForDone ());
 	if (fDoneEvent != INVALID_HANDLE_VALUE) {
 		Verify (::CloseHandle (fDoneEvent));
 	}

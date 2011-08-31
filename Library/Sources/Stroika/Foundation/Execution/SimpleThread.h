@@ -73,19 +73,25 @@ namespace	Stroika {
 				public:
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
 					
-					// send ThreadAbortException if not forced, and TerminateThread if forced - does NOT block until Stop successful
-					// Note that its legal to call Stop on a thread in any state - including nullptr. Some may just have no effect
-					nonvirtual	void	Stop ();
+					// send ThreadAbortException to the given thread.
+					// This call is (generally) non-blocking (may block for critical section to update status, but does NOT block until Stop successful).
+					//
+					// Note that its legal to call Abort on a thread in any state - including nullptr. Some may just have no effect
+					nonvirtual	void	Abort ();
 
+// LGP - REVIEW WHERE THIS IS USED - WHY IS IT USEFUL -- LGP 2011-08-30
 					// Note that its legal to call Stop_Forced_Unsafe on a thread in any state - including nullptr. Some may just have no effect
-					nonvirtual	void	Stop_Forced_Unsafe ();	// like Stop () - but less safe, and more forceful
+					nonvirtual	void	Abort_Forced_Unsafe ();	// like Abort () - but less safe, and more forceful
 
-					// wait until thread is done (use Stop to request termination) - throws if timeout
+					// wait until thread is done (use Abort to request termination) - throws if timeout
 					// Note that its legal to call WaitForDone on a thread in any state - including nullptr. Some may just have no effect
 					nonvirtual	void	WaitForDone (Time::DurationSecondsType timeout = -1.0f) const;
 
-					// Note that its legal to call StopAndWaitForDone on a thread in any state - including nullptr. Some may just have no effect
-					nonvirtual	void	StopAndWaitForDone (Time::DurationSecondsType timeout = -1.0f);	// throws if timeout
+					// Note that its legal to call AbortAndWaitForDone on a thread in any state - including nullptr. Some may just have no effect
+					// An example of when this is useful is if you have a thread (performing some operation on behalf of an object - with data pointers to that object)
+					// and must stop the thread (its no longer useful) - but must assure its done before you destroy the rest of the data...)
+					// As for example in FileUtils - DirectoryWatcher...
+					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = -1.0f);	// throws if timeout
 
 					// Look pumping messages until either time2Pump is exceeded or the thread completes. Its NOT an erorr if the
 					// timeout is exceeded
@@ -102,8 +108,8 @@ namespace	Stroika {
 						eNull,				// null thread object
 						eNotYetRunning,		// created, but start not yet called
 						eRunning,			// in the context of the 'Run' method
-						eAborting,			// Stop () called, but the thread still hasn't yet unwound
-						eCompleted,			// run has terminated (possibly by exception, possibly normally, possibly because of Stop call)
+						eAborting,			// Abort () called, but the thread still hasn't yet unwound
+						eCompleted,			// run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
 					};
 					nonvirtual	Status	GetStatus () const;
 
@@ -136,7 +142,7 @@ namespace	Stroika {
 
 				protected:
 					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
-					// and is just called by SimpleThread::Stop (). It CAN be hooked by subclassses to do soemthing to
+					// and is just called by SimpleThread::Abort (). It CAN be hooked by subclassses to do soemthing to
 					// force a quicker abort.
 					//
 					// BUT BEWARE WHEN OVERRIDING - WORKS ON ANOTHER THREAD!!!!

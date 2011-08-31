@@ -50,9 +50,9 @@ namespace	Stroika {
 				{
 					return fRep < rhs.fRep;
 				}
-			inline	void	SimpleThread::StopAndWaitForDone (Time::DurationSecondsType timeout)
+			inline	void	SimpleThread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 				{
-					Stop ();
+					Abort ();
 					WaitForDone (timeout);
 				}
 			inline	wstring	SimpleThread::GetThreadName () const

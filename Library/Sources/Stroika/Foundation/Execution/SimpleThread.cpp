@@ -381,7 +381,7 @@ void	SimpleThread::Start ()
 	fRep->fOK2StartEvent.Set ();
 }
 
-void	SimpleThread::Stop ()
+void	SimpleThread::Abort ()
 {
 	if (fRep.IsNull ()) {
 		// then its effectively already stopped.
@@ -408,7 +408,7 @@ void	SimpleThread::Stop ()
 	}
 }
 
-void	SimpleThread::Stop_Forced_Unsafe ()
+void	SimpleThread::Abort_Forced_Unsafe ()
 {
 	if (fRep.IsNull ()) {
 		// then its effectively already stopped.
@@ -420,7 +420,7 @@ void	SimpleThread::Stop_Forced_Unsafe ()
 	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
 #endif
 
-	Stop ();
+	Abort ();
 
 	// Wait some reasonable amount of time for the thread to abort
 	IgnoreExceptionsForCall (WaitForDone (5.0f));
