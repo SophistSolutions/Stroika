@@ -78,14 +78,7 @@
  *		be handled for you with nearly optimal performance. One of the above
  *		AllocModes will be used (we dont document which)
  *
- *
- *
- *		<< USE TEMPLATES TO DO THIS>>
- *		Not too sure how important this is, but I think that there is no
- *		assumption that Character==char.  It could probably be used for
- *		multi-byte characters.  Though, practically, it would need to be
- *		parameterized, since most of the time when you have multibyte
- *		characters, you need single ones too?
+
  **
  */
 
@@ -109,10 +102,9 @@ namespace	Stroika {
             class	String {
                 public:
                     String ();
-// SERIOUSLY CONSIDER LOSING THIS
-                    String (const char* cString);
-// SERIOUSLY CONSIDER LOSING THIS
-                    String (const void* arrayOfBytes, size_t nBytes);	// if arrayOfBytes 0 then not copied from, and initial data in string undefined
+
+                    String (const wchar_t* cString);
+					String (const std::wstring& r);
 
 					String (const String& from);
 
@@ -146,7 +138,7 @@ namespace	Stroika {
 					 */
                     nonvirtual	size_t	IndexOf (const String& subString) const;
                     nonvirtual	size_t	RIndexOf (Character c) const;
-					
+
 					/*
 					 * RIndexOf (substring) returns the index of the last occurance of the given substring in this string. This function
 					 * always returns a valid string index, which is followed by the given substring, or kBadStringIndex otherwise.
@@ -167,41 +159,11 @@ namespace	Stroika {
                      * pointer might become invalid. Generally, if you don't call any routines of String (even
                      * indirectly) you should be allright.
                      */
-                    nonvirtual	const void* Peek () const;
-
-                    /*
-                     * Some useful conversion routines to C strings. Note that
-                     * if you specify a buffer, we fill in no more than that amount, and
-                     * otherwise we alloc a string for you, and you must then dispose of
-                     * it when you are thru (with delete).
-                     *
-                     * Also, note that these return char*, rather than Character*. The reason
-                     * for this is that even for multi-byte characters, you may want to get back
-                     * a 'char*' representaiotn for talking to some other library routine.
-                     * The actuall length will be big enuf for the whole wide string (reword).
-                     *
-                     * Note: if the buffer size is too small for the given string, we assert-out, rather
-                     * than silently truncating. This may be less convientient in some cases, but I cannot stand
-                     * things like magic truncation, and silent failures that are hard to track down. An important
-                     * feature of Stroika is that we try not to quietly "do the right thing" but detect logic/
-                     * programming errors as soon as possible, and notify the programmer.
-                     *
-                     * As it is often convientent, and sometimes safe and proper to do truncation, we also
-                     * provide routines to do that. We choose to make the safer choice (the one with assertions)
-                     * the default, and force you to explicitly embed the word Trunc in the conversion to
-                     * get it to happen. This is not much extra typing, and I think its important that
-                     * there is at least a subliminal hint that you really meant to do truncation.
-                     */
-                    nonvirtual	char*	ToCString () const;
-                    nonvirtual	char*	ToCString (char buf [], size_t bufferSize) const;
-                    nonvirtual	char*	ToCStringTrunc (char buf [], size_t bufferSize) const;
-
-
+                    nonvirtual	const Character* Peek () const;
 
 #if 0
 // Sterl: Please consider these possible new APIs
-                    String (const wchar_t* cString);
-					String (const std::wstring& r);
+
 
 					static	String	FromUTF8 (const char*);
 					static	String	FromUTF8 (const std::string&);
@@ -243,7 +205,7 @@ namespace	Stroika {
 
                             virtual	void	SetLength (size_t newLength) 	= 0;
 
-                            virtual	const void*	Peek () const 				= 0;
+                            virtual	const Character*	Peek () const 				= 0;
                     };
 
                 protected:
@@ -277,29 +239,29 @@ namespace	Stroika {
             String	operator+ (const String& lhs, const String& rhs);
 
             bool	operator== (const String& lhs, const String& rhs);
-            bool	operator== (const char* lhs, const String& rhs);
-            bool	operator== (const String& lhs, const char* rhs);
+            bool	operator== (const wchar_t* lhs, const String& rhs);
+            bool	operator== (const String& lhs, const wchar_t* rhs);
             bool	operator!= (const String& lhs, const String& rhs);
-            bool	operator!= (const char* lhs, const String& rhs);
-            bool	operator!= (const String& lhs, const char* rhs);
+            bool	operator!= (const wchar_t* lhs, const String& rhs);
+            bool	operator!= (const String& lhs, const wchar_t* rhs);
             bool	operator< (const String& lhs, const String& rhs);
-            bool	operator< (const char* lhs, const String& rhs);
-            bool	operator< (const String& lhs, const char* rhs);
+            bool	operator< (const wchar_t* lhs, const String& rhs);
+            bool	operator< (const String& lhs, const wchar_t* rhs);
             bool	operator<= (const String& lhs, const String& rhs);
-            bool	operator<= (const char* lhs, const String& rhs);
-            bool	operator<= (const String& lhs, const char* rhs);
+            bool	operator<= (const wchar_t* lhs, const String& rhs);
+            bool	operator<= (const String& lhs, const wchar_t* rhs);
             bool	operator> (const String& lhs, const String& rhs);
-            bool	operator> (const char* lhs, const String& rhs);
-            bool	operator> (const String& lhs, const char* rhs);
+            bool	operator> (const wchar_t* lhs, const String& rhs);
+            bool	operator> (const String& lhs, const wchar_t* rhs);
             bool	operator>= (const String& lhs, const String& rhs);
-            bool	operator>= (const char* lhs, const String& rhs);
-            bool	operator>= (const String& lhs, const char* rhs);
+            bool	operator>= (const wchar_t* lhs, const String& rhs);
+            bool	operator>= (const String& lhs, const wchar_t* rhs);
 
             /*
              * Stream inserters and extractors.
              */
             ostream&	operator<< (ostream& out, const String& s);
-            istream&	operator>> (istream& in, String& s);
+            wistream&	operator>> (wistream& in, String& s);
 
 
             /*
@@ -313,12 +275,13 @@ namespace	Stroika {
             class	String_CharArray : public String {
                 public:
                     String_CharArray ();
-                    String_CharArray (const char* cString);
-                    String_CharArray (const void* arrayOfBytes, size_t nBytes);
+                    String_CharArray (const wchar_t* str);
+                    String_CharArray (const Character* arrayOfCharacters, size_t nCharacters);
+                    String_CharArray (const wstring& str);
                     String_CharArray (const String& from);
                     String_CharArray (const String_CharArray& s);
 
-                    String_CharArray& operator= (const String_CharArray& s);
+                   String_CharArray& operator= (const String_CharArray& s);
             };
 
 
@@ -326,8 +289,8 @@ namespace	Stroika {
             class	String_BufferedCharArray  : public String {
                 public:
                     String_BufferedCharArray ();
-                    String_BufferedCharArray (const char* cString);
-                    String_BufferedCharArray (const void* arrayOfBytes, size_t nBytes);
+                    String_BufferedCharArray (const wchar_t* cString);
+                    String_BufferedCharArray (const wstring& str);
                     String_BufferedCharArray (const String& from);
                     String_BufferedCharArray (const String_BufferedCharArray& s);
 
@@ -339,8 +302,7 @@ namespace	Stroika {
 
             class	String_ReadOnlyChar : public String {
                 public:
-                    String_ReadOnlyChar (const char* cString);
-                    String_ReadOnlyChar (const void* arrayOfBytes, size_t nBytes);
+                    String_ReadOnlyChar (const wchar_t* cString);
                     String_ReadOnlyChar (const String_ReadOnlyChar& s);
 
                     String_ReadOnlyChar& operator= (const String_ReadOnlyChar& s);
@@ -366,4 +328,3 @@ namespace	Stroika {
 
 
 #endif	/*_Stroika_Foundation_Characters_String_h_*/
-
