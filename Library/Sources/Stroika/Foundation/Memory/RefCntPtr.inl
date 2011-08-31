@@ -271,10 +271,10 @@ namespace	Stroika {
 						return fCountHolder->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::unique () const
+				inline	bool	RefCntPtr<T>::unique () const
 					{
-						RequireNotNil (fCountHolder);
-						return fCountHolder->fCount_DONT_ACCESS == 1;
+						// respect the stl-ish names
+						return IsUnique ();
 					}
 			template	<typename T>
 				bool	RefCntPtr<T>::operator< (const RefCntPtr<T>& rhs) const
