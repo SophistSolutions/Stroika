@@ -10,6 +10,7 @@
 *.wsdl text eol=crlf diff
 README text diff
 Makefile* text diff
+*.mk text diff
 *.h text diff
 *.inl text diff
 *.cpp text diff
