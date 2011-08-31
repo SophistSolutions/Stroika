@@ -37,7 +37,7 @@
  *		operations faster, at some cost in memory. It keeps a buffer that is at
  *		least as long as the String, but is often somewhat longer.
  *
- *		StringRep_ReadOnlyChar is a subclass of StringRep which uses the memory
+ *		String_ReadOnlyChar::MyRep_ is a subclass of StringRep which uses the memory
  *		passed in and saves the pointer, and does not delete it later. This can be a
  *		big memory efficiency and save useless memory waste and fragmentation. It
  *		is mainly useful for constant C strings.
@@ -71,7 +71,7 @@
  *		These AllocModes are:
  *			eBuffered:				which means use StringRep_CharArray.
  *			eFixedSize:				which means use StringRep_BufferedCharArray
- *			eReadOnly:				which means use StringRep_ReadOnlyChar
+ *			eReadOnly:				which means use String_ReadOnlyChar::MyRep_
  *
  *		At the risk of being redundent. Most of this need be of no concern. If
  *		you ignore the allocMode stuff and the StringRep stuff, it will all
@@ -105,9 +105,7 @@ namespace	Stroika {
 
                     String (const wchar_t* cString);
 					String (const std::wstring& r);
-
 					String (const String& from);
-
                     ~String ();
 
                     nonvirtual	String&	operator= (const String& newString);
@@ -260,6 +258,7 @@ namespace	Stroika {
             /*
              * Stream inserters and extractors.
              */
+// PROBABLY EITHER GET RID OF THESE - OR use namespace std {typedef ostream} and then ??? somehow avoid forcing #include of <iostream> class in string code
             ostream&	operator<< (ostream& out, const String& s);
             wistream&	operator>> (wistream& in, String& s);
 
@@ -272,6 +271,9 @@ namespace	Stroika {
 
 
 
+			/*
+             * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
+             */
             class	String_CharArray : public String {
                 public:
                     String_CharArray ();
@@ -286,6 +288,9 @@ namespace	Stroika {
 
 
 
+			/*
+             * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
+             */
             class	String_BufferedCharArray  : public String {
                 public:
                     String_BufferedCharArray ();
@@ -300,12 +305,18 @@ namespace	Stroika {
 
 
 
+            /*
+             * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
+             */
             class	String_ReadOnlyChar : public String {
                 public:
                     String_ReadOnlyChar (const wchar_t* cString);
                     String_ReadOnlyChar (const String_ReadOnlyChar& s);
 
                     String_ReadOnlyChar& operator= (const String_ReadOnlyChar& s);
+
+				private:
+					class	MyRep_;
             };
 
 

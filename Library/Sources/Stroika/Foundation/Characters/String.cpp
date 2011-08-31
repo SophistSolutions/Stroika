@@ -20,6 +20,122 @@ using	namespace	Stroika::Foundation::Characters;
 
 
 
+namespace	{
+
+
+
+    /*
+        * Subclasses from StringRep_CharArray instead of StringRep as a convenience (inheriting implementation).
+        * In nearly all cases, such inheritance is a bad idea, but here it is justified because people
+        * never directly manipulate the Reps, only the envelope classes, which have the conceptually
+        * proper derivation. And the code savings is significant, since they differ only in
+        * their buffering schemes.
+        * Of course, not all subclasses of StringRep can do this, and if it ever posed a problem here it
+        * could be modified without having any effect on peoples code.
+        *
+        */
+    class	StringRep_BufferedCharArray : public StringRep_CharArray {
+        public:
+            StringRep_BufferedCharArray (const Character* arrayOfCharacters, size_t nBytes);
+
+            virtual		StringRep*	Clone () const override;
+
+        private:
+            virtual		size_t	CalcAllocSize (size_t requested) override;
+    };
+
+
+}
+
+
+
+class	String_ReadOnlyChar::MyRep_ : public StringRep_CharArray {
+    public:
+        MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
+        ~MyRep_ ();
+
+        virtual		void	RemoveAll () override;
+
+        virtual		void	SetAt (Character item, size_t index) override;
+        virtual		void	InsertAt (Character item, size_t index) override;
+        virtual		void	RemoveAt (size_t index, size_t amountToRemove) override;
+
+        virtual		void	SetLength (size_t newLength) override;
+
+    private:
+        bool	fAllocedMem;
+
+        // called before calling any method that modifies the string, to ensure that
+        // we do not munge memory we did not alloc
+        nonvirtual	void	AssureMemAllocated ();
+};
+
+
+namespace	{
+
+    class	StringRep_Substring : public String::StringRep {
+        public:
+            StringRep_Substring (const Memory::Shared<StringRep>& baseString, size_t from, size_t length);
+
+            virtual		StringRep*	Clone () const override;
+
+            virtual		size_t	GetLength () const override;
+            virtual		bool	Contains (Character item) const override;
+            virtual		void	RemoveAll () override;
+
+            virtual		Character	GetAt (size_t index) const override;
+            virtual		void		SetAt (Character item, size_t index) override;
+            virtual		void		InsertAt (Character item, size_t index) override;
+            virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
+
+            virtual		void	SetLength (size_t newLength) override;
+
+            virtual		const Character*	Peek () const override;
+
+        private:
+            Memory::Shared<StringRep>	fBase;
+
+            size_t	fFrom;
+            size_t	fLength;
+    };
+
+}
+
+
+
+
+namespace	{
+
+    class	StringRep_Catenate : public String::StringRep {
+        public:
+            StringRep_Catenate (const String& lhs, const String& rhs);
+
+            virtual		StringRep*	Clone () const override;
+
+            virtual		size_t	GetLength () const override;
+            virtual		bool	Contains (Character item) const override;
+            virtual		void	RemoveAll () override;
+
+            virtual		Character	GetAt (size_t index) const override;
+            virtual		void		SetAt (Character item, size_t index) override;
+            virtual		void		InsertAt (Character item, size_t index) override;
+            virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
+
+            virtual		void	SetLength (size_t newLength) override;
+
+            virtual		const Character*	Peek () const override;
+
+        private:
+            String			fLeft;
+            String			fRight;
+            size_t			fLength;
+
+            nonvirtual	void	Normalize ();
+    };
+
+}
+
+
 
 
 
@@ -294,7 +410,7 @@ String_ReadOnlyChar::String_ReadOnlyChar (const wchar_t* cString)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
 	size_t length = wcslen (cString);
-	SetRep (new StringRep_ReadOnlyChar ((const Character*)cString, length));
+	SetRep (new MyRep_ ((const Character*)cString, length));
 }
 
 
@@ -499,10 +615,10 @@ size_t	StringRep_BufferedCharArray::CalcAllocSize (size_t requested)
 
 /*
  ********************************************************************************
- ****************************** StringRep_ReadOnlyChar **************************
+ ****************************** String_ReadOnlyChar::MyRep_ **************************
  ********************************************************************************
  */
-StringRep_ReadOnlyChar::StringRep_ReadOnlyChar (const Character* arrayOfCharacters, size_t nCharacters)
+String_ReadOnlyChar::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
 	: StringRep_CharArray ()
 	, fAllocedMem (false)
 {
@@ -510,45 +626,45 @@ StringRep_ReadOnlyChar::StringRep_ReadOnlyChar (const Character* arrayOfCharacte
 	SetStorage (const_cast<Character*>(arrayOfCharacters), nCharacters);
 }
 
-StringRep_ReadOnlyChar::~StringRep_ReadOnlyChar ()
+String_ReadOnlyChar::MyRep_::~MyRep_ ()
 {
 	if (not fAllocedMem) {
 		SetStorage (nullptr, 0);	// make sure that memory is not deleted, as we never alloced
 	}
 }
 
-void	StringRep_ReadOnlyChar::RemoveAll ()
+void	String_ReadOnlyChar::MyRep_::RemoveAll ()
 {
 	AssureMemAllocated ();
 	StringRep_CharArray::RemoveAll ();
 }
 
-void	StringRep_ReadOnlyChar::SetAt (Character item, size_t index)
+void	String_ReadOnlyChar::MyRep_::SetAt (Character item, size_t index)
 {
 	AssureMemAllocated ();
 	StringRep_CharArray::SetAt (item, index);
 }
 
-void	StringRep_ReadOnlyChar::InsertAt (Character item, size_t index)
+void	String_ReadOnlyChar::MyRep_::InsertAt (Character item, size_t index)
 {
 	AssureMemAllocated ();
 	StringRep_CharArray::InsertAt (item, index);
 }
 
-void	StringRep_ReadOnlyChar::RemoveAt (size_t index, size_t amountToRemove)
+void	String_ReadOnlyChar::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
 {
 	AssureMemAllocated ();
 	StringRep_CharArray::RemoveAt (index, amountToRemove);
 }
 
-void	StringRep_ReadOnlyChar::SetLength (size_t newLength)
+void	String_ReadOnlyChar::MyRep_::SetLength (size_t newLength)
 {
 	AssureMemAllocated ();
 	StringRep_CharArray::SetLength (newLength);
 }
 
 // SSW 8/30/2011: Note: this looks wrong as no assignment to the storage. Need to copy the exiting characters over!!
-void	StringRep_ReadOnlyChar::AssureMemAllocated ()
+void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
 {
 	if (not fAllocedMem) {
 	    Assert (sizeof (Character) == sizeof (wchar_t))
@@ -558,6 +674,8 @@ void	StringRep_ReadOnlyChar::AssureMemAllocated ()
 
 	Ensure (fAllocedMem);
 }
+
+
 
 
 
