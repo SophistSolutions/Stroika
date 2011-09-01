@@ -271,8 +271,6 @@ static	void	Test2_Helper (String& s1, String& s2)
 static	void	Test3 ()
 {
 	{
-		const	wchar_t	frobaz[]	=	L"abc";
-
 		String	t1;
 		String	t2	=	t1;
 		String	t3	=	L"a";
