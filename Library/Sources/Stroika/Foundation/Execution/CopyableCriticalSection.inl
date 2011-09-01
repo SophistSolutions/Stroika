@@ -27,10 +27,12 @@ namespace	Stroika {
 					{
 						fCritSec->Unlock ();
 					}
+				#if		qUseWindowsNativeThreadSupport
 				inline	CopyableCriticalSection::operator CRITICAL_SECTION& ()
 					{
 						return *fCritSec;
 					}
+				#endif
 
 		}
 	}

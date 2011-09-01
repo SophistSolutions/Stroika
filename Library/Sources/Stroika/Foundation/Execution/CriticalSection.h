@@ -10,8 +10,8 @@
 
 #if		qUseWindowsNativeThreadSupport
 	#include	<windows.h>
-#else
-	typedef	int	CRITICAL_SECTION;
+//#else
+//	typedef	int	CRITICAL_SECTION;
 #endif
 
 #include	"../Configuration/Common.h"
@@ -34,10 +34,12 @@ namespace	Stroika {
 					nonvirtual	void	Lock (); 
 					nonvirtual	void	Unlock ();
 
+				#if		qUseWindowsNativeThreadSupport
 					operator CRITICAL_SECTION& ();
 
 				private:
 					CRITICAL_SECTION fCritSec;
+				#endif
 			};
 
 

@@ -43,10 +43,12 @@ namespace	Stroika {
 					::LeaveCriticalSection (&fCritSec);
 				#endif
 				}
+			#if		qUseWindowsNativeThreadSupport
 			inline	CriticalSection::operator CRITICAL_SECTION& ()
 				{
 					return fCritSec;
 				}
+			#endif
 
 
 		//	class	AutoCriticalSection
