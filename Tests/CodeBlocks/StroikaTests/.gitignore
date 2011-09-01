@@ -1,0 +1,6 @@
+bin/
+obj/
+StroikaTests.cbp.bak
+StroikaTests.depend
+StroikaTests.layout
+StroikaTests.layout.bak
