@@ -45,7 +45,7 @@ namespace	Stroika {
 // STERLING:
 // IF THIS IS PRIVATE - RENAME TO _ - AND THEN WHY VIRTUAL???? IS THAT REALLY RIGHT ?? SB PROTECTED?
 //		-- LGP 2011-08-30
-					virtual	size_t	CalcAllocSize (size_t requested);
+					virtual	size_t	CalcAllocChars (size_t requested);
 			};
 
 
