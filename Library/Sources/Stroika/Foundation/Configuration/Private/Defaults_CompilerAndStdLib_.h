@@ -193,4 +193,21 @@
 
 
 
+	/*
+	@CONFIGVAR:		qCompilerAndStdLib_Supports_lambda_default_argument
+	@DESCRIPTION:	<p>Defined true if the compiler supports constexpr</p>
+	*/
+	#ifndef	qCompilerAndStdLib_Supports_constexpr
+		#if		defined (__GNUC__)
+			#define	qCompilerAndStdLib_Supports_lambda_default_argument	0
+		#elif	defined (_MSC_VER) && _MSC_VER >= 1600
+			#define	qCompilerAndStdLib_Supports_lambda_default_argument	1
+		#else
+			// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+			#define	qCompilerAndStdLib_Supports_lambda_default_argument	1
+		#endif
+	#endif
+
+
+
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_*/

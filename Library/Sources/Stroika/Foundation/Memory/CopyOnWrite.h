@@ -28,9 +28,22 @@ namespace	Stroika {
 						CopyOnWrite ();
 						CopyOnWrite (const CopyOnWrite<T,SHARED_IMLP>& from);
 
+					#if		!qCompilerAndStdLib_Supports_lambda_default_argument
 					public:
+						inline	T*	DefaultElementCopier_ (const T& t)
+							{
+								return new T (t);
+							}
+					#endif
+
+					public:
+						#if		qCompilerAndStdLib_Supports_lambda_default_argument
 						CopyOnWrite (const SHARED_IMLP& from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
 						CopyOnWrite (T* from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
+						#else
+						CopyOnWrite (const SHARED_IMLP& from, T* (*copier) (const T&) = DefaultElementCopier_);
+						CopyOnWrite (T* from, T* (*copier) (const T&) = DefaultElementCopier_);
+						#endif
 
 					public:
 						nonvirtual	CopyOnWrite<T,SHARED_IMLP>& operator= (const CopyOnWrite<T,SHARED_IMLP>& src);
