@@ -41,7 +41,7 @@ namespace	{
             virtual		StringRep*	Clone () const override;
 
         private:
-            virtual		size_t	CalcAllocSize (size_t requested) override;
+            virtual		size_t	CalcAllocChars (size_t requested) override;
     };
 
 
@@ -157,7 +157,7 @@ String::String (const wchar_t* cString)
 	: fRep (&Clone_, nullptr)
 {
 	RequireNotNull (cString);
-	Assert (sizeof (Character) == sizeof (wchar_t));
+	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	fRep = new StringRep_CharArray ((const Character*)cString, wcslen (cString));
 }
 
@@ -169,7 +169,7 @@ String::String (StringRep* sharedPart, bool)
 
 String&	String::operator+= (Character appendage)
 {
-	fRep->InsertAt (appendage, GetLength ()+1);
+	fRep->InsertAt (appendage, GetLength ());
 	return (*this);
 }
 
@@ -188,6 +188,7 @@ String&	String::operator+= (const String& appendage)
 		size_t	appendLength = appendage.GetLength ();
 		SetLength (oldLength + appendLength);
 		Assert (appendage.GetLength () == appendLength);
+		Assert (fRep.CountReferences () == 1);
 		memcpy (const_cast<Character*>(&(fRep->Peek ())[oldLength]), appendage.fRep->Peek (), appendLength*sizeof (Character));
 	}
 	return (*this);
@@ -255,7 +256,7 @@ size_t	String::IndexOf (const String& subString) const
 	size_t	subStrLen	=	subString.GetLength ();
 	size_t	limit		=	GetLength () - subStrLen;
 	for (size_t i = 0; i <= limit; i++) {
-		for (size_t j = 1; j <= subStrLen; j++) {
+		for (size_t j = 0; j < subStrLen; j++) {
 			if (fRep->GetAt (i+j) != subString.fRep->GetAt (j)) {
 				goto nogood;
 			}
@@ -266,6 +267,7 @@ nogood:
 	}
 	return (kBadStringIndex);
 }
+
 
 size_t	String::RIndexOf (Character c) const
 {
@@ -288,7 +290,7 @@ size_t	String::RIndexOf (const String& subString) const
 	}
 
 	size_t	subStrLen	=	subString.GetLength ();
-	size_t	limit		=	GetLength () - subStrLen;
+	size_t	limit		=	GetLength () - subStrLen+1;
 	for (size_t i = limit; i > 0; --i) {
 		if (SubString (i-1, subStrLen) == subString) {
 			return (i-1);
@@ -296,6 +298,7 @@ size_t	String::RIndexOf (const String& subString) const
 	}
 	return (kBadStringIndex);
 }
+
 
 bool	String::Contains (Character c) const
 {
@@ -338,14 +341,14 @@ String_CharArray::String_CharArray (const wchar_t* cString)
 	: String (nullptr, false)
 {
 	size_t length = wcslen (cString);
-    Assert (sizeof (Character) == sizeof (wchar_t));
+    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	SetRep (new StringRep_CharArray ((const Character*)cString, length));
 }
 
 String_CharArray::String_CharArray (const wstring& str)
     : String (nullptr, false)
 {
-    Assert (sizeof (Character) == sizeof (wchar_t));
+    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	SetRep (new StringRep_CharArray ((const Character*)str.c_str (), str.length ()));
 }
 
@@ -378,7 +381,7 @@ String_BufferedCharArray::String_BufferedCharArray ()
 String_BufferedCharArray::String_BufferedCharArray (const wchar_t* cString)
 	: String (nullptr, false)
 {
-    Assert (sizeof (Character) == sizeof (wchar_t));
+    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	size_t length = wcslen (cString);
 	SetRep (new StringRep_BufferedCharArray ((const Character*)cString, length));
 }
@@ -386,7 +389,7 @@ String_BufferedCharArray::String_BufferedCharArray (const wchar_t* cString)
 String_BufferedCharArray::String_BufferedCharArray (const wstring& str)
 	: String (nullptr, false)
 {
-    Assert (sizeof (Character) == sizeof (wchar_t));
+    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	SetRep (new StringRep_BufferedCharArray ((const Character*) str.c_str (), str.length ()));
 }
 
@@ -443,7 +446,7 @@ StringRep_CharArray::StringRep_CharArray (const Character* arrayOfCharacters, si
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
 
-	fStorage = ::new wchar_t [CalcAllocSize (fLength)];
+	fStorage = ::new wchar_t [CalcAllocChars (fLength)];
 	if (arrayOfCharacters != nullptr) {
 		memcpy (fStorage, arrayOfCharacters, fLength*sizeof (Character));
 	}
@@ -474,7 +477,7 @@ size_t	StringRep_CharArray::GetLength () const
 
 bool	StringRep_CharArray::Contains (Character item) const
 {
-	AssertNotNull (fStorage);
+	Assert (fStorage != NULL or GetLength () == 0);
 
 	char asciiItem = item.GetAsciiCode ();
 	for (size_t i = 0; i < fLength; i++) {
@@ -514,17 +517,17 @@ void	StringRep_CharArray::InsertAt (Character item, size_t index)
 	Require (index <= GetLength ());
 
 	SetLength (GetLength () + 1);
-	if (index < fLength) {
+	if (index < (fLength-1)) {
 		wchar_t*	lhs	=	&fStorage [fLength];
 		wchar_t*	rhs	=	&fStorage [fLength-1];
-		size_t i = fLength;
-		for (; i >= index; i--) {
+		Assert ((fLength-index) > 0);
+		size_t amt = fLength-index-1;   // minus one because fLength increased by one by SetLength above
+		for (size_t i = 1; i <= amt; ++i) {
 			*lhs-- = *rhs--;
 		}
-		Assert (i == index);
 		Assert (lhs == &fStorage [index]);
 	}
-	fStorage[index] = item.GetAsciiCode ();
+	fStorage[index] = item;
 }
 
 void	StringRep_CharArray::RemoveAt (size_t index, size_t amountToRemove)
@@ -542,18 +545,20 @@ void	StringRep_CharArray::RemoveAt (size_t index, size_t amountToRemove)
 	fLength -= amountToRemove;
 }
 
+
 void	StringRep_CharArray::SetLength (size_t newLength)
 {
-	AssertNotNull (fStorage);
+	size_t	oldAllocChars	=	CalcAllocChars (fLength);
+	size_t	newAllocChars	=	CalcAllocChars (newLength);
 
-	size_t	oldAllocSize	=	CalcAllocSize (fLength);
-	size_t	newAllocSize	=	CalcAllocSize (newLength);
+	if (oldAllocChars != newAllocChars) {
+		Assert (newAllocChars >= newLength);
 
-	if (oldAllocSize != newAllocSize) {
-		Assert (newAllocSize >= newLength);
-		fStorage = (wchar_t*)realloc (fStorage, newAllocSize);
+        size_t amountToAlloc = newAllocChars*sizeof (Character);
+		fStorage = (wchar_t*)realloc (fStorage, amountToAlloc);
 	}
 	fLength = newLength;
+    Ensure (fStorage != NULL or GetLength () == 0);
 	Ensure (fLength == newLength);
 }
 
@@ -572,7 +577,7 @@ void	StringRep_CharArray::SetStorage (Character* storage, size_t length)
 	fLength = length;
 }
 
-size_t	StringRep_CharArray::CalcAllocSize (size_t requested)
+size_t	StringRep_CharArray::CalcAllocChars (size_t requested)
 {
 	return (requested);
 }
@@ -592,7 +597,7 @@ StringRep_BufferedCharArray::StringRep_BufferedCharArray (const Character* array
 	RequireNotNull (arrayOfCharacters);
 	Assert (sizeof (Character) == sizeof (wchar_t))
 
-	wchar_t*	storage = ::new wchar_t [CalcAllocSize (nCharacters)];
+	wchar_t*	storage = ::new wchar_t [CalcAllocChars (nCharacters)];
 	memcpy (storage, arrayOfCharacters, nCharacters*sizeof (Character));
 	SetStorage ((Character*)storage, nCharacters);
 }
@@ -602,7 +607,7 @@ String::StringRep*	StringRep_BufferedCharArray::Clone () const
 	return (new StringRep_BufferedCharArray (Peek (), GetLength ()));
 }
 
-size_t	StringRep_BufferedCharArray::CalcAllocSize (size_t requested)
+size_t	StringRep_BufferedCharArray::CalcAllocChars (size_t requested)
 {
 	// round up to buffer block size
 	return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
@@ -663,12 +668,20 @@ void	String_ReadOnlyChar::MyRep_::SetLength (size_t newLength)
 	StringRep_CharArray::SetLength (newLength);
 }
 
-// SSW 8/30/2011: Note: this looks wrong as no assignment to the storage. Need to copy the exiting characters over!!
+
 void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
 {
 	if (not fAllocedMem) {
-	    Assert (sizeof (Character) == sizeof (wchar_t))
+	    Assert (sizeof (Character) == sizeof (wchar_t));
+
+// SSW 8/30/2011: Note: wrong as no assignment to the storage. Need to copy the existing characters over!!
+#if 0
 		SetStorage ((Character*) ::new wchar_t [GetLength ()], GetLength ());
+#else
+	wchar_t* storage = ::new wchar_t [GetLength ()];
+    memcpy (storage, (wchar_t*)Peek (), GetLength ()*sizeof (Character));
+    SetStorage ((Character*)storage, GetLength ());
+#endif
 		fAllocedMem = true;
 	}
 
@@ -792,7 +805,7 @@ String::StringRep*	StringRep_Catenate::Clone () const
 {
 	StringRep_CharArray*	s	=	new StringRep_CharArray (nullptr, GetLength ());
 	size_t lhsLengthInBytes = fLeft.GetLength ()*sizeof (Character);
-	Assert (sizeof (Character) == sizeof (wchar_t));
+	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	memcpy (&((Character*)s->Peek ())[0], fLeft.Peek (), lhsLengthInBytes);
 	memcpy (&((Character*)s->Peek ())[lhsLengthInBytes], fRight.Peek (), fRight.GetLength ()*sizeof (Character));
 	return (s);
@@ -819,7 +832,7 @@ void	StringRep_Catenate::RemoveAll ()
 Character	StringRep_Catenate::GetAt (size_t index) const
 {
 	size_t length = fLeft.GetLength ();
-	if (index <= length) {
+	if (index < length) {
 		return (fLeft[index]);
 	}
 	else {
@@ -866,7 +879,7 @@ void	StringRep_Catenate::Normalize ()
 	if (fRight != L"") {
 		String_CharArray newL	=	String_CharArray (nullptr, GetLength ());
 
-        Assert (sizeof (Character) == sizeof (wchar_t));
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         size_t lhsLengthInBytes = fLeft.GetLength ()*sizeof (Character);
         memcpy (&((Character*)newL.Peek ())[0], fLeft.Peek (), lhsLengthInBytes);
         memcpy (&((Character*)newL.Peek ())[lhsLengthInBytes], fRight.Peek (), fRight.GetLength ()*sizeof (Character));
