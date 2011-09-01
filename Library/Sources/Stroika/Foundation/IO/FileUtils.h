@@ -21,7 +21,7 @@
 #include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
-#include	"../Execution/SimpleThread.h"
+#include	"../Execution/Thread.h"
 #include	"../Time/DateUtils.h"
 
 #include	"FileAccessMode.h"
@@ -126,12 +126,12 @@ namespace	Stroika {
 					static	void	ThreadProc (void* lpParameter);
 
 				private:
-					TString						fDirectory;
-					bool						fWatchSubTree;
-					Execution::SimpleThread		fThread;
-					HANDLE						fDoneEvent;
-					HANDLE						fWatchEvent;
-					bool						fQuitting;
+					TString				fDirectory;
+					bool				fWatchSubTree;
+					Execution::Thread	fThread;
+					HANDLE				fDoneEvent;
+					HANDLE				fWatchEvent;
+					bool				fQuitting;
 			};
 		#endif
 

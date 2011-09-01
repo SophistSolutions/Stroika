@@ -112,6 +112,7 @@ sub WriteDefault
 	print (OUT "#include	\"Private/Defaults_Database_ODBCClient_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_DataExchangeFormat_XML_Common_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Trace_.h\"\n");
+	print (OUT "#include	\"Private/Defaults_Execution_Threads_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Memory_Common_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Memory_BlockAllocated_.h\"\n");
 	print (OUT "\n");

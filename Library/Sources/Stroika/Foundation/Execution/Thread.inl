@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_SimpleThread_inl_
-#define	_Stroika_Foundation_Execution_SimpleThread_inl_	1
+#ifndef	_Stroika_Foundation_Execution_Thread_inl_
+#define	_Stroika_Foundation_Execution_Thread_inl_	1
 
 
 /*
@@ -18,14 +18,14 @@ namespace	Stroika {
 
 
 
-		// class	SimpleThread::Rep
-			inline	void	SimpleThread::Rep::Start ()
+		// class	Thread::Rep
+			inline	void	Thread::Rep::Start ()
 				{
 					fOK2StartEvent.Set ();
 				}
-			inline	void	SimpleThread::Rep::ThrowAbortIfNeeded () const
+			inline	void	Thread::Rep::ThrowAbortIfNeeded () const
 				{
-				#if			qPlatform_Windows
+				#if			qUseThreads_WindowsNative
 					Require (::GetCurrentThreadId () == MyGetThreadId_ ());
 				#endif
 					AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
@@ -35,31 +35,31 @@ namespace	Stroika {
 				}
 
 
-		// class	SimpleThread
-		#if			qPlatform_Windows
-			inline	HANDLE	SimpleThread::GetOSThreadHandle () const
+		// class	Thread
+		#if			qUseThreads_WindowsNative
+			inline	HANDLE	Thread::GetOSThreadHandle () const
 				{
 					return fRep->fThread;
 				}
 		#endif
-			inline	RefCntPtr<SimpleThread::Rep>	SimpleThread::GetRep () const
+			inline	RefCntPtr<Thread::Rep>	Thread::GetRep () const
 				{
 					return fRep;
 				}
-			inline	bool	SimpleThread::operator< (const SimpleThread& rhs) const
+			inline	bool	Thread::operator< (const Thread& rhs) const
 				{
 					return fRep < rhs.fRep;
 				}
-			inline	void	SimpleThread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+			inline	void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 				{
 					Abort ();
 					WaitForDone (timeout);
 				}
-			inline	wstring	SimpleThread::GetThreadName () const
+			inline	wstring	Thread::GetThreadName () const
 				{
 					return fRep->fThreadName;
 				}
-			inline	SimpleThread::Status	SimpleThread::GetStatus () const
+			inline	Thread::Status	Thread::GetStatus () const
 				{
 					if (fRep.IsNull ()) {
 						return eNull;
@@ -83,4 +83,4 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Execution_SimpleThread_inl_*/
+#endif	/*_Stroika_Foundation_Execution_Thread_inl_*/

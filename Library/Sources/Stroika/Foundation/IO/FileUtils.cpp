@@ -1099,7 +1099,7 @@ IO::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& directoryName
 	fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter)),
 	fQuitting (false)
 {
-	fThread = Execution::SimpleThread (&ThreadProc, this);
+	fThread = Execution::Thread (&ThreadProc, this);
 	fThread.SetThreadName (L"DirectoryChangeWatcher");
 	fThread.Start ();
 }

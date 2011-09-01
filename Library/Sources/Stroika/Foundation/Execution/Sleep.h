@@ -15,7 +15,7 @@ namespace	Stroika {
 		namespace	Execution {
 
 			// MAIN reason to use this - is it sets the 'alertable' flag on the sleep, so the QueueUserAPC () stuff works!
-			// which allows SimpleThread::Stop () to work properly...
+			// which allows Thread::Abort () to work properly...
 			// -- LGP 2009-04-28
 			void	Sleep (Time::DurationSecondsType seconds2Wait);
 

@@ -20,30 +20,30 @@ namespace	Stroika {
 		//	class	CriticalSection
 			inline	CriticalSection::CriticalSection () throw ()
 				{
-				#if qUseWindowsNativeThreadSupport
+				#if qUseThreads_WindowsNative
 					memset (&fCritSec, 0, sizeof(CRITICAL_SECTION));
 					::InitializeCriticalSection (&fCritSec);
 				#endif
 				}
 			inline	CriticalSection::~CriticalSection()
 				{
-				#if qUseWindowsNativeThreadSupport
+				#if qUseThreads_WindowsNative
 					IgnoreExceptionsForCall (::DeleteCriticalSection (&fCritSec));
 				#endif
 				}
 			inline	void	CriticalSection::Lock () 
 				{
-				#if qUseWindowsNativeThreadSupport
+				#if qUseThreads_WindowsNative
 					::EnterCriticalSection (&fCritSec);
 				#endif
 				}
 			inline	void CriticalSection::Unlock()
 				{
-				#if qUseWindowsNativeThreadSupport
+				#if qUseThreads_WindowsNative
 					::LeaveCriticalSection (&fCritSec);
 				#endif
 				}
-			#if		qUseWindowsNativeThreadSupport
+			#if		qUseThreads_WindowsNative
 			inline	CriticalSection::operator CRITICAL_SECTION& ()
 				{
 					return fCritSec;

@@ -30,7 +30,7 @@ namespace	Stroika {
 				public:
 					nonvirtual	void	Lock (); 
 					nonvirtual	void	Unlock ();
-				#if		qUseWindowsNativeThreadSupport
+				#if		qUseThreads_WindowsNative
 					nonvirtual	operator CRITICAL_SECTION& ();
 				#endif
 			};

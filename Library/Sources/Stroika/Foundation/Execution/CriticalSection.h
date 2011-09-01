@@ -6,12 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
-#define	qUseWindowsNativeThreadSupport	qPlatform_Windows
-
-#if		qUseWindowsNativeThreadSupport
+#if		qUseThreads_WindowsNative
 	#include	<windows.h>
-//#else
-//	typedef	int	CRITICAL_SECTION;
 #endif
 
 #include	"../Configuration/Common.h"
@@ -34,7 +30,7 @@ namespace	Stroika {
 					nonvirtual	void	Lock (); 
 					nonvirtual	void	Unlock ();
 
-				#if		qUseWindowsNativeThreadSupport
+				#if		qUseThreads_WindowsNative
 					operator CRITICAL_SECTION& ();
 
 				private:

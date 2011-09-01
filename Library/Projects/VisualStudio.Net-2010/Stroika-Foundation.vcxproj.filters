@@ -132,9 +132,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -264,6 +261,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\CopyOnWrite.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -331,9 +331,6 @@
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h">
@@ -516,6 +513,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\CopyOnWrite.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Threads_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -570,9 +573,6 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleThread.inl">
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl">
@@ -706,6 +706,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\CopyOnWrite.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>

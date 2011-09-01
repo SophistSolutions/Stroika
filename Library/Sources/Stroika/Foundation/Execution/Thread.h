@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_SimpleThread_h_
-#define	_Stroika_Foundation_Execution_SimpleThread_h_	1
+#ifndef	_Stroika_Foundation_Execution_Thread_h_
+#define	_Stroika_Foundation_Execution_Thread_h_	1
 
 #include	"../StroikaPreComp.h"
 
-#if			qPlatform_Windows
+#if			qUseThreads_WindowsNative
 	#include	<windows.h>
 #endif
 
@@ -18,6 +18,46 @@
 #include	"Exceptions.h"
 #include	"Event.h"
 #include	"IRunnable.h"
+
+
+
+
+/*
+@CONFIGVAR:		qUseThreads_WindowsNative
+@DESCRIPTION:	<p>qUseThreads_WindowsNative is true iff Stroika is built to use a native Windows SDK implementation of threads</p>
+*/
+#if		!defined (qUseThreads_WindowsNative)
+	#error "qUseThreads_WindowsNative should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+/*
+@CONFIGVAR:		qUseThreads_StdCPlusPlus
+@DESCRIPTION:	<p>qUseThreads_StdCPlusPlus is true iff Stroika is built to use portable standard C++ implementation of threads</p>
+*/
+#if		!defined (qUseThreads_StdCPlusPlus)
+	#error "qUseThreads_StdCPlusPlus should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+/*
+@CONFIGVAR:		qUseThreads
+@DESCRIPTION:	<p>This defines whether or not the Stroika thread classes are supported at all</p>
+*/
+#if		!defined (qUseThreads)
+	#error "qUseThreads should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+
+#if		qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus
+	#error "Configuraiton Error: cannot define both qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus"
+#endif
+
+
+
+
+
+
+
 
 
 namespace	Stroika {	
@@ -42,7 +82,7 @@ namespace	Stroika {
 			//
 
 
-			// Using the smartpointer wrapper SimpleThread around a thread guarnatees its reference counting
+			// Using the smartpointer wrapper Thread around a thread guarnatees its reference counting
 			// will work safely - so that even when all external references go away, the fact that the thread
 			// is still running will keep the reference count non-zero.
 			//
@@ -53,19 +93,20 @@ namespace	Stroika {
 		// NotifyOfAbort/SleepEx/QueueUserAPC stuff - it should be pretty automatic...
 		// -- LGP 2009-05-08
 			//
-			class	SimpleThread {
+			#if		qUseThreads
+			class	Thread {
 				public:
 					class	Rep;
 				public:
-					SimpleThread ();
-					explicit SimpleThread (const RefCntPtr<Rep>& threadObj);
-					explicit SimpleThread (Rep* newThreadObj);
+					Thread ();
+					explicit Thread (const RefCntPtr<Rep>& threadObj);
+					explicit Thread (Rep* newThreadObj);
 					// fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
-					explicit SimpleThread (void (*fun2CallOnce) (void* arg), void* arg);
-					explicit SimpleThread (const RefCntPtr<IRunnable>& runnable);
+					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
+					explicit Thread (const RefCntPtr<IRunnable>& runnable);
 
 				public:
-				#if			qPlatform_Windows
+				#if			qUseThreads_WindowsNative
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
 					nonvirtual	RefCntPtr<Rep>	GetRep () const;
@@ -98,7 +139,7 @@ namespace	Stroika {
 					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = -1.0f) const;
 					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = -1.0f) const;	// throws if timeout
 
-			#if			qPlatform_Windows
+			#if			qUseThreads_WindowsNative
 				public:
 					nonvirtual	void	SetThreadPriority (int nPriority = THREAD_PRIORITY_NORMAL);
 			#endif
@@ -123,12 +164,12 @@ namespace	Stroika {
 					nonvirtual	void	SetThreadName (const wstring& threadName);
 
 				public:
-					nonvirtual	bool	operator< (const SimpleThread& rhs) const;
+					nonvirtual	bool	operator< (const Thread& rhs) const;
 
 				private:
 					RefCntPtr<Rep>	fRep;
 			};
-			class	SimpleThread::Rep : public virtual Memory::RefCntPtrBase {
+			class	Thread::Rep : public virtual Memory::RefCntPtrBase {
 				protected:
 					Rep ();
 				public:
@@ -142,7 +183,7 @@ namespace	Stroika {
 
 				protected:
 					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
-					// and is just called by SimpleThread::Abort (). It CAN be hooked by subclassses to do soemthing to
+					// and is just called by Thread::Abort (). It CAN be hooked by subclassses to do soemthing to
 					// force a quicker abort.
 					//
 					// BUT BEWARE WHEN OVERRIDING - WORKS ON ANOTHER THREAD!!!!
@@ -155,7 +196,7 @@ namespace	Stroika {
 				public:
 					virtual	void	DO_DELETE_REF_CNT () override;
 
-			#if			qPlatform_Windows
+			#if			qUseThreads_WindowsNative
 				private:
 					static	unsigned int	__stdcall	ThreadProc (void* lpParameter);
 
@@ -167,10 +208,10 @@ namespace	Stroika {
 					nonvirtual	int	MyGetThreadId_ () const;
 
 				private:
-					friend class	SimpleThread;
+					friend class	Thread;
 
 				private:
-				#if			qPlatform_Windows
+				#if			qUseThreads_WindowsNative
 					HANDLE					fThread;
 				#endif
 					mutable	CriticalSection	fStatusCriticalSection;
@@ -179,7 +220,7 @@ namespace	Stroika {
 					Event					fOK2StartEvent;
 					wstring					fThreadName;
 			};
-
+			#endif
 
 
 
@@ -195,7 +236,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Execution_SimpleThread_h_*/
+#endif	/*_Stroika_Foundation_Execution_Thread_h_*/
 
 
 
@@ -207,4 +248,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"SimpleThread.inl"
+#include	"Thread.inl"

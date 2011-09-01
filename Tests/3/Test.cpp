@@ -8,7 +8,7 @@
 
 #include	"Stroika/Foundation/Execution/CriticalSection.h"
 #include	"Stroika/Foundation/Execution/Event.h"
-#include	"Stroika/Foundation/Execution/SimpleThread.h"
+#include	"Stroika/Foundation/Execution/Thread.h"
 #include	"Stroika/Foundation/Execution/Sleep.h"
 
 
@@ -17,7 +17,7 @@ using	namespace	Stroika::Foundation;
 
 using	Execution::CriticalSection;
 using	Execution::AutoCriticalSection;
-using	Execution::SimpleThread;
+using	Execution::Thread;
 
 
 
@@ -45,7 +45,7 @@ namespace	{
 					}
 			};
 
-			SimpleThread	thread (&FRED::DoIt, "foo");
+			Thread	thread (&FRED::DoIt, "foo");
 			thread.Start ();
 			thread.WaitForDone ();
 		}
@@ -78,8 +78,8 @@ namespace	{
 			};
 
 			int	updaterValue	=	0;
-			SimpleThread	thread1 (&FRED::DoIt, &updaterValue);
-			SimpleThread	thread2 (&FRED::DoIt, &updaterValue);
+			Thread	thread1 (&FRED::DoIt, &updaterValue);
+			Thread	thread2 (&FRED::DoIt, &updaterValue);
 			thread1.Start ();
 			thread2.Start ();
 			thread1.WaitForDone ();
@@ -132,8 +132,8 @@ namespace	{
 			sRegTest3Event_T1_.Reset ();
 			sRegTest3Event_T2_.Reset ();
 			int	updaterValue	=	0;
-			SimpleThread	thread1 (&FRED1::DoIt, &updaterValue);
-			SimpleThread	thread2 (&FRED2::DoIt, &updaterValue);
+			Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			Thread	thread2 (&FRED2::DoIt, &updaterValue);
 			thread1.Start ();
 			thread2.Start ();
 			sRegTest3Event_T1_.Set ();
