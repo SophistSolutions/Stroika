@@ -44,14 +44,16 @@ namespace	Stroika {
 
 
 			// enter  in CTOR and LEAVE in DTOR
-			class	AutoCriticalSection {
-				public:
-					explicit AutoCriticalSection (CRITICAL_SECTION& critSec);
-					~AutoCriticalSection ();
+			template	<typename LOCKTYPE>
+				class	AutoCriticalSectionT {
+					public:
+						explicit AutoCriticalSectionT (LOCKTYPE& critSec);
+						~AutoCriticalSectionT ();
 
-				private:
-					CRITICAL_SECTION&	fCritSec;
-			};
+					private:
+						LOCKTYPE&	fCritSec;
+				};
+			typedef	AutoCriticalSectionT<CriticalSection>	AutoCriticalSection;
 
 
 		}

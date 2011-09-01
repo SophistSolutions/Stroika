@@ -48,21 +48,19 @@ namespace	Stroika {
 					return fCritSec;
 				}
 
-		//	class	AutoCriticalSection
-			inline	AutoCriticalSection::AutoCriticalSection (CRITICAL_SECTION& critSec):
-				fCritSec (critSec)
-				{
-				#if qUseWindowsNativeThreadSupport
-					::EnterCriticalSection (&fCritSec);
-				#endif
-				}
-			inline	AutoCriticalSection::~AutoCriticalSection ()
-				{
-				#if qUseWindowsNativeThreadSupport
-					IgnoreExceptionsForCall (::LeaveCriticalSection (&fCritSec));
-				#endif
-				}
 
+		//	class	AutoCriticalSection
+			template	<typename LOCKTYPE>
+				inline	AutoCriticalSectionT<LOCKTYPE>::AutoCriticalSectionT (LOCKTYPE& critSec)
+					: fCritSec (critSec)
+					{
+						fCritSec.Lock ();
+					}
+			template	<typename LOCKTYPE>
+				inline	AutoCriticalSectionT<LOCKTYPE>::~AutoCriticalSectionT ()
+					{
+						fCritSec.Unlock ();
+					}
 
 		}
 	}
