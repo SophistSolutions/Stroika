@@ -28,6 +28,7 @@ sub DoRunSimpleTestArgv
 {
 	local $dbgOrRel = $_[0];
 	local $tstName = $_[1];
+	local $dirPrefix = $_[2];
 
 	if ($dbgOrRel eq "") {
 		$dbgOrRel = 'All';
@@ -36,17 +37,17 @@ sub DoRunSimpleTestArgv
 	local $outDir = PrepareOutputDir();
 
 	if ($dbgOrRel eq 'All') {
-		DoRunSimpleTest ('Debug-A-32', $outDir, $tstName);
-		DoRunSimpleTest ('Release-A-32', $outDir, $tstName);
-		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName);
-		DoRunSimpleTest ('Release-U-32', $outDir, $tstName);
+		DoRunSimpleTest ('Debug-A-32', $outDir, $tstName, $dirPrefix);
+		DoRunSimpleTest ('Release-A-32', $outDir, $tstName, $dirPrefix);
+		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName, $dirPrefix);
+		DoRunSimpleTest ('Release-U-32', $outDir, $tstName, $dirPrefix);
 		if (bitter() eq 64) {
-			DoRunSimpleTest ('Debug-U-64', $outDir, $tstName);
-			DoRunSimpleTest ('Release-U-64', $outDir, $tstName);
+			DoRunSimpleTest ('Debug-U-64', $outDir, $tstName, $dirPrefix);
+			DoRunSimpleTest ('Release-U-64', $outDir, $tstName, $dirPrefix);
 		}
 	}
 	else {
-		DoRunSimpleTest ($dbgOrRel, $outDir, $tstName);
+		DoRunSimpleTest ($dbgOrRel, $outDir, $tstName, $dirPrefix);
 	}
 }
 
@@ -55,9 +56,10 @@ sub DoRunSimpleTest
 	local $dbgOrRel = $_[0];
 	local $outDir = $_[1];
 	local $tstName = $_[2];
-	local $extraRunArgs = $_[3];
+	local $dirPrefix = $_[3];
+	local $extraRunArgs = $_[4];
 	
-	local $r = DoRunSimpleTest_R ($dbgOrRel, $outDir, $tstName, $extraRunArgs);
+	local $r = DoRunSimpleTest_R ($dbgOrRel, $outDir, $tstName, $dirPrefix, $extraRunArgs);
 	print $r;
 }
 
@@ -103,9 +105,10 @@ sub DoRunSimpleTest_R
 	local $dbgOrRel = $_[0];
 	local $outDir = $_[1];
 	local $tstName = $_[2];
-	local $extraRunArgs = $_[3];
+	local $dirPrefix = $_[3];
+	local $extraRunArgs = $_[4];
 	
-	return DoRunSimpleTest_EXE_R ($dbgOrRel, $outDir, $tstName, $extraRunArgs, "$dbgOrRel/Test.exe");
+	return DoRunSimpleTest_EXE_R ($dbgOrRel, $outDir, $tstName, $extraRunArgs, "$dirPrefix$dbgOrRel/Test.exe");
 }
 
 

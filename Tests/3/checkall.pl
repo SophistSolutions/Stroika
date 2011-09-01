@@ -1,10 +1,10 @@
-CheckFileExists ("Debug-A-32/Test.exe");
-CheckFileExists ("Release-A-32/Test.exe");
+CheckFileExists ("../../Builds/Windows/Test3/Debug-A-32/Test.exe");
+CheckFileExists ("../../Builds/Windows/Test3/Release-A-32/Test.exe");
 
-CheckFileExists ("Debug-U-32/Test.exe");
-CheckFileExists ("Release-U-32/Test.exe");
-CheckFileExists ("Debug-U-64/Test.exe");
-CheckFileExists ("Release-U-64/Test.exe");
+CheckFileExists ("../../Builds/Windows/Test3/Debug-U-32/Test.exe");
+CheckFileExists ("../../Builds/Windows/Test3/Release-U-32/Test.exe");
+CheckFileExists ("../../Builds/Windows/Test3/Debug-U-64/Test.exe");
+CheckFileExists ("../../Builds/Windows/Test3/Release-U-64/Test.exe");
 
 print "[SUCCEEDED]\r\n";
 
