@@ -39,13 +39,11 @@ namespace	Stroika {
 					StringRep_CharArray ();
 					nonvirtual	void	SetStorage (Character* storage, size_t length);
 
+					virtual	size_t	CalcAllocChars (size_t requested);
+
 				private:
 					wchar_t*	fStorage;
 					size_t	    fLength;
-// STERLING:
-// IF THIS IS PRIVATE - RENAME TO _ - AND THEN WHY VIRTUAL???? IS THAT REALLY RIGHT ?? SB PROTECTED?
-//		-- LGP 2011-08-30
-					virtual	size_t	CalcAllocChars (size_t requested);
 			};
 
 

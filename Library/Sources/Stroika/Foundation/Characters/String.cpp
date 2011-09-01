@@ -40,7 +40,7 @@ namespace	{
 
             virtual		StringRep*	Clone () const override;
 
-        private:
+        protected:
             virtual		size_t	CalcAllocChars (size_t requested) override;
     };
 
