@@ -2,3 +2,5 @@ obj/
 CodeBlocks.layout
 libCodeBlock.a
 CodeBlocks.depend
+libStroika.a
+libStroika_ndb.a
