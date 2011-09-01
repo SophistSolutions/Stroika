@@ -16,7 +16,7 @@ use constant true  => 1;
 #
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
-my $configFileName	=	"Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
+my $configFileName	=	"Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
 
 
 my $intermediateFiles	=	"IntermediateFiles/";
@@ -31,7 +31,7 @@ sub mkDirWithLinks
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$platform/$relPath";
-	system ("ln -s ../../../Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
+	system ("ln -s ../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
@@ -39,7 +39,7 @@ sub mkDirWithLinks2
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$platform/$relPath";
-	system ("ln -s ../../../../Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
+	system ("ln -s ../../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
 }
 
 
@@ -53,9 +53,9 @@ unless (-e $intermediateFiles) {
 	mkdir "$intermediateFiles";
 	mkdir "$intermediateFiles/$platform";
 	mkdir "$intermediateFiles/$platform/";
-	system ("ln -s ../../Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Makefile");
-	system ("cp Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Configuration.mk");
-	system ("cp Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/SharedBuildRules.mk");
+	system ("ln -s ../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Makefile");
+	system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Configuration.mk");
+	system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/SharedBuildRules.mk");
 	
 	mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
 	mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");

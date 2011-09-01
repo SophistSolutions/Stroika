@@ -8,6 +8,8 @@ if ($BLD_TRG eq '') {
 print ("**************************** STARTING Stroika ****************************\n");
 system ("sh -c 'date'");
 
+system ("perl configure.pl --only-if-unconfigured");
+
 system ("cd Library; perl buildall.pl $BLD_TRG");
 system ("cd Tests; perl buildall.pl $BLD_TRG");
 
