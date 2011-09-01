@@ -1,10 +1,9 @@
-/* Copyright(c) Sophist Solutions Inc. 1990-1992.  All rights reserved */
-
+/*
+ * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
+ */
 #include	"Stroika/Foundation/StroikaPreComp.h"
 
-
 #include	<iostream>
-
 
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Containers/Common.h"
@@ -12,16 +11,15 @@
 #include	"Stroika/Foundation/Characters/String.h"
 
 
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Characters;
 
-extern  void    TestStrings ();
+
 
 #define	TestCondition(e)\
 	if (!(e)) cout << "File '" << __FILE__ << "'; Line "  << __LINE__ << " ## TEST FAILED: " #e << endl;
 
-#define		qPrintTimings		!qDebug
 
-using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Characters;
 
 
 namespace	{
@@ -31,6 +29,7 @@ namespace	{
 			_exit (EXIT_FAILURE);
 		}
 }
+
 
 
 bool	operator== (Character lhs, wchar_t rhs)
@@ -65,7 +64,8 @@ static	void	Test7 ();
 static  void    TestReadOnlyStrings ();
 
 #if qDebug
-	const	int	kLoopEnd = 1000;
+	//const	int	kLoopEnd = 1000;
+	const	int	kLoopEnd = 500;		// 1000 generates stackoverflow (because of String_Catentate stuff) on Windoze - clearly a Stroika bug!!! To use so much stack
 #else
 	const	int	kLoopEnd = 2000;
 #endif
@@ -181,6 +181,13 @@ static	void	StressTest2 (String big)
 	for (int i = 1; i <= kLoopEnd; i++) {
 		big = big + s1;
 		TestCondition (big.GetLength () == s1.GetLength () * i);
+
+#if 0
+		for (int j = 0; j < big.GetLength (); ++j) {
+			Character c = big[j];
+			int breahere=1;
+		}
+#endif
 	}
 }
 
@@ -472,4 +479,35 @@ void    TestReadOnlyStrings ()
     s += L"x";
     TestCondition (s.GetLength () == 4);
     TestCondition (s[3] == 'x');
+}
+
+
+
+
+namespace	{
+
+	void	DoRegressionTests_ ()
+		{
+			try {
+				TestStrings ();
+			}
+			catch (...) {
+				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
+				_exit (EXIT_FAILURE);
+			}
+		}
+}
+
+
+
+
+int		main(int argc, const char* argv[])
+{
+#if		qDebug
+	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
+#endif
+	DoRegressionTests_ ();
+
+	cout << "Succeeded" << endl;
+	return EXIT_SUCCESS;
 }

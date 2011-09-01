@@ -144,27 +144,28 @@ namespace	{
  ************************************* String ***********************************
  ********************************************************************************
  */
-String::String ()
-	: fRep (nullptr, &Clone_)
-{
-	static	SHARED<StringRep>	sSharedBuffer (new StringRep_CharArray (nullptr, 0), &Clone_);
+const	SHARED<String::StringRep>	String::kEmptyStringRep_ (new StringRep_CharArray (nullptr, 0), &String::Clone_);
 
-	fRep = sSharedBuffer;
-	Assert (fRep.CountReferences () > 1);
+String::String ()
+	: fRep (kEmptyStringRep_)
+{
+	//redo this function as inline - MAYBE - but be careful about relative order of evaluation - may need ModuleInit<> template, or maybe better to leave
+	// this way?
 }
 
 String::String (const wchar_t* cString)
-	: fRep (nullptr, &Clone_)
+	: fRep (new StringRep_CharArray ((const Character*)cString, wcslen (cString)), &Clone_)
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-	fRep = new StringRep_CharArray ((const Character*)cString, wcslen (cString));
 }
 
 String::String (StringRep* sharedPart, bool)
 	: fRep (sharedPart, &Clone_)
 {
-	Require (fRep.CountReferences () == 1);
+	RequireNotNull (sharedPart);
+	Require (fRep.unique ());
+	//Require (fRep.CountReferences () == 1);
 }
 
 String&	String::operator+= (Character appendage)
@@ -175,7 +176,7 @@ String&	String::operator+= (Character appendage)
 
 String&	String::operator+= (const String& appendage)
 {
-	if ((fRep == appendage.fRep) and (fRep.CountReferences () == 1)) {
+	if ((fRep == appendage.fRep) and fRep.unique ()) {
 		/*
 		 * We must be careful about this case since blowing aways "this"s memory, and then
 		 * trying to copy from "appendage"s would be bad.
@@ -188,7 +189,7 @@ String&	String::operator+= (const String& appendage)
 		size_t	appendLength = appendage.GetLength ();
 		SetLength (oldLength + appendLength);
 		Assert (appendage.GetLength () == appendLength);
-		Assert (fRep.CountReferences () == 1);
+		Assert (fRep.unique ());
 		memcpy (const_cast<Character*>(&(fRep->Peek ())[oldLength]), appendage.fRep->Peek (), appendLength*sizeof (Character));
 	}
 	return (*this);
@@ -332,31 +333,26 @@ String	String::SubString (size_t from, size_t length) const
  ********************************************************************************
  */
 String_CharArray::String_CharArray ()
-	: String (nullptr, false)
+	: String (new StringRep_CharArray (nullptr, 0), false)
 {
-	SetRep (new StringRep_CharArray (nullptr, 0));
 }
 
 String_CharArray::String_CharArray (const wchar_t* cString)
-	: String (nullptr, false)
+	: String (new StringRep_CharArray ((const Character*)cString, wcslen (cString)), false)
 {
-	size_t length = wcslen (cString);
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-	SetRep (new StringRep_CharArray ((const Character*)cString, length));
 }
 
 String_CharArray::String_CharArray (const wstring& str)
-    : String (nullptr, false)
+    : String (new StringRep_CharArray ((const Character*)str.c_str (), str.length ()), false)
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-	SetRep (new StringRep_CharArray ((const Character*)str.c_str (), str.length ()));
 }
 
 
 String_CharArray::String_CharArray (const String& from)
-	: String (nullptr, false)
+	: String (new StringRep_CharArray (from.Peek (), from.GetLength ()), false)
 {
-	SetRep (new StringRep_CharArray (from.Peek (), from.GetLength ()));
 }
 
 
@@ -373,30 +369,25 @@ String_CharArray::String_CharArray (const String& from)
  ********************************************************************************
  */
 String_BufferedCharArray::String_BufferedCharArray ()
-	: String (nullptr, false)
+	: String (new StringRep_BufferedCharArray (nullptr, 0), false)
 {
-	SetRep (new StringRep_BufferedCharArray (nullptr, 0));
 }
 
 String_BufferedCharArray::String_BufferedCharArray (const wchar_t* cString)
-	: String (nullptr, false)
+	: String (new StringRep_BufferedCharArray ((const Character*)cString, wcslen (cString)), false)
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-	size_t length = wcslen (cString);
-	SetRep (new StringRep_BufferedCharArray ((const Character*)cString, length));
 }
 
 String_BufferedCharArray::String_BufferedCharArray (const wstring& str)
-	: String (nullptr, false)
+	: String (new StringRep_BufferedCharArray ((const Character*) str.c_str (), str.length ()), false)
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-	SetRep (new StringRep_BufferedCharArray ((const Character*) str.c_str (), str.length ()));
 }
 
 String_BufferedCharArray::String_BufferedCharArray (const String& from)
-	: String (nullptr, false)
+	: String (new StringRep_BufferedCharArray (from.Peek (), from.GetLength ()), false)
 {
-	SetRep (new StringRep_BufferedCharArray (from.Peek (), from.GetLength ()));
 }
 
 
@@ -409,11 +400,9 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
  ********************************************************************************
  */
 String_ReadOnlyChar::String_ReadOnlyChar (const wchar_t* cString)
-	: String (nullptr, false)
+	: String (new MyRep_ ((const Character*)cString, wcslen (cString)), false)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
-	size_t length = wcslen (cString);
-	SetRep (new MyRep_ ((const Character*)cString, length));
 }
 
 

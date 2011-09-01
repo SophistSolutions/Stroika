@@ -267,8 +267,7 @@ namespace	Stroika {
 			template	<typename T>
 				inline	bool	RefCntPtr<T>::IsUnique () const
 					{
-						RequireNotNull (fCountHolder);
-						return fCountHolder->fCount_DONT_ACCESS == 1;
+						return fCountHolder == NULL? false: fCountHolder->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T>
 				inline	bool	RefCntPtr<T>::unique () const

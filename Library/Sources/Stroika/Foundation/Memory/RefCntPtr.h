@@ -160,7 +160,9 @@ namespace	Stroika {
 					RefCntPtrBase*	fCountHolder;
 
 				public:
+					// Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
 					nonvirtual	bool	IsUnique () const;
+					// Alias for IsUnique()
 					nonvirtual	bool	unique () const;
 					nonvirtual	size_t	CurrentRefCount () const;
 

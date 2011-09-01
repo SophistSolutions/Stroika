@@ -48,6 +48,7 @@ namespace	Stroika {
 					{
 						SHARED_IMLP::operator= (src);
 						fCopier = src.fCopier;
+						return *this;
 					}
 			template    <typename	T, typename SHARED_IMLP>
 				inline	const T*	CopyOnWrite<T,SHARED_IMLP>::GetPointer () const
@@ -111,9 +112,9 @@ namespace	Stroika {
 			template    <typename	T, typename SHARED_IMLP>
 				void	CopyOnWrite<T,SHARED_IMLP>::BreakReferences_ ()
 					{
-						RequireNotNil (fCopier);
+						RequireNotNull (fCopier);
 						T*	ptr	=	SHARED_IMLP::get ();
-						RequireNotNil (ptr);
+						RequireNotNull (ptr);
 						/*
 						 *		For a valid pointer that is reference counted and multiply shared,
 						 *	make a copy of that pointer via our fCloner function, and assign
@@ -128,7 +129,7 @@ namespace	Stroika {
 						//Require (!SHARED_IMLP::unique ());	This is not NECESSARILY so. Another thread could have just released this pointer, in which case
 						// the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
 						// value and it shoudl go away.
-						*this = ((*fCopier) (*ptr));
+						*this = CopyOnWrite<T,SHARED_IMLP> ((*fCopier) (*ptr), fCopier);
 						Ensure (SHARED_IMLP::unique ());
 					}
 

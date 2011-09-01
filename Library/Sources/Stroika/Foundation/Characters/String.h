@@ -93,8 +93,8 @@
 
 
 
-//#define SHARED  Memory::CopyOnWrite
-#define SHARED  Memory::Shared
+#define SHARED  Memory::CopyOnWrite
+//#define SHARED  Memory::Shared
 
 namespace	Stroika {
 	namespace	Foundation {
@@ -210,6 +210,7 @@ namespace	Stroika {
                     };
 
                 protected:
+					// StringRep MUST be not-null
                     String (StringRep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
                     nonvirtual	void	SetRep (StringRep* rep);
@@ -222,6 +223,10 @@ namespace	Stroika {
 
                     static	StringRep*	Clone_ (const StringRep& rep);
 
+				private:
+					static	const	SHARED<String::StringRep>	kEmptyStringRep_;
+
+				private:
                 /*
                  * These are made friends so they can peek at the shared part, as an optimization/
                  */

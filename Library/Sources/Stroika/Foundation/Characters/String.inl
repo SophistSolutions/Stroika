@@ -58,9 +58,8 @@ namespace	Stroika {
 				{
 				}
             inline	String::String (const std::wstring& r)
-                : fRep ((StringRep*)nullptr, &Clone_)
+                : fRep (new StringRep_CharArray ((const Character*)r.c_str (), r.length ()), &Clone_)
 				{
-					fRep = new StringRep_CharArray ((const Character*)r.c_str (), r.length ());
 				}
             inline	String&	String::operator= (const String& newString)
 				{
@@ -94,7 +93,7 @@ namespace	Stroika {
 				}
             inline	void	String::SetRep (StringRep* rep)
 				{
-					fRep = rep;
+					fRep = SHARED<StringRep> (rep, &Clone_);
 				}
             inline	const String::StringRep*	String::GetRep () const
 				{

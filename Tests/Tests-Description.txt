@@ -2,4 +2,5 @@
 [2]		Streams/JSON
 [3]		Threads
 [4]		Exceptions
+[5]		Strings
 

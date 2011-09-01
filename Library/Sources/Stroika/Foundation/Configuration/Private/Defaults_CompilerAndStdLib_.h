@@ -212,7 +212,7 @@
 	@CONFIGVAR:		qCompilerAndStdLib_Supports_lambda_default_argument
 	@DESCRIPTION:	<p>Defined true if the compiler supports constexpr</p>
 	*/
-	#ifndef	qCompilerAndStdLib_Supports_constexpr
+	#ifndef	qCompilerAndStdLib_Supports_lambda_default_argument
 		#if		defined (__GNUC__)
 			#define	qCompilerAndStdLib_Supports_lambda_default_argument	0
 		#elif	defined (_MSC_VER) && _MSC_VER >= 1600
