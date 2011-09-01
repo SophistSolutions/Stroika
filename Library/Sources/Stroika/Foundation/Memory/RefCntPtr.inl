@@ -218,11 +218,13 @@ namespace	Stroika {
 							*this = RefCntPtr<T> (p);
 						}
 					}
+#if 0
 			template	<typename T>
 				inline	T*	RefCntPtr<T>::DefaultElementCopier (const T& t)
 					{
 						return new T (t);
 					}
+#endif
 			template	<typename T>
 				inline	void	RefCntPtr<T>::Assure1Reference (T* (*copier) (const T&))
 					{

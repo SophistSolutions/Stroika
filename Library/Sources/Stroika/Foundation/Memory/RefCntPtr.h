@@ -132,7 +132,7 @@ namespace	Stroika {
 							}
 
 				public:
-					static	T*	DefaultElementCopier (const T& t);
+//					static	T*	DefaultElementCopier (const T& t);
 					/*
 					 * Assure1Reference () can be called when implementing copy-on-write. A typical use would be to call Assure1Reference () on
 					 * all non-const methods of envelope objects which use RefCntPtr<> to share a common read-only copy and only clone it when they need write.
@@ -140,7 +140,8 @@ namespace	Stroika {
 					 * The 'copier' function must make a logical copy (presumably suitable for update) of the given object already pointed to. A generally appropriate
 					 * default implementation is provided.
 					 */
-					nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = DefaultElementCopier);
+					//nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = DefaultElementCopier);
+					nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = [](const T& t) { return new T (t); });
 
 				private:
 					nonvirtual	void	BreakReferences_ (T* (*copier) (const T&));

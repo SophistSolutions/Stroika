@@ -13,6 +13,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)BlockAllocated.o\
+	$(ObjDir)CopyOnWrite.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)MemoryAllocator.o\
 	$(ObjDir)Optional.o\
