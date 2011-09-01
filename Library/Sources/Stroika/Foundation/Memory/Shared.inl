@@ -12,14 +12,14 @@
  */
 #include	"BlockAllocated.h"
 
-namespace	Stroika {	
+namespace	Stroika {
 	namespace	Foundation {
 		namespace	Memory {
 
 			typedef	uint32_t		Counter_Shared;			// MUST BE SAME TYPE AS Shared<T>::Counter
 			extern	Counter_Shared*		sCounterList_Shared;
 			extern	void				GetMem_Shared ();
-	
+
 			inline	Counter_Shared*	NewCounter_Shared ()
 				{
 					/*
@@ -27,7 +27,7 @@ namespace	Stroika {
 					 * Otherwise alloc union of two types (ptr and Counter_Shared)
 					 */
 					Assert (sizeof (Counter_Shared) >= sizeof (Counter_Shared*));
-	
+
 					if (sCounterList_Shared == nullptr) {
 						GetMem_Shared ();
 					}
@@ -36,7 +36,7 @@ namespace	Stroika {
 					sCounterList_Shared = *(Counter_Shared**)sCounterList_Shared;
 					return (result);
 				}
-	
+
 			inline	void	DeleteCounter_Shared (Counter_Shared* counter)
 				{
 					/*
@@ -44,15 +44,15 @@ namespace	Stroika {
 					 * Otherwise alloc union of two types (ptr and Counter_Shared)
 					 */
 					Assert (sizeof (Counter_Shared) >= sizeof (Counter_Shared*));
-	
+
 					RequireNotNull (counter);
 					(*(Counter_Shared**)counter) = sCounterList_Shared;
 					sCounterList_Shared = counter;
 				}
 
 
-			template <class T> 
-				inline	Shared<T>::Shared (T* (*cloneFunction) (const T&), T* ptr) : 
+			template <class T>
+				inline	Shared<T>::Shared (T* ptr, T* (*cloneFunction) (const T&)) :
 					fPtr (ptr),
 					fCount (nullptr),
 					fCloner (cloneFunction)
@@ -78,7 +78,7 @@ namespace	Stroika {
 						EnsureNotNull (fPtr);
 						return (fPtr);
 					}
-			template <class T> 
+			template <class T>
 				inline	const T&	Shared<T>::operator* () const
 					{
 						EnsureNotNull (fPtr);
@@ -97,7 +97,7 @@ namespace	Stroika {
 				}
 
 
-			template	<class	T>	
+			template	<class	T>
 				inline	bool	operator== (const Shared<T>& lhs, const Shared<T>& rhs)
 					{
 						return (lhs.GetPointer () == rhs.GetPointer ());
@@ -199,7 +199,7 @@ namespace	Stroika {
 						 */
 						Assure1Reference ();
 						EnsureNotNull (fPtr);
-						return (fPtr); 
+						return (fPtr);
 					}
 			template <class T>
 				T& Shared<T>::operator* ()
@@ -210,7 +210,7 @@ namespace	Stroika {
 						 */
 						Assure1Reference ();
 						EnsureNotNull (fPtr);
-						return (*fPtr); 
+						return (*fPtr);
 					}
 			template <class T>
 				T* Shared<T>::GetPointer ()
@@ -226,7 +226,7 @@ namespace	Stroika {
 						}
 						Assure1Reference ();
 						EnsureNotNull (fPtr);
-						return (fPtr); 
+						return (fPtr);
 					}
 			template <class T>
 				void	Shared<T>::BreakReferences ()

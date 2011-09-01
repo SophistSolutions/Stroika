@@ -75,7 +75,7 @@ namespace	{
 
     class	StringRep_Substring : public String::StringRep {
         public:
-            StringRep_Substring (const Memory::Shared<StringRep>& baseString, size_t from, size_t length);
+            StringRep_Substring (const SHARED<StringRep>& baseString, size_t from, size_t length);
 
             virtual		StringRep*	Clone () const override;
 
@@ -93,7 +93,7 @@ namespace	{
             virtual		const Character*	Peek () const override;
 
         private:
-            Memory::Shared<StringRep>	fBase;
+            SHARED<StringRep>	fBase;
 
             size_t	fFrom;
             size_t	fLength;
@@ -145,16 +145,16 @@ namespace	{
  ********************************************************************************
  */
 String::String ()
-	: fRep (&Clone_, nullptr)
+	: fRep (nullptr, &Clone_)
 {
-	static	Memory::Shared<StringRep>	sSharedBuffer (&Clone_, new StringRep_CharArray (nullptr, 0));
+	static	SHARED<StringRep>	sSharedBuffer (new StringRep_CharArray (nullptr, 0), &Clone_);
 
 	fRep = sSharedBuffer;
 	Assert (fRep.CountReferences () > 1);
 }
 
 String::String (const wchar_t* cString)
-	: fRep (&Clone_, nullptr)
+	: fRep (nullptr, &Clone_)
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
@@ -162,7 +162,7 @@ String::String (const wchar_t* cString)
 }
 
 String::String (StringRep* sharedPart, bool)
-	: fRep (&Clone_, sharedPart)
+	: fRep (sharedPart, &Clone_)
 {
 	Require (fRep.CountReferences () == 1);
 }
@@ -700,7 +700,7 @@ void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
  ******************************** StringRep_Substring ***************************
  ********************************************************************************
  */
-StringRep_Substring::StringRep_Substring (const Memory::Shared<StringRep>& baseString, size_t from, size_t length)
+StringRep_Substring::StringRep_Substring (const SHARED<StringRep>& baseString, size_t from, size_t length)
 	: fBase (baseString)
 	, fFrom (from)
 	, fLength (length)

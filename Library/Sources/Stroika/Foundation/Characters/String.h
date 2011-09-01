@@ -88,10 +88,13 @@
 
 #include	"Character.h"
 
+#include	"../Memory/CopyOnWrite.h"
 #include	"../Memory/Shared.h"
 
 
 
+//#define SHARED  Memory::CopyOnWrite
+#define SHARED  Memory::Shared
 
 namespace	Stroika {
 	namespace	Foundation {
@@ -215,7 +218,7 @@ namespace	Stroika {
                     nonvirtual	StringRep*			GetRep ();
 
                 private:
-                    Memory::Shared<StringRep>	fRep;
+                    SHARED<StringRep>	fRep;
 
                     static	StringRep*	Clone_ (const StringRep& rep);
 

@@ -58,7 +58,7 @@ namespace	Stroika {
 				{
 				}
             inline	String::String (const std::wstring& r)
-                : fRep (&Clone_, 0)
+                : fRep ((StringRep*)nullptr, &Clone_)
 				{
 					fRep = new StringRep_CharArray ((const Character*)r.c_str (), r.length ());
 				}

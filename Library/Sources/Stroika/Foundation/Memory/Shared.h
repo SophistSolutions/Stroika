@@ -46,13 +46,13 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Memory {
 
-			template	<class T>	
+			template	<class T>
 				class	Shared {
 					private:
 						Shared ();	// illegal - dont call this...
 
 					public:
-						Shared (T* (*cloneFunction) (const T&), T* ptr);	// OK to pass nullptr for ptr but assign before use
+						Shared (T* ptr, T* (*cloneFunction) (const T&));	// OK to pass nullptr for ptr but assign before use
 						Shared (const Shared<T>& src);
 
 						~Shared ();											// nonvirtual DTOR cuz we always keep these by value
