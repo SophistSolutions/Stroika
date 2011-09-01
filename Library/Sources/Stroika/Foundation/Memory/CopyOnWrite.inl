@@ -104,7 +104,7 @@ namespace	Stroika {
 			template    <typename	T, typename SHARED_IMLP>
 				inline	void	CopyOnWrite<T,SHARED_IMLP>::Assure1Reference ()
 					{
-						if (!unique ()) {
+						if (!SHARED_IMLP::unique ()) {
 							BreakReferences_ ();
 						}
 					}
@@ -125,9 +125,11 @@ namespace	Stroika {
 						 *		Since we will be cloning the given pointer, we assume(assert) that
 						 *	it is non-nullptr.
 						 */
-						Require (!unique ());
+						//Require (!SHARED_IMLP::unique ());	This is not NECESSARILY so. Another thread could have just released this pointer, in which case
+						// the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
+						// value and it shoudl go away.
 						*this = ((*fCopier) (*ptr));
-						Ensure (unique ());
+						Ensure (SHARED_IMLP::unique ());
 					}
 
 		}
