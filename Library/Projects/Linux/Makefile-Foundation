@@ -1,8 +1,13 @@
 ObjDir                          =       ./
-SrcDir                          =       ../../../Sources/Stroika/Foundation/
+SrcDir                          =       ../../Library/Sources/Stroika/Foundation/
+LibDir				=	../../Builds/Platform_Linux/
 Includes                        =       -I.
 
-VPATH = $(SrcDir)
+
+StroikaFoundationLib		=	$(LibDir)Stroika-Foundation.a
+
+
+VPATH = $(SrcDir) $(LibDir)
 
 
 SubDirs=	\
@@ -32,17 +37,18 @@ all-objs:
 	done
 
 
-Stroika-Foundation.a:	all-objs
+$(StroikaFoundationLib):	all-objs
 	@echo "PROBABLY WRONG HANDLING OF OVERLAPPING NAMESPACES (eg common in two dirs) - but a decent start"
+	@mkdir -p $(LibDir)
 	@rm -f Stroika-Foundation.a
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq Stroika-Foundation.a $$i/$$oo); done )\
+	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
 	done
-	ranlib Stroika-Foundation.a
+	ranlib $(StroikaFoundationLib)
 
 
-all:	Stroika-Foundation.a
+all:	$(StroikaFoundationLib)
 
 
 clean:
@@ -52,7 +58,7 @@ clean:
 	done
 
 clobber::
-	@rm Stroika-Foundation.a
+	@rm $(StroikaFoundationLib)
 
 
 Build:	all

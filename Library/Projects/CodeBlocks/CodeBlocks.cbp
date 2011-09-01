@@ -15,7 +15,6 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-std=c++0x" />
-					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-DqDebug=1" />
 				</Compiler>
