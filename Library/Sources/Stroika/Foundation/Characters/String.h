@@ -92,6 +92,23 @@
 
 
 
+
+#if		0
+SHORT TERM THINGS TODO:
+
+	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
+	(2)	Implement the UTF8 functions
+
+
+
+MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
+	(1)	when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
+
+#endif
+
+
+
+
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
@@ -109,6 +126,10 @@ namespace	Stroika {
                     ~String ();
 
                     nonvirtual	String&	operator= (const String& newString);
+
+				public:
+					static	String	FromUTF8 (const char* from);
+					static	String	FromUTF8 (const std::string& from);
 
                 public:
                     nonvirtual	String&	operator+= (Character appendage);
@@ -167,31 +188,21 @@ namespace	Stroika {
                      */
                     nonvirtual	const Character* Peek () const;
 
-#if 0
-// Sterl: Please consider these possible new APIs
 
-
-					static	String	FromUTF8 (const char*);
-					static	String	FromUTF8 (const std::string&);
-
-					nonvirtual	wstring	ToStdStr () const;
-					nonvirtual	const wstring&	ToStdStr (wstring* into) const;
-					nonvirtual	const wchar_t*	c_str () const;
-					nonvirtual	string	ToStdStrUTF8 () const;
-					nonvirtual	const string&	ToStdStrUTF8 (string* into) const;
-					nonvirtual	const char*	ToUTF8_c_str () const;		// unsure we want
-					nonvirtual	string	ToStdStrASCII () const;	// Requires that each Character is 'ASCII' - more efficent than using UTF8 impl - but will assert out if values not valid ASCII
-
-
-//ALSO - VERY IMPORTANT - when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
-
-#endif
-
+				public:
+					/*
+					 * 	CopyTo () copies the contents of this string to the target buffer.
+					 *	It always nul-terminates, and asserts buffer is large enuf.
+					 *	
+				<<<< USE THIS IN PREFERENCE TO PEEK- EXCEPT WHERE PERFORMANCE DICTATES OTHERWISE >>>
+					 */
+					nonvirtual	void	CopyTo (Character* buf, size_t nCharsInBuf);
+					nonvirtual	void	CopyTo (wchar_t* buf, size_t nCharsInBuf);
 
 
 				public:
 					/*
-					 * Convert String losslessly into a standard C++ type (right now just wstring supported)
+					 * Convert String losslessly into a standard C++ type (right now just <wstring>,<const wchar_t*> supported)
 					 */
 					template	<typename	T>
 						nonvirtual	T	As () const;
@@ -201,6 +212,43 @@ namespace	Stroika {
 						nonvirtual	wstring	As () const;
 					template	<>
 						nonvirtual	void	As (wstring* into) const;
+					// Always returns a NUL-terminated 'C'-string
+					template	<>
+						nonvirtual	const wchar_t*	As () const;
+
+					/*
+					 * Convert String losslessly into a standard C++ type (right now just <string> supported)
+					 */
+					template	<typename	T>
+						nonvirtual	T	AsUTF8 () const;
+					template	<typename	T>
+						nonvirtual	void	AsUTF8 (T* into) const;
+					template	<>
+						nonvirtual	string	AsUTF8 () const;
+					template	<>
+						nonvirtual	void	AsUTF8 (string* into) const;
+
+					/*
+					 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string MUST be valid ascii characters (asserted)
+					 */
+					template	<typename	T>
+						nonvirtual	T	AsASCII () const;
+					template	<typename	T>
+						nonvirtual	void	AsASCII (T* into) const;
+					template	<>
+						nonvirtual	string	AsASCII () const;
+					template	<>
+						nonvirtual	void	AsASCII (string* into) const;
+
+
+
+				// StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
+				public:
+					inline	const wchar_t* c_str () const { return As<const wchar_t*> (); }
+					// need more overloads
+					inline	size_t find (wchar_t c) const { return IndexOf (c); }
+					// need more overloads
+					inline	size_t rfind (wchar_t c) const { return RIndexOf (c); }
 
 
 				protected:

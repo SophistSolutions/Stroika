@@ -48,6 +48,22 @@ namespace	Stroika {
 				{
 					return (fRep->Peek ());
 				}
+			inline	void	String::CopyTo (Character* buf, size_t nCharsInBuf)
+				{
+// THIS ASSUMES Peek() always returns non-null and Nul-terminated string - VERIFY IF THAT ASSUMPTION IS TRUE AND DOCUMENT IN Peek() API
+					Require (nCharsInBuf > GetLength ());
+					RequireNotNull (buf);
+					size_t	nChars	=	GetLength () + 1;
+					(void)::memcpy (buf, fRep->Peek (), nChars*sizeof (Character));
+				}
+			inline	void	String::CopyTo (wchar_t* buf, size_t nCharsInBuf)
+				{
+// THIS ASSUMES Peek() always returns non-null and Nul-terminated string - VERIFY IF THAT ASSUMPTION IS TRUE AND DOCUMENT IN Peek() API
+					Require (nCharsInBuf > GetLength ());
+					RequireNotNull (buf);
+					size_t	nChars	=	GetLength () + 1;
+					(void)::memcpy (buf, fRep->Peek (), nChars*sizeof (Character));
+				}
             inline	size_t	String::GetLength () const
 				{
 					return (fRep->GetLength ());
@@ -75,6 +91,28 @@ namespace	Stroika {
 						As (&r);
 						return r;
 					}
+			template	<>
+				inline	const wchar_t*	String::As () const
+					{
+// I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!	-- LGP 2011-09-01
+						return (const wchar_t*)Peek ();
+					}
+			template	<>
+				inline	string	String::AsUTF8 () const
+					{
+						string	r;
+						AsUTF8 (&r);
+						return r;
+					}
+			template	<>
+				inline	string	String::AsASCII () const
+					{
+						string	r;
+						AsASCII (&r);
+						return r;
+					}
+
+
 
 
 
