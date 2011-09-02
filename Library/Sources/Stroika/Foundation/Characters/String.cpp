@@ -75,7 +75,7 @@ namespace	{
 
     class	StringRep_Substring : public String::StringRep {
         public:
-            StringRep_Substring (const SHARED<StringRep>& baseString, size_t from, size_t length);
+            StringRep_Substring (const Memory::CopyOnWrite<StringRep>& baseString, size_t from, size_t length);
 
             virtual		StringRep*	Clone () const override;
 
@@ -93,7 +93,7 @@ namespace	{
             virtual		const Character*	Peek () const override;
 
         private:
-            SHARED<StringRep>	fBase;
+            Memory::CopyOnWrite<StringRep>	fBase;
 
             size_t	fFrom;
             size_t	fLength;
@@ -144,7 +144,7 @@ namespace	{
  ************************************* String ***********************************
  ********************************************************************************
  */
-const	SHARED<String::StringRep>	String::kEmptyStringRep_ (new StringRep_CharArray (nullptr, 0), &String::Clone_);
+const	Memory::CopyOnWrite<String::StringRep>	String::kEmptyStringRep_ (new StringRep_CharArray (nullptr, 0), &String::Clone_);
 
 String::String ()
 	: fRep (kEmptyStringRep_)
@@ -689,7 +689,7 @@ void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
  ******************************** StringRep_Substring ***************************
  ********************************************************************************
  */
-StringRep_Substring::StringRep_Substring (const SHARED<StringRep>& baseString, size_t from, size_t length)
+StringRep_Substring::StringRep_Substring (const Memory::CopyOnWrite<StringRep>& baseString, size_t from, size_t length)
 	: fBase (baseString)
 	, fFrom (from)
 	, fLength (length)
@@ -1034,6 +1034,7 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const wchar
 
 
 
+#if 0
 
 /*
  ********************************************************************************
@@ -1047,7 +1048,6 @@ ostream&	operator<< (ostream& out, const String& s)
     }
     return (out);
 }
-
 
 
 
@@ -1079,7 +1079,7 @@ wistream&	operator>> (wistream& in, String& s)
     }
     return (in);
 }
-
+#endif
 
 
 

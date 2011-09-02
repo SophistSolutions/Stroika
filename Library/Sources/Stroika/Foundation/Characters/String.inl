@@ -93,7 +93,7 @@ namespace	Stroika {
 				}
             inline	void	String::SetRep (StringRep* rep)
 				{
-					fRep = SHARED<StringRep> (rep, &Clone_);
+					fRep = Memory::CopyOnWrite<StringRep> (rep, &Clone_);
 				}
             inline	const String::StringRep*	String::GetRep () const
 				{

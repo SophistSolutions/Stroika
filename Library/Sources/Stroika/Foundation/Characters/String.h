@@ -84,17 +84,13 @@
 
 #include	"../StroikaPreComp.h"
 
-#include <ostream>
+#include	"../Memory/CopyOnWrite.h"
 
 #include	"Character.h"
 
-#include	"../Memory/CopyOnWrite.h"
-#include	"../Memory/Shared.h"
 
 
 
-#define SHARED  Memory::CopyOnWrite
-//#define SHARED  Memory::Shared
 
 namespace	Stroika {
 	namespace	Foundation {
@@ -219,26 +215,26 @@ namespace	Stroika {
                     nonvirtual	StringRep*			GetRep ();
 
                 private:
-                    SHARED<StringRep>	fRep;
+                    Memory::CopyOnWrite<StringRep>	fRep;
 
                     static	StringRep*	Clone_ (const StringRep& rep);
 
 				private:
-					static	const	SHARED<String::StringRep>	kEmptyStringRep_;
+					static	const	Memory::CopyOnWrite<String::StringRep>	kEmptyStringRep_;
 
 				private:
-                /*
-                 * These are made friends so they can peek at the shared part, as an optimization/
-                 */
-                friend	bool	operator== (const String& lhs, const String& rhs);
-                friend	bool	operator!= (const String& lhs, const String& rhs);
-                friend	bool	operator< (const String& lhs, const String& rhs);
-                friend	bool	operator<= (const String& lhs, const String& rhs);
-                friend	bool	operator> (const String& lhs, const String& rhs);
-                friend	bool	operator>= (const String& lhs, const String& rhs);
+					/*
+					 * These are made friends so they can peek at the shared part, as an optimization/
+					 */
+					friend	bool	operator== (const String& lhs, const String& rhs);
+					friend	bool	operator!= (const String& lhs, const String& rhs);
+					friend	bool	operator< (const String& lhs, const String& rhs);
+					friend	bool	operator<= (const String& lhs, const String& rhs);
+					friend	bool	operator> (const String& lhs, const String& rhs);
+					friend	bool	operator>= (const String& lhs, const String& rhs);
 
-                // constructs a StringRep_Catenate
-                friend	String	operator+ (const String& lhs, const String& rhs);
+					// constructs a StringRep_Catenate
+					friend	String	operator+ (const String& lhs, const String& rhs);
             };
 
 
@@ -263,16 +259,22 @@ namespace	Stroika {
             bool	operator>= (const wchar_t* lhs, const String& rhs);
             bool	operator>= (const String& lhs, const wchar_t* rhs);
 
+
+#if 0
+			// DISCUSS WITH STERL IF we should supprot this sort of thing, and if so - where. Its really cruddy stream support (structured or not!)
             /*
              * Stream inserters and extractors.
              */
 // PROBABLY EITHER GET RID OF THESE - OR use namespace std {typedef ostream} and then ??? somehow avoid forcing #include of <iostream> class in string code
             ostream&	operator<< (ostream& out, const String& s);
             wistream&	operator>> (wistream& in, String& s);
+#endif
 
 
             /*
              * Case conversion.
+
+// REDO AS MEMBER FUNCTIONS!!!
              */
             String	toupper (const String& s);
             String	tolower (const String& s);
@@ -285,13 +287,16 @@ namespace	Stroika {
             class	String_CharArray : public String {
                 public:
                     String_CharArray ();
-                    String_CharArray (const wchar_t* str);
-                    String_CharArray (const Character* arrayOfCharacters, size_t nCharacters);
-                    String_CharArray (const wstring& str);
-                    String_CharArray (const String& from);
+                    explicit String_CharArray (const wchar_t* str);
+                    explicit String_CharArray (const Character* arrayOfCharacters, size_t nCharacters);
+                    explicit String_CharArray (const wstring& str);
+                    explicit String_CharArray (const String& from);
                     String_CharArray (const String_CharArray& s);
 
                    String_CharArray& operator= (const String_CharArray& s);
+
+				private:
+					class	MyRep_;
             };
 
 
@@ -302,12 +307,15 @@ namespace	Stroika {
             class	String_BufferedCharArray  : public String {
                 public:
                     String_BufferedCharArray ();
-                    String_BufferedCharArray (const wchar_t* cString);
-                    String_BufferedCharArray (const wstring& str);
-                    String_BufferedCharArray (const String& from);
+                    explicit String_BufferedCharArray (const wchar_t* cString);
+                    explicit String_BufferedCharArray (const wstring& str);
+                    explicit String_BufferedCharArray (const String& from);
                     String_BufferedCharArray (const String_BufferedCharArray& s);
 
                     String_BufferedCharArray& operator= (const String_BufferedCharArray& s);
+
+				private:
+					class	MyRep_;
             };
 
 
@@ -318,7 +326,7 @@ namespace	Stroika {
              */
             class	String_ReadOnlyChar : public String {
                 public:
-                    String_ReadOnlyChar (const wchar_t* cString);
+                    explicit String_ReadOnlyChar (const wchar_t* cString);
                     String_ReadOnlyChar (const String_ReadOnlyChar& s);
 
                     String_ReadOnlyChar& operator= (const String_ReadOnlyChar& s);
