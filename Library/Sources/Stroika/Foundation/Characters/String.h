@@ -188,6 +188,21 @@ namespace	Stroika {
 #endif
 
 
+
+				public:
+					/*
+					 * Convert String losslessly into a standard C++ type (right now just wstring supported)
+					 */
+					template	<typename	T>
+						nonvirtual	T	As () const;
+					template	<typename	T>
+						nonvirtual	void	As (T* into) const;
+					template	<>
+						nonvirtual	wstring	As () const;
+					template	<>
+						nonvirtual	void	As (wstring* into) const;
+
+
 				protected:
                     class	StringRep {
                         protected:

@@ -58,6 +58,23 @@ namespace	Stroika {
 					Require (i < GetLength ());
 					return (fRep->GetAt (i));
 				}
+			template	<>
+				inline	void	String::As (wstring* into) const
+					{
+						RequireNotNull (into);
+						size_t	n	=	GetLength ();
+						const Character* cp	=	Peek ();
+						Assert (sizeof (Character) == sizeof (wchar_t));		// going to want to clean this up!!!	--LGP 2011-09-01
+						const wchar_t* wcp	=	(const wchar_t*)cp;
+						into->assign (wcp, wcp + n);
+					}
+			template	<>
+				inline	wstring	String::As () const
+					{
+						wstring	r;
+						As (&r);
+						return r;
+					}
 
 
 

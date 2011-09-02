@@ -542,7 +542,7 @@ void	String_CharArray::MyRep_::SetAt (Character item, size_t index)
 	Require (index < GetLength ());
 	AssertNotNull (fStorage);
 
-	fStorage[index] = item;
+	fStorage[index] = item.As<wchar_t> ();
 }
 
 void	String_CharArray::MyRep_::InsertAt (Character item, size_t index)
@@ -561,7 +561,7 @@ void	String_CharArray::MyRep_::InsertAt (Character item, size_t index)
 		}
 		Assert (lhs == &fStorage [index]);
 	}
-	fStorage[index] = item;
+	fStorage[index] = item.As<wchar_t> ();
 }
 
 void	String_CharArray::MyRep_::RemoveAt (size_t index, size_t amountToRemove)

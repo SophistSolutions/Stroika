@@ -38,10 +38,11 @@ namespace	Stroika {
 				{
 					return (fCharacterCode);
 				}
-			inline	Character::operator wchar_t () const
-				{
-					return (fCharacterCode);
-				}
+			template<>
+				inline	wchar_t	Character::As () const
+					{
+						return GetCharacterCode ();
+					}
 
 			
 			

@@ -34,7 +34,13 @@ namespace	Stroika {
 
 					nonvirtual	wchar_t	GetCharacterCode () const;
 
-					operator wchar_t () const;
+
+					template	<typename T>
+						T	As () const;
+
+// SHOULD do specialization for typedef unsigned short char16_t and char32_t as well!
+					template<>
+						wchar_t	As () const;
 
 				private:
 					wchar_t		fCharacterCode;
