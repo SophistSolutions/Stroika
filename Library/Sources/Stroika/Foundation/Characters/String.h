@@ -96,8 +96,20 @@
 #if		0
 SHORT TERM THINGS TODO:
 
+	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
+		it is all correct for each (especially SetStorage () sutff looks quesitonable)
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
 	(2)	Implement the UTF8 functions
+	(3)	Fix / Re-impemlement the CopyOnWrite() code to not store a POINTER to clone function. Best option is to use FUNCTOR
+		whcih is stored in CopyOnWrite object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use 
+		some kind of overload so there is a no-cost way todo the most common case of a static (per type) Clone function.
+	(4)	Migrate most of the StringUtils stuff here like:
+			> Contains- with CI optin
+			> StartsWtih- with CI optin
+			> EndsWith- with CI optin
+			> LTrim/RTrim/Trim
+			> Compare () - returns < less > more =0 for equal- with CI optin
+			> Equals() - with CI optin
 
 
 
@@ -113,9 +125,8 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-            const size_t    kBadStringIndex   = -1;
-
-
+            //const size_t    kBadStringIndex   = -1;
+            const size_t    kBadStringIndex   = string::npos;
 
             class	String {
                 public:
@@ -244,7 +255,8 @@ namespace	Stroika {
 
 				// StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
 				public:
-					inline	const wchar_t* c_str () const { return As<const wchar_t*> (); }
+					inline	size_t			length () const { return GetLength (); }
+					inline	const wchar_t*	c_str () const { return As<const wchar_t*> (); }
 					// need more overloads
 					inline	size_t find (wchar_t c) const { return IndexOf (c); }
 					// need more overloads
@@ -252,30 +264,9 @@ namespace	Stroika {
 
 
 				protected:
-                    class	StringRep {
-                        protected:
-                            StringRep ();
+                    class	StringRep;
 
-                        public:
-                            virtual	~StringRep ();
-
-                            virtual	StringRep*	Clone () const		= 0;
-
-                            virtual	size_t	GetLength () const 					= 0;
-                            virtual	bool	Contains (Character item) const		= 0;
-                            virtual	void	RemoveAll () 						= 0;
-
-                            virtual	Character	GetAt (size_t index) const				= 0;
-                            virtual	void		SetAt (Character item, size_t index)	= 0;
-                            virtual	void		InsertAt (Character item, size_t index)	= 0;
-                            virtual	void		RemoveAt (size_t index, size_t amountToRemove)	= 0;
-
-                            virtual	void	SetLength (size_t newLength) 	= 0;
-
-                            virtual	const Character*	Peek () const 				= 0;
-                    };
-
-                protected:
+				protected:
 					// StringRep MUST be not-null
                     String (StringRep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
@@ -300,6 +291,29 @@ namespace	Stroika {
 
 					// constructs a StringRep_Catenate
 					friend	String	operator+ (const String& lhs, const String& rhs);
+            };
+
+            class	String::StringRep {
+                protected:
+                    StringRep ();
+
+                public:
+                    virtual	~StringRep ();
+
+                    virtual	StringRep*	Clone () const		= 0;
+
+                    virtual	size_t	GetLength () const 					= 0;
+                    virtual	bool	Contains (Character item) const		= 0;
+                    virtual	void	RemoveAll () 						= 0;
+
+                    virtual	Character	GetAt (size_t index) const				= 0;
+                    virtual	void		SetAt (Character item, size_t index)	= 0;
+                    virtual	void		InsertAt (Character item, size_t index)	= 0;
+                    virtual	void		RemoveAt (size_t index, size_t amountToRemove)	= 0;
+
+                    virtual	void	SetLength (size_t newLength) 	= 0;
+
+                    virtual	const Character*	Peek () const 				= 0;
             };
 
 
