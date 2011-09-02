@@ -113,6 +113,13 @@ namespace	Stroika {
 					}
 
 
+			inline	size_t			String::length () const { return GetLength (); }
+			inline	const wchar_t*	String::c_str () const { return As<const wchar_t*> (); }
+			// need more overloads
+			inline	size_t String::find (wchar_t c) const { return IndexOf (c); }
+			// need more overloads
+			inline	size_t String::rfind (wchar_t c) const { return RIndexOf (c); }
+
 
 
 

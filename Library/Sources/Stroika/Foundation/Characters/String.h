@@ -96,6 +96,7 @@
 #if		0
 SHORT TERM THINGS TODO:
 
+	(0)	qENABLE_SPECIALIZTION_STRHACK
 	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
 		it is all correct for each (especially SetStorage () sutff looks quesitonable)
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
@@ -119,6 +120,12 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 #endif
 
 
+//tmphack to workaround gcc compilation issue - not sure if my bug or theirs yet...
+#if qPlatform_Windows
+#define qENABLE_SPECIALIZTION_STRHACK 1
+#else
+#define qENABLE_SPECIALIZTION_STRHACK 0
+#endif
 
 
 namespace	Stroika {
@@ -219,6 +226,7 @@ namespace	Stroika {
 						nonvirtual	T	As () const;
 					template	<typename	T>
 						nonvirtual	void	As (T* into) const;
+#if qENABLE_SPECIALIZTION_STRHACK
 					template	<>
 						nonvirtual	wstring	As () const;
 					template	<>
@@ -226,6 +234,7 @@ namespace	Stroika {
 					// Always returns a NUL-terminated 'C'-string
 					template	<>
 						nonvirtual	const wchar_t*	As () const;
+#endif
 
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <string> supported)
@@ -234,10 +243,12 @@ namespace	Stroika {
 						nonvirtual	T	AsUTF8 () const;
 					template	<typename	T>
 						nonvirtual	void	AsUTF8 (T* into) const;
+#if qENABLE_SPECIALIZTION_STRHACK
 					template	<>
 						nonvirtual	string	AsUTF8 () const;
 					template	<>
 						nonvirtual	void	AsUTF8 (string* into) const;
+#endif
 
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string MUST be valid ascii characters (asserted)
@@ -246,21 +257,23 @@ namespace	Stroika {
 						nonvirtual	T	AsASCII () const;
 					template	<typename	T>
 						nonvirtual	void	AsASCII (T* into) const;
+#if qENABLE_SPECIALIZTION_STRHACK
 					template	<>
 						nonvirtual	string	AsASCII () const;
 					template	<>
 						nonvirtual	void	AsASCII (string* into) const;
+#endif
 
 
 
 				// StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
 				public:
-					inline	size_t			length () const { return GetLength (); }
-					inline	const wchar_t*	c_str () const { return As<const wchar_t*> (); }
+					inline	size_t			length () const;
+					inline	const wchar_t*	c_str () const;
 					// need more overloads
-					inline	size_t find (wchar_t c) const { return IndexOf (c); }
+					inline	size_t find (wchar_t c) const;
 					// need more overloads
-					inline	size_t rfind (wchar_t c) const { return RIndexOf (c); }
+					inline	size_t rfind (wchar_t c) const;
 
 
 				protected:
