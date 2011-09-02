@@ -439,6 +439,13 @@ namespace	{
 			Test9Support::DoTest1<String> (L"Hello");
 			Test9Support::DoTest1<std::wstring> (L"Hello");
 		}
+	void	Test10_ConvertToFromSTDStrings_ ()
+		{
+			const	wstring	kT1	=	L"abcdefh124123985213129314234";
+			String	t1	=	kT1;
+			Assert (t1.As<wstring> () == kT1);
+			Assert (t1 == kT1);
+		}
 }
 
 
@@ -482,6 +489,7 @@ namespace	{
 				Test7_ ();
 				Test8_ReadOnlyStrings_ ();
 				Test9_StringVersusStdCString_ ();
+				Test10_ConvertToFromSTDStrings_ ();
 			}
 			catch (...) {
 				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
