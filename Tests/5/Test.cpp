@@ -28,6 +28,134 @@ namespace	{
 
 
 
+
+
+
+
+
+
+namespace	{
+	unsigned ipow (unsigned n, unsigned toPow)
+		{
+			// quick hack since pow didnt seem to do what I want - just blindly
+			// multiply and dont worry about overflow...
+			unsigned result = 1;
+			while (toPow-- != 0) {
+				result *= n;
+			}
+			return (result);
+		}
+}
+
+namespace	{
+	namespace	Test2Helpers_ {
+		#if qDebug
+			//const	int	kLoopEnd = 1000;
+			const	int	kLoopEnd = 500;		// 1000 generates stackoverflow (because of String_Catentate stuff) on Windoze - clearly a Stroika bug!!! To use so much stack
+		#else
+			const	int	kLoopEnd = 2000;
+		#endif
+
+		void	StressTest1_ (String big)
+			{
+				for (int j = 1; j <= kLoopEnd/50; j++) {
+					String_ReadOnlyChar	a (L"a");
+					for (int i = 0; i <= kLoopEnd; i++) {
+						big += a;
+						Assert ((big.GetLength () -1) == i);
+						Assert (big[i] == 'a');
+					}
+					big.SetLength (0);
+				}
+
+				String	s1	=	L"test strings";
+				for (int i = 1; i <= kLoopEnd; i++) {
+					big += s1;
+					Assert (big.GetLength () == s1.GetLength () * i);
+				}
+			}
+		void	StressTest2_ (String big)
+			{
+				String	s1	=	L"test strings";
+				for (int i = 1; i <= kLoopEnd; i++) {
+					big = big + s1;
+					Assert (big.GetLength () == s1.GetLength () * i);
+			#if 0
+					for (int j = 0; j < big.GetLength (); ++j) {
+						Character c = big[j];
+						int breahere=1;
+					}
+			#endif
+				}
+			}
+		void	StressTestStrings ()
+			{
+			#if		qPrintTimings
+				cout << tab << "Stress testing strings..." << endl;
+				Time t = GetCurrentTime ();
+			#endif
+
+				{
+					String s (L"");
+					StressTest1_ (s);
+				}
+
+			#if		qPrintTimings
+				t = GetCurrentTime () - t;
+				cout << tab << "finished Stress testing strings += ... time elapsed = " << t << endl;
+				t = GetCurrentTime ();
+			#endif
+
+				{
+					String s (L"");
+					StressTest2_ (s);
+				}
+
+			#if		qPrintTimings
+				t = GetCurrentTime () - t;
+				cout << tab << "finished Stress testing strings + ... time elapsed = " << t << endl;
+			#endif
+		}
+	void	StressTestBufferedStrings ()
+		{
+		#if		qPrintTimings
+			cout << tab << "Stress testing buffered strings..." << endl;
+			Time t = GetCurrentTime ();
+		#endif
+
+			{
+				String_BufferedCharArray s (L"");
+				StressTest1_ (s);
+			}
+
+		#if		qPrintTimings
+			t = GetCurrentTime () - t;
+			cout << tab << "finished stress testing buffered strings  += ... time elapsed = " << t << endl;
+			t = GetCurrentTime ();
+		#endif
+
+			{
+				String_BufferedCharArray s (L"");
+				StressTest2_ (s);
+			}
+
+		#if		qPrintTimings
+			t = GetCurrentTime () - t;
+			cout << tab << "finished stress testing buffered strings + ... at " << t << endl;
+		#endif
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
 namespace	{
 	void	Test2_Helper_ (String& s1, String& s2)
 		{
@@ -81,7 +209,11 @@ namespace	{
 			}
 		}
 
-	void	Test2_ ();
+	void	Test2_ ()
+		{
+			Test2Helpers_::StressTestStrings ();
+			Test2Helpers_::StressTestBufferedStrings ();
+		}
 
 	void	Test3_ ()
 		{
@@ -282,130 +414,33 @@ namespace	{
 			Assert (s.GetLength () == 4);
 			Assert (s[3] == 'x');
 		}
-}
 
-
-namespace	{
-	unsigned ipow (unsigned n, unsigned toPow)
-		{
-			// quick hack since pow didnt seem to do what I want - just blindly
-			// multiply and dont worry about overflow...
-			unsigned result = 1;
-			while (toPow-- != 0) {
-				result *= n;
-			}
-			return (result);
-		}
-}
-
-namespace	{
-	namespace	Test2Helpers_ {
-		#if qDebug
-			//const	int	kLoopEnd = 1000;
-			const	int	kLoopEnd = 500;		// 1000 generates stackoverflow (because of String_Catentate stuff) on Windoze - clearly a Stroika bug!!! To use so much stack
-		#else
-			const	int	kLoopEnd = 2000;
-		#endif
-
-		void	StressTest1_ (String big)
-			{
-				for (int j = 1; j <= kLoopEnd/50; j++) {
-					String_ReadOnlyChar	a (L"a");
-					for (int i = 0; i <= kLoopEnd; i++) {
-						big += a;
-						Assert ((big.GetLength () -1) == i);
-						Assert (big[i] == 'a');
+	namespace	{
+		namespace	Test9Support {
+			template	<typename	STRING>
+				void	DoTest1 (STRING s)
+					{
+						STRING	t1	=	s;
+						for (size_t i = 0; i < 100; ++i) {
+							t1 += L"X";
+						}
+						STRING	t2	=	t1;
+						if (t1 != t2) {
+							Assert (false);
+						}
 					}
-					big.SetLength (0);
-				}
-
-				String	s1	=	L"test strings";
-				for (int i = 1; i <= kLoopEnd; i++) {
-					big += s1;
-					Assert (big.GetLength () == s1.GetLength () * i);
-				}
-			}
-		void	StressTest2_ (String big)
-			{
-				String	s1	=	L"test strings";
-				for (int i = 1; i <= kLoopEnd; i++) {
-					big = big + s1;
-					Assert (big.GetLength () == s1.GetLength () * i);
-			#if 0
-					for (int j = 0; j < big.GetLength (); ++j) {
-						Character c = big[j];
-						int breahere=1;
-					}
-			#endif
-				}
-			}
-		void	StressTestStrings ()
-			{
-			#if		qPrintTimings
-				cout << tab << "Stress testing strings..." << endl;
-				Time t = GetCurrentTime ();
-			#endif
-
-				{
-					String s (L"");
-					StressTest1_ (s);
-				}
-
-			#if		qPrintTimings
-				t = GetCurrentTime () - t;
-				cout << tab << "finished Stress testing strings += ... time elapsed = " << t << endl;
-				t = GetCurrentTime ();
-			#endif
-
-				{
-					String s (L"");
-					StressTest2_ (s);
-				}
-
-			#if		qPrintTimings
-				t = GetCurrentTime () - t;
-				cout << tab << "finished Stress testing strings + ... time elapsed = " << t << endl;
-			#endif
-		}
-	void	StressTestBufferedStrings ()
-		{
-		#if		qPrintTimings
-			cout << tab << "Stress testing buffered strings..." << endl;
-			Time t = GetCurrentTime ();
-		#endif
-
-			{
-				String_BufferedCharArray s (L"");
-				StressTest1_ (s);
-			}
-
-		#if		qPrintTimings
-			t = GetCurrentTime () - t;
-			cout << tab << "finished stress testing buffered strings  += ... time elapsed = " << t << endl;
-			t = GetCurrentTime ();
-		#endif
-
-			{
-				String_BufferedCharArray s (L"");
-				StressTest2_ (s);
-			}
-
-		#if		qPrintTimings
-			t = GetCurrentTime () - t;
-			cout << tab << "finished stress testing buffered strings + ... at " << t << endl;
-		#endif
 		}
 	}
-}
-
-
-namespace	{
-	void	Test2_ ()
+	void	Test9_StringVersusStdCString_ ()
 		{
-			Test2Helpers_::StressTestStrings ();
-			Test2Helpers_::StressTestBufferedStrings ();
+			// EMBELLISH THIS MORE ONCE WE HAVE TIMING SUPPORT WORKING - SO WE CNA COMPARE PERFORMANCE - AND COME UP WITH MORE REASONABLE TESTS
+			//
+			//		-- LGP 2011-09-01
+			Test9Support::DoTest1<String> (L"Hello");
+			Test9Support::DoTest1<std::wstring> (L"Hello");
 		}
 }
+
 
 
 
@@ -446,6 +481,7 @@ namespace	{
 
 				Test7_ ();
 				Test8_ReadOnlyStrings_ ();
+				Test9_StringVersusStdCString_ ();
 			}
 			catch (...) {
 				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
