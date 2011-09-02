@@ -216,13 +216,6 @@ namespace	Stroika {
 					// StringRep MUST be not-null
                     String (StringRep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
-#if 0
-                    nonvirtual	void	SetRep_ (StringRep* rep);
-
-                    nonvirtual	const StringRep*	GetRep_ () const;
-                    nonvirtual	StringRep*			GetRep_ ();
-#endif
-
                 private:
                     Memory::CopyOnWrite<StringRep>	fRep;
 

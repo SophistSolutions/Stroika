@@ -58,20 +58,6 @@ namespace	Stroika {
 					Require (i < GetLength ());
 					return (fRep->GetAt (i));
 				}
-#if 0
-            inline	void	String::SetRep_ (StringRep* rep)
-				{
-					fRep = Memory::CopyOnWrite<StringRep> (rep, &Clone_);
-				}
-            inline	const String::StringRep*	String::GetRep_ () const
-				{
-					return (fRep.GetPointer ());
-				}
-            inline	String::StringRep*			String::GetRep_ ()
-				{
-					return (fRep.GetPointer ());
-				}
-#endif
 
 
 
