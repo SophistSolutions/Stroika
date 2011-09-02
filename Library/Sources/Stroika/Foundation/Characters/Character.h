@@ -9,6 +9,21 @@
 #include	"../Configuration/Common.h"
 
 
+
+
+
+
+//tmphack to workaround gcc compilation issue - not sure if my bug or theirs yet...
+#if qPlatform_Windows
+#define qENABLE_SPECIALIZTION_STRHACK 1
+#else
+#define qENABLE_SPECIALIZTION_STRHACK 0
+#endif
+
+
+
+
+
 //// KEY ISSUES TO DECIDE:
 //
 //		o	Can we use a class with no loss of performacne (or must we use typdef wchar_t Character)
@@ -39,8 +54,11 @@ namespace	Stroika {
 						T	As () const;
 
 // SHOULD do specialization for typedef unsigned short char16_t and char32_t as well!
+
+#if qENABLE_SPECIALIZTION_STRHACK
 					template<>
 						wchar_t	As () const;
+#endif
 
 				private:
 					wchar_t		fCharacterCode;

@@ -306,6 +306,14 @@ namespace	Stroika {
 					friend	String	operator+ (const String& lhs, const String& rhs);
             };
 
+// MAYBE FIX FOR qENABLE_SPECIALIZTION_STRHACK is TODO THIS...
+			template	<>
+				void	String::AsUTF8 (string* into) const;
+			template	<>
+				void	String::AsASCII (string* into) const;
+
+
+
             class	String::StringRep {
                 protected:
                     StringRep ();

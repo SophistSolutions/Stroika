@@ -112,7 +112,6 @@ namespace	Stroika {
 						return r;
 					}
 
-
 			inline	size_t			String::length () const { return GetLength (); }
 			inline	const wchar_t*	String::c_str () const { return As<const wchar_t*> (); }
 			// need more overloads
