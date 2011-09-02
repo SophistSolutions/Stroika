@@ -98,10 +98,11 @@ namespace	Stroika {
 
             const size_t    kBadStringIndex   = -1;
 
+
+
             class	String {
                 public:
                     String ();
-
                     String (const wchar_t* cString);
 					String (const std::wstring& r);
 					String (const String& from);
@@ -109,20 +110,24 @@ namespace	Stroika {
 
                     nonvirtual	String&	operator= (const String& newString);
 
+                public:
                     nonvirtual	String&	operator+= (Character appendage);
                     nonvirtual	String&	operator+= (const String& appendage);
 
+                public:
                     nonvirtual	size_t	GetLength () const;
                     nonvirtual	void	SetLength (size_t newLength);
 
                     nonvirtual	Character	operator[] (size_t i) const;
                     nonvirtual	void		SetCharAt (Character c, size_t i);
 
+                public:
                     nonvirtual	void		InsertAt (Character c, size_t i);
                     nonvirtual	void		RemoveAt (size_t i);
                     nonvirtual	void		RemoveAt (size_t i, size_t amountToRemove);
                     nonvirtual	void		Remove (Character c);
 
+                public:
                     /*
                      * inherited from Sequence. Lookup the character (or string) in this string, and return
                      * its index - either starting from the front, or end of the string. Returns kBadStringIndex
@@ -134,6 +139,8 @@ namespace	Stroika {
 					 * always returns a valid string index, which is followed by the given substring, or kBadStringIndex otherwise.
 					 */
                     nonvirtual	size_t	IndexOf (const String& subString) const;
+
+
                     nonvirtual	size_t	RIndexOf (Character c) const;
 
 					/*
@@ -145,12 +152,14 @@ namespace	Stroika {
                     nonvirtual	bool	Contains (Character c) const;
                     nonvirtual	bool	Contains (const String& subString) const;
 
+                public:
                     /*
                      * Produce a substring of this string, starting at from, and extending length characters. If length
                      * is kBadStringIndex (default) then return all the way to the end of the string.
                      */
                     nonvirtual	String		SubString (size_t from, size_t length = kBadStringIndex) const;
 
+                public:
                     /*
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
                      * pointer might become invalid. Generally, if you don't call any routines of String (even
@@ -179,9 +188,7 @@ namespace	Stroika {
 #endif
 
 
-				protected:	// PROBABLY SHOULD MAKE THIS PROTECTED - but must be careful about making REPs be nested classes inside subclasses of String
-							//	-- LGP 2011-08-29
-				public:
+				protected:
                     class	StringRep {
                         protected:
                             StringRep ();
@@ -209,10 +216,12 @@ namespace	Stroika {
 					// StringRep MUST be not-null
                     String (StringRep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
-                    nonvirtual	void	SetRep (StringRep* rep);
+#if 0
+                    nonvirtual	void	SetRep_ (StringRep* rep);
 
-                    nonvirtual	const StringRep*	GetRep () const;
-                    nonvirtual	StringRep*			GetRep ();
+                    nonvirtual	const StringRep*	GetRep_ () const;
+                    nonvirtual	StringRep*			GetRep_ ();
+#endif
 
                 private:
                     Memory::CopyOnWrite<StringRep>	fRep;
@@ -295,7 +304,7 @@ namespace	Stroika {
 
                    String_CharArray& operator= (const String_CharArray& s);
 
-				private:
+				public:
 					class	MyRep_;
             };
 

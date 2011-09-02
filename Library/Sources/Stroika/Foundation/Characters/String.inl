@@ -15,50 +15,17 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-			class	StringRep_CharArray : public String::StringRep {
-				public:
-					StringRep_CharArray (const Character* arrayOfCharacters, size_t nBytes);
-					~StringRep_CharArray ();
-
-					virtual		StringRep*	Clone () const override;
-
-					virtual		size_t	GetLength () const override;
-					virtual		bool	Contains (Character item) const override;
-					virtual		void	RemoveAll () override;
-
-					virtual		Character	GetAt (size_t index) const override;
-					virtual		void		SetAt (Character item, size_t index) override;
-					virtual		void		InsertAt (Character item, size_t index) override;
-					virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
-
-					virtual		void	SetLength (size_t newLength) override;
-
-					virtual		const Character*	Peek () const override;
-
-				protected:
-					StringRep_CharArray ();
-					nonvirtual	void	SetStorage (Character* storage, size_t length);
-
-					virtual	size_t	CalcAllocChars (size_t requested);
-
-				private:
-					wchar_t*	fStorage;
-					size_t	    fLength;
-			};
 
 
-
+			//	class	String::StringRep
             inline	String::StringRep::StringRep ()
 				{
 				}
 
 
+			//	class	String
 			inline	String::String (const String& from)
 				: fRep (from.fRep)
-				{
-				}
-            inline	String::String (const std::wstring& r)
-                : fRep (new StringRep_CharArray ((const Character*)r.c_str (), r.length ()), &Clone_)
 				{
 				}
             inline	String&	String::operator= (const String& newString)
@@ -91,18 +58,20 @@ namespace	Stroika {
 					Require (i < GetLength ());
 					return (fRep->GetAt (i));
 				}
-            inline	void	String::SetRep (StringRep* rep)
+#if 0
+            inline	void	String::SetRep_ (StringRep* rep)
 				{
 					fRep = Memory::CopyOnWrite<StringRep> (rep, &Clone_);
 				}
-            inline	const String::StringRep*	String::GetRep () const
+            inline	const String::StringRep*	String::GetRep_ () const
 				{
 					return (fRep.GetPointer ());
 				}
-            inline	String::StringRep*			String::GetRep ()
+            inline	String::StringRep*			String::GetRep_ ()
 				{
 					return (fRep.GetPointer ());
 				}
+#endif
 
 
 
@@ -144,16 +113,40 @@ namespace	Stroika {
 				}
 
 
-			inline	String_CharArray::String_CharArray (const String_CharArray& s)	: String (s)	{}
-            inline	String_CharArray& String_CharArray::operator= (const String_CharArray& s)	{	String::operator= (s);	return (*this); }
+			//	class	String_CharArray
+			inline	String_CharArray::String_CharArray (const String_CharArray& s)
+				: String (s)
+				{
+				}
+            inline	String_CharArray& String_CharArray::operator= (const String_CharArray& s)
+				{
+					String::operator= (s);
+					return (*this);
+				}
 
 
-			inline	String_BufferedCharArray::String_BufferedCharArray (const String_BufferedCharArray& s)	: String (s)	{}
-            inline	String_BufferedCharArray& String_BufferedCharArray::operator= (const String_BufferedCharArray& s)	{	String::operator= (s);	return (*this); }
+			//	class	String_BufferedCharArray
+			inline	String_BufferedCharArray::String_BufferedCharArray (const String_BufferedCharArray& s)
+				: String (s)
+				{
+				}
+            inline	String_BufferedCharArray& String_BufferedCharArray::operator= (const String_BufferedCharArray& s)
+				{	
+					String::operator= (s);	
+					return (*this);
+				}
 
 
-			inline	String_ReadOnlyChar::String_ReadOnlyChar (const String_ReadOnlyChar& s)	: String (s)	{}
-            inline	String_ReadOnlyChar& String_ReadOnlyChar::operator= (const String_ReadOnlyChar& s)	{	String::operator= (s);	return (*this); }
+			//	class	String_ReadOnlyChar
+			inline	String_ReadOnlyChar::String_ReadOnlyChar (const String_ReadOnlyChar& s)
+				: String (s)
+				{
+				}
+            inline	String_ReadOnlyChar& String_ReadOnlyChar::operator= (const String_ReadOnlyChar& s)
+				{
+					String::operator= (s);
+					return (*this);
+				}
 		}
 	}
 }
