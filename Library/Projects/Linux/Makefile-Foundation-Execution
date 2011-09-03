@@ -12,7 +12,7 @@ Includes                        =       -I.
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)AtomicOperation.o\
+	$(ObjDir)AtomicOperations.o\
 	$(ObjDir)CopyableCriticalSection.o\
 	$(ObjDir)CriticalSection.o\
 	$(ObjDir)DLLSupport.o\

@@ -216,9 +216,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperation.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Shared.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -262,6 +259,9 @@
       <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
   </ItemGroup>

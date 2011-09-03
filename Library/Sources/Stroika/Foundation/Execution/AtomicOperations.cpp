@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#if		qPlatform_Windows
+#if		!qCompilerAndStdLib_Supports_stdatomic && qPlatform_Win32
 	#include	"CriticalSection.h"
 #endif
 
@@ -16,14 +16,14 @@ using	namespace	Stroika::Foundation::Execution;
 
 
 
-#if		qPlatform_Windows
+#if		!qCompilerAndStdLib_Supports_stdatomic && qPlatform_Win32
 namespace	{
 	CriticalSection	sCritSec_;
 }
 #endif
 
 
-#if		qPlatform_Win32
+#if		!qCompilerAndStdLib_Supports_stdatomic && qPlatform_Win32
 int64_t	Execution::AtomicIncrement (volatile int64_t* p)
 {
 	RequireNotNull (p);

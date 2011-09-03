@@ -178,6 +178,21 @@
 
 
 
+	/*
+	@CONFIGVAR:		qCompilerAndStdLib_Supports_stdatomic
+	@DESCRIPTION:	<p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
+	*/
+	#if		!defined (qCompilerAndStdLib_Supports_stdatomic)
+		#if		defined (__GNUC__)
+			#define	qCompilerAndStdLib_Supports_stdatomic	1
+		#elif	defined (_MSC_VER) && _MSC_VER <= 1600
+			#define	qCompilerAndStdLib_Supports_stdatomic	0
+		#else
+			// GUESS
+			#define	qCompilerAndStdLib_Supports_stdatomic	1
+		#endif
+	#endif
+
 
 
 	/*

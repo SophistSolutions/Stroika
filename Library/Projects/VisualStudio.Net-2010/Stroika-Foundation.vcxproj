@@ -95,7 +95,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperation.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
