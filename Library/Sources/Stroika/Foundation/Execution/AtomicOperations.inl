@@ -38,7 +38,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, 1);
+						return __sync_fetch_and_add (p, 1) + 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -54,7 +54,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, 1);
+						return __sync_fetch_and_add (p, 1) + 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -71,7 +71,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, 1);
+						return __sync_fetch_and_add (p, 1) + 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -85,7 +85,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, 1);
+						return __sync_fetch_and_add (p, 1) + 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -101,7 +101,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, 1);
+						return __sync_fetch_and_sub (p, 1) - 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -118,7 +118,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, 1);
+						return __sync_fetch_and_sub (p, 1) - 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -132,7 +132,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, 1);
+						return __sync_fetch_and_sub (p, 1) - 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -147,7 +147,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, 1);
+						return __sync_fetch_and_sub (p, 1) - 1;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -164,7 +164,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, 1);
+						return __sync_fetch_and_add (p, 1) + arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -181,7 +181,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, arg);
+						return __sync_fetch_and_add (p, arg) + arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -196,7 +196,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, arg);
+						return __sync_fetch_and_add (p, arg) + arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -213,7 +213,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_add (p, arg);
+						return __sync_fetch_and_add (p, arg) + arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -229,7 +229,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, arg);
+						return __sync_fetch_and_sub (p, arg) - arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -246,7 +246,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, arg);
+						return __sync_fetch_and_sub (p, arg) - arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -261,7 +261,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, arg);
+						return __sync_fetch_and_sub (p, arg) - arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
@@ -278,7 +278,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (p);
 					#if		qDoGCCHackAroundMyBuggyStdcIml
-						return __sync_fetch_and_sub (p, arg);
+						return __sync_fetch_and_sub (p, arg) - arg;
 					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
