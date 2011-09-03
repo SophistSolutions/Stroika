@@ -6,8 +6,21 @@ if ($BLD_TRG eq '') {
 }
 
 print ("Building Tests...\n");
-system ("cd Projects/VisualStudio.Net-2010/1; perl buildall.pl $BLD_TRG");
-system ("cd Projects/VisualStudio.Net-2010/2; perl buildall.pl $BLD_TRG");
-system ("cd Projects/VisualStudio.Net-2010/3; perl buildall.pl $BLD_TRG");
-system ("cd Projects/VisualStudio.Net-2010/4; perl buildall.pl $BLD_TRG");
-system ("cd Projects/VisualStudio.Net-2010/5; perl buildall.pl $BLD_TRG");
+if ("$^O" eq "linux") {
+	my $useBld = lc ($BLD_TRG);
+	if ($useBld eq "build") {
+		$useBld = "all";
+	}
+    system ("cd ../IntermediateFiles/Platform_Linux/Test1; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Test2; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Test3; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Test4; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Test5; make $useBld");
+}
+else {
+	system ("cd Projects/VisualStudio.Net-2010/1; perl buildall.pl $BLD_TRG");
+	system ("cd Projects/VisualStudio.Net-2010/2; perl buildall.pl $BLD_TRG");
+	system ("cd Projects/VisualStudio.Net-2010/3; perl buildall.pl $BLD_TRG");
+	system ("cd Projects/VisualStudio.Net-2010/4; perl buildall.pl $BLD_TRG");
+	system ("cd Projects/VisualStudio.Net-2010/5; perl buildall.pl $BLD_TRG");
+}
