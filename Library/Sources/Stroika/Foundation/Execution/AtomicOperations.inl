@@ -11,7 +11,7 @@
  ********************************************************************************
  */
 #if		qCompilerAndStdLib_Supports_stdatomic
-	#include	<cstdatomic>
+	#include	<atomic>
 #elif	qPlatform_Windows
 	#include	<windows.h>
 #endif
@@ -131,7 +131,7 @@ namespace	Stroika {
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
-						atomic<int32_t*> ((uint32_t*)p) += arg;
+						atomic<int32_t*> ((int32_t*)p) += arg;
 					#elif	qPlatform_Windows
 						return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), arg);
 					#else
