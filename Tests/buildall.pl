@@ -6,8 +6,8 @@ if ($BLD_TRG eq '') {
 }
 
 print ("Building Tests...\n");
-system ("cd 1; perl buildall.pl $BLD_TRG");
-system ("cd 2; perl buildall.pl $BLD_TRG");
-system ("cd 3; perl buildall.pl $BLD_TRG");
-system ("cd 4; perl buildall.pl $BLD_TRG");
-system ("cd 5; perl buildall.pl $BLD_TRG");
+system ("cd Projects/VisualStudio.Net-2010/1; perl buildall.pl $BLD_TRG");
+system ("cd Projects/VisualStudio.Net-2010/2; perl buildall.pl $BLD_TRG");
+system ("cd Projects/VisualStudio.Net-2010/3; perl buildall.pl $BLD_TRG");
+system ("cd Projects/VisualStudio.Net-2010/4; perl buildall.pl $BLD_TRG");
+system ("cd Projects/VisualStudio.Net-2010/5; perl buildall.pl $BLD_TRG");
