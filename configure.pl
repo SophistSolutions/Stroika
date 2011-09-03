@@ -30,16 +30,16 @@ sub mkDirWithLinks
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/$relPath";
-	system ("ln -s ../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
+	mkdir "$intermediateFiles/$platform/Lib/$relPath";
+	system ("ln -s ../../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/Lib/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/$relPath";
-	system ("ln -s ../../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/$relPath/Makefile");
+	mkdir "$intermediateFiles/$platform/Lib/$relPath";
+	system ("ln -s ../../../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/Lib/$relPath/Makefile");
 }
 
 
@@ -52,10 +52,10 @@ if ($forceRecreate) {
 unless (-e $intermediateFiles) {
 	mkdir "$intermediateFiles";
 	mkdir "$intermediateFiles/$platform";
-	mkdir "$intermediateFiles/$platform/";
-	system ("ln -s ../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Makefile");
-	system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Configuration.mk");
-	system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/SharedBuildRules.mk");
+	mkdir "$intermediateFiles/$platform/Lib";
+	system ("ln -s ../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Lib/Makefile");
+	system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Lib/Configuration.mk");
+	system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/Lib/SharedBuildRules.mk");
 	
 	mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
 	mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
