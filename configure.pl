@@ -44,36 +44,45 @@ sub mkDirWithLinks2
 
 
 sub MakeUnixDirs {
+	if ($forceRecreate) {
+		system ("rm -rf $intermediateFiles");
+	}
+	unless (-e $intermediateFiles) {
+		mkdir "$intermediateFiles";
+		mkdir "$intermediateFiles/$platform";
+		mkdir "$intermediateFiles/$platform/Lib";
+		system ("ln -s ../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Lib/Makefile");
+		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Lib/Configuration.mk");
+		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/Lib/SharedBuildRules.mk");
+		
+		mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
+		mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
+		mkDirWithLinks("Containers", "Makefile-Foundation-Containers");
+		mkDirWithLinks("Cryptography", "Makefile-Foundation-Cryptography");
+		mkDirWithLinks("Database", "Makefile-Foundation-Database");
+		mkDirWithLinks("DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
+		mkDirWithLinks2("DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
+		mkDirWithLinks2("DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
+		mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
+		mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
+		mkDirWithLinks("IO", "Makefile-Foundation-IO");
+		mkDirWithLinks2("IO/Network", "Makefile-Foundation-IO-Network");
+		mkDirWithLinks("Math", "Makefile-Foundation-Math");
+		mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
+		mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
+		mkDirWithLinks("Time", "Makefile-Foundation-Time");
 
-if ($forceRecreate) {
-	system ("rm -rf $intermediateFiles");
-}
-
-unless (-e $intermediateFiles) {
-	mkdir "$intermediateFiles";
-	mkdir "$intermediateFiles/$platform";
-	mkdir "$intermediateFiles/$platform/Lib";
-	system ("ln -s ../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Lib/Makefile");
-	system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Lib/Configuration.mk");
-	system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/Lib/SharedBuildRules.mk");
-	
-	mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
-	mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
-	mkDirWithLinks("Containers", "Makefile-Foundation-Containers");
-	mkDirWithLinks("Cryptography", "Makefile-Foundation-Cryptography");
-	mkDirWithLinks("Database", "Makefile-Foundation-Database");
-	mkDirWithLinks("DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
-	mkDirWithLinks2("DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
-	mkDirWithLinks2("DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
-	mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
-	mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
-	mkDirWithLinks("IO", "Makefile-Foundation-IO");
-	mkDirWithLinks2("IO/Network", "Makefile-Foundation-IO-Network");
-	mkDirWithLinks("Math", "Makefile-Foundation-Math");
-	mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
-	mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
-	mkDirWithLinks("Time", "Makefile-Foundation-Time");
-}
+		mkdir "$intermediateFiles/$platform/Test1";
+		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test1 $intermediateFiles/$platform/Test1/Makefile");
+		mkdir "$intermediateFiles/$platform/Test2";
+		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test2 $intermediateFiles/$platform/Test2/Makefile");
+		mkdir "$intermediateFiles/$platform/Test3";
+		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test3 $intermediateFiles/$platform/Test3/Makefile");
+		mkdir "$intermediateFiles/$platform/Test4";
+		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test4 $intermediateFiles/$platform/Test4/Makefile");
+		mkdir "$intermediateFiles/$platform/Test5";
+		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test5 $intermediateFiles/$platform/Test5/Makefile");
+	}
 }
 
 
@@ -123,10 +132,10 @@ sub WriteDefault
 
 foreach $var (@ARGV)
 {
-    if (lc ($var) eq "-force" or lc ($var) eq "--force") {
-	$forceRecreate = true;
-	print "Forcing recreate...\n";
-    }
+	if (lc ($var) eq "-force" or lc ($var) eq "--force") {
+		$forceRecreate = true;
+		print "Forcing recreate...\n";
+	}
 }
 
 

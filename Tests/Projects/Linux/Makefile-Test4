@@ -1,0 +1,22 @@
+include	../Lib/Configuration.mk
+include	../Lib/SharedBuildRules.mk
+
+CFLAGS= -c -std=c++0x $(DEBUGFLAG) $(Includes)
+
+
+ObjDir                          =       ./
+SrcDir                          =       ../../../Tests/4
+Includes                        =       -I. -I../../../Library/Sources
+
+TARGETEXE	=	../../../Builds/Platform_Linux/Test4
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Test.o\
+
+all:	$(TARGETEXE)
+
+$(TARGETEXE):	$(Objs)
+	g++ -o $(TARGETEXE) $(Objs) ../../../Builds/Platform_Linux/Stroika-Foundation.a
+
