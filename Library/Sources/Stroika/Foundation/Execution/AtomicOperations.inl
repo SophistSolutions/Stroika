@@ -23,9 +23,23 @@ namespace	Stroika {
 		namespace	Execution {
 
 
+//tmphack - this API I think I understand, but not the stdc++ one
+#if defined(__GCC__)
+	#define qDoGCCHackAroundMyBuggyStdcIml 1
+#else
+	#define qDoGCCHackAroundMyBuggyStdcIml 0
+#endif
+			
+
+
+
+
 			inline	int32_t	AtomicIncrement (volatile int32_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -39,6 +53,9 @@ namespace	Stroika {
 			inline	uint32_t	AtomicIncrement (volatile uint32_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -53,6 +70,9 @@ namespace	Stroika {
 			inline	int64_t	AtomicIncrement (volatile int64_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -64,6 +84,9 @@ namespace	Stroika {
 			inline	uint64_t	AtomicIncrement (volatile uint64_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -77,6 +100,9 @@ namespace	Stroika {
 			inline	int32_t	AtomicDecrement (volatile int32_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -91,6 +117,9 @@ namespace	Stroika {
 			inline	int64_t	AtomicDecrement (volatile int64_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -102,6 +131,9 @@ namespace	Stroika {
 			inline	uint64_t	AtomicDecrement (volatile uint64_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -114,6 +146,9 @@ namespace	Stroika {
 			inline	uint32_t	AtomicDecrement (volatile uint32_t* p)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -128,6 +163,9 @@ namespace	Stroika {
 			inline	int32_t	AtomicAdd (volatile int32_t* p, int32_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, 1);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -142,6 +180,9 @@ namespace	Stroika {
 			inline	int64_t	AtomicAdd (volatile int64_t* p, int64_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -154,6 +195,9 @@ namespace	Stroika {
 			inline	uint32_t	AtomicAdd (volatile uint32_t* p, uint32_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -168,6 +212,9 @@ namespace	Stroika {
 			inline	uint64_t	AtomicAdd (volatile uint64_t* p, uint64_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_add (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -181,6 +228,9 @@ namespace	Stroika {
 			inline	int32_t	AtomicSubtract (volatile int32_t* p, int32_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -195,6 +245,9 @@ namespace	Stroika {
 			inline	int64_t	AtomicSubtract (volatile int64_t* p, int64_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -207,6 +260,9 @@ namespace	Stroika {
 			inline	uint32_t	AtomicSubtract (volatile uint32_t* p, uint32_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
@@ -221,6 +277,9 @@ namespace	Stroika {
 			inline	uint64_t	AtomicSubtract (volatile uint64_t* p, uint64_t arg)
 				{
 					RequireNotNull (p);
+					#if		qDoGCCHackAroundMyBuggyStdcIml
+						return __sync_fetch_and_sub (p, arg);
+					#endif
 					#if		qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
