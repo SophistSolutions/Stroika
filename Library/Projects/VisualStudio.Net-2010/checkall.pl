@@ -1,15 +1,15 @@
-CheckFileExists ("../../../Builds/Windows/Lib/Debug-A-32/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Windows/Lib/Release-A-32/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Debug-A-32/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Release-A-32/Library/Stroika-Foundation.lib");
 
-CheckFileExists ("../../../Builds/Windows/Lib/Debug-U-32/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Windows/Lib/Debug-U-64/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Windows/Lib/Release-U-32/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Windows/Lib/Release-U-64/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Debug-U-32/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Debug-U-64/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Release-U-32/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Release-U-64/Library/Stroika-Foundation.lib");
 
-CheckFileExists ("../../../Builds/Windows/Lib/Release-Logging-U-32/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Windows/Lib/Release-Logging-U-64/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Release-Logging-U-32/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Release-Logging-U-64/Library/Stroika-Foundation.lib");
 
-CheckFileExists ("../../../Builds/Windows/Lib/Release-DbgMemLeaks-U-32/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/Windows/Release-DbgMemLeaks-U-32/Library/Stroika-Foundation.lib");
 
 
 print "[SUCCEEDED]\r\n";

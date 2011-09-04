@@ -5,7 +5,7 @@ CFLAGS= -c -std=c++0x $(DEBUGFLAG)
 
 
 ObjDir                          =       ./
-SrcDir                          =       ../../../../Library/Sources/Stroika/Foundation/Cryptography/
+SrcDir                          =       ../../../../../Library/Sources/Stroika/Foundation/Cryptography/
 Includes                        =       -I.
 
 

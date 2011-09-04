@@ -21,6 +21,7 @@ my $configFileName	=	"Library/Sources/Stroika/Foundation/Configuration/StroikaCo
 
 my $intermediateFiles	=	"IntermediateFiles/";
 my $platform		=	"Platform_Linux";
+my $target		=	"Debug";
 
 my $forceRecreate = false;
 
@@ -30,16 +31,16 @@ sub mkDirWithLinks
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/Lib/$relPath";
-	system ("ln -s ../../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/Lib/$relPath/Makefile");
+	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
+	system ("ln -s ../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/Lib/$relPath";
-	system ("ln -s ../../../../../Library/Projects/Linux/$makefileName $intermediateFiles/$platform/Lib/$relPath/Makefile");
+	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
+	system ("ln -s ../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
 }
 
 
@@ -50,10 +51,11 @@ sub MakeUnixDirs {
 	unless (-e $intermediateFiles) {
 		mkdir "$intermediateFiles";
 		mkdir "$intermediateFiles/$platform";
-		mkdir "$intermediateFiles/$platform/Lib";
-		system ("ln -s ../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/Lib/Makefile");
-		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/Lib/Configuration.mk");
-		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/Lib/SharedBuildRules.mk");
+		mkdir "$intermediateFiles/$platform/$target";
+		mkdir "$intermediateFiles/$platform/$target/Library";
+		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/$target/Library/Makefile");
+		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/$target/Library/Configuration.mk");
+		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/$target/Library/SharedBuildRules.mk");
 		
 		mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
 		mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
@@ -72,16 +74,16 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
 		mkDirWithLinks("Time", "Makefile-Foundation-Time");
 
-		mkdir "$intermediateFiles/$platform/Test1";
-		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test1 $intermediateFiles/$platform/Test1/Makefile");
-		mkdir "$intermediateFiles/$platform/Test2";
-		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test2 $intermediateFiles/$platform/Test2/Makefile");
-		mkdir "$intermediateFiles/$platform/Test3";
-		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test3 $intermediateFiles/$platform/Test3/Makefile");
-		mkdir "$intermediateFiles/$platform/Test4";
-		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test4 $intermediateFiles/$platform/Test4/Makefile");
-		mkdir "$intermediateFiles/$platform/Test5";
-		system ("ln -s ../../../Tests/Projects/Linux/Makefile-Test5 $intermediateFiles/$platform/Test5/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test1";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test1 $intermediateFiles/$platform/$target/Test1/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test2";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test2 $intermediateFiles/$platform/$target/Test2/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test3";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test3 $intermediateFiles/$platform/$target/Test3/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test4";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test4 $intermediateFiles/$platform/$target/Test4/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test5";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test5 $intermediateFiles/$platform/$target/Test5/Makefile");
 	}
 }
 

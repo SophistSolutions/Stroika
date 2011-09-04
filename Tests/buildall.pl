@@ -11,11 +11,11 @@ if ("$^O" eq "linux") {
 	if ($useBld eq "build") {
 		$useBld = "all";
 	}
-    system ("cd ../IntermediateFiles/Platform_Linux/Test1; make $useBld");
-    system ("cd ../IntermediateFiles/Platform_Linux/Test2; make $useBld");
-    system ("cd ../IntermediateFiles/Platform_Linux/Test3; make $useBld");
-    system ("cd ../IntermediateFiles/Platform_Linux/Test4; make $useBld");
-    system ("cd ../IntermediateFiles/Platform_Linux/Test5; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test1; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test2; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test3; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test4; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test5; make $useBld");
 }
 else {
 	system ("cd Projects/VisualStudio.Net-2010/1; perl buildall.pl $BLD_TRG");

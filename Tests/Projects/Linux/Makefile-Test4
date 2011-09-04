@@ -1,14 +1,15 @@
-include	../Lib/Configuration.mk
-include	../Lib/SharedBuildRules.mk
+include	../Library/Configuration.mk
+include	../Library/SharedBuildRules.mk
 
 CFLAGS= -c -std=c++0x $(DEBUGFLAG) $(Includes)
 
+_Back2Top_	=	../../../../
 
 ObjDir                          =       ./
-SrcDir                          =       ../../../Tests/4
-Includes                        =       -I. -I../../../Library/Sources
+SrcDir                          =       $(_Back2Top_)Tests/4
+Includes                        =       -I. -I$(_Back2Top_)Library/Sources
 
-TARGETEXE	=	../../../Builds/Platform_Linux/Test4
+TARGETEXE	=	$(_Back2Top_)Builds/Platform_Linux/Test4
 
 VPATH = $(SrcDir)
 
@@ -18,5 +19,5 @@ Objs	=	\
 all:	$(TARGETEXE)
 
 $(TARGETEXE):	$(Objs)
-	g++ -o $(TARGETEXE) $(Objs) ../../../Builds/Platform_Linux/Stroika-Foundation.a
+	g++ -o $(TARGETEXE) $(Objs) $(_Back2Top_)Builds/Platform_Linux/Stroika-Foundation.a
 

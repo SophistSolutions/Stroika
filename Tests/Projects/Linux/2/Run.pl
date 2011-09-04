@@ -5,7 +5,7 @@ local $date = `sh -c date`;
 chomp ($date);
 print "Starting regression test #[2] Streams/JSON Test: $date ------------------------------\r\n";
 
-DoRunSimpleTestArgv ($ARGV[0], "[2] Streams/JSON Test", "../../../../Builds/Platform_Linux/Test2/");
+DoRunSimpleTestArgv ($ARGV[0], "[2] Streams/JSON Test", "../../../../Builds/Platform_Linux/", "Test2");
 
 local $date = `sh -c date`;
 chomp ($date);

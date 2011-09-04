@@ -12,7 +12,7 @@ if ("$^O" eq "linux") {
     if ($useBld eq "build") {
 	$useBld = "all";
     }
-    system ("cd ../IntermediateFiles/Platform_Linux/Lib; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library; make $useBld");
 }
 else {
     system ("cd Projects/VisualStudio.Net-2010; perl buildall.pl $BLD_TRG");

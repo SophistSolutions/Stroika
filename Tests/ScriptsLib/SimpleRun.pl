@@ -29,25 +29,29 @@ sub DoRunSimpleTestArgv
 	local $dbgOrRel = $_[0];
 	local $tstName = $_[1];
 	local $dirPrefix = $_[2];
+	local $suffixFromTrgDir = $_[3];
 
 	if ($dbgOrRel eq "") {
 		$dbgOrRel = 'All';
 	}
 
 	local $outDir = PrepareOutputDir();
-
+if ("$^O" eq "linux") {
+#TMPHACK...til we move stuff and get right targets list
+$dbgOrRel = '';
+}
 	if ($dbgOrRel eq 'All') {
-		DoRunSimpleTest ('Debug-A-32', $outDir, $tstName, $dirPrefix);
-		DoRunSimpleTest ('Release-A-32', $outDir, $tstName, $dirPrefix);
-		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName, $dirPrefix);
-		DoRunSimpleTest ('Release-U-32', $outDir, $tstName, $dirPrefix);
+		DoRunSimpleTest ('Debug-A-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
+		DoRunSimpleTest ('Release-A-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
+		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
+		DoRunSimpleTest ('Release-U-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 		if (bitter() eq 64) {
-			DoRunSimpleTest ('Debug-U-64', $outDir, $tstName, $dirPrefix);
-			DoRunSimpleTest ('Release-U-64', $outDir, $tstName, $dirPrefix);
+			DoRunSimpleTest ('Debug-U-64', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
+			DoRunSimpleTest ('Release-U-64', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 		}
 	}
 	else {
-		DoRunSimpleTest ($dbgOrRel, $outDir, $tstName, $dirPrefix);
+		DoRunSimpleTest ($dbgOrRel, $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 	}
 }
 
@@ -57,9 +61,10 @@ sub DoRunSimpleTest
 	local $outDir = $_[1];
 	local $tstName = $_[2];
 	local $dirPrefix = $_[3];
-	local $extraRunArgs = $_[4];
+	local $suffixFromTrgDir = $_[4];
+	local $extraRunArgs = $_[5];
 	
-	local $r = DoRunSimpleTest_R ($dbgOrRel, $outDir, $tstName, $dirPrefix, $extraRunArgs);
+	local $r = DoRunSimpleTest_R ($dbgOrRel, $outDir, $tstName, $dirPrefix, $suffixFromTrgDir, $extraRunArgs);
 	print $r;
 }
 
@@ -106,9 +111,10 @@ sub DoRunSimpleTest_R
 	local $outDir = $_[1];
 	local $tstName = $_[2];
 	local $dirPrefix = $_[3];
-	local $extraRunArgs = $_[4];
-	
-	return DoRunSimpleTest_EXE_R ($dbgOrRel, $outDir, $tstName, $extraRunArgs, "$dirPrefix$dbgOrRel/Test.exe");
+	local $suffixFromTrgDir = $_[4];
+	local $extraRunArgs = $_[5];
+
+	return DoRunSimpleTest_EXE_R ($dbgOrRel, $outDir, $tstName, $extraRunArgs, "$dirPrefix$dbgOrRel/$suffixFromTrgDir");
 }
 
 

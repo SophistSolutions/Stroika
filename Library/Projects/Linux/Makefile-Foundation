@@ -1,6 +1,6 @@
 ObjDir                          =       ./
-SrcDir                          =       ../../../Library/Sources/Stroika/Foundation/
-LibDir				=	../../../Builds/Platform_Linux/
+SrcDir                          =       ../../../../Library/Sources/Stroika/Foundation/
+LibDir				=	../../../../Builds/Platform_Linux/
 Includes                        =       -I.
 
 
