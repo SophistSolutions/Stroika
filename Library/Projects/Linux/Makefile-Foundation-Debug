@@ -1,13 +1,9 @@
 include ../Configuration.mk
 include	../SharedBuildRules.mk
+include	../SharedMakeVariables.mk
 
-CFLAGS= -c -std=c++0x $(DEBUGFLAG)
-
-
-ObjDir                          =       ./
-SrcDir                          =       ../../../../../Library/Sources/Stroika/Foundation/Debug/
-Includes                        =       -I.
-
+RelPathToDevRoot		=	../../../../../
+SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/Debug/
 
 VPATH = $(SrcDir)
 

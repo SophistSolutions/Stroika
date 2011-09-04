@@ -56,6 +56,7 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/$target/Library/Makefile");
 		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/$target/Library/Configuration.mk");
 		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/$target/Library/SharedBuildRules.mk");
+		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles/$platform/$target/Library/SharedMakeVariables.mk");
 		
 		mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
 		mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");

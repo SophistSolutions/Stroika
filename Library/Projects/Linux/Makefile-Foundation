@@ -1,33 +1,30 @@
-ObjDir                          =       ./
-SrcDir                          =       ../../../../Library/Sources/Stroika/Foundation/
-LibDir				=	../../../../Builds/Platform_Linux/
-Includes                        =       -I.
+include Configuration.mk
+include	SharedMakeVariables.mk
+include	SharedBuildRules.mk
 
-
-StroikaFoundationLib		=	$(LibDir)Stroika-Foundation.a
+RelPathToDevRoot		=	../../../../
+SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/
 
 
 VPATH = $(SrcDir) $(LibDir)
-
 
 SubDirs=	\
 	Characters		\
 	Configuration		\
 	Containers		\
 	Cryptography		\
-	Database			\
+	Database		\
 	DataExchangeFormat	\
 	Debug			\
-	Execution			\
-	IO				\
-	Math				\
+	Execution		\
+	IO			\
+	Math			\
 	Memory			\
 	Streams			\
-	Time				\
+	Time			\
 
 
-.DEFAULT_GOAL := all
-
+#.DEFAULT_GOAL := all
 
 
 all-objs:
@@ -51,7 +48,7 @@ $(StroikaFoundationLib):	all-objs
 all:	$(StroikaFoundationLib)
 
 
-clean:
+clean::
 	@for i in $(SubDirs);\
 	do\
 	    (cd $$i; make -s clean;)\
