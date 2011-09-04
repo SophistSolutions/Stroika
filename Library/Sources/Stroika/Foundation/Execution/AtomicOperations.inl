@@ -24,7 +24,7 @@ namespace	Stroika {
 
 
 //tmphack - this API I think I understand, but not the stdc++ one
-#if defined(__GCC__)
+#if defined(__GNUC__)
 	#define qDoGCCHackAroundMyBuggyStdcIml 1
 #else
 	#define qDoGCCHackAroundMyBuggyStdcIml 0
