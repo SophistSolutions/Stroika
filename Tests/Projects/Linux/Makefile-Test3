@@ -1,15 +1,14 @@
 include	../Library/Configuration.mk
 include	../Library/SharedBuildRules.mk
+include	../Library/SharedMakeVariables.mk
 
-CFLAGS= -c -std=c++0x $(DEBUGFLAG) $(Includes)
+TEST_NUM=3
 
-_Back2Top_	=	../../../../
+RelPathToDevRoot		=	../../../../
+SrcDir                          =       $(RelPathToDevRoot)Tests/$(TEST_NUM)/
+Includes                        +=      -I.
 
-ObjDir                          =       ./
-SrcDir                          =       $(_Back2Top_)Tests/3
-Includes                        =       -I. -I$(_Back2Top_)Library/Sources
-
-TARGETEXE	=	$(_Back2Top_)Builds/Platform_Linux/Test3
+TARGETEXE			=	$(RelPathToDevRoot)Builds/Platform_Linux/Test$(TEST_NUM)
 
 VPATH = $(SrcDir)
 
@@ -19,5 +18,5 @@ Objs	=	\
 all:	$(TARGETEXE)
 
 $(TARGETEXE):	$(Objs)
-	g++ -o $(TARGETEXE) $(Objs) $(_Back2Top_)Builds/Platform_Linux/Stroika-Foundation.a
+	g++ -o $(TARGETEXE) $(Objs) $(StroikaFoundationLib)
 

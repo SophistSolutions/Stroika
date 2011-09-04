@@ -6,11 +6,17 @@
 #
 # NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list, or (all of them should) override RelPathToDevRoot)
 
+
+
+
 RelPathToDevRoot		=	_NO_DEFAULT_
 ObjDir                          =       ./
 LibDir				=	$(RelPathToDevRoot)Builds/Platform_Linux/
 Includes                        =       -I$(RelPathToDevRoot)/Library/Sources/
 
 StroikaFoundationLib		=	$(LibDir)Stroika-Foundation.a
+CFLAGS= -c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Includes)
 
-CFLAGS= -c -std=c++0x $(DEBUGFLAG)
+ifeq ($(INCLUDE_SYMBOLS), 1)
+	CFLAGS += -g
+endif

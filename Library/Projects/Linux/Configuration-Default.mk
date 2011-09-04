@@ -1,2 +1,7 @@
-DEBUGFLAG=	-DqDebug=1
+ENABLE_ASSERTIONS=	1
+INCLUDE_SYMBOLS	=	1
+
+# Can be blank, or -O2, etc..
+COPTIMIZE_FLAGS	=	
+
 
