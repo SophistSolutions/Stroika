@@ -15,7 +15,7 @@ clobber::	clean
 
 
 list-objs:
-	echo $(Objs)
+	echo -n $(Objs)
 
 
 # default build rule - map (windowsish) top-level build arg to unixish name 'all'

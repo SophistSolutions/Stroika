@@ -2,13 +2,12 @@ include ../Configuration.mk
 include	../SharedBuildRules.mk
 include	../SharedMakeVariables.mk
 
-#CFLAGS= -c -std=c++0x $(DEBUGFLAG)
-
 
 RelPathToDevRoot		=	../../../../../
 SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/
 
 .PHONY:				Network
+
 
 SubDirs	=	\
 	Network
@@ -24,6 +23,12 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
+
+NETWORK_OBJS := $(shell cd Network; make -s list-objs)
+NETWORK_OBJS := $(addprefix "./Network/", $(NETWORK_OBJS))
+
+list-objs:
+	echo $(Objs) $(NETWORK_OBJS)
 
 
 Network:
