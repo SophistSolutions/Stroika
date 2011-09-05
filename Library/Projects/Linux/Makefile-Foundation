@@ -33,14 +33,14 @@ all-objs:
 
 
 $(StroikaFoundationLib):	all-objs
-	@echo "PROBABLY WRONG HANDLING OF OVERLAPPING NAMESPACES (eg common in two dirs) - but a decent start"
 	@mkdir -p $(LibDir)
-	@rm -f Stroika-Foundation.a
+	@echo Creating $(StroikaFoundationLib)...
+	@rm -f $(StroikaFoundationLib)
 	@for i in $(SubDirs);\
 	do\
 	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
 	done
-	ranlib $(StroikaFoundationLib)
+	@ranlib $(StroikaFoundationLib)
 
 
 all:	$(StroikaFoundationLib)
