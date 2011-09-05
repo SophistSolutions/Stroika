@@ -24,8 +24,6 @@ SubDirs=	\
 	Time			\
 
 
-#.DEFAULT_GOAL := all
-
 
 all-objs:
 	@for i in $(SubDirs);\
