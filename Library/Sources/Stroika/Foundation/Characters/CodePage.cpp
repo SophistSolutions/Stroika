@@ -11,6 +11,7 @@
 #endif
 
 #include	"../Configuration/Common.h"
+#include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 
 #include	"CodePage.h"
@@ -490,7 +491,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 #if		qPlatform_Windows
 			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
 #else
-			throw CodePageNotSupportedException ();
+			Execution::DoThrow (CodePageNotSupportedException (fCodePage));
 #endif
 		}
 	}
