@@ -348,7 +348,9 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		}
 		break;
 		default: {
+#if		qPlatform_Windows
 			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+#endif
 		}
 		break;
 	}
@@ -368,7 +370,9 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		size_t	tstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<wchar_t>	tstBuf (*outCharCnt);
 
+#if		qPlatform_Windows
 		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
+#endif
 		Assert (tstCharCnt == *outCharCnt);
 		Assert (memcmp (tstBuf, outChars, sizeof (wchar_t)*tstCharCnt) == 0);
 	}
@@ -447,7 +451,9 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 					useOutCharCount = 0;
 				}
 			}
+#if		qPlatform_Windows
 			Characters::Platform::Windows::PlatformCodePageConverter (kCodePage_UTF7).MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
+#endif
 			if (GetHandleBOM ()) {
 				if (*outCharCnt >= 5) {
 					useOutCharCount += 5;
@@ -481,7 +487,9 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		}
 		break;
 		default: {
+#if		qPlatform_Windows
 			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+#endif
 		}
 	}
 
@@ -491,7 +499,9 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		size_t						win32TstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
 
+#if		qPlatform_Windows
 		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, win32TstBuf, &win32TstCharCnt);
+#endif
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 		// used for bad conversions. Reason is cuz for characters that don't map - our table and
 		// the system table can differ in how they map depending on current OS code page.

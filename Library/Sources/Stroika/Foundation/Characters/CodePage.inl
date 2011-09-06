@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	<cstring>
 #include	"../Debug/Assertions.h"
 
 #if		qPlatform_Windows

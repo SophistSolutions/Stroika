@@ -50,7 +50,7 @@ namespace	Stroika {
 			}
 #if		!qPlatform_Windows
 			inline	DLLException::DLLException (const char* message) :
-				StringException (Characters::ACPStringToWide (message))
+				StringException (Characters::NarrowSDKStringToWide (message))
 			{
 			}
 #endif
