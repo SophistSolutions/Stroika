@@ -13,6 +13,10 @@
 #include	"../Containers/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 
+#if		qPlatform_Windows
+	#include	"Platform/Windows/CodePage.h"
+#endif
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Characters {
@@ -198,29 +202,20 @@ namespace	Stroika {
 				{
 					RequireNotNull (intoResult);
 					Require (wsStart <= wsEnd);
-					size_t	wsLen	=	(wsEnd - wsStart);
-			#if		qPlatform_Windows
-					int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), nullptr, 0, nullptr, nullptr);
-					intoResult->resize (stringLength);
-					if (stringLength != 0) {
-						Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
-					}
-			#else
-					AssertNotImplemented ();
-			#endif
+					#if		qPlatform_Windows
+						Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
 				}
 			inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
 				{
 					RequireNotNull (intoResult);
-			#if		qPlatform_Windows
-					int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), nullptr, 0, nullptr, nullptr);
-					intoResult->resize (stringLength);
-					if (stringLength != 0) {
-						Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
-					}
-			#else
-					AssertNotImplemented ();
-			#endif
+					#if		qPlatform_Windows
+						Platform::Windows::WideStringToNarrow (ws, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
 				}
 			inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
 				{
@@ -232,29 +227,20 @@ namespace	Stroika {
 				{
 					RequireNotNull (intoResult);
 					Require (sStart <= sEnd);
-					size_t	sLen	=	(sEnd - sStart);
-			#if		qPlatform_Windows
-					int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), nullptr, 0);
-					intoResult->resize (newStrLen);
-					if (newStrLen != 0) {
-						Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
-					}
-			#else
-					AssertNotImplemented ();
-			#endif
+					#if		qPlatform_Windows
+						Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
 				}
 			inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
 				{
 					RequireNotNull (intoResult);
-			#if		qPlatform_Windows
-					int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), nullptr, 0);
-					intoResult->resize (newStrLen);
-					if (newStrLen != 0) {
-						Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), Containers::Start (*intoResult), newStrLen) == newStrLen);
-					}
-			#else
-					AssertNotImplemented ();
-			#endif
+					#if		qPlatform_Windows
+						Platform::Windows::NarrowStringToWide (s, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
 				}
 			inline	wstring	NarrowStringToWide (const string& s, int codePage)
 				{
@@ -286,31 +272,7 @@ namespace	Stroika {
 					#endif
 					return string (s.begin (), s.end ());
 				}
-			inline	string	WideStringToACP (const wstring& ws)
-				{
-		#if		qPlatform_Windows
-					return WideStringToNarrow (ws, ::GetACP ());
-		#else
-					AssertNotImplemented ();
-					return WideStringToNarrow (ws, kCodePage_ANSI);	
-		#endif
-				}
-		#if		qPlatform_Windows
-			inline	string	BSTRStringToUTF8 (const BSTR bstr)
-				{
-					if (bstr == nullptr) {
-						return string ();
-					}
-					else {
-						int	srcStrLen	=	::SysStringLen (bstr);
-						int stringLength = ::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, nullptr, 0, nullptr, nullptr);
-						string	result;
-						result.resize (stringLength);
-						Verify (::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, nullptr, nullptr) == stringLength);
-						return result;
-					}
-				}
-		#endif
+
 
 			inline	string	WideStringToUTF8 (const wstring& ws)
 				{
@@ -336,30 +298,6 @@ namespace	Stroika {
 				{
 					return NarrowStringToWide (s, kCodePage_UTF8);
 				}
-		#if		qPlatform_Windows
-			inline	wstring	BSTR2wstring (BSTR b)
-				{
-					if (b == nullptr) {
-						return wstring ();
-					}
-					else {
-						return wstring (b);
-					}
-				}
-		#endif
-	
-		#if		qPlatform_Windows
-			inline	wstring	BSTR2wstring (VARIANT b)
-				{
-					if (b.vt == VT_BSTR) {
-						return BSTR2wstring (b.bstrVal);
-					}
-					else {
-						return wstring ();
-					}
-				}
-		#endif
-
 
 
 

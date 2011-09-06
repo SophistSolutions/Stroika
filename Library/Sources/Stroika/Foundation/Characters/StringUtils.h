@@ -77,29 +77,15 @@ namespace	Stroika {
 			wstring	NarrowStringToWide (const string& s, CodePage codePage);
 
 
-			string	WideStringToACP (const wstring& ws);
-			wstring	ACPStringToWide (const string& ws);
-
-
-		#if		qPlatform_Windows
-			string	BSTRStringToUTF8 (const BSTR bstr);
-		#endif
 			string	WideStringToUTF8 (const wstring& ws);
 			void	UTF8StringToWide (const char* s, wstring* intoStr);
 			void	UTF8StringToWide (const string& s, wstring* intoStr);
 			wstring	UTF8StringToWide (const char* ws);
 			wstring	UTF8StringToWide (const string& ws);
 
-		#if		qPlatform_Windows
-			BSTR	UTF8StringToBSTR (const char* ws);
-		#endif
 			wstring	ASCIIStringToWide (const string& s);
 			string	WideStringToASCII (const wstring& s);
 
-		#if		qPlatform_Windows
-			wstring	BSTR2wstring (BSTR b);
-			wstring	BSTR2wstring (VARIANT b);
-		#endif
 			string	Format (const char* format, ...);
 			wstring	Format (const wchar_t* format, ...);
 

@@ -1540,7 +1540,7 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 		*confidence = eLow;
 	}
 #if		qPlatform_Windows
-	return ::GetACP ();
+	return Characters::GetDefaultSDKCodePage ();
 #else
 	return kCodePage_UTF8;	// not at all obvious yet what to do for Linux/Mac
 #endif

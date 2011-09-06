@@ -1196,7 +1196,7 @@ AppTempFileManager::AppTempFileManager ():
 			}
 			else {
 				DbgTrace ("bad news if we cannot create AppTempFileManager::fTmpDir: %d", error);
-				Execution::DoThrow (Platform::Windows::Exception (error));
+				Execution::DoThrow (Execution::Platform::Windows::Exception (error));
 			}
 		}
 		// we succeeded - good! Done...
@@ -1498,7 +1498,7 @@ void	ThroughTmpFileWriter::Commit ()
 	try {
 		ThrowIfFalseGetLastError (::MoveFileEx (fTmpFilePath.c_str (), fRealFilePath.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
 	}
-	catch (const Platform::Windows::Exception& we) {
+	catch (const Execution::Platform::Windows::Exception& we) {
 		// On Win9x - this fails cuz OS not impl...
 		if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
 			::DeleteFile (fRealFilePath.c_str ());

@@ -19,16 +19,20 @@ namespace	Stroika {
 
 			typedef	std::basic_string<TChar>	TString;
 
-#if 0
-//backwards compat name - use "TString" from now on
-//typedef	TString	tstring;
-#endif
+			string	WideStringToNarrowSDKString (const wstring& ws);
+			wstring	NarrowSDKStringToWide (const string& s);
+
+			string	TString2NarrowSDK (const TString& s);
+			TString	NarrowSDK2TString (const string& s);
+
+//BACKWARD COMPAT NAMES - TIL WE FIX HEALTHFRAME -- LGP 2011-09-05
+inline string	WideStringToACP (const wstring& ws) { return WideStringToNarrowSDKString (ws); }
+inline wstring	ACPStringToWide (const string& s) { return NarrowSDKStringToWide (s); }
+inline string	TString2ANSI (const TString& s) { return TString2NarrowSDK (s); }
+inline TString	ANSI2TString (const string& s) { return NarrowSDK2TString (s); }
 
 
-			string	TString2ANSI (const TString& s);
 			wstring	TString2Wide (const TString& s);
-
-			TString	ANSI2TString (const string& s);
 			TString	Wide2TString (const wstring& s);
 
 			TString	ToTString (const string& s);

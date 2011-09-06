@@ -225,7 +225,7 @@ void	Execution::ThrowIfShellExecError (HINSTANCE r)
 				TraceContextBumper	trcCtx (TSTR ("invalid_parameter_handler"));
 				DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
 				Assert (false);
-				throw Platform::Windows::Exception (ERROR_INVALID_PARAMETER);
+				throw Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER);
 			}
 	}
 void	Execution::RegisterDefaultHandler_invalid_parameter ()
@@ -249,7 +249,7 @@ void	Execution::RegisterDefaultHandler_invalid_parameter ()
 			{
 				TraceContextBumper	trcCtx (TSTR ("purecall_handler_"));
 				Assert (false);
-				throw Platform::Windows::Exception (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
+				throw Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
 			}
 	}
 void	Execution::RegisterDefaultHandler_pure_function_call ()

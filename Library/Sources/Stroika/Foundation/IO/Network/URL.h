@@ -125,7 +125,7 @@ namespace	Stroika {
 		}
 	inline	wstring		URLQueryDecoder::operator () (const string& idx) const
 		{
-			return operator () (Characters::ACPStringToWide (idx));
+			return operator () (Characters::UTF8StringToWide (idx));
 		}
 	inline	bool		URLQueryDecoder::HasField (const wstring& idx) const
 		{
@@ -134,7 +134,7 @@ namespace	Stroika {
 		}
 	inline	bool		URLQueryDecoder::HasField (const string& idx) const
 		{
-			return HasField (Characters::ACPStringToWide (idx));
+			return HasField (Characters::UTF8StringToWide (idx));
 		}
 	inline	void	URLQueryDecoder::AddField (const wstring& idx, const wstring& value)
 		{
@@ -142,7 +142,7 @@ namespace	Stroika {
 		}
 	inline	void	URLQueryDecoder::RemoveFieldIfAny (const string& idx)
 		{
-			RemoveFieldIfAny (Characters::ACPStringToWide (idx));
+			RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
 		}
 
 

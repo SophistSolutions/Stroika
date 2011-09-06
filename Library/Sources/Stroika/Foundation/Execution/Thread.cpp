@@ -357,7 +357,7 @@ void	Thread::SetThreadName (const wstring& threadName)
 					DWORD dwThreadID;	// thread ID (-1=caller thread)
 					DWORD dwFlags;		// reserved for future use, must be zero
 				};
-				string	useThreadName	=	WideStringToACP (threadName);
+				string	useThreadName	=	WideStringToNarrowSDKString (threadName);
 				THREADNAME_INFO info;
 				{
 					info.dwType = 0x1000;

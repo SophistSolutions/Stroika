@@ -261,7 +261,6 @@ namespace	Stroika {
 				public:
 					static	const vector<CodePage>&	GetAll ();
 					static	bool					IsCodePageAvailable (CodePage cp);
-					static	CodePage				GetDefaultCodePage ();
 
 				private:
 					static	void	Init ();

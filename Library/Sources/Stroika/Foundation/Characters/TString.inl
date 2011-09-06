@@ -16,28 +16,44 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-			inline	string	TString2ANSI (const TString& s)
+
+
+
+			inline	wstring	NarrowSDKStringToWide (const string& s)
+				{
+					return NarrowStringToWide (s, GetDefaultSDKCodePage ());
+				}
+			inline	string	WideStringToNarrowSDKString (const wstring& ws)
+				{
+					return WideStringToNarrow (ws, GetDefaultSDKCodePage ());
+				}
+
+
+			inline	string	TString2NarrowSDK (const TString& s)
 				{
 					#if		qTargetPlatformSDKUseswchar_t
-						return WideStringToACP (s);
+						return WideStringToNarrowSDKString (s);
 					#else
 						return s;
 					#endif
 				}
+			inline	TString	NarrowSDK2TString (const string& s)
+				{
+					#if		qTargetPlatformSDKUseswchar_t
+						return NarrowSDKStringToWide (s);
+					#else
+						return s;
+					#endif
+				}
+
+
+
 			inline	wstring	TString2Wide (const TString& s)
 				{
 					#if		qTargetPlatformSDKUseswchar_t
 						return s;
 					#else
-						return ACPStringToWide (s);
-					#endif
-				}
-			inline	TString	ANSI2TString (const string& s)
-				{
-					#if		qTargetPlatformSDKUseswchar_t
-						return ACPStringToWide (s);
-					#else
-						return s;
+						return NarrowSDKStringToWide (s);
 					#endif
 				}
 			inline	TString	Wide2TString (const wstring& s)
@@ -45,12 +61,12 @@ namespace	Stroika {
 					#if		qTargetPlatformSDKUseswchar_t
 						return s;
 					#else
-						return WideStringToACP (s);
+						return WideStringToNarrowSDKString (s);
 					#endif
 				}
 			inline	TString	ToTString (const string& s)
 				{
-					return ANSI2TString (s);
+					return NarrowSDK2TString (s);
 				}
 			inline	TString	ToTString (const wstring& s)
 				{

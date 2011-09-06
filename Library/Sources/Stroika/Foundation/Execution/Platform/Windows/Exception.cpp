@@ -108,7 +108,7 @@ namespace {
  *********************** Platform::Windows::Exception ***************************
  ********************************************************************************
  */
-void	Platform::Windows::Exception::DoThrow (DWORD error)
+void	Execution::Platform::Windows::Exception::DoThrow (DWORD error)
 {
 	switch (error) {
 		case	ERROR_SUCCESS: {
@@ -140,7 +140,7 @@ void	Platform::Windows::Exception::DoThrow (DWORD error)
 	}
 }
 
-TString	Platform::Windows::Exception::LookupMessage (DWORD dw)
+TString	Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)
 {
 	return Win32Error2String_ (dw);
 }

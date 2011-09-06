@@ -23,16 +23,13 @@ namespace	Stroika {
 			*/
 			inline	CodePage	GetDefaultSDKCodePage ()
 				{
-					#if		qPlatform_MacOS
-						return kCodePage_MAC;	// there maybe a better answer than this??? Some Mac SDK API?
-					#elif	qPlatform_Windows
+					#if		qPlatform_Windows
+						//http://blogs.msdn.com/b/michkap/archive/2005/01/06/347834.aspx
 						return CP_ACP;			// special windows define which maps to the current OS code page
-					#elif	qXWindows
-						// Need some sort of TMPHACK answer for UNIX - eventually do better ;-) Maybe using locale calls?
-						return kCodePage_ANSI;
+						//GetACP()				// means essentially the same thing but supposedly (even if we cahced GetACP() - CP_ACP is faster)
 					#else
-						Assert (false);		// probably shouldn't come up??
-						return kCodePage_ANSI;	// for now - an OK answer
+// MAYBE should use the LOCALE stuff - and get the current code-page from the locale? If such a thing?
+						return kCodePage_UTF8;	// So far - this is meaningless on other systems - but this would be the best guess I think
 					#endif
 				}
 
@@ -58,12 +55,6 @@ namespace	Stroika {
 					// For SPR#1184 I grabbed a few more numbers. The mapping to codepages can be roughly guestimated by looking 
 					// in the registry around HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Charset\
 					//	-- LGP 2002-11-29
-					#ifdef	CP_ACP
-						Assert (CP_ACP == 0);
-					#else
-						const	unsigned char	CP_ACP				=	0;
-					#endif
-
 					#ifdef	ANSI_CHARSET
 						Assert (ANSI_CHARSET == 0);
 					#else
@@ -156,13 +147,10 @@ namespace	Stroika {
 					#endif
 
 					switch (lfCharSet) {
-		//				case	ANSI_CHARSET:			return CP_ACP;						// used to do this - but I THINK it was wrong - LGP 2002-12-08
 						case	ANSI_CHARSET:			return kCodePage_ANSI;				// right? Maybe SB? kCodePage_ANSI (1252)???
-						//case	DEFAULT_CHARSET:		return CP_ACP;						// Not sure what todo here?
 						case	MAC_CHARSET:			return kCodePage_MAC;
 						case	SHIFTJIS_CHARSET:		return kCodePage_SJIS;				//	Japanese (SJIS)
 						case	HANGEUL_CHARSET:		return kCodePage_Korean;			//	Hangul
-		//				case	JOHAB_CHARSET:			return CP_ACP;						//	Johab		--DONT KNOW
 						case	GB2312_CHARSET:			return kCodePage_GB2312;			//	Chinese
 						case	CHINESEBIG5_CHARSET:	return kCodePage_BIG5;				//	Chinese
 						case	GREEK_CHARSET:			return kCodePage_GREEK;				//	Greek
@@ -179,8 +167,7 @@ namespace	Stroika {
 						case	EASTEUROPE_CHARSET:		return kCodePage_EasternEuropean;	//	aka 'central european'?
 						case	254:					return kCodePage_PC; break;
 						case	OEM_CHARSET:			return kCodePage_PCA; break;
-//						case	256:					return kCodePage_MAC; break;
-						default:						return CP_ACP;
+						default:						return GetDefaultSDKCodePage ();
 					}
 				}
 		#if		qPlatform_Windows
@@ -214,7 +201,7 @@ namespace	Stroika {
 						case	LANG_TURKISH:		return kCodePage_Turkish;
 						case	LANG_UKRAINIAN:		return kCodePage_CYRILIC;			// guess? - 2003-01-30
 						case	LANG_VIETNAMESE:	return kCodePage_Vietnamese;
-						default:					return ::GetACP ();
+						default:					return GetDefaultSDKCodePage ();
 					}
 				}
 		#endif
@@ -324,22 +311,6 @@ namespace	Stroika {
 						Init ();
 					}
 					return sCodePages;
-				}
-			/*
-			@METHOD:		CodePagesInstalled::GetDefaultCodePage
-			@DESCRIPTION:	<p>Returns the operating systems default code page. NOTE - this is NOT the same as
-						the default code page Led will use. Led will use this occasionally as its default, however.
-						On Windows - this is basically a call to ::GetACP ().</p>
-			*/
-			inline	CodePage	CodePagesInstalled::GetDefaultCodePage ()
-				{
-					#if		qPlatform_MacOS
-						return kCodePage_MAC;
-					#elif	qPlatform_Windows
-						return ::GetACP ();
-					#else
-						return kCodePage_ANSI;	// not sure what else to return by default
-					#endif
 				}
 
 		}

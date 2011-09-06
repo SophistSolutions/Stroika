@@ -77,6 +77,26 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp" />
@@ -144,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h" />
@@ -231,6 +252,7 @@
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl" />

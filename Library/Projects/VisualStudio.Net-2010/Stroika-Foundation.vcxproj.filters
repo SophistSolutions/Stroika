@@ -67,6 +67,12 @@
     <Filter Include="Sources\DataExchangeFormat\XML">
       <UniqueIdentifier>{f5abe5eb-bc4d-4e08-9e2a-92cfa9dbcc74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Characters\Platform">
+      <UniqueIdentifier>{1cbbdc22-254d-4d95-a3b1-7ece18ad227c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Characters\Platform\Windows">
+      <UniqueIdentifier>{ec714b71-f421-47f5-a8b3-801de432f3ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -263,6 +269,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.cpp">
       <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
+      <Filter>Sources\Characters\Platform\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -519,6 +528,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Threads_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h">
+      <Filter>Sources\Characters\Platform\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -709,6 +721,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl">
+      <Filter>Sources\Characters\Platform\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>

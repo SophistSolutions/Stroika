@@ -27,50 +27,6 @@ using	namespace	Stroika::Foundation::Memory;
 
 
 
-/*
- ********************************************************************************
- ***************************** ACPStringToWide **********************************
- ********************************************************************************
- */
-wstring	Characters::ACPStringToWide (const string& ws)
-{
-#if		qPlatform_Windows
-	int newStrLen = ::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), nullptr, 0);
-	wstring	result;
-	result.resize (newStrLen);
-	Verify (::MultiByteToWideChar (::GetACP (), 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (result), newStrLen) == newStrLen);
-	return result;
-#else
-		AssertNotImplemented ();
-#endif
-}
-
-
-
-
-
-
-/*
- ********************************************************************************
- **************************** UTF8StringToBSTR **********************************
- ********************************************************************************
- */
-#if		qPlatform_Windows
-BSTR	Characters::UTF8StringToBSTR (const char* ws)
-{
-	RequireNotNull (ws);
-	size_t	wsLen	=	::strlen (ws);
-	int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), nullptr, 0);
-	BSTR result	= ::SysAllocStringLen (nullptr, stringLength);
-	if (result == nullptr) {
-		DbgTrace ("UTF8StringToBSTR () out of memory - throwing bad_alloc");
-		throw bad_alloc ();
-	}
-	Verify (::MultiByteToWideChar (kCodePage_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
-	return result;
-}
-#endif
-
 
 
 /*
@@ -408,7 +364,7 @@ string	Characters::QuoteForXMLAttribute (const wstring& s)
 wstring	Characters::QuoteForXMLAttributeW (const wstring& s)
 {
 	string	tmp	=	QuoteForXMLAttribute (s);
-	return ACPStringToWide (tmp);
+	return NarrowSDKStringToWide (tmp);
 }
 
 
@@ -495,7 +451,7 @@ string	Characters::QuoteForXML (const wstring& s)
 wstring	Characters::QuoteForXMLW (const wstring& s)
 {
 	string	tmp	=	QuoteForXML (s);
-	return ACPStringToWide (tmp);
+	return NarrowSDKStringToWide (tmp);
 }
 
 
@@ -707,9 +663,9 @@ int	Characters::String2Int (const wstring& s)
 		return ::_wtol (s.c_str ());
 	#else
 		// unclear if this is good/safe - cuz of - for example - funky wide japanese numbers etc... probaby must do better
-		// Also note use WideStringToACP() instead of WideStringToASCII - cuz the later asserts all valid ascii chars whcih may not be true here...
+		// Also note use WideStringToNarrowSDKString() instead of WideStringToASCII - cuz the later asserts all valid ascii chars whcih may not be true here...
 		//		-- LGP 2011-08-18
-		return String2Int (WideStringToACP (s));
+		return String2Int (WideStringToNarrowSDKString (s));
 	#endif
 }
 
