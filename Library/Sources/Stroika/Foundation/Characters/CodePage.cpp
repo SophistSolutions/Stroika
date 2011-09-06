@@ -4,18 +4,28 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
+#include	<set>
+
 #if		qPlatform_Windows
-	#include	<cstdio>
 	#include	<tchar.h>
 #endif
 
 #include	"../Configuration/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 
+#if		qPlatform_Windows
+	#include	"Platform/Windows/CodePage.h"
+#endif
+
+#include	"CodePage.h"
+
 
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Memory;
+
+
+
 
 
 #ifndef	qBuildInTableDrivenCodePageBuilderProc
@@ -40,7 +50,6 @@ using	namespace	Stroika::Foundation::Memory;
 #endif
 
 
-#include	"CodePage.h"
 
 
 
@@ -343,7 +352,7 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		}
 		break;
 		default: {
-			Win32_CodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
 		}
 		break;
 	}
@@ -363,7 +372,7 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		size_t	tstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<wchar_t>	tstBuf (*outCharCnt);
 
-		Win32_CodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
+		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
 		Assert (tstCharCnt == *outCharCnt);
 		Assert (memcmp (tstBuf, outChars, sizeof (wchar_t)*tstCharCnt) == 0);
 	}
@@ -442,7 +451,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 					useOutCharCount = 0;
 				}
 			}
-			Win32_CodePageConverter (kCodePage_UTF7).MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
+			Characters::Platform::Windows::PlatformCodePageConverter (kCodePage_UTF7).MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
 			if (GetHandleBOM ()) {
 				if (*outCharCnt >= 5) {
 					useOutCharCount += 5;
@@ -476,7 +485,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		}
 		break;
 		default: {
-			Win32_CodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
 		}
 	}
 
@@ -486,7 +495,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		size_t						win32TstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
 
-		Win32_CodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, win32TstBuf, &win32TstCharCnt);
+		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, win32TstBuf, &win32TstCharCnt);
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 		// used for bad conversions. Reason is cuz for characters that don't map - our table and
 		// the system table can differ in how they map depending on current OS code page.
@@ -500,48 +509,6 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 
 
 
-
-
-/*
- ********************************************************************************
- **************************** Win32_CodePageConverter ***************************
- ********************************************************************************
- */
-void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
-{
-	Require (inMBCharCnt == 0 or inMBChars != nullptr);
-	RequireNotNull (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != nullptr);
-//	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
-#if		qPlatform_Windows
-	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
-#else
-	AssertNotImplemented ();
-#endif
-#if 0
-// enable to debug cases (e.g. caused when you read a CRLF file with fstream
-// in text mode, and get - somehow - stuff that triggers this ??? - with convert to
-// xml???). Anyhow - get error#102 - BUF_NOT_BIG-ENUF or osmeting like that...
-//
-// Debug when its happening again -- LGP 2008-09-02
-	if (*outCharCnt == 0) {
-		DWORD x = GetLastError ();
-		int breaker=1;
-	}
-#endif
-}
-
-void	Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
-{
-	Require (inCharCnt == 0 or inChars != nullptr);
-	RequireNotNull (outCharCnt);
-	Require (*outCharCnt == 0 or outChars != nullptr);
-#if		qPlatform_Windows
-	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
-#else
-	AssertNotImplemented ();
-#endif
-}
 
 
 
@@ -1416,34 +1383,48 @@ void	UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, ch
  ********************************** CodePagesInstalled **************************
  ********************************************************************************
  */
-vector<CodePage>	CodePagesInstalled::sCodePages;
+namespace	{
+	set<CodePage>	sCodePages_;
+}
 
-#if qPlatform_Windows
-BOOL FAR	PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageString)
-{
-	sCodePages.push_back (_ttoi (lpCodePageString));
-	return (1);
+#if		qPlatform_Windows
+namespace	{
+	BOOL FAR	PASCAL EnumCodePagesProc_ (LPTSTR lpCodePageString)
+		{
+			sCodePages_.insert (_ttoi (lpCodePageString));
+			return (1);
+		}
 }
 #endif
 
-void	CodePagesInstalled::Init ()
+/*
+@METHOD:		CodePagesInstalled::GetAll
+@DESCRIPTION:	<p>Returns a list of all code pages installed on the system.
+			This list is returned in sorted order.</p>
+*/
+vector<CodePage>	CodePagesInstalled::GetAll ()
 {
-	Assert (sCodePages.size () == 0);
-#if qPlatform_Windows
-	::EnumSystemCodePages (EnumCodePagesProc, CP_INSTALLED);
+	if (sCodePages_.empty ()) {
+		Init_ ();
+	}
+	return vector<CodePage> (sCodePages_.begin (), sCodePages_.end ());
+}
+
+void	CodePagesInstalled::Init_ ()
+{
+	Assert (sCodePages_.size () == 0);
+#if		qPlatform_Windows
+	::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);
 #endif
 	// Add these 'fake' code pages - which I believe are always available, but never listed by this procedure
-	AddIfNotPresent (kCodePage_UNICODE_WIDE);
-	AddIfNotPresent (kCodePage_UNICODE_WIDE_BIGENDIAN);
-	AddIfNotPresent (kCodePage_UTF8);			// cuz even if OS (e.g. Win98) doesn't support, we have our own baked in code
-	std::sort (sCodePages.begin (), sCodePages.end ());
+	AddIfNotPresent_ (kCodePage_UNICODE_WIDE);
+	AddIfNotPresent_ (kCodePage_UNICODE_WIDE_BIGENDIAN);
+	AddIfNotPresent_ (kCodePage_UTF8);			// cuz even if OS (e.g. Win98) doesn't support, we have our own baked in code
 }
 
-void	CodePagesInstalled::AddIfNotPresent (CodePage cp)
+void	CodePagesInstalled::AddIfNotPresent_ (CodePage cp)
 {
-	if (std::find (sCodePages.begin (), sCodePages.end (), cp) == sCodePages.end ()) {
-		sCodePages.push_back (cp);
-	}
+	sCodePages_.insert (cp);
 }
 
 /*
@@ -1452,9 +1433,10 @@ void	CodePagesInstalled::AddIfNotPresent (CodePage cp)
 */
 bool	CodePagesInstalled::IsCodePageAvailable (CodePage cp)
 {
-	const vector<CodePage>&				codePages	=	GetAll ();
-	vector<CodePage>::const_iterator	i			=	lower_bound (codePages.begin (), codePages.end (), cp);
-	return (i != codePages.end ());
+	if (sCodePages_.empty ()) {
+		Init_ ();
+	}
+	return sCodePages_.find (cp) != sCodePages_.end ();
 }
 
 

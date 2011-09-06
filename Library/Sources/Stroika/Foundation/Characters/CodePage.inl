@@ -25,7 +25,12 @@ namespace	Stroika {
 				{
 					#if		qPlatform_Windows
 						//http://blogs.msdn.com/b/michkap/archive/2005/01/06/347834.aspx
-						return CP_ACP;			// special windows define which maps to the current OS code page
+						#if		defined (CP_ACP)
+							Assert (CP_ACP == 0);
+							return CP_ACP;			// special windows define which maps to the current OS code page
+						#else
+							return 0;
+						#endif
 						//GetACP()				// means essentially the same thing but supposedly (even if we cahced GetACP() - CP_ACP is faster)
 					#else
 // MAYBE should use the LOCALE stuff - and get the current code-page from the locale? If such a thing?
@@ -34,179 +39,6 @@ namespace	Stroika {
 				}
 
 
-
-			/*
-			@METHOD:		Win32CharSetToCodePage
-			@DESCRIPTION:	<p>Map from a Win32 lfCharset enumeration (as appears in RTF font specifications and LOGFONT specifications)
-						This routine is made portable to other platforms BECAUSE it is used in RTF files.
-						This function returns the magic code page # zero (CP_ACP on windows) if there is no good mapping.</p>
-			*/
-			inline	CodePage	Win32CharSetToCodePage (unsigned char lfCharSet)
-				{
-					// See MSFT info article Q165478. No routine to map from these charset values - just this table... Sigh...
-					// LGP 2001-04-30
-
-					// In the file http://msdn.microsoft.com/library/specs/rtfspec_6.htm - there are many more of these
-					// magic#s documented. But not how to get the numbers back from a font. May want to support more
-					// of these? But I think not - I think they are now redudundantly specified via better mecahnims,
-					// like UNICODE or \cpg
-					// -- LGP 2000/04/29
-					//
-					// For SPR#1184 I grabbed a few more numbers. The mapping to codepages can be roughly guestimated by looking 
-					// in the registry around HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Charset\
-					//	-- LGP 2002-11-29
-					#ifdef	ANSI_CHARSET
-						Assert (ANSI_CHARSET == 0);
-					#else
-						const	unsigned char	ANSI_CHARSET		=	0;
-					#endif
-					#ifdef	DEFAULT_CHARSET
-						Assert (DEFAULT_CHARSET == 1);
-					#else
-						const	unsigned char	DEFAULT_CHARSET		=	1;
-					#endif
-					#ifdef	MAC_CHARSET
-						Assert (MAC_CHARSET == 77);
-					#else
-						const	unsigned char	MAC_CHARSET			=	77;
-					#endif
-					#ifdef	SHIFTJIS_CHARSET
-						Assert (SHIFTJIS_CHARSET == 128);
-					#else
-						const	unsigned char	SHIFTJIS_CHARSET	=	128;
-					#endif
-					#ifdef	HANGEUL_CHARSET
-						Assert (HANGEUL_CHARSET == 129);
-					#else
-						const	unsigned char	HANGEUL_CHARSET		=	129;
-					#endif
-					#ifdef	JOHAB_CHARSET
-						Assert (JOHAB_CHARSET == 130);
-					#else
-						const	unsigned char	JOHAB_CHARSET		=	130;
-					#endif
-					#ifdef	GB2312_CHARSET
-						Assert (GB2312_CHARSET == 134);
-					#else
-						const	unsigned char	GB2312_CHARSET		=	134;
-					#endif
-					#ifdef	CHINESEBIG5_CHARSET
-						Assert (CHINESEBIG5_CHARSET == 136);
-					#else
-						const	unsigned char	CHINESEBIG5_CHARSET	=	136;
-					#endif
-					#ifdef	GREEK_CHARSET
-						Assert (GREEK_CHARSET == 161);
-					#else
-						const	unsigned char	GREEK_CHARSET		=	161;
-					#endif
-					#ifdef	TURKISH_CHARSET
-						Assert (TURKISH_CHARSET == 162);
-					#else
-						const	unsigned char	TURKISH_CHARSET		=	162;
-					#endif
-					#ifdef	VIETNAMESE_CHARSET
-						Assert (VIETNAMESE_CHARSET == 163);
-					#else
-						const	unsigned char	VIETNAMESE_CHARSET	=	163;
-					#endif
-					#ifdef	HEBREW_CHARSET
-						Assert (HEBREW_CHARSET == 177);
-					#else
-						const	unsigned char	HEBREW_CHARSET		=	177;
-					#endif
-					#ifdef	ARABIC_CHARSET
-						Assert (ARABIC_CHARSET == 178);
-					#else
-						const	unsigned char	ARABIC_CHARSET		=	178;
-					#endif
-					#ifdef	BALTIC_CHARSET
-						Assert (BALTIC_CHARSET == 186);
-					#else
-						const	unsigned char	BALTIC_CHARSET		=	186;
-					#endif
-					#ifdef	RUSSIAN_CHARSET
-						Assert (RUSSIAN_CHARSET == 204);
-					#else
-						const	unsigned char	RUSSIAN_CHARSET		=	204;
-					#endif
-					#ifdef	THAI_CHARSET
-						Assert (THAI_CHARSET == 222);
-					#else
-						const	unsigned char	THAI_CHARSET		=	222;
-					#endif
-					#ifdef	EASTEUROPE_CHARSET
-						Assert (EASTEUROPE_CHARSET == 238);
-					#else
-						const	unsigned char	EASTEUROPE_CHARSET	=	238;
-					#endif
-					#ifdef	OEM_CHARSET
-						Assert (OEM_CHARSET == 255);
-					#else
-						const	unsigned char	OEM_CHARSET			=	255;
-					#endif
-
-					switch (lfCharSet) {
-						case	ANSI_CHARSET:			return kCodePage_ANSI;				// right? Maybe SB? kCodePage_ANSI (1252)???
-						case	MAC_CHARSET:			return kCodePage_MAC;
-						case	SHIFTJIS_CHARSET:		return kCodePage_SJIS;				//	Japanese (SJIS)
-						case	HANGEUL_CHARSET:		return kCodePage_Korean;			//	Hangul
-						case	GB2312_CHARSET:			return kCodePage_GB2312;			//	Chinese
-						case	CHINESEBIG5_CHARSET:	return kCodePage_BIG5;				//	Chinese
-						case	GREEK_CHARSET:			return kCodePage_GREEK;				//	Greek
-						case	TURKISH_CHARSET:		return kCodePage_Turkish;			//	Turkish
-						case	VIETNAMESE_CHARSET:		return kCodePage_Vietnamese;		//	Vietnamese
-						case	HEBREW_CHARSET:			return kCodePage_HEBREW;			//	Hebrew
-						case	ARABIC_CHARSET:			return kCodePage_ARABIC;			//	Arabic
-						case	179:					return kCodePage_ARABIC;			//	Arabic Traditional
-						case	180:					return kCodePage_ARABIC;			//	Arabic user
-						case	181:					return kCodePage_HEBREW;			//	Hebrew user
-						case	BALTIC_CHARSET:			return kCodePage_Baltic;			//	Baltic
-						case	RUSSIAN_CHARSET:		return kCodePage_CYRILIC;			//	Russian/Cyrilic
-						case	THAI_CHARSET:			return kCodePage_Thai;				//	Thai
-						case	EASTEUROPE_CHARSET:		return kCodePage_EasternEuropean;	//	aka 'central european'?
-						case	254:					return kCodePage_PC; break;
-						case	OEM_CHARSET:			return kCodePage_PCA; break;
-						default:						return GetDefaultSDKCodePage ();
-					}
-				}
-		#if		qPlatform_Windows
-			/*
-			@METHOD:		Win32PrimaryLangIDToCodePage
-			@DESCRIPTION:	<p>Map from a Win32 language identifier to a code page.</p>
-			*/
-			inline	CodePage	Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
-				{
-					/*
-					 *	I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesnt provide their own
-					 *	mapping routines! Anyhow - I got a start on this from some UNISCRIBE sample code, and have since
-					 *	added on from educated guesswork.		-- LGP 2003-01-30
-					 */
-					switch (PRIMARYLANGID (languageIdenifier)) {
-						case	LANG_ARABIC:		return kCodePage_ARABIC;
-						case	LANG_ENGLISH:		return kCodePage_ANSI;
-						case	LANG_FRENCH:		return kCodePage_ANSI;
-						case	LANG_GERMAN:		return kCodePage_ANSI;
-						case	LANG_GREEK:			return kCodePage_GREEK;
-						case	LANG_HEBREW:		return kCodePage_HEBREW;
-						case	LANG_ICELANDIC:		return kCodePage_ANSI;				// guess? - 2003-01-30
-						case	LANG_ITALIAN:		return kCodePage_ANSI;
-						case	LANG_KOREAN:		return kCodePage_Korean;
-						case	LANG_POLISH:		return kCodePage_EasternEuropean;	// a bit of a guess - LGP 2003-01-30
-						case	LANG_PORTUGUESE:	return kCodePage_ANSI;
-						case	LANG_RUSSIAN:		return kCodePage_CYRILIC;
-						case	LANG_SPANISH:		return kCodePage_ANSI;
-						case	LANG_SWEDISH:		return kCodePage_ANSI;				// guess? - 2003-01-30
-						case	LANG_THAI:			return kCodePage_Thai;
-						case	LANG_TURKISH:		return kCodePage_Turkish;
-						case	LANG_UKRAINIAN:		return kCodePage_CYRILIC;			// guess? - 2003-01-30
-						case	LANG_VIETNAMESE:	return kCodePage_Vietnamese;
-						default:					return GetDefaultSDKCodePage ();
-					}
-				}
-		#endif
-
-		
 		
 		
 		//	class	UTF8Converter
@@ -288,30 +120,9 @@ namespace	Stroika {
 
 
 
-		//	class	CodePageConverter
-			inline	Win32_CodePageConverter::Win32_CodePageConverter (int codePage):
-					fCodePage (codePage)
-					{
-					}
 
 
 
-
-
-
-		//	class	CodePagesInstalled
-			/*
-			@METHOD:		CodePagesInstalled::GetAll
-			@DESCRIPTION:	<p>Returns a list of all code pages installed on the system.
-						This list is returned in sorted order.</p>
-			*/
-			inline	const vector<CodePage>&	CodePagesInstalled::GetAll ()
-				{
-					if (sCodePages.empty ()) {
-						Init ();
-					}
-					return sCodePages;
-				}
 
 		}
 	}

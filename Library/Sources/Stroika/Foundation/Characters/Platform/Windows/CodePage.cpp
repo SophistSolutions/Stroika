@@ -56,3 +56,55 @@ wstring	Characters::Platform::Windows::BSTR2wstring (VARIANT b)
 		return wstring ();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** PlatformCodePageConverter *************************
+ ********************************************************************************
+ */
+void	PlatformCodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+{
+	Require (inMBCharCnt == 0 or inMBChars != nullptr);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != nullptr);
+//	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
+#if		qPlatform_Windows
+	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
+#else
+	AssertNotImplemented ();
+#endif
+#if 0
+// enable to debug cases (e.g. caused when you read a CRLF file with fstream
+// in text mode, and get - somehow - stuff that triggers this ??? - with convert to
+// xml???). Anyhow - get error#102 - BUF_NOT_BIG-ENUF or osmeting like that...
+//
+// Debug when its happening again -- LGP 2008-09-02
+	if (*outCharCnt == 0) {
+		DWORD x = GetLastError ();
+		int breaker=1;
+	}
+#endif
+}
+
+void	PlatformCodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+{
+	Require (inCharCnt == 0 or inChars != nullptr);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != nullptr);
+#if		qPlatform_Windows
+	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
+#else
+	AssertNotImplemented ();
+#endif
+}
+
+

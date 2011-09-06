@@ -16,11 +16,6 @@
 #include	<cctype>
 #include	<vector>
 
-// CURRENTLY NEEDED FOR TYPE 'USHORT' - but could avoid that dependency!!!
-#if		qPlatform_Windows
-	#include	<Windows.h>
-#endif
-
 #include	"../Configuration/Common.h"
 
 
@@ -79,13 +74,6 @@ namespace	Stroika {
 
 			CodePage	GetDefaultSDKCodePage ();
 
-		#if		qPlatform_Windows
-			CodePage	Win32CharSetToCodePage (unsigned char lfCharSet);
-		#endif
-
-		#if		qPlatform_Windows
-			CodePage	Win32PrimaryLangIDToCodePage (USHORT languageIdenifier);
-		#endif
 
 			/*
 			@CLASS:			CodePageConverter
@@ -220,20 +208,6 @@ namespace	Stroika {
 
 
 
-			class	Win32_CodePageConverter {
-				public:
-					Win32_CodePageConverter (CodePage codePage);
-
-				public:
-					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
-					nonvirtual	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-
-				private:
-					CodePage	fCodePage;
-			};
-
-
-
 
 
 			class	UTF8Converter {
@@ -256,22 +230,12 @@ namespace	Stroika {
 			*/
 			class	CodePagesInstalled {
 				public:
-					struct	CodePageNames;
-
-				public:
-					static	const vector<CodePage>&	GetAll ();
-					static	bool					IsCodePageAvailable (CodePage cp);
+					static	vector<CodePage>	GetAll ();
+					static	bool				IsCodePageAvailable (CodePage cp);
 
 				private:
-					static	void	Init ();
-					static	void	AddIfNotPresent (CodePage cp);
-				#if qPlatform_Windows
-					private:
-						static	BOOL FAR	PASCAL	EnumCodePagesProc (LPTSTR lpCodePageString);
-				#endif
-
-				private:
-					static	vector<CodePage>	sCodePages;
+					static	void	Init_ ();
+					static	void	AddIfNotPresent_ (CodePage cp);
 			};
 
 
