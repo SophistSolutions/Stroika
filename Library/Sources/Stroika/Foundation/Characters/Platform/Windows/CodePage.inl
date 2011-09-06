@@ -31,6 +31,7 @@ namespace	Stroika {
 								Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
 							}
 						}
+#if 0
 					inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
 						{
 							RequireNotNull (intoResult);
@@ -46,6 +47,7 @@ namespace	Stroika {
 							WideStringToNarrow (ws, codePage, &result);
 							return result;
 						}
+#endif
 
 					inline	void	NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
 						{
@@ -58,6 +60,7 @@ namespace	Stroika {
 								Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
 							}
 						}
+#if 0
 					inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
 						{
 							RequireNotNull (intoResult);
@@ -73,6 +76,7 @@ namespace	Stroika {
 							NarrowStringToWide (s, codePage, &result);
 							return result;
 						}
+#endif
 
 
 					inline	wstring	BSTR2wstring (BSTR b)

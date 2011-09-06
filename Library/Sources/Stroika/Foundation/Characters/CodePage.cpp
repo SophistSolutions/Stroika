@@ -434,6 +434,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 			}
 		}
 		break;
+#if		qPlatform_Windows
 		case	kCodePage_UTF7: {
 			char*	useOutChars		=	outChars;
 			size_t	useOutCharCount	=	*outCharCnt;
@@ -451,9 +452,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 					useOutCharCount = 0;
 				}
 			}
-#if		qPlatform_Windows
 			Characters::Platform::Windows::PlatformCodePageConverter (kCodePage_UTF7).MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
-#endif
 			if (GetHandleBOM ()) {
 				if (*outCharCnt >= 5) {
 					useOutCharCount += 5;
@@ -462,6 +461,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 			*outCharCnt = useOutCharCount;
 		}
 		break;
+#endif
 		case	kCodePage_UTF8: {
 			char*	useOutChars		=	outChars;
 			size_t	useOutCharCount	=	*outCharCnt;
@@ -493,15 +493,14 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		}
 	}
 
-#if		qDebug
+#if		qDebug && qPlatform_Windows
 	// Assure my baked tables perform the same as the builtin Win32 API
 	if (fCodePage == kCodePage_ANSI or fCodePage == kCodePage_MAC or fCodePage == kCodePage_PC or fCodePage == kCodePage_PCA) {
 		size_t						win32TstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
 
-#if		qPlatform_Windows
 		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, win32TstBuf, &win32TstCharCnt);
-#endif
+
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 		// used for bad conversions. Reason is cuz for characters that don't map - our table and
 		// the system table can differ in how they map depending on current OS code page.
@@ -1541,6 +1540,41 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 
 
 
+
+/*
+ ********************************************************************************
+ *********************** Characters::WideStringToNarrow *************************
+ ********************************************************************************
+ */
+void	Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
+{
+	RequireNotNull (intoResult);
+	Require (wsStart <= wsEnd);
+	#if		qPlatform_Windows
+		Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
+	#else
+		AssertNotImplemented ();
+	#endif
+}
+
+
+
+
+/*
+ ********************************************************************************
+ *********************** Characters::NarrowStringToWide *************************
+ ********************************************************************************
+ */
+void	Characters::NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+{
+	RequireNotNull (intoResult);
+	Require (sStart <= sEnd);
+	#if		qPlatform_Windows
+		Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
+	#else
+		AssertNotImplemented ();
+	#endif
+}
 
 
 

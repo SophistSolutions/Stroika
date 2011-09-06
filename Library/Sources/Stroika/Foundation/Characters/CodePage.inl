@@ -128,24 +128,11 @@ namespace	Stroika {
 
 
 
-			inline	void	WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
-				{
-					RequireNotNull (intoResult);
-					Require (wsStart <= wsEnd);
-					#if		qPlatform_Windows
-						Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
-					#else
-						AssertNotImplemented ();
-					#endif
-				}
 			inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
 				{
 					RequireNotNull (intoResult);
-					#if		qPlatform_Windows
-						Platform::Windows::WideStringToNarrow (ws, codePage, intoResult);
-					#else
-						AssertNotImplemented ();
-					#endif
+					const wchar_t*	wsp	=	ws.c_str ();
+					WideStringToNarrow (wsp, wsp + ws.length (), codePage, intoResult);
 				}
 			inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
 				{
@@ -153,24 +140,11 @@ namespace	Stroika {
 					WideStringToNarrow (ws, codePage, &result);
 					return result;
 				}
-			inline	void	NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
-				{
-					RequireNotNull (intoResult);
-					Require (sStart <= sEnd);
-					#if		qPlatform_Windows
-						Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
-					#else
-						AssertNotImplemented ();
-					#endif
-				}
 			inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
 				{
 					RequireNotNull (intoResult);
-					#if		qPlatform_Windows
-						Platform::Windows::NarrowStringToWide (s, codePage, intoResult);
-					#else
-						AssertNotImplemented ();
-					#endif
+					const char*	sp	=	s.c_str ();
+					NarrowStringToWide (sp, sp + s.length (), codePage, intoResult);
 				}
 			inline	wstring	NarrowStringToWide (const string& s, int codePage)
 				{
