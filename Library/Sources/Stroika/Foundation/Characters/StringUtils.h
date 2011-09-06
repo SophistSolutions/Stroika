@@ -69,22 +69,6 @@ namespace	Stroika {
 			using	Characters::CodePage;
 
 
-			void	WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
-			void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
-			string	WideStringToNarrow (const wstring& ws, CodePage codePage);
-			void	NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
-			void	NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult);
-			wstring	NarrowStringToWide (const string& s, CodePage codePage);
-
-
-			string	WideStringToUTF8 (const wstring& ws);
-			void	UTF8StringToWide (const char* s, wstring* intoStr);
-			void	UTF8StringToWide (const string& s, wstring* intoStr);
-			wstring	UTF8StringToWide (const char* ws);
-			wstring	UTF8StringToWide (const string& ws);
-
-			wstring	ASCIIStringToWide (const string& s);
-			string	WideStringToASCII (const wstring& s);
 
 			string	Format (const char* format, ...);
 			wstring	Format (const wchar_t* format, ...);

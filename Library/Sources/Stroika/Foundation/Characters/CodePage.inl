@@ -12,6 +12,11 @@
  */
 #include	"../Debug/Assertions.h"
 
+#if		qPlatform_Windows
+	#include	"Platform/Windows/CodePage.h"
+#endif
+
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -54,14 +59,14 @@ namespace	Stroika {
 	
 	
 		//	class	CodePageConverter
-			inline	CodePageConverter::CodePageConverter (CodePage codePage):
-					fHandleBOM (false),
-					fCodePage (codePage)
+			inline	CodePageConverter::CodePageConverter (CodePage codePage)
+					: fHandleBOM (false)
+					, fCodePage (codePage)
 					{
 					}
-			inline	CodePageConverter::CodePageConverter (CodePage codePage, HandleBOMFlag h):
-					fHandleBOM (true),
-					fCodePage (codePage)
+			inline	CodePageConverter::CodePageConverter (CodePage codePage, HandleBOMFlag h)
+					: fHandleBOM (true)
+					, fCodePage (codePage)
 					{
 						Require (h == eHandleBOM);
 						Arg_Unused (h);
@@ -121,6 +126,107 @@ namespace	Stroika {
 
 
 
+
+			inline	void	WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
+				{
+					RequireNotNull (intoResult);
+					Require (wsStart <= wsEnd);
+					#if		qPlatform_Windows
+						Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
+				{
+					RequireNotNull (intoResult);
+					#if		qPlatform_Windows
+						Platform::Windows::WideStringToNarrow (ws, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
+				{
+					string	result;
+					WideStringToNarrow (ws, codePage, &result);
+					return result;
+				}
+			inline	void	NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+				{
+					RequireNotNull (intoResult);
+					Require (sStart <= sEnd);
+					#if		qPlatform_Windows
+						Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
+				{
+					RequireNotNull (intoResult);
+					#if		qPlatform_Windows
+						Platform::Windows::NarrowStringToWide (s, codePage, intoResult);
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+			inline	wstring	NarrowStringToWide (const string& s, int codePage)
+				{
+					wstring	result;
+					NarrowStringToWide (s, codePage, &result);
+					return result;
+				}
+
+
+
+
+
+
+			inline	wstring	ASCIIStringToWide (const string& s)
+				{
+					#if		qDebug
+						for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
+							Assert (isascii (*i));
+						}
+					#endif
+					return wstring (s.begin (), s.end ());
+				}
+			inline	string	WideStringToASCII (const wstring& s)
+				{
+					#if		qDebug
+						for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
+							Assert (isascii (*i));
+						}
+					#endif
+					return string (s.begin (), s.end ());
+				}
+
+
+			inline	string	WideStringToUTF8 (const wstring& ws)
+				{
+					return WideStringToNarrow (ws, kCodePage_UTF8);
+				}
+			inline	void	UTF8StringToWide (const char* s, wstring* intoStr)
+				{
+					RequireNotNull (s);
+					NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, intoStr);
+				}
+			inline	void	UTF8StringToWide (const string& s, wstring* intoStr)
+				{
+					NarrowStringToWide (s, kCodePage_UTF8, intoStr);
+				}
+			inline	wstring	UTF8StringToWide (const char* s)
+				{
+					RequireNotNull (s);
+					wstring	result;
+					NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, &result);
+					return result;
+				}
+			inline	wstring	UTF8StringToWide (const string& s)
+				{
+					return NarrowStringToWide (s, kCodePage_UTF8);
+				}
 
 
 

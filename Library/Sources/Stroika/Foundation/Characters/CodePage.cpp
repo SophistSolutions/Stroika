@@ -13,10 +13,6 @@
 #include	"../Configuration/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 
-#if		qPlatform_Windows
-	#include	"Platform/Windows/CodePage.h"
-#endif
-
 #include	"CodePage.h"
 
 
