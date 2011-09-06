@@ -31,23 +31,6 @@ namespace	Stroika {
 								Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
 							}
 						}
-#if 0
-					inline	void	WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
-						{
-							RequireNotNull (intoResult);
-							int stringLength = ::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), nullptr, 0, nullptr, nullptr);
-							intoResult->resize (stringLength);
-							if (stringLength != 0) {
-								Verify (::WideCharToMultiByte (codePage, 0, ws.c_str (), static_cast<int> (ws.size ()), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
-							}
-						}
-					inline	string	WideStringToNarrow (const wstring& ws, CodePage codePage)
-						{
-							string	result;
-							WideStringToNarrow (ws, codePage, &result);
-							return result;
-						}
-#endif
 
 					inline	void	NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
 						{
@@ -60,23 +43,6 @@ namespace	Stroika {
 								Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
 							}
 						}
-#if 0
-					inline	void	NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
-						{
-							RequireNotNull (intoResult);
-							int newStrLen = ::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), nullptr, 0);
-							intoResult->resize (newStrLen);
-							if (newStrLen != 0) {
-								Verify (::MultiByteToWideChar (codePage, 0, s.c_str (), static_cast<int> (s.size ()), Containers::Start (*intoResult), newStrLen) == newStrLen);
-							}
-						}
-					inline	wstring	NarrowStringToWide (const string& s, int codePage)
-						{
-							wstring	result;
-							NarrowStringToWide (s, codePage, &result);
-							return result;
-						}
-#endif
 
 
 					inline	wstring	BSTR2wstring (BSTR b)

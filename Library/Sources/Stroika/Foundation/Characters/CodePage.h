@@ -20,6 +20,17 @@
 
 
 
+
+/*
+ *	TODO:
+ *
+ *	(o)		FIRST - we need to fix PortableWideStringToNarrow_ and CodePageConverter to have a MORE SPACE EFFICNET (COMPUTE OUT BUF SIZE).
+ *			Run basic xlate algortihm without writing to OUTPUTR, and find use that WOUDL be used.
+ *
+ *	(o)		THEN - test performance, and see if windows version can get away with using portable version (where codes overlap)
+ */
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Characters {

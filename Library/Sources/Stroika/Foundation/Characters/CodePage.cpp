@@ -489,6 +489,8 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		default: {
 #if		qPlatform_Windows
 			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+#else
+			throw CodePageNotSupportedException ();
 #endif
 		}
 	}
@@ -1546,16 +1548,40 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
  *********************** Characters::WideStringToNarrow *************************
  ********************************************************************************
  */
+namespace	{
+	void	PortableWideStringToNarrow_ (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
+		{
+			RequireNotNull (intoResult);
+			Require (wsStart <= wsEnd);
+			size_t	inSize	=	wsEnd - wsStart;
+			CodePageConverter	cc (codePage);
+// this grossly oversates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
+			size_t outSizeBuf = cc.MapFromUNICODE_QuickComputeOutBufSize (wsStart, inSize);
+			intoResult->resize (outSizeBuf);
+			size_t	actualOutSize	=	0;
+			if (inSize != 0) {
+				actualOutSize = outSizeBuf;
+				cc.MapFromUNICODE (wsStart, inSize, Containers::Start (*intoResult), &actualOutSize);
+				if (intoResult->size () != actualOutSize) {
+					// shrink
+					Assert (intoResult->size () > actualOutSize);
+					intoResult->resize (actualOutSize);
+				}
+			}
+		}
+}
 void	Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
 {
 	RequireNotNull (intoResult);
 	Require (wsStart <= wsEnd);
+
 	#if		qPlatform_Windows
 		Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
 	#else
-		AssertNotImplemented ();
+		PortableWideStringToNarrow_ (wsStart, wsEnd, codePage, intoResult);
 	#endif
 }
+
 
 
 
@@ -1565,6 +1591,28 @@ void	Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
  *********************** Characters::NarrowStringToWide *************************
  ********************************************************************************
  */
+namespace	{
+	void	PortableNarrowStringToWide_ (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+		{
+			RequireNotNull (intoResult);
+			Require (sStart <= sEnd);
+			size_t	inSize	=	sEnd - sStart;
+			CodePageConverter	cc (codePage);
+// this grossly oversates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
+			size_t outSizeBuf = cc.MapToUNICODE_QuickComputeOutBufSize (sStart, inSize);
+			intoResult->resize (outSizeBuf);
+			size_t	actualOutSize	=	0;
+			if (inSize != 0) {
+				actualOutSize = outSizeBuf;
+				cc.MapToUNICODE (sStart, inSize, Containers::Start (*intoResult), &actualOutSize);
+				if (intoResult->size () != actualOutSize) {
+					// shrink
+					Assert (intoResult->size () > actualOutSize);
+					intoResult->resize (actualOutSize);
+				}
+			}
+		}
+}
 void	Characters::NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
 {
 	RequireNotNull (intoResult);
@@ -1572,15 +1620,7 @@ void	Characters::NarrowStringToWide (const char* sStart, const char* sEnd, int c
 	#if		qPlatform_Windows
 		Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
 	#else
-		AssertNotImplemented ();
+		PortableNarrowStringToWide_ (sStart, sEnd, codePage, intoResult);
 	#endif
 }
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
 
