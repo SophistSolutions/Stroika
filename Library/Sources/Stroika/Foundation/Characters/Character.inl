@@ -51,7 +51,7 @@ namespace	Stroika {
 				}
 			inline	bool	Character::IsWhitespace () const
 				{
-					return IsWhitespace ();
+					return !!iswspace (fCharacterCode);
 				}
 			inline	bool	Character::IsDigit () const
 				{

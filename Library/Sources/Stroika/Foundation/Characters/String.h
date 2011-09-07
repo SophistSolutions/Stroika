@@ -106,6 +106,7 @@ SHORT TERM THINGS TODO:
 		some kind of overload so there is a no-cost way todo the most common case of a static (per type) Clone function.
 	(4)	Migrate most of the StringUtils stuff here like:
 			> Contains- with CI optin
+// overload so can be string arg OR lambda!
 			> StartsWtih- with CI optin
 			> EndsWith- with CI optin
 			> LTrim/RTrim/Trim
@@ -118,6 +119,7 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 	(1)	when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
 
 #endif
+
 
 
 //tmphack to workaround gcc compilation issue - not sure if my bug or theirs yet...
@@ -198,7 +200,24 @@ namespace	Stroika {
                      */
                     nonvirtual	String		SubString (size_t from, size_t length = kBadStringIndex) const;
 
-                public:
+
+//unimplemented draft API
+				public:
+					#if		!qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+					inline	static	bool	DefaultTrimArg_ (Character c)				{		return c.IsWhitespace ();		}
+					#endif
+
+					#if		qCompilerAndStdLib_Supports_lambda_default_argument && qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+					nonvirtual	String	LTrim (bool (*shouldBeTrimmmed) (Character) = [](const Character& c) -> bool { return c.IsWhitespace (); }) const;
+					nonvirtual	String	RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+					nonvirtual	String	Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+					#else
+					nonvirtual	String	LTrim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
+					nonvirtual	String	RTrim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
+					nonvirtual	String	Trim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
+					#endif
+
+				public:
                     /*
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
                      * pointer might become invalid. Generally, if you don't call any routines of String (even

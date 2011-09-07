@@ -242,4 +242,27 @@
 
 
 
+	/*
+	@CONFIGVAR:		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+	@DESCRIPTION:	<p>https://connect.microsoft.com/VisualStudio/feedback/details/572138
+		From the C++0x FCD (N3092 5.1.2/6):
+			"The closure type for a lambda-expression with no lambda-capture has a public non-virtual non-explicit const conversion
+			function to pointer to function having the same parameter and return types as the closure type’s function call operator.
+			The value returned by this conversion function shall be the address of a function that, when invoked, has the same effect
+			as invoking the closure type’s function call operator."
+		Not implemented in VS.net 2010
+	</p>
+	*/
+	#ifndef	qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+		#if		defined (__GNUC__)
+			#define	qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported	1
+		#elif	defined (_MSC_VER) && _MSC_VER <= 1600
+			#define	qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported	0
+		#else
+			// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+			#define	qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported	1
+		#endif
+	#endif
+
+
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_*/

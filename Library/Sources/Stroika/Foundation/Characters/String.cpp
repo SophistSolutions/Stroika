@@ -370,7 +370,63 @@ String	String::SubString (size_t from, size_t length) const
 	if (length == kBadStringIndex) {
 		length = GetLength () - from;
 	}
+	if (from == 0 and length == GetLength ()) {
+		// just bump reference count
+		return *this;
+	}
 	return (String (new String_Substring_::MyRep_ (fRep, from, length), false));
+}
+
+String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
+{
+	RequireNotNull (shouldBeTrimmmed);
+	// Could be much more efficient if pushed into REP - so we avoid each character virtual call...
+	size_t length = GetLength ();
+	for (size_t i = 0; i < length; ++i) {
+		if (not (*shouldBeTrimmmed) (fRep->GetAt (i))) {
+			if (i == 0) {
+				// no change in string
+				return *this;
+			}
+			else {
+				return SubString (i, length - i);
+			}
+		}
+	}
+	// all trimmed
+	return String ();
+}
+
+String	String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
+{
+	RequireNotNull (shouldBeTrimmmed);
+	// Could be much more efficient if pushed into REP - so we avoid each character virtual call...
+	size_t length = GetLength ();
+	if (length != 0) {
+		for (ptrdiff_t i = length - 1; i != 0; --i) {
+			if (not (*shouldBeTrimmmed) (fRep->GetAt (i))) {
+				size_t	nCharsRemoved	=	(length - 1) - i;
+				if (nCharsRemoved == 0) {
+					// no change in string
+					return *this;
+				}
+				else {
+					return SubString (0, length - nCharsRemoved);
+				}
+			}
+		}
+	}
+	// all trimmed
+	return String ();
+}
+
+String	String::Trim (bool (*shouldBeTrimmmed) (Character)) const
+{
+	RequireNotNull (shouldBeTrimmmed);
+	/*
+	 * This could be implemented more efficient, but this is simpler for now..
+	 */
+	return LTrim (shouldBeTrimmmed).RTrim (shouldBeTrimmmed);
 }
 
 template	<>

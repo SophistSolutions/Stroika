@@ -449,6 +449,25 @@ namespace	{
 }
 
 
+namespace	{
+	#if		!qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+	static	bool	Test11_TRIM_ISALPHA (Character c)				{		return c.IsAlphabetic ();		}
+	#endif
+	void	Test11_Trim_ ()
+		{
+			const	String	kT1	=	L"  abc";
+			Assert (kT1.RTrim () == kT1);
+			Assert (kT1.LTrim () == kT1.Trim ());
+			Assert (kT1.Trim () == L"abc");
+
+			#if		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+				Assert (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
+			#else
+				Assert (kT1.Trim (Test11_TRIM_ISALPHA) == L"  ");
+			#endif
+		}
+}
+
 
 
 
@@ -490,6 +509,7 @@ namespace	{
 				Test8_ReadOnlyStrings_ ();
 				Test9_StringVersusStdCString_ ();
 				Test10_ConvertToFromSTDStrings_ ();
+				Test11_Trim_ ();
 			}
 			catch (...) {
 				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
