@@ -7,6 +7,8 @@
 /*
  *
  * Description:
+
+ <<<<REVIEW / UPDATE DOCS FOR NEW STROIKA>>>
  *
  *		This family of classes using something akin to the Letter/Envelope paradigm
  *		described in Copliens "Advanced C++ Programming Styles and Idioms").
@@ -109,7 +111,6 @@ SHORT TERM THINGS TODO:
 // overload so can be string arg OR lambda!
 			> StartsWtih- with CI optin
 			> EndsWith- with CI optin
-			> LTrim/RTrim/Trim
 			> Compare () - returns < less > more =0 for equal- with CI optin
 			> Equals() - with CI optin
 
@@ -208,8 +209,21 @@ namespace	Stroika {
 					#endif
 
 					#if		qCompilerAndStdLib_Supports_lambda_default_argument && qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+					/*
+					 * String LTrim () scans the characters form the left to right, and applies the given 'shouldBeTrimmed' function (defaults to IsWhitespace).
+					 * all such characters are removed, and the resulting string is returned. This does not modify the current string its applied to - just
+					 * returns the trimmed string.
+					 */
 					nonvirtual	String	LTrim (bool (*shouldBeTrimmmed) (Character) = [](const Character& c) -> bool { return c.IsWhitespace (); }) const;
+					/*
+					 * String RTrim () scans the characters form the right to left, and applies the given 'shouldBeTrimmed' function (defaults to IsWhitespace).
+					 * all such characters are removed, and the resulting string is returned. This does not modify the current string its applied to - just
+					 * returns the trimmed string.
+					 */
 					nonvirtual	String	RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+					/*
+					 * String Trim () is locally equivilent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
+					 */
 					nonvirtual	String	Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
 					#else
 					nonvirtual	String	LTrim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
