@@ -13,7 +13,6 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<cctype>
 #include	<vector>
 
 #include	"../Configuration/Common.h"
@@ -28,6 +27,10 @@
  *			Run basic xlate algortihm without writing to OUTPUTR, and find use that WOUDL be used.
  *
  *	(o)		THEN - test performance, and see if windows version can get away with using portable version (where codes overlap)
+ *
+ *	(o)		Current support for char32_t is almost totally wrong. I don't understand exactly how char16_t and char32_t are interrelated, but I'm
+ *			sure its not as simplistic as what is implemented here. Probably - its that bit about Character(t).IsSurrogate() - for combiing characters.
+ *			But this should be good enuf to get us started...
  */
 
 
@@ -83,6 +86,10 @@ namespace	Stroika {
 
 
 
+			/*
+			@METHOD:		GetDefaultSDKCodePage
+			@DESCRIPTION:	<p>Returns the assumed code page of @'Led_SDK_Char'.</p>
+			*/
 			CodePage	GetDefaultSDKCodePage ();
 
 
@@ -101,22 +108,60 @@ namespace	Stroika {
 					CodePageConverter (CodePage codePage, HandleBOMFlag h);
 
 				public:
+					/*
+					@METHOD:		CodePageConverter::GetHandleBOM
+					@DESCRIPTION:	<p>In UNICODE, files are generally headed by a byte order mark (BOM). This mark is used to indicate
+							if the file is big endian, or little-endian (if the characters are wide-characters). This is true for 2 and 4
+							byte UNICODE (UCS-2, UCS-4) UNICODE, as well as for UTF-X encodings (such as UTF-7 and UTF-8). It is also used
+							to indicate whether or not the file is in a UTF encoding (as byte order doesn't matter in any (most?) of the
+							UTF encodings.</p>
+								<p>The basic rubrick for BOM's is that they are the character 0xfeff, as it would be encoded in the given
+							UTF or UCS encoding.</p>
+								<p>Because of this type of encoding - if you have a 0xfeff character (after decoding) at the beginning of
+							a buffer, there is no way for this routine to know if that was REALLY there, or if it was byte order mark. And its not always
+							desirable for the routine producing these encodings to produce the byte order mark, but sometimes its highly desirable.
+							So - this class lets you get/set a flag to indicate whether or not to process BOMs on input, and whether or not to
+							generate them on encoded outputs.</p>
+								<p>See also @'CodePageConverter::SetHandleBOM', and note that there is an overloaded CTOR that lets you specify
+							CodePageConverter::eHandleBOM as a final argument to automatically set this BOM converter flag.</p>
+					*/
 					nonvirtual	bool	GetHandleBOM () const;
+					/*
+					@METHOD:		CodePageConverter::SetHandleBOM
+					@DESCRIPTION:	<p>See also @'CodePageConverter::GetHandleBOM'.</p>
+					*/
 					nonvirtual	void	SetHandleBOM (bool handleBOM);
 				private:
 					bool	fHandleBOM;
 
 				public:
+					/*
+					@METHOD:		CodePageConverter::MapToUNICODE
+					@DESCRIPTION:	<p>Map the given multibyte chars in the fCodePage codepage into wide UNICODE
+						characters. Pass in a buffer 'outChars' of
+						size large enough to accomodate those characrters.</p>
+							<p>'outCharCnt' is the size of the output buffer coming in, and it contains the number
+						of UNICODE chars copied out on return.</p>
+					*/
 					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
 
+					/*
+					@METHOD:		CodePageConverter::MapToUNICODE_QuickComputeOutBufSize
+					@DESCRIPTION:	<p>Call to get an upper bound, reasonable buffer size to use to pass to
+								@'CodePageConverter::MapToUNICODE' calls.</p>
+					*/
 					nonvirtual	size_t	MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
 
 					nonvirtual	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 
+					/*
+					@METHOD:		CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize
+					@DESCRIPTION:	<p>Call to get an upper bound, reasonable buffer size to use to pass to MapFromUNICODE calls.</p>
+					*/
 					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
 					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
 					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
@@ -148,6 +193,11 @@ namespace	Stroika {
 
 
 
+			/*
+			@CLASS:			UTF8Converter
+			@DESCRIPTION:
+					<p>Helper class to wrap conversions between between UTF8 and wide-character UNICODE.</p>
+			*/
 			class	UTF8Converter {
 				public:
 					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
@@ -178,7 +228,17 @@ namespace	Stroika {
 			*/
 			class	CodePagesInstalled {
 				public:
+					/*
+					@METHOD:		CodePagesInstalled::GetAll
+					@DESCRIPTION:	<p>Returns a list of all code pages installed on the system.
+								This list is returned in sorted order.</p>
+					*/
 					static	vector<CodePage>	GetAll ();
+
+					/*
+					@METHOD:		CodePagesInstalled::IsCodePageAvailable
+					@DESCRIPTION:	<p>Checks if the given code page is installed.</p>
+					*/
 					static	bool				IsCodePageAvailable (CodePage cp);
 
 				private:
@@ -200,6 +260,13 @@ namespace	Stroika {
 					enum	Confidence { eLow = 0, eMedium = 10, eHigh=100 };
 
 				public:
+					/*
+					@METHOD:		CodePagesGuesser::Guess
+					@DESCRIPTION:	<p>Guess the code page of the given snippet of text. Return that codepage. Always make some guess,
+								and return the level of quality of the guess in the optional parameter 'confidence' - unless its nullptr (which it is by default),
+								and return the number of bytes of BOM (byte-order-mark) prefix to strip from teh source in 'bytesFromFrontToStrip'
+								unless it is nullptr (which it is by default).</p>
+					*/
 					nonvirtual	CodePage	Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
 			};
 

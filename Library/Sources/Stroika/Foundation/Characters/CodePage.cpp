@@ -6,10 +6,6 @@
 #include	<algorithm>
 #include	<set>
 
-#if		qPlatform_Windows
-	#include	<tchar.h>
-#endif
-
 #include	"../Configuration/Common.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
@@ -89,11 +85,6 @@ namespace	{
 
 
 namespace	{
-			/*
-			@CLASS:			TableDrivenCodePageConverter_<CODEPAGE>
-			@DESCRIPTION:
-					<p>Helper class - probably should not be directly used.</p>
-			*/
 			template	<CodePage CODEPAGE>
 				class	TableDrivenCodePageConverter_ {
 					public:
@@ -166,10 +157,8 @@ namespace	{
 					private:
 						static	const	char16_t	kMap[256];
 				};
-
-
-
 }
+
 
 
 
@@ -327,7 +316,7 @@ namespace {
 
 /*
  ********************************************************************************
- ******************************** CodePageConverter *****************************
+ ************* Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE ****************
  ********************************************************************************
  */
 void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
@@ -345,10 +334,17 @@ void	Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
 	Ensure (*outCharCnt <= outBufSize);
 }
 
+
+
+
+
+
+
 /*
-@METHOD:		CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize
-@DESCRIPTION:	<p>Call to get an upper bound, reasonable buffer size to use to pass to MapFromUNICODE calls.</p>
-*/
+ ********************************************************************************
+ ******************************** CodePageConverter *****************************
+ ********************************************************************************
+ */
 size_t	CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const
 {
 	size_t	resultSize;
@@ -382,23 +378,6 @@ size_t	CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
 	return resultSize;
 }
 
-
-
-
-
-/*
- ********************************************************************************
- ******************************** CodePageConverter *****************************
- ********************************************************************************
- */
-/*
-@METHOD:		CodePageConverter::MapToUNICODE
-@DESCRIPTION:	<p>Map the given multibyte chars in the fCodePage codepage into wide UNICODE
-	characters. Pass in a buffer 'outChars' of
-	size large enough to accomodate those characrters.</p>
-		<p>'outCharCnt' is the size of the output buffer coming in, and it contains the number
-	of UNICODE chars copied out on return.</p>
-*/
 void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const
 {
 	Require (inMBCharCnt == 0 or inMBChars != nullptr);
@@ -1163,7 +1142,7 @@ void	TableDrivenCodePageConverter_<kCodePage_HEBREW>::MapFromUNICODE (const char
 
 /*
  ********************************************************************************
- ******************** TableDrivenCodePageConverter_<kCodePage_ARABIC> ************
+ ******************* TableDrivenCodePageConverter_<kCodePage_ARABIC> ************
  ********************************************************************************
  */
 const	char16_t		TableDrivenCodePageConverter_<kCodePage_ARABIC>::kMap[256] = {
@@ -1530,11 +1509,6 @@ namespace	{
 }
 #endif
 
-/*
-@METHOD:		CodePagesInstalled::GetAll
-@DESCRIPTION:	<p>Returns a list of all code pages installed on the system.
-			This list is returned in sorted order.</p>
-*/
 vector<CodePage>	CodePagesInstalled::GetAll ()
 {
 	if (sCodePages_.empty ()) {
@@ -1560,10 +1534,6 @@ void	CodePagesInstalled::AddIfNotPresent_ (CodePage cp)
 	sCodePages_.insert (cp);
 }
 
-/*
-@METHOD:		CodePagesInstalled::IsCodePageAvailable
-@DESCRIPTION:	<p>Checks if the given code page is installed.</p>
-*/
 bool	CodePagesInstalled::IsCodePageAvailable (CodePage cp)
 {
 	if (sCodePages_.empty ()) {
@@ -1577,19 +1547,13 @@ bool	CodePagesInstalled::IsCodePageAvailable (CodePage cp)
 
 
 
+
+
 /*
  ********************************************************************************
  ********************************** CodePagesGuesser ****************************
  ********************************************************************************
  */
-
-/*
-@METHOD:		CodePagesGuesser::Guess
-@DESCRIPTION:	<p>Guess the code page of the given snippet of text. Return that codepage. Always make some guess,
-			and return the level of quality of the guess in the optional parameter 'confidence' - unless its nullptr (which it is by default),
-			and return the number of bytes of BOM (byte-order-mark) prefix to strip from teh source in 'bytesFromFrontToStrip'
-			unless it is nullptr (which it is by default).</p>
-*/
 CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* confidence, size_t* bytesFromFrontToStrip)
 {
 	if (confidence != nullptr) {
@@ -1654,11 +1618,7 @@ CodePage	CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
 	if (confidence != nullptr) {
 		*confidence = eLow;
 	}
-#if		qPlatform_Windows
 	return Characters::GetDefaultSDKCodePage ();
-#else
-	return kCodePage_UTF8;	// not at all obvious yet what to do for Linux/Mac
-#endif
 }
 
 
@@ -1707,6 +1667,9 @@ void	Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
 		PortableWideStringToNarrow_ (wsStart, wsEnd, codePage, intoResult);
 	#endif
 }
+
+
+
 
 
 

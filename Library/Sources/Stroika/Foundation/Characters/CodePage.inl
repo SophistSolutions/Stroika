@@ -23,10 +23,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-			/*
-			@METHOD:		GetDefaultSDKCodePage
-			@DESCRIPTION:	<p>Returns the assumed code page of @'Led_SDK_Char'.</p>
-			*/
 			inline	CodePage	GetDefaultSDKCodePage ()
 				{
 					#if		qPlatform_Windows
@@ -94,40 +90,14 @@ namespace	Stroika {
 						Require (h == eHandleBOM);
 						Arg_Unused (h);
 					}
-			/*
-			@METHOD:		CodePageConverter::GetHandleBOM
-			@DESCRIPTION:	<p>In UNICODE, files are generally headed by a byte order mark (BOM). This mark is used to indicate
-					if the file is big endian, or little-endian (if the characters are wide-characters). This is true for 2 and 4
-					byte UNICODE (UCS-2, UCS-4) UNICODE, as well as for UTF-X encodings (such as UTF-7 and UTF-8). It is also used
-					to indicate whether or not the file is in a UTF encoding (as byte order doesn't matter in any (most?) of the
-					UTF encodings.</p>
-						<p>The basic rubrick for BOM's is that they are the character 0xfeff, as it would be encoded in the given
-					UTF or UCS encoding.</p>
-						<p>Because of this type of encoding - if you have a 0xfeff character (after decoding) at the beginning of
-					a buffer, there is no way for this routine to know if that was REALLY there, or if it was byte order mark. And its not always
-					desirable for the routine producing these encodings to produce the byte order mark, but sometimes its highly desirable.
-					So - this class lets you get/set a flag to indicate whether or not to process BOMs on input, and whether or not to
-					generate them on encoded outputs.</p>
-						<p>See also @'CodePageConverter::SetHandleBOM', and note that there is an overloaded CTOR that lets you specify
-					CodePageConverter::eHandleBOM as a final argument to automatically set this BOM converter flag.</p>
-			*/
 			inline	bool	CodePageConverter::GetHandleBOM () const
 					{
 						return fHandleBOM;
 					}
-			/*
-			@METHOD:		CodePageConverter::SetHandleBOM
-			@DESCRIPTION:	<p>See also @'CodePageConverter::GetHandleBOM'.</p>
-			*/
 			inline	void	CodePageConverter::SetHandleBOM (bool handleBOM)
 					{
 						fHandleBOM = handleBOM;
 					}
-			/*
-			@METHOD:		CodePageConverter::MapToUNICODE_QuickComputeOutBufSize
-			@DESCRIPTION:	<p>Call to get an upper bound, reasonable buffer size to use to pass to
-						@'CodePageConverter::MapToUNICODE' calls.</p>
-			*/
 			inline	size_t	CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
 				{
 					size_t	resultSize	=	inMBCharCnt;
