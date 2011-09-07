@@ -49,7 +49,7 @@ namespace	Stroika {
 				inline	const T* Optional<T>::operator-> () const
 					{
 						if (fValue.IsNull ()) {
-							Exception::DoThrow (bad_alloc ());
+							Execution::DoThrow (bad_alloc ());
 						}
 						return &fValue.GetRep ();
 					}
@@ -57,7 +57,7 @@ namespace	Stroika {
 				inline	T* Optional<T>::operator-> ()
 					{
 						if (fValue.IsNull ()) {
-							Exception::DoThrow (bad_alloc ());
+							Execution::DoThrow (bad_alloc ());
 						}
 						return &fValue.GetRep ();
 					}
@@ -65,7 +65,7 @@ namespace	Stroika {
 				inline	const T& Optional<T>::operator* () const
 					{
 						if (fValue.IsNull ()) {
-							Exception::DoThrow (bad_alloc ());
+							Execution::DoThrow (bad_alloc ());
 						}
 						return fValue.GetRep ();
 					}
@@ -73,7 +73,7 @@ namespace	Stroika {
 				inline	T& Optional<T>::operator* ()
 					{
 						if (fValue.IsNull ()) {
-							Exception::DoThrow (bad_alloc ());
+							Execution::DoThrow (bad_alloc ());
 						}
 						return fValue.GetRep ();
 					}
@@ -81,7 +81,7 @@ namespace	Stroika {
 				inline	Optional<T>::operator T () const
 					{
 						if (fValue.IsNull ()) {
-							Exception::DoThrow (bad_alloc ());
+							Execution::DoThrow (bad_alloc ());
 						}
 						return *fValue;
 					}

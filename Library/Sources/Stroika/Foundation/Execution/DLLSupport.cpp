@@ -76,7 +76,7 @@ DLLHandle	DLLLoader::LoadDLL (const TChar* dllName, int flags)
 		// either main module or not found
 		const char*	err = dlerror ();
 		if (err != nullptr) {
-			Exception::DoThrow (DLLException (err));
+			Execution::DoThrow (DLLException (err));
 		}
 	}
 	return module;
@@ -93,7 +93,7 @@ DLLLoader::~DLLLoader ()
 	if (dlclose (fModule) != 0) {
 		const char*	err = dlerror ();
 		if (err != nullptr) {
-			Exception::DoThrow (DLLException (err));
+			Execution::DoThrow (DLLException (err));
 		}
 	}
 #endif
