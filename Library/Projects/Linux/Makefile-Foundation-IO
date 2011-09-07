@@ -27,8 +27,8 @@ all:	$(Objs) $(SubDirs)
 NETWORK_OBJS := $(shell cd Network; make -s list-objs)
 NETWORK_OBJS := $(addprefix "./Network/", $(NETWORK_OBJS))
 
-list-objs:
-	echo $(Objs) $(NETWORK_OBJS)
+list-objs::
+	@echo $(NETWORK_OBJS)
 
 
 Network:
