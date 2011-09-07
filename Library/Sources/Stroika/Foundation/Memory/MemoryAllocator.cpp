@@ -7,6 +7,7 @@
 #include	<set>
 
 #include	"../Execution/AtomicOperations.h"
+#include	"../Execution/Exceptions.h"
 #include	"../Execution/ModuleInit.h"
 
 #include	"MemoryAllocator.h"
@@ -69,7 +70,7 @@ void*	SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
 {
 	void*	p	=	malloc (size);
 	if (p == nullptr) {
-		throw bad_alloc ();
+		Execution::DoThrow (bad_alloc ());
 	}
 	return p;
 }
