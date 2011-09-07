@@ -3,6 +3,12 @@
  */
 #include	"../../../StroikaPreComp.h"
 
+#if		qPlatform_Windows
+	#include	<Windows.h>
+#else
+	#error "WINDOWS REQUIRED FOR THIS MODULE"
+#endif
+
 #include	"../../../Debug/Trace.h"
 #include	"../../../Execution/Exceptions.h"
 
@@ -18,7 +24,11 @@ using	namespace	Stroika::Foundation::Characters::Platform::Windows;
 
 
 
-
+/*
+ ********************************************************************************
+ *************** Characters::Platform::Windows::BSTRStringToUTF8 ****************
+ ********************************************************************************
+ */
 string	Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr)
 {
 	if (bstr == nullptr) {
@@ -34,6 +44,14 @@ string	Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr)
 	}
 }
 
+
+
+
+/*
+ ********************************************************************************
+ *************** Characters::Platform::Windows::UTF8StringToBSTR ****************
+ ********************************************************************************
+ */
 BSTR	Characters::Platform::Windows::UTF8StringToBSTR (const char* ws)
 {
 	RequireNotNull (ws);
@@ -47,6 +65,13 @@ BSTR	Characters::Platform::Windows::UTF8StringToBSTR (const char* ws)
 	return result;
 }
 
+
+
+/*
+ ********************************************************************************
+ ******************* Characters::Platform::Windows::BSTR2wstring ****************
+ ********************************************************************************
+ */
 wstring	Characters::Platform::Windows::BSTR2wstring (VARIANT b)
 {
 	if (b.vt == VT_BSTR) {
@@ -77,11 +102,7 @@ void	PlatformCodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMB
 	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 //	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
-#if		qPlatform_Windows
 	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
-#else
-	AssertNotImplemented ();
-#endif
 #if 0
 // enable to debug cases (e.g. caused when you read a CRLF file with fstream
 // in text mode, and get - somehow - stuff that triggers this ??? - with convert to
@@ -100,11 +121,7 @@ void	PlatformCodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t i
 	Require (inCharCnt == 0 or inChars != nullptr);
 	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
-#if		qPlatform_Windows
 	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
-#else
-	AssertNotImplemented ();
-#endif
 }
 
 
