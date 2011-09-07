@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	<cctype>
+
 #include	"../Debug/Assertions.h"
 
 namespace	Stroika {	
@@ -43,6 +45,34 @@ namespace	Stroika {
 					{
 						return GetCharacterCode ();
 					}
+			inline	bool	Character::IsAscii () const
+				{
+					return fCharacterCode <= 0x7f;
+				}
+			inline	bool	Character::IsWhitespace () const
+				{
+					return IsWhitespace ();
+				}
+			inline	bool	Character::IsDigit () const
+				{
+					return !!iswdigit (fCharacterCode);
+				}
+			inline	bool	Character::IsHexDigit () const
+				{
+					return !!iswxdigit (fCharacterCode);
+				}
+			inline	bool	Character::IsAlphabetic () const
+				{
+					return !!iswalpha (fCharacterCode);
+				}
+			inline	bool	Character::IsAlphaNumeric () const
+				{
+					return !!iswalnum (fCharacterCode);
+				}
+			inline	bool	Character::IsPunctuation () const
+				{
+					return !!iswpunct (fCharacterCode);
+				}
 
 			
 			

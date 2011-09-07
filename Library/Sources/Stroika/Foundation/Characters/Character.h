@@ -70,6 +70,16 @@ namespace	Stroika {
 						wchar_t	As () const;
 #endif
 
+
+				public:
+					nonvirtual	bool	IsAscii () const;
+					nonvirtual	bool	IsWhitespace () const;
+					nonvirtual	bool	IsDigit () const;
+					nonvirtual	bool	IsHexDigit () const;
+					nonvirtual	bool	IsAlphabetic () const;
+					nonvirtual	bool	IsAlphaNumeric () const;
+					nonvirtual	bool	IsPunctuation () const;
+
 				private:
 					wchar_t		fCharacterCode;
 			};
