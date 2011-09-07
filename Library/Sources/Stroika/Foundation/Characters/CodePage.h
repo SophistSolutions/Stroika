@@ -107,9 +107,18 @@ namespace	Stroika {
 					bool	fHandleBOM;
 
 				public:
+					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
+					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
+
 					nonvirtual	size_t	MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
+
+					nonvirtual	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+					nonvirtual	void	MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+
+					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
+					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
 					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
 
 				private:
@@ -135,99 +144,27 @@ namespace	Stroika {
 
 
 
-			/*
-			@CLASS:			TableDrivenCodePageConverter<CODEPAGE>
-			@DESCRIPTION:
-					<p>Helper class - probably should not be directly used.</p>
-			*/
-			template	<CodePage CODEPAGE>
-				class	TableDrivenCodePageConverter {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-				};
-
-
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_ANSI> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_MAC> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_PC> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_PCA> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_GREEK> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_Turkish> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_HEBREW> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-			template<>
-				class	TableDrivenCodePageConverter<kCodePage_ARABIC> {
-					public:
-						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-						static	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
-					private:
-						static	const	wchar_t	kMap[256];
-				};
-
-
-
-
-
 
 
 
 
 			class	UTF8Converter {
 				public:
+					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
+					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
+
 					nonvirtual	size_t	MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
+
+					nonvirtual	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+					nonvirtual	void	MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 					nonvirtual	void	MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+
+					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
+					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
 					nonvirtual	size_t	MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
 			};
+
 
 
 

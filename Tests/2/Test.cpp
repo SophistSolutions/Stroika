@@ -18,6 +18,11 @@ using	namespace	Stroika::Foundation;
 using	Memory::VariantValue;
 
 
+//#include <cuchar>
+//#include <uchar.h>
+
+char16_t  a;
+char32_t  b;
 
 /*
  * Validating JSON parse results:

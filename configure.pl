@@ -116,6 +116,7 @@ sub WriteDefault
 	print (OUT "//Out of alphabetic order because other defaults depend on qDebug\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Assertions_.h\"\n");
 	print (OUT "\n");
+	print (OUT "#include	\"Private/Defaults_Characters_Character_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_StringUtils_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_TChar_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_CompilerAndStdLib_.h\"\n");

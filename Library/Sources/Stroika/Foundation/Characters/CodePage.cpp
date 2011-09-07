@@ -74,6 +74,103 @@ using	namespace	Characters;
 
 
 
+#if		qPlatform_Windows
+namespace	{
+	inline	const wchar_t*	SAFE_WIN_WCHART_CAST_ (const char16_t* t)		{ return reinterpret_cast<const wchar_t*> (t); }
+	inline	wchar_t*		SAFE_WIN_WCHART_CAST_ (char16_t* t)				{ return reinterpret_cast<wchar_t*> (t); }
+	inline	const char16_t*	SAFE_WIN_WCHART_CAST_ (const wchar_t* t)		{ return reinterpret_cast<const char16_t*> (t); }
+	inline	char16_t*		SAFE_WIN_WCHART_CAST_ (wchar_t* t)				{ return reinterpret_cast<char16_t*> (t); }
+}
+#endif
+
+
+
+
+
+
+namespace	{
+			/*
+			@CLASS:			TableDrivenCodePageConverter_<CODEPAGE>
+			@DESCRIPTION:
+					<p>Helper class - probably should not be directly used.</p>
+			*/
+			template	<CodePage CODEPAGE>
+				class	TableDrivenCodePageConverter_ {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+				};
+
+
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_ANSI> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_MAC> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_PC> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_PCA> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_GREEK> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_Turkish> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_HEBREW> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+			template<>
+				class	TableDrivenCodePageConverter_<kCodePage_ARABIC> {
+					public:
+						static	void	MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt);
+						static	void	MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt);
+					private:
+						static	const	char16_t	kMap[256];
+				};
+
+
+
+}
+
 
 
 namespace {
@@ -302,7 +399,7 @@ size_t	CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
 		<p>'outCharCnt' is the size of the output buffer coming in, and it contains the number
 	of UNICODE chars copied out on return.</p>
 */
-void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const
 {
 	Require (inMBCharCnt == 0 or inMBChars != nullptr);
 	RequireNotNull (outCharCnt);
@@ -317,14 +414,14 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		}
 	}
 	switch (fCodePage) {
-		case	kCodePage_ANSI:		TableDrivenCodePageConverter<kCodePage_ANSI>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_MAC:		TableDrivenCodePageConverter<kCodePage_MAC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_PC:		TableDrivenCodePageConverter<kCodePage_PC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_PCA:		TableDrivenCodePageConverter<kCodePage_PCA>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_GREEK:	TableDrivenCodePageConverter<kCodePage_GREEK>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_Turkish:	TableDrivenCodePageConverter<kCodePage_Turkish>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_HEBREW:	TableDrivenCodePageConverter<kCodePage_HEBREW>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_ARABIC:	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_ANSI:		TableDrivenCodePageConverter_<kCodePage_ANSI>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_MAC:		TableDrivenCodePageConverter_<kCodePage_MAC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_PC:		TableDrivenCodePageConverter_<kCodePage_PC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_PCA:		TableDrivenCodePageConverter_<kCodePage_PCA>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_GREEK:	TableDrivenCodePageConverter_<kCodePage_GREEK>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_Turkish:	TableDrivenCodePageConverter_<kCodePage_Turkish>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_HEBREW:	TableDrivenCodePageConverter_<kCodePage_HEBREW>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_ARABIC:	TableDrivenCodePageConverter_<kCodePage_ARABIC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt); break;
 		case	kCodePage_UNICODE_WIDE: {
 			const wchar_t*	inWChars	=	reinterpret_cast<const wchar_t*> (inMBChars);
 			size_t			inWCharCnt	=	(inMBCharCnt / sizeof (wchar_t));
@@ -349,47 +446,47 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		}
 		break;
 		default: {
-#if		qPlatform_Windows
-			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
-#endif
+			#if		qPlatform_Windows
+				Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, SAFE_WIN_WCHART_CAST_ (outChars), outCharCnt);
+			#else
+				Execution::DoThrow (CodePageNotSupportedException (fCodePage));
+			#endif
 		}
 		break;
 	}
 
-#if		qDebug
+#if		qDebug && qPlatform_Windows
 	// Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
-	if (fCodePage == kCodePage_ANSI or
-		fCodePage == kCodePage_MAC or
-		fCodePage == kCodePage_PC or
-		fCodePage == kCodePage_PCA or
-		fCodePage == kCodePage_GREEK or
-		fCodePage == kCodePage_Turkish or
-		fCodePage == kCodePage_HEBREW or
-		fCodePage == kCodePage_ARABIC or
-		fCodePage == kCodePage_UTF8
-	) {
+	{
 		size_t	tstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<wchar_t>	tstBuf (*outCharCnt);
-
-#if		qPlatform_Windows
 		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
-#endif
 		Assert (tstCharCnt == *outCharCnt);
 		Assert (memcmp (tstBuf, outChars, sizeof (wchar_t)*tstCharCnt) == 0);
 	}
 #endif
 }
 
-void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
+{
+// Not really right - but hopefully adquate for starters -- LGP 2011-09-06
+	SmallStackBuffer<char16_t>	tmpBuf (*outCharCnt);
+	MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf, outCharCnt);
+	for (size_t i = 0; i < *outCharCnt; ++i) {
+		outChars[i] = tmpBuf[i];
+	}
+}
+
+void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
 	Require (inCharCnt == 0 or inChars != nullptr);
 	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
 	switch (fCodePage) {
-		case	kCodePage_ANSI:		TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_MAC:		TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_PC:		TableDrivenCodePageConverter<kCodePage_PC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
-		case	kCodePage_PCA:		TableDrivenCodePageConverter<kCodePage_PCA>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_ANSI:		TableDrivenCodePageConverter_<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_MAC:		TableDrivenCodePageConverter_<kCodePage_MAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_PC:		TableDrivenCodePageConverter_<kCodePage_PC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
+		case	kCodePage_PCA:		TableDrivenCodePageConverter_<kCodePage_PCA>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
 		case	kCodePage_UNICODE_WIDE: {
 			if (*outCharCnt >= 2) {
 				wchar_t*	outWBytes		=	reinterpret_cast<wchar_t*> (outChars);
@@ -453,7 +550,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 					useOutCharCount = 0;
 				}
 			}
-			Characters::Platform::Windows::PlatformCodePageConverter (kCodePage_UTF7).MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
+			Characters::Platform::Windows::PlatformCodePageConverter (kCodePage_UTF7).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, useOutChars, &useOutCharCount);
 			if (GetHandleBOM ()) {
 				if (*outCharCnt >= 5) {
 					useOutCharCount += 5;
@@ -489,7 +586,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		break;
 		default: {
 #if		qPlatform_Windows
-			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+			Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, outChars, outCharCnt);
 #else
 			Execution::DoThrow (CodePageNotSupportedException (fCodePage));
 #endif
@@ -498,11 +595,11 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 
 #if		qDebug && qPlatform_Windows
 	// Assure my baked tables perform the same as the builtin Win32 API
-	if (fCodePage == kCodePage_ANSI or fCodePage == kCodePage_MAC or fCodePage == kCodePage_PC or fCodePage == kCodePage_PCA) {
+	{
 		size_t						win32TstCharCnt	=	*outCharCnt;
 		SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
 
-		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, win32TstBuf, &win32TstCharCnt);
+		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, win32TstBuf, &win32TstCharCnt);
 
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 		// used for bad conversions. Reason is cuz for characters that don't map - our table and
@@ -513,7 +610,15 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 #endif
 }
 
-
+void	CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+{
+// Not really right - but hopefully adquate for starters -- LGP 2011-09-06
+	SmallStackBuffer<char16_t>	tmpBuf (*outCharCnt);
+	for (size_t i = 0; i < inCharCnt; ++i) {
+		tmpBuf[i] = inChars[i];
+	}
+	MapFromUNICODE (tmpBuf, inCharCnt, outChars, outCharCnt);
+}
 
 
 
@@ -530,10 +635,10 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 
 /*
  ********************************************************************************
- ***************** TableDrivenCodePageConverter<kCodePage_ANSI> *****************
+ ***************** TableDrivenCodePageConverter_<kCodePage_ANSI> *****************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_ANSI>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_ANSI>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -568,7 +673,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_ANSI>::kMap[256] = {
 		0xf8,		0xf9,		0xfa,		0xfb,		0xfc,		0xfd,		0xfe,		0xff,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_ANSI>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_ANSI>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -577,7 +682,7 @@ void	TableDrivenCodePageConverter<kCodePage_ANSI>::MapToUNICODE (const char* inM
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_ANSI>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -607,10 +712,10 @@ void	TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (const wchar_t
 
 /*
  ********************************************************************************
- ********************* TableDrivenCodePageConverter<kCodePage_MAC> **************
+ ******************** TableDrivenCodePageConverter_<kCodePage_MAC> **************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_MAC>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_MAC>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -645,7 +750,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_MAC>::kMap[256] = {
 		0xaf,		0x2d8,		0x2d9,		0x2da,		0xb8,		0x2dd,		0x2db,		0x2c7,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_MAC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_MAC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -654,7 +759,7 @@ void	TableDrivenCodePageConverter<kCodePage_MAC>::MapToUNICODE (const char* inMB
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_MAC>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -681,10 +786,10 @@ void	TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (const wchar_t*
 
 /*
  ********************************************************************************
- ********************* TableDrivenCodePageConverter<kCodePage_PC> ***************
+ ********************* TableDrivenCodePageConverter_<kCodePage_PC> ***************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_PC>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_PC>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -719,7 +824,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_PC>::kMap[256] = {
 		0xb0,		0x2219,		0xb7,		0x221a,		0x207f,		0xb2,		0x25a0,		0xa0,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_PC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_PC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -728,7 +833,7 @@ void	TableDrivenCodePageConverter<kCodePage_PC>::MapToUNICODE (const char* inMBC
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_PC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_PC>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -757,10 +862,10 @@ void	TableDrivenCodePageConverter<kCodePage_PC>::MapFromUNICODE (const wchar_t* 
 
 /*
  ********************************************************************************
- ********************* TableDrivenCodePageConverter<kCodePage_PCA> **************
+ ******************** TableDrivenCodePageConverter_<kCodePage_PCA> **************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_PCA>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_PCA>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -795,7 +900,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_PCA>::kMap[256] = {
 		0xb0,		0xa8,		0xb7,		0xb9,		0xb3,		0xb2,		0x25a0,		0xa0,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_PCA>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_PCA>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -804,7 +909,7 @@ void	TableDrivenCodePageConverter<kCodePage_PCA>::MapToUNICODE (const char* inMB
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_PCA>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_PCA>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -832,10 +937,10 @@ void	TableDrivenCodePageConverter<kCodePage_PCA>::MapFromUNICODE (const wchar_t*
 
 /*
  ********************************************************************************
- ******************** TableDrivenCodePageConverter<kCodePage_GREEK> *************
+ ******************** TableDrivenCodePageConverter_<kCodePage_GREEK> *************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_GREEK>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_GREEK>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -870,7 +975,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_GREEK>::kMap[256] = {
 		0x3c8,		0x3c9,		0x3ca,		0x3cb,		0x3cc,		0x3cd,		0x3ce,		0xf8fb,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_GREEK>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_GREEK>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -879,7 +984,7 @@ void	TableDrivenCodePageConverter<kCodePage_GREEK>::MapToUNICODE (const char* in
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_GREEK>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_GREEK>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -907,10 +1012,10 @@ void	TableDrivenCodePageConverter<kCodePage_GREEK>::MapFromUNICODE (const wchar_
 
 /*
  ********************************************************************************
- **************** TableDrivenCodePageConverter<kCodePage_Turkish> ***************
+ **************** TableDrivenCodePageConverter_<kCodePage_Turkish> ***************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_Turkish>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_Turkish>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -945,7 +1050,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_Turkish>::kMap[256] = {
 		0xf8,		0xf9,		0xfa,		0xfb,		0xfc,		0x131,		0x15f,		0xff,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_Turkish>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_Turkish>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -954,7 +1059,7 @@ void	TableDrivenCodePageConverter<kCodePage_Turkish>::MapToUNICODE (const char* 
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_Turkish>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_Turkish>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -983,10 +1088,10 @@ void	TableDrivenCodePageConverter<kCodePage_Turkish>::MapFromUNICODE (const wcha
 
 /*
  ********************************************************************************
- ***************** TableDrivenCodePageConverter<kCodePage_HEBREW> ***************
+ **************** TableDrivenCodePageConverter_<kCodePage_HEBREW> ***************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_HEBREW>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_HEBREW>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -1021,7 +1126,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_HEBREW>::kMap[256] = {
 		0x5e8,		0x5e9,		0x5ea,		0xf894,		0xf895,		0x200e,		0x200f,		0xf896,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_HEBREW>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_HEBREW>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -1030,7 +1135,7 @@ void	TableDrivenCodePageConverter<kCodePage_HEBREW>::MapToUNICODE (const char* i
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_HEBREW>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_HEBREW>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -1058,10 +1163,10 @@ void	TableDrivenCodePageConverter<kCodePage_HEBREW>::MapFromUNICODE (const wchar
 
 /*
  ********************************************************************************
- ******************** TableDrivenCodePageConverter<kCodePage_ARABIC> ************
+ ******************** TableDrivenCodePageConverter_<kCodePage_ARABIC> ************
  ********************************************************************************
  */
-const	wchar_t		TableDrivenCodePageConverter<kCodePage_ARABIC>::kMap[256] = {
+const	char16_t		TableDrivenCodePageConverter_<kCodePage_ARABIC>::kMap[256] = {
 		0x0,		0x1,		0x2,		0x3,		0x4,		0x5,		0x6,		0x7,
 		0x8,		0x9,		0xa,		0xb,		0xc,		0xd,		0xe,		0xf,
 		0x10,		0x11,		0x12,		0x13,		0x14,		0x15,		0x16,		0x17,
@@ -1096,7 +1201,7 @@ const	wchar_t		TableDrivenCodePageConverter<kCodePage_ARABIC>::kMap[256] = {
 		0x651,		0xf9,		0x652,		0xfb,		0xfc,		0x200e,		0x200f,		0x6d2,
 };
 
-void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_ARABIC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inMBCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -1105,7 +1210,7 @@ void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapToUNICODE (const char* i
 	*outCharCnt = nCharsToCopy;
 }
 
-void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+void	TableDrivenCodePageConverter_<kCodePage_ARABIC>::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
 {
 	size_t	nCharsToCopy	=	min (inCharCnt, *outCharCnt);
 	for (size_t i = 0; i < nCharsToCopy; ++i) {
@@ -1138,7 +1243,7 @@ void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar
  ********************************************************************************
  */
 
-void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const
 {
 	Require (inMBCharCnt == 0 or inMBChars != nullptr);
 	RequireNotNull (outCharCnt);
@@ -1233,11 +1338,18 @@ void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wch
 		//		*sourceStart = source;
 		//		*targetStart = target;
 		//		return result;
-		*outCharCnt = (reinterpret_cast<wchar_t*> (target) - outChars);
+		*outCharCnt = (reinterpret_cast<char16_t*> (target) - outChars);
 	}
 }
 
-void	UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
+{
+// Not really right - but hopefully adquate for starters -- LGP 2011-09-06
+	SmallStackBuffer<char16_t>	tmpBuf (*outCharCnt);
+	MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf, outCharCnt);
+}
+
+void	UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
 	/*
 	 *	NOTE - based on ConvertUTF16toUTF8 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
@@ -1380,6 +1492,19 @@ void	UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, ch
 		*outCharCnt = (outP - outChars);
 	#endif
 }
+
+void	UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+{
+// Not really right - but hopefully adquate for starters -- LGP 2011-09-06
+	SmallStackBuffer<char16_t>	tmpBuf (*outCharCnt);
+	for (size_t i = 0; i < inCharCnt; ++i) {
+		tmpBuf[i] = inChars[i];
+	}
+	MapFromUNICODE (tmpBuf, inCharCnt, outChars, outCharCnt);
+}
+
+
+
 
 
 
