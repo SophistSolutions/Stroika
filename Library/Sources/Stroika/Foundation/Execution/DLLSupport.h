@@ -7,10 +7,9 @@
 #include	"../StroikaPreComp.h"
 
 #if		qPlatform_Windows
-	#include	<tchar.h>
 	#include	<Windows.h>
 #else
-	#include <dlfcn.h>
+	#include	<dlfcn.h>
 #endif
 
 #include	"../Characters/TString.h"

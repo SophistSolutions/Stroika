@@ -9,8 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"../Debug/Assertions.h"
 #include	"../Characters/StringUtils.h"
+#include	"../Debug/Assertions.h"
+#include	"../Execution/Exceptions.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
