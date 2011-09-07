@@ -45,7 +45,7 @@ namespace	{
 					}
 			};
 
-			Thread	thread (&FRED::DoIt, "foo");
+			Thread	thread (&FRED::DoIt, const_cast<char*> ("foo"));
 			thread.Start ();
 			thread.WaitForDone ();
 		}
