@@ -98,7 +98,6 @@
 #if		0
 SHORT TERM THINGS TODO:
 
-	(0)	qENABLE_SPECIALIZTION_STRHACK
 	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
 		it is all correct for each (especially SetStorage () sutff looks quesitonable)
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
@@ -121,14 +120,6 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 
 #endif
 
-
-
-//tmphack to workaround gcc compilation issue - not sure if my bug or theirs yet...
-#if qPlatform_Windows
-#define qENABLE_SPECIALIZTION_STRHACK 1
-#else
-#define qENABLE_SPECIALIZTION_STRHACK 0
-#endif
 
 
 namespace	Stroika {
@@ -259,15 +250,6 @@ namespace	Stroika {
 						nonvirtual	T	As () const;
 					template	<typename	T>
 						nonvirtual	void	As (T* into) const;
-#if qENABLE_SPECIALIZTION_STRHACK
-					template	<>
-						nonvirtual	wstring	As () const;
-					template	<>
-						nonvirtual	void	As (wstring* into) const;
-					// Always returns a NUL-terminated 'C'-string
-					template	<>
-						nonvirtual	const wchar_t*	As () const;
-#endif
 
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <string> supported)
@@ -276,12 +258,6 @@ namespace	Stroika {
 						nonvirtual	T	AsUTF8 () const;
 					template	<typename	T>
 						nonvirtual	void	AsUTF8 (T* into) const;
-#if qENABLE_SPECIALIZTION_STRHACK
-					template	<>
-						nonvirtual	string	AsUTF8 () const;
-					template	<>
-						nonvirtual	void	AsUTF8 (string* into) const;
-#endif
 
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string MUST be valid ascii characters (asserted)
@@ -290,12 +266,6 @@ namespace	Stroika {
 						nonvirtual	T	AsASCII () const;
 					template	<typename	T>
 						nonvirtual	void	AsASCII (T* into) const;
-#if qENABLE_SPECIALIZTION_STRHACK
-					template	<>
-						nonvirtual	string	AsASCII () const;
-					template	<>
-						nonvirtual	void	AsASCII (string* into) const;
-#endif
 
 
 
@@ -339,11 +309,23 @@ namespace	Stroika {
 					friend	String	operator+ (const String& lhs, const String& rhs);
             };
 
-// MAYBE FIX FOR qENABLE_SPECIALIZTION_STRHACK is TODO THIS...
+			template	<>
+				void	String::As (wstring* into) const;
+			template	<>
+				wstring	String::As () const;
+			template	<>
+				const wchar_t*	String::As () const;
+
 			template	<>
 				void	String::AsUTF8 (string* into) const;
 			template	<>
+				string	String::AsUTF8 () const;
+
+			template	<>
 				void	String::AsASCII (string* into) const;
+			template	<>
+				string	String::AsASCII () const;
+
 
 
 

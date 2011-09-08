@@ -13,12 +13,6 @@
 
 
 
-//tmphack to workaround gcc compilation issue - not sure if my bug or theirs yet...
-#if qPlatform_Windows
-#define qENABLE_SPECIALIZTION_STRHACK 1
-#else
-#define qENABLE_SPECIALIZTION_STRHACK 0
-#endif
 
 
 /*
@@ -63,14 +57,6 @@ namespace	Stroika {
 					template	<typename T>
 						T	As () const;
 
-// SHOULD do specialization for typedef unsigned short char16_t and char32_t as well!
-
-#if qENABLE_SPECIALIZTION_STRHACK
-					template<>
-						wchar_t	As () const;
-#endif
-
-
 				public:
 					nonvirtual	bool	IsAscii () const;
 					nonvirtual	bool	IsWhitespace () const;
@@ -83,6 +69,10 @@ namespace	Stroika {
 				private:
 					wchar_t		fCharacterCode;
 			};
+
+			template<>
+				wchar_t	Character::As () const;
+
 
 			bool	operator== (Character lhs, Character rhs);
 			bool	operator!= (Character lhs, Character rhs);
