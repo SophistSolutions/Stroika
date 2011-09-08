@@ -36,14 +36,14 @@ if ($isBuildingMode) {
 
 my $useBld	=	$BLD_TRG;
 if (lc ($BLD_TRG) eq "rebuild") {
-	$useBld = "build";	# we already deleted everything above
+	$useBld = "Build";	# we already deleted everything above
 }
 
 # No point in sub-builds for clean/clobber, since we adequately cleaned with the
 # above
 if ($isBuildingMode) {
-	system ("cd Library; perl buildall.pl $BLD_TRG");
-	system ("cd Tests; perl buildall.pl $BLD_TRG");
+	system ("cd Library; perl buildall.pl $useBld");
+	system ("cd Tests; perl buildall.pl $useBld");
 }
 
 system ("sh -c 'date'");
