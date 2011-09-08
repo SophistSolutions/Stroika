@@ -11,6 +11,8 @@
 #include	"Stroika/Foundation/Execution/Thread.h"
 #include	"Stroika/Foundation/Execution/Sleep.h"
 
+#include	"../TestHarness/TestHarness.h"
+
 
 using	namespace	Stroika::Foundation;
 
@@ -21,14 +23,6 @@ using	Execution::Thread;
 
 
 
-
-namespace	{
-	void	_ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
-		{
-			cerr << "FAILED: " << fileName << ": " << lineNum << endl;
-			_exit (EXIT_FAILURE);
-		}
-}
 
 
 
@@ -150,28 +144,18 @@ namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			try {
-				RegressionTest1_ ();
-				RegressionTest2_ ();
-				RegressionTest3_ ();
-			}
-			catch (...) {
-				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
-				_exit (EXIT_FAILURE);
-			}
+			RegressionTest1_ ();
+			RegressionTest2_ ();
+			RegressionTest3_ ();
 		}
 }
 
 
 
-
-int main(int argc, const char* argv[])
+int		main (int argc, const char* argv[])
 {
-#if		qDebug
-	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
-#endif
-	DoRegressionTests_ ();
-
-	cout << "Succeeded" << endl;
+	Stroika::TestHarness::Setup ();
+	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 	return EXIT_SUCCESS;
 }
+

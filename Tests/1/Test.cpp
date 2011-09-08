@@ -16,18 +16,13 @@
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
 
+#include	"../TestHarness/TestHarness.h"
 
 using	namespace	Stroika::Foundation;
 
 
 
-namespace	{
-	void	_ASSERT_HANDLER_(const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
-		{
-			cerr << "FAILED: " << fileName << ": " << lineNum << endl;
-			_exit (EXIT_FAILURE);
-		}
-}
+
 
 
 
@@ -171,13 +166,9 @@ namespace	{
 
 
 
-int main(int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
-#if		qDebug
-	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
-#endif
-	DoRegressionTests_ ();
-
-	cout << "Succeeded" << endl;
+	Stroika::TestHarness::Setup ();
+	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 	return EXIT_SUCCESS;
 }

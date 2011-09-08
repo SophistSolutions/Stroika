@@ -10,21 +10,11 @@
 #include	"Stroika/Foundation/Time/Realtime.h"
 #include	"Stroika/Foundation/Characters/String.h"
 
+#include	"../TestHarness/TestHarness.h"
+
 
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
-
-
-
-
-namespace	{
-	void	_ASSERT_HANDLER_(const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
-		{
-			cerr << "FAILED: " << fileName << ": " << lineNum << endl;
-			_exit (EXIT_FAILURE);
-		}
-}
-
 
 
 
@@ -482,52 +472,44 @@ namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			try {
-				Test1_ ();
-				Test2_ ();
-				Test3_ ();
-				Test4_ ();
-				Test5_ ();
+			Test1_ ();
+			Test2_ ();
+			Test3_ ();
+			Test4_ ();
+			Test5_ ();
 
-				const	int	kRecurseDepth = 6;
-				String	testString = L"some dump test";
+			const	int	kRecurseDepth = 6;
+			String	testString = L"some dump test";
 
-			#if		qPrintTimings
-				cout << '\t' << "Recursive build test with depth " << kRecurseDepth << " for " << testString << endl;
-				Time t = GetCurrentTime ();
-			#endif
+		#if		qPrintTimings
+			cout << '\t' << "Recursive build test with depth " << kRecurseDepth << " for " << testString << endl;
+			Time t = GetCurrentTime ();
+		#endif
 
-				String s = Test6_ (testString, kRecurseDepth);	// returns length 114688 for depth 6
-				Assert (s.GetLength () ==  (ipow (4,kRecurseDepth) * 2 * testString.GetLength ()));
+			String s = Test6_ (testString, kRecurseDepth);	// returns length 114688 for depth 6
+			Assert (s.GetLength () ==  (ipow (4,kRecurseDepth) * 2 * testString.GetLength ()));
 
-			#if		qPrintTimings
-				t = GetCurrentTime () - t;
-				cout << tab << "finished Recursive build test. Time elapsed = " << t << " length = " << s.GetLength () << endl;
-			#endif
+		#if		qPrintTimings
+			t = GetCurrentTime () - t;
+			cout << tab << "finished Recursive build test. Time elapsed = " << t << " length = " << s.GetLength () << endl;
+		#endif
 
-				Test7_ ();
-				Test8_ReadOnlyStrings_ ();
-				Test9_StringVersusStdCString_ ();
-				Test10_ConvertToFromSTDStrings_ ();
-				Test11_Trim_ ();
-			}
-			catch (...) {
-				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
-				_exit (EXIT_FAILURE);
-			}
+			Test7_ ();
+			Test8_ReadOnlyStrings_ ();
+			Test9_StringVersusStdCString_ ();
+			Test10_ConvertToFromSTDStrings_ ();
+			Test11_Trim_ ();
 		}
 }
 
 
 
 
-int		main(int argc, const char* argv[])
-{
-#if		qDebug
-	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
-#endif
-	DoRegressionTests_ ();
 
-	cout << "Succeeded" << endl;
+int		main (int argc, const char* argv[])
+{
+	Stroika::TestHarness::Setup ();
+	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 	return EXIT_SUCCESS;
 }
+

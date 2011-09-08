@@ -462,6 +462,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\3\Test.cpp" />
+    <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\TestHarness\TestHarness.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

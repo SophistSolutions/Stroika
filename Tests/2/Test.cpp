@@ -12,17 +12,15 @@
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Memory/VariantValue.h"
 
+#include	"../TestHarness/TestHarness.h"
+
 
 using	namespace	Stroika::Foundation;
 
 using	Memory::VariantValue;
 
 
-//#include <cuchar>
-//#include <uchar.h>
 
-char16_t  a;
-char32_t  b;
 
 /*
  * Validating JSON parse results:
@@ -30,14 +28,6 @@ char32_t  b;
  */
 
 
-
-namespace	{
-	void	_ASSERT_HANDLER_(const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
-		{
-			cerr << "FAILED: " << fileName << ": " << lineNum << endl;
-			_exit (EXIT_FAILURE);
-		}
-}
 
 
 
@@ -154,27 +144,19 @@ namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			try {
-				DoRegressionTests_Writer_ ();
-				DoRegressionTests_Reader_ ();
-			}
-			catch (...) {
-				cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
-				_exit (EXIT_FAILURE);
-			}
+			DoRegressionTests_Writer_ ();
+			DoRegressionTests_Reader_ ();
 		}
 }
 
 
 
 
-int main(int argc, const char* argv[])
-{
-#if		qDebug
-	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
-#endif
-	DoRegressionTests_ ();
 
-	cout << "Succeeded" << endl;
+int main (int argc, const char* argv[])
+{
+	Stroika::TestHarness::Setup ();
+	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 	return EXIT_SUCCESS;
 }
+
