@@ -5,7 +5,6 @@
 
 #include	<iostream>
 
-
 #include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 
@@ -21,7 +20,16 @@ using	namespace	Stroika::TestHarness;
 namespace	{
 	void	_ASSERT_HANDLER_(const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 		{
-			cerr << "FAILED: " << fileName << ": " << lineNum << endl;
+			if (assertCategory == nullptr) {
+				assertCategory = "Unknown assertion";
+			}
+			if (assertionText == nullptr) {
+				assertionText = "";
+			}
+			if (functionName == nullptr) {
+				functionName = "";
+			}
+			cerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
 			_exit (EXIT_FAILURE);
 		}
 }
