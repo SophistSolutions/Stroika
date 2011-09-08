@@ -53,7 +53,7 @@ clean::
 	done
 
 clobber::
-	@rm $(StroikaFoundationLib)
+	@rm -f $(StroikaFoundationLib)
 
 
 Build:	all
