@@ -112,12 +112,31 @@ namespace	Stroika {
 						return r;
 					}
 
-			inline	size_t			String::length () const { return GetLength (); }
-			inline	const wchar_t*	String::c_str () const { return As<const wchar_t*> (); }
-			// need more overloads
-			inline	size_t String::find (wchar_t c) const { return IndexOf (c); }
-			// need more overloads
-			inline	size_t String::rfind (wchar_t c) const { return RIndexOf (c); }
+			inline	size_t	String::length () const
+				{
+					return GetLength ();
+				}
+			inline	size_t	String::size () const
+				{
+					return GetLength ();
+				}
+			inline	const wchar_t*	String::c_str () const
+				{
+					return As<const wchar_t*> ();
+				}
+			inline	const wchar_t*	String::data () const
+				{
+					// In STL this is not required to NUL-terminate, but our current implementation will (which is OK)
+					return As<const wchar_t*> ();
+				}
+			inline	size_t String::find (wchar_t c) const
+				{
+					return IndexOf (c);
+				}
+			inline	size_t String::rfind (wchar_t c) const
+				{
+					return RIndexOf (c);
+				}
 
 
 

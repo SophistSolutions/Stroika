@@ -81,6 +81,14 @@
  *		AllocModes will be used (we dont document which)
  *
 
+
+ *** NOTES TO WRITEUP:
+ THREAD SAFETY:
+	 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
+	 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+
+
+
  **
  */
 
@@ -112,6 +120,7 @@ SHORT TERM THINGS TODO:
 			> EndsWith- with CI optin
 			> Compare () - returns < less > more =0 for equal- with CI optin
 			> Equals() - with CI optin
+	(5)	Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
 
 
 
@@ -122,11 +131,11 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 
 
 
+
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-            //const size_t    kBadStringIndex   = -1;
             const size_t    kBadStringIndex   = string::npos;
 
             class	String {
@@ -271,12 +280,14 @@ namespace	Stroika {
 
 				// StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
 				public:
-					inline	size_t			length () const;
-					inline	const wchar_t*	c_str () const;
+					nonvirtual	size_t			size () const;
+					nonvirtual	size_t			length () const;
+					nonvirtual	const wchar_t*	data () const;
+					nonvirtual	const wchar_t*	c_str () const;
 					// need more overloads
-					inline	size_t find (wchar_t c) const;
+					nonvirtual	size_t find (wchar_t c) const;
 					// need more overloads
-					inline	size_t rfind (wchar_t c) const;
+					nonvirtual	size_t rfind (wchar_t c) const;
 
 
 				protected:
