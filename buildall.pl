@@ -34,8 +34,17 @@ if ($isBuildingMode) {
 	system ("perl configure.pl --only-if-unconfigured");
 }
 
-system ("cd Library; perl buildall.pl $BLD_TRG");
-system ("cd Tests; perl buildall.pl $BLD_TRG");
+my $useBld	=	$BLD_TRG;
+if (lc ($BLD_TRG) eq "rebuild") {
+	$useBld = "build";	// we already deleted everything above
+}
+
+# No point in sub-builds for clean/clobber, since we adequately cleaned with the
+# above
+if ($isBuildingMode) {
+	system ("cd Library; perl buildall.pl $BLD_TRG");
+	system ("cd Tests; perl buildall.pl $BLD_TRG");
+}
 
 system ("sh -c 'date'");
 if ($isBuildingMode) {
