@@ -5,7 +5,7 @@ local $date = `sh -c date`;
 chomp ($date);
 print "Starting regression test #[1] Cryptography Test: $date ------------------------------\r\n";
 
-DoRunSimpleTestArgv ($ARGV[0], "[1] Cryptography Test", "../../../../Builds/Windows/", "Test1/Test.exe");
+DoRunSimpleTestArgv ($ARGV[0], "[1] Cryptography Test", "../../../../Builds/Windows/", "Test1/Test1.exe");
 
 local $date = `sh -c date`;
 chomp ($date);

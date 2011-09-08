@@ -1,10 +1,10 @@
-CheckFileExists ("../../../../Builds/Windows/Debug-A-32/Test1/Test.exe");
-CheckFileExists ("../../../../Builds/Windows/Release-A-32/Test1/Test.exe");
+CheckFileExists ("../../../../Builds/Windows/Debug-A-32/Test1/Test1.exe");
+CheckFileExists ("../../../../Builds/Windows/Release-A-32/Test1/Test1.exe");
 
-CheckFileExists ("../../../../Builds/Windows/Debug-U-32/Test1/Test.exe");
-CheckFileExists ("../../../../Builds/Windows/Release-U-32/Test1/Test.exe");
-CheckFileExists ("../../../../Builds/Windows/Debug-U-64/Test1/Test.exe");
-CheckFileExists ("../../../../Builds/Windows/Release-U-64/Test1/Test.exe");
+CheckFileExists ("../../../../Builds/Windows/Debug-U-32/Test1/Test1.exe");
+CheckFileExists ("../../../../Builds/Windows/Release-U-32/Test1/Test1.exe");
+CheckFileExists ("../../../../Builds/Windows/Debug-U-64/Test1/Test1.exe");
+CheckFileExists ("../../../../Builds/Windows/Release-U-64/Test1/Test1.exe");
 
 print "[SUCCEEDED]\r\n";
 
