@@ -12,11 +12,11 @@ my $runRegressionTests = $isBuildingMode;
 print ("**************************** STARTING Stroika ****************************\n");
 system ("sh -c 'date'");
 
-if (lc ($BLD_TRG) eq "clobber") {
+if ((lc ($BLD_TRG) eq "clobber") || (lc ($BLD_TRG) eq "rebuild")) {
 	system ("rm -rf Builds");
 	system ("rm -f Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h");
 }
-if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean")) {
+if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean") or (lc ($BLD_TRG) eq "rebuild")) {
 	system ("rm -rf IntermediateFiles");
 }
 

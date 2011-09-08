@@ -7,13 +7,17 @@ if ($BLD_TRG eq '') {
 
 print ("Building library...\n");
 
+my $useBld = lc ($BLD_TRG);
 if ("$^O" eq "linux") {
-    my $useBld = lc ($BLD_TRG);
-    if ($useBld eq "build") {
-	$useBld = "all";
-    }
+	if ($useBld eq "build") {
+		$useBld = "all";
+	}
+	if ($useBld eq "rebuild") {
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library; make clobber");
+		$useBld = "all";
+	}
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library; make $useBld");
 }
 else {
-    system ("cd Projects/VisualStudio.Net-2010; perl buildall.pl $BLD_TRG");
+    system ("cd Projects/VisualStudio.Net-2010; perl buildall.pl $useBld");
 }
