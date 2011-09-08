@@ -36,7 +36,7 @@ if ($isBuildingMode) {
 
 my $useBld	=	$BLD_TRG;
 if (lc ($BLD_TRG) eq "rebuild") {
-	$useBld = "build";	// we already deleted everything above
+	$useBld = "build";	# we already deleted everything above
 }
 
 # No point in sub-builds for clean/clobber, since we adequately cleaned with the
