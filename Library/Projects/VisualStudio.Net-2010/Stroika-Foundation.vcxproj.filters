@@ -258,9 +258,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\CopyOnWrite.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -269,6 +266,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <Filter>Sources\Characters\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.cpp">
+      <Filter>Sources\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -513,9 +513,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\CopyOnWrite.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -527,6 +524,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_Character_.h">
       <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h">
+      <Filter>Sources\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -710,14 +710,14 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\CopyOnWrite.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl">
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl">
       <Filter>Sources\Characters\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
 </Project>

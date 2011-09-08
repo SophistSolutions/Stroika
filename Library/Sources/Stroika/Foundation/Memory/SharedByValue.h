@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Memory_CopyOnWrite_h_
-#define	_Stroika_Foundation_Memory_CopyOnWrite_h_	1
+#ifndef	_Stroika_Foundation_Memory_SharedByValue_h_
+#define	_Stroika_Foundation_Memory_SharedByValue_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -16,17 +16,18 @@ namespace	Stroika {
 
 
 			/*
-			@CLASS:			CopyOnWrite<T>
+			@CLASS:			SharedByValue<T>
 			@DESCRIPTION:	<p>This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
 				to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
 				data structures.</p>
-					<p>This class SHOULD be completely compatible with either Memory::RefCntPtr<> or std::shared_ptr</p>
+					<p>This class should allow SHARED_IMLP to be either Memory::RefCntPtr<> or std::shared_ptr</p>
+					<p>This class template was originally called CopyOnWrite<></p>
 			*/
 			template    <typename	T, typename SHARED_IMLP = RefCntPtr<T>>
-				class	CopyOnWrite : public SHARED_IMLP {
+				class	SharedByValue : public SHARED_IMLP {
 					public:
-						CopyOnWrite ();
-						CopyOnWrite (const CopyOnWrite<T,SHARED_IMLP>& from);
+						SharedByValue ();
+						SharedByValue (const SharedByValue<T,SHARED_IMLP>& from);
 
 					#if		!qCompilerAndStdLib_Supports_lambda_default_argument
 					public:
@@ -38,15 +39,15 @@ namespace	Stroika {
 
 					public:
 						#if		qCompilerAndStdLib_Supports_lambda_default_argument
-						CopyOnWrite (const SHARED_IMLP& from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
-						CopyOnWrite (T* from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
+						SharedByValue (const SHARED_IMLP& from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
+						SharedByValue (T* from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
 						#else
-						CopyOnWrite (const SHARED_IMLP& from, T* (*copier) (const T&) = DefaultElementCopier_);
-						CopyOnWrite (T* from, T* (*copier) (const T&) = DefaultElementCopier_);
+						SharedByValue (const SHARED_IMLP& from, T* (*copier) (const T&) = DefaultElementCopier_);
+						SharedByValue (T* from, T* (*copier) (const T&) = DefaultElementCopier_);
 						#endif
 
 					public:
-						nonvirtual	CopyOnWrite<T,SHARED_IMLP>& operator= (const CopyOnWrite<T,SHARED_IMLP>& src);
+						nonvirtual	SharedByValue<T,SHARED_IMLP>& operator= (const SharedByValue<T,SHARED_IMLP>& src);
 
 					public:
 						/*
@@ -79,7 +80,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Memory_CopyOnWrite_h_*/
+#endif	/*_Stroika_Foundation_Memory_SharedByValue_h_*/
 
 
 
@@ -92,4 +93,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"CopyOnWrite.inl"
+#include	"SharedByValue.inl"

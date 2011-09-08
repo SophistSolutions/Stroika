@@ -112,7 +112,7 @@ namespace	{
 	struct String_Substring_ : public String {
 		class	MyRep_ : public String::StringRep {
 			public:
-				MyRep_ (const Memory::CopyOnWrite<StringRep>& baseString, size_t from, size_t length);
+				MyRep_ (const Memory::SharedByValue<StringRep>& baseString, size_t from, size_t length);
 
 				virtual		StringRep*	Clone () const override;
 
@@ -130,7 +130,7 @@ namespace	{
 				virtual		const Character*	Peek () const override;
 
 			private:
-				Memory::CopyOnWrite<StringRep>	fBase;
+				Memory::SharedByValue<StringRep>	fBase;
 
 				size_t	fFrom;
 				size_t	fLength;
@@ -180,7 +180,7 @@ namespace	{
  ************************************* String ***********************************
  ********************************************************************************
  */
-const	Memory::CopyOnWrite<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+const	Memory::SharedByValue<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
 
 String::String ()
 	: fRep (kEmptyStringRep_)
@@ -829,7 +829,7 @@ void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
  ************************** String_Substring_::MyRep_ ***************************
  ********************************************************************************
  */
-String_Substring_::MyRep_::MyRep_ (const Memory::CopyOnWrite<StringRep>& baseString, size_t from, size_t length)
+String_Substring_::MyRep_::MyRep_ (const Memory::SharedByValue<StringRep>& baseString, size_t from, size_t length)
 	: fBase (baseString)
 	, fFrom (from)
 	, fLength (length)

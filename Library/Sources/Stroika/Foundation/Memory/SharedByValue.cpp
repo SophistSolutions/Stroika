@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	"CopyOnWrite.h"
+#include	"SharedByValue.h"
 
 
 

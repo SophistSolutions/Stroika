@@ -94,7 +94,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	"../Memory/CopyOnWrite.h"
+#include	"../Memory/SharedByValue.h"
 
 #include	"Character.h"
 
@@ -110,8 +110,8 @@ SHORT TERM THINGS TODO:
 		it is all correct for each (especially SetStorage () sutff looks quesitonable)
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
 	(2)	Implement the UTF8 functions
-	(3)	Fix / Re-impemlement the CopyOnWrite() code to not store a POINTER to clone function. Best option is to use FUNCTOR
-		whcih is stored in CopyOnWrite object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use 
+	(3)	Fix / Re-impemlement the SharedByValue() code to not store a POINTER to clone function. Best option is to use FUNCTOR
+		whcih is stored in SharedByValue object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use 
 		some kind of overload so there is a no-cost way todo the most common case of a static (per type) Clone function.
 	(4)	Migrate most of the StringUtils stuff here like:
 			> Contains- with CI optin
@@ -298,12 +298,12 @@ namespace	Stroika {
                     String (StringRep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
                 private:
-                    Memory::CopyOnWrite<StringRep>	fRep;
+                    Memory::SharedByValue<StringRep>	fRep;
 
                     static	StringRep*	Clone_ (const StringRep& rep);
 
 				private:
-					static	const	Memory::CopyOnWrite<String::StringRep>	kEmptyStringRep_;
+					static	const	Memory::SharedByValue<String::StringRep>	kEmptyStringRep_;
 
 				private:
 					/*

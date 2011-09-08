@@ -10,11 +10,11 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)BlockAllocated.o\
-	$(ObjDir)CopyOnWrite.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)MemoryAllocator.o\
 	$(ObjDir)Optional.o\
 	$(ObjDir)RefCntPtr.o\
+	$(ObjDir)SharedByValue.o\
 	$(ObjDir)SmallStackBuffer.o\
 	$(ObjDir)VariantValue.o\
 
