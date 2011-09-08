@@ -5,6 +5,16 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
+if (	(lc ($BLD_TRG) eq "help") ||
+	(lc ($BLD_TRG) eq "-help") || 
+	(lc ($BLD_TRG) eq "-h") || 
+	(lc ($BLD_TRG) eq "-?") || 
+	(lc ($BLD_TRG) eq "/?"))
+	{
+	print ("buildall.pl TARGET\n\t with TARGET = Clean, Clobber, All, or Rebuild\n");
+	exit (0);
+}
+
 my $isBuildingMode = not ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean"));
 my $runRegressionTests = $isBuildingMode;
 

@@ -6,9 +6,19 @@ if ($BLD_TRG eq '') {
 }
 
 print ("Building Tests...\n");
+
+my $useBld = lc ($BLD_TRG);
+
 if ("$^O" eq "linux") {
-	my $useBld = lc ($BLD_TRG);
 	if ($useBld eq "build") {
+		$useBld = "all";
+	}
+	if ($useBld eq "rebuild") {
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test1; make clobber");
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test2; make clobber");
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test3; make clobber");
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test4; make clobber");
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test5; make clobber");
 		$useBld = "all";
 	}
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test1; make $useBld");
