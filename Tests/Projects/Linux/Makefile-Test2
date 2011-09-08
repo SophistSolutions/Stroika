@@ -10,7 +10,7 @@ Includes                        +=      -I.
 
 TARGETEXE			=	$(RelPathToDevRoot)Builds/Platform_Linux/Test$(TEST_NUM)
 
-VPATH = $(SrcDir)
+VPATH =$(SrcDir):$(SrcDir)../TestHarness/
 
 Objs	=	\
 	$(ObjDir)Test.o\
