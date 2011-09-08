@@ -15,7 +15,6 @@ Objs	=	\
 	$(ObjDir)MemoryAllocator.o\
 	$(ObjDir)Optional.o\
 	$(ObjDir)RefCntPtr.o\
-	$(ObjDir)Shared.o\
 	$(ObjDir)SmallStackBuffer.o\
 	$(ObjDir)VariantValue.o\
 

@@ -22,7 +22,31 @@
  *
  *
  */
-
+/*
+ * Description:
+ *		<<<<OBSOLETE/WRONG - FROM OLD STROIKA SHARED CLASS - JUSTPLACE HOLDER DOC TIL WE CAN WRITE GOOD STUFF>>>>>
+ *
+ *             This class is for keeping track of a data structure with reference counts,
+ *     and disposing of that structure when the reference count drops to zero.
+ *     Copying one of these Shared<T> just increments the referce count,
+ *     and destroying/overwriting one decrements it.
+ *
+ *             You can have a ptr having a nullptr value, and it can be copied.
+ *     (Implementation detail - the reference count itself is NEVER nil except upon
+ *     failure of alloction of memory in ctor and then only valid op on class is
+ *     destruction). You can access the value with GetPointer () but this is not
+ *     advised - only if it may be legitimately nullptr do you want to do this.
+ *     Generaly just use ptr-> to access the data, and this will do the
+ *     RequireNotNull (POINTER) for you.
+ *
+ *             This class can be enourmously useful in implementing letter/envelope -
+ *     type data structures - see String, or Shapes, for examples.
+ *
+ *
+ * TODO:
+ *
+ *
+ */
 
 namespace	Stroika {	
 	namespace	Foundation {
