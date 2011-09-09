@@ -12,7 +12,7 @@
 #include	"../Configuration/Common.h"
 #include	"../Time/DateUtils.h"
 
-#include	"RefCntPtr.h"
+#include	"SharedPtr.h"
 
 
 // MIMICS (eventually - not totally yet) COM "VARIANT" type - not so much for COM integration, but
@@ -42,7 +42,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Memory {
 
-			using	Memory::RefCntPtr;
+			using	Memory::SharedPtr;
 			using	Time::Date;
 			using	Time::DateTime;
 	
@@ -95,7 +95,7 @@ namespace	Stroika {
 
 				private:
 					struct	ValRep;
-					RefCntPtr<ValRep>	fVal;
+					SharedPtr<ValRep>	fVal;
 
 				private:
 					template	<typename T, Type t>	struct	TValRep;

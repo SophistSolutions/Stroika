@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Memory_RefCntPtr_h_
-#define	_Stroika_Foundation_Memory_RefCntPtr_h_	1
+#ifndef	_Stroika_Foundation_Memory_SharedPtr_h_
+#define	_Stroika_Foundation_Memory_SharedPtr_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -53,23 +53,23 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-			// An OPTIONAL class you can mix into 'T', and use with RefCntPtr<>. If the 'T' used in RefCntPtr<T> inherits
-			// from this, then you can re-constitute a RefCntPtr<T> from it's T* (since the count is pulled along-side).
-			// This is sometimes handy if you wish to take a RefCntPtr<> object, and pass the underlying pointer through
-			// a layer of code, and then re-constitute the RefCntPtr<> part later.
-			struct	RefCntPtrBase {
+			// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
+			// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
+			// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
+			// a layer of code, and then re-constitute the SharedPtr<> part later.
+			struct	SharedPtrBase {
 				// we really want to treat this fCount_ as PRIVATE!!! DONT ACCESS IN SUBCLASSES - but it needs
-				// access from the RefCntPtr<> template
+				// access from the SharedPtr<> template
 				private:
 				public:
 					size_t	fCount_DONT_ACCESS;
 
 				public:
-					RefCntPtrBase ();
-					virtual ~RefCntPtrBase ();
+					SharedPtrBase ();
+					virtual ~SharedPtrBase ();
 
 				public:
-					// called to delete the 'RefCntPtrBase'. But - if this gets mixed into another object, just override
+					// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
 					// to ignore (cuz the actual object will get deleted too)
 					virtual	void	DO_DELETE_REF_CNT () = 0;
 			};
@@ -79,7 +79,7 @@ namespace	Stroika {
 
 
 			/*
-			@CLASS:			RefCntPtr<T>
+			@CLASS:			SharedPtr<T>
 			@DESCRIPTION:	<p>A very simple reference counted pointer implementation. Alas - there doesn't seem to
 				be anything in STL which provides this functionality! std::auto_ptr is closest, but no cigar.
 				For one thing, std::auto_ptr doesn't work with std::vector.</p>
@@ -90,31 +90,31 @@ namespace	Stroika {
 				to IsNull() first if you aren't sure.</p>
 					<P>Since this class is strictly more powerful than the STL template auto_ptr<>, but many people may already be
 				using auto_ptr<>, I've provided some mimicing routines to make the transition easier if you want to make some of your
-				auto_ptr's be RefCntPtr<T>.</p>
+				auto_ptr's be SharedPtr<T>.</p>
 					<ul>
-						<li>@'RefCntPtr<T>::get'</li>
-						<li>@'RefCntPtr<T>::release'</li>
-						<li>@'RefCntPtr<T>::reset'</li>
+						<li>@'SharedPtr<T>::get'</li>
+						<li>@'SharedPtr<T>::release'</li>
+						<li>@'SharedPtr<T>::reset'</li>
 					</ul>
 			*/
-			template	<typename	T>	class	RefCntPtr {
+			template	<typename	T>	class	SharedPtr {
 				public:
-					RefCntPtr ();
-					explicit RefCntPtr (T* from);
-					enum UsesRefCntPtrBase { eUsesRefCntPtrBase };
-					explicit RefCntPtr (UsesRefCntPtrBase, T* from);
-					explicit RefCntPtr (T* from, RefCntPtrBase* useCounter);
-					RefCntPtr (const RefCntPtr<T>& from);
+					SharedPtr ();
+					explicit SharedPtr (T* from);
+					enum UsesSharedPtrBase { eUsesSharedPtrBase };
+					explicit SharedPtr (UsesSharedPtrBase, T* from);
+					explicit SharedPtr (T* from, SharedPtrBase* useCounter);
+					SharedPtr (const SharedPtr<T>& from);
 
 					template <typename T2>
 					/*
-					@METHOD:		RefCntPtr::RefCntPtr
+					@METHOD:		SharedPtr::SharedPtr
 					@DESCRIPTION:	<p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
 								to the base class. There isn't any way to express this in template requirements, but this template
 								will fail to compile (error assigning to its fPtr member in the CTOR) if its ever used to
 								assign inappropriate pointer combinations.</p>
 					*/
-						RefCntPtr (const RefCntPtr<T2>& from):
+						SharedPtr (const SharedPtr<T2>& from):
 							fPtr (from.get ()),
 							fCountHolder (from._PEEK_CNT_PTR_ ())
 							{
@@ -125,9 +125,9 @@ namespace	Stroika {
 							}
 
 				public:
-					nonvirtual		RefCntPtr<T>& operator= (const RefCntPtr<T>& rhs);
+					nonvirtual		SharedPtr<T>& operator= (const SharedPtr<T>& rhs);
 				public:
-					~RefCntPtr ();
+					~SharedPtr ();
 
 				public:
 					nonvirtual	bool		IsNull () const;
@@ -147,12 +147,12 @@ namespace	Stroika {
 				public:
 					template <typename T2>
 					/*
-					@METHOD:		RefCntPtr::Dynamic_Cast
-					@DESCRIPTION:	<p>Similar to RefCntPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast - thats a reserved word.</p>
+					@METHOD:		SharedPtr::Dynamic_Cast
+					@DESCRIPTION:	<p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast - thats a reserved word.</p>
 					*/
-						RefCntPtr<T2> Dynamic_Cast ()
+						SharedPtr<T2> Dynamic_Cast ()
 							{
-								return RefCntPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
+								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
 							}
 
 				public:
@@ -165,7 +165,7 @@ namespace	Stroika {
 
 					/*
 					 * Assure1Reference () can be called when implementing copy-on-write. A typical use would be to call Assure1Reference () on
-					 * all non-const methods of envelope objects which use RefCntPtr<> to share a common read-only copy and only clone it when they need write.
+					 * all non-const methods of envelope objects which use SharedPtr<> to share a common read-only copy and only clone it when they need write.
 					 *
 					 * The 'copier' function must make a logical copy (presumably suitable for update) of the given object already pointed to. A generally appropriate
 					 * default implementation is provided.
@@ -181,7 +181,7 @@ namespace	Stroika {
 
 				protected:
 					T*				fPtr;
-					RefCntPtrBase*	fCountHolder;
+					SharedPtrBase*	fCountHolder;
 
 				public:
 					// Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
@@ -191,27 +191,27 @@ namespace	Stroika {
 					nonvirtual	size_t	CurrentRefCount () const;
 
 				public:
-					nonvirtual	bool	operator< (const RefCntPtr<T>& rhs) const;
-					nonvirtual	bool	operator<= (const RefCntPtr<T>& rhs) const;
-					nonvirtual	bool	operator> (const RefCntPtr<T>& rhs) const;
-					nonvirtual	bool	operator>= (const RefCntPtr<T>& rhs) const;
-					nonvirtual	bool	operator== (const RefCntPtr<T>& rhs) const;
-					nonvirtual	bool	operator!= (const RefCntPtr<T>& rhs) const;
+					nonvirtual	bool	operator< (const SharedPtr<T>& rhs) const;
+					nonvirtual	bool	operator<= (const SharedPtr<T>& rhs) const;
+					nonvirtual	bool	operator> (const SharedPtr<T>& rhs) const;
+					nonvirtual	bool	operator>= (const SharedPtr<T>& rhs) const;
+					nonvirtual	bool	operator== (const SharedPtr<T>& rhs) const;
+					nonvirtual	bool	operator!= (const SharedPtr<T>& rhs) const;
 
 				public:
-					nonvirtual	RefCntPtrBase*		_PEEK_CNT_PTR_ () const;
+					nonvirtual	SharedPtrBase*		_PEEK_CNT_PTR_ () const;
 			};
 
 
 
 // REDO THIS - SB PaRTIAL TEMPLATE SPECIALIZATION
 template	<typename	T>
-	void	ThrowIfNull (const Memory::RefCntPtr<T>& p);
+	void	ThrowIfNull (const Memory::SharedPtr<T>& p);
 	
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Memory_RefCntPtr_h_*/
+#endif	/*_Stroika_Foundation_Memory_SharedPtr_h_*/
 
 
 
@@ -224,4 +224,4 @@ template	<typename	T>
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"RefCntPtr.inl"
+#include	"SharedPtr.inl"

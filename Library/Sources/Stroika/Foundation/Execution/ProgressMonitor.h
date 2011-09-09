@@ -9,7 +9,7 @@
 #include	<string>
 
 #include	"../Configuration/Common.h"
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 #include	"../Memory/VariantValue.h"
 
 #include	"CriticalSection.h"
@@ -57,14 +57,14 @@ namespace	Stroika {
 
 				public:
 					ProgressMontior ();
-					ProgressMontior (const Memory::RefCntPtr<ICallback>& callback);
+					ProgressMontior (const Memory::SharedPtr<ICallback>& callback);
 				public:
 					~ProgressMontior ();
 
 				public:
-					nonvirtual	void	AddCallback (const Memory::RefCntPtr<ICallback>& callback);
+					nonvirtual	void	AddCallback (const Memory::SharedPtr<ICallback>& callback);
 				private:
-					vector<Memory::RefCntPtr<ICallback>>	fCallbacks;
+					vector<Memory::SharedPtr<ICallback>>	fCallbacks;
 
 				public:
 					nonvirtual	ProgressRangeType	GetProgress () const;

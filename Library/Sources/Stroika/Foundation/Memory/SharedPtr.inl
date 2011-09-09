@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Memory_RefCntPtr_inl_
-#define	_Stroika_Foundation_Memory_RefCntPtr_inl_	1
+#ifndef	_Stroika_Foundation_Memory_SharedPtr_inl_
+#define	_Stroika_Foundation_Memory_SharedPtr_inl_	1
 
 
 /*
@@ -19,51 +19,51 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-			namespace	RefCntPtrNS {
+			namespace	SharedPtrNS {
 				namespace	Private {
-					struct	SimpleRefCntPtrBase : RefCntPtrBase {
+					struct	SimpleSharedPtrBase : SharedPtrBase {
 						public:
 							virtual	void	DO_DELETE_REF_CNT ();
 
 						public:
-							DECLARE_USE_BLOCK_ALLOCATION(SimpleRefCntPtrBase);
+							DECLARE_USE_BLOCK_ALLOCATION(SimpleSharedPtrBase);
 					};
 				}
 			}
 
 
 
-		//	class	RefCntPtrBase
-			inline	RefCntPtrBase::RefCntPtrBase ():
+		//	class	SharedPtrBase
+			inline	SharedPtrBase::SharedPtrBase ():
 				fCount_DONT_ACCESS (0)
 				{
 				}
-			inline	RefCntPtrBase::~RefCntPtrBase ()
+			inline	SharedPtrBase::~SharedPtrBase ()
 				{
 				}
 
 
 
-		//	class	RefCntPtr<T>
+		//	class	SharedPtr<T>
 			template	<typename T>
-				inline	RefCntPtr<T>::RefCntPtr ():
+				inline	SharedPtr<T>::SharedPtr ():
 					fPtr (nullptr),
 					fCountHolder (nullptr)
 					{
 					}
 			template	<typename T>
-				inline	RefCntPtr<T>::RefCntPtr (T* from):
+				inline	SharedPtr<T>::SharedPtr (T* from):
 					fPtr (from),
 					fCountHolder (nullptr)
 					{
 						if (from != nullptr) {
-							fCountHolder = DEBUG_NEW RefCntPtrNS::Private::SimpleRefCntPtrBase ();
+							fCountHolder = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
 							Assert (fCountHolder->fCount_DONT_ACCESS == 0);
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T>
-				inline	RefCntPtr<T>::RefCntPtr (UsesRefCntPtrBase, T* from):
+				inline	SharedPtr<T>::SharedPtr (UsesSharedPtrBase, T* from):
 					fPtr (from),
 					fCountHolder (from)
 					{
@@ -72,7 +72,7 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T>
-				inline	RefCntPtr<T>::RefCntPtr (T* from, RefCntPtrBase* useCounter):
+				inline	SharedPtr<T>::SharedPtr (T* from, SharedPtrBase* useCounter):
 					fPtr (from),
 					fCountHolder (from == nullptr? nullptr: useCounter)
 					{
@@ -81,7 +81,7 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T>
-				inline	RefCntPtr<T>::RefCntPtr (const RefCntPtr<T>& from):
+				inline	SharedPtr<T>::SharedPtr (const SharedPtr<T>& from):
 					fPtr (from.fPtr),
 					fCountHolder (from.fCountHolder)
 					{
@@ -91,7 +91,7 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T>
-				inline	RefCntPtr<T>& RefCntPtr<T>::operator= (const RefCntPtr<T>& rhs)
+				inline	SharedPtr<T>& SharedPtr<T>::operator= (const SharedPtr<T>& rhs)
 					{
 						if (rhs.fPtr != fPtr) {
 							if (fPtr != nullptr) {
@@ -115,7 +115,7 @@ namespace	Stroika {
 						return *this;
 					}
 			template	<typename T>
-				inline	RefCntPtr<T>::~RefCntPtr ()
+				inline	SharedPtr<T>::~SharedPtr ()
 					{
 						if (fPtr != nullptr) {
 							AssertNotNull (fCountHolder);
@@ -129,16 +129,16 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T>
-				inline	bool	RefCntPtr<T>::IsNull () const
+				inline	bool	SharedPtr<T>::IsNull () const
 					{
 						return fPtr == nullptr;
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::GetRep
+				@METHOD:		SharedPtr<T>::GetRep
 				@DESCRIPTION:	<p>Asserts that the pointer is non-nullptr.</p>
 				*/
-				inline	T&	RefCntPtr<T>::GetRep () const
+				inline	T&	SharedPtr<T>::GetRep () const
 					{
 						AssertNotNull (fPtr);
 						AssertNotNull (fCountHolder);
@@ -147,44 +147,44 @@ namespace	Stroika {
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::operator->
+				@METHOD:		SharedPtr<T>::operator->
 				@DESCRIPTION:	<p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
 				*/
-				inline	T* RefCntPtr<T>::operator-> () const
+				inline	T* SharedPtr<T>::operator-> () const
 					{
 						return &GetRep ();
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::operator*
+				@METHOD:		SharedPtr<T>::operator*
 				@DESCRIPTION:	<p></p>
 				*/
-				inline	T& RefCntPtr<T>::operator* () const
+				inline	T& SharedPtr<T>::operator* () const
 					{
 						return GetRep ();
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::operator->
+				@METHOD:		SharedPtr<T>::operator->
 				@DESCRIPTION:	<p>Note - this CAN return nullptr</p>
 				*/
-				inline	RefCntPtr<T>::operator T* () const
+				inline	SharedPtr<T>::operator T* () const
 					{
 						return fPtr;
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::get
+				@METHOD:		SharedPtr<T>::get
 				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
 							asserts about it being non-null.</p>
 				*/
-				inline	T*	RefCntPtr<T>::get () const
+				inline	T*	SharedPtr<T>::get () const
 					{
 						return (fPtr);
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::release
+				@METHOD:		SharedPtr<T>::release
 				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
 							pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
 							<br>
@@ -192,41 +192,41 @@ namespace	Stroika {
 							If you want the pointer before release, explicitly call get () first!!!
 							</p>
 				*/
-				inline	void	RefCntPtr<T>::release ()
+				inline	void	SharedPtr<T>::release ()
 					{
-						*this = RefCntPtr<T> (nullptr);
+						*this = SharedPtr<T> (nullptr);
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::clear
-				@DESCRIPTION:	<p>Synonymn for RefCntPtr<T>::release ()
+				@METHOD:		SharedPtr<T>::clear
+				@DESCRIPTION:	<p>Synonymn for SharedPtr<T>::release ()
 							</p>
 				*/
-				inline	void	RefCntPtr<T>::clear ()
+				inline	void	SharedPtr<T>::clear ()
 					{
 						release ();
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::reset
+				@METHOD:		SharedPtr<T>::reset
 				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
 							pre-existing pointer value. Unreference any previous value. Note - if there were more than one references to the underlying object, its not destroyed.</p>
 				*/
-				inline	void	RefCntPtr<T>::reset (T* p)
+				inline	void	SharedPtr<T>::reset (T* p)
 					{
 						if (fPtr != p) {
-							*this = RefCntPtr<T> (p);
+							*this = SharedPtr<T> (p);
 						}
 					}
 #if 0
 			template	<typename T>
-				inline	T*	RefCntPtr<T>::DefaultElementCopier (const T& t)
+				inline	T*	SharedPtr<T>::DefaultElementCopier (const T& t)
 					{
 						return new T (t);
 					}
 #endif
 			template	<typename T>
-				inline	void	RefCntPtr<T>::Assure1Reference (T* (*copier) (const T&))
+				inline	void	SharedPtr<T>::Assure1Reference (T* (*copier) (const T&))
 					{
 						RequireNotNil (copier);
 						if (not IsUnique ()) {
@@ -234,7 +234,7 @@ namespace	Stroika {
 						}
 					}
 			template <class T>
-				void	RefCntPtr<T>::BreakReferences_ (T* (*copier) (const T&))
+				void	SharedPtr<T>::BreakReferences_ (T* (*copier) (const T&))
 					{
 						RequireNotNil (copier);
 						/*
@@ -256,27 +256,27 @@ namespace	Stroika {
 					}
 			template	<typename T>
 				/*
-				@METHOD:		RefCntPtr<T>::CurrentRefCount
+				@METHOD:		SharedPtr<T>::CurrentRefCount
 				@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
 				so not its awlays avaialble (it has no cost to keep available).</p>
 				*/
-				inline	size_t	RefCntPtr<T>::CurrentRefCount () const
+				inline	size_t	SharedPtr<T>::CurrentRefCount () const
 					{
 						return fCountHolder==nullptr? 0: fCountHolder->fCount_DONT_ACCESS;
 					}
 			template	<typename T>
-				inline	bool	RefCntPtr<T>::IsUnique () const
+				inline	bool	SharedPtr<T>::IsUnique () const
 					{
 						return fCountHolder == NULL? false: fCountHolder->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T>
-				inline	bool	RefCntPtr<T>::unique () const
+				inline	bool	SharedPtr<T>::unique () const
 					{
 						// respect the stl-ish names
 						return IsUnique ();
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::operator< (const RefCntPtr<T>& rhs) const
+				bool	SharedPtr<T>::operator< (const SharedPtr<T>& rhs) const
 					{
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
@@ -284,7 +284,7 @@ namespace	Stroika {
 						return fPtr < rhs.fPtr;
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::operator<= (const RefCntPtr<T>& rhs) const
+				bool	SharedPtr<T>::operator<= (const SharedPtr<T>& rhs) const
 					{
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
@@ -292,7 +292,7 @@ namespace	Stroika {
 						return fPtr <= rhs.fPtr;
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::operator> (const RefCntPtr<T>& rhs) const
+				bool	SharedPtr<T>::operator> (const SharedPtr<T>& rhs) const
 					{
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
@@ -300,7 +300,7 @@ namespace	Stroika {
 						return fPtr > rhs.fPtr;
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::operator>= (const RefCntPtr<T>& rhs) const
+				bool	SharedPtr<T>::operator>= (const SharedPtr<T>& rhs) const
 					{
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
@@ -308,17 +308,17 @@ namespace	Stroika {
 						return fPtr >= rhs.fPtr;
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::operator== (const RefCntPtr<T>& rhs) const
+				bool	SharedPtr<T>::operator== (const SharedPtr<T>& rhs) const
 					{
 						return fPtr == rhs.fPtr;
 					}
 			template	<typename T>
-				bool	RefCntPtr<T>::operator!= (const RefCntPtr<T>& rhs) const
+				bool	SharedPtr<T>::operator!= (const SharedPtr<T>& rhs) const
 					{
 						return fPtr != rhs.fPtr;
 					}
 			template	<typename T>
-				RefCntPtrBase*		RefCntPtr<T>::_PEEK_CNT_PTR_ () const
+				SharedPtrBase*		SharedPtr<T>::_PEEK_CNT_PTR_ () const
 					{
 						return fCountHolder;
 					}
@@ -330,10 +330,10 @@ namespace	Stroika {
 //REDO AS TEMPLATE SPECIALIZATIONS
 //	void	ThrowIfNull ()
 template	<typename	T>
-	inline	void	ThrowIfNull (const Memory::RefCntPtr<T>& p)
+	inline	void	ThrowIfNull (const Memory::SharedPtr<T>& p)
 		{
 			if (p.get () == nullptr) {
-				Execution::DoThrow (bad_alloc (), TSTR ("ThrowIfNull (RefCntPtr<typename T> ()) - throwing bad_alloc ()"));
+				Execution::DoThrow (bad_alloc (), TSTR ("ThrowIfNull (SharedPtr<typename T> ()) - throwing bad_alloc ()"));
 			}
 		}
 
@@ -345,4 +345,4 @@ template	<typename	T>
 
 	}
 }
-#endif	/*_Stroika_Foundation_Memory_RefCntPtr_inl_*/
+#endif	/*_Stroika_Foundation_Memory_SharedPtr_inl_*/

@@ -5,7 +5,7 @@
 
 #include	"../Execution/CriticalSection.h"
 
-#include	"RefCntPtr.h"
+#include	"SharedPtr.h"
 
 #include	"BlockAllocated.h"
 

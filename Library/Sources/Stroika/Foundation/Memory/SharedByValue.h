@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 
 
 
@@ -20,10 +20,10 @@ namespace	Stroika {
 			@DESCRIPTION:	<p>This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
 				to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
 				data structures.</p>
-					<p>This class should allow SHARED_IMLP to be either Memory::RefCntPtr<> or std::shared_ptr</p>
+					<p>This class should allow SHARED_IMLP to be either Memory::SharedPtr<> or std::shared_ptr</p>
 					<p>This class template was originally called CopyOnWrite<></p>
 			*/
-			template    <typename	T, typename SHARED_IMLP = RefCntPtr<T>>
+			template    <typename	T, typename SHARED_IMLP = SharedPtr<T>>
 				class	SharedByValue : public SHARED_IMLP {
 					public:
 						SharedByValue ();

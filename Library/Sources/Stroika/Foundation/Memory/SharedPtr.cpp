@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	"RefCntPtr.h"
+#include	"SharedPtr.h"
 
 
 
@@ -14,10 +14,10 @@ using	namespace	Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ****************************** SimpleRefCntPtrBase *****************************
+ ****************************** SimpleSharedPtrBase *****************************
  ********************************************************************************
  */
-void	RefCntPtrNS::Private::SimpleRefCntPtrBase::DO_DELETE_REF_CNT ()
+void	SharedPtrNS::Private::SimpleSharedPtrBase::DO_DELETE_REF_CNT ()
 {
 	delete this;
 }

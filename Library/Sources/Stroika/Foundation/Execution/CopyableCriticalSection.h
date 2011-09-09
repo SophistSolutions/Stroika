@@ -11,7 +11,7 @@
 #endif
 
 #include	"../Configuration/Common.h"
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 
 #include	"CriticalSection.h"
 
@@ -23,7 +23,7 @@ namespace	Stroika {
 
 			class	CopyableCriticalSection {
 				private:
-					Memory::RefCntPtr<CriticalSection>	fCritSec;
+					Memory::SharedPtr<CriticalSection>	fCritSec;
 				public:
 					CopyableCriticalSection ();
 

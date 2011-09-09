@@ -14,7 +14,7 @@
 
 #include	"../Characters/StringUtils.h"
 #include	"../Execution/Exceptions.h"
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -56,7 +56,7 @@ namespace	Stroika {
 					nonvirtual	unsigned int GetNestedTransactionCount () const;
 
 				private:
-					RefCntPtr<Rep>	fRep;
+					SharedPtr<Rep>	fRep;
 			};
 		#endif
 
@@ -72,7 +72,7 @@ namespace	Stroika {
 					Query (DBConnection database);
 
 				public:
-					void	Bind (RefCntPtr<AbstractColumn>* columns, size_t numberColumns);
+					void	Bind (SharedPtr<AbstractColumn>* columns, size_t numberColumns);
 
 				public:
 					void	Execute (const wstring& sqlQuery);
@@ -81,7 +81,7 @@ namespace	Stroika {
 					bool	FetchRow ();
 
 				private:
-					RefCntPtr<Rep>	fRep;
+					SharedPtr<Rep>	fRep;
 			};
 		#endif
 

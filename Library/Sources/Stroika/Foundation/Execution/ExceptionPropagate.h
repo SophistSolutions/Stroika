@@ -8,7 +8,7 @@
 
 #include	"../IO/FileBusyException.h"
 #include	"../IO/FileFormatException.h"
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 
 #include	"IRunnable.h"
 
@@ -39,14 +39,14 @@ namespace	Stroika {
 					virtual	void	RethrowIfAnyCaught () const;
 
 				public:
-					Memory::RefCntPtr<RequiredComponentMissingException>		fRequiredComponentMissingException;
-					Memory::RefCntPtr<StringException>							fStringException;
-					Memory::RefCntPtr<IO::FileFormatException>					fFileFormatException;
-					Memory::RefCntPtr<IO::FileBusyException>					fFileBusyException;
-					Memory::RefCntPtr<SilentException>							fSilentException;
+					Memory::SharedPtr<RequiredComponentMissingException>		fRequiredComponentMissingException;
+					Memory::SharedPtr<StringException>							fStringException;
+					Memory::SharedPtr<IO::FileFormatException>					fFileFormatException;
+					Memory::SharedPtr<IO::FileBusyException>					fFileBusyException;
+					Memory::SharedPtr<SilentException>							fSilentException;
 				#if		qPlatform_Windows
-					Memory::RefCntPtr<Platform::Windows::HRESULTErrorException>	fHRESULTErrorException;
-					Memory::RefCntPtr<Platform::Windows::Exception>				fWin32ErrorException;
+					Memory::SharedPtr<Platform::Windows::HRESULTErrorException>	fHRESULTErrorException;
+					Memory::SharedPtr<Platform::Windows::Exception>				fWin32ErrorException;
 				#endif
 			};
 

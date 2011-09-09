@@ -11,7 +11,7 @@
 #endif
 
 #include	"../Configuration/Common.h"
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 
 #include	"CriticalSection.h"
 #include	"Exceptions.h"

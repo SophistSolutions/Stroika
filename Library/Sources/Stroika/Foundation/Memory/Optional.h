@@ -9,7 +9,7 @@
 #include	"../Configuration/Common.h"
 
 //TEMPORARILY - WE MUST RE-IMPLEMENT NOT USING REFCNTPTR
-#include	"RefCntPtr.h"
+#include	"SharedPtr.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -51,10 +51,10 @@ namespace	Stroika {
 					private:
 						/*
 						 * Note: the implementation here is safe via copying - because we never WRITE to the value stored in the
-						 * RefCntPtr<T> and never return a copy to someone who could, so the value can never change. One changes
+						 * SharedPtr<T> and never return a copy to someone who could, so the value can never change. One changes
 						 * an Optional<T> by creating a whole new value object and assigning it.
 						 */
-						RefCntPtr<T>	fValue;
+						SharedPtr<T>	fValue;
 				};
 		}
 	}

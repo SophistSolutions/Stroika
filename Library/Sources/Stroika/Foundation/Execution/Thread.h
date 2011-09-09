@@ -11,7 +11,7 @@
 #endif
 
 #include	"../Configuration/Common.h"
-#include	"../Memory/RefCntPtr.h"
+#include	"../Memory/SharedPtr.h"
 #include	"../Time/Realtime.h"
 
 #include	"CriticalSection.h"
@@ -65,7 +65,7 @@ namespace	Stroika {
 		namespace	Execution {
 
 
-			using	Memory::RefCntPtr;
+			using	Memory::SharedPtr;
 
 
 			// ADD THREADPOOL (Thread Pool) SUPPORT:
@@ -99,17 +99,17 @@ namespace	Stroika {
 					class	Rep;
 				public:
 					Thread ();
-					explicit Thread (const RefCntPtr<Rep>& threadObj);
+					explicit Thread (const SharedPtr<Rep>& threadObj);
 					explicit Thread (Rep* newThreadObj);
 					// fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
 					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
-					explicit Thread (const RefCntPtr<IRunnable>& runnable);
+					explicit Thread (const SharedPtr<IRunnable>& runnable);
 
 				public:
 				#if			qUseThreads_WindowsNative
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
-					nonvirtual	RefCntPtr<Rep>	GetRep () const;
+					nonvirtual	SharedPtr<Rep>	GetRep () const;
 
 				public:
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
@@ -167,9 +167,9 @@ namespace	Stroika {
 					nonvirtual	bool	operator< (const Thread& rhs) const;
 
 				private:
-					RefCntPtr<Rep>	fRep;
+					SharedPtr<Rep>	fRep;
 			};
-			class	Thread::Rep : public virtual Memory::RefCntPtrBase {
+			class	Thread::Rep : public virtual Memory::SharedPtrBase {
 				protected:
 					Rep ();
 				public:

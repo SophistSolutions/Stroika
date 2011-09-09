@@ -20,13 +20,13 @@
 		>	Need BUffered variants for Binary/Text and Input/Output. Do them separately - thats 4 classes.
 		>	Must figure out of I want 2 more - BinaryBufferedInputOutputStream and TextBufferedInputOutputStream (good idea? - unclear?)
 		>	Possibly use SmallStackBuffer<> inside as impl detail?
-		>	Unclear about lifetime of arguments. COULD have CTORs take RefCntPtr<> of appropriate 'base stream'. Thats sensible.
+		>	Unclear about lifetime of arguments. COULD have CTORs take SharedPtr<> of appropriate 'base stream'. Thats sensible.
 		>	UNCELAR how to handle 'seekability' - more variants, or only do buffered wrapper on 'seekable' combinations? Maybe do a TEMPLATED
 		>	implmentation so can work with various combos?
 
 
 	>NEW TextInputStreamAdaptor (subclass from TextInputStream, but takes BinaryInputStream as arg -)
-		>	 like with buffered - do we require use of RefCntPtr?
+		>	 like with buffered - do we require use of SharedPtr?
 		>	Takes as argument input CODEPAGE (so we automatically map from binary data
 		>	Takes as argument AUTODETECT INPUT CODEPAGE (very useful - LED already has code for this)
 		>	Similarly on TextOutputStreamAdaptor (takes binary stream arg, and flags about codepage to use, and BOM flag)

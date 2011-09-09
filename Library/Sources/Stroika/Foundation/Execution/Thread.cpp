@@ -168,7 +168,7 @@ Thread::Rep::~Rep ()
 void	Thread::Rep::DO_DELETE_REF_CNT ()
 {
 	// nothing todo, cuz we don't want to get deleted twice!!!'
-	// See docs for RefCntPtr<>
+	// See docs for SharedPtr<>
 }
 
 #if			qUseThreads_WindowsNative
@@ -177,11 +177,11 @@ unsigned int	__stdcall	Thread::Rep::ThreadProc (void* lpParameter)
 	RequireNotNull (lpParameter);
 	/*
 	 * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
-	 * RefCntPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
+	 * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
 	 * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
 	 */
 	Rep*			rep			=	reinterpret_cast<Rep*> (lpParameter);
-	RefCntPtr<Rep>	incRefCnt	=	RefCntPtr<Rep> (RefCntPtr<Rep>::eUsesRefCntPtrBase, rep);	// assure refcount incremented so object not deleted while the thread is running
+	SharedPtr<Rep>	incRefCnt	=	SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, rep);	// assure refcount incremented so object not deleted while the thread is running
 
 	incRefCnt->fRefCountBumpedEvent.Set ();
 
@@ -286,9 +286,9 @@ namespace	{
 namespace	{
 	class	RunnableRunRep_ : public Thread::Rep {
 		private:
-			RefCntPtr<IRunnable>	fRunnable;
+			SharedPtr<IRunnable>	fRunnable;
 		public:
-			RunnableRunRep_ (const RefCntPtr<IRunnable>& runnable)
+			RunnableRunRep_ (const SharedPtr<IRunnable>& runnable)
 				: fRunnable (runnable)
 				{
 				}
@@ -314,23 +314,23 @@ Thread::Thread ()
 {
 }
 
-Thread::Thread (const RefCntPtr<Rep>& threadObj)
+Thread::Thread (const SharedPtr<Rep>& threadObj)
 	: fRep (threadObj)
 {
 }
 
 Thread::Thread (Rep* newThreadObj):
-	fRep (RefCntPtr<Rep> (RefCntPtr<Rep>::eUsesRefCntPtrBase, newThreadObj))
+	fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, newThreadObj))
 {
 }
 
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-	: fRep (RefCntPtr<Rep> (RefCntPtr<Rep>::eUsesRefCntPtrBase, DEBUG_NEW RunOnceRep_ (fun2CallOnce, arg)))
+	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunOnceRep_ (fun2CallOnce, arg)))
 {
 }
 
-Thread::Thread (const RefCntPtr<IRunnable>& runnable)
-	: fRep (RefCntPtr<Rep> (RefCntPtr<Rep>::eUsesRefCntPtrBase, DEBUG_NEW RunnableRunRep_ (runnable)))
+Thread::Thread (const SharedPtr<IRunnable>& runnable)
+	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunnableRunRep_ (runnable)))
 {
 }
 

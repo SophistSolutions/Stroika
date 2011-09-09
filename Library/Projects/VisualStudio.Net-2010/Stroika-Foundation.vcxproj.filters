@@ -84,9 +84,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -273,6 +270,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -282,9 +282,6 @@
       <Filter>Sources\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h">
@@ -534,6 +531,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -546,9 +546,6 @@
       <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\RefCntPtr.inl">
       <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl">
@@ -723,6 +720,9 @@
       <Filter>Sources\Characters\Platform\Windows</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl">
       <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>

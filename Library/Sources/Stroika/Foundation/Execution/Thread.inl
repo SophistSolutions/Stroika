@@ -42,7 +42,7 @@ namespace	Stroika {
 					return fRep->fThread;
 				}
 		#endif
-			inline	RefCntPtr<Thread::Rep>	Thread::GetRep () const
+			inline	SharedPtr<Thread::Rep>	Thread::GetRep () const
 				{
 					return fRep;
 				}
