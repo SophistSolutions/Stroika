@@ -398,6 +398,35 @@ String	String::Trim (bool (*shouldBeTrimmmed) (Character)) const
 	return LTrim (shouldBeTrimmmed).RTrim (shouldBeTrimmmed);
 }
 
+String	String::ToLowerCase () const
+{
+	// Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
+	String	result	=	*this;
+	size_t	n	=	result.GetLength ();
+	for (size_t i = 0; i < n; ++i) {
+		Character	c	=	result[i];
+		if (c.IsUpperCase ()) {
+			result.SetCharAt (c.ToLowerCase (), i);
+		}
+	}
+	return result;
+}
+
+String	String::ToUpperCase () const
+{
+	// Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
+	String	result	=	*this;
+	size_t	n	=	result.GetLength ();
+	for (size_t i = 0; i < n; ++i) {
+		Character	c	=	result[i];
+		if (c.IsLowerCase ()) {
+			result.SetCharAt (c.ToUpperCase (), i);
+		}
+	}
+	return result;
+}
+
+
 template	<>
 	void	String::AsUTF8 (string* into) const
 		{
@@ -1099,7 +1128,7 @@ wistream&	operator>> (wistream& in, String& s)
 
 
 
-
+#if 0
 
 /*
  ********************************************************************************
@@ -1137,3 +1166,4 @@ String	tolower (const String& s)
     }
     return (result);
 }
+#endif

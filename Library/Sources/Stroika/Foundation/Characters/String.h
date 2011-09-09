@@ -255,6 +255,17 @@ namespace	Stroika {
 					nonvirtual	String	Trim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
 					#endif
 
+
+				public:
+					/*
+					 * Return a new string based on this string where each lower case characer is replaced by its upper case equivilent.
+					 */
+					nonvirtual	String	ToLowerCase () const;
+
+					/*
+					 * Return a new string based on this string where each lower case characer is replaced by its upper case equivilent.
+					 */
+					nonvirtual	String	ToUpperCase () const;
 				
 				public:
                     /*
@@ -433,6 +444,9 @@ namespace	Stroika {
 #endif
 
 
+
+
+#if 0
             /*
              * Case conversion.
 
@@ -440,6 +454,7 @@ namespace	Stroika {
              */
             String	toupper (const String& s);
             String	tolower (const String& s);
+#endif
 
 
 

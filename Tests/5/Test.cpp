@@ -479,6 +479,18 @@ namespace	{
 
 
 
+namespace	{
+	void	Test13_ToLowerUpper_ ()
+		{
+			String w = L"Lewis";
+			Assert (w.ToLowerCase () == L"lewis");
+			Assert (w.ToUpperCase () == L"LEWIS");
+			Assert (w == L"Lewis");
+		}
+}
+
+
+
 
 
 namespace	{
@@ -513,6 +525,7 @@ namespace	{
 			Test10_ConvertToFromSTDStrings_ ();
 			Test11_Trim_ ();
 			Test12_CodePageConverter_ ();
+			Test13_ToLowerUpper_ ();
 		}
 }
 
