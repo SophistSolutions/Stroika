@@ -66,6 +66,14 @@ namespace	Stroika {
 				{
 					return !!iswalpha (fCharacterCode);
 				}
+			inline	bool	Character::IsUpperCase () const
+				{
+					return !!iswupper (fCharacterCode);
+				}
+			inline	bool	Character::IsLowerCase () const
+				{
+					return !!iswlower (fCharacterCode);
+				}
 			inline	bool	Character::IsAlphaNumeric () const
 				{
 					return !!iswalnum (fCharacterCode);
@@ -74,6 +82,28 @@ namespace	Stroika {
 				{
 					return !!iswpunct (fCharacterCode);
 				}
+			inline	Character	Character::ToLowerCase () const
+				{
+					// Cannot find good spec on towlower/towupper, so not sure this cehck is necessary
+					if (::iswupper (fCharacterCode)) {
+						return static_cast<wchar_t> (::towlower (fCharacterCode));
+					}
+					else {
+						return fCharacterCode;
+					}
+				}
+			inline	Character	Character::ToUpperCase () const
+				{
+					if (::iswlower (fCharacterCode)) {
+						return static_cast<wchar_t> (::towupper(fCharacterCode));
+					}
+					else {
+						return fCharacterCode;
+					}
+				}
+
+
+
 
 			
 			

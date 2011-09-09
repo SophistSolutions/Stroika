@@ -72,8 +72,26 @@ namespace	Stroika {
 					nonvirtual	bool	IsDigit () const;
 					nonvirtual	bool	IsHexDigit () const;
 					nonvirtual	bool	IsAlphabetic () const;
+					// Checks if the given character is uppper case. Can be called on any character Returns false if not alphabetic
+					nonvirtual	bool	IsUpperCase () const;
+					// Checks if the given character is lower case. Can be called on any character. Returns false if not alphabetic
+					nonvirtual	bool	IsLowerCase () const;
 					nonvirtual	bool	IsAlphaNumeric () const;
 					nonvirtual	bool	IsPunctuation () const;
+
+				public:
+					/*
+					 * Note that this does NOT modify the character in place but returns the new desired character.
+					 *		It is not necessary to first check
+					 * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the original character if there is no sensible conversion.
+					 */
+					nonvirtual	Character	ToLowerCase () const;
+					/*
+					 * Note that this does NOT modify the character in place but returns the new desired character.
+					 *		It is not necessary to first check
+					 * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the original character if there is no sensible conversion.
+					 */
+					nonvirtual	Character	ToUpperCase () const;
 
 				private:
 					wchar_t		fCharacterCode;
