@@ -140,37 +140,6 @@ namespace	{
 
 
 
-namespace	{
-	struct	String_Catenate_ : String {
-		class	MyRep_ : public StringRep {
-			public:
-				MyRep_ (const String& lhs, const String& rhs);
-
-				virtual		StringRep*	Clone () const override;
-
-				virtual		size_t	GetLength () const override;
-				virtual		bool	Contains (Character item) const override;
-				virtual		void	RemoveAll () override;
-
-				virtual		Character	GetAt (size_t index) const override;
-				virtual		void		SetAt (Character item, size_t index) override;
-				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-				virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
-
-				virtual		void	SetLength (size_t newLength) override;
-
-				virtual		const Character*	Peek () const override;
-
-			private:
-				String			fLeft;
-				String			fRight;
-				size_t			fLength;
-
-				nonvirtual	void	Normalize_ ();
-		};
-	};
-}
-
 
 
 
@@ -926,113 +895,6 @@ const Character*	String_Substring_::MyRep_::Peek () const
 
 
 
-/*
- ********************************************************************************
- ************************** String_Catenate_::MyRep_ ****************************
- ********************************************************************************
- */
-String_Catenate_::MyRep_::MyRep_ (const String& lhs, const String& rhs)
-	: fLeft (lhs)
-	, fRight (rhs)
-	, fLength (lhs.GetLength () + rhs.GetLength ())
-{
-}
-
-String::StringRep*	String_Catenate_::MyRep_::Clone () const
-{
-	String_CharArray::MyRep_*	s	=	new String_CharArray::MyRep_ (nullptr, GetLength ());
-	size_t lhsLengthInBytes = fLeft.GetLength ()*sizeof (Character);
-	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-	memcpy (&((Character*)s->Peek ())[0], fLeft.Peek (), lhsLengthInBytes);
-	memcpy (&((Character*)s->Peek ())[lhsLengthInBytes], fRight.Peek (), fRight.GetLength ()*sizeof (Character));
-	return (s);
-}
-
-size_t	String_Catenate_::MyRep_::GetLength () const
-{
-	Assert (fLength == (fLeft.GetLength () + fRight.GetLength ()));
-	return (fLength);
-}
-
-bool	String_Catenate_::MyRep_::Contains (Character item) const
-{
-	return (bool ((fLeft.Contains (item)) or (fRight.Contains (item))));
-}
-
-void	String_Catenate_::MyRep_::RemoveAll ()
-{
-	fLeft = L"";
-	fRight = L"";
-	fLength = 0;
-}
-
-Character	String_Catenate_::MyRep_::GetAt (size_t index) const
-{
-	size_t length = fLeft.GetLength ();
-	if (index < length) {
-		return (fLeft[index]);
-	}
-	else {
-		return (fRight[(index - length)]);
-	}
-}
-
-void	String_Catenate_::MyRep_::SetAt (Character item, size_t index)
-{
-	Normalize_ ();
-	fLeft.SetCharAt (item, index);
-}
-
-void	String_Catenate_::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
-{
-	Normalize_ ();
-Assert (srcStart + 1 == srcEnd);;//tmphack - cuz thats all that we do right now
-Character item = *srcStart;
-	fLeft.InsertAt (item, index);
-	fLength++;
-}
-
-void	String_Catenate_::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
-{
-	Normalize_ ();
-	fLeft.RemoveAt (index, amountToRemove);
-	fLength -= amountToRemove;
-}
-
-void	String_Catenate_::MyRep_::SetLength (size_t newLength)
-{
-	Normalize_ ();
-	fLeft.SetLength (newLength);
-	fLength = newLength;
-}
-
-const Character*	String_Catenate_::MyRep_::Peek () const
-{
-	const_cast<String_Catenate_::MyRep_*> (this)->Normalize_ ();
-	return (fLeft.Peek ());
-}
-
-void	String_Catenate_::MyRep_::Normalize_ ()
-{
-	if (fRight != L"") {
-		String_CharArray newL	=	String_CharArray (nullptr, GetLength ());
-
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        size_t lhsLengthInBytes = fLeft.GetLength ()*sizeof (Character);
-        memcpy (&((Character*)newL.Peek ())[0], fLeft.Peek (), lhsLengthInBytes);
-        memcpy (&((Character*)newL.Peek ())[lhsLengthInBytes], fRight.Peek (), fRight.GetLength ()*sizeof (Character));
-
-		fLeft = newL;
-		fRight = L"";
-	}
-	Assert (fLength == (fLeft.GetLength () + fRight.GetLength ()));
-}
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -1041,15 +903,21 @@ void	String_Catenate_::MyRep_::Normalize_ ()
  */
 String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
 {
-#if 0
+#if 1
+	String_BufferedCharArray	tmp	=	String_BufferedCharArray (lhs);
+
+	// Very cruddy implementation - but should be functional -- LGP 2011-09-08
+	for (size_t i = 0; i < rhs.GetLength (); ++i) {
+		tmp.InsertAt (rhs[i], tmp.GetLength ());
+	}
+	return tmp;
+#elif 0
     size_t	lhsLen	=	lhs.GetLength ();
     size_t	rhsLen	=	rhs.GetLength ();
     String	s	=	String (nullptr, lhsLen + rhsLen);			// garbage string of right size
     memcpy (&((char*)s.Peek ())[0], lhs.Peek (), size_t (lhsLen));
     memcpy (&((char*)s.Peek ())[lhsLen], rhs.Peek (), size_t (rhsLen));
     return (s);
-#else
-	return (String (new String_Catenate_::MyRep_ (lhs, rhs), false));
 #endif
 }
 
