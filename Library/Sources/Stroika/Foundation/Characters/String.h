@@ -106,6 +106,10 @@
 #if		0
 SHORT TERM THINGS TODO:
 
+
+	(0)	Fix const	Memory::SharedByValue<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+		to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
+			just in CPP file
 	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
 		it is all correct for each (especially SetStorage () sutff looks quesitonable)
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
@@ -122,6 +126,20 @@ SHORT TERM THINGS TODO:
 			> Equals() - with CI optin
 	(5)	Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
 
+
+
+	(6)	Compare
+			template	<typename TCHAR>
+				basic_string<TCHAR>	RTrim (const basic_string<TCHAR>& text)
+					{
+						std::locale loc1;	// default locale
+						const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
+						typename basic_string<TCHAR>::const_iterator i = text.end ();
+						for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
+							;
+						return basic_string<TCHAR> (text.begin (), i);
+					}
+			with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
 
 
 MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):

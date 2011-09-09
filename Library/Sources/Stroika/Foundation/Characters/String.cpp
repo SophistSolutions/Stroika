@@ -365,7 +365,7 @@ String	String::SubString (size_t from, size_t length) const
 	Require ((length == kBadStringIndex) or (length <= (GetLength ()-from) and (length >= 0)));
 
 	if (length == 0) {
-		return (L"");   // SSW: replacement for kEmptyString doesn't catch this
+		return String ();
     }
 	if (length == kBadStringIndex) {
 		length = GetLength () - from;

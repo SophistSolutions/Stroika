@@ -22,7 +22,14 @@
 
 
 
-
+/*
+ * TODO:
+ *		>> MOVE English Language type stuff - pluralize etc - into its own module.
+ *
+ *		>> PERHPS create FORMAT module - and put there the FORMAT function(and FormatV), along with String2Int/Int2String, etc.
+ *
+ *		>> Move XML-related tools to somewhere in teh DataExthcnageFormat/XML heirarchy...
+ */
 
 
 
