@@ -209,7 +209,7 @@ String&	String::operator+= (const String& appendage)
 		SetLength (oldLength + appendLength);
 		Assert (appendage.GetLength () == appendLength);
 		Assert (fRep.unique ());
-		memcpy (const_cast<Character*>(&(fRep->Peek ())[oldLength]), appendage.fRep->Peek (), appendLength*sizeof (Character));
+		appendage.CopyTo (const_cast<Character*>(&(fRep->Peek ())[oldLength]), appendLength);
 	}
 	return (*this);
 }
@@ -524,9 +524,6 @@ String_ReadOnlyChar::String_ReadOnlyChar (const wchar_t* cString)
  *********************************** StringRep **********************************
  ********************************************************************************
  */
-String::StringRep::~StringRep ()
-{
-}
 
 
 
@@ -776,14 +773,10 @@ void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
 	if (not fAllocedMem) {
 	    Assert (sizeof (Character) == sizeof (wchar_t));
 
-// SSW 8/30/2011: Note: wrong as no assignment to the storage. Need to copy the existing characters over!!
-#if 0
-		SetStorage ((Character*) ::new wchar_t [GetLength ()], GetLength ());
-#else
-	wchar_t* storage = ::new wchar_t [GetLength ()];
-    memcpy (storage, (wchar_t*)Peek (), GetLength ()*sizeof (Character));
-    SetStorage ((Character*)storage, GetLength ());
-#endif
+		size_t	len	=	GetLength ();
+		wchar_t* storage = ::new wchar_t [len];
+		CopyTo (storage, len);
+		SetStorage ((Character*)storage, GetLength ());
 		fAllocedMem = true;
 	}
 

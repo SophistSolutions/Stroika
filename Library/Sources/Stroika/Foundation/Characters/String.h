@@ -107,6 +107,13 @@
 SHORT TERM THINGS TODO:
 
 
+	(0)	Document if we store NUL-terminated strings internally or not. If not - how do we implement the stdC++ c_str () API safely? Perhaps temporarily store the extra char* in teh ENVOLOPE to be freed
+		when the envelope next changes gets copied/etc? Sucky). Do we really need that API? Maybe return PROXY OBJECT which has operator char* in iT! THAT maybe safest thing!!!!
+
+	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
+
+	(0)	Get rid fo the external toupper stuff - ONLY support it at the string leve.
+	(0)	Try and get rid of the Peek () API
 	(0)	Fix const	Memory::SharedByValue<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
 		to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
 			just in CPP file
@@ -254,6 +261,11 @@ namespace	Stroika {
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
                      * pointer might become invalid. Generally, if you don't call any routines of String (even
                      * indirectly) you should be allright.
+					 *
+					 * FROM CODE REVIEW - IT APPEARS PEEK MUST NEVER RETURN NULL (except maybe if length = 0), and lifetime is (unclear but short)
+					 * and returns NON-NUL-TERMINATED Character array. But no matter the rep, it MUST always be able to return a Character* array (so not good design constraint)
+					 * We should PROBABYL try to find a way to change that or get rid of this API
+					 *			--LGP 2011-09-09
                      */
                     nonvirtual	const Character* Peek () const;
 
@@ -261,12 +273,10 @@ namespace	Stroika {
 				public:
 					/*
 					 * 	CopyTo () copies the contents of this string to the target buffer.
-					 *	It always nul-terminates, and asserts buffer is large enuf.
-					 *	
-				<<<< USE THIS IN PREFERENCE TO PEEK- EXCEPT WHERE PERFORMANCE DICTATES OTHERWISE >>>
+					 *	CopyTo () does NOT nul-terminate the target buffer, but DOES assert that nCharsInBuf is >= this->GetLength ()
 					 */
-					nonvirtual	void	CopyTo (Character* buf, size_t nCharsInBuf);
-					nonvirtual	void	CopyTo (wchar_t* buf, size_t nCharsInBuf);
+					nonvirtual	void	CopyTo (Character* buf, size_t nCharsInBuf) const;
+					nonvirtual	void	CopyTo (wchar_t* buf, size_t nCharsInBuf) const;
 
 
 				public:
@@ -379,6 +389,14 @@ namespace	Stroika {
                     virtual	void	SetLength (size_t newLength) 	= 0;
 
                     virtual	const Character*	Peek () const 				= 0;
+
+				public:
+					/*
+					 * 	CopyTo () copies the contents of this string to the target buffer.
+					 *	CopyTo () does NOT nul-terminate the target buffer, but DOES assert that nCharsInBuf is >= this->GetLength ()
+					 */
+					nonvirtual	void	CopyTo (Character* buf, size_t nCharsInBuf) const;
+					nonvirtual	void	CopyTo (wchar_t* buf, size_t nCharsInBuf) const;
             };
 
 

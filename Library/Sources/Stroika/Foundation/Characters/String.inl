@@ -21,6 +21,24 @@ namespace	Stroika {
             inline	String::StringRep::StringRep ()
 				{
 				}
+            inline	String::StringRep::~StringRep ()
+				{
+				}
+			inline	void	String::StringRep::CopyTo (Character* buf, size_t nCharsInBuf) const
+				{
+					Require (nCharsInBuf >= GetLength ());
+					RequireNotNull (buf);
+					size_t	nChars	=	GetLength ();
+					(void)::memcpy (buf, Peek (), nChars*sizeof (Character));
+				}
+			inline	void	String::StringRep::CopyTo (wchar_t* buf, size_t nCharsInBuf) const
+				{
+					Require (nCharsInBuf >= GetLength ());
+					RequireNotNull (buf);
+					size_t	nChars	=	GetLength ();
+					(void)::memcpy (buf, Peek (), nChars*sizeof (Character));
+				}
+
 
 
 			//	class	String
@@ -48,21 +66,17 @@ namespace	Stroika {
 				{
 					return (fRep->Peek ());
 				}
-			inline	void	String::CopyTo (Character* buf, size_t nCharsInBuf)
+			inline	void	String::CopyTo (Character* buf, size_t nCharsInBuf) const
 				{
-// THIS ASSUMES Peek() always returns non-null and Nul-terminated string - VERIFY IF THAT ASSUMPTION IS TRUE AND DOCUMENT IN Peek() API
-					Require (nCharsInBuf > GetLength ());
+					Require (nCharsInBuf >= GetLength ());
 					RequireNotNull (buf);
-					size_t	nChars	=	GetLength () + 1;
-					(void)::memcpy (buf, fRep->Peek (), nChars*sizeof (Character));
+					fRep->CopyTo (buf, nCharsInBuf);
 				}
-			inline	void	String::CopyTo (wchar_t* buf, size_t nCharsInBuf)
+			inline	void	String::CopyTo (wchar_t* buf, size_t nCharsInBuf) const
 				{
-// THIS ASSUMES Peek() always returns non-null and Nul-terminated string - VERIFY IF THAT ASSUMPTION IS TRUE AND DOCUMENT IN Peek() API
-					Require (nCharsInBuf > GetLength ());
+					Require (nCharsInBuf >= GetLength ());
 					RequireNotNull (buf);
-					size_t	nChars	=	GetLength () + 1;
-					(void)::memcpy (buf, fRep->Peek (), nChars*sizeof (Character));
+					fRep->CopyTo (buf, nCharsInBuf);
 				}
             inline	size_t	String::GetLength () const
 				{
