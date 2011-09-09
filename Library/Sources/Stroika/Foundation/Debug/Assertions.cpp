@@ -4,10 +4,9 @@
 #include	"../StroikaPreComp.h"
 
 #include	<cassert>
+#include	<cstdlib>
 
-#if		qPlatform_Windows
-	#include	<Windows.h>
-#endif
+#include	"Debugger.h"
 
 #include	"Assertions.h"
 
@@ -23,13 +22,13 @@ using	namespace	Stroika::Foundation::Debug;
 	namespace	{
 		void	DefaultAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 			{
-				#if		qPlatform_Windows
-					DebugBreak ();
-				#elif	defined (__GNUC__)
+				DropIntoDebuggerIfPresent ();
+				#if		defined (__GNUC__)
 					__assert_fail (assertionText==nullptr? "": assertionText, fileName, lineNum, functionName==nullptr? "": functionName);
 				#else
 					assert (false);
 				#endif
+				abort ();	// if we ever get that far...
 			}
 	}
 
@@ -43,6 +42,11 @@ using	namespace	Stroika::Foundation::Debug;
 		return sAssertFailureHandler_;
 	}
 
+	AssertionHandlerType	Stroika::Foundation::Debug::GetDefaultAssertionHandler ()
+	{
+		return DefaultAssertionHandler_;
+	}
+	
 	void	Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType assertionHandler)
 	{
 		sAssertFailureHandler_ = (assertionHandler == nullptr)? DefaultAssertionHandler_ : assertionHandler;

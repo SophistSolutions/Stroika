@@ -7,6 +7,7 @@
 
 #include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
+#include	"Stroika/Foundation/Debug/Debugger.h"
 
 #include	"TestHarness.h"
 
@@ -18,7 +19,7 @@ using	namespace	Stroika::TestHarness;
 
 
 namespace	{
-	void	_ASSERT_HANDLER_(const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
+	void	_ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 		{
 			if (assertCategory == nullptr) {
 				assertCategory = "Unknown assertion";
@@ -30,6 +31,9 @@ namespace	{
 				functionName = "";
 			}
 			cerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
+			
+			Debug::DropIntoDebuggerIfPresent ();
+
 			_exit (EXIT_FAILURE);
 		}
 }
@@ -54,6 +58,7 @@ void	TestHarness::PrintPassOrFail (void (*regressionTest) ())
 	catch (...) {
 		cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
 		cout << "Failed" << endl;
+		Debug::DropIntoDebuggerIfPresent ();
 		_exit (EXIT_FAILURE);
 	}
 }

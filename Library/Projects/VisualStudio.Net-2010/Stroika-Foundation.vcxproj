@@ -114,6 +114,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.h" />

@@ -9,6 +9,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Assertions.o\
+	$(ObjDir)Debugger.o\
 	$(ObjDir)Trace.o\
 
 all:	$(Objs)

@@ -90,6 +90,8 @@ namespace	Stroika {
 				*/
 				AssertionHandlerType	GetAssertionHandler ();
 
+				AssertionHandlerType	GetDefaultAssertionHandler ();
+
 				/*
 				@METHOD:		SetAssertionHandler
 				@DESCRIPTION:	<p>See @'GetAssertionHandler'. If SetAssertionHandler() is called with nullptr, then this merely selects the default assertion handler.</p>
@@ -152,13 +154,20 @@ namespace	Stroika {
 
 
 
-			#define	AssertNotReached()		Assert (false)
-			#define	RequireNotReached()		Assert (false)
-			#define	EnsureNotReached()		Assert (false)
+			#if		qDebug
+				#define	AssertNotReached()		Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Reached", __FILE__, __LINE__, nullptr)
+				#define	RequireNotReached()		Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", "Not Reached", __FILE__, __LINE__, nullptr)
+				#define	EnsureNotReached()		Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", "Not Reached", __FILE__, __LINE__, nullptr)
 
-			// Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
-			// makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
-			#define	AssertNotImplemented()	Assert (false)
+				// Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
+				// makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
+				#define	AssertNotImplemented()	Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Implemented", __FILE__, __LINE__, nullptr)
+			#else
+				#define	AssertNotReached()
+				#define	RequireNotReached()
+				#define	EnsureNotReached()
+				#define	AssertNotImplemented()
+			#endif
 
 			/*
 			@DESCRIPTION:	<p>Verify () is an assertion like Assert, except its argument is ALWAYS EVALUATED, even if

@@ -270,6 +270,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -527,6 +530,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h">
       <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
