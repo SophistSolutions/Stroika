@@ -41,10 +41,10 @@ namespace	{
 			string x = out.str ();
 			for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
 				if (x[i] != expected[i]) {
-					AssertNotReached ();
+					VerifyTestResult (false);
 				}
 			}
-			Assert (out.str () == expected);
+			VerifyTestResult (out.str () == expected);
 		}
 
 	void	DoRegressionTests_Writer_ ()
@@ -91,8 +91,8 @@ namespace	{
 			stringstream	tmp;
 			tmp << v;
 			VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
-			Assert (v1.GetType () == expected.GetType ());
-			Assert (v1 == expected);
+			VerifyTestResult (v1.GetType () == expected.GetType ());
+			VerifyTestResult (v1 == expected);
 		}
 
 	void	DoRegressionTests_Reader_ ()
@@ -133,7 +133,7 @@ namespace	{
 				stringstream	tmp;
 				tmp << kExample;
 				VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
-				Assert (v1.GetType () == VariantValue::eMap);
+				VerifyTestResult (v1.GetType () == VariantValue::eMap);
 			}
 
 		}

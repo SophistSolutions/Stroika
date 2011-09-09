@@ -78,7 +78,7 @@ namespace	{
 			thread2.Start ();
 			thread1.WaitForDone ();
 			thread2.WaitForDone ();
-			Assert (updaterValue == 2 * 10);
+			VerifyTestResult (updaterValue == 2 * 10);
 		}
 }
 
@@ -133,7 +133,7 @@ namespace	{
 			sRegTest3Event_T1_.Set ();
 			thread1.WaitForDone ();
 			thread2.WaitForDone ();
-			Assert (updaterValue == 2 * 10);
+			VerifyTestResult (updaterValue == 2 * 10);
 		}
 }
 

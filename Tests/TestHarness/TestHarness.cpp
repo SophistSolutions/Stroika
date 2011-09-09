@@ -66,3 +66,9 @@ void	TestHarness::PrintPassOrFail (void (*regressionTest) ())
 
 
 
+void	TestHarness::Test_ (bool failIfFalse, const char* regressionTestText, const char* fileName, int lineNum)
+{
+	if (not failIfFalse) {
+		_ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
+	}
+}

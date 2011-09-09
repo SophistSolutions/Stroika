@@ -52,8 +52,8 @@ namespace	{
 					String_ReadOnlyChar	a (L"a");
 					for (int i = 0; i <= kLoopEnd; i++) {
 						big += a;
-						Assert ((big.GetLength () -1) == i);
-						Assert (big[i] == 'a');
+						VerifyTestResult ((big.GetLength () -1) == i);
+						VerifyTestResult (big[i] == 'a');
 					}
 					big.SetLength (0);
 				}
@@ -61,7 +61,7 @@ namespace	{
 				String	s1	=	L"test strings";
 				for (int i = 1; i <= kLoopEnd; i++) {
 					big += s1;
-					Assert (big.GetLength () == s1.GetLength () * i);
+					VerifyTestResult (big.GetLength () == s1.GetLength () * i);
 				}
 			}
 		void	StressTest2_ (String big)
@@ -69,7 +69,7 @@ namespace	{
 				String	s1	=	L"test strings";
 				for (int i = 1; i <= kLoopEnd; i++) {
 					big = big + s1;
-					Assert (big.GetLength () == s1.GetLength () * i);
+					VerifyTestResult (big.GetLength () == s1.GetLength () * i);
 			#if 0
 					for (int j = 0; j < big.GetLength (); ++j) {
 						Character c = big[j];
@@ -149,22 +149,22 @@ namespace	{
 namespace	{
 	void	Test2_Helper_ (String& s1, String& s2)
 		{
-			Assert (s1.GetLength () == 12);
-			Assert (String (s1).GetLength () == 12);
-			Assert (s1 == s2);
-			Assert (! (s1 != s2));
-			Assert (s1 + s1 == s2 + s2);
-			Assert ((s1 + s1).GetLength () == s1.GetLength () *2);
-			Assert (s1[2] == 's');
-			Assert ('s' == s1[2]);
-			Assert (s1.GetLength () == 12);
+			VerifyTestResult (s1.GetLength () == 12);
+			VerifyTestResult (String (s1).GetLength () == 12);
+			VerifyTestResult (s1 == s2);
+			VerifyTestResult (! (s1 != s2));
+			VerifyTestResult (s1 + s1 == s2 + s2);
+			VerifyTestResult ((s1 + s1).GetLength () == s1.GetLength () *2);
+			VerifyTestResult (s1[2] == 's');
+			VerifyTestResult ('s' == s1[2]);
+			VerifyTestResult (s1.GetLength () == 12);
 
 			String s3;
 			s3 += s1;
 			s3 += s2;
 
 			s1 += L"\n";
-			Assert (s1.GetLength () == 13);
+			VerifyTestResult (s1.GetLength () == 13);
 		}
 
 	void	Test1_ ()
@@ -173,9 +173,9 @@ namespace	{
 			 * Some simple tests to start off with.
 			 */
 			{
-				Assert (String (String (L"fred") + String (L"joe")).GetLength () == 7);
+				VerifyTestResult (String (String (L"fred") + String (L"joe")).GetLength () == 7);
 
-				Assert (String (L"fred") + String (L"joe") == String (L"fredjoe"));
+				VerifyTestResult (String (L"fred") + String (L"joe") == String (L"fredjoe"));
 				{
 					String	s1	=	String_CharArray (L"test strings");
 					String	s2	=	String_CharArray (L"test strings");
@@ -186,7 +186,7 @@ namespace	{
 					String_BufferedCharArray s1 (L"test strings");
 					String_BufferedCharArray s2 (L"test strings");
 
-					Assert (Character ('a') == 'a');
+					VerifyTestResult (Character ('a') == 'a');
 
 					Test2_Helper_ (s1, s2);
 				}
@@ -212,52 +212,52 @@ namespace	{
 			String	t3	=	L"a";
 			String	t4	=	L"a";
 
-			Assert (t1 == L"");
-			Assert (t1 == String ());
-			Assert (t1 == String (L""));
-			Assert (t1 == t2);
-			Assert (t3 == L"a");
-			Assert (t3 == String(L"a"));
-			Assert (t4 == L"a");
+			VerifyTestResult (t1 == L"");
+			VerifyTestResult (t1 == String ());
+			VerifyTestResult (t1 == String (L""));
+			VerifyTestResult (t1 == t2);
+			VerifyTestResult (t3 == L"a");
+			VerifyTestResult (t3 == String(L"a"));
+			VerifyTestResult (t4 == L"a");
 			t1 = t1;
-			Assert (t1 == L"");
+			VerifyTestResult (t1 == L"");
 
 			t1 += 'F';
 			t1 += 'r';
 			t1 += 'e';
 			t1 += 'd';
 			t1 += L" Flintstone";
-			Assert (t1 == L"Fred Flintstone");
-			Assert (L"Fred Flintstone" == t1);
-			Assert (String (L"Fred Flintstone") == t1);
-			Assert (t1 == String (L"Fred Flintstone"));
-			Assert (t2 != L"Fred Flintstone");
-			Assert (L"Fred Flintstone" != t2);
-			Assert (String (L"Fred Flintstone") != t2);
-			Assert (t2 != String (L"Fred Flintstone"));
+			VerifyTestResult (t1 == L"Fred Flintstone");
+			VerifyTestResult (L"Fred Flintstone" == t1);
+			VerifyTestResult (String (L"Fred Flintstone") == t1);
+			VerifyTestResult (t1 == String (L"Fred Flintstone"));
+			VerifyTestResult (t2 != L"Fred Flintstone");
+			VerifyTestResult (L"Fred Flintstone" != t2);
+			VerifyTestResult (String (L"Fred Flintstone") != t2);
+			VerifyTestResult (t2 != String (L"Fred Flintstone"));
 
-			Assert (t1.GetLength () == 15);
+			VerifyTestResult (t1.GetLength () == 15);
 			t1.SetLength (20);
-			Assert (t1.GetLength () == 20);
+			VerifyTestResult (t1.GetLength () == 20);
 			t1.SetLength (4);
-			Assert (t1.GetLength () == 4);
-			Assert (t1 == L"Fred");
+			VerifyTestResult (t1.GetLength () == 4);
+			VerifyTestResult (t1 == L"Fred");
 
-			Assert (t1[0] == 'F');
-			Assert (t1[1] == 'r');
-			Assert (t1[2] == 'e');
-			Assert (t1[3] == 'd');
+			VerifyTestResult (t1[0] == 'F');
+			VerifyTestResult (t1[1] == 'r');
+			VerifyTestResult (t1[2] == 'e');
+			VerifyTestResult (t1[3] == 'd');
 
-			Assert (t1[0] == 'F');
-			Assert (t1[1] == 'r');
-			Assert (t1[2] == 'e');
-			Assert (t1[3] == 'd');
+			VerifyTestResult (t1[0] == 'F');
+			VerifyTestResult (t1[1] == 'r');
+			VerifyTestResult (t1[2] == 'e');
+			VerifyTestResult (t1[3] == 'd');
 
 			String	a[10];
-			Assert (a[2] == L"");
+			VerifyTestResult (a[2] == L"");
 			a [3] = L"Fred";
-			Assert (a[3] == L"Fred");
-			Assert (a[2] != L"Fred");
+			VerifyTestResult (a[3] == L"Fred");
+			VerifyTestResult (a[2] != L"Fred");
 		}
 
 	void	Test4_ ()
@@ -273,17 +273,17 @@ namespace	{
 			t5 = t1;
 			t1 = t5;
 			t1 = t1;
-			Assert (t1 == L"");
-			Assert (t5 == L"");
+			VerifyTestResult (t1 == L"");
+			VerifyTestResult (t5 == L"");
 
 			t1 += 'F';
 			t1 += 'r';
 			t1 += 'e';
 			t1 += 'd';
 			t1 += L" Flintstone";
-			Assert (t1 == L"Fred Flintstone");
+			VerifyTestResult (t1 == L"Fred Flintstone");
 			t5 = t1.SubString (5, 10);
-			Assert (t5 == L"Flintstone")
+			VerifyTestResult (t5 == L"Flintstone");
 
 			t1.SetLength (20);
 			t1.SetLength (4);
@@ -294,61 +294,61 @@ namespace	{
 			t5.SetCharAt ('E', 2);
 			t5.SetCharAt ('D', 3);
 
-			Assert (t5[0] == 'f');
-			Assert (t5[1] == 'R');
-			Assert (t5[2] == 'E');
-			Assert (t5[3] == 'D');
-			Assert (t5.IndexOf ('f') == 0);
-			Assert (t5.IndexOf (L"f") == 0);
-			Assert (t5.IndexOf (L"fR") == 0);
-			Assert (t5.IndexOf (L"fRE") == 0);
-			Assert (t5.IndexOf (L"fRED") == 0);
-			Assert (t5.IndexOf (L"fRD") == kBadStringIndex);
-			Assert (t5.IndexOf ('R') == 1);
-			Assert (t5.IndexOf ('E') == 2);
-			Assert (t5.IndexOf ('D') == 3);
-			Assert (t5.IndexOf (L"D") == 3);
+			VerifyTestResult (t5[0] == 'f');
+			VerifyTestResult (t5[1] == 'R');
+			VerifyTestResult (t5[2] == 'E');
+			VerifyTestResult (t5[3] == 'D');
+			VerifyTestResult (t5.IndexOf ('f') == 0);
+			VerifyTestResult (t5.IndexOf (L"f") == 0);
+			VerifyTestResult (t5.IndexOf (L"fR") == 0);
+			VerifyTestResult (t5.IndexOf (L"fRE") == 0);
+			VerifyTestResult (t5.IndexOf (L"fRED") == 0);
+			VerifyTestResult (t5.IndexOf (L"fRD") == kBadStringIndex);
+			VerifyTestResult (t5.IndexOf ('R') == 1);
+			VerifyTestResult (t5.IndexOf ('E') == 2);
+			VerifyTestResult (t5.IndexOf ('D') == 3);
+			VerifyTestResult (t5.IndexOf (L"D") == 3);
 
-			Assert (t5.RIndexOf ('f') == 0);
-			Assert (t5.RIndexOf ('R') == 1);
-			Assert (t5.RIndexOf ('E') == 2);
-			Assert (t5.RIndexOf ('D') == 3);
-			Assert (t5.RIndexOf (L"D") == 3);
-			Assert (t5.RIndexOf (L"ED") == 2);
-			Assert (t5.RIndexOf (L"RED") == 1);
-			Assert (t5.RIndexOf (L"fRED") == 0);
-			Assert (t5.RIndexOf (L"fr") == kBadStringIndex);
-			Assert (t5.RIndexOf (L"f") == 0);
+			VerifyTestResult (t5.RIndexOf ('f') == 0);
+			VerifyTestResult (t5.RIndexOf ('R') == 1);
+			VerifyTestResult (t5.RIndexOf ('E') == 2);
+			VerifyTestResult (t5.RIndexOf ('D') == 3);
+			VerifyTestResult (t5.RIndexOf (L"D") == 3);
+			VerifyTestResult (t5.RIndexOf (L"ED") == 2);
+			VerifyTestResult (t5.RIndexOf (L"RED") == 1);
+			VerifyTestResult (t5.RIndexOf (L"fRED") == 0);
+			VerifyTestResult (t5.RIndexOf (L"fr") == kBadStringIndex);
+			VerifyTestResult (t5.RIndexOf (L"f") == 0);
 
 			t5.SetCharAt ('D', 0);
 			t5.SetCharAt ('D', 1);
 			t5.SetCharAt ('D', 2);
 			t5.SetCharAt ('D', 3);
-			Assert (t5.IndexOf ('D') == 0);
-			Assert (t5.IndexOf (L"D") == 0);
-			Assert (t5.RIndexOf ('D') == 3);
-			Assert (t5.RIndexOf (L"D") == 3);
+			VerifyTestResult (t5.IndexOf ('D') == 0);
+			VerifyTestResult (t5.IndexOf (L"D") == 0);
+			VerifyTestResult (t5.RIndexOf ('D') == 3);
+			VerifyTestResult (t5.RIndexOf (L"D") == 3);
 
-			Assert (t5.IndexOf ('f') == kBadStringIndex);
-			Assert (t5.IndexOf (L"f") == kBadStringIndex);
-			Assert (t5.RIndexOf ('f') == kBadStringIndex);
-			Assert (t5.RIndexOf (L"f") == kBadStringIndex);
+			VerifyTestResult (t5.IndexOf ('f') == kBadStringIndex);
+			VerifyTestResult (t5.IndexOf (L"f") == kBadStringIndex);
+			VerifyTestResult (t5.RIndexOf ('f') == kBadStringIndex);
+			VerifyTestResult (t5.RIndexOf (L"f") == kBadStringIndex);
 
-			Assert ((t5.Peek ())[0] == 'D');
-			Assert ((t5.Peek ())[1] == 'D');
-			Assert ((t5.Peek ())[2] == 'D');
-			Assert ((t5.Peek ())[3] == 'D');
+			VerifyTestResult ((t5.Peek ())[0] == 'D');
+			VerifyTestResult ((t5.Peek ())[1] == 'D');
+			VerifyTestResult ((t5.Peek ())[2] == 'D');
+			VerifyTestResult ((t5.Peek ())[3] == 'D');
 		}
 
 	void	Test5_ ()
 		{
 			String arr [100];
 			arr [3] = L"fred";
-			Assert (arr[3] == L"fred");
+			VerifyTestResult (arr[3] == L"fred");
 			String*	l	=	new String [100];
 			l[3] = L"FRED";
-			Assert (l[3] == L"FRED");
-			Assert (l[99] == L"");
+			VerifyTestResult (l[3] == L"FRED");
+			VerifyTestResult (l[99] == L"");
 			delete[] (l);
 			size_t nSlots = 100;
 			l	=	new String [size_t (nSlots)];
@@ -367,42 +367,42 @@ namespace	{
 
 	void	Test7_ ()
 		{
-			Assert (String (L"1") <= String (L"1"));
-			Assert (String (L"1") <= String (L"10"));
-			Assert (not (String (L"1") > String (L"10")));
-			Assert (not (String (L"1") >= String (L"10")));
-			Assert (String (L"1") < String (L"10"));
+			VerifyTestResult (String (L"1") <= String (L"1"));
+			VerifyTestResult (String (L"1") <= String (L"10"));
+			VerifyTestResult (not (String (L"1") > String (L"10")));
+			VerifyTestResult (not (String (L"1") >= String (L"10")));
+			VerifyTestResult (String (L"1") < String (L"10"));
 
-			Assert (String (L"20") > String (L"11"));
-			Assert (String (L"20") >= String (L"11"));
-			Assert (not (String (L"20") < String (L"11")));
-			Assert (not (String (L"20") <= String (L"11")));
-			Assert (String (L"11") < String (L"20"));
-			Assert (String (L"11") <= String (L"20"));
-			Assert (not (String (L"11") > String (L"20")));
-			Assert (not (String (L"11") >= String (L"20")));
+			VerifyTestResult (String (L"20") > String (L"11"));
+			VerifyTestResult (String (L"20") >= String (L"11"));
+			VerifyTestResult (not (String (L"20") < String (L"11")));
+			VerifyTestResult (not (String (L"20") <= String (L"11")));
+			VerifyTestResult (String (L"11") < String (L"20"));
+			VerifyTestResult (String (L"11") <= String (L"20"));
+			VerifyTestResult (not (String (L"11") > String (L"20")));
+			VerifyTestResult (not (String (L"11") >= String (L"20")));
 
-			Assert (String (L"aac") > String (L"aab"));
-			Assert (String (L"aac") >= String (L"aab"));
-			Assert (not (String (L"aac") < String (L"aab")));
-			Assert (not (String (L"aac") <= String (L"aab")));
+			VerifyTestResult (String (L"aac") > String (L"aab"));
+			VerifyTestResult (String (L"aac") >= String (L"aab"));
+			VerifyTestResult (not (String (L"aac") < String (L"aab")));
+			VerifyTestResult (not (String (L"aac") <= String (L"aab")));
 
-			Assert (String (L"apple") < String (L"apples"));
-			Assert (String (L"apple") <= String (L"apples"));
-			Assert (not (String (L"apple") > String (L"apples")));
-			Assert (not (String (L"apple") >= String (L"apples")));
+			VerifyTestResult (String (L"apple") < String (L"apples"));
+			VerifyTestResult (String (L"apple") <= String (L"apples"));
+			VerifyTestResult (not (String (L"apple") > String (L"apples")));
+			VerifyTestResult (not (String (L"apple") >= String (L"apples")));
 		}
 
 	void    Test8_ReadOnlyStrings_ ()
 		{
 			String_ReadOnlyChar s (L"fred");
-			Assert (s[0] == 'f');
+			VerifyTestResult (s[0] == 'f');
 			s.SetLength (3);
-			Assert (s[0] == 'f');
-			Assert (s.GetLength () == 3);
+			VerifyTestResult (s[0] == 'f');
+			VerifyTestResult (s.GetLength () == 3);
 			s += L"x";
-			Assert (s.GetLength () == 4);
-			Assert (s[3] == 'x');
+			VerifyTestResult (s.GetLength () == 4);
+			VerifyTestResult (s[3] == 'x');
 		}
 
 	namespace	{
@@ -416,7 +416,7 @@ namespace	{
 						}
 						STRING	t2	=	t1;
 						if (t1 != t2) {
-							Assert (false);
+							VerifyTestResult (false);
 						}
 					}
 		}
@@ -433,8 +433,8 @@ namespace	{
 		{
 			const	wstring	kT1	=	L"abcdefh124123985213129314234";
 			String	t1	=	kT1;
-			Assert (t1.As<wstring> () == kT1);
-			Assert (t1 == kT1);
+			VerifyTestResult (t1.As<wstring> () == kT1);
+			VerifyTestResult (t1 == kT1);
 		}
 }
 
@@ -446,14 +446,14 @@ namespace	{
 	void	Test11_Trim_ ()
 		{
 			const	String	kT1	=	L"  abc";
-			Assert (kT1.RTrim () == kT1);
-			Assert (kT1.LTrim () == kT1.Trim ());
-			Assert (kT1.Trim () == L"abc");
+			VerifyTestResult (kT1.RTrim () == kT1);
+			VerifyTestResult (kT1.LTrim () == kT1.Trim ());
+			VerifyTestResult (kT1.Trim () == L"abc");
 
 			#if		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-				Assert (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
+				VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
 			#else
-				Assert (kT1.Trim (Test11_TRIM_ISALPHA) == L"  ");
+				VerifyTestResult (kT1.Trim (Test11_TRIM_ISALPHA) == L"  ");
 			#endif
 		}
 }
@@ -471,7 +471,7 @@ namespace	{
 			SmallStackBuffer<char>	buf (sz + 1);
 			size_t	charCnt	=	sz;
 			cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
-			Assert (string (buf.begin (), buf.begin () + charCnt) == "﻿<PHRMode");
+			VerifyTestResult (string (buf.begin (), buf.begin () + charCnt) == "﻿<PHRMode");
 		}
 }
 
@@ -483,9 +483,9 @@ namespace	{
 	void	Test13_ToLowerUpper_ ()
 		{
 			String w = L"Lewis";
-			Assert (w.ToLowerCase () == L"lewis");
-			Assert (w.ToUpperCase () == L"LEWIS");
-			Assert (w == L"Lewis");
+			VerifyTestResult (w.ToLowerCase () == L"lewis");
+			VerifyTestResult (w.ToUpperCase () == L"LEWIS");
+			VerifyTestResult (w == L"Lewis");
 		}
 }
 
@@ -512,7 +512,7 @@ namespace	{
 		#endif
 
 			String s = Test6_ (testString, kRecurseDepth);	// returns length 114688 for depth 6
-			Assert (s.GetLength () ==  (ipow (4,kRecurseDepth) * 2 * testString.GetLength ()));
+			VerifyTestResult (s.GetLength () ==  (ipow (4,kRecurseDepth) * 2 * testString.GetLength ()));
 
 		#if		qPrintTimings
 			t = GetCurrentTime () - t;
