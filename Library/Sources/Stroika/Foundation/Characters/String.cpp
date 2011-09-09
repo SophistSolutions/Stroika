@@ -35,7 +35,7 @@ class	String_CharArray::MyRep_ : public String::StringRep {
 
 		virtual		Character	GetAt (size_t index) const override;
 		virtual		void		SetAt (Character item, size_t index) override;
-		virtual		void		InsertAt (Character item, size_t index) override;
+		virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
 		virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
 
 		virtual		void	SetLength (size_t newLength) override;
@@ -89,7 +89,7 @@ class	String_ReadOnlyChar::MyRep_ : public String_CharArray::MyRep_ {
         virtual		void	RemoveAll () override;
 
         virtual		void	SetAt (Character item, size_t index) override;
-        virtual		void	InsertAt (Character item, size_t index) override;
+        virtual		void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
         virtual		void	RemoveAt (size_t index, size_t amountToRemove) override;
 
         virtual		void	SetLength (size_t newLength) override;
@@ -122,7 +122,7 @@ namespace	{
 
 				virtual		Character	GetAt (size_t index) const override;
 				virtual		void		SetAt (Character item, size_t index) override;
-				virtual		void		InsertAt (Character item, size_t index) override;
+				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
 				virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
 
 				virtual		void	SetLength (size_t newLength) override;
@@ -154,7 +154,7 @@ namespace	{
 
 				virtual		Character	GetAt (size_t index) const override;
 				virtual		void		SetAt (Character item, size_t index) override;
-				virtual		void		InsertAt (Character item, size_t index) override;
+				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
 				virtual		void		RemoveAt (size_t index, size_t amountToRemove) override;
 
 				virtual		void	SetLength (size_t newLength) override;
@@ -220,7 +220,7 @@ String	String::FromUTF8 (const std::string& from)
 
 String&	String::operator+= (Character appendage)
 {
-	fRep->InsertAt (appendage, GetLength ());
+	fRep->InsertAt (&appendage, &appendage + 1, GetLength ());
 	return (*this);
 }
 
@@ -266,7 +266,7 @@ void	String::InsertAt (Character c, size_t i)
 {
 	Require (i >= 0);
 	Require (i <= (GetLength ()));
-	fRep->InsertAt (c, i);
+	fRep->InsertAt (&c, &c + 1, i);
 }
 
 void	String::RemoveAt (size_t i, size_t amountToRemove)
@@ -640,10 +640,14 @@ void	String_CharArray::MyRep_::SetAt (Character item, size_t index)
 	fStorage[index] = item.As<wchar_t> ();
 }
 
-void	String_CharArray::MyRep_::InsertAt (Character item, size_t index)
+void	String_CharArray::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
 	Require (index >= 0);
 	Require (index <= GetLength ());
+
+Assert (srcEnd - srcStart == 1);	//tmphack - just havne't implemtend more general case
+Character item = *srcStart;
+
 
 	SetLength (GetLength () + 1);
 	if (index < (fLength-1)) {
@@ -780,10 +784,10 @@ void	String_ReadOnlyChar::MyRep_::SetAt (Character item, size_t index)
 	String_CharArray::MyRep_::SetAt (item, index);
 }
 
-void	String_ReadOnlyChar::MyRep_::InsertAt (Character item, size_t index)
+void	String_ReadOnlyChar::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
 	AssureMemAllocated ();
-	String_CharArray::MyRep_::InsertAt (item, index);
+	String_CharArray::MyRep_::InsertAt (srcStart, srcEnd, index);
 }
 
 void	String_ReadOnlyChar::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
@@ -880,11 +884,11 @@ void	String_Substring_::MyRep_::SetAt (Character item, size_t index)
 	fBase->SetAt (item, (fFrom+index));
 }
 
-void	String_Substring_::MyRep_::InsertAt (Character item, size_t index)
+void	String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
 	Require (index <= GetLength ());
 	Assert ((fFrom+index) <= fBase->GetLength ());
-	fBase->InsertAt (item, (fFrom+index));
+	fBase->InsertAt (srcStart, srcEnd, (fFrom+index));
 	fLength++;
 }
 
@@ -979,9 +983,11 @@ void	String_Catenate_::MyRep_::SetAt (Character item, size_t index)
 	fLeft.SetCharAt (item, index);
 }
 
-void	String_Catenate_::MyRep_::InsertAt (Character item, size_t index)
+void	String_Catenate_::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
 	Normalize_ ();
+Assert (srcStart + 1 == srcEnd);;//tmphack - cuz thats all that we do right now
+Character item = *srcStart;
 	fLeft.InsertAt (item, index);
 	fLength++;
 }

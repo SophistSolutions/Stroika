@@ -220,7 +220,6 @@ namespace	Stroika {
                     nonvirtual	String		SubString (size_t from, size_t length = kBadStringIndex) const;
 
 
-//unimplemented draft API
 				public:
 					#if		!qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
 					inline	static	bool	DefaultTrimArg_ (Character c)				{		return c.IsWhitespace ();		}
@@ -249,6 +248,7 @@ namespace	Stroika {
 					nonvirtual	String	Trim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
 					#endif
 
+				
 				public:
                     /*
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
@@ -373,7 +373,7 @@ namespace	Stroika {
 
                     virtual	Character	GetAt (size_t index) const				= 0;
                     virtual	void		SetAt (Character item, size_t index)	= 0;
-                    virtual	void		InsertAt (Character item, size_t index)	= 0;
+                    virtual	void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	= 0;
                     virtual	void		RemoveAt (size_t index, size_t amountToRemove)	= 0;
 
                     virtual	void	SetLength (size_t newLength) 	= 0;
