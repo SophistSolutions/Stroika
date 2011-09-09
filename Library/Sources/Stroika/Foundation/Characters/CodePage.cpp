@@ -461,6 +461,12 @@ void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 	Require (inCharCnt == 0 or inChars != nullptr);
 	RequireNotNull (outCharCnt);
 	Require (*outCharCnt == 0 or outChars != nullptr);
+
+	size_t	outBufferSize	=	*outCharCnt;
+#if		qDebug && qPlatform_Windows
+	size_t	countOfBOMCharsAdded	=	0;		// just for the Windows debug check at the end
+#endif
+
 	switch (fCodePage) {
 		case	kCodePage_ANSI:		TableDrivenCodePageConverter_<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
 		case	kCodePage_MAC:		TableDrivenCodePageConverter_<kCodePage_MAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
@@ -478,6 +484,9 @@ void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 				if (GetHandleBOM ()) {
 					outChars[0] = '\xff';
 					outChars[1] = '\xfe';
+					#if		qDebug && qPlatform_Windows
+						countOfBOMCharsAdded = 2;
+					#endif
 				}
 				(void)::memcpy (outWBytes, inChars, inCharCnt * sizeof (wchar_t));
 			}
@@ -498,6 +507,9 @@ void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 				if (GetHandleBOM ()) {
 					outChars[0] =  '\xfe';
 					outChars[1] =  '\xff';
+					#if		qDebug && qPlatform_Windows
+						countOfBOMCharsAdded = 2;
+					#endif
 				}
 				for (size_t i = 0; i < inCharCnt; ++i) {
 					wchar_t	c	=	inChars[i];
@@ -524,6 +536,9 @@ void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 					outChars[2] = 0x76;
 					outChars[3] = 0x38;
 					outChars[4] = 0x2d;
+					#if		qDebug && qPlatform_Windows
+						countOfBOMCharsAdded = 5;
+					#endif
 				}
 				else {
 					useOutCharCount = 0;
@@ -549,6 +564,9 @@ void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 					reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
 					reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
 					reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
+					#if		qDebug && qPlatform_Windows
+						countOfBOMCharsAdded = 3;
+					#endif
 				}
 				else {
 					useOutCharCount = 0;
@@ -575,16 +593,16 @@ void	CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 #if		qDebug && qPlatform_Windows
 	// Assure my baked tables perform the same as the builtin Win32 API
 	{
-		size_t						win32TstCharCnt	=	*outCharCnt;
-		SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
+		size_t						win32TstCharCnt	=	outBufferSize;
+		SmallStackBuffer<char>	win32TstBuf (win32TstCharCnt);
 
 		Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, win32TstBuf, &win32TstCharCnt);
 
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 		// used for bad conversions. Reason is cuz for characters that don't map - our table and
 		// the system table can differ in how they map depending on current OS code page.
-		Assert (win32TstCharCnt == *outCharCnt or outChars[0] == '?');
-		Assert (memcmp (win32TstBuf, outChars, win32TstCharCnt) == 0 or outChars[0] == '?');
+		Assert ((win32TstCharCnt + countOfBOMCharsAdded) == *outCharCnt or outChars[0] == '?');
+		Assert (memcmp (win32TstBuf, outChars + countOfBOMCharsAdded, win32TstCharCnt) == 0 or outChars[0] == '?');
 	}
 #endif
 }

@@ -471,6 +471,7 @@ namespace	{
 			SmallStackBuffer<char>	buf (sz + 1);
 			size_t	charCnt	=	sz;
 			cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
+			Assert (string (buf.begin (), buf.begin () + charCnt) == "﻿<PHRMode");
 		}
 }
 
