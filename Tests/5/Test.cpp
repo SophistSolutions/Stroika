@@ -460,7 +460,19 @@ namespace	{
 
 
 
-
+namespace	{
+	void	Test12_CodePageConverter_ ()
+		{
+			wstring w = L"<PHRMode";
+			using namespace Characters;
+			using namespace Memory;
+			CodePageConverter	cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+			size_t				sz	=		cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
+			SmallStackBuffer<char>	buf (sz + 1);
+			size_t	charCnt	=	sz;
+			cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
+		}
+}
 
 
 
@@ -499,6 +511,7 @@ namespace	{
 			Test9_StringVersusStdCString_ ();
 			Test10_ConvertToFromSTDStrings_ ();
 			Test11_Trim_ ();
+			Test12_CodePageConverter_ ();
 		}
 }
 
