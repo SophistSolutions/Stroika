@@ -4,8 +4,9 @@ my $DBG_LIB;
 my $REL_LIB;
 
 if ("$^O" eq "linux") {
-	$REL_LIB = "CURRENT/Build/Win32/VC10/Static Release/xerces-c_static_3.lib";
-	$DBG_LIB = "CURRENT/Build/Win32/VC10/Static Debug/xerces-c_static_3D.lib";
+#for now seems to build just one lib...
+	$REL_LIB = "CURRENT/src/.libs/libxerces-c.a";
+	$DBG_LIB = $REL_LIB;
 }
 else {
 	$REL_LIB = "CURRENT/Build/Win32/VC10/Static Release/xerces-c_static_3.lib";
