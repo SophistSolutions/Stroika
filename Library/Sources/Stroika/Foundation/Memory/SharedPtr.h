@@ -20,6 +20,44 @@
  * TODO:
  *		+	SERIOUSLY CONSIDER relationship between this class and Shared<>
  *
+ *		+	CAREFULLY writeup differences between this class and shared_ptr<>
+ *			+	I DONT BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
+ *				applications. Maybe I'm missing something. Ask around a bit...
+ *
+ *			+	Mechanism to pass SharedPtr<T> through non-C++ APIS. I NOW do that through a funky base class. But i JUST
+ *				thought of a way - which BTW works for shared_ptr<T>. 
+ *					Implement a new class
+ *						struct	SharedPtrHandOff<T, SharedPtr<T>> {
+							CTOR takes ADDRESS of SharedPtr<> to be passed to another place (e.g throug win32 API).
+							
+							void DoHandoff (SharedPtr<T>* into)
+								{
+									magically copies the value in.
+									*into = fCopy;
+								}
+
+								private:
+									SharedPtr<T> fCopy;
+						};
+						Then use is
+								RefCntPtr<WINDOWOBJ> w (new WINDOWOBJ);
+								SharedPtrHandOff<WINDOWOBJ)> handoff(&w);
+								::CreateWindow (......, &handoff);
+
+						In WM_CREATE method
+							SharedPtrHandoff<T>* handoff = reintpret_cast<SharedPtrHandoff<T>*> (voidStarUserdataArg);
+
+							RefCntPtr<WINDOWOBJ> myCopy	=	handoff->DoHandoff();
+
+
+				That basic process (varios syntax cleanups needed) - should work for either shared_ptr or SharedPtr, and allow me
+				to get rid of the funky shared base class used for SharedPtrRep...
+
+
+				Then - we COULD get rid of SharedPtr<> altoegher and just not use the weak_ptr stuff if its a bad idea. I'm undecided on that
+				later point. More thought required
+						--	LGP 2011-09-09
+ *
  *
  */
 /*
