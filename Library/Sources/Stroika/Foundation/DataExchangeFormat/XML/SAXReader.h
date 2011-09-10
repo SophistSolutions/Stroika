@@ -32,7 +32,7 @@ namespace	Stroika {
 						virtual	void	StartDocument ();
 						virtual	void	EndDocument ();
 					public:
-						virtual	void	StartElement (const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>&	attrs);
+						virtual	void	StartElement (const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs);
 						virtual	void	EndElement (const String& uri, const String& localname, const String& qname);
 					public:
 						virtual	void	CharactersInsideElement (const String& text);
