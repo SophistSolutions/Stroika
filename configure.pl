@@ -85,6 +85,8 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test4 $intermediateFiles/$platform/$target/Test4/Makefile");
 		mkdir "$intermediateFiles/$platform/$target/Test5";
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test5 $intermediateFiles/$platform/$target/Test5/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test6";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test6 $intermediateFiles/$platform/$target/Test6/Makefile");
 	}
 }
 
