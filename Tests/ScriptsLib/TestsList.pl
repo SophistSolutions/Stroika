@@ -13,10 +13,10 @@ sub trim($)
 
 sub	GetThisScriptDir {
 	use File::Basename;
-	my $dirname = dirname(__FILE__);
 	use Cwd 'abs_path';
-	my $A = abs_path (__FILE__);
-	$dirname = dirname($A);
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
 	return $dirname;
 }
 
@@ -53,6 +53,13 @@ sub GetAllTests {
 	return @listAllTests;
 }
 
+sub Prepare_ () {
+	if ($#listAllTests < 0) {
+		ReadListOfTests_ ();
+	}
+	return 1;
+}
+
 
 sub RunSimpleTest {
 	foreach $tst (GetAllTests ()) {
@@ -61,5 +68,5 @@ sub RunSimpleTest {
 }
 
 
-RunSimpleTest();
-1
+#RunSimpleTest();
+Prepare_ ();
