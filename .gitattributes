@@ -11,6 +11,7 @@
 README text diff
 Makefile* text diff
 *.mk text diff
+*.pl text diff
 *.h text diff
 *.inl text diff
 *.cpp text diff
