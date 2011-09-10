@@ -1,6 +1,6 @@
-﻿[1]		Cryptography
-[2]		Streams/JSON
-[3]		Threads
-[4]		Exceptions
-[5]		Strings
-[6]		XML-Sax-Parser
+[1]	Cryptography
+[2]	Streams/JSON
+[3]	Threads
+[4]	Exceptions
+[5]	Strings
+[6]	XML-Sax-Parser
