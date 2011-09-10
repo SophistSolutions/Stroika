@@ -1,0 +1,44 @@
+*** Origs\xerces-c-3.1.1\projects\Win32\VC10\xerces-all\XercesLib\XercesLib.vcxproj	2010-04-22 03:30:10.000000000 -0400
+--- CURRENT\projects\Win32\VC10\xerces-all\XercesLib\XercesLib.vcxproj	2010-05-09 12:13:40.968142000 -0400
+***************
+*** 71,76 ****
+--- 71,77 ----
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" Label="Configuration">
+      <ConfigurationType>StaticLibrary</ConfigurationType>
+      <UseOfMfc>false</UseOfMfc>
++     <WholeProgramOptimization>false</WholeProgramOptimization>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+      <ConfigurationType>DynamicLibrary</ConfigurationType>
+***************
+*** 380,386 ****
+        <TypeLibraryName>$(OutDir)XercesLib.tlb</TypeLibraryName>
+      </Midl>
+      <ClCompile>
+!       <Optimization>MinSpace</Optimization>
+        <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+        <AdditionalIncludeDirectories>..\..\..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;NDEBUG;WIN32;_WINDOWS;XERCES_STATIC_LIBRARY;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+--- 381,387 ----
+        <TypeLibraryName>$(OutDir)XercesLib.tlb</TypeLibraryName>
+      </Midl>
+      <ClCompile>
+!       <Optimization>Full</Optimization>
+        <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+        <AdditionalIncludeDirectories>..\..\..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;NDEBUG;WIN32;_WINDOWS;XERCES_STATIC_LIBRARY;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+***************
+*** 393,398 ****
+--- 394,405 ----
+        <WarningLevel>Level3</WarningLevel>
+        <CompileAs>Default</CompileAs>
+        <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
++       <IntrinsicFunctions>true</IntrinsicFunctions>
++       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
++       <OmitFramePointers>true</OmitFramePointers>
++       <WholeProgramOptimization>false</WholeProgramOptimization>
++       <BufferSecurityCheck>false</BufferSecurityCheck>
++       <FunctionLevelLinking>true</FunctionLevelLinking>
+      </ClCompile>
+      <ResourceCompile>
+        <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
