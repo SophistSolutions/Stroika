@@ -258,15 +258,15 @@ void	SAXCallbackInterface::EndDocument ()
 {
 }
 
-void	SAXCallbackInterface::StartElement (const wstring& uri, const wstring& localname, const wstring& qname, const map<wstring,Memory::VariantValue>& attrs)
+void	SAXCallbackInterface::StartElement (const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs)
 {
 }
 
-void	SAXCallbackInterface::EndElement (const wstring& uri, const wstring& localname, const wstring& qname)
+void	SAXCallbackInterface::EndElement (const String& uri, const String& localname, const String& qname)
 {
 }
 
-void	SAXCallbackInterface::CharactersInsideElement (const wstring& text)
+void	SAXCallbackInterface::CharactersInsideElement (const String& text)
 {
 }
 

@@ -9,6 +9,7 @@
 #include	<istream>
 
 #include	"../../Configuration/Common.h"
+#include	"../../Characters/String.h"
 #include	"../../Execution/ProgressMonitor.h"
 #include	"../../Memory/VariantValue.h"
 
@@ -22,6 +23,8 @@ namespace	Stroika {
 		namespace	DataExchangeFormat {
 			namespace	XML {
 
+				using	Characters::String;
+
 				// Override any of these methods you want to recieve notification of the given event. There is no need to call the
 				// inherited version.
 				class	SAXCallbackInterface {
@@ -29,10 +32,10 @@ namespace	Stroika {
 						virtual	void	StartDocument ();
 						virtual	void	EndDocument ();
 					public:
-						virtual	void	StartElement (const wstring& uri, const wstring& localname, const wstring& qname, const map<wstring,Memory::VariantValue>&	attrs);
-						virtual	void	EndElement (const wstring& uri, const wstring& localname, const wstring& qname);
+						virtual	void	StartElement (const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>&	attrs);
+						virtual	void	EndElement (const String& uri, const String& localname, const String& qname);
 					public:
-						virtual	void	CharactersInsideElement (const wstring& text);
+						virtual	void	CharactersInsideElement (const String& text);
 				};
 
 				#if		qHasLibrary_Xerces
