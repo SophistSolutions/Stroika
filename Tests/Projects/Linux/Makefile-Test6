@@ -1,0 +1,23 @@
+include	../Library/Configuration.mk
+include	../Library/SharedBuildRules.mk
+include	../Library/SharedMakeVariables.mk
+
+TEST_NUM=6
+
+RelPathToDevRoot		=	../../../../
+SrcDir                          =       $(RelPathToDevRoot)Tests/$(TEST_NUM)/
+Includes                        +=      -I.
+
+TARGETEXE			=	$(RelPathToDevRoot)Builds/Platform_Linux/Test$(TEST_NUM)
+
+VPATH =$(SrcDir):$(SrcDir)../TestHarness/
+
+Objs	=	\
+	$(ObjDir)Test.o\
+	$(ObjDir)TestHarness.o\
+
+all:	$(TARGETEXE)
+
+$(TARGETEXE):	$(Objs)
+	g++ -o $(TARGETEXE) $(Objs) $(StroikaFoundationLib)
+

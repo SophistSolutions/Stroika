@@ -10,6 +10,7 @@ if ("$^O" eq "linux") {
 	system ("cd Projects/Linux/3; perl Run.pl");
 	system ("cd Projects/Linux/4; perl Run.pl");
 	system ("cd Projects/Linux/5; perl Run.pl");
+	system ("cd Projects/Linux/6; perl Run.pl");
 }
 else {
 	system ("cd Projects/VisualStudio.Net-2010/1; perl Run.pl");
@@ -17,5 +18,6 @@ else {
 	system ("cd Projects/VisualStudio.Net-2010/3; perl Run.pl");
 	system ("cd Projects/VisualStudio.Net-2010/4; perl Run.pl");
 	system ("cd Projects/VisualStudio.Net-2010/5; perl Run.pl");
+	system ("cd Projects/VisualStudio.Net-2010/6; perl Run.pl");
 }
 

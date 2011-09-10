@@ -19,6 +19,7 @@ if ("$^O" eq "linux") {
 	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test3; make clobber");
 	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test4; make clobber");
 	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test5; make clobber");
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test6; make clobber");
 		$useBld = "all";
 	}
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test1; make $useBld");
@@ -26,6 +27,7 @@ if ("$^O" eq "linux") {
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test3; make $useBld");
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test4; make $useBld");
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test5; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test6; make $useBld");
 }
 else {
 	system ("cd Projects/VisualStudio.Net-2010/1; perl buildall.pl $BLD_TRG");
@@ -33,4 +35,5 @@ else {
 	system ("cd Projects/VisualStudio.Net-2010/3; perl buildall.pl $BLD_TRG");
 	system ("cd Projects/VisualStudio.Net-2010/4; perl buildall.pl $BLD_TRG");
 	system ("cd Projects/VisualStudio.Net-2010/5; perl buildall.pl $BLD_TRG");
+	system ("cd Projects/VisualStudio.Net-2010/6; perl buildall.pl $BLD_TRG");
 }
