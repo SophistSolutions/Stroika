@@ -22,6 +22,8 @@ my $runRegressionTests = $isBuildingMode;
 print ("**************************** STARTING Stroika ****************************\n");
 system ("sh -c 'date'");
 
+system ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
+
 if ((lc ($BLD_TRG) eq "clobber") || (lc ($BLD_TRG) eq "rebuild")) {
 	system ("rm -rf Builds");
 	system ("rm -f Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h");
