@@ -17,21 +17,24 @@ if ("$^O" eq "linux") {
 	if ($useBld eq "build") {
 		$useBld = "all";
 	}
+	use Cwd;
+	use Cwd 'abs_path';
+	my $savedDir = abs_path (getcwd ());
+	chdir ("../IntermediateFiles/Platform_Linux/Debug/");
 	if ($useBld eq "rebuild") {
-		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test1; make clobber");
-		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test2; make clobber");
-		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test3; make clobber");
-		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test4; make clobber");
-		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test5; make clobber");
-		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test6; make clobber");
+		foreach $tst (GetAllTests ()) {
+			my $tstName = GetTestName ($tst);
+			print ("Test $tst: $tstName; clobber...\n");
+			system ("cd Test$tst; perl buildall.pl clobber");
+		}
 		$useBld = "all";
 	}
-	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test1; make $useBld");
-	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test2; make $useBld");
-	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test3; make $useBld");
-	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test4; make $useBld");
-	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test5; make $useBld");
-	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Test6; make $useBld");
+	foreach $tst (GetAllTests ()) {
+		my $tstName = GetTestName ($tst);
+		print ("Test $tst: $tstName; $useBld...\n");
+		system ("cd Test$tst; perl buildall.pl $useBld");
+	}
+	chdir ($savedDir);
 }
 else {
 	use Cwd;

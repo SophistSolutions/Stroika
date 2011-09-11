@@ -6,12 +6,14 @@ if ($BLD_TRG eq '') {
 }
 
 
-my $EXTRACTED_DIRNAME	=	"xerces-c-3.1.1";
-my $trgDirName	=			"$EXTRACTED_DIRNAME";
-my $SLINKDIRNAME	=		"$EXTRACTED_DIRNAME";
+my $BASENAME	=	"xerces-c-3.1.1";
+
+my $EXTRACTED_DIRNAME	=	$BASENAME;
+my $trgDirName	=			$BASENAME;
+my $SLINKDIRNAME	=		$BASENAME;
 
 
-print (">>>>>> START >>>>>>> ThirdPartyLibs/Xerces <<<<<<<<<<<<<<<<\n");
+print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
 
 if ((lc ("$BLD_TRG") eq "clean") || (lc ("$BLD_TRG") eq "clobber")) {
 	system ("rm -rf $trgDirName CURRENT");
@@ -23,14 +25,14 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 
 if (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp") {
 	print ("already up to date\n");
-	print ("<<<<<<<< END <<<<<<<< ThirdPartyLibs/Xerces <<<<<<<<<<<<<<<<\n");
+	goto DONE;
 	exit (0);
 }
 
 print ("Extracting Xerces...\n");
 
-system ("rm -rf xerces-c-3.1.1 CURRENT");
-system ("tar xf Origs/xerces-c-3.1.1.tar.gz 2> /dev/null");
+system ("rm -rf $trgDirName CURRENT");
+system ("tar xf Origs/$BASENAME.tar.gz 2> /dev/null");
 system ("mv $EXTRACTED_DIRNAME CURRENT");
 system ("ln -s CURRENT $SLINKDIRNAME");
 
@@ -59,14 +61,25 @@ if ("$^O" eq "linux") {
 	system ("cd CURRENT ; make all");
 }
 else {
+	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 	require "../../Library/Projects/VisualStudio.Net-2010/SetupBuildCommonVars.pl";
 	
 	chdir ("CURRENT/Projects/Win32/VC10/xerces-all/XercesLib");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\" /target:$BLD_TRG\n");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\" /target:$BLD_TRG\n");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:$BLD_TRG");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:$BLD_TRG");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:$BLD_TRG");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:$BLD_TRG");
 	chdir ("../../../../../../");
-}
+
+	# cleaning needless objs (leave libs)
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/VC10/Static Debug/obj/'");
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/VC10/Static Release/obj/'");
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/VC10/Static Debug/obj/'");
+}	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/VC10/Static Release/obj/'");
+
 
 system ("perl checkall.pl");
-print ("<<<<<<<< END <<<<<<<< ThirdPartyLibs/Xerces <<<<<<<<<<<<<<<<\n");
+
+DONE:
+print (">>>>>>>>******************** ENDING ThirdPartyLibs/Xerces ******************\n");
 
