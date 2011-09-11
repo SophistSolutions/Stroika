@@ -3,7 +3,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-require "../../../SetupBuildCommonVars.pl";
+require "../../../../Library/Projects/VisualStudio.Net-2010/SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 
