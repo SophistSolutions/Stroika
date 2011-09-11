@@ -13,7 +13,7 @@ my $trgDirName	=			$BASENAME;
 my $SLINKDIRNAME	=		$BASENAME;
 
 
-print (">>>>>> START >>>>>>> ThirdPartyLibs/Xerces <<<<<<<<<<<<<<<<\n");
+print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
 
 if ((lc ("$BLD_TRG") eq "clean") || (lc ("$BLD_TRG") eq "clobber")) {
 	system ("rm -rf $trgDirName CURRENT");
@@ -25,7 +25,7 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 
 if (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp") {
 	print ("already up to date\n");
-	print ("<<<<<<<< END <<<<<<<< ThirdPartyLibs/Xerces <<<<<<<<<<<<<<<<\n");
+	goto DONE;
 	exit (0);
 }
 
@@ -79,5 +79,7 @@ else {
 
 
 system ("perl checkall.pl");
-print ("<<<<<<<< END <<<<<<<< ThirdPartyLibs/Xerces <<<<<<<<<<<<<<<<\n");
+
+DONE:
+print (">>>>>>>>******************** ENDING ThirdPartyLibs/Xerces ******************\n");
 
