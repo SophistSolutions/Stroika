@@ -89,8 +89,6 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Memory_Common_.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Configuration/StroikaConfig-ReadMe.txt" />
 		<Unit filename="../../Sources/Stroika/Foundation/Configuration/StroikaConfig.h" />
-		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.h" />
-		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_Array.h" />
@@ -102,6 +100,8 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Private/Array.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Private/Array.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.inl" />
@@ -191,7 +191,12 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/ResourceAccessor.cpp">
+<<<<<<< HEAD
 			<Option target="&lt;{~None~}&gt;" />
+=======
+			<Option compile="0" />
+			<Option link="0" />
+>>>>>>> bc651da... move array implementation to private directory and namespace it
 		</Unit>
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/ResourceAccessor.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/ResourceAccessor.inl" />

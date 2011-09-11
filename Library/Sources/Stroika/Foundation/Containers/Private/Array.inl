@@ -1,11 +1,11 @@
-#include "../Debug/Assertions.h"
+#include "../../Debug/Assertions.h"
 
 
 
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
-
+                using namespace Private;
 
                 template	<class	T>	inline	ArrayNode<T>::ArrayNode (T item) :
                     fItem (item)

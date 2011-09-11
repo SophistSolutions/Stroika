@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 
-#include "Array.h"
+#include "Private/Array.h"
 
 #include "../Memory/BlockAllocated.h"
 
@@ -10,6 +10,8 @@
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
+
+		    using namespace Private;
 
 
             // class Bag_Array<T>
