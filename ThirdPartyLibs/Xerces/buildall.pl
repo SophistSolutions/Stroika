@@ -30,7 +30,7 @@ if (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp") {
 print ("Extracting Xerces...\n");
 
 system ("rm -rf xerces-c-3.1.1 CURRENT");
-system ("tar xvf Origs/xerces-c-3.1.1.tar.gz");
+system ("tar xf Origs/xerces-c-3.1.1.tar.gz 2> /dev/null");
 system ("mv $EXTRACTED_DIRNAME CURRENT");
 system ("ln -s CURRENT $SLINKDIRNAME");
 
