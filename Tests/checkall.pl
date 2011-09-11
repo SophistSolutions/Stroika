@@ -1,18 +1,20 @@
 #!/usr/bin/perl
 
+require ("ScriptsLib/TestsList.pl");
+
+my $checkallDir;
 if ("$^O" eq "linux") {
-    system ("cd Projects/Linux/1; perl checkall.pl");
-    system ("cd Projects/Linux/2; perl checkall.pl");
-    system ("cd Projects/Linux/3; perl checkall.pl");
-    system ("cd Projects/Linux/4; perl checkall.pl");
-    system ("cd Projects/Linux/5; perl checkall.pl");
-    system ("cd Projects/Linux/6; perl checkall.pl");
+    $checkallDir  = "Projects/Linux/";
 }
 else {
-	system ("cd Projects/VisualStudio.Net-2010/1; perl checkall.pl");
-	system ("cd Projects/VisualStudio.Net-2010/2; perl checkall.pl");
-	system ("cd Projects/VisualStudio.Net-2010/3; perl checkall.pl");
-	system ("cd Projects/VisualStudio.Net-2010/4; perl checkall.pl");
-	system ("cd Projects/VisualStudio.Net-2010/5; perl checkall.pl");
-	system ("cd Projects/VisualStudio.Net-2010/6; perl checkall.pl");
+    $checkallDir  = "Projects/VisualStudio.Net-2010/";
 }
+
+use Cwd;
+use Cwd 'abs_path';
+my $savedDir = abs_path (getcwd ());
+chdir ($checkallDir);
+	foreach $tst (GetAllTests ()) {
+		system ("cd $tst; perl checkall.pl");
+	}
+chdir ($savedDir);
