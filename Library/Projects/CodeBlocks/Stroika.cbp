@@ -89,10 +89,8 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Memory_Common_.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Configuration/StroikaConfig-ReadMe.txt" />
 		<Unit filename="../../Sources/Stroika/Foundation/Configuration/StroikaConfig.h" />
-		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.inl" />
-		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_Array.h" />

@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Containers_Bag_h_
+#ifndef	_Stroika_Foundation_Containers_Iterator_h_
 #define	_Stroika_Foundation_Containers_Iterator_h_	1
 
 /*
@@ -227,15 +227,15 @@ namespace	Stroika {
             template	<typename T> inline	Iterator<T>::Iterator (const Iterator<T>& from) :
                 fIterator (0)
             {
-                RequireNotNil (from.fIterator);
+                RequireNotNull (from.fIterator);
                 fIterator = from.fIterator->Clone ();
-                EnsureNotNil (fIterator);
+                EnsureNotNull (fIterator);
             }
             template	<typename T> inline	Iterator<T>::Iterator (IteratorRep<T>* it) :
                 fIterator (it)
             {
-                RequireNotNil (it);
-                EnsureNotNil (fIterator);
+                RequireNotNull (it);
+                EnsureNotNull (fIterator);
             }
             template	<typename T> inline	Iterator<T>::~Iterator ()
             {
@@ -243,29 +243,29 @@ namespace	Stroika {
             }
             template	<typename T> inline	Iterator<T>&	Iterator<T>::operator= (const Iterator<T>& rhs)
             {
-                RequireNotNil (fIterator);
-                RequireNotNil (rhs.fIterator);
+                RequireNotNull (fIterator);
+                RequireNotNull (rhs.fIterator);
                 if (fIterator != rhs.fIterator) {
                     delete fIterator;
                     fIterator = rhs.fIterator->Clone ();
-                    EnsureNotNil (fIterator);
+                    EnsureNotNull (fIterator);
                 }
                 return (*this);
             }
             template	<typename T> inline	bool	Iterator<T>::Done () const
             {
-                RequireNotNil (fIterator);
+                RequireNotNull (fIterator);
                 return (fIterator->Done ());
             }
             template	<typename T> inline	bool	Iterator<T>::More ()
             {
-                RequireNotNil (fIterator);
+                RequireNotNull (fIterator);
                 return (fIterator->More ());
             }
             template	<typename T> inline	T	Iterator<T>::Current () const
             {
                 Require (not Done ());
-                RequireNotNil (fIterator);
+                RequireNotNull (fIterator);
                 return (fIterator->Current ());
             }
 

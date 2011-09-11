@@ -65,6 +65,12 @@
 
  #define        qGCC_ScopingInTemplateBug   1
 
+#include	"../StroikaPreComp.h"
+
+#include	"../Configuration/Common.h"
+
+#include "Common.h"
+
 
 namespace	Stroika {
 	namespace	Foundation {

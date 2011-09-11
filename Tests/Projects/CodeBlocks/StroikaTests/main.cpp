@@ -52,5 +52,15 @@ int main()
         cout << "Testing Date and Time" << endl;
         TestDateAndTime ();
     #endif
-    return 0;
+    #if 1
+        extern  int Test_Arrays ();
+        cout << "Testing Arrays" << endl;
+        Test_Arrays ();
+    #endif
+     #if 1
+        extern  int Test_Bags ();
+        cout << "Testing Bag" << endl;
+        Test_Bags ();
+    #endif   return 0;
 }
+
