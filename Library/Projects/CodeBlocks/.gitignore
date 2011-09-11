@@ -1,6 +1,8 @@
 obj/
-CodeBlocks.layout
-libCodeBlock.a
-CodeBlocks.depend
-libStroika.a
+Stroika.layout
+Stroika.layout.bak
+Stroika.depend
+Stroika.cbp
+Stroika.cbp.bak
+libStroika_dbg.a
 libStroika_ndb.a

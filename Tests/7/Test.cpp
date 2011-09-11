@@ -25,7 +25,7 @@ using	Stroika::Foundation::Debug::TraceContextBumper;
 
 
 namespace	{
-	
+
 	void	TestTickCountGrowsMonotonically_ ()
 		{
 			DurationSecondsType	start	=	Time::GetTickCount ();
@@ -36,7 +36,7 @@ namespace	{
 }
 
 namespace	{
-	
+
 	void	TestDate_ ()
 		{
 			Date	d (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
@@ -51,7 +51,7 @@ namespace	{
 
 
 namespace	{
-	
+
 	void	TestDateTime_ ()
 		{
 			DateTime	d	=	Date (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
@@ -76,8 +76,11 @@ namespace	{
 
 
 
-
-int		main (int argc, const char* argv[])
+#if qOnlyOneMain
+extern  int TestDateAndTime ()
+#else
+int main (int argc, const char* argv[])
+#endif
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

@@ -55,7 +55,7 @@ namespace	{
 					result.reserve (relEncodedSize);
 					for (int i = 0; i < relEncodedSize; ++i) {
 						if (relBuf[i] == '\r') {
-							// 
+							//
 							result.push_back ('\n');
 							++i;	// skip LF
 						}
@@ -117,7 +117,7 @@ namespace	{
 			}
 
 			{
-				const	char	kSrc[] = 
+				const	char	kSrc[] =
 					"This is a good test\r\n"
 					"We eat wiggly worms.\r\n"
 					"\r\n"
@@ -128,14 +128,14 @@ namespace	{
 			}
 
 			{
-				const	char	kSrc[]	=	
+				const	char	kSrc[]	=
 					"{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
 					"{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 \\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab \\tx720 }\\listid292 }}\r\n"
 					"{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
 					"{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever today. Not terrible, but several times. And I think a bit yesterda\r\n"
 					"y.}"
 					;
-				const	char	kEncodedVal[] = 
+				const	char	kEncodedVal[] =
 					"e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
 					"Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
 					"aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
@@ -164,9 +164,11 @@ namespace	{
 
 
 
-
-
+#if qOnlyOneMain
+extern  int CryptographyTests ()
+#else
 int main (int argc, const char* argv[])
+#endif
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

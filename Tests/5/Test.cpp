@@ -553,8 +553,11 @@ namespace	{
 
 
 
-
-int		main (int argc, const char* argv[])
+#if qOnlyOneMain
+extern  int TestStrings ()
+#else
+int main (int argc, const char* argv[])
+#endif
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

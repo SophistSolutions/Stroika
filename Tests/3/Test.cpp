@@ -30,7 +30,7 @@ using	Execution::Thread;
 namespace	{
 	void	RegressionTest1_ ()
 		{
-			struct	FRED { 
+			struct	FRED {
 				static	void	DoIt (void* ignored)
 					{
 						for (int i = 1; i < 10; i++) {
@@ -57,7 +57,7 @@ namespace	{
 		{
 
 			// Make 2 concurrent threads, which share a critical section object to take turns updating a variable
-			struct	FRED { 
+			struct	FRED {
 				static	void	DoIt (void* ignored)
 					{
 						int*	argP	=	reinterpret_cast<int*> (ignored);
@@ -94,7 +94,7 @@ namespace	{
 		{
 
 			// Make 2 concurrent threads, which share a critical section object to take turns updating a variable
-			struct	FRED1 { 
+			struct	FRED1 {
 				static	void	DoIt (void* ignored)
 					{
 						int*	argP	=	reinterpret_cast<int*> (ignored);
@@ -108,7 +108,7 @@ namespace	{
 						}
 					}
 			};
-			struct	FRED2 { 
+			struct	FRED2 {
 				static	void	DoIt (void* ignored)
 					{
 						int*	argP	=	reinterpret_cast<int*> (ignored);
@@ -152,7 +152,11 @@ namespace	{
 
 
 
-int		main (int argc, const char* argv[])
+#if qOnlyOneMain
+extern  int TestThreads ()
+#else
+int main (int argc, const char* argv[])
+#endif
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

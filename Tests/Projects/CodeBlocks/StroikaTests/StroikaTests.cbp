@@ -15,11 +15,15 @@
 				<Compiler>
 					<Add option="-std=c++0x" />
 					<Add option="-g" />
+					<Add option="-Wno-unknown-pragmas" />
 					<Add option="-DqDebug=1" />
-					<Add directory="../../../Library/Sources" />
+					<Add option="-DqOnlyOneMain=1" />
+					<Add directory="../../../../Library/Sources/" />
 				</Compiler>
 				<Linker>
-					<Add library="../../../Library/Projects/CodeBlocks/libStroika.a" />
+					<Add option="-lrt" />
+					<Add library="../../../../Library/Projects/CodeBlocks/libStroika_dbg.a" />
+					<Add library="../../../../ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -31,11 +35,17 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-std=c++0x" />
+					<Add option="-Wno-unknown-pragmas" />
 					<Add option="-DqDebug=0" />
+					<Add option="-DqOnlyOneMain=1" />
 					<Add directory="../../../Library/Sources" />
+					<Add directory="../../../../Library/Sources/" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-lrt" />
+					<Add library="../../../../Library/Projects/CodeBlocks/libStroika_ndb.a" />
+					<Add library="../../../../ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -43,8 +53,18 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../../../1/Test.cpp" />
+		<Unit filename="../../../2/Test.cpp" />
+		<Unit filename="../../../3/Test.cpp">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="../../../4/Test.cpp" />
+		<Unit filename="../../../5/Test.cpp" />
+		<Unit filename="../../../6/Test.cpp" />
+		<Unit filename="../../../7/Test.cpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="../../Strings/StringTests.cpp" />
+		<Unit filename="../../../TestHarness/TestHarness.cpp" />
+		<Unit filename="../../../TestHarness/TestHarness.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

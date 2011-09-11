@@ -61,26 +61,26 @@ namespace	{
 					L"			<PersonName/>\n"
 					L"			<Locations>\n"
 				;
-			newDocXML += 
+			newDocXML +=
 				L"				<Location id=\"id=102\">\n"
 				L"					<Name>Primary Residence</Name>\n"
 				L"					<Address/>\n"
 				L"				</Location>\n"
 			;
-			newDocXML += 
+			newDocXML +=
 				L"				<Location id=\"id=103\">\n"
 				L"					<Name>Residence2</Name>\n"
 				L"					<Address/>\n"
 				L"				</Location>\n"
 			;
-			newDocXML += 
+			newDocXML +=
 					L"			</Locations>\n"
 					L"		</ContactInfo>\n";
-			newDocXML += 
+			newDocXML +=
 				L"		<AdvanceDirectives id=\"id=104\"/>\n"
 				L"		<BirthInfo id=\"id=105\"/>\n"
 			;
-			newDocXML += 
+			newDocXML +=
 					L"	</BasicInformation>\n"
 					L"	<Calendar/>\n"
 					L"	<FamilyMembers/>\n"
@@ -105,7 +105,7 @@ namespace	{
 					L"	<PageCustomizations/>\n"
 					L"</PHRModel>\n"
 				;
-			
+
 			class	MyCallback : public SAXCallbackInterface {
 				public:
 					virtual	void	StartDocument () override
@@ -241,8 +241,11 @@ namespace	{
 
 
 
-
-int		main (int argc, const char* argv[])
+#if qOnlyOneMain
+extern  int TextXML_SaxParser ()
+#else
+int main (int argc, const char* argv[])
+#endif
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

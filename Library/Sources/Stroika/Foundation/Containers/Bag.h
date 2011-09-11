@@ -140,7 +140,7 @@ namespace	Stroika {
                     nonvirtual	BagRep<T>*			GetRep ();
 
                 private:
-                    Memory::CopyOnWrite<BagRep<T> >	fRep;
+                    Memory::SharedByValue<BagRep<T> >	fRep;
 
                     static	BagRep<T>*	Clone (const BagRep<T>& rep);
 

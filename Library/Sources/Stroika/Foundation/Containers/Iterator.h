@@ -103,7 +103,7 @@
 
 #include	"../Configuration/Common.h"
 
-#include	"../Memory/CopyOnWrite.h"
+#include	"../Memory/SharedByValue.h"
 
 /*
  *		Iterator are used primarily to get auto-destruction

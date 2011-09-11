@@ -6,7 +6,7 @@
 #include	"../StroikaPreComp.h"
 
 #include    "Iterator.h"
-#include	"../Memory/CopyOnWrite.h"
+#include	"../Memory/SharedByValue.h"
 
 #include "Bag.h"
 
