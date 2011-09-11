@@ -48,16 +48,23 @@
 
 
 #include    "Iterator.h"
+#include	"../Memory/SharedByValue.h"
 
-#if 1
+
+
+
+
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
+            template	<typename T>	class	Bag;
             template	<typename T>	class	BagRep;
             template	<typename T>	class	BagIteratorRep;
             template	<typename T>	class	BagMutatorRep;
 
+            template	<typename T>	bool	operator== (const Bag<T>& lhs, const Bag<T>& rhs);
+            template	<typename T>	bool	operator!= (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
             template	<typename T>	class	BagIterator : public Iterator<T> {
@@ -144,11 +151,10 @@ namespace	Stroika {
 
                     static	BagRep<T>*	Clone (const BagRep<T>& rep);
 
+                    // SSW 9/16/2011: note weird syntax needed for friend declaration (and had to be forwarded above)
                 	friend  bool	operator==<T> (const Bag<T>& lhs, const Bag<T>& rhs);	// friend to check if reps equal...
             };
 
-            template	<typename T>	bool	operator== (const Bag<T>& lhs, const Bag<T>& rhs);
-            template	<typename T>	bool	operator!= (const Bag<T>& lhs, const Bag<T>& rhs);
 
             template	<typename T>	Bag<T>	operator+ (const Bag<T>& lhs, const Bag<T>& rhs);
             template	<typename T>	Bag<T>	operator- (const Bag<T>& lhs, const Bag<T>& rhs);
@@ -236,7 +242,7 @@ namespace	Stroika {
                 template	<typename T>	inline	void	BagMutator<T>::UpdateCurrent (T newValue)
                 {
                     /*
-                     * Because of the way we construct BagMutators, it is gauranteed that
+                     * Because of the way we construct BagMutators, it is guaranteed that
                      * this cast is safe. We could have kept an extra var of the right
                      * static type, but this would have been a waste of time and memory.
                      */
@@ -259,7 +265,7 @@ namespace	Stroika {
                 {
                 }
                 template	<typename T>	inline	Bag<T>::Bag (BagRep<T>* rep) :
-                    fRep (&Clone, rep)
+                    fRep (rep, &Clone)
                 {
                 }
                 template	<typename T>	inline	Bag<T>&	Bag<T>::operator= (const Bag<T>& bag)
@@ -315,7 +321,7 @@ namespace	Stroika {
                 template	<typename T>	inline	Bag<T>::operator BagIterator<T> () const
                 {
                     // (~const) to force a break references
-                    return (((Bag<T>*) this)->fRep->MakeBagIterator ());
+                    return const_cast<Bag<T>> (this)->fRep->MakeBagIterator ();
                 }
                 template	<typename T>	inline	Bag<T>::operator BagMutator<T> ()
                 {
@@ -334,7 +340,14 @@ namespace	Stroika {
     }
 }
 
-#endif
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include	"Bag.inl"
+
 
 #endif	/*_Stroika_Foundation_Containers_Bag_h_ */
 
