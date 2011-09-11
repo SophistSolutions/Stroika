@@ -342,13 +342,13 @@ namespace	Stroika {
 }
 
 
+#endif	/*_Stroika_Foundation_Containers_Bag_h_ */
+
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
 #include	"Bag.inl"
-
-
-#endif	/*_Stroika_Foundation_Containers_Bag_h_ */
 

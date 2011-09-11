@@ -471,6 +471,8 @@ namespace	Stroika {
 }
 
 
+#endif	/*_Stroika_Foundation_Containers_Array_h_ */
+
 
 /*
  ********************************************************************************
@@ -478,6 +480,4 @@ namespace	Stroika {
  ********************************************************************************
  */
 #include	"Array.inl"
-
-#endif	/*_Stroika_Foundation_Containers_Array_h_ */
 

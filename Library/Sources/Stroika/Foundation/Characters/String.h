@@ -50,7 +50,7 @@
  *
  *
 	(0)	Document if we store NUL-terminated strings internally or not. If not - how do we implement the stdC++ c_str () API safely? Perhaps temporarily store the extra char* in teh ENVOLOPE to be freed
-		when the envelope next changes gets copied/etc? Sucky). Do we really need that API? 
+		when the envelope next changes gets copied/etc? Sucky). Do we really need that API?
 		Maybe return PROXY OBJECT which has operator char* in iT! THAT maybe safest thing!!!!
 		ANMYHOW - RIGHT NOW - As<const wchar_t*> () works - but it will be confusing to people cuz NOT nul-termianted!
 
@@ -65,7 +65,7 @@
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
 	(2)	Implement the UTF8 functions
 	(3)	Fix / Re-impemlement the SharedByValue() code to not store a POINTER to clone function. Best option is to use FUNCTOR
-		whcih is stored in SharedByValue object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use 
+		whcih is stored in SharedByValue object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use
 		some kind of overload so there is a no-cost way todo the most common case of a static (per type) Clone function.
 	(4)	Migrate most of the StringUtils stuff here like:
 			> Contains- with CI optin
@@ -220,12 +220,12 @@ namespace	Stroika {
 					 * Return a new string based on this string where each lower case characer is replaced by its upper case equivilent.
 					 */
 					nonvirtual	String	ToUpperCase () const;
-				
+
 					/*
 					 * Return true if the string contains zero non-whitespace characters.
 					 */
 					nonvirtual	bool	IsWhitespace () const;
-				
+
 				public:
                     /*
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
@@ -448,11 +448,11 @@ namespace	Stroika {
 
             /*
 			 *	String_ExternalMemoryOwnership is a subtype of string you can use to construct a String object, so long as the memory pointed to
-			 * in the argument has a 
-			 *		o	FULL APPLICATION LIFETIME, 
+			 * in the argument has a
+			 *		o	FULL APPLICATION LIFETIME,
 			 *		o	and never changes value
 			 *
-			 *	Strings constructed with this String_ExternalMemoryOwnership maybe treated like normal strings - passed anywhere, and even modified via the 
+			 *	Strings constructed with this String_ExternalMemoryOwnership maybe treated like normal strings - passed anywhere, and even modified via the
 			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
 			 *	only call this String constructor with a block of read-only, never changeing memory, and then - only as a performance optimization.
 			 *
@@ -485,11 +485,11 @@ namespace	Stroika {
 
             /*
 			 *	String_StackLifetime is a subtype of string you can use to construct a String object, so long as the memory pointed to
-			 * in the argument has a 
+			 * in the argument has a
 			 *		o	Greater lifetime than the String_StackLifetime envelope class
 			 *		o	and buffer data never changes value
 			 *
-			 *	Strings constructed with this String_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the 
+			 *	Strings constructed with this String_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the
 			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
 			 *	and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
 			 *
@@ -513,7 +513,7 @@ namespace	Stroika {
 			 *				F(String_StackLifetime (cs));
 			 *			}
 			 *
-			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_StackLifetime() based memory maybe more efficient than the 
+			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_StackLifetime() based memory maybe more efficient than the
 			 *	previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
 			 *
 			 *		<<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
@@ -553,6 +553,8 @@ namespace	Stroika {
 
 
 
+#endif	/*_Stroika_Foundation_Characters_String_h_*/
+
 
 /*
  ********************************************************************************
@@ -562,5 +564,3 @@ namespace	Stroika {
 #include	"String.inl"
 
 
-
-#endif	/*_Stroika_Foundation_Characters_String_h_*/
