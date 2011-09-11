@@ -10,6 +10,7 @@
 				<Option output="libStroika_dbg" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug/" />
+				<Option external_deps="libStroika_dbg.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -25,6 +26,7 @@
 				<Option output="libStroika_ndb" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Release/" />
+				<Option external_deps="libStroika_ndb.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -305,7 +307,6 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Time/DateTime.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Time/DateTime.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Time/DateTime.inl" />
-		<Unit filename="../../Sources/Stroika/Foundation/Time/DateUtils.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Time/Duration.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Time/Duration.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Time/Duration.inl" />
