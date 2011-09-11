@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Stroika" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="libStroika_dbg" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-std=c++0x" />
+					<Add option="-g" />
+					<Add option="-Wno-unknown-pragmas" />
+					<Add option="-DqDebug=1" />
+					<Add directory="../../../ThirdPartyLibs/Xerces/CURRENT/src" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="libStroika_ndb" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++0x" />
+					<Add option="-Wall" />
+					<Add option="-Wno-unknown-pragmas" />
+					<Add option="-DqDebug=0" />
+					<Add directory="../../../ThirdPartyLibs/Xerces/CURRENT/src" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/Character.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/Character.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/Character.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/CodePage.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/CodePage.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/CodePage.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/LineEndings.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/LineEndings.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/LineEndings.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/Platform/Windows/CodePage.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/Platform/Windows/CodePage.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/Platform/Windows/CodePage.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/String.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/String.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/String.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/StringUtils.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/StringUtils.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/StringUtils.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/TChar.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/TChar.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/TChar.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/TString.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/TString.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Characters/TString.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Common.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Common.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Characters_Character_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Characters_StringUtils_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Characters_TChar_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_CompilerAndStdLib_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Configuration_Common_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Containers_LRUCache_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Containers_TimedCache_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_DataExchangeFormat_XML_Common_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Database_ODBCClient_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Debug_Assertions_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Debug_Trace_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Execution_Exceptions_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Execution_Threads_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Memory_BlockAllocated_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/Private/Defaults_Memory_Common_.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/StroikaConfig-ReadMe.txt" />
+		<Unit filename="../../Sources/Stroika/Foundation/Configuration/StroikaConfig.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Array.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_Array.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_Array.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Common.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Common.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Iterator.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Iterator.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/TimedCache.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/TimedCache.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/TimedCache.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/VectorUtils.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/VectorUtils.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/VectorUtils.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Cryptography/Base64.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Cryptography/Base64.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Cryptography/Base64.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Cryptography/MD5.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Cryptography/MD5.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Cryptography/MD5.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/JSON/Reader.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/JSON/Reader.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/JSON/Reader.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/JSON/Writer.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/JSON/Writer.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/JSON/Writer.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Common.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Writer.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Writer.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/DataExchangeFormat/XML/Writer.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Database/ODBCClient.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Database/ODBCClient.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Assertions.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Assertions.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Debugger.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Debugger.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Trace.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Trace.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Debug/Trace.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/AtomicOperations.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/AtomicOperations.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/AtomicOperations.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/CopyableCriticalSection.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/CopyableCriticalSection.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/CopyableCriticalSection.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/CriticalSection.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/CriticalSection.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/CriticalSection.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/DLLSupport.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/DLLSupport.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/DLLSupport.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Event.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Event.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Event.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ExceptionPropagate.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ExceptionPropagate.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ExceptionPropagate.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Exceptions.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Exceptions.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Exceptions.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/IRunnable.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/IRunnable.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/IRunnable.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Module.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Module.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Module.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ModuleInit.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ModuleInit.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ModuleInit.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/Exception.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/Exception.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/Exception.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/ResourceAccessor.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/ResourceAccessor.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/ResourceAccessor.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/StructuredException.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/StructuredException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/StructuredException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/WaitSupport.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Platform/Windows/WaitSupport.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ProgressMonitor.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ProgressMonitor.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ProgressMonitor.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/SimpleThread.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Sleep.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Sleep.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Sleep.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/StringException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/StringException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/StringException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Thread.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Thread.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/Thread.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ThreadAbortException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ThreadAbortException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/ThreadAbortException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/WaitAbandonedException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/WaitAbandonedException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/WaitTimedOutException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Execution/WaitTimedOutException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileAccessException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileAccessException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileAccessException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileAccessMode.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileBusyException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileBusyException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileBusyException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileFormatException.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileFormatException.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileFormatException.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileUtils.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileUtils.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileUtils.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/URL.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/URL.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Linguistics/Words.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Linguistics/Words.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Linguistics/Words.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Math/Angle.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Math/Angle.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Math/Angle.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Math/Common.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Math/Common.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/BlockAllocated.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/BlockAllocated.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/BlockAllocated.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Common.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Common.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Common.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/MemoryAllocator.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/MemoryAllocator.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/MemoryAllocator.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Optional.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Optional.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Optional.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Platform/Windows/Handle.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Platform/Windows/Handle.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/Platform/Windows/Handle.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SharedByValue.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SharedByValue.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SharedByValue.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SharedPtr.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SharedPtr.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SharedPtr.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SmallStackBuffer.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SmallStackBuffer.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/SmallStackBuffer.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/VariantValue.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/VariantValue.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Memory/VariantValue.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/BinaryInputStream.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/BinaryInputStream.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/BinaryInputStream.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/BinaryOutputStream.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/BinaryOutputStream.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/BinaryOutputStream.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/Seekable.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/Seekable.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/Seekable.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/TextInputStream.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/TextInputStream.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/TextInputStream.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/TextOutputStream.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/TextOutputStream.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Streams/TextOutputStream.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/StroikaPreComp.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Date.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Date.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Date.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/DateTime.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/DateTime.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/DateTime.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/DateUtils.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Duration.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Duration.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Duration.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Realtime.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Realtime.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/Realtime.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/TimeOfDay.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/TimeOfDay.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Time/TimeOfDay.inl" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
