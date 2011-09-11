@@ -1,22 +1,51 @@
 #!/usr/bin/perl
 
-my $BLD_TRG = $ARGV[0];
+my $BLD_TRG;
+
+foreach $i (@ARGV) {
+	if (lc ($i) eq "build" ||
+		lc ($i) eq "build+" ||
+		lc ($i) eq "clean" ||
+		lc ($i) eq "clobber" ||
+		lc ($i) eq "rebuild" ||
+		lc ($i) eq "rebuild+" ||
+		lc ($i) eq "all" ||
+		lc ($i) eq "all+" 
+		) {
+		$BLD_TRG = $i;
+	}
+	if (	(lc ($i) eq "help") ||
+		(lc ($i) eq "-help") || 
+		(lc ($i) eq "--help") || 
+		(lc ($i) eq "-h") || 
+		(lc ($i) eq "-?") || 
+		(lc ($i) eq "/?"))
+		{
+		print ("buildall.pl TARGET\n\t with TARGET = Build, Build+, Clean, Clobber, All, All+, Rebuild, Rebuild+\n");
+		exit (0);
+	}
+}
+
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-if (	(lc ($BLD_TRG) eq "help") ||
-	(lc ($BLD_TRG) eq "-help") || 
-	(lc ($BLD_TRG) eq "-h") || 
-	(lc ($BLD_TRG) eq "-?") || 
-	(lc ($BLD_TRG) eq "/?"))
-	{
-	print ("buildall.pl TARGET\n\t with TARGET = Clean, Clobber, All, or Rebuild\n");
-	exit (0);
+my $runRegressionTests = 0;
+if (lc ($BLD_TRG) eq 'build+') {
+	$BLD_TRG = 'Build';
+	$runRegressionTests = 1;
+}
+if (lc ($BLD_TRG) eq 'all+') {
+	$BLD_TRG = 'all';
+	$runRegressionTests = 1;
+}
+if (lc ($BLD_TRG) eq 'rebuild+') {
+	$BLD_TRG = 'rebuild';
+	$runRegressionTests = 1;
 }
 
+
 my $isBuildingMode = not ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean"));
-my $runRegressionTests = $isBuildingMode;
 
 
 print ("**************************** STARTING Stroika ****************************\n");

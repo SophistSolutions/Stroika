@@ -43,7 +43,7 @@ else {
 	chdir ("Projects/VisualStudio.Net-2010");
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
-			print ("Test $tst: $tstName; $BLD_TRG...\n");
+			print ("$BLD_TRG Test $tst: $tstName ...\n");
 			system ("cd $tst; perl buildall.pl $BLD_TRG");
 		}
 	chdir ($savedDir);
