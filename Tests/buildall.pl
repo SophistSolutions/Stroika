@@ -25,14 +25,14 @@ if ("$^O" eq "linux") {
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
 			print ("Test $tst: $tstName; clobber...\n");
-			system ("cd Test$tst; perl buildall.pl clobber");
+			system ("cd Test$tst; make -s clobber");
 		}
 		$useBld = "all";
 	}
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
 		print ("Test $tst: $tstName; $useBld...\n");
-		system ("cd Test$tst; perl buildall.pl $useBld");
+		system ("cd Test$tst; make -s $useBld");
 	}
 	chdir ($savedDir);
 }
