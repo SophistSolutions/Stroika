@@ -20,7 +20,7 @@ namespace	Stroika {
 		// LIKE calling Assert but it will ALSO trigger a failure in NODEBUG builds
 		void	Test_ (bool failIfFalse, const char* regressionTestText, const char* fileName, int lineNum);
 
-		#define	VerifyTestResult(c)		Stroika::TestHarness::Test_	(c, #c, __FILE__, __LINE__)
+		#define	VerifyTestResult(c)		Stroika::TestHarness::Test_	(!!(c), #c, __FILE__, __LINE__)
 	}
 }
 #endif	/*_Stroika_Foundation_Tests_TestHarness_h_*/
