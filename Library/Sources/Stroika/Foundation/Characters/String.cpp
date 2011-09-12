@@ -1102,104 +1102,15 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const Strin
 bool	Stroika::Foundation::Characters::operator<= (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_ExternalMemoryOwnership (lhs) <= rhs);
+    return (String_StackLifetime (lhs) <= rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
     RequireNotNull (rhs);
-    return (lhs <= String_ExternalMemoryOwnership (rhs));
+    return (lhs <= String_StackLifetime (rhs));
 }
 
 
 
-
-#if 0
-
-/*
- ********************************************************************************
- ************************************* operator<< *******************************
- ********************************************************************************
- */
-ostream&	operator<< (ostream& out, const String& s)
-{
-    for (size_t i = 1; i <= s.GetLength (); i++) {
-        out << s[i].GetAsciiCode ();
-    }
-    return (out);
-}
-
-
-
-/*
- ********************************************************************************
- ************************************* operator>> *******************************
- ********************************************************************************
- */
-wistream&	operator>> (wistream& in, String& s)
-{
-    s = L"";
-    wchar_t	bigBuf [2048];
-    bigBuf[0] = '\0';
-    // Do same as operator>> (istream&, char*)...
-	std::streamsize oldWidth = in.width (sizeof (bigBuf)-1);	// prevent overflow (I hope thats what this does??)
-    in >> bigBuf;
-    in.width (oldWidth);							// maybe unncessary - reset automatically???
-
-// LGP Thursday, October 8, 1992 2:59:51 AM
-// Sterl - I know you used gcount>0 but that breaks with libg++ 2.2.
-// Not sure why. This should work fine with cfront and libg++ - why did
-// you change it??? If it helps, I added a NUL termination to the
-// array before using builtin- char* version - not sure that matters???
-// BTW, I check (in) rather than (in.good ()) since I dont want to get
-// a string on EOF - I already assigned empty string above - that should be
-// it.
-    if (in.good ()) {
-        s = String (bigBuf);
-    }
-    return (in);
-}
-#endif
-
-
-
-#if 0
-
-/*
- ********************************************************************************
- ************************************* toupper **********************************
- ********************************************************************************
- */
-String	toupper (const String& s)
-{
-    String			result	=	s;
-    size_t	rLen	=	result.GetLength ();
-    for (size_t i = 0; i < rLen; i++) {
-        if (isalpha (result [i].GetAsciiCode ())) {
-            result.SetCharAt (TOUPPER (result [i].GetAsciiCode ()), i);
-        }
-    }
-    return (result);
-}
-
-
-
-
-/*
- ********************************************************************************
- ************************************* tolower **********************************
- ********************************************************************************
- */
-String	tolower (const String& s)
-{
-    String			result	=	s;
-    size_t	rLen	=	result.GetLength ();
-    for (size_t i = 0; i < rLen; i++) {
-        if (isalpha (result [i].GetAsciiCode ())) {
-            result.SetCharAt (TOLOWER (result [i].GetAsciiCode ()), i);
-        }
-    }
-    return (result);
-}
-#endif

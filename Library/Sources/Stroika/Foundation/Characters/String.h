@@ -431,29 +431,6 @@ namespace	Stroika {
             bool	operator>= (const String& lhs, const wchar_t* rhs);
 
 
-#if 0
-			// DISCUSS WITH STERL IF we should supprot this sort of thing, and if so - where. Its really cruddy stream support (structured or not!)
-            /*
-             * Stream inserters and extractors.
-             */
-// PROBABLY EITHER GET RID OF THESE - OR use namespace std {typedef ostream} and then ??? somehow avoid forcing #include of <iostream> class in string code
-            ostream&	operator<< (ostream& out, const String& s);
-            wistream&	operator>> (wistream& in, String& s);
-#endif
-
-
-
-
-#if 0
-            /*
-             * Case conversion.
-
-// REDO AS MEMBER FUNCTIONS!!!
-             */
-            String	toupper (const String& s);
-            String	tolower (const String& s);
-#endif
-
 
 
 			/*
