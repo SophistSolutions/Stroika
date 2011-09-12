@@ -7,6 +7,7 @@
 
 #include	"../../Characters/StringUtils.h"
 #include	"../../Debug/Trace.h"
+#include	"../../Execution/AtomicOperations.h"
 #include	"../../Execution/ProgressMonitor.h"
 #include	"../../Memory/Common.h"
 #include	"../../Memory/MemoryAllocator.h"
@@ -84,10 +85,10 @@ using	Memory::VariantValue;
 
 	class	ValidationFailed {
 		public:
-			ValidationFailed (const wstring& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos);
+			ValidationFailed (const String& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos);
 
 		public:
-			wstring			fReason;
+			String			fReason;
 			unsigned int	fLineNum;
 			unsigned int	fLinePos;
 			unsigned int	fFilePos;
@@ -98,7 +99,7 @@ using	Memory::VariantValue;
  ****************************** ValidationFailed ********************************
  ********************************************************************************
  */
-ValidationFailed::ValidationFailed (const wstring& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos)
+ValidationFailed::ValidationFailed (const String& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos)
 	: fReason (reason)
 	, fLineNum (lineNum)
 	, fLinePos (linePos)
@@ -292,7 +293,7 @@ namespace	{
  */
 namespace	{
 	#if		qDebug
-		LONG	sStdIStream_InputStream_COUNT	=	0;
+		uint32_t	sStdIStream_InputStream_COUNT	=	0;
 	#endif
 
 
@@ -391,13 +392,13 @@ namespace	{
 						fSource (in)
 						{
 							#if		qDebug
-								::InterlockedIncrement (&sStdIStream_InputStream_COUNT);
+								AtomicIncrement (&sStdIStream_InputStream_COUNT);
 							#endif
 						}
 					~StdIStream_InputStream ()
 						{
 							#if		qDebug
-								::InterlockedDecrement (&sStdIStream_InputStream_COUNT);
+								AtomicDecrement (&sStdIStream_InputStream_COUNT);
 							#endif
 						}
 				public:
