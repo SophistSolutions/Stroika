@@ -115,6 +115,49 @@ namespace	Stroika {
 
 				private:
 					nonvirtual	void	CallNotifyProgress_ () const;
+
+
+			public:
+				class	SubTask;
+			};
+
+
+
+			/*
+			 * Helper used to continue reporting progress, but breaking the progress into subtasks, and doing the artithmatic of integrating the total into an overall progress total.
+			 */
+			class	ProgressMontior::SubTask : public ProgressMontior {
+				private:
+					typedef	ProgressMontior	inherited;
+
+				public:
+					// NB: progressCallback argment can be NULL
+					SubTask (ProgressMontior* progressCallback, float fromProg, float toProg)
+					{
+						//for now - ignored - do nothing
+					}
+
+				public:
+					nonvirtual	operator ProgressMontior* ()
+					{
+						//tmphack
+						return nullptr;
+					}
+
+#if 0
+
+// this is from the OLD impl - not sure what todo for new impl... (from RFLLib - need new impl for Stroika style progress)
+				public:
+					virtual	wstring	GetCurrentTaskDescription () const override;
+					virtual	wstring	SetCurrentTaskDescription (const wstring& taskDescription) override;
+					virtual	void	SetCurrentProgress (float currentProgress) override;
+					virtual	bool	IsCanceled () const override;	// if this returns true - try to quickly and cleanly abort current operation (but doesn't necessarily do anything)
+#endif
+
+				private:
+					ProgressMontior* fMainProgress;
+					float			fFromProg;
+					float			fToProg;
 			};
 
 		}
