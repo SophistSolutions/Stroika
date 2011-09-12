@@ -552,6 +552,28 @@ namespace	Stroika {
             };
 
 
+			#if		0
+            /*
+			 *
+			 *	NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
+			 *
+			 *	String_Common is a subtype of string you can use to construct a String object freely. It has no semantics requirements. However, it SHOULD only
+			 *	be used for strings which are commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
+			 *	allocated permanently - for the lifetime of the application, and will take potentially extra time looking for the given string.
+			 *
+			 *	We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in a hashtable (or map), and do quick lookup of associated index, and
+			 *	also store in a table (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value of the stored rep. Then doing a PEEK()
+			 *	is trivial and efficient.
+			 *
+			 *		<<TODO: OPTIMIZATION not really implemented yet. But it can still freeely be used safely.>>
+			 */
+            class	String_Common : public String {
+                public:
+                    explicit String_Common (const String& from);
+            };
+			#endif
+
+
 		}
 	}
 }
