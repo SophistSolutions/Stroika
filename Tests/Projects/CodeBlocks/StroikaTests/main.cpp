@@ -42,12 +42,12 @@ int main()
         cout << "Testing Strings" << endl;
         TestStrings ();
     #endif
-    #if 0
+    #if 1
         extern  int TextXML_SaxParser ();
         cout << "Testing XML - SAX Parser" << endl;
         TextXML_SaxParser ();
     #endif
-    #if 0
+    #if 1
         extern  int TestDateAndTime ();
         cout << "Testing Date and Time" << endl;
         TestDateAndTime ();
