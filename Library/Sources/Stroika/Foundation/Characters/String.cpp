@@ -156,6 +156,16 @@ String::String ()
 {
 }
 
+String::String (const char16_t* cString)
+	: fRep (kEmptyStringRep_)
+{
+	RequireNotNull (cString);
+	// Horrible, but temporarily OK impl
+	for (const char16_t* i = cString; *i != '\0'; ++i) {
+		InsertAt (*i, (i - cString));
+	}
+}
+
 String::String (const wchar_t* cString)
 	: fRep (new String_CharArray::MyRep_ ((const Character*)cString, wcslen (cString)), &Clone_)
 {

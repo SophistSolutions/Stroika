@@ -26,6 +26,10 @@ namespace	Stroika {
 				: fCharacterCode (c)
 				{
 				}
+			inline	Character::Character (char16_t c)
+				: fCharacterCode (c)
+				{
+				}
 			inline	Character::Character (wchar_t wc)
 				: fCharacterCode (wc)
 				{

@@ -166,6 +166,7 @@ namespace	Stroika {
             class	String {
                 public:
                     String ();
+                    String (const char16_t* cString);
                     String (const wchar_t* cString);
 					String (const std::wstring& r);
 					String (const String& from);

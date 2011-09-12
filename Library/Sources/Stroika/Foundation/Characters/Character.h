@@ -54,6 +54,8 @@ namespace	Stroika {
 				public:
 					Character ();
 					Character (char c);
+					Character (char16_t c);
+					//Character (char32_t c);	// not for now til we decide how to handle surrogates
 					Character (wchar_t wc);
 
 					// Asserts the given characer is ascii
