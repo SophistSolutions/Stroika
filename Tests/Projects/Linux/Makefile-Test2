@@ -19,5 +19,6 @@ Objs	=	\
 all:	$(TARGETEXE)
 
 $(TARGETEXE):	$(Objs)
-	g++ -o $(TARGETEXE) $(Objs) $(StroikaFoundationLib)
+	g++ -o $(TARGETEXE) $(Objs) $(LIBS)
+
 

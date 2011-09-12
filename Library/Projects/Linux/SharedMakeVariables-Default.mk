@@ -17,6 +17,12 @@ Includes                        =       -I$(RelPathToDevRoot)/Library/Sources/
 StroikaFoundationLib		=	$(LibDir)Stroika-Foundation.a
 CFLAGS= -c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Includes)
 
+StroikaFoundationSupportLibs	=	$(RelPathToDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a
+
+LIBS	=	$(StroikaFoundationLib) $(StroikaFoundationSupportLibs)
+
+
+
 ifeq ($(INCLUDE_SYMBOLS), 1)
 	CFLAGS += -g
 endif
