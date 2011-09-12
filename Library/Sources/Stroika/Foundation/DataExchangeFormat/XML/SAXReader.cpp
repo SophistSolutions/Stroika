@@ -71,6 +71,24 @@ using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
 using	namespace	Stroika::Foundation::Memory;
 
 
+namespace {
+  String xercesString2String_ (const XMLCh* t)
+  {
+    if (sizeof (XMLCh) == sizeof (char16_t)) {
+      return String (reinterpret_cast<const char16_t*> (t));
+    }
+    else if (sizeof (XMLCh) == sizeof (wchar_t)) {
+      return String (reinterpret_cast<const wchar_t*> (t));
+    }
+    else {
+      AssertNotReached (); return String ();
+    }
+  }
+}
+
+
+
+
 using	Memory::VariantValue;
 
 
@@ -224,7 +242,7 @@ namespace	{
 					, const XMLFileLoc          colNum
 				) override
 				{
-					Execution::DoThrow (ValidationFailed (errorText, static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
+				  Execution::DoThrow (ValidationFailed (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
 				}
 			virtual	 void resetErrors () override
 				{
@@ -565,16 +583,16 @@ namespace	{
 					for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
 						const XMLCh* localAttrName = attributes.getLocalName (i);
 						const XMLCh* val = attributes.getValue (i);
-						attrs.insert (map<wstring,VariantValue>::value_type (localAttrName, val));
+						attrs.insert (map<String,VariantValue>::value_type (xercesString2String_ (localAttrName), val));
 					}
-					fCallback.StartElement (uri, localname, qname, attrs);
+					fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localname), xercesString2String_ (qname), attrs);
 				}
 			virtual		void	endElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname) override
 				{
 					Require (uri != nullptr);
 					Require (localname != nullptr);
 					Require (qname != nullptr);
-					fCallback.EndElement (uri, localname, qname);
+					fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localname), xercesString2String_ (qname));
 				}
 			virtual		void	characters (const XMLCh* const chars, const XMLSize_t length) override
 				{
@@ -592,7 +610,9 @@ void	XML::SAXParse (istream& in, SAXCallbackInterface& callback, Execution::Prog
 	SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
 	parser->setErrorHandler (&sMyErrorReproter);
-	parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMontior::SubTask (progres, 0.1f, 0.9f), L"SAX::Parse"));
+	//const XMLCh kBufID[] = L"SAX::Parse";
+	const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
+	parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMontior::SubTask (progres, 0.1f, 0.9f), kBufID));
 }
 
 #if 0
