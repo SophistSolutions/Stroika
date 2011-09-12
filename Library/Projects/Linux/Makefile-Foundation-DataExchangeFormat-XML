@@ -14,4 +14,7 @@ Objs	=	\
 all:	$(Objs)
 
 
+$(ObjDir)SAXReader.o:	$(SrcDir)SAXReader.cpp
+	@echo "Compiling $<"
+	@gcc $(CFLAGS) -I$(RelPathToDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/ $< -o $@
 
