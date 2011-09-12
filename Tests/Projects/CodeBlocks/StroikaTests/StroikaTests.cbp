@@ -62,8 +62,8 @@
 		<Unit filename="../../../5/Test.cpp" />
 		<Unit filename="../../../6/Test.cpp" />
 		<Unit filename="../../../7/Test.cpp" />
-		<Unit filename="../../../Array/Test.cpp" />
-		<Unit filename="../../../Bag/Test.cpp" />
+		<Unit filename="../../../8/Test.cpp" />
+		<Unit filename="../../../9/Test.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="../../../TestHarness/TestHarness.cpp" />
 		<Unit filename="../../../TestHarness/TestHarness.h" />

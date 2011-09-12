@@ -5,3 +5,5 @@
 [5]	Strings
 [6]	XML-Sax-Parser
 [7]	Time/Date
+[8] Array
+[9] Bag
