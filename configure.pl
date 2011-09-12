@@ -60,7 +60,7 @@ sub MakeUnixDirs {
 		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/$target/Library/Configuration.mk");
 		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/$target/Library/SharedBuildRules.mk");
 		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles/$platform/$target/Library/SharedMakeVariables.mk");
-		
+
 		mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
 		mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
 		mkDirWithLinks("Containers", "Makefile-Foundation-Containers");
@@ -93,6 +93,10 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test6 $intermediateFiles/$platform/$target/Test6/Makefile");
 		mkdir "$intermediateFiles/$platform/$target/Test7";
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test7 $intermediateFiles/$platform/$target/Test7/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test8";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test8 $intermediateFiles/$platform/$target/Test8/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test9";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test9 $intermediateFiles/$platform/$target/Test9/Makefile");
 	}
 }
 
@@ -133,7 +137,7 @@ sub WriteDefault
 	print (OUT "\n");
 	print (OUT "#include	\"Private/Defaults_Configuration_Common_.h\"\n");
 	print (OUT "\n");
-	
+
 	print (OUT "//Out of alphabetic order because other defaults depend on qDebug\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Assertions_.h\"\n");
 	print (OUT "\n");
@@ -150,7 +154,7 @@ sub WriteDefault
 	print (OUT "#include	\"Private/Defaults_Memory_Common_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Memory_BlockAllocated_.h\"\n");
 	print (OUT "\n");
-	
+
 	print (OUT "#endif	/*_Stroika_Foundation_Configuration_StroikaConfig_h_*/\n");
 	close(OUT);
 }
