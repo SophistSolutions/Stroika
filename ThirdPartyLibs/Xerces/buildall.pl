@@ -58,7 +58,7 @@ if ("$^O" eq "linux") {
 
 print ("Building Xerces...\n");
 if ("$^O" eq "linux") {
-	system ("cd CURRENT ; make all");
+	system ("cd CURRENT ; make -s all");
 }
 else {
 	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
