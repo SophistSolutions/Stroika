@@ -63,7 +63,6 @@
  *
  */
 
- #define        qGCC_ScopingInTemplateBug   1
 
 #include	"../../StroikaPreComp.h"
 
@@ -203,7 +202,7 @@ namespace	Stroika {
                         const ArrayNode<T>*	fStart;			// points to FIRST elt
                         const ArrayNode<T>*	fEnd;			// points 1 PAST last elt
                         const ArrayNode<T>*	fCurrent;		// points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
-                        bool				fSupressMore;	// Indicates if More should do anything, or if were already Mored...
+                        bool				fSuppressMore;	// Indicates if More should do anything, or if were already Mored...
 
                 #if		qDebug
                         virtual	void	Invariant_ () const;
@@ -222,6 +221,12 @@ namespace	Stroika {
                         ForwardArrayIterator (const Array<T>& data);
 
                         nonvirtual	bool	More ();
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
+
+                    private:
+                        typedef ArrayIteratorBase<T>    inherited;
                 };
 
 
@@ -235,7 +240,15 @@ namespace	Stroika {
                     public:
                         ForwardArrayMutator (Array<T>& data);
 
+                        nonvirtual	bool	More ();                // shadow to avoid scope ambiguity
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
+
                         nonvirtual	void	UpdateCurrent (T newValue);
+
+                    private:
+                        typedef ForwardArrayIterator<T>    inherited;
                 };
 
 
@@ -251,6 +264,12 @@ namespace	Stroika {
                         BackwardArrayIterator (const Array<T>& data);
 
                         nonvirtual	bool	More ();
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
+
+                    private:
+                        typedef ArrayIteratorBase<T>    inherited;
                 };
 
 
@@ -264,14 +283,16 @@ namespace	Stroika {
                     public:
                         BackwardArrayMutator (Array<T>& data);
 
+                        nonvirtual	bool	More ();                // shadow to avoid scope ambiguity
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
+
                         nonvirtual	void	UpdateCurrent (T newValue);
+
+                    private:
+                        typedef BackwardArrayIterator<T>    inherited;
                 };
-
-
-
-
-
-
 
 
 
@@ -357,7 +378,11 @@ namespace	Stroika {
 
                         nonvirtual	ArrayIterator_PatchBase<T>&	operator= (const ArrayIterator_PatchBase<T>& rhs);
 
-                    public:
+                        nonvirtual	size_t	CurrentIndex () const;  // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
+
+                   public:
                         nonvirtual	void	PatchAdd (size_t index);		//	call after add
                         nonvirtual	void	PatchRemove (size_t index);		//	call before remove
                         nonvirtual	void	PatchRemoveAll ();				//	call after removeall
@@ -373,7 +398,9 @@ namespace	Stroika {
 
                         virtual		void	PatchRemoveCurrent ()	=	0;	// called from patchremove if patching current item...
 
-                    friend	class	Array_Patch<T>;
+                        friend	class	Array_Patch<T>;
+                    private:
+                        typedef ArrayIteratorBase<T>    inherited;
                 };
 
 
@@ -392,9 +419,15 @@ namespace	Stroika {
 
                     public:
                         nonvirtual	bool	More ();
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
 
                     protected:
                         virtual	void	PatchRemoveCurrent () override;
+
+                   private:
+                        typedef ArrayIterator_PatchBase<T>    inherited;
                 };
 
 
@@ -408,11 +441,20 @@ namespace	Stroika {
                     public:
                         ForwardArrayMutator_Patch (Array_Patch<T>& data);
 
+                        nonvirtual	size_t	CurrentIndex () const;  // shadow to avoid scope ambiguity
+
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
+
                     public:
                         nonvirtual	void	RemoveCurrent ();
                         nonvirtual	void	UpdateCurrent (T newValue);
                         nonvirtual	void	AddBefore (T item);				//	NB: Can be called if done
                         nonvirtual	void	AddAfter (T item);
+
+                   private:
+                        typedef ForwardArrayIterator_Patch<T>    inherited;
                 };
 
 
@@ -430,10 +472,17 @@ namespace	Stroika {
                         BackwardArrayIterator_Patch (const Array_Patch<T>& data);
 
                     public:
-                        nonvirtual	bool	More ();
+                        nonvirtual	size_t	CurrentIndex () const;  // shadow to avoid scope ambiguity
 
+                        nonvirtual	bool	More ();
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
                     protected:
                         virtual	void	PatchRemoveCurrent () override;
+
+                   private:
+                        typedef ArrayIterator_PatchBase<T>    inherited;
                 };
 
 
@@ -447,13 +496,19 @@ namespace	Stroika {
                     public:
                         BackwardArrayMutator_Patch (Array_Patch<T>& data);
 
+                        nonvirtual	size_t	CurrentIndex () const;  // shadow to avoid scope ambiguity
+                        nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
+
+                        nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
                     public:
                         nonvirtual	void	RemoveCurrent ();
                         nonvirtual	void	UpdateCurrent (T newValue);
                         nonvirtual	void	AddBefore (T item);
                         nonvirtual	void	AddAfter (T item);				//	NB: Can be called if done
-                };
 
+                   private:
+                        typedef BackwardArrayIterator_Patch<T>    inherited;
+                };
 		    }
 		}
 	}

@@ -90,12 +90,12 @@ namespace	Stroika {
 
             template	<class	T>	inline	void*	Bag_ArrayMutatorRep<T>::operator new (size_t size)
             {
-                return (Stroika::Foundation::Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator new (size));
+                return (Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator new (size));
             }
 
             template	<class	T>	inline	void	Bag_ArrayMutatorRep<T>::operator delete (void* p)
             {
-                Stroika::Foundation::Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator delete (p);
+                Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator delete (p);
             }
 
             template	<class	T>	Bag_ArrayMutatorRep<T>::Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner) :

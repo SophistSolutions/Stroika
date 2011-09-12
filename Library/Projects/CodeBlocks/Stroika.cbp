@@ -97,6 +97,7 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Common.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Iterator.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Iterator.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Iterator.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.inl" />

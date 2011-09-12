@@ -88,7 +88,7 @@ namespace	Stroika {
                     fStart (&data.fItems[0]),
                     fEnd (&data.fItems[data.GetLength ()]),
                     //fCurrent ()							dont initialize - done in subclasses...
-                    fSupressMore (true)				// first time thru - cuz of how used in for loops...
+                    fSuppressMore (true)				// first time thru - cuz of how used in for loops...
                 {
                     #if		qDebug
                         fCurrent = 0;	// more likely to cause bugs...(leave the xtra newline cuz of genclass bug...)
@@ -123,117 +123,79 @@ namespace	Stroika {
                 template	<typename T>	inline	ForwardArrayIterator<T>::ForwardArrayIterator (const Array<T>& data) :
                     ArrayIteratorBase<T>(data)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayIterator<T>::fCurrent = ForwardArrayIterator<T>::fStart;
-                    ForwardArrayIterator<T>::Invariant ();
-            #else
-                    fCurrent = FfStart;
+                    this->fCurrent = this->fStart;
                     Invariant ();
-            #endif
-                }
-                template	<typename T>	inline	bool	ForwardArrayIterator<T>::More ()
-                {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayIterator<T>::Invariant ();
-                    if (not ForwardArrayIterator<T>::fSupressMore and not ForwardArrayIterator<T>::Done ()) {
-                        Assert (ForwardArrayIterator<T>::fCurrent < ForwardArrayIterator<T>::fEnd);
-                        ForwardArrayIterator<T>::fCurrent++;
-                    }
-                    ForwardArrayIterator<T>::fSupressMore = false;
-                    ForwardArrayIterator<T>::Invariant ();
-                    return (not ForwardArrayIterator<T>::Done ());
-            #else
-                    Invariant ();
-                    if (not fSupressMore and not Done ()) {
-                        Assert (fCurrent < fEnd);
-                        fCurrent++;
-                    }
-                    fSupressMore = false;
-                    Invariant ();
-                    return (not Done ());
-            #endif
                 }
 
+                template	<typename T>	inline	bool	ForwardArrayIterator<T>::More ()
+                {
+                    Invariant ();
+                    if (not this->fSuppressMore and not Done ()) {
+                        Assert (this->fCurrent < this->fEnd);
+                        this->fCurrent++;
+                    }
+                    this->fSuppressMore = false;
+                    Invariant ();
+                    return (not Done ());
+                }
+
+                template	<typename T>	inline	bool	ForwardArrayIterator<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
+
+                template	<typename T>	inline	void	ForwardArrayIterator<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
 
                 // Class ForwardArrayMutator<T>
                 template	<typename T>	inline	ForwardArrayMutator<T>::ForwardArrayMutator (Array<T>& data) :
                     ForwardArrayIterator<T>((const Array<T>&)data)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayMutator<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	void	ForwardArrayMutator<T>::UpdateCurrent (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayMutator<T>::Invariant ();
-                    Require (not ForwardArrayMutator<T>::Done ());
-                    AssertNotNull (ForwardArrayMutator<T>::fCurrent);
-                    const_cast<ArrayNode<T>*> (ForwardArrayMutator<T>::fCurrent)->fItem = newValue; // not sure how to handle better the (~const)
-            #else
-                    ((ArrayNode<T>*)ForwardArrayMutator<T>::fCurrent)->fItem = newValue;
                     Invariant ();
                     Require (not Done ());
-                    AssertNotNull (fCurrent);
-                    ((ArrayNode<T>*)fCurrent)->fItem = newValue;	// not sure how to handle better the (~const)
-            #endif
+                    AssertNotNull (this->fCurrent);
+                    const_cast<ArrayNode<T>*> (this->fCurrent)->fItem = newValue;
                 }
 
+                template	<typename T>	inline	bool	ForwardArrayMutator<T>::More ()
+                {
+                    return (inherited::More ());
+                }
+
+                template	<typename T>	inline	bool	ForwardArrayMutator<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
+
+                template	<typename T>	inline	void	ForwardArrayMutator<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
 
                 // Class BackwardArrayIterator<T>
                 template	<typename T>	inline	BackwardArrayIterator<T>::BackwardArrayIterator (const Array<T>& data) :
                     ArrayIteratorBase<T>(data)
                 {
-            #if qGCC_ScopingInTemplateBug
                     if (data.GetLength () == 0) {
-                        BackwardArrayIterator<T>::fCurrent = BackwardArrayIterator<T>::fEnd;	// magic to indicate done
+                        this->fCurrent = this->fEnd;	// magic to indicate done
                     }
                     else {
-                        BackwardArrayIterator<T>::fCurrent = BackwardArrayIterator<T>::fEnd-1;	// last valid item
-                    }
-                    BackwardArrayIterator<T>::Invariant ();
-            #else
-                    if (data.GetLength () == 0) {
-                        fCurrent = fEnd;	// magic to indicate done
-                    }
-                    else {
-                        fCurrent = fEnd-1;	// last valid item
+                        this->fCurrent = this->fEnd-1;	// last valid item
                     }
                     Invariant ();
-            #endif
                 }
 
                 template	<typename T>	inline	bool	BackwardArrayIterator<T>::More ()
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayIterator<T>::Invariant ();
-                    if (BackwardArrayIterator<T>::fSupressMore) {
-                        BackwardArrayIterator<T>::fSupressMore = false;
-                        return (not BackwardArrayIterator<T>::Done ());
-                    }
-                    else {
-                        if (BackwardArrayIterator<T>::Done ()) {
-                            return (false);
-                        }
-                        else {
-                            if (BackwardArrayIterator<T>::fCurrent == BackwardArrayIterator<T>::fStart) {
-                                BackwardArrayIterator<T>::fCurrent = BackwardArrayIterator<T>::fEnd;	// magic to indicate done
-                                Ensure (BackwardArrayIterator<T>::Done ());
-                                return (false);
-                            }
-                            else {
-                                BackwardArrayIterator<T>::fCurrent--;
-                                Ensure (not BackwardArrayIterator<T>::Done ());
-                                return (true);
-                            }
-                        }
-                    }
-            #else
                     Invariant ();
-                    if (fSupressMore) {
-                        fSupressMore = false;
+                    if (this->fSuppressMore) {
+                        this->fSuppressMore = false;
                         return (not Done ());
                     }
                     else {
@@ -241,50 +203,59 @@ namespace	Stroika {
                             return (false);
                         }
                         else {
-                            if (fCurrent == fStart) {
-                                fCurrent = fEnd;	// magic to indicate done
+                            if (this->fCurrent == this->fStart) {
+                                this->fCurrent = this->fEnd;	// magic to indicate done
                                 Ensure (Done ());
                                 return (false);
                             }
                             else {
-                                fCurrent--;
+                                this->fCurrent--;
                                 Ensure (not Done ());
                                 return (true);
                             }
                         }
                     }
-            #endif
                     AssertNotReached ();	return (false);
                 }
 
+                template	<typename T>	inline	bool	BackwardArrayIterator<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
+
+                template	<typename T>	inline	void	BackwardArrayIterator<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
 
                 // Class BackwardArrayMutator<T>
                 template	<typename T>	inline	BackwardArrayMutator<T>::BackwardArrayMutator (Array<T>& data) :
                     BackwardArrayIterator<T>((const Array<T>&)data)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayMutator<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	void	BackwardArrayMutator<T>::UpdateCurrent (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayMutator<T>::Invariant ();
-                    Require (not BackwardArrayMutator<T>::Done ());
-                    AssertNotNull (BackwardArrayMutator<T>::fCurrent);
-                    const_cast<ArrayNode<T>*> (BackwardArrayMutator<T>::fCurrent)->fItem = newValue;	// not sure how to handle better the (~const)
-
-            #else
                     Invariant ();
                     Require (not Done ());
-                    AssertNotNull (fCurrent);
-                    const_cast<ArrayNode<T>*> (fCurrent)->fItem = newValue;	// not sure how to handle better the (~const)
-            #endif
+                    AssertNotNull (this->fCurrent);
+                    const_cast<ArrayNode<T>*> (this->fCurrent)->fItem = newValue;	// not sure how to handle better the (~const)
                 }
 
+                template	<typename T>	inline	bool	BackwardArrayMutator<T>::More ()
+                {
+                    return (inherited::More ());
+                }
 
+                template	<typename T>	inline	bool	BackwardArrayMutator<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
+
+                template	<typename T>	inline	void	BackwardArrayMutator<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
 
                 /*
                  **************************** Patching code ****************************
@@ -309,19 +280,11 @@ namespace	Stroika {
                 {
                     RequireNotNull (fData);
                     const_cast <Array_Patch<T>*> (fData)->fIterators = this;
-            #if qGCC_ScopingInTemplateBug
-                    ArrayIterator_PatchBase<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	ArrayIterator_PatchBase<T>::~ArrayIterator_PatchBase ()
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ArrayIterator_PatchBase<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
                     AssertNotNull (fData);
                     if (fData->fIterators == this) {
                         const_cast <Array_Patch<T>*> (fData)->fIterators = fNext;
@@ -339,11 +302,7 @@ namespace	Stroika {
                 }
                 template	<typename T>	inline	ArrayIterator_PatchBase<T>&	ArrayIterator_PatchBase<T>::operator= (const ArrayIterator_PatchBase<T>& rhs)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ArrayIterator_PatchBase<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
 
                     /*
                      *		If the fData field has not changed, then we can leave alone our iterator linkage.
@@ -383,13 +342,22 @@ namespace	Stroika {
 
                     ArrayIteratorBase<T>::operator=(rhs);
 
-            #if qGCC_ScopingInTemplateBug
-                    ArrayIterator_PatchBase<T>::Invariant ();
-            #else
+
                     Invariant ();
-            #endif
+
                     return (*this);
                 }
+
+                template	<typename T>	inline	void	ArrayIterator_PatchBase<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
+
+                template	<typename T>	inline  size_t	ArrayIterator_PatchBase<T>::CurrentIndex () const
+                {
+                    return (inherited::CurrentIndex ());
+                }
+
                 template	<typename T>	inline	void	ArrayIterator_PatchBase<T>::PatchAdd (size_t index)
                 {
                     /*
@@ -398,11 +366,7 @@ namespace	Stroika {
                      */
                     Require (index >= 1);
 
-            #if qGCC_ScopingInTemplateBug
-                    ArrayIterator_PatchBase<T>::fEnd++;
-            #else
-                    fEnd++;
-            #endif
+                    this->fEnd++;
 
                     AssertNotNull (fData);
 
@@ -425,22 +389,15 @@ namespace	Stroika {
                      *	the position we are at, the same argument as before applies - we
                      *	would be revisiting, or skipping forwards an item.
                      */
-            #if qGCC_ScopingInTemplateBug
-                    Require (index <= (ArrayIterator_PatchBase<T>::fEnd-ArrayIterator_PatchBase<T>::fStart));
-                    if (&ArrayIterator_PatchBase<T>::fStart[index-1] <= ArrayIterator_PatchBase<T>::fCurrent) {		// index <= CurrentIndex () - only faster
+
+                    Require (index <= (this->fEnd-this->fStart));
+                    if (&this->fStart[index-1] <= this->fCurrent) {		// index <= CurrentIndex () - only faster
                                                             // Cannot call CurrentIndex () since invariants
                                                             // might fail at this point
-                        ArrayIterator_PatchBase<T>::fCurrent++;
+                        this->fCurrent++;
                     }
-            #else
-                    Require (index <= (fEnd-fStart));
-                    if (&fStart[index-1] <= fCurrent) {		// index <= CurrentIndex () - only faster
-                                                            // Cannot call CurrentIndex () since invariants
-                                                            // might fail at this point
-                        fCurrent++;
-                    }
-            #endif
                 }
+
                 template	<typename T>	inline	void	ArrayIterator_PatchBase<T>::PatchRemove (size_t index)
                 {
                     Require (index >= 1);
@@ -458,68 +415,40 @@ namespace	Stroika {
                      *	would cause us to skip one. To correct our index, we must decrement it so that
                      *	it.Current () refers to the same entity.
                      *
-                     *		In the case where we are directly hit, just set fSupressMore
+                     *		In the case where we are directly hit, just set fSuppressMore
                      *	to true. If we are going forwards, are are already pointing where
                      *	we should be (and this works for repeat deletions). If we are
-                     *	going backwards, then fSupressMore will be ignored, but for the
+                     *	going backwards, then fSuppressMore will be ignored, but for the
                      *	sake of code sharing, its tough to do much about that waste.
                      */
-            #if qGCC_ScopingInTemplateBug
-                    Assert ((&ArrayIterator_PatchBase<T>::fStart[index-1] <= ArrayIterator_PatchBase<T>::fCurrent) == (index <= ArrayIterator_PatchBase<T>::CurrentIndex ()));		// index <= CurrentIndex () - only faster
-                    if (&ArrayIterator_PatchBase<T>::fStart[index-1] < ArrayIterator_PatchBase<T>::fCurrent) {
-                        Assert (ArrayIterator_PatchBase<T>::CurrentIndex () >= 2);		// cuz then index would be <= 0, and thats imposible
-                        ArrayIterator_PatchBase<T>::fCurrent--;
-                    }
-                    else if (&ArrayIterator_PatchBase<T>::fStart[index-1] == ArrayIterator_PatchBase<T>::fCurrent) {
-                        PatchRemoveCurrent ();
-                    }
-                    // Decrement at the end since CurrentIndex () calls stuff that asserts (fEnd-fStart) == fData->GetLength ()
-                    Assert ((ArrayIterator_PatchBase<T>::fEnd-ArrayIterator_PatchBase<T>::fStart) == fData->GetLength ());		//	since called before remove
-
-                    /*
-                     * At this point, fCurrent could be == fEnd - must not lest fCurrent point past!
-                     */
-                    if (ArrayIterator_PatchBase<T>::fCurrent == ArrayIterator_PatchBase<T>::fEnd) {
-                        Assert (ArrayIterator_PatchBase<T>::fCurrent > ArrayIterator_PatchBase<T>::fStart);	// since we are removing something start!=end
-                        ArrayIterator_PatchBase<T>::fCurrent--;
-                    }
-                    ArrayIterator_PatchBase<T>::fEnd--;
-            #else
-                    Assert ((&fStart[index-1] <= fCurrent) == (index <= CurrentIndex ()));		// index <= CurrentIndex () - only faster
-                    if (&fStart[index-1] < fCurrent) {
+                    Assert ((&this->fStart[index-1] <= this->fCurrent) == (index <= CurrentIndex ()));		// index <= CurrentIndex () - only faster
+                    if (&this->fStart[index-1] < this->fCurrent) {
                         Assert (CurrentIndex () >= 2);		// cuz then index would be <= 0, and thats imposible
-                        fCurrent--;
+                        this->fCurrent--;
                     }
-                    else if (&fStart[index-1] == fCurrent) {
+                    else if (&this->fStart[index-1] == this->fCurrent) {
                         PatchRemoveCurrent ();
                     }
                     // Decrement at the end since CurrentIndex () calls stuff that asserts (fEnd-fStart) == fData->GetLength ()
-                    Assert ((fEnd-fStart) == fData->GetLength ());		//	since called before remove
+                    Assert ((this->fEnd-this->fStart) == fData->GetLength ());		//	since called before remove
 
                     /*
                      * At this point, fCurrent could be == fEnd - must not lest fCurrent point past!
                      */
-                    if (fCurrent == fEnd) {
-                        Assert (fCurrent > fStart);	// since we are removing something start!=end
-                        fCurrent--;
+                    if (this->fCurrent == this->fEnd) {
+                        Assert (this->fCurrent > this->fStart);	// since we are removing something start!=end
+                        this->fCurrent--;
                     }
-                    fEnd--;
-            #endif
+                    this->fEnd--;
                 }
                 template	<typename T>	inline	void	ArrayIterator_PatchBase<T>::PatchRemoveAll ()
                 {
                     Require (fData->GetLength () == 0);		//	since called after removeall
-            #if qGCC_ScopingInTemplateBug
-                    ArrayIterator_PatchBase<T>::fCurrent = fData->fItems;
-                    ArrayIterator_PatchBase<T>::fStart = fData->fItems;
-                    ArrayIterator_PatchBase<T>::fEnd = fData->fItems;
-                    ArrayIterator_PatchBase<T>::fSupressMore = true;
-            #else
-                    fCurrent = fData->fItems;
-                    fStart = fData->fItems;
-                    fEnd = fData->fItems;
-                    fSupressMore = true;
-            #endif
+
+                    this->fCurrent = fData->fItems;
+                    this->fStart = fData->fItems;
+                    this->fEnd = fData->fItems;
+                    this->fSuppressMore = true;
                 }
                 template	<typename T>	inline	void	ArrayIterator_PatchBase<T>::PatchRealloc ()
                 {
@@ -527,21 +456,12 @@ namespace	Stroika {
                      *		NB: We can only call invariant after we've fixed things up, since realloc
                      * has happened by now, but things don't point to the right places yet.
                      */
-            #if qGCC_ScopingInTemplateBug
-                    if (ArrayIterator_PatchBase<T>::fStart != fData->fItems) {
-                        const	ArrayNode<T>*	oldStart	=	ArrayIterator_PatchBase<T>::fStart;
-                        ArrayIterator_PatchBase<T>::fStart = fData->fItems;
-                        ArrayIterator_PatchBase<T>::fCurrent = fData->fItems + (ArrayIterator_PatchBase<T>::fCurrent-oldStart);
-                        ArrayIterator_PatchBase<T>::fEnd = fData->fItems + (ArrayIterator_PatchBase<T>::fEnd-oldStart);
+                    if (this->fStart != fData->fItems) {
+                        const	ArrayNode<T>*	oldStart	=	this->fStart;
+                        this->fStart = fData->fItems;
+                        this->fCurrent = fData->fItems + (this->fCurrent-oldStart);
+                        this->fEnd = fData->fItems + (this->fEnd-oldStart);
                     }
-            #else
-                    if (fStart != fData->fItems) {
-                        const	ArrayNode<T>*	oldStart	=	fStart;
-                        fStart = fData->fItems;
-                        fCurrent = fData->fItems + (fCurrent-oldStart);
-                        fEnd = fData->fItems + (fEnd-oldStart);
-                    }
-            #endif
                 }
 
 
@@ -553,12 +473,14 @@ namespace	Stroika {
                     InvariantOnIterators_ ();
             #endif
                 }
+
                 template	<class	T>	inline	Array_Patch<T>::Array_Patch () :
                     Array<T> (),
                     fIterators (0)
                 {
                     Invariant ();
                 }
+
                 template	<class	T>	inline	Array_Patch<T>::Array_Patch (const Array_Patch<T>& from) :
                     Array<T> (from),
                     fIterators (0)	// Don't copy the list of iterators - would be trouble with backpointers!
@@ -566,15 +488,18 @@ namespace	Stroika {
                 {
                     Invariant ();
                 }
+
                 template	<class	T>	inline	Array_Patch<T>::~Array_Patch ()
                 {
                     Require (fIterators == 0);
                     Invariant ();
                 }
+
                 template	<class	T>	inline	bool	Array_Patch<T>::HasActiveIterators () const
                 {
                     return bool (fIterators != 0);
                 }
+
                 template	<typename T>	inline	void	Array_Patch<T>::PatchViewsAdd (size_t index) const
                 {
                     /*
@@ -586,24 +511,28 @@ namespace	Stroika {
                         v->PatchAdd (index);
                     }
                 }
+
                 template	<typename T>	inline	void	Array_Patch<T>::PatchViewsRemove (size_t index) const
                 {
                     for (ArrayIterator_PatchBase<T>* v = fIterators; v != 0; v = v->fNext) {
                         v->PatchRemove (index);
                     }
                 }
+
                 template	<typename T>	inline	void	Array_Patch<T>::PatchViewsRemoveAll () const
                 {
                     for (ArrayIterator_PatchBase<T>* v = fIterators; v != 0; v = v->fNext) {
                         v->PatchRemoveAll ();
                     }
                 }
+
                 template	<typename T>	inline	void	Array_Patch<T>::PatchViewsRealloc () const
                 {
                     for (ArrayIterator_PatchBase<T>* v = fIterators; v != 0; v = v->fNext) {
                         v->PatchRealloc ();
                     }
                 }
+
                 template	<class	T>	inline	Array_Patch<T>& Array_Patch<T>::operator= (const Array_Patch<T>& rhs)
                 {
                     /*
@@ -616,11 +545,13 @@ namespace	Stroika {
                     Invariant ();
                     return (*this);
                 }
+
                 template	<class	T>	inline	void	Array_Patch<T>::SetLength (size_t newLength, T fillValue)
                 {
                     // For now, not sure how to patch the iterators, so just Assert out - fix later ...
                     AssertNotReached ();
                 }
+
                 template	<class	T>	inline	void	Array_Patch<T>::InsertAt (T item, size_t index)
                 {
                     Invariant ();
@@ -628,6 +559,7 @@ namespace	Stroika {
                     PatchViewsAdd (index);			// PatchRealloc done in PatchViewsAdd()
                     Invariant ();
                 }
+
                 template	<class	T>	inline	void	Array_Patch<T>::RemoveAt (size_t index)
                 {
                     Invariant ();
@@ -637,6 +569,7 @@ namespace	Stroika {
                     // just destructs things.
                     Invariant ();
                 }
+
                 template	<class	T>	inline	void	Array_Patch<T>::RemoveAll ()
                 {
                     Invariant ();
@@ -645,6 +578,7 @@ namespace	Stroika {
                                                 // it does not realloc pointers (ie does not call setslotsalloced).
                     Invariant ();
                 }
+
                 template	<class	T>	inline	void	Array_Patch<T>::SetSlotsAlloced (size_t slotsAlloced)
                 {
                     Invariant ();
@@ -652,6 +586,7 @@ namespace	Stroika {
                     PatchViewsRealloc ();
                     Invariant ();
                 }
+
                 template	<class	T>	inline	void	Array_Patch<T>::Compact ()
                 {
                     Invariant ();
@@ -666,175 +601,113 @@ namespace	Stroika {
                 template	<typename T>	inline	ForwardArrayIterator_Patch<T>::ForwardArrayIterator_Patch (const Array_Patch<T>& data) :
                     ArrayIterator_PatchBase<T> (data)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayIterator_Patch<T>::fCurrent = ForwardArrayIterator_Patch<T>::fStart;
-                    ForwardArrayIterator_Patch<T>::Invariant ();
-            #else
-                    fCurrent = fStart;
+                    this->fCurrent = this->fStart;
                     Invariant ();
-            #endif
-                }
-                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::More ()
-                {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayIterator_Patch<T>::Invariant ();
-                    if (not ForwardArrayIterator_Patch<T>::fSupressMore and not ForwardArrayIterator_Patch<T>::Done ()) {
-                        Assert (ForwardArrayIterator_Patch<T>::fCurrent < ForwardArrayIterator_Patch<T>::fEnd);
-                        ForwardArrayIterator_Patch<T>::fCurrent++;
-                    }
-                    ForwardArrayIterator_Patch<T>::fSupressMore = false;
-                    ForwardArrayIterator_Patch<T>::Invariant ();
-                    return (not ForwardArrayIterator_Patch<T>::Done ());
-            #else
-                    Invariant ();
-                    if (not fSupressMore and not Done ()) {
-                        Assert (fCurrent < fEnd);
-                        fCurrent++;
-                    }
-                    fSupressMore = false;
-                    Invariant ();
-                    return (not Done ());
-            #endif
-                }
-                template	<typename T>	inline	void	ForwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
-                {
-            #if qGCC_ScopingInTemplateBug
-                    Assert (ForwardArrayIterator_Patch<T>::fCurrent < ForwardArrayIterator_Patch<T>::fEnd);	// cannot remove something past the end
-                    ForwardArrayIterator_Patch<T>::fSupressMore = true;
-            #else
-                    Assert (fCurrent < fEnd);	// cannot remove something past the end
-                    fSupressMore = true;
-            #endif
                 }
 
+                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::More ()
+                {
+                    Invariant ();
+                    if (not this->fSuppressMore and not Done ()) {
+                        Assert ( this->fCurrent <  this->fEnd);
+                         this->fCurrent++;
+                    }
+                     this->fSuppressMore = false;
+                    Invariant ();
+                    return (not Done ());
+                }
+
+                template	<typename T>	inline	void	ForwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
+                {
+                    Assert ( this->fCurrent <  this->fEnd);	// cannot remove something past the end
+                    this->fSuppressMore = true;
+                }
+
+
+                template	<typename T>	inline	void	ForwardArrayIterator_Patch<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
+
+                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
 
                 // Class ForwardArrayMutator<T>
                 template	<typename T>	inline	ForwardArrayMutator_Patch<T>::ForwardArrayMutator_Patch (Array_Patch<T>& data) :
                     ForwardArrayIterator_Patch<T>((const Array_Patch<T>&)data)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
                 }
+
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::RemoveCurrent ()
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-                    AssertNotNull (ForwardArrayMutator_Patch<T>::fData);
-                    const_cast<Array_Patch<T>*> (ForwardArrayMutator_Patch<T>::fData)->RemoveAt (ForwardArrayMutator_Patch<T>::CurrentIndex ());
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-            #else
                     Invariant ();
-                    AssertNotNull (fData);
-                    const_cast<Array_Patch<T>*> (fData)->RemoveAt (CurrentIndex ());
+                    AssertNotNull (this->fData);
+                    const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (CurrentIndex ());
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-                    Require (not ForwardArrayMutator_Patch<T>::Done ());
-                    AssertNotNull (ForwardArrayMutator_Patch<T>::fCurrent);
-                    const_cast<ArrayNode<T>*>(ForwardArrayMutator_Patch<T>::fCurrent)->fItem = newValue;
-            #else
                     Invariant ();
                     Require (not Done ());
-                    AssertNotNull (fCurrent);
-                    const_cast<ArrayNode<T>*>(fCurrent)->fItem = newValue;
-            #endif
+                    AssertNotNull (this->fCurrent);
+                    const_cast<ArrayNode<T>*>(this->fCurrent)->fItem = newValue;
                 }
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::AddBefore (T newValue)
                 {
                     /*
                      * NB: This can be called if we are done.
                      */
-            #if qGCC_ScopingInTemplateBug
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-                    AssertNotNull (ForwardArrayMutator_Patch<T>::fData);
-                    const_cast<Array_Patch<T>*> (ForwardArrayMutator_Patch<T>::fData)->InsertAt (newValue, ForwardArrayMutator_Patch<T>::CurrentIndex ());
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-            #else
                     Invariant ();
-                    AssertNotNull (fData);
-                    const_cast<Array_Patch<T>*> (fData)->InsertAt (newValue, CurrentIndex ());
+                    AssertNotNull (this->fData);
+                    const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex ());
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::AddAfter (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    Require (not ForwardArrayMutator_Patch<T>::Done ());
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-                    AssertNotNull (ForwardArrayMutator_Patch<T>::fData);
-                    const_cast<Array_Patch<T>*> (ForwardArrayMutator_Patch<T>::fData)->InsertAt (newValue, ForwardArrayMutator_Patch<T>::CurrentIndex ()+1);
-                    ForwardArrayMutator_Patch<T>::Invariant ();
-            #else
                     Require (not Done ());
                     Invariant ();
-                    AssertNotNull (fData);
-                    const_cast<Array_Patch<T>*> (fData)->InsertAt (newValue, CurrentIndex ()+1);
+                    AssertNotNull (this->fData);
+                    const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex ()+1);
                     Invariant ();
-            #endif
                 }
 
+                template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
+
+                template	<typename T>	inline	bool	ForwardArrayMutator_Patch<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
+
+                template	<typename T>	inline	size_t	ForwardArrayMutator_Patch<T>::CurrentIndex () const
+                {
+                    return (inherited::CurrentIndex ());
+                }
 
                 // class BackwardArrayIterator_Patch<T>
                 template	<typename T>	inline	BackwardArrayIterator_Patch<T>::BackwardArrayIterator_Patch (const Array_Patch<T>& data) :
                     ArrayIterator_PatchBase<T> (data)
                 {
-            #if qGCC_ScopingInTemplateBug
                     if (data.GetLength () == 0) {
-                        BackwardArrayIterator_Patch<T>::fCurrent = BackwardArrayIterator_Patch<T>::fEnd;	// magic to indicate done
+                        this->fCurrent = this->fEnd;	// magic to indicate done
                     }
                     else {
-                        BackwardArrayIterator_Patch<T>::fCurrent = BackwardArrayIterator_Patch<T>::fEnd-1;	// last valid item
-                    }
-                    BackwardArrayIterator_Patch<T>::Invariant ();
-            #else
-                    if (data.GetLength () == 0) {
-                        fCurrent = fEnd;	// magic to indicate done
-                    }
-                    else {
-                        fCurrent = fEnd-1;	// last valid item
+                        this->fCurrent = this->fEnd-1;	// last valid item
                     }
                     Invariant ();
-            #endif
                 }
 
                 // Careful to keep hdr and src copies identical...
                 template	<typename T>	inline	bool	BackwardArrayIterator_Patch<T>::More ()
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayIterator_Patch<T>::Invariant ();
-                    if (BackwardArrayIterator_Patch<T>::fSupressMore) {
-                        BackwardArrayIterator_Patch<T>::fSupressMore = false;
-                        return (not BackwardArrayIterator_Patch<T>::Done ());
-                    }
-                    else {
-                        if (BackwardArrayIterator_Patch<T>::Done ()) {
-                            return (false);
-                        }
-                        else {
-                            if (BackwardArrayIterator_Patch<T>::fCurrent == BackwardArrayIterator_Patch<T>::fStart) {
-                                BackwardArrayIterator_Patch<T>::fCurrent = BackwardArrayIterator_Patch<T>::fEnd;	// magic to indicate done
-                                Ensure (BackwardArrayIterator_Patch<T>::Done ());
-                                return (false);
-                            }
-                            else {
-                                BackwardArrayIterator_Patch<T>::fCurrent--;
-                                Ensure (not BackwardArrayIterator_Patch<T>::Done ());
-                                return (true);
-                            }
-                        }
-                    }
-                    AssertNotReached ();	return (false);
-            #else
                     Invariant ();
-                    if (fSupressMore) {
-                        fSupressMore = false;
+                    if (this->fSuppressMore) {
+                        this->fSuppressMore = false;
                         return (not Done ());
                     }
                     else {
@@ -842,43 +715,31 @@ namespace	Stroika {
                             return (false);
                         }
                         else {
-                            if (fCurrent == fStart) {
-                                fCurrent = fEnd;	// magic to indicate done
+                            if (this->fCurrent == this->fStart) {
+                                this->fCurrent = this->fEnd;	// magic to indicate done
                                 Ensure (Done ());
                                 return (false);
                             }
                             else {
-                                fCurrent--;
+                                this->fCurrent--;
                                 Ensure (not Done ());
                                 return (true);
                             }
                         }
                     }
                     AssertNotReached ();	return (false);
-            #endif
                 }
 
                 template	<typename T>	inline	void	BackwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
                 {
-            #if qGCC_ScopingInTemplateBug
-                    if (BackwardArrayIterator_Patch<T>::fCurrent == BackwardArrayIterator_Patch<T>::fStart) {
-                        BackwardArrayIterator_Patch<T>::fCurrent = BackwardArrayIterator_Patch<T>::fEnd;	// magic to indicate done
+                    if (this->fCurrent == this->fStart) {
+                        this->fCurrent = this->fEnd;	// magic to indicate done
                     }
                     else {
-                        Assert (BackwardArrayIterator_Patch<T>::fCurrent > BackwardArrayIterator_Patch<T>::fStart);
-                        BackwardArrayIterator_Patch<T>::fCurrent--;
+                        Assert (this->fCurrent > this->fStart);
+                        this->fCurrent--;
                     }
-                    BackwardArrayIterator_Patch<T>::fSupressMore = true;
-            #else
-                    if (fCurrent == fStart) {
-                        fCurrent = fEnd;	// magic to indicate done
-                    }
-                    else {
-                        Assert (fCurrent > fStart);
-                        fCurrent--;
-                    }
-                    fSupressMore = true;
-            #endif
+                    this->fSuppressMore = true;
                 }
 
 
@@ -886,73 +747,53 @@ namespace	Stroika {
                 template	<typename T>	inline	BackwardArrayMutator_Patch<T>::BackwardArrayMutator_Patch (Array_Patch<T>& data) :
                     BackwardArrayIterator_Patch<T>((const Array_Patch<T>&)data)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayIterator_Patch<T>::Invariant ();
-            #else
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	void	BackwardArrayMutator_Patch<T>::RemoveCurrent ()
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayIterator_Patch<T>::Invariant ();
-                    AssertNotNull (BackwardArrayIterator_Patch<T>::fData);
-                    const_cast<Array_Patch<T>*> (BackwardArrayIterator_Patch<T>::fData)->RemoveAt (BackwardArrayIterator_Patch<T>::CurrentIndex ());
-            #else
                     Invariant ();
-                    AssertNotNull (fData);
-                    const_cast<Array_Patch<T>*> (fData)->RemoveAt (CurrentIndex ());
-            #endif
+                    AssertNotNull (this->fData);
+                    const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (CurrentIndex ());
                 }
                 template	<typename T>	inline	void	BackwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    BackwardArrayMutator_Patch<T>::Invariant ();
-                    Require (not BackwardArrayMutator_Patch<T>::Done ());
-                    AssertNotNull (BackwardArrayMutator_Patch<T>::fCurrent);
-                    const_cast<ArrayNode<T>*>(BackwardArrayMutator_Patch<T>::fCurrent)->fItem = newValue;
-            #else
                     Invariant ();
                     Require (not Done ());
-                    AssertNotNull (fCurrent);
-                    const_cast<ArrayNode<T>*>(fCurrent)->fItem = newValue;
-            #endif
+                    AssertNotNull (this->fCurrent);
+                    const_cast<ArrayNode<T>*>(this->fCurrent)->fItem = newValue;
                 }
                 template	<typename T>	inline	void	BackwardArrayMutator_Patch<T>::AddBefore (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    Require (not BackwardArrayMutator_Patch<T>::Done ());
-                    BackwardArrayMutator_Patch<T>::Invariant ();
-                    AssertNotNull (BackwardArrayMutator_Patch<T>::fData);
-                    const_cast<Array_Patch<T>*> (BackwardArrayMutator_Patch<T>::fData)->InsertAt (newValue, BackwardArrayMutator_Patch<T>::CurrentIndex ());
-                    BackwardArrayMutator_Patch<T>::Invariant ();
-            #else
                     Require (not Done ());
                     Invariant ();
-                    AssertNotNull (fData);
-                    const_cast<Array_Patch<T>*> (fData)->InsertAt (newValue, CurrentIndex ());
+                    AssertNotNull (this->fData);
+                    const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex ());
                     Invariant ();
-            #endif
                 }
                 template	<typename T>	inline	void	BackwardArrayMutator_Patch<T>::AddAfter (T newValue)
                 {
-            #if qGCC_ScopingInTemplateBug
-                    /*
-                     * NB: This can be called if we are done.
-                     */
-                    BackwardArrayMutator_Patch<T>::Invariant ();
-                    AssertNotNull (BackwardArrayMutator_Patch<T>::fData);
-                    const_cast<Array_Patch<T>*>(BackwardArrayMutator_Patch<T>::fData)->InsertAt (newValue, BackwardArrayMutator_Patch<T>::CurrentIndex ()+1);
-                    BackwardArrayMutator_Patch<T>::Invariant ();
-            #else
                     /*
                      * NB: This can be called if we are done.
                      */
                     Invariant ();
-                    AssertNotNull (fData);
-                    const_cast<Array_Patch<T>*>(fData)->InsertAt (newValue, CurrentIndex ()+1);
+                    AssertNotNull (this->fData);
+                    const_cast<Array_Patch<T>*>(this->fData)->InsertAt (newValue, CurrentIndex ()+1);
                     Invariant ();
-            #endif
+                }
+
+                template	<typename T>	inline	void	BackwardArrayMutator_Patch<T>::Invariant () const
+                {
+                    inherited::Invariant ();
+                }
+
+                template	<typename T>	inline	bool	BackwardArrayMutator_Patch<T>::Done () const
+                {
+                    return (inherited::Done ());
+                }
+
+                template	<typename T>	inline	size_t	BackwardArrayMutator_Patch<T>::CurrentIndex () const
+                {
+                    return (inherited::CurrentIndex ());
                 }
 
             /*
