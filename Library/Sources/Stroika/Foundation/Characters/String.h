@@ -39,11 +39,6 @@
  *		operations faster, at some cost in memory. It keeps a buffer that is at
  *		least as long as the String, but is often somewhat longer.
  *
- *		String_ReadOnlyChar::MyRep_ is a subclass of StringRep which uses the memory
- *		passed in and saves the pointer, and does not delete it later. This can be a
- *		big memory efficiency and save useless memory waste and fragmentation. It
- *		is mainly useful for constant C strings.
- *
  *		StringRep_Substring is a subclass of StringRep useful in the
  *		implementation of SubString operations. It allows for the sharing of memory
  *		of the original StringRep (whatever its representation) and still have
@@ -73,7 +68,6 @@
  *		These AllocModes are:
  *			eBuffered:				which means use StringRep_CharArray.
  *			eFixedSize:				which means use StringRep_BufferedCharArray
- *			eReadOnly:				which means use String_ReadOnlyChar::MyRep_
  *
  *		At the risk of being redundent. Most of this need be of no concern. If
  *		you ignore the allocMode stuff and the StringRep stuff, it will all
@@ -500,14 +494,35 @@ namespace	Stroika {
 
 
             /*
-             * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
-             */
-            class	String_ReadOnlyChar : public String {
+			 *	String_ExternalMemoryOwnership is a subtype of string you can use to construct a String object, so long as the memory pointed to
+			 * in the argument has a 
+			 *		o	FULL APPLICATION LIFETIME, 
+			 *		o	and never changes value
+			 *
+			 *	Strings constructed with this String_ExternalMemoryOwnership maybe treated like normal strings - passed anywhere, and even modified via the 
+			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
+			 *	only call this String constructor with a block of read-only, never changeing memory, and then - only as a performance optimization.
+			 *
+			 *	For example
+			 *		String	tmp1	=	L"FRED";
+			 *		String	tmp2	=	String (L"FRED");
+			 *		String	tmp3	=	String_ExternalMemoryOwnership (L"FRED");
+			 *
+			 *		extern String saved;
+			 *		inline	String	F(String x)			{ saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
+			 *		F(tmp1);
+			 *		F(tmp2);
+			 *		F(tmp3);
+			 *
+			 *	These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation maybe slightly more efficent, but all are equally safe.
+			 *
+			 */
+            class	String_ExternalMemoryOwnership : public String {
                 public:
-                    explicit String_ReadOnlyChar (const wchar_t* cString);
-                    String_ReadOnlyChar (const String_ReadOnlyChar& s);
+                    explicit String_ExternalMemoryOwnership (const wchar_t* cString);
+                    String_ExternalMemoryOwnership (const String_ExternalMemoryOwnership& s);
 
-                    String_ReadOnlyChar& operator= (const String_ReadOnlyChar& s);
+                    String_ExternalMemoryOwnership& operator= (const String_ExternalMemoryOwnership& s);
 
 				private:
 					class	MyRep_;

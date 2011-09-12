@@ -217,12 +217,12 @@ namespace	Stroika {
 				}
 
 
-			//	class	String_ReadOnlyChar
-			inline	String_ReadOnlyChar::String_ReadOnlyChar (const String_ReadOnlyChar& s)
+			//	class	String_ExternalMemoryOwnership
+			inline	String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (const String_ExternalMemoryOwnership& s)
 				: String (s)
 				{
 				}
-            inline	String_ReadOnlyChar& String_ReadOnlyChar::operator= (const String_ReadOnlyChar& s)
+            inline	String_ExternalMemoryOwnership& String_ExternalMemoryOwnership::operator= (const String_ExternalMemoryOwnership& s)
 				{
 					String::operator= (s);
 					return (*this);

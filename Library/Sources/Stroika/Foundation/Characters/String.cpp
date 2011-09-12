@@ -81,7 +81,7 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
 
 
 
-class	String_ReadOnlyChar::MyRep_ : public String_CharArray::MyRep_ {
+class	String_ExternalMemoryOwnership::MyRep_ : public String_CharArray::MyRep_ {
     public:
         MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
         ~MyRep_ ();
@@ -95,11 +95,11 @@ class	String_ReadOnlyChar::MyRep_ : public String_CharArray::MyRep_ {
         virtual		void	SetLength (size_t newLength) override;
 
     private:
-        bool	fAllocedMem;
+        bool	fWeOwnBuffer_;
 
         // called before calling any method that modifies the string, to ensure that
         // we do not munge memory we did not alloc
-        nonvirtual	void	AssureMemAllocated ();
+        nonvirtual	void	AssureWeOwnBuffer_ ();
 };
 
 
@@ -545,10 +545,10 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
 
 /*
  ********************************************************************************
- ****************************** String_ReadOnlyChar *****************************
+ *********************** String_ExternalMemoryOwnership *************************
  ********************************************************************************
  */
-String_ReadOnlyChar::String_ReadOnlyChar (const wchar_t* cString)
+String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (const wchar_t* cString)
 	: String (new MyRep_ ((const Character*)cString, wcslen (cString)), false)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
@@ -759,67 +759,67 @@ size_t	String_BufferedCharArray::MyRep_::CalcAllocChars_ (size_t requested)
 
 /*
  ********************************************************************************
- ************************* String_ReadOnlyChar::MyRep_ **************************
+ ****************** String_ExternalMemoryOwnership::MyRep_ **********************
  ********************************************************************************
  */
-String_ReadOnlyChar::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
+String_ExternalMemoryOwnership::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
 	: String_CharArray::MyRep_ ()
-	, fAllocedMem (false)
+	, fWeOwnBuffer_ (false)
 {
 	RequireNotNull (arrayOfCharacters);
 	SetStorage (const_cast<Character*>(arrayOfCharacters), nCharacters);
 }
 
-String_ReadOnlyChar::MyRep_::~MyRep_ ()
+String_ExternalMemoryOwnership::MyRep_::~MyRep_ ()
 {
-	if (not fAllocedMem) {
+	if (not fWeOwnBuffer_) {
 		SetStorage (nullptr, 0);	// make sure that memory is not deleted, as we never alloced
 	}
 }
 
-void	String_ReadOnlyChar::MyRep_::RemoveAll ()
+void	String_ExternalMemoryOwnership::MyRep_::RemoveAll ()
 {
-	AssureMemAllocated ();
+	AssureWeOwnBuffer_ ();
 	String_CharArray::MyRep_::RemoveAll ();
 }
 
-void	String_ReadOnlyChar::MyRep_::SetAt (Character item, size_t index)
+void	String_ExternalMemoryOwnership::MyRep_::SetAt (Character item, size_t index)
 {
-	AssureMemAllocated ();
+	AssureWeOwnBuffer_ ();
 	String_CharArray::MyRep_::SetAt (item, index);
 }
 
-void	String_ReadOnlyChar::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
+void	String_ExternalMemoryOwnership::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
-	AssureMemAllocated ();
+	AssureWeOwnBuffer_ ();
 	String_CharArray::MyRep_::InsertAt (srcStart, srcEnd, index);
 }
 
-void	String_ReadOnlyChar::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
+void	String_ExternalMemoryOwnership::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
 {
-	AssureMemAllocated ();
+	AssureWeOwnBuffer_ ();
 	String_CharArray::MyRep_::RemoveAt (index, amountToRemove);
 }
 
-void	String_ReadOnlyChar::MyRep_::SetLength (size_t newLength)
+void	String_ExternalMemoryOwnership::MyRep_::SetLength (size_t newLength)
 {
-	AssureMemAllocated ();
+	AssureWeOwnBuffer_ ();
 	String_CharArray::MyRep_::SetLength (newLength);
 }
 
-void	String_ReadOnlyChar::MyRep_::AssureMemAllocated ()
+void	String_ExternalMemoryOwnership::MyRep_::AssureWeOwnBuffer_ ()
 {
-	if (not fAllocedMem) {
+	if (not fWeOwnBuffer_) {
 	    Assert (sizeof (Character) == sizeof (wchar_t));
 
 		size_t	len	=	GetLength ();
 		wchar_t* storage = ::new wchar_t [len];
 		CopyTo (storage, len);
 		SetStorage ((Character*)storage, GetLength ());
-		fAllocedMem = true;
+		fWeOwnBuffer_ = true;
 	}
 
-	Ensure (fAllocedMem);
+	Ensure (fWeOwnBuffer_);
 }
 
 
@@ -1042,13 +1042,13 @@ bool	Stroika::Foundation::Characters::operator< (const String& lhs, const String
 bool	Stroika::Foundation::Characters::operator< (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_ReadOnlyChar (lhs) < rhs);
+    return (String_ExternalMemoryOwnership (lhs) < rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator< (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
-    return (lhs < String_ReadOnlyChar (rhs));
+    return (lhs < String_ExternalMemoryOwnership (rhs));
 }
 
 
@@ -1076,14 +1076,14 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const Strin
 bool	Stroika::Foundation::Characters::operator<= (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_ReadOnlyChar (lhs) <= rhs);
+    return (String_ExternalMemoryOwnership (lhs) <= rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
     RequireNotNull (rhs);
-    return (lhs <= String_ReadOnlyChar (rhs));
+    return (lhs <= String_ExternalMemoryOwnership (rhs));
 }
 
 
