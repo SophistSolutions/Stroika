@@ -215,7 +215,6 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/ProgressMonitor.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/ProgressMonitor.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/ProgressMonitor.inl" />
-		<Unit filename="../../Sources/Stroika/Foundation/Execution/SimpleThread.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Sleep.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Sleep.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Execution/Sleep.inl" />

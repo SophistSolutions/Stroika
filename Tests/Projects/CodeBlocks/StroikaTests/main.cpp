@@ -61,6 +61,7 @@ int main()
         extern  int Test_Bags ();
         cout << "Testing Bag" << endl;
         Test_Bags ();
-    #endif   return 0;
+    #endif
+    return 0;
 }
 
