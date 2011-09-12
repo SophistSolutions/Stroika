@@ -13,7 +13,7 @@
 #include	"../Containers/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 
-namespace	Stroika {	
+namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
@@ -72,7 +72,7 @@ namespace	Stroika {
 							return (c - 'A') + 'a';
 						}
 						else if (c <= 127) {
-							Ensure (towlower (c) == c);
+							Ensure (wchar_t (towlower (c)) == c);
 							return c;
 						}
 						else {
@@ -110,7 +110,7 @@ namespace	Stroika {
 							return (c - 'a') + 'A';
 						}
 						else if (c <= 127) {
-							Ensure (towupper (c) == c);
+							Ensure (wchar_t (towupper (c)) == c);
 							return c;
 						}
 						else {
@@ -121,7 +121,7 @@ namespace	Stroika {
 					#endif
 				}
 
-		
+
 		//	ISSPACE
 			inline	bool	ISSPACE (char c)
 				{
@@ -162,7 +162,7 @@ namespace	Stroika {
 					#endif
 				}
 
-		
+
 		//	tolower
 			inline	wstring	tolower (const wstring& s)
 				{
