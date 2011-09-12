@@ -7,8 +7,6 @@
 /*
  *
  * Description:
-
- <<<<REVIEW / UPDATE DOCS FOR NEW STROIKA>>>
  *
  *		This family of classes using something akin to the Letter/Envelope paradigm
  *		described in Copliens "Advanced C++ Programming Styles and Idioms").
@@ -25,65 +23,12 @@
  *		String class is built in this interface, and subclasses of StringRep only
  *		needed follow that prootcol to be used interchangably with the rest of Strings.
  *
- *		Although you generally don't need to know about the various subclasses of
- *		StringRep implemented here, we give a brief overview anyhow.
+ *		This is which NEED be used. However, Stroika provides several String SUBTYPES
+ *		which act EXACTLY like a String, but offer different performance behaviors.
  *
- *		StringRep_BufferedCharArray is a subclass of StringRep designed to minimized
- *		memory usage. It uses Realloc () to keep resizing the buffer it has allocated,
- *		and whatever argument you give IT in construction, is copied into memory it
- *		allocates, and frees. The buffer is always exactly the length of the string,
- *		which minimized memory usage, but may slow down doing many operations that
- *		change the length of the String.
- *
- *		StringRep_CharArray uses buffering to make dynamically sizing String
- *		operations faster, at some cost in memory. It keeps a buffer that is at
- *		least as long as the String, but is often somewhat longer.
- *
- *		StringRep_Substring is a subclass of StringRep useful in the
- *		implementation of SubString operations. It allows for the sharing of memory
- *		of the original StringRep (whatever its representation) and still have
- *		the concept of a separate string.
- *		This can be a very big efficiency win when applying substring operations
- *		in a fashion that does not then modify the substrings. Then we get away with
- *		being lazy, in our lazy copy, and never really have to.
- *
- *		There are a whole raft of other potentially useful StringReps. For example,
- *		a StringRep that hooks into a backend database, or into the system
- *		TextEdit's implementations. A StringRep could compress its text to save
- *		space. A possibility used in GCC is to build a buffer that points to two
- *		other buffers as a way to implement operator+ in String efficiently. (NOTE:
- *		some of the above would require adding more interface to StringRep,
- *		in particular to make GetChar be a virtual method. This will probably be
- *		done, but it remains controversial due to the intrinsic overhead of
- *		virtual function invocations).
- *
- *		Although you can create a String from any one of these StringReps
- *		directly, it is far more common to do so via a convience interface. The
- *		constructor for String is overloaded to take an enum AllocMode argument
- *		which specifies how to interpret the rest of the arguments to the
- *		constructor (really those args are just passed on directly to the
- *		appropriate subclass of StringRep mentioned above by conditioned on
- *		the enum argument).
- *
- *		These AllocModes are:
- *			eBuffered:				which means use StringRep_CharArray.
- *			eFixedSize:				which means use StringRep_BufferedCharArray
- *
- *		At the risk of being redundent. Most of this need be of no concern. If
- *		you ignore the allocMode stuff and the StringRep stuff, it will all
- *		be handled for you with nearly optimal performance. One of the above
- *		AllocModes will be used (we dont document which)
- *
-
-
- *** NOTES TO WRITEUP:
- THREAD SAFETY:
-	 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
-	 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
-
-
-
- **
+ *				o	String_ExternalMemoryOwnership
+ *				o	String_StackLifetime
+ *				o	String_Common
  */
 
 #include	"../StroikaPreComp.h"
@@ -95,18 +40,20 @@
 
 
 
-
-
-#if		0
-SHORT TERM THINGS TODO:
-
-
+/*
+ * TODO:
+ *
+ *		o	WRITEUP THREAD SAFETY:
+ *		 THREAD SAFETY:
+ *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
+ *			 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+ *
+ *
 	(0)	Document if we store NUL-terminated strings internally or not. If not - how do we implement the stdC++ c_str () API safely? Perhaps temporarily store the extra char* in teh ENVOLOPE to be freed
 		when the envelope next changes gets copied/etc? Sucky). Do we really need that API? Maybe return PROXY OBJECT which has operator char* in iT! THAT maybe safest thing!!!!
 
 	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
 
-	(0)	Get rid fo the external toupper stuff - ONLY support it at the string leve.
 	(0)	Try and get rid of the Peek () API
 	(0)	Fix const	Memory::SharedByValue<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
 		to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
@@ -149,7 +96,9 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 
 	(o)		Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
 
-#endif
+ */
+
+
 
 
 
@@ -435,6 +384,11 @@ namespace	Stroika {
 
 			/*
              * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
+ *<<<NOT SURE THE BELOW IS RIGHT>>>
+ *
+ *		StringRep_CharArray uses buffering to make dynamically sizing String
+ *		operations faster, at some cost in memory. It keeps a buffer that is at
+ *		least as long as the String, but is often somewhat longer.
              */
             class	String_CharArray : public String {
                 public:
@@ -455,6 +409,13 @@ namespace	Stroika {
 
 			/*
              * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
+ *<<<NOT SURE THE BELOW IS RIGHT>>>
+ *		StringRep_BufferedCharArray is a subclass of StringRep designed to minimized
+ *		memory usage. It uses Realloc () to keep resizing the buffer it has allocated,
+ *		and whatever argument you give IT in construction, is copied into memory it
+ *		allocates, and frees. The buffer is always exactly the length of the string,
+ *		which minimized memory usage, but may slow down doing many operations that
+ *		change the length of the String.
              */
             class	String_BufferedCharArray  : public String {
                 public:

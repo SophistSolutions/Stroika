@@ -19,6 +19,48 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
 
+/*
+ * INTERNAL (INCOMPLETE/PARTLY OBSOLETE) NOTES ABOUT STRING REPS:
+ *
+ 
+ *
+ *		StringRep_Substring is a subclass of StringRep useful in the
+ *		implementation of SubString operations. It allows for the sharing of memory
+ *		of the original StringRep (whatever its representation) and still have
+ *		the concept of a separate string.
+ *		This can be a very big efficiency win when applying substring operations
+ *		in a fashion that does not then modify the substrings. Then we get away with
+ *		being lazy, in our lazy copy, and never really have to.
+ *
+ *		There are a whole raft of other potentially useful StringReps. For example,
+ *		a StringRep that hooks into a backend database, or into the system
+ *		TextEdit's implementations. A StringRep could compress its text to save
+ *		space. A possibility used in GCC is to build a buffer that points to two
+ *		other buffers as a way to implement operator+ in String efficiently. (NOTE:
+ *		some of the above would require adding more interface to StringRep,
+ *		in particular to make GetChar be a virtual method. This will probably be
+ *		done, but it remains controversial due to the intrinsic overhead of
+ *		virtual function invocations).
+ *
+ *		Although you can create a String from any one of these StringReps
+ *		directly, it is far more common to do so via a convience interface. The
+ *		constructor for String is overloaded to take an enum AllocMode argument
+ *		which specifies how to interpret the rest of the arguments to the
+ *		constructor (really those args are just passed on directly to the
+ *		appropriate subclass of StringRep mentioned above by conditioned on
+ *		the enum argument).
+ *
+ *		These AllocModes are:
+ *			eBuffered:				which means use StringRep_CharArray.
+ *			eFixedSize:				which means use StringRep_BufferedCharArray
+ *
+ *		At the risk of being redundent. Most of this need be of no concern. If
+ *		you ignore the allocMode stuff and the StringRep stuff, it will all
+ *		be handled for you with nearly optimal performance. One of the above
+ *		AllocModes will be used (we dont document which)
+
+ */
+
 
 
 
