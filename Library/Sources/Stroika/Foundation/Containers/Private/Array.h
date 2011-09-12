@@ -76,16 +76,6 @@ namespace	Stroika {
 		namespace	Containers {
 		    namespace Private {
 
-
-                template	<class	T>	class	Array;
-                template	<class	T>	class	ArrayIteratorBase;
-                template	<class	T>	class	ArrayIterator_PatchBase;
-                template	<class	T>	class	ForwardArrayMutator;
-                template	<class	T>	class	BackwardArrayMutator;
-                template	<class	T>	class	ForwardArrayMutator_Patch;
-                template	<class	T>	class	BackwardArrayMutator_Patch;
-
-
                 /*
                  *		We use this class ArrayNode as a hack to work around bugs in many
                  *	C++ compilers (most notewory is CFront 2.1 - I'm not sure about others).
@@ -102,16 +92,8 @@ namespace	Stroika {
                         ~ArrayNode ();
 
 
-                    private:
+                    public:
                         T	fItem;
-
-                    friend	class	Array<T>;
-                    friend	class	ArrayIteratorBase<T>;
-                    friend	class	ArrayIterator_PatchBase<T>;
-                    friend	class	ForwardArrayMutator<T>;
-                    friend	class	BackwardArrayMutator<T>;
-                    friend	class	ForwardArrayMutator_Patch<T>;
-                    friend	class	BackwardArrayMutator_Patch<T>;
                 };
 
 
@@ -220,7 +202,7 @@ namespace	Stroika {
                     public:
                         ForwardArrayIterator (const Array<T>& data);
 
-                        nonvirtual	bool	More ();
+                        nonvirtual	bool	More (T* current);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -240,7 +222,7 @@ namespace	Stroika {
                     public:
                         ForwardArrayMutator (Array<T>& data);
 
-                        nonvirtual	bool	More ();                // shadow to avoid scope ambiguity
+                        nonvirtual	bool	More (T* current);                // shadow to avoid scope ambiguity
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -263,7 +245,7 @@ namespace	Stroika {
                     public:
                         BackwardArrayIterator (const Array<T>& data);
 
-                        nonvirtual	bool	More ();
+                        nonvirtual	bool	More (T* current);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -283,7 +265,7 @@ namespace	Stroika {
                     public:
                         BackwardArrayMutator (Array<T>& data);
 
-                        nonvirtual	bool	More ();                // shadow to avoid scope ambiguity
+                        nonvirtual	bool	More (T* current);      // shadow to avoid scope ambiguity
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -336,7 +318,7 @@ namespace	Stroika {
 
                     /*
                      * Methods to do the patching yourself. Iterate over all the iterators and
-                     * perfrom patching.
+                     * perform patching.
                      */
                     public:
                         nonvirtual	bool	HasActiveIterators () const;			//	are there any iterators to be patched?
@@ -368,7 +350,7 @@ namespace	Stroika {
 
                 /*
                  *		ArrayIterator_PatchBase<T> is a private utility class designed
-                 *	to promote source code sharing among the patched iterator implemetnations.
+                 *	to promote source code sharing among the patched iterator implementations.
                  */
                 template	<typename T>	class	ArrayIterator_PatchBase : public ArrayIteratorBase<T> {
                     public:
@@ -418,7 +400,7 @@ namespace	Stroika {
                         ForwardArrayIterator_Patch (const Array_Patch<T>& data);
 
                     public:
-                        nonvirtual	bool	More ();
+                        nonvirtual	bool	More (T* current);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -474,7 +456,7 @@ namespace	Stroika {
                     public:
                         nonvirtual	size_t	CurrentIndex () const;  // shadow to avoid scope ambiguity
 
-                        nonvirtual	bool	More ();
+                        nonvirtual	bool	More (T* current);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity

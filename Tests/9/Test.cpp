@@ -26,7 +26,10 @@ namespace	{
 
 class	SimpleClass {
 	public:
-		SimpleClass (size_t v);
+	#if qIteratorsRequireNoArgContructorForT
+            SimpleClass ();
+    #endif
+        SimpleClass (size_t v);
 		SimpleClass (const SimpleClass& f);
 		~SimpleClass ();
 
@@ -53,6 +56,15 @@ bool	operator< (const SimpleClass& lhs, const SimpleClass& rhs);
 static	const	int kFunnyValue = 1234;
 
 size_t	SimpleClass::sTotalLiveObjects	=	0;
+
+#if qIteratorsRequireNoArgContructorForT
+     SimpleClass::SimpleClass () :
+        fValue (3),
+        fConstructed (kFunnyValue)
+    {
+        sTotalLiveObjects++;
+    }
+#endif
 
 SimpleClass::SimpleClass (size_t v) :
 	fValue (v),
@@ -121,14 +133,14 @@ namespace	{
 
 static	void	BagIteratorTests(Bag<size_t>& s)
 {
-	const	int	kTestSize	=	100;
+	const	size_t	kTestSize	=	100;
 
 	VerifyTestResult(s.GetLength() == 0);
 	/*
 	 * Try removes while iterating forward.
 	 */
 	{
-		for(int i = 1; i <= kTestSize; i++) {
+		for(size_t i = 1; i <= kTestSize; i++) {
 			s.Add(i);
 		}
 
@@ -136,18 +148,19 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 
 		{
 			ForEach(size_t, it, s) {
-				for(int i = 1; i <= kTestSize; i++) {
+				for(size_t i = 1; i <= kTestSize; i++) {
 					VerifyTestResult(s.Contains(i));
 					VerifyTestResult(s.GetLength() == kTestSize - i + 1);
 					s.Remove(i);
 					VerifyTestResult(not s.Contains(i-1));
+					VerifyTestResult(s.GetLength() == kTestSize - i);
 				}
 			}
 			VerifyTestResult(s.IsEmpty());
 			VerifyTestResult(s.GetLength() == 0);
 		}
 
-		for(int i = 1; i <= kTestSize; i++) {
+		for(size_t i = 1; i <= kTestSize; i++) {
 			s.Add(i);
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
@@ -159,7 +172,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 			VerifyTestResult(s.GetLength() == 0);
 		}
 
-		for(int i = 1; i <= kTestSize; i++) {
+		for(size_t i = 1; i <= kTestSize; i++) {
 			s.Add(i);
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
@@ -175,12 +188,12 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 	{
 		s.RemoveAll();
 		VerifyTestResult(s.GetLength() == 0);
-		for(int i = 1; i <= kTestSize; i++) {
+		for(size_t i = 1; i <= kTestSize; i++) {
 			s.Add(i);
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
 
-		int i =	1;
+		size_t i =	1;
 		ForEach(size_t, it, s) {
 			ForEach(size_t, it2, s) {
 				ForEachT(BagMutator, size_t, it3, s) {
@@ -204,12 +217,12 @@ static	void	BagTimings(Bag<size_t>& s)
 	cout << tab << "testing Bag<size_t> of length " << s.GetLength() << endl;
 #endif
 
-	for(int i = 1; i <= s.GetLength(); i++) {
+	for(size_t i = 1; i <= s.GetLength(); i++) {
 		VerifyTestResult(s.Contains(i));
 		VerifyTestResult(not s.Contains(0));
 	}
 
-	for(int i = 1; i <= s.GetLength(); i++) {
+	for(size_t i = 1; i <= s.GetLength(); i++) {
 		ForEach(size_t, it, s) {
 			if(it.Current() == i) {
 				break;
@@ -262,7 +275,7 @@ void	BagTests(Bag<size_t>& s)
 #else
 	const	size_t	K = 500;
 #endif
-	int i;
+	size_t i;
 
 	VerifyTestResult(s.IsEmpty());
 	s.Add(three);

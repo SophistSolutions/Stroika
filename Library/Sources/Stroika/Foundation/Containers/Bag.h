@@ -82,7 +82,7 @@ namespace	Stroika {
                     void	UpdateCurrent (T newValue);
 
                 protected:
-                    nonvirtual  BagMutatorRep<T>*	GetIterator ();
+                    nonvirtual  BagMutatorRep<T>*	GetMutatorRep ();
             };
 
             template	<typename T>	class	Bag {
@@ -116,9 +116,7 @@ namespace	Stroika {
                     nonvirtual	void	Remove (T item);
                     nonvirtual	void	Remove (const Bag<T>& items);
 
-
-
-            // Have Bag_Difference/Union/Interesection??? methods/??
+                // Have Bag_Difference/Union/Interesection??? methods/??
 
 
                 /*
@@ -200,9 +198,6 @@ namespace	Stroika {
                     virtual	BagIteratorRep<T>*	MakeBagIterator () 		=	0;
                     virtual	BagMutatorRep<T>*	MakeBagMutator () 		=	0;
             };
-
-
-
 
 		}
     }

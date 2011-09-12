@@ -228,7 +228,7 @@ namespace	Stroika {
             {
             }
 
-            template	<typename T>    inline  BagMutatorRep<T>* BagMutator<T>::GetIterator ()
+            template	<typename T>    inline  BagMutatorRep<T>* BagMutator<T>::GetMutatorRep ()
             {
                 /*
                  * Because of the way we construct BagMutators, it is guaranteed that
@@ -242,27 +242,28 @@ namespace	Stroika {
 
             template	<typename T>	inline	void	BagMutator<T>::RemoveCurrent ()
             {
-                GetIterator ()->RemoveCurrent ();
+                GetMutatorRep ()->RemoveCurrent ();
             }
 
             template	<typename T>	inline	void	BagMutator<T>::UpdateCurrent (T newValue)
             {
-                GetIterator ()->UpdateCurrent (newValue);
+                GetMutatorRep ()->UpdateCurrent (newValue);
             }
 
             // class BagRep<T>
             template	<typename T>	inline	BagRep<T>::BagRep ()
             {
             }
+
             template	<typename T>	inline	BagRep<T>::~BagRep ()
             {
             }
-
 
             template	<typename T>	inline	const BagRep<T>*	Bag<T>::GetRep () const
             {
                 return (fRep.GetPointer ());
             }
+
             template	<typename T>	inline	BagRep<T>*	Bag<T>::GetRep ()
             {
                 return (fRep.GetPointer ());

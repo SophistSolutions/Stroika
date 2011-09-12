@@ -127,7 +127,7 @@ namespace	Stroika {
                     Invariant ();
                 }
 
-                template	<typename T>	inline	bool	ForwardArrayIterator<T>::More ()
+                template	<typename T>	inline	bool	ForwardArrayIterator<T>::More (T* current)
                 {
                     Invariant ();
                     if (not this->fSuppressMore and not Done ()) {
@@ -135,6 +135,7 @@ namespace	Stroika {
                         this->fCurrent++;
                     }
                     this->fSuppressMore = false;
+                    *current = *(this->fCurrent);
                     Invariant ();
                     return (not Done ());
                 }
@@ -163,9 +164,9 @@ namespace	Stroika {
                     const_cast<ArrayNode<T>*> (this->fCurrent)->fItem = newValue;
                 }
 
-                template	<typename T>	inline	bool	ForwardArrayMutator<T>::More ()
+                template	<typename T>	inline	bool	ForwardArrayMutator<T>::More (T* current)
                 {
-                    return (inherited::More ());
+                    return (inherited::More (current));
                 }
 
                 template	<typename T>	inline	bool	ForwardArrayMutator<T>::Done () const
@@ -191,11 +192,14 @@ namespace	Stroika {
                     Invariant ();
                 }
 
-                template	<typename T>	inline	bool	BackwardArrayIterator<T>::More ()
+                template	<typename T>	inline	bool	BackwardArrayIterator<T>::More (T* current)
                 {
                     Invariant ();
                     if (this->fSuppressMore) {
                         this->fSuppressMore = false;
+                        if (not Done ()) {
+                            *current = this->fCurrent->fItem;
+                        }
                         return (not Done ());
                     }
                     else {
@@ -210,6 +214,7 @@ namespace	Stroika {
                             }
                             else {
                                 this->fCurrent--;
+                                *current = this->fCurrent->fItem;
                                 Ensure (not Done ());
                                 return (true);
                             }
@@ -242,9 +247,9 @@ namespace	Stroika {
                     const_cast<ArrayNode<T>*> (this->fCurrent)->fItem = newValue;	// not sure how to handle better the (~const)
                 }
 
-                template	<typename T>	inline	bool	BackwardArrayMutator<T>::More ()
+                template	<typename T>	inline	bool	BackwardArrayMutator<T>::More (T* current)
                 {
-                    return (inherited::More ());
+                    return (inherited::More (current));
                 }
 
                 template	<typename T>	inline	bool	BackwardArrayMutator<T>::Done () const
@@ -390,7 +395,7 @@ namespace	Stroika {
                      *	would be revisiting, or skipping forwards an item.
                      */
 
-                    Require (index <= (this->fEnd-this->fStart));
+                    Require ((this->fEnd >= this->fStart) and (index <= size_t (this->fEnd-this->fStart)));
                     if (&this->fStart[index-1] <= this->fCurrent) {		// index <= CurrentIndex () - only faster
                                                             // Cannot call CurrentIndex () since invariants
                                                             // might fail at this point
@@ -430,7 +435,7 @@ namespace	Stroika {
                         PatchRemoveCurrent ();
                     }
                     // Decrement at the end since CurrentIndex () calls stuff that asserts (fEnd-fStart) == fData->GetLength ()
-                    Assert ((this->fEnd-this->fStart) == fData->GetLength ());		//	since called before remove
+                    Assert (size_t (this->fEnd-this->fStart) == fData->GetLength ());		//	since called before remove
 
                     /*
                      * At this point, fCurrent could be == fEnd - must not lest fCurrent point past!
@@ -605,14 +610,18 @@ namespace	Stroika {
                     Invariant ();
                 }
 
-                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::More ()
+                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::More (T* current)
                 {
                     Invariant ();
                     if (not this->fSuppressMore and not Done ()) {
                         Assert ( this->fCurrent <  this->fEnd);
                          this->fCurrent++;
                     }
-                     this->fSuppressMore = false;
+
+                    this->fSuppressMore = false;
+                    if (not Done ()) {
+                        *current = (*this->fCurrent).fItem;
+                    }
                     Invariant ();
                     return (not Done ());
                 }
@@ -703,11 +712,14 @@ namespace	Stroika {
                 }
 
                 // Careful to keep hdr and src copies identical...
-                template	<typename T>	inline	bool	BackwardArrayIterator_Patch<T>::More ()
+                template	<typename T>	inline	bool	BackwardArrayIterator_Patch<T>::More (T* current)
                 {
                     Invariant ();
                     if (this->fSuppressMore) {
                         this->fSuppressMore = false;
+                        if (not Done ()) {
+                            *current = *(this->fCurrent);
+                        }
                         return (not Done ());
                     }
                     else {
@@ -722,6 +734,7 @@ namespace	Stroika {
                             }
                             else {
                                 this->fCurrent--;
+                                *current = *(this->fCurrent);
                                 Ensure (not Done ());
                                 return (true);
                             }
@@ -1064,7 +1077,7 @@ namespace	Stroika {
             {
                 AssertNotNull (fData);
                 Assert (fStart == fData->fItems);
-                Assert ((fEnd-fStart) == fData->GetLength ());
+                Assert (size_t (fEnd-fStart) == fData->GetLength ());
                 Assert ((fCurrent >= fStart) and (fCurrent <= fEnd));	// ANSI C requires this is always TRUE
             }
             #endif

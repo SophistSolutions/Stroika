@@ -52,23 +52,16 @@ namespace	Stroika {
                 return (*this);
             }
 
-            template	<typename T> inline	bool	Iterator<T>::Done () const
-            {
-                RequireNotNull (fIterator);
-                return (fIterator->Done ());
-            }
-
             template	<typename T> inline	bool	Iterator<T>::More ()
             {
                 RequireNotNull (fIterator);
-                return (fIterator->More ());
+                return (fIterator->More (&fCurrent));
             }
 
             template	<typename T> inline	T	Iterator<T>::Current () const
             {
-                Require (not Done ());
                 RequireNotNull (fIterator);
-                return (fIterator->Current ());
+                return (fCurrent);
             }
 
 

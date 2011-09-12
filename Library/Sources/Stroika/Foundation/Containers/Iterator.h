@@ -105,17 +105,33 @@
 
 #include	"../Memory/SharedByValue.h"
 
+
+// SSW 9/19/2011: remove this restriction for more efficiency and flexibility
+#define qIteratorsRequireNoArgContructorForT    1
+
 /*
  *		Iterator are used primarily to get auto-destruction
  *	at the end of a scope where they are used. They are not intended to be used
  *	directly, but just from the ForEach macros.
  *
- *		Logically, it should be a subclass of IteratorRep<T>, but we
- *	avoid this as a performance hack since they we'd generate vtables, etc...
- *	(at least on all known - imho lousy - compilers).
  *
  */
 
+/*
+ *
+ *  Current () can be called anytime More has been called at least once, and has returned true. It returns the
+ *	current item in the iteration process. It is undefined what Current ()
+ *	will return if it is deleted while current - however - if anything
+ *	else is deleted, Current () is guaranteed to be valid, and remain
+ *	the same.
+ *  More can be called anytime. If not done, then it iterates to the next
+ *  item in the collection (i.e. it changes the value returned by Current).
+ *  It returns the true if iteration can continue, and false if there is nothing
+ *  left to iterate over, allowing looping as
+ *  for (Iterator<T > It = (Iterator<T >)(Init); It.More ();)
+ *
+ *
+ */
 
 namespace	Stroika {
 	namespace	Foundation {
@@ -134,12 +150,14 @@ namespace	Stroika {
                     Iterator ();	// Never implemented - illegal
 
                 public:
-                    nonvirtual	bool	Done () const;
+
+
                     nonvirtual	bool	More ();
                     nonvirtual	T		Current () const;
 
                 protected:
                     IteratorRep<T>*	fIterator;
+                    T               fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
             };
 
 
@@ -156,32 +174,8 @@ namespace	Stroika {
                 public:
                     virtual	~IteratorRep ();
 
-            // COMMENTS OUT OF DATE!!!
-                /*
-                 *		Done () can be called anytime, and it tells if the iteration
-                 *	is finished.
-                 *
-                 *		Next () can only be called if Not Done, OR if you were not done
-                 *	before, and you deleted the current item. The reason for this
-                 *	apparantly bizarre exception is because a natural use of these
-                 *	methods is in a C for loop, with the Next () being called in the
-                 *	re-initalization portion, and Done () in the test portion of the for
-                 *	loop. If you get into the body of the for loop, and delete the current
-                 *	item - causing your iteration to be completed, then you WILL call Next
-                 *	before Done in this case. This is the only case we allow however. It
-                 *	is not - in general - allowed to call Next when we are already done.
-                 *
-                 *		Current () can be called anytime Done () is false. It returns the
-                 *	current item in the iteration process. It is undefined what Current ()
-                 *	will return if it is deleted while current - however - if anything
-                 *	else is deleted, Current () is guaranteed to be valid, and remain
-                 *	the same.
-                 *
-                 */
                 public:
-                    virtual	bool			Done () const		=	0;
-                    virtual	bool			More ()				=	0;
-                    virtual	T				Current () const	=	0;
+                    virtual	bool			More (T* current)   =	0;
                     virtual	IteratorRep<T>*	Clone () const		=	0;
             };
 

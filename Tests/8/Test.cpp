@@ -26,6 +26,9 @@ namespace	{
 
 class	SimpleClass {
 	public:
+	#if qIteratorsRequireNoArgContructorForT
+            SimpleClass ();
+    #endif
 		SimpleClass (size_t v);
 		SimpleClass (const SimpleClass& f);
 		~SimpleClass ();
@@ -53,6 +56,15 @@ bool	operator< (const SimpleClass& lhs, const SimpleClass& rhs);
 static	const	int kFunnyValue = 1234;
 
 size_t	SimpleClass::sTotalLiveObjects	=	0;
+
+#if qIteratorsRequireNoArgContructorForT
+     SimpleClass::SimpleClass () :
+        fValue (3),
+        fConstructed (kFunnyValue)
+    {
+        sTotalLiveObjects++;
+    }
+#endif
 
 SimpleClass::SimpleClass (size_t v) :
 	fValue (v),
@@ -118,8 +130,7 @@ bool	operator< (const SimpleClass& lhs, const SimpleClass& rhs)
 namespace	{
 static	void	Test1()
 {
-    Array<size_t>	someArray;// if debug on, new C compiler on mac chokes here - should fix better but hack it for now...
-
+    Array<size_t>	someArray;
 
 	const	size_t	kBigSize	=	1001;
 
@@ -138,9 +149,9 @@ static	void	Test1()
 	VerifyTestResult(someArray.GetLength() == kBigSize+1);
 	VerifyTestResult(someArray [100] == 1);
 
-	someArray [101] = -someArray [100];
+	someArray [101] = someArray [100] + 10;
 	someArray.RemoveAt(1);
-	VerifyTestResult(someArray [100] == -1);
+	VerifyTestResult(someArray [100] == 11);
 }
 
 static	void	Test2()

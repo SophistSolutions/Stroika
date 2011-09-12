@@ -62,7 +62,7 @@ namespace	Stroika {
                     Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner);
 
                     virtual	bool	Done () const override;
-                    virtual	bool	More () override;
+                    virtual	bool	More (T* current) override;
                     virtual	T		Current () const override;
 
                     virtual	IteratorRep<T>*		Clone () const override;
@@ -109,9 +109,9 @@ namespace	Stroika {
                 return (fIterator.Done ());
             }
 
-            template	<class	T>	bool	Bag_ArrayMutatorRep<T>::More ()
+            template	<class	T>	bool	Bag_ArrayMutatorRep<T>::More (T* current)
             {
-                return (fIterator.More ());
+                return (fIterator.More (current));
             }
 
             template	<class	T>	T	Bag_ArrayMutatorRep<T>::Current () const
@@ -147,12 +147,12 @@ namespace	Stroika {
 
             template	<class	T>	inline	void*	Bag_ArrayRep<T>::operator new (size_t size)
             {
-                return (Stroika::Foundation::Memory::BlockAllocated<Bag_ArrayRep<T> >::operator new (size));
+                return (Memory::BlockAllocated<Bag_ArrayRep<T> >::operator new (size));
             }
 
             template	<class	T>	inline	void	Bag_ArrayRep<T>::operator delete (void* p)
             {
-                Stroika::Foundation::Memory::BlockAllocated<Bag_ArrayRep<T> >::operator delete (p);
+                Memory::BlockAllocated<Bag_ArrayRep<T> >::operator delete (p);
             }
 
             template	<typename T>	inline	Bag_ArrayRep<T>::Bag_ArrayRep () :
@@ -205,8 +205,11 @@ namespace	Stroika {
                  *		Iterate backwards since removing from the end of an array
                  *	will be faster.
                  */
-                for (BackwardArrayIterator<T> it (fData); it.More ();) {
-                    if (it.Current () == item) {
+#if qIteratorsRequireNoArgContructorForT
+                T temp;
+#endif
+                for (BackwardArrayIterator<T> it (fData); it.More (&temp);) {
+                    if (temp == item) {
                         fData.RemoveAt (it.CurrentIndex ());
                         return;
                     }
