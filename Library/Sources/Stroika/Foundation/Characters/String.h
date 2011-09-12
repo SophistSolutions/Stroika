@@ -146,6 +146,9 @@ SHORT TERM THINGS TODO:
 MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 	(1)	when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
 
+
+	(o)		Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
+
 #endif
 
 
@@ -529,6 +532,47 @@ namespace	Stroika {
             };
 
 
+
+            /*
+			 *	String_StackLifetime is a subtype of string you can use to construct a String object, so long as the memory pointed to
+			 * in the argument has a 
+			 *		o	Greater lifetime than the String_StackLifetime envelope class
+			 *		o	and buffer data never changes value
+			 *
+			 *	Strings constructed with this String_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the 
+			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
+			 *	and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
+			 *
+			 *	This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
+			 *	call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
+			 *	association will be broken when the String_StackLifetime goes out of scope.
+			 *
+			 *	This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
+			 *	copied in that case).
+			 *
+			 *	For example
+			 *
+			 *		extern String saved;
+			 *		inline	String	F(String x)			{ saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
+			 *
+			 *
+			 *		void f (const wchar_t* cs)
+			 *			{
+			 *				F(L"FRED";);
+			 *				F(String (L"FRED"));
+			 *				F(String_StackLifetime (cs));
+			 *			}
+			 *
+			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_StackLifetime() based memory maybe more efficient than the 
+			 *	previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
+			 *
+			 *		<<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
+			 *			real optimized implemenation >>
+			 */
+            class	String_StackLifetime : public String {
+                public:
+                    explicit String_StackLifetime (const wchar_t* cString);
+            };
 
 
 		}

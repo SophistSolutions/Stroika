@@ -491,6 +491,26 @@ namespace	{
 
 
 
+namespace	{
+	void    Test14_String_StackLifetime_ ()
+		{
+			wchar_t	buf[1024];
+			wcscpy (buf, L"fred");
+			{
+				String_StackLifetime s (buf);
+				VerifyTestResult (s[0] == 'f');
+				s.SetLength (3);
+				VerifyTestResult (s[0] == 'f');
+				VerifyTestResult (s.GetLength () == 3);
+				s += L"x";
+				VerifyTestResult (s.GetLength () == 4);
+				VerifyTestResult (s[3] == 'x');
+			}
+			VerifyTestResult (::wcscmp (buf, L"fred") == 0);
+		}
+
+}
+
 
 
 namespace	{
@@ -526,6 +546,7 @@ namespace	{
 			Test11_Trim_ ();
 			Test12_CodePageConverter_ ();
 			Test13_ToLowerUpper_ ();
+			Test14_String_StackLifetime_ ();
 		}
 }
 
