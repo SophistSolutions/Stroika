@@ -193,7 +193,8 @@ namespace	{
 
 #if		qHasLibrary_Xerces
 	namespace	{
-		const	XMLCh	kDOMImplFeatureDeclaration[]	=	XMLStrL ("Core");
+		//const	XMLCh	kDOMImplFeatureDeclaration[]	=	L"Core";
+		const	XMLCh	kDOMImplFeatureDeclaration[]	=	{ 'C', 'o', 'r', 'e', '\0'};
 		DOMImplementation&	GetDOMIMPL_ ()
 			{
 				// safe to save in a static var? -- LGP 2007-05-20
