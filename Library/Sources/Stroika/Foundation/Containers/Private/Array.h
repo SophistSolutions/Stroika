@@ -173,6 +173,7 @@ namespace	Stroika {
 
                         nonvirtual	T		Current () const;			//	Error to call if Done (), otherwise OK
                         nonvirtual	size_t	CurrentIndex () const;		//	NB: This can be called if we are done - if so, it returns GetLength() + 1.
+                        nonvirtual	bool	More (T* current);
                         nonvirtual	bool	Done () const;
 
                         nonvirtual	void	Invariant () const;

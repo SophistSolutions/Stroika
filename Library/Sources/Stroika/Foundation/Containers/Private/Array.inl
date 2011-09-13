@@ -17,7 +17,6 @@ namespace	Stroika {
                 }
 
 
-
                 // class	Array<T>
                 template	<class	T>	inline	void	Array<T>::Invariant () const
                 {
@@ -25,49 +24,58 @@ namespace	Stroika {
                     Invariant_ ();
             #endif
                 }
+
                 template	<class	T>	inline	Array<T>::Array () :
                     fLength (0),
                     fSlotsAllocated (0),
                     fItems (0)
                 {
                 }
+
                 template	<class	T>	inline	Array<T>::~Array ()
                 {
                     RemoveAll ();
                     delete (char*)fItems;
                 }
+
                 template	<class	T>	inline	T	Array<T>::GetAt (size_t i) const
                 {
                     Require (i >= 1);
                     Require (i <= fLength);
                     return (fItems [i-1].fItem);
                 }
+
                 template	<class	T>	inline	void	Array<T>::SetAt (T item, size_t i)
                 {
                     Require (i >= 1);
                     Require (i <= fLength);
                     fItems [i-1].fItem = item;
                 }
+
                 template	<class	T>	inline	T&	Array<T>::operator[] (size_t i)
                 {
                     Require (i >= 1);
                     Require (i <= fLength);
                     return (fItems [i-1].fItem);
                 }
+
                 template	<class	T>	inline	T	Array<T>::operator[] (size_t i) const
                 {
                     Require (i >= 1);
                     Require (i <= fLength);
                     return (fItems [i-1].fItem);
                 }
+
                 template	<class	T>	inline	size_t	Array<T>::GetLength () const
                 {
                     return (fLength);
                 }
+
                 template	<class	T>	inline	size_t	Array<T>::GetSlotsAlloced () const
                 {
                     return (fSlotsAllocated);
                 }
+
                 template	<class	T>	inline	void	Array<T>::Compact ()
                 {
                     SetSlotsAlloced (GetLength ());
@@ -91,18 +99,30 @@ namespace	Stroika {
                     fSuppressMore (true)				// first time thru - cuz of how used in for loops...
                 {
                     #if		qDebug
-                        fCurrent = 0;	// more likely to cause bugs...(leave the xtra newline cuz of genclass bug...)
+                        fCurrent = nullptr;	// more likely to cause bugs...(leave the xtra newline cuz of genclass bug...)
 
                     #endif
                     /*
                      * Cannot call invariant () here since fCurrent not yet setup.
                      */
                 }
+                template	<typename T>	bool	ArrayIteratorBase<T>::More (T* current)
+                {
+                    this->fSuppressMore = false;
+                    Invariant ();
+                    if (not Done ()) {
+                        *current = fCurrent->fItem;
+                        return true;
+                    }
+
+                    return (false);
+                }
                 template	<typename T>	inline	bool	ArrayIteratorBase<T>::Done () const
                 {
                     Invariant ();
                     return bool (fCurrent == fEnd);
                 }
+
                 template	<typename T>	inline	size_t	ArrayIteratorBase<T>::CurrentIndex () const
                 {
                     /*
@@ -111,6 +131,7 @@ namespace	Stroika {
                     Invariant ();
                     return ((fCurrent-fStart)+1);
                 }
+
                 template	<typename T>	inline	T		ArrayIteratorBase<T>::Current () const
                 {
                     Ensure (fData->GetAt (CurrentIndex ()) == fCurrent->fItem);
@@ -134,10 +155,8 @@ namespace	Stroika {
                         Assert (this->fCurrent < this->fEnd);
                         this->fCurrent++;
                     }
-                    this->fSuppressMore = false;
-                    *current = *(this->fCurrent);
-                    Invariant ();
-                    return (not Done ());
+
+                    return (inherited::More (current));
                 }
 
                 template	<typename T>	inline	bool	ForwardArrayIterator<T>::Done () const
@@ -156,6 +175,7 @@ namespace	Stroika {
                 {
                     Invariant ();
                 }
+
                 template	<typename T>	inline	void	ForwardArrayMutator<T>::UpdateCurrent (T newValue)
                 {
                     Invariant ();
@@ -195,32 +215,17 @@ namespace	Stroika {
                 template	<typename T>	inline	bool	BackwardArrayIterator<T>::More (T* current)
                 {
                     Invariant ();
-                    if (this->fSuppressMore) {
-                        this->fSuppressMore = false;
-                        if (not Done ()) {
-                            *current = this->fCurrent->fItem;
-                        }
-                        return (not Done ());
-                    }
-                    else {
-                        if (Done ()) {
-                            return (false);
+                    if (not this->fSuppressMore and not Done ()) {
+                        if (this->fCurrent == this->fStart) {
+                            this->fCurrent = this->fEnd;	// magic to indicate done
+                            Ensure (Done ());
                         }
                         else {
-                            if (this->fCurrent == this->fStart) {
-                                this->fCurrent = this->fEnd;	// magic to indicate done
-                                Ensure (Done ());
-                                return (false);
-                            }
-                            else {
-                                this->fCurrent--;
-                                *current = this->fCurrent->fItem;
-                                Ensure (not Done ());
-                                return (true);
-                            }
+                            this->fCurrent--;
+                            Ensure (not Done ());
                         }
                     }
-                    AssertNotReached ();	return (false);
+                    return (inherited::More (current));
                 }
 
                 template	<typename T>	inline	bool	BackwardArrayIterator<T>::Done () const
@@ -278,6 +283,7 @@ namespace	Stroika {
                      * Cannot call invariant () here since fCurrent not yet setup.
                      */
                 }
+
                 template	<typename T>	inline	ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from) :
                     ArrayIteratorBase<T>(from),
                     fData (from.fData),
@@ -287,6 +293,7 @@ namespace	Stroika {
                     const_cast <Array_Patch<T>*> (fData)->fIterators = this;
                     Invariant ();
                 }
+
                 template	<typename T>	inline	ArrayIterator_PatchBase<T>::~ArrayIterator_PatchBase ()
                 {
                     Invariant ();
@@ -305,6 +312,7 @@ namespace	Stroika {
                         v->fNext = fNext;
                     }
                 }
+
                 template	<typename T>	inline	ArrayIterator_PatchBase<T>&	ArrayIterator_PatchBase<T>::operator= (const ArrayIterator_PatchBase<T>& rhs)
                 {
                     Invariant ();
