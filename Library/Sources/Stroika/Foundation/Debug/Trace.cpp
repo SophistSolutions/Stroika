@@ -340,7 +340,7 @@ template	<typename	CHARTYPE>
 				#if		qPlatform_Windows
 					ThreadID	threadID	=	::GetCurrentThreadId ();
 				#else
-					AssertNotImplemented ();
+//AssertNotImplemented ();
 					ThreadID	threadID	=	0;
 				#endif
 				if (sFirstTime) {
