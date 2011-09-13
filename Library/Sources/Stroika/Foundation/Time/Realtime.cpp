@@ -63,6 +63,7 @@ DurationSecondsType	Stroika::Foundation::Time::GetTickCount ()
 			return static_cast<DurationSecondsType> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
 		}
 	#else
+		return time (0);	//tmphack... not good but better than assert erorr
 		AssertNotReached ();
 		return 0;
 	#endif
