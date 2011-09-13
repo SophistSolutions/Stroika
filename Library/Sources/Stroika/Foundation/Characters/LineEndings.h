@@ -6,15 +6,9 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<cctype>
-#include	<locale>
 #include	<string>
-#include	<vector>
-
 
 #include	"../Configuration/Common.h"
-#include	"CodePage.h"
-#include	"TChar.h"
 
 
 
@@ -25,8 +19,6 @@ namespace	Stroika {
 			using	std::string;
 			using	std::wstring;
 			using	std::basic_string;
-
-			using	Characters::CodePage;
 
 			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
