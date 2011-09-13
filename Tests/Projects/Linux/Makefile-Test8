@@ -15,6 +15,7 @@ VPATH =$(SrcDir):$(SrcDir)../TestHarness/
 Objs	=	\
 	$(ObjDir)Test.o\
 	$(ObjDir)TestHarness.o\
+	$(ObjDir)SimpleClass.o\
 
 all:	$(TARGETEXE)
 

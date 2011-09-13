@@ -65,6 +65,8 @@
 		<Unit filename="../../../8/Test.cpp" />
 		<Unit filename="../../../9/Test.cpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="../../../TestHarness/SimpleClass.cpp" />
+		<Unit filename="../../../TestHarness/SimpleClass.h" />
 		<Unit filename="../../../TestHarness/TestHarness.cpp" />
 		<Unit filename="../../../TestHarness/TestHarness.h" />
 		<Extensions>
