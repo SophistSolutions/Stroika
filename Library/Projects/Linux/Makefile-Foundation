@@ -18,6 +18,7 @@ SubDirs=	\
 	Debug			\
 	Execution		\
 	IO			\
+	Linguistics		\
 	Math			\
 	Memory			\
 	Streams			\

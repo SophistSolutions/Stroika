@@ -76,23 +76,12 @@ namespace	Stroika {
 			using	Characters::CodePage;
 
 
-
 			string	Format (const char* format, ...);
 			wstring	Format (const wchar_t* format, ...);
 
 
-			/*
-			 *	Implement current-ui-language-specific noun-pluralization logic for the given noun string (assuming the count of that noun
-			 *	is given (english rules - if count != 1 - append s, but we dont wnat that logic to proliferate through the app, so
-			 *	its easier to localize.
-			 */
-			string	PluralizeNoun (const string& s, int count = 1000);
-			wstring	PluralizeNoun (const wstring& s, int count = 1000);
-
 			string	StripTrailingCharIfAny (const string& s, char c);
 			wstring	StripTrailingCharIfAny (const wstring& s, wchar_t c);
-
-
 
 
 			wstring			MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
@@ -163,28 +152,6 @@ namespace	Stroika {
 			// Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
 			template	<typename T>
 				size_t	Length (const T* p);
-
-
-			wstring	MungeStringSoSingular (const wstring& s);
-			string	MungeStringSoSingular (const string& s);
-
-			string	CapitalizeEachWord (const string& s);	// e.g. 'joe smith' becomes 'Joe Smith'
-			wstring	CapitalizeEachWord (const wstring& s);
-			string	CapitalizeEachSentence (const string& s);	// e.g. 'joe smith' becomes 'Joe smith'
-			wstring	CapitalizeEachSentence (const wstring& s);
-			string	UnCapitalizeFirstWord (const string& s);	// e.g. 'Joe Smith' becomes 'joe Smith', but 'IBM eats' stays 'IBM eats'
-			wstring	UnCapitalizeFirstWord (const wstring& s);
-			bool	IsAllCaps (const string& s);
-			bool	IsAllCaps (const wstring& s);
-
-
-			string	QuoteForXMLAttribute (const string& s);
-			string	QuoteForXMLAttribute (const wstring& s);		// encode non-ascii characters as entity-references
-			wstring	QuoteForXMLAttributeW (const wstring& s);
-			string	QuoteForXML (const string& s);
-			string	QuoteForXML (const wstring& s);		// encode non-ascii characters as entity-references
-			wstring	QuoteForXMLW (const wstring& s);
-
 
 
 			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf

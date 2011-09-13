@@ -73,6 +73,9 @@
     <Filter Include="Sources\Characters\Platform\Windows">
       <UniqueIdentifier>{ec714b71-f421-47f5-a8b3-801de432f3ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Linguistics">
+      <UniqueIdentifier>{6b1b3bae-d077-420d-82ed-25b7c63afda2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -278,6 +281,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.cpp">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp">
+      <Filter>Sources\Linguistics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -546,6 +552,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.h">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h">
+      <Filter>Sources\Linguistics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -742,6 +751,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.inl">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.inl">
+      <Filter>Sources\Linguistics</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
+#include	"../Linguistics/Words.h"
 
 #include	"DateUtils.h"
 
@@ -523,11 +524,11 @@ wstring	Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathD
 			float	yearDiffF	=	deathDate.empty ()? YearDifferenceF (Date::GetToday (), birthDate): YearDifferenceF (deathDate, birthDate);
 			int		months		=	int (yearDiffF * 12.0f + 0.4999f);
 			wstring	unitBase	=	abbrevUnit? L"mo": L"month";
-			return Format (L"%d %s", months, PluralizeNoun (unitBase, months).c_str ());
+			return Format (L"%d %s", months, Linguistics::PluralizeNoun (unitBase, months).c_str ());
 		}
 		else {
 			wstring	unitBase	=	abbrevUnit? L"yr": L"year";
-			return Format (L"%d %s", yearDiff, PluralizeNoun (unitBase, yearDiff).c_str ());
+			return Format (L"%d %s", yearDiff, Linguistics::PluralizeNoun (unitBase, yearDiff).c_str ());
 		}
 	}
 }
@@ -1329,7 +1330,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nYears) + Characters::PluralizeNoun (L"year", static_cast<int> (nYears));
+			result += Format (L"%d ", nYears) + Linguistics::PluralizeNoun (L"year", static_cast<int> (nYears));
 			timeLeft -= nYears * kSecondsPerYear;
 		}
 	}
@@ -1339,7 +1340,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nMonths) + Characters::PluralizeNoun (L"month", static_cast<int> (nMonths));
+			result += Format (L"%d ", nMonths) + Linguistics::PluralizeNoun (L"month", static_cast<int> (nMonths));
 			timeLeft -= nMonths * kSecondsPerMonth;
 		}
 	}
@@ -1349,7 +1350,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nDays) + Characters::PluralizeNoun (L"day", static_cast<int> (nDays));
+			result += Format (L"%d ", nDays) + Linguistics::PluralizeNoun (L"day", static_cast<int> (nDays));
 			timeLeft -= nDays * kSecondsPerDay;
 		}
 	}
@@ -1360,7 +1361,7 @@ wstring Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", nHours) + Characters::PluralizeNoun (L"hour", static_cast<int> (nHours));
+				result += Format (L"%d ", nHours) + Linguistics::PluralizeNoun (L"hour", static_cast<int> (nHours));
 				timeLeft -= nHours * kSecondsPerHour;
 			}
 		}
@@ -1370,7 +1371,7 @@ wstring Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", nMinutes) + Characters::PluralizeNoun (L"minute", static_cast<int> (nMinutes));
+				result += Format (L"%d ", nMinutes) + Linguistics::PluralizeNoun (L"minute", static_cast<int> (nMinutes));
 				timeLeft -= nMinutes * kSecondsPerMinute;
 			}
 		}
@@ -1378,7 +1379,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", timeLeft) + Characters::PluralizeNoun (L"second", static_cast<int> (timeLeft));
+			result += Format (L"%d ", timeLeft) + Linguistics::PluralizeNoun (L"second", static_cast<int> (timeLeft));
 		}
 	}
 	if (isNeg) {
