@@ -139,7 +139,8 @@ TString	Emitter::GetTraceFileName () const
 				}
 			#else
 // redo above portably using Execution::GetEXEPath () and portable code to find filepath separator char and GetBaseFileName...
-				AssertNotImplemented ();
+//AssertNotImplemented ();
+mfname= TSTR("test");
 			#endif
 		}
 		TString nowstr	=	ToTString (Time::DateTime::Now ().Format4XML ());
@@ -507,7 +508,8 @@ namespace	{
 			#if		qPlatform_Windows
 				ThreadID	threadID	=	::GetCurrentThreadId ();
 			#else
-				AssertNotImplemented ();
+//tmphack disable til we fix thread stuff for unix
+//AssertNotImplemented ();
 				ThreadID	threadID = 0;
 			#endif
 			AutoCriticalSection critSec (GetCritSection_ ());
@@ -525,7 +527,8 @@ namespace	{
 			#if		qPlatform_Windows
 				ThreadID	threadID	=	::GetCurrentThreadId ();
 			#else
-				AssertNotImplemented ();
+// get rid of this temporarily while testing - til we fix linux stuff
+//AssertNotImplemented ();
 				ThreadID	threadID = 0;
 			#endif
 			AutoCriticalSection critSec (GetCritSection_ ());
