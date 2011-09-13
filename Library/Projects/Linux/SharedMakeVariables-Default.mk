@@ -19,7 +19,7 @@ CFLAGS= -c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Include
 
 StroikaFoundationSupportLibs	=	$(RelPathToDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a
 
-LIBS	=	$(StroikaFoundationLib) $(StroikaFoundationSupportLibs)
+LIBS	=	$(StroikaFoundationLib) $(StroikaFoundationSupportLibs) -lpthread
 
 
 
