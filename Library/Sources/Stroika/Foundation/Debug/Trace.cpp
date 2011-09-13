@@ -490,7 +490,8 @@ namespace	{
 			#if		qPlatform_Windows
 				ThreadID	threadID	=	::GetCurrentThreadId ();
 			#else
-				AssertNotImplemented ();
+//tmpahack to test
+//AssertNotImplemented ();
 				ThreadID	threadID = 0;
 			#endif
 			AutoCriticalSection critSec (GetCritSection_ ());
