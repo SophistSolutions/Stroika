@@ -137,6 +137,10 @@ namespace	Stroika {
                     nonvirtual	operator BagIterator<T> () const;
                     nonvirtual	operator BagMutator<T> ();
 
+                    // Support for ranged for, and stl syntax in general
+                    nonvirtual  Iterator<T>    begin () const;
+                    nonvirtual  IterationState end () const;
+
                 public:
                     nonvirtual	size_t	TallyOf (T item) const;
 

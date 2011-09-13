@@ -21,7 +21,8 @@ namespace	Stroika {
 
             // class Iterator<T>
             template	<typename T> inline	Iterator<T>::Iterator (const Iterator<T>& from) :
-                fIterator (0)
+                fIterator (0),
+                fCurrent (from.fCurrent)
             {
                 RequireNotNull (from.fIterator);
                 fIterator = from.fIterator->Clone ();

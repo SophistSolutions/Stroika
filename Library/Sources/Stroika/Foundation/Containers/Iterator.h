@@ -136,22 +136,38 @@
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
+           enum IterationState  {
+                kAtEnd = true
+            };
 
             template	<typename T> class	IteratorRep;
             template	<typename T> class	Iterator {
                 public:
-                    Iterator (IteratorRep<T>* it);
+                     Iterator (IteratorRep<T>* it);
                     Iterator (const Iterator<T>& from);
                     ~Iterator ();
 
                     nonvirtual	Iterator<T>&	operator= (const Iterator<T>& rhs);
 
+                    const   T   operator* () const
+                    {
+                        return Current ();
+                    }
+
+                    const void  operator++ ()
+                    {
+                        More ();
+                    }
+
+                    bool    operator!= (IterationState rhs)
+                    {
+                        return (not fIterator->Done ());
+                    }
+
                 private:
                     Iterator ();	// Never implemented - illegal
 
                 public:
-
-
                     nonvirtual	bool	More ();
                     nonvirtual	T		Current () const;
 
@@ -175,22 +191,23 @@ namespace	Stroika {
                     virtual	~IteratorRep ();
 
                 public:
-                    virtual	bool			More (T* current)   =	0;
-                    virtual	IteratorRep<T>*	Clone () const		=	0;
+                    virtual	bool			More (T* current)   = 0;
+                    virtual	IteratorRep<T>*	Clone () const		= 0;
+                    virtual bool            Done () const       = 0;
             };
 
             /*
              * ForEach Macros.
              */
 
-            #if		qGCC_ConversionOperatorInitializerConfusionBug || qMPW_CFront_ConversionOperatorInitializerCodeGenBug
-                #define	ForEach(T,It,Init)			for (Iterator<T > It = (Iterator<T >)(Init); It.More ();)
-                #define	ForEachT(ItT,T,It,Init)		for (ItT<T > It = (ItT<T >)(Init); It.More ();)
+            #if		1
+                #define	ForEach(T,It,Init)			for (Iterator<T > It = Init.begin (); It != Init.end (); ++It)
+                // SSW 9/20/2011: note that ForEachT is inadequote for ranged for, because can't use begin -- how would it know what to return
+                #define	ForEachT(ItT,T,It,Init)		for (ItT<T > It (Init); It != Init.end (); ++It)
             #else
                 #define	ForEach(T,It,Init)			for (Iterator<T > It (Init); It.More ();)
                 #define	ForEachT(ItT,T,It,Init)		for (ItT<T > It (Init); It.More ();)
             #endif
-
 
 
 		}

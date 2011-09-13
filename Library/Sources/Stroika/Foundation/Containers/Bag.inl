@@ -69,7 +69,19 @@ namespace	Stroika {
 
             template	<typename T>	inline	Bag<T>::operator Iterator<T> () const
             {
-                return (const_cast<Bag<T> *> (this)->fRep->MakeIterator ());
+                Iterator<T> it = const_cast<Bag<T> *> (this)->fRep->MakeIterator ();
+                it.More ();
+                return it;
+            }
+
+            template	<typename T>	inline	Iterator<T>    Bag<T>::begin () const
+            {
+                return operator Iterator<T> ();
+            }
+
+            template	<typename T>	inline	IterationState    Bag<T>::end () const
+            {
+                return (IterationState::kAtEnd);
             }
 
             template	<typename T>	inline	Bag<T>&	Bag<T>::operator+= (T item)
@@ -95,15 +107,19 @@ namespace	Stroika {
                 Remove (items);
                 return (*this);
             }
+
             template	<typename T>	inline	Bag<T>::operator BagIterator<T> () const
             {
-                // (~const) to force a break references
-                return const_cast<Bag<T>> (this)->fRep->MakeBagIterator ();
+                BagIterator<T> it = const_cast<Bag<T> *> (this)->fRep->MakeBagIterator ();
+                it.More ();
+                return it;
             }
 
             template	<typename T>	inline	Bag<T>::operator BagMutator<T> ()
             {
-                return (fRep->MakeBagMutator ());
+                BagMutator<T> it = fRep->MakeBagMutator ();
+                it.More ();
+                return it;
             }
 
             template	<class T> void	Bag<T>::Add (T item)
@@ -139,7 +155,7 @@ namespace	Stroika {
             template	<class T> size_t	Bag<T>::TallyOf (T item) const
             {
                 size_t count = 0;
-                ForEach (T, it, *this) {
+                ForEach (T, it, (*this)) {
                     if (it.Current () == item) {
                         count++;
                     }

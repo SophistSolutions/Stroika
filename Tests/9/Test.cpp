@@ -133,7 +133,7 @@ namespace	{
 
 static	void	BagIteratorTests(Bag<size_t>& s)
 {
-	const	size_t	kTestSize	=	100;
+	const	size_t	kTestSize	=	2;    // keep an even number
 
 	VerifyTestResult(s.GetLength() == 0);
 	/*
@@ -145,6 +145,16 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 
 		VerifyTestResult(s.GetLength() == kTestSize);
+
+        ForEach(size_t, it, s) {
+            VerifyTestResult(s.Contains(it.Current ()));
+            s.Remove (s.GetLength ());
+        }
+ 		VerifyTestResult(s.GetLength() == kTestSize/2);
+ 		s.RemoveAll ();
+        for(size_t i = 1; i <= kTestSize; i++) {
+			s.Add(i);
+		}
 
 		{
 			ForEach(size_t, it, s) {
@@ -165,9 +175,14 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
 		{
+#if 1
+            for (BagMutator<size_t> it (s); it != s.end (); ++it) {
+#else
 			ForEachT(BagMutator, size_t, it, s) {
+#endif
 				it.RemoveCurrent();
 			}
+
 			VerifyTestResult(s.IsEmpty());
 			VerifyTestResult(s.GetLength() == 0);
 		}
@@ -206,6 +221,30 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 			}
 		}
 	}
+
+// garbage time: play with ranged for
+    s.RemoveAll ();
+#if 0
+    int my_array[5] = {1, 2, 3, 4,5};
+    for(int &x : my_array) {
+        s.Add(x);
+    }
+#endif
+    for (Iterator<size_t> it (s); it.More ();) {
+
+    }
+    for(size_t i = 1; i <= 10; i++) {
+        s.Add(i);
+    }
+    for (auto it = s.begin (); it != s.end (); ++it) {
+    }
+
+ #if 0
+		for (auto& it : s) {
+		    s.RemoveCurrent ()
+		}
+#endif
+    s.RemoveAll ();
 }
 
 
