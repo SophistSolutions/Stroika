@@ -149,23 +149,15 @@ namespace	Stroika {
 
                     nonvirtual	Iterator<T>&	operator= (const Iterator<T>& rhs);
 
-                    const   T   operator* () const
-                    {
-                        return Current ();
-                    }
-
-                    const void  operator++ ()
-                    {
-                        More ();
-                    }
-
-                    bool    operator!= (IterationState rhs)
-                    {
-                        return (not fIterator->Done ());
-                    }
-
                 private:
                     Iterator ();	// Never implemented - illegal
+
+                public:
+                    // support for Range based for, and stl style iteration in general (containers must also support begin, end)
+                    nonvirtual  const   T   operator* ();
+                    nonvirtual  const void  operator++ ();
+                    nonvirtual  bool    operator!= (IterationState rhs);
+
 
                 public:
                     nonvirtual	bool	More ();
