@@ -285,6 +285,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp">
       <Filter>Sources\Linguistics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -555,6 +558,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h">
       <Filter>Sources\Linguistics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -754,6 +760,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.inl">
       <Filter>Sources\Linguistics</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>

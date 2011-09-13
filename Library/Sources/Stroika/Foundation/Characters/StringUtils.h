@@ -153,41 +153,6 @@ namespace	Stroika {
 				size_t	Length (const T* p);
 
 
-// Move to Characters/LINEENDINGS module
-			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
-			// always big enough. OK for srcText and outBuf to be SAME PTR.
-			template	<typename TCHAR>
-				size_t	CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
-			template	<typename TCHAR>
-				void	CRLFToNL (basic_string<TCHAR>* text);	// modified in-place
-			template	<typename TCHAR>
-				basic_string<TCHAR>	CRLFToNL (const basic_string<TCHAR>& text);
-
-// Move to Characters/LINEENDINGS module
-			template	<typename TCHAR>
-				size_t	NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
-			template	<typename TCHAR>
-				basic_string<TCHAR>	NLToCRLF (const basic_string<TCHAR>& text);
-
-
-// Move to Characters/LINEENDINGS module
-			template	<typename TCHAR>
-				size_t	NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
-			template	<typename TCHAR>
-				basic_string<TCHAR>	NLToNative (const basic_string<TCHAR>& text);
-
-// Move to Characters/LINEENDINGS module
-			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
-			// always big enough. OK for srcText and outBuf to be SAME PTR.
-			template	<typename TCHAR>
-				size_t	NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
-			template	<typename TCHAR>
-				void	NormalizeTextToNL (basic_string<TCHAR>* text);	// modified in-place
-			template	<typename TCHAR>
-				basic_string<TCHAR>	NormalizeTextToNL (const basic_string<TCHAR>& text);
-
-
-
 			string	LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
 			wstring	LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
 

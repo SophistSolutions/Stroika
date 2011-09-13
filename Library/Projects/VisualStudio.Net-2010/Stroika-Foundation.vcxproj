@@ -77,6 +77,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
@@ -224,6 +225,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
@@ -316,6 +318,7 @@
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
