@@ -47,7 +47,7 @@ namespace	{
 namespace	{
 	void	Test_1_SAXParser_ ()
 		{
-			TraceContextBumper ctx (_T ("Test_1_SAXParser_"));
+			TraceContextBumper ctx (TSTR ("Test_1_SAXParser_"));
 			const wstring	kNSTest	=	L"Test-NAMESPACE";
 			//NYI
 			//Schema	gSchema		=	Schema (kNSTest);
