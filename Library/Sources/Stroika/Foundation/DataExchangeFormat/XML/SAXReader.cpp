@@ -33,6 +33,11 @@
 
 
 #if		qHasLibrary_Xerces
+
+// Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
+#define	XML_LIBRARY	1
+#define	XERCES_STATIC_LIBRARY	1
+
 	// avoid namespace conflcit with some Xerces code	
 	#undef Assert
 
@@ -398,6 +403,7 @@ UsingModuleHelper::~UsingModuleHelper ()
 	sUsingLibInterHelper = NULL;
 }
 
+UsingModuleHelper	sUsingModuleHelper_;		// not sure how we want to control lifetime of this object!!!
 
 
 #if		qHasLibrary_Xerces
