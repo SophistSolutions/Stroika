@@ -135,6 +135,7 @@ static	void	Test1()
 	const	size_t	kBigSize	=	1001;
 
 	VerifyTestResult(someArray.GetLength() == 0);
+
 	someArray.SetLength(kBigSize, 0);
 	someArray.RemoveAll();
 	someArray.SetLength(kBigSize, 0);
@@ -145,20 +146,38 @@ static	void	Test1()
 	someArray [55] = 55;
 	VerifyTestResult(someArray [55] == 55);
 	VerifyTestResult(someArray [55] != 56);
+
 	someArray.InsertAt(1, 100);
 	VerifyTestResult(someArray.GetLength() == kBigSize+1);
 	VerifyTestResult(someArray [100] == 1);
 
 	someArray [101] = someArray [100] + 10;
-	someArray.RemoveAt(1);
+    VerifyTestResult(someArray [101] == 11);
+	someArray.RemoveAt(0);
 	VerifyTestResult(someArray [100] == 11);
+	someArray.RemoveAt(1);
+
+	VerifyTestResult(someArray [99] == 11);
 }
 
 static	void	Test2()
 {
+ 	{
+ 	    Array<SimpleClass>	someArray;
+ 	    someArray.InsertAt(100, 0);
+// for (size_t i = 0; i < someArray.GetLength (); ++i) { cerr << "someArray[" << i << "] = " << someArray[i].GetValue () << endl; }
+	    someArray.RemoveAt(0);
+ 	    someArray.InsertAt(2, 0);
+ 	    someArray.InsertAt(1, 0);
+  	    someArray.InsertAt(3, 0);
+  	    someArray.InsertAt(4, someArray.GetLength ());
+        someArray.RemoveAt(someArray.GetLength ()-1);
+        someArray.RemoveAt(1);
+	}
+
 	Array<SimpleClass>	someArray;
 
-	const	size_t	kBigSize	=	1000;
+	const	size_t	kBigSize	=	1001;
 
 	VerifyTestResult(someArray.GetLength() == 0);
 	someArray.SetLength(kBigSize, 0);
@@ -172,12 +191,14 @@ static	void	Test2()
 	VerifyTestResult(someArray [55] == 55);
 	VerifyTestResult(not(someArray [55] == 56));
 
+
 	someArray.RemoveAt(100);
+
 	while(someArray.GetLength() > 0) {
-		someArray.RemoveAt(1);
+		someArray.RemoveAt(0);
 	}
 	while(someArray.GetLength() < kBigSize) {
-		someArray.InsertAt(1, someArray.GetLength()+1);
+		someArray.InsertAt(1, someArray.GetLength());
 	}
 
 	someArray.InsertAt(1, 100);

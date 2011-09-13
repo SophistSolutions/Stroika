@@ -196,8 +196,9 @@ namespace	Stroika {
 
             template	<typename T>	void	Bag_ArrayRep<T>::Add (T item)
             {
-                fData.InsertAt (item, GetLength () + 1);
+                fData.InsertAt (item, GetLength ());
             }
+
 
             template	<typename T>	void	Bag_ArrayRep<T>::Remove (T item)
             {

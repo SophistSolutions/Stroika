@@ -105,7 +105,7 @@ namespace	Stroika {
                  *		This class is the main core of the implementation. It provides
                  *	an array abstraction, where the size can be set dynamically, and
                  *	extra sluff is maintained off the end to reduce copying from reallocs.
-                 *	Only items 1..GetLength () are kept constructed. The rest (GetLength()+1
+                 *	Only items 0..GetLength ()-1 are kept constructed. The rest (GetLength()+1
                  *	..fSlotsAlloced) are uninitialized memory. This is important because
                  *	it means you can count on DTORs of your T being called when you
                  *	remove them from contains, not when the caches happen to empty.

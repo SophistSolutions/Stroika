@@ -40,30 +40,30 @@ namespace	Stroika {
 
                 template	<class	T>	inline	T	Array<T>::GetAt (size_t i) const
                 {
-                    Require (i >= 1);
-                    Require (i <= fLength);
-                    return (fItems [i-1].fItem);
+                    Require (i >= 0);
+                    Require (i < fLength);
+                    return (fItems [i].fItem);
                 }
 
                 template	<class	T>	inline	void	Array<T>::SetAt (T item, size_t i)
                 {
-                    Require (i >= 1);
-                    Require (i <= fLength);
-                    fItems [i-1].fItem = item;
+                    Require (i >= 0);
+                    Require (i < fLength);
+                    fItems [i].fItem = item;
                 }
 
                 template	<class	T>	inline	T&	Array<T>::operator[] (size_t i)
                 {
-                    Require (i >= 1);
-                    Require (i <= fLength);
-                    return (fItems [i-1].fItem);
+                    Require (i >= 0);
+                    Require (i < fLength);
+                    return (fItems [i].fItem);
                 }
 
                 template	<class	T>	inline	T	Array<T>::operator[] (size_t i) const
                 {
-                    Require (i >= 1);
-                    Require (i <= fLength);
-                    return (fItems [i-1].fItem);
+                    Require (i >= 0);
+                    Require (i < fLength);
+                    return (fItems [i].fItem);
                 }
 
                 template	<class	T>	inline	size_t	Array<T>::GetLength () const
@@ -100,7 +100,6 @@ namespace	Stroika {
                 {
                     #if		qDebug
                         fCurrent = nullptr;	// more likely to cause bugs...(leave the xtra newline cuz of genclass bug...)
-
                     #endif
                     /*
                      * Cannot call invariant () here since fCurrent not yet setup.
@@ -126,10 +125,10 @@ namespace	Stroika {
                 template	<typename T>	inline	size_t	ArrayIteratorBase<T>::CurrentIndex () const
                 {
                     /*
-                     * NB: This can be called if we are done - if so, it returns GetLength() + 1.
+                     * NB: This can be called if we are done - if so, it returns GetLength().
                      */
                     Invariant ();
-                    return ((fCurrent-fStart)+1);
+                    return ((fCurrent-fStart));
                 }
 
                 template	<typename T>	inline	T		ArrayIteratorBase<T>::Current () const
@@ -377,7 +376,7 @@ namespace	Stroika {
                      *		NB: We cannot call invariants here because this is called after the add
                      *	and the PatchRealloc has not yet happened.
                      */
-                    Require (index >= 1);
+                    Require (index >= 0);
 
                     this->fEnd++;
 
@@ -404,7 +403,7 @@ namespace	Stroika {
                      */
 
                     Require ((this->fEnd >= this->fStart) and (index <= size_t (this->fEnd-this->fStart)));
-                    if (&this->fStart[index-1] <= this->fCurrent) {		// index <= CurrentIndex () - only faster
+                    if (&this->fStart[index] <= this->fCurrent) {		// index <= CurrentIndex () - only faster
                                                             // Cannot call CurrentIndex () since invariants
                                                             // might fail at this point
                         this->fCurrent++;
@@ -413,8 +412,8 @@ namespace	Stroika {
 
                 template	<typename T>	inline	void	ArrayIterator_PatchBase<T>::PatchRemove (size_t index)
                 {
-                    Require (index >= 1);
-                    Require (index <= fData->GetLength ());
+                    Require (index >= 0);
+                    Require (index < fData->GetLength ());
 
                     /*
                      *		If we are removing an item from the right of our cursor, it has no effect
@@ -434,12 +433,12 @@ namespace	Stroika {
                      *	going backwards, then fSuppressMore will be ignored, but for the
                      *	sake of code sharing, its tough to do much about that waste.
                      */
-                    Assert ((&this->fStart[index-1] <= this->fCurrent) == (index <= CurrentIndex ()));		// index <= CurrentIndex () - only faster
-                    if (&this->fStart[index-1] < this->fCurrent) {
-                        Assert (CurrentIndex () >= 2);		// cuz then index would be <= 0, and thats imposible
+                    Assert ((&this->fStart[index] <= this->fCurrent) == (index <= CurrentIndex ()));
+                    if (&this->fStart[index] < this->fCurrent) {
+                        Assert (CurrentIndex () >= 1);
                         this->fCurrent--;
                     }
-                    else if (&this->fStart[index-1] == this->fCurrent) {
+                    else if (&this->fStart[index] == this->fCurrent) {
                         PatchRemoveCurrent ();
                     }
                     // Decrement at the end since CurrentIndex () calls stuff that asserts (fEnd-fStart) == fData->GetLength ()
@@ -665,6 +664,7 @@ namespace	Stroika {
                     const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (CurrentIndex ());
                     Invariant ();
                 }
+
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
                 {
                     Invariant ();
@@ -672,6 +672,7 @@ namespace	Stroika {
                     AssertNotNull (this->fCurrent);
                     const_cast<ArrayNode<T>*>(this->fCurrent)->fItem = newValue;
                 }
+
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::AddBefore (T newValue)
                 {
                     /*
@@ -682,6 +683,7 @@ namespace	Stroika {
                     const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex ());
                     Invariant ();
                 }
+
                 template	<typename T>	inline	void	ForwardArrayMutator_Patch<T>::AddAfter (T newValue)
                 {
                     Require (not Done ());
@@ -849,8 +851,8 @@ namespace	Stroika {
 
             template	<typename T>	void	Array<T>::InsertAt (T item, size_t index)
             {
-                Require (index >= 1);
-                Require (index <= fLength+1);
+                Require (index >= 0);
+                Require (index <= fLength);
                 Invariant ();
 
                 /*
@@ -858,19 +860,21 @@ namespace	Stroika {
                  * right time.
                  */
                 SetLength (fLength + 1, item);			//	Add space for extra item
-
-                if (index < fLength) {
+                size_t  oldLength = fLength -1;
+                if (index < oldLength) {
                     /*
                      * Slide items down, and add our new entry
                      */
+                    Assert (fLength >= 2);
                     ArrayNode<T>*	lhs	=	&fItems [fLength-1];
                     ArrayNode<T>*	rhs	=	&fItems [fLength-2];
                     size_t i = fLength-1;
-                    for (; i >= index; i--) {
+
+                    for (; i > index; i--) {
                         *lhs-- = *rhs--;
                     }
-                    Assert (i == index-1);
-                    Assert (lhs == &fItems [index-1]);
+                    Assert (i == index);
+                    Assert (lhs == &fItems [index]);
                     lhs->fItem = item;
                 }
                 Invariant ();
@@ -878,19 +882,20 @@ namespace	Stroika {
 
             template	<typename T>	void	Array<T>::RemoveAt (size_t index)
             {
-                Require (index >= 1);
-                Require (index <= fLength);
+                Require (index >= 0);
+                Require (index < fLength);
                 Invariant ();
 
-                if (index < fLength) {
+                if (index < fLength-1) {
                     /*
                      * Slide items down.
                      */
-                        ArrayNode<T>*	lhs	=	&fItems [index-1];
-                        ArrayNode<T>*	rhs	=	&fItems [index];
+                        ArrayNode<T>*	lhs	=	&fItems [index];
+                        ArrayNode<T>*	rhs	=	&fItems [index+1];
             // We tried getting rid of index var and using ptr compare but
             // did much worse on CFront/MPW Thursday, August 27, 1992 4:12:08 PM
-                    for ( size_t i = fLength - index; i > 0; i--) {
+                    for ( size_t i = fLength - index -1; i > 0; i--) {
+
                         *lhs++ = *rhs++;
                     }
                 }
@@ -901,7 +906,7 @@ namespace	Stroika {
             template	<typename T>	void	Array<T>::RemoveAll ()
             {
                 Invariant ();
-                    ArrayNode<T>*	p	=	&fItems[0];
+                ArrayNode<T>*	p	=	&fItems[0];
                 for ( size_t i = fLength; i > 0; i--, p++) {
                     p->ArrayNode<T>::~ArrayNode ();
                 }
@@ -913,8 +918,8 @@ namespace	Stroika {
             {
                 Invariant ();
                 if (fLength > 0) {
-                        const	ArrayNode<T>*	current	=	&fItems [0];
-                        const	ArrayNode<T>*	last	=	&fItems [fLength-1];	// safe to -1 since fLength>0
+                    const	ArrayNode<T>*	current	=	&fItems [0];
+                    const	ArrayNode<T>*	last	=	&fItems [fLength-1];	// safe to -1 since fLength>0
                     for (; current <= last; current++) {
                         if (current->fItem == item) {
                             return (true);
@@ -978,7 +983,7 @@ namespace	Stroika {
                  */
                 Assert (lhs == &fItems[commonLength]);						// point 1 past first guy to destroy/overwrite
                 if (fLength > newLength) {
-                        ArrayNode<T>*	end	=	&fItems[fLength];	// point 1 past last old guy
+                    ArrayNode<T>*	end	=	&fItems[fLength];	// point 1 past last old guy
                     /*
                      * Then we must destruct entries at the end.
                      */
