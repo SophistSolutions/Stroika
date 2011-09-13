@@ -261,7 +261,8 @@ String&	String::operator+= (const String& appendage)
 		SetLength (oldLength + appendLength);
 		Assert (appendage.GetLength () == appendLength);
 		Assert (fRep.unique ());
-		appendage.CopyTo (const_cast<Character*>(&(fRep->Peek ())[oldLength]), appendLength);
+		Character*	dstBuf	=	const_cast<Character*>(&(fRep->Peek ())[oldLength]);
+		appendage.CopyTo (dstBuf, dstBuf + appendLength);
 	}
 	return (*this);
 }
@@ -363,7 +364,7 @@ size_t	String::RIndexOf (const String& subString) const
 	size_t	subStrLen	=	subString.GetLength ();
 	size_t	limit		=	GetLength () - subStrLen+1;
 	for (size_t i = limit; i > 0; --i) {
-		if (SubString (i-1, subStrLen) == subString) {
+		if (SubString (i-1, i - 1 + subStrLen) == subString) {
 			return (i-1);
 		}
 	}
@@ -380,10 +381,11 @@ bool	String::Contains (const String& subString) const
 	return bool (IndexOf (subString) != kBadStringIndex);
 }
 
-String	String::SubString (size_t from, size_t length) const
+String	String::SubString (size_t from, size_t to) const
 {
+	size_t	length	=	to-from;	// akwardly written cuz arg used to be 'length' - but fix impl later...
 	Require (from >= 0);
-	Require ((length == kBadStringIndex) or (length <= (GetLength ()-from) and (length >= 0)));
+	Require ((to == kBadStringIndex) or (length <= (GetLength ()-from) and (length >= 0)));
 
 	if (length == 0) {
 		return String ();
@@ -410,7 +412,7 @@ String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 				return *this;
 			}
 			else {
-				return SubString (i, length - i);
+				return SubString (i, length);
 			}
 		}
 	}
@@ -882,8 +884,8 @@ void	String_ExternalMemoryOwnership::MyRep_::AssureWeOwnBuffer_ ()
 
 		size_t	len	=	GetLength ();
 		wchar_t* storage = ::new wchar_t [len];
-		CopyTo (storage, len);
-		SetStorage ((Character*)storage, GetLength ());
+		CopyTo (storage, storage + len);
+		SetStorage (reinterpret_cast<Character*> (storage), len);
 		fWeOwnBuffer_ = true;
 	}
 

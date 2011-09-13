@@ -24,19 +24,19 @@ namespace	Stroika {
             inline	String::StringRep::~StringRep ()
 				{
 				}
-			inline	void	String::StringRep::CopyTo (Character* buf, size_t nCharsInBuf) const
+			inline	void	String::StringRep::CopyTo (Character* bufFrom, Character* bufTo) const
 				{
-					Require (nCharsInBuf >= GetLength ());
-					RequireNotNull (buf);
+					RequireNotNull (bufFrom);
+					Require (bufFrom + GetLength () >= bufTo);
 					size_t	nChars	=	GetLength ();
-					(void)::memcpy (buf, Peek (), nChars*sizeof (Character));
+					(void)::memcpy (bufFrom, Peek (), nChars*sizeof (Character));
 				}
-			inline	void	String::StringRep::CopyTo (wchar_t* buf, size_t nCharsInBuf) const
+			inline	void	String::StringRep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
 				{
-					Require (nCharsInBuf >= GetLength ());
-					RequireNotNull (buf);
+					RequireNotNull (bufFrom);
+					Require (bufFrom + GetLength () >= bufTo);
 					size_t	nChars	=	GetLength ();
-					(void)::memcpy (buf, Peek (), nChars*sizeof (Character));
+					(void)::memcpy (bufFrom, Peek (), nChars*sizeof (Character));
 				}
 
 
@@ -66,17 +66,17 @@ namespace	Stroika {
 				{
 					return (fRep->Peek ());
 				}
-			inline	void	String::CopyTo (Character* buf, size_t nCharsInBuf) const
+			inline	void	String::CopyTo (Character* bufFrom, Character* bufTo) const
 				{
-					Require (nCharsInBuf >= GetLength ());
-					RequireNotNull (buf);
-					fRep->CopyTo (buf, nCharsInBuf);
+					RequireNotNull (bufFrom);
+					Require (bufFrom + GetLength () >= bufTo);
+					fRep->CopyTo (bufFrom, bufTo);
 				}
-			inline	void	String::CopyTo (wchar_t* buf, size_t nCharsInBuf) const
+			inline	void	String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
 				{
-					Require (nCharsInBuf >= GetLength ());
-					RequireNotNull (buf);
-					fRep->CopyTo (buf, nCharsInBuf);
+					RequireNotNull (bufFrom);
+					Require (bufFrom + GetLength () >= bufTo);
+					fRep->CopyTo (bufFrom, bufTo);
 				}
             inline	size_t	String::GetLength () const
 				{

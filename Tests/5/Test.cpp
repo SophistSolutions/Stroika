@@ -282,7 +282,7 @@ namespace	{
 			t1 += 'd';
 			t1 += L" Flintstone";
 			VerifyTestResult (t1 == L"Fred Flintstone");
-			t5 = t1.SubString (5, 10);
+			t5 = t1.SubString (5, 5 + 10);
 			VerifyTestResult (t5 == L"Flintstone");
 
 			t1.SetLength (20);

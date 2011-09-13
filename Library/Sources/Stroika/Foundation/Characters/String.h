@@ -168,10 +168,10 @@ namespace	Stroika {
 
                 public:
                     /*
-                     * Produce a substring of this string, starting at from, and extending length characters. If length
+                     * Produce a substring of this string, starting at from, and up to to (require from <= to unless to == kBadStingIndex). If to
                      * is kBadStringIndex (default) then return all the way to the end of the string.
                      */
-                    nonvirtual	String		SubString (size_t from, size_t length = kBadStringIndex) const;
+                    nonvirtual	String		SubString (size_t from, size_t to = kBadStringIndex) const;
 
 
 				public:
@@ -231,10 +231,10 @@ namespace	Stroika {
 				public:
 					/*
 					 * 	CopyTo () copies the contents of this string to the target buffer.
-					 *	CopyTo () does NOT nul-terminate the target buffer, but DOES assert that nCharsInBuf is >= this->GetLength ()
+					 *	CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
 					 */
-					nonvirtual	void	CopyTo (Character* buf, size_t nCharsInBuf) const;
-					nonvirtual	void	CopyTo (wchar_t* buf, size_t nCharsInBuf) const;
+					nonvirtual	void	CopyTo (Character* bufFrom, Character* bufTo) const;
+					nonvirtual	void	CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
 
 
 				public:
@@ -351,10 +351,10 @@ namespace	Stroika {
 				public:
 					/*
 					 * 	CopyTo () copies the contents of this string to the target buffer.
-					 *	CopyTo () does NOT nul-terminate the target buffer, but DOES assert that nCharsInBuf is >= this->GetLength ()
+					 *	CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
 					 */
-					nonvirtual	void	CopyTo (Character* buf, size_t nCharsInBuf) const;
-					nonvirtual	void	CopyTo (wchar_t* buf, size_t nCharsInBuf) const;
+					nonvirtual	void	CopyTo (Character* bufFrom, Character* bufTo) const;
+					nonvirtual	void	CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
             };
 
 
