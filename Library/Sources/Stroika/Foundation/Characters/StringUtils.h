@@ -24,11 +24,9 @@
 
 /*
  * TODO:
- *		>> MOVE English Language type stuff - pluralize etc - into its own module.
- *
  *		>> PERHPS create FORMAT module - and put there the FORMAT function(and FormatV), along with String2Int/Int2String, etc.
  *
- *		>> Move XML-related tools to somewhere in teh DataExthcnageFormat/XML heirarchy...
+ *		>> Probably move LineEdnings related stutff to Characters/LineEndings module
  */
 
 
@@ -75,20 +73,21 @@ namespace	Stroika {
 
 			using	Characters::CodePage;
 
-
+// Move to Characters/FORMAT module
 			string	Format (const char* format, ...);
 			wstring	Format (const wchar_t* format, ...);
 
-
+//See what this is used for? Seems too specific... See String::Trim()
 			string	StripTrailingCharIfAny (const string& s, char c);
 			wstring	StripTrailingCharIfAny (const wstring& s, wchar_t c);
 
-
+// MOVE TO CODEPAGE STUFF???
 			wstring			MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
 			vector<Byte>	MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8);	// suitable for files
 
 
 
+// Move to Characters/FORMAT module
 			int		HexString2Int (const string& s);
 			int		HexString2Int (const wstring& s);
 			int		String2Int (const string& s);
@@ -154,6 +153,7 @@ namespace	Stroika {
 				size_t	Length (const T* p);
 
 
+// Move to Characters/LINEENDINGS module
 			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
@@ -163,17 +163,20 @@ namespace	Stroika {
 			template	<typename TCHAR>
 				basic_string<TCHAR>	CRLFToNL (const basic_string<TCHAR>& text);
 
+// Move to Characters/LINEENDINGS module
 			template	<typename TCHAR>
 				size_t	NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
 			template	<typename TCHAR>
 				basic_string<TCHAR>	NLToCRLF (const basic_string<TCHAR>& text);
 
 
+// Move to Characters/LINEENDINGS module
 			template	<typename TCHAR>
 				size_t	NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
 			template	<typename TCHAR>
 				basic_string<TCHAR>	NLToNative (const basic_string<TCHAR>& text);
 
+// Move to Characters/LINEENDINGS module
 			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
