@@ -154,8 +154,8 @@ namespace	Stroika {
 
                 public:
                     // support for Range based for, and stl style iteration in general (containers must also support begin, end)
-                    nonvirtual  const   T   operator* ();
-                    nonvirtual  const void  operator++ ();
+                    nonvirtual  T       operator* () const;
+                    nonvirtual  void    operator++ ();
                     nonvirtual  bool    operator!= (IterationState rhs);
 
 

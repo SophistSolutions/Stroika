@@ -65,17 +65,17 @@ namespace	Stroika {
                 return (fCurrent);
             }
 
-             template	<typename T> inline      const   T   operator* () const
+            template	<typename T>  inline    T   Iterator<T>::operator* () const
             {
                 return Current ();
             }
 
-             template	<typename T> inline       const void  operator++ ()
+            template	<typename T>   inline   void  Iterator<T>::operator++ ()
             {
                 More ();
             }
 
-             template	<typename T> inline       bool    operator!= (IterationState rhs)
+            template	<typename T> inline bool   Iterator<T>::operator!= (IterationState rhs)
             {
                 return (not fIterator->Done ());
             }
