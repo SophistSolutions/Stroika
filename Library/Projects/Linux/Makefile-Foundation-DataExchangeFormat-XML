@@ -9,6 +9,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Namespace.o\
+	$(ObjDir)SAXObjectReader.o\
 	$(ObjDir)SAXReader.o\
 
 all:	$(Objs)

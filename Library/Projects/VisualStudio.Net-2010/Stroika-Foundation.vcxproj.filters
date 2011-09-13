@@ -273,6 +273,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.cpp">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -534,6 +537,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -724,6 +730,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
     </None>
   </ItemGroup>
 </Project>
