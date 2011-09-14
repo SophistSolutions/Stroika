@@ -4,6 +4,7 @@
 #include	"../../StroikaPreComp.h"
 
 #include	"../../Characters/StringUtils.h"
+#include	"../BadFormatException.h"
 
 #include	"SAXObjectReader.h"
 
@@ -15,13 +16,8 @@ using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
 
 
 
-namespace	{
-	void	ThrowUnRecognizedStartElt_ (const String& uri, const String& localName)
-		{
-			//tmphack impl
-			throw Execution::StringException (L"FIX _ DO SPECIAL TYPE FOR THIS - UNRECOGNIZED START ELT IN XML PARSOING");
-		}
-}
+
+
 
 
 /*
@@ -46,32 +42,90 @@ class	SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 			}
 		virtual	void	StartElement (const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 			{
-				AssertNotNull (fSAXObjectReader_.fStack.back ());
-				fSAXObjectReader_.fStack.back ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
+				AssertNotNull (fSAXObjectReader_.fStack_.back ());
+				fSAXObjectReader_.fStack_.back ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
 			}
 		virtual	void	EndElement (const String& uri, const String& localName, const String& qname) override
 			{
-				AssertNotNull (fSAXObjectReader_.fStack.back ());
-				fSAXObjectReader_.fStack.back ()->HandleEndTag (fSAXObjectReader_);
+				AssertNotNull (fSAXObjectReader_.fStack_.back ());
+				fSAXObjectReader_.fStack_.back ()->HandleEndTag (fSAXObjectReader_);
 			}
 		virtual	void	CharactersInsideElement (const String& text) override
 			{
-				AssertNotNull (fSAXObjectReader_.fStack.back ());
-				fSAXObjectReader_.fStack.back ()->HandleTextInside (fSAXObjectReader_, text);
+				AssertNotNull (fSAXObjectReader_.fStack_.back ());
+				fSAXObjectReader_.fStack_.back ()->HandleTextInside (fSAXObjectReader_, text);
 			}
 };
 
-void	SAXObjectReader::Run (ObjectBase* docEltBuilder, istream& in)
+namespace	{
+	struct DocumentReader_ : public SAXObjectReader::ObjectBase {
+		Memory::SharedPtr<ObjectBase>	fDocEltBuilder;
+		bool							fAnyDocElt;
+		String							fDocEltURI;
+		String							fDocEltName;
+		DocumentReader_ (const Memory::SharedPtr<ObjectBase>& docEltBuilder)
+			: fDocEltBuilder (docEltBuilder)
+			, fAnyDocElt (true)
+			, fDocEltURI ()
+			, fDocEltName ()
+			{
+			}
+		DocumentReader_ (const Memory::SharedPtr<ObjectBase>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
+			: fDocEltBuilder (docEltBuilder)
+			, fAnyDocElt (false)
+			, fDocEltURI (checkURI)
+			, fDocEltName (checkDocEltName)
+			{
+			}
+		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+			{
+				if (not fAnyDocElt) {
+					if (localName != fDocEltName or uri != fDocEltURI) {
+						ThrowUnRecognizedStartElt (uri, localName);
+					}
+				}
+				r.Push (fDocEltBuilder);
+			}
+		virtual	void	HandleTextInside (SAXObjectReader &r, const String& text)  override
+			{
+				// OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
+				// assure input is valid
+				Assert (text.IsWhitespace ());
+			}
+		virtual	void	HandleEndTag (SAXObjectReader &r) override
+			{
+				r.Pop ();
+			}
+	};
+}
+void	SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, istream& in)
 {
 	RequireNotNull (docEltBuilder);
-	Require (fStack.size () == 0);
+	Require (fStack_.size () == 0);
 
-	Push (Memory::SharedPtr<ObjectBase> (docEltBuilder));
+	Push (Memory::SharedPtr<ObjectBase> (new DocumentReader_ (docEltBuilder)));
 
 	MyCallback_ cb (*this);
 	SAXParse (in, cb);
 
-	Require (fStack.size () == 0);
+	Pop ();	// the docuemnt reader we just added
+
+	Ensure (fStack_.size () == 0);
+}
+
+void	SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, istream& in)
+{
+	RequireNotNull (docEltBuilder);
+	Require (fStack_.size () == 0);
+
+	Push (Memory::SharedPtr<ObjectBase> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
+
+	MyCallback_ cb (*this);
+	SAXParse (in, cb);
+
+	Pop ();	// the docuemnt reader we just added
+
+	Ensure (fStack_.size () == 0);
 }
 
 
@@ -98,11 +152,12 @@ SAXObjectReader::ObjectBase::~ObjectBase ()
 BuiltinReader<String>::BuiltinReader (String* intoVal)
 	: value_ (intoVal)
 {
+	RequireNotNull (intoVal);
 }
 
 void	BuiltinReader<String>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 {
-	ThrowUnRecognizedStartElt_ (uri, localName);
+	ThrowUnRecognizedStartElt (uri, localName);
 }
 
 void	BuiltinReader<String>::HandleTextInside (SAXObjectReader &r, const String& text) override
@@ -131,11 +186,12 @@ BuiltinReader<int>::BuiltinReader (int* intoVal)
 	: value_ (intoVal)
 	, tmpVal_ ()
 {
+	RequireNotNull (intoVal);
 }
 
 void	BuiltinReader<int>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 {
-	ThrowUnRecognizedStartElt_ (uri, localName);
+	ThrowUnRecognizedStartElt (uri, localName);
 }
 
 void	BuiltinReader<int>::HandleTextInside (SAXObjectReader &r, const String& text) override
@@ -156,18 +212,19 @@ void	BuiltinReader<int>::HandleEndTag (SAXObjectReader &r) override
 
 /*
  ********************************************************************************
- ************************* XML::BuiltinReader<Time::DateTime> ***************************
+ ********************** XML::BuiltinReader<Time::DateTime> **********************
  ********************************************************************************
  */
 BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
 	: value_ (intoVal)
 	, tmpVal_ ()
 {
+	RequireNotNull (intoVal);
 }
 
 void	BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 {
-	ThrowUnRecognizedStartElt_ (uri, localName);
+	ThrowUnRecognizedStartElt (uri, localName);
 }
 
 void	BuiltinReader<Time::DateTime>::HandleTextInside (SAXObjectReader &r, const String& text) override
@@ -181,3 +238,20 @@ void	BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader &r) override
 {
 	r.Pop ();
 }
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** XML::ThrowUnRecognizedStartElt **********************
+ ********************************************************************************
+ */
+void	XML::ThrowUnRecognizedStartElt (const String& uri, const String& localName)
+{
+	Execution::DoThrow (BadFormatException (Characters::Format (L"Unrecognized start tag '%s'", localName.c_str ())));
+}
+
+

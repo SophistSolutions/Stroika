@@ -18,12 +18,12 @@ namespace	Stroika {
 				//	class	SAXObjectReader
 				inline	void	SAXObjectReader::Push (const Memory::SharedPtr<ObjectBase>& elt)
 					{
-						Containers::ReserveSpeedTweekAdd1 (fStack);
-						fStack.push_back (elt);
+						Containers::ReserveSpeedTweekAdd1 (fStack_);
+						fStack_.push_back (elt);
 					}
 				inline	void	SAXObjectReader::Pop ()
 					{
-						fStack.pop_back ();
+						fStack_.pop_back ();
 					}
 
 

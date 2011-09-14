@@ -166,7 +166,7 @@ namespace	{
 					_PushNewObjPtr (r, new BuiltinReader<String> (&valuePtr->lastName));
 				}
 				else {
-//					ThrowUnRecognizedStartElt (uri, localName);
+					ThrowUnRecognizedStartElt (uri, localName);
 				}
 			}
 	};
@@ -188,7 +188,7 @@ namespace	{
 					_PushNewObjPtr (r, new PersonReader_ (&valuePtr->withWhom));
 				}
 				else {
-//					ThrowUnRecognizedStartElt (uri, localName);
+					ThrowUnRecognizedStartElt (uri, localName);
 				}
 			}
 	};
@@ -211,7 +211,7 @@ namespace	{
 
 			SAXObjectReader	reader;
 			Appointment_		appointment;
-			reader.Run (new AppointmentReader_ (&appointment), tmpStrm);
+			reader.Run (Memory::SharedPtr<SAXObjectReader::ObjectBase> (new AppointmentReader_ (&appointment)), tmpStrm);
 			VerifyTestResult (appointment.withWhom.firstName == L"Jim");
 			VerifyTestResult (appointment.withWhom.lastName == L"Smith");
 			VerifyTestResult (appointment.when.GetDate () == Time::Date (Time::Date::Year (2005), Time::Date::eJune, Time::Date::DayOfMonth (1)));
