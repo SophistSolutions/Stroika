@@ -135,7 +135,7 @@ Date::Date (const wstring& rep, XML)
 // horrible hack - very bad... but hopefully gets us limping along...
 		string tmp = WideStringToASCII (rep);
 		convert_iso8601 (tmp.c_str (), tmp.length (), &tm);
-		fJulianDateRep = jday (tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
+		fJulianDateRep = Safe_jday (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900));
 #else
 		AssertNotImplemented ();
 #endif
