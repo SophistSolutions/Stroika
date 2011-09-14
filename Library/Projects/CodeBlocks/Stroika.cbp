@@ -103,6 +103,8 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/LRUCache.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Private/Array.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Private/Array.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Private/LinkedList.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Private/LinkedList.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/SetUtils.inl" />

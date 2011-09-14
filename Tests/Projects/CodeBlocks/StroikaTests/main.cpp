@@ -57,10 +57,15 @@ int main()
         cout << "Testing Arrays" << endl;
         Test_Arrays ();
     #endif
-     #if 1
+	#if 1
         extern  int Test_Bags ();
         cout << "Testing Bag" << endl;
         Test_Bags ();
+    #endif
+    #if 1
+		extern  int Test_LinkedList ();
+        cout << "Testing Linked List" << endl;
+        Test_LinkedList ();
     #endif
     return 0;
 }

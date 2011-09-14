@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Stroika">
-		<Project filename="../../../Tests/Projects/CodeBlocks/StroikaTests/StroikaTests.cbp" active="1" />
+		<Project filename="../../../Tests/Projects/CodeBlocks/StroikaTests/StroikaTests.cbp" active="1">
+			<Depends filename="Stroika.cbp" />
+		</Project>
 		<Project filename="Stroika.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
