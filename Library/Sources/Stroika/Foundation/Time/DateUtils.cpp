@@ -8,7 +8,6 @@
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
-	// NEED UNIX DEFINE
 	#include <time.h>
 #endif
 
@@ -133,7 +132,7 @@ Date::Date (const wstring& rep, XML)
 #elif	qPlatform_POSIX
 		struct tm tm;
 		memset(&tm, 0, sizeof(struct tm));
-		convert_iso8601(date, sizeof(date), &tm);
+		convert_iso8601 (rep.c_str (), rep.length (), &tm);
 		fDateRep = jday (tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
 #else
 		AssertNotImplemented ();
