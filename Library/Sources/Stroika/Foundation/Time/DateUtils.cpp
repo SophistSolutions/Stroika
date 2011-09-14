@@ -7,7 +7,7 @@
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
-#elif	_POSIX_SOURCE
+#elif	qPlatform_POSIX
 	// NEED UNIX DEFINE
 	#include <time.h>
 #endif
@@ -91,7 +91,7 @@ Date::Date (const FILETIME& fileTime)
 }
 #endif
 
-#if		_POSIX_SOURCE
+#if		qPlatform_POSIX
 namespace	{
 	// VERY PRIMITIVE UNIX
 	void convert_iso8601 (const char *time_string, int ts_len, struct tm *tm_data)
@@ -105,8 +105,8 @@ namespace	{
 			memset(&amp;ctime, 0, sizeof(struct tm));
 			strptime(temp, "%FT%T%z", &amp;ctime);
 
-			long ts = mktime(&amp;ctime) - timezone;
-			localtime_r(&amp;ts, tm_data);
+			long ts = mktime(&ctime) - timezone;
+			localtime_r (&ts, tm_data);
 		}
 }
 #endif
@@ -130,7 +130,7 @@ Date::Date (const wstring& rep, XML)
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
-#elif	defined (_POSIX_SOURCE)
+#elif	qPlatform_POSIX
 		struct tm tm;
 		memset(&tm, 0, sizeof(struct tm));
 		convert_iso8601(date, sizeof(date), &tm);

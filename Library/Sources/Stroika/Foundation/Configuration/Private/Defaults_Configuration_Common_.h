@@ -127,5 +127,16 @@
 
 
 
+	// POSIX support
+	#if		!defined (qPlatform_POSIX)
+		#if		!qPlatform_Windows && defined (_POSIX_SOURCE)
+			#define	qPlatform_POSIX	1
+		#else
+			#define	qPlatform_POSIX	0
+		#endif
+	#endif
+
+
+
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_*/
