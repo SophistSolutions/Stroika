@@ -6,6 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	"../Memory/Optional.h"
 #include	"../Execution/StringException.h"
 
 namespace	Stroika {	
@@ -17,9 +18,17 @@ namespace	Stroika {
 				public:
 					BadFormatException ();
 					BadFormatException (const wstring& details);
+					BadFormatException (const wstring& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset);
 
 				public:
 					nonvirtual	wstring	GetDetails () const;
+
+				public:
+					nonvirtual	void	GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const;
+				private:
+					Memory::Optional<unsigned int>	fLineNumber;
+					Memory::Optional<unsigned int>	fColumnNumber;
+					Memory::Optional<uint64_t>		fFileOffset;
 
 				private:
 					wstring	fDetails_;
