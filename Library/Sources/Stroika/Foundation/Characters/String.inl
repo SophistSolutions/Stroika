@@ -154,7 +154,6 @@ namespace	Stroika {
 
 
 
-
 			inline	bool	operator!= (const String& lhs, const String& rhs)
 				{
 					return (bool (not (lhs == rhs)));
