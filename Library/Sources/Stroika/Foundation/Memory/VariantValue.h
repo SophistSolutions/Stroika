@@ -10,7 +10,7 @@
 #include	<vector>
 
 #include	"../Configuration/Common.h"
-#include	"../Time/DateUtils.h"
+#include	"../Time/DateTime.h"
 
 #include	"SharedPtr.h"
 

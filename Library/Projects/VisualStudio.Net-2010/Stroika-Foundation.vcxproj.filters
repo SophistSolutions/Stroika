@@ -117,9 +117,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.cpp">
       <Filter>Sources\Containers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.cpp">
-      <Filter>Sources\Time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -287,6 +284,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.cpp">
       <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp">
+      <Filter>Sources\Time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -561,6 +570,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTime.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -598,9 +619,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.inl">
-      <Filter>Sources\Time</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
       <Filter>Sources\Time</Filter>
@@ -763,6 +781,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl">
+      <Filter>Sources\Time</Filter>
     </None>
   </ItemGroup>
 </Project>
