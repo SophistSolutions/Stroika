@@ -102,8 +102,8 @@ namespace	{
 			strncpy(temp, time_string, ts_len);
 
 			struct tm ctime;
-			memset(&amp;ctime, 0, sizeof(struct tm));
-			strptime(temp, "%FT%T%z", &amp;ctime);
+			memset(&ctime, 0, sizeof(struct tm));
+			strptime(temp, "%FT%T%z", &ctime);
 
 			long ts = mktime(&ctime) - timezone;
 			localtime_r (&ts, tm_data);
