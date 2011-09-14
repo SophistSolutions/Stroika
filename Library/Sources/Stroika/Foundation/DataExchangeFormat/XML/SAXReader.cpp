@@ -531,11 +531,11 @@ void	SAXCallbackInterface::EndDocument ()
 {
 }
 
-void	SAXCallbackInterface::StartElement (const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs)
+void	SAXCallbackInterface::StartElement (const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs)
 {
 }
 
-void	SAXCallbackInterface::EndElement (const String& uri, const String& localname, const String& qname)
+void	SAXCallbackInterface::EndElement (const String& uri, const String& localName, const String& qname)
 {
 }
 
@@ -580,10 +580,10 @@ namespace	{
 				}
 
 		public:
-			virtual		void startElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes& attributes) override
+			virtual		void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override
 				{
 					Require (uri != nullptr);
-					Require (localname != nullptr);
+					Require (localName != nullptr);
 					Require (qname != nullptr);
 					map<String,Memory::VariantValue>	attrs;
 					for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
@@ -591,14 +591,14 @@ namespace	{
 						const XMLCh* val = attributes.getValue (i);
 						attrs.insert (map<String,VariantValue>::value_type (xercesString2String_ (localAttrName), val));
 					}
-					fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localname), xercesString2String_ (qname), attrs);
+					fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname), attrs);
 				}
-			virtual		void	endElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname) override
+			virtual		void	endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
 				{
 					Require (uri != nullptr);
-					Require (localname != nullptr);
+					Require (localName != nullptr);
 					Require (qname != nullptr);
-					fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localname), xercesString2String_ (qname));
+					fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname));
 				}
 			virtual		void	characters (const XMLCh* const chars, const XMLSize_t length) override
 				{

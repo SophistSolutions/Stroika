@@ -34,9 +34,9 @@ namespace	Stroika {
 						private:
 							String* value_;
 						public:
-							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
-							virtual	void	HandleTextInside (SAXObjectReader &r, String text) override;
-							virtual	void	HanldeEndTag (SAXObjectReader &r) override;
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
 				template	<>
 					class	BuiltinReader<int> : public SAXObjectReader::ObjectBase {
@@ -46,9 +46,9 @@ namespace	Stroika {
 							String	tmpVal_;
 							int*	value_;
 						public:
-							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
-							virtual	void	HandleTextInside (SAXObjectReader &r, String text) override;
-							virtual	void	HanldeEndTag (SAXObjectReader &r) override;
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
 				template	<>
 					class	BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
@@ -58,10 +58,40 @@ namespace	Stroika {
 							String			tmpVal_;
 							Time::DateTime* value_;
 						public:
-							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
-							virtual	void	HandleTextInside (SAXObjectReader &r, String text) override;
-							virtual	void	HanldeEndTag (SAXObjectReader &r) override;
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
+
+
+
+
+				template	<typename	T>
+					inline	ComplexObjectReader<T>::ComplexObjectReader (T* vp)
+						: valuePtr (vp)
+						{
+							RequireNotNull (vp);
+						}
+				template	<typename	T>
+					void	ComplexObjectReader<T>::HandleTextInside (SAXObjectReader &r, const String& text) override
+						{
+							// OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
+							// assure input is valid
+							Assert (text.IsWhitespace ());
+						}
+				template	<typename	T>
+					void	ComplexObjectReader<T>::HandleEndTag (SAXObjectReader &r) override
+						{
+							r.Pop ();
+						}
+				template	<typename	T>
+					void	ComplexObjectReader<T>::_PushNewObjPtr (SAXObjectReader &r, ObjectBase* newlyAllocatedObject2Push)
+						{
+							RequireNotNull (newlyAllocatedObject2Push);
+							r.Push (Memory::SharedPtr<ObjectBase> (newlyAllocatedObject2Push));
+						}
+
+
 			}
 		}
 	}

@@ -20,8 +20,6 @@ namespace	Stroika {
 			namespace	XML {
 
 
-
-
 				/*
 				 *		NEEED EXPLANATION OF HOW TO USE - DOCS
 				 */
@@ -40,15 +38,18 @@ namespace	Stroika {
 	
 					private:
 						vector<Memory::SharedPtr<ObjectBase>> fStack;
+
+					private:
+						class	MyCallback_;
 				};
 
 
 				class	SAXObjectReader::ObjectBase {
 					public:
 						virtual ~ObjectBase ();
-						virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) = 0;
-						virtual	void	HandleTextInside (SAXObjectReader &r, String text) = 0;
-						virtual	void	HanldeEndTag (SAXObjectReader &r) = 0;
+						virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) = 0;
+						virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) = 0;
+						virtual	void	HandleEndTag (SAXObjectReader &r) = 0;
 				};
 
 
@@ -67,9 +68,9 @@ namespace	Stroika {
 							T* value_;
 	
 						public:
-							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
-							virtual	void	HandleTextInside (SAXObjectReader &r, String text) override;
-							virtual	void	HanldeEndTag (SAXObjectReader &r) override;
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
 
 				template	<>
@@ -78,6 +79,27 @@ namespace	Stroika {
 					class	BuiltinReader<int>;
 				template	<>
 					class	BuiltinReader<Time::DateTime>;
+
+
+
+				/*
+				 * Helper class for reading complex (structured) objects.
+				 */
+				template	<typename	T>
+					class	ComplexObjectReader : public SAXObjectReader::ObjectBase {
+						protected:
+							ComplexObjectReader (T* vp);
+
+						public:
+							T*	valuePtr;
+	
+						public:
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
+						protected:
+							nonvirtual	void	_PushNewObjPtr (SAXObjectReader &r, ObjectBase* newlyAllocatedObject2Push);
+					};
+	
 
 			}
 		}
