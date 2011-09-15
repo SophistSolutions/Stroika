@@ -20,10 +20,13 @@ namespace	Stroika {
 			namespace	XML {
 
 
-
-
 				/*
-				 *		NEEED EXPLANATION OF HOW TO USE - DOCS
+				 *		The basic idea of the SAXObjectReader is to make it easier to write C++ code to deserialize an XML source (via SAX), into
+				 *	a C++ data structure. This tends to be MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing the DOM
+				 *	with XPath. So why would you do it? This way is dramatically more efficeint. For one thing - there is no need to have the entire source in memory at
+				 *	a time, and there is no need to ever construct intermediary DOM nodes.
+				 *
+				 *		We need good docs - on how to use this - but for the time being, just look at the example usage in the regression test.
 				 */
 				class SAXObjectReader {
 					public:
@@ -35,20 +38,24 @@ namespace	Stroika {
 
 					public:
 						// puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve recieved
-						// a HandleCHildStar tand HandleEndTag() method call (exactly once).
-						virtual	void	Run (ObjectBase* docEltBuilder, istream& in);
+						// a HandleChildStar tand HandleEndTag() method call (exactly once).
+						nonvirtual	void	Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, istream& in);
+						nonvirtual	void	Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, istream& in);
 	
 					private:
-						vector<Memory::SharedPtr<ObjectBase>> fStack;
+						vector<Memory::SharedPtr<ObjectBase>> fStack_;
+
+					private:
+						class	MyCallback_;
 				};
 
 
 				class	SAXObjectReader::ObjectBase {
 					public:
 						virtual ~ObjectBase ();
-						virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) = 0;
-						virtual	void	HandleTextInside (SAXObjectReader &r, String text) = 0;
-						virtual	void	HanldeEndTag (SAXObjectReader &r) = 0;
+						virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) = 0;
+						virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) = 0;
+						virtual	void	HandleEndTag (SAXObjectReader &r) = 0;
 				};
 
 
@@ -67,9 +74,9 @@ namespace	Stroika {
 							T* value_;
 	
 						public:
-							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
-							virtual	void	HandleTextInside (SAXObjectReader &r, String text) override;
-							virtual	void	HanldeEndTag (SAXObjectReader &r) override;
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
 
 				template	<>
@@ -78,6 +85,29 @@ namespace	Stroika {
 					class	BuiltinReader<int>;
 				template	<>
 					class	BuiltinReader<Time::DateTime>;
+
+
+
+				/*
+				 * Helper class for reading complex (structured) objects.
+				 */
+				template	<typename	T>
+					class	ComplexObjectReader : public SAXObjectReader::ObjectBase {
+						protected:
+							ComplexObjectReader (T* vp);
+
+						public:
+							T*	valuePtr;
+	
+						public:
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
+						protected:
+							nonvirtual	void	_PushNewObjPtr (SAXObjectReader &r, ObjectBase* newlyAllocatedObject2Push);
+					};
+	
+
+				void	ThrowUnRecognizedStartElt (const String& uri, const String& localName);
 
 			}
 		}

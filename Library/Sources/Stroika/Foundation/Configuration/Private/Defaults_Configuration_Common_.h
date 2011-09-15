@@ -45,19 +45,19 @@
 
 	// Define qPlatform_Windows (by inference from other defines)
 	#if		!defined (qPlatform_Windows)
-		#if		defined(_WINDOWS)
+		#if		defined (_WINDOWS)
 			#define	qPlatform_Windows	1
 		#endif
 	#endif
 
 	// Define qPlatform_Win32 and qPlatform_Win64 (by inference from other defines)
 	#if		!defined (qPlatform_Win32) || !defined (qPlatform_Win64)
-		#if		defined(_WIN64)
+		#if		defined (_WIN64)
 			#define	qPlatform_Win64		1
 			#define	qPlatform_Win32		0
 			// in case only _WIN32 defined
 			#define	qPlatform_Windows	1
-		#elif		defined(_WIN32)
+		#elif		defined (_WIN32)
 			#define	qPlatform_Win64		0
 			#define	qPlatform_Win32		1
 			// in case only _WIN32 defined
@@ -126,6 +126,24 @@
 	#endif
 
 
+
+	// POSIX support
+	#if		!defined (qPlatform_POSIX)
+		// not sure 
+		#if		qPlatform_Windows
+			#define	qPlatform_POSIX	0
+		#elif	defined (_POSIX_SOURCE) || defined (__unix__)
+			// Not really sure which defines to look for --LGP 2011-09-13
+			#define	qPlatform_POSIX	1
+		#else
+			#define	qPlatform_POSIX	0
+		#endif
+	#endif
+
+
+	#if		qPlatform_Windows && qPlatform_POSIX
+		#warning "Shouldn't have both Windows and POSIX platform flags set"
+	#endif
 
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_*/

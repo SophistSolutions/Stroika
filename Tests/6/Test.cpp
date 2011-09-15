@@ -7,6 +7,7 @@
 #include	<sstream>
 
 #include	"Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h"
+#include	"Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
 #include	"Stroika/Foundation/Containers/Common.h"
@@ -21,6 +22,8 @@ using	namespace	Stroika::Foundation::DataExchangeFormat;
 using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
 
 using	Stroika::Foundation::Debug::TraceContextBumper;
+
+
 
 
 namespace	{
@@ -113,14 +116,14 @@ namespace	{
 						{
 							Assert (fEltDepthCount == 0);
 						}
-					virtual	void	StartElement (const String& uri, const String& localname, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+					virtual	void	StartElement (const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 						{
 							fEltDepthCount++;
-							fEltStack.push_back (uri + L"/" + localname + L"/" + qname);
+							fEltStack.push_back (uri + L"/" + localName + L"/" + qname);
 						}
-					virtual	void	EndElement (const String& uri, const String& localname, const String& qname) override
+					virtual	void	EndElement (const String& uri, const String& localName, const String& qname) override
 						{
-							Assert (fEltStack.back () == uri + L"/" + localname + L"/" + qname);
+							Assert (fEltStack.back () == uri + L"/" + localName + L"/" + qname);
 							fEltStack.pop_back ();
 							fEltDepthCount--;
 						}
@@ -141,11 +144,88 @@ namespace	{
 
 
 
+
+
+namespace	{
+	struct	Person_ {
+		String firstName;
+		String lastName;
+	};
+	struct PersonReader_ : public ComplexObjectReader<Person_> {
+		PersonReader_ (Person_* v):
+			ComplexObjectReader<Person_> (v)
+			{
+			}
+		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+			{
+				RequireNotNull (valuePtr);
+				if (localName == L"FirstName") {
+					_PushNewObjPtr (r, new BuiltinReader<String> (&valuePtr->firstName));
+				}
+				else if (localName == L"LastName") {
+					_PushNewObjPtr (r, new BuiltinReader<String> (&valuePtr->lastName));
+				}
+				else {
+					ThrowUnRecognizedStartElt (uri, localName);
+				}
+			}
+	};
+	struct	Appointment_ {
+		Time::DateTime	when;
+		Person_			withWhom;
+	};
+	struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
+		AppointmentReader_ (Appointment_* v):
+			ComplexObjectReader<Appointment_> (v)
+			{
+			}
+		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+			{
+				if (localName == L"When") {
+					_PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&valuePtr->when));
+				}
+				else if (localName == L"WithWhom") {
+					_PushNewObjPtr (r, new PersonReader_ (&valuePtr->withWhom));
+				}
+				else {
+					ThrowUnRecognizedStartElt (uri, localName);
+				}
+			}
+	};
+
+	void	Test_2_SAXObjectReader_ ()
+		{
+			TraceContextBumper ctx (TSTR ("Test_2_SAXObjectReader_"));
+			const wstring	kNSTest	=	L"Test-NAMESPACE";
+			wstring	newDocXML	=
+					L"<Appointment xmlns=\"" + wstring (kNSTest) + L"\">\n"
+					L"	<When>2005-06-01T13:00:00-05:00</When>"
+					L"	<WithWhom>\n"
+					L"		<FirstName>Jim</FirstName>"
+					L"		<LastName>Smith</LastName>"
+					L"	</WithWhom>\n"
+					L"</Appointment>\n"
+				;
+			stringstream tmpStrm;
+			WriteTextStream_ (newDocXML, tmpStrm);
+
+			SAXObjectReader	reader;
+			Appointment_		appointment;
+			reader.Run (Memory::SharedPtr<SAXObjectReader::ObjectBase> (new AppointmentReader_ (&appointment)), tmpStrm);
+			VerifyTestResult (appointment.withWhom.firstName == L"Jim");
+			VerifyTestResult (appointment.withWhom.lastName == L"Smith");
+			VerifyTestResult (appointment.when.GetDate () == Time::Date (Time::Date::Year (2005), Time::Date::eJune, Time::Date::DayOfMonth (1)));
+		}
+}
+
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
 		{
 			Test_1_SAXParser_ ();
+			Test_2_SAXObjectReader_ ();
 		}
 }
 

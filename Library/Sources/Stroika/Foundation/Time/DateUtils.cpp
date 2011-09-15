@@ -7,6 +7,8 @@
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
+#elif	qPlatform_POSIX
+	#include <time.h>
 #endif
 
 #include	"../Debug/Assertions.h"
@@ -88,6 +90,26 @@ Date::Date (const FILETIME& fileTime)
 }
 #endif
 
+#if		qPlatform_POSIX
+namespace	{
+	// VERY PRIMITIVE UNIX
+	void convert_iso8601 (const char *time_string, int ts_len, struct tm *tm_data)
+		{
+			tzset();
+			char temp[64];
+			memset(temp, 0, sizeof(temp));
+			strncpy(temp, time_string, ts_len);
+
+			struct tm ctime;
+			memset(&ctime, 0, sizeof(struct tm));
+			strptime(temp, "%FT%T%z", &ctime);
+
+			long ts = mktime(&ctime) - timezone;
+			localtime_r (&ts, tm_data);
+		}
+}
+#endif
+
 Date::Date (const wstring& rep, XML)
 	: fJulianDateRep (kEmptyJulianRep)
 {
@@ -107,6 +129,13 @@ Date::Date (const wstring& rep, XML)
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
+#elif	qPlatform_POSIX
+		struct tm tm;
+		memset(&tm, 0, sizeof(struct tm));
+// horrible hack - very bad... but hopefully gets us limping along...
+		string tmp = WideStringToASCII (rep);
+		convert_iso8601 (tmp.c_str (), tmp.length (), &tm);
+		fJulianDateRep = Safe_jday (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900));
 #else
 		AssertNotImplemented ();
 #endif

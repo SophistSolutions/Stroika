@@ -480,6 +480,17 @@ String	String::ToUpperCase () const
 	return result;
 }
 
+bool String::IsWhitespace () const
+{
+	size_t	n	=	GetLength ();
+	for (size_t i = 0; i < n; ++i) {
+		Character	c	=	operator[] (i);
+		if (not c.IsWhitespace ()) {
+			return false;
+		}
+	}
+	return true;
+}
 
 template	<>
 	void	String::AsUTF8 (string* into) const

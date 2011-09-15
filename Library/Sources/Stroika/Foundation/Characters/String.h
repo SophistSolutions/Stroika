@@ -214,6 +214,11 @@ namespace	Stroika {
 					 */
 					nonvirtual	String	ToUpperCase () const;
 				
+					/*
+					 * Return true if the string contains zero non-whitespace characters.
+					 */
+					nonvirtual	bool	IsWhitespace () const;
+				
 				public:
                     /*
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
