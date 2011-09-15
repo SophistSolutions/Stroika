@@ -7,6 +7,8 @@
 
 #if		qPlatform_Windows
 	#include	<Windows.h>
+#elif	qPlatform_POSIX
+	#include	<time.h>
 #endif
 
 #include	"../Debug/Assertions.h"
@@ -47,10 +49,12 @@ DurationSecondsType	Stroika::Foundation::Time::GetTickCount ()
 			Verify (::QueryPerformanceCounter (&counter));
 			return static_cast<DurationSecondsType> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
 		}
+	#elif	qPlatform_POSIX
+		timespec ts;
+		Verify (clock_gettime (CLOCK_REALTIME, &ts) == 0);
+		return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 	#else
 		return time (0);	//tmphack... not good but better than assert erorr
-		AssertNotReached ();
-		return 0;
 	#endif
 }
 

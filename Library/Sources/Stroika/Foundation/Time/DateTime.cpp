@@ -32,21 +32,6 @@ using	namespace	Time;
 
 
 
-#if		qPlatform_Windows
-namespace	{
-	wstring	GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
-		{
-			int	sizeNeeded	=	::GetLocaleInfoW (Locale, LCType, nullptr, 0);
-			SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
-			Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
-			return wstring (buf);
-		}
-}
-#endif
-
-
-
-
 
 
 
@@ -83,6 +68,8 @@ DateTime::DateTime (const wstring& rep)
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fDate = Date (sysTime);
 		fTimeOfDay = TimeOfDay (sysTime);
+#elif	qPlatform_POSIX
+		AssertNotImplemented ();
 #else
 		AssertNotImplemented ();
 #endif
@@ -180,6 +167,8 @@ DateTime::DateTime (time_t unixTime):
 	ft.dwLowDateTime = (DWORD)ll;
 	ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
 	*this = DateTime (ft);
+#elif	qPlatform_POSIX
+	AssertNotImplemented ();
 #else
 	Assert (false);
 #endif
@@ -200,8 +189,11 @@ DateTime	DateTime::Now ()
 	memset (&st, 0, sizeof (st));
 	::GetLocalTime (&st);
 	return DateTime (st);
+#elif	qPlatform_POSIX
+	AssertNotImplemented ();
+	return DateTime ();
 #else
-	Assert (false);
+	AssertNotImplemented ();
 	return DateTime ();
 #endif
 }
@@ -210,6 +202,9 @@ wstring	DateTime::Format () const
 {
 #if		qPlatform_Windows
 	return Format (LOCALE_USER_DEFAULT);
+#elif	qPlatform_POSIX
+	AssertNotImplemented ();
+	return wstring ();
 #else
 	AssertNotImplemented ();
 	return wstring ();
@@ -265,8 +260,10 @@ wstring	DateTime::Format4XML () const
 				int	hrs	=	unsignedBias / 60;
 				int mins = unsignedBias - hrs * 60;
 				tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
+#elif	qPlatform_POSIX
+				AssertNotImplemented ();
 #else
-				Assert (false);
+	AssertNotImplemented ();
 #endif
 			}
 			r += wstring (L"T") + buf + tzBiasString;

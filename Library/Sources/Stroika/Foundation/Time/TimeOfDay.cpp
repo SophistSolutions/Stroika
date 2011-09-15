@@ -103,6 +103,8 @@ TimeOfDay::TimeOfDay (const wstring& rep)
 	memset (&sysTime, 0, sizeof (sysTime));
 	Verify (::VariantTimeToSystemTime (d, &sysTime));
 	*this = TimeOfDay (sysTime);
+#elif	qPlatform_POSIX
+	AssertNotImplemented ();
 #else
 	AssertNotImplemented ();
 #endif
@@ -220,7 +222,10 @@ namespace	{
 			 */
 
 			// we could keep recomputing this, but why pay the runtime cost? Restart app to get new locale info
-			static	const	wstring	kFormatStr	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT);
+			#if		qPlatform_Windows
+				static	const	wstring	kFormatStr	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT);
+			#else
+			#endif
 
 			// This is what I couldn't get the MSFT default locale display stuff todo
 			// We want to show 3pm, not 3:00:00pm.
@@ -328,59 +333,13 @@ wstring	TimeOfDay::Format (LCID lcid) const
 		return wstring ();
 	}
 	else {
-		#if	1
-			int hour = fTime/(60*60);
-			int minutes = (fTime - hour * 60 * 60) / 60;
-			int secs = fTime - hour * 60 * 60 - minutes * 60;
-			Assert (hour >= 0 and hour < 24);
-			Assert (minutes >= 0 and minutes < 60);
-			Assert (secs >= 0 and secs < 60);
-			return GenTimeStr4TOD_ (hour, minutes, secs);
-		#elif	1
-			// Simpler and maybe safer than GenTimeStr4TOD_ - but alas - doesn't have the ability to
-			// remove trailing zeros...
-			DATE	variantDate	=	0.0;
-			ThrowIfErrorHRESULT (::SystemTimeToVariantTime (&operator SYSTEMTIME (), &variantDate));
-			BSTR	tmpStr	=	nullptr;
-			ThrowIfErrorHRESULT (::VarBstrFromDate (variantDate, lcid, VAR_TIMEVALUEONLY, &tmpStr));
-			wstring	result	=	BSTR2wstring (tmpStr);
-			::SysFreeString (tmpStr);
-			return result;
-		#elif 1
-			int hour = fTime/(60*60);
-			int minutes = (fTime - hour * 60 * 60) / 60;
-			int secs = fTime - hour * 60 * 60 - minutes * 60;
-			Assert (hour >= 0 and hour < 24);
-			Assert (minutes >= 0 and minutes < 60);
-			Assert (secs >= 0 and secs < 60);
-			int pmFlag =	hour>=12;
-			if (pmFlag) {
-				hour -= 12;
-			}
-			if (hour == 0) {
-				hour = 12;
-			}
-			const wchar_t* pmFlagStr	=	pmFlag?L"PM":L"AM";
-			if (secs == 0 and minutes == 0) {
-				return ::Format (L"%d %s", hour, pmFlagStr);
-			}
-			else if (secs == 0) {
-				return ::Format (L"%d:%02d %s", hour, minutes, pmFlagStr);
-			}
-			else {
-				return ::Format (L"%d:%02d:%02d %s", hour, minutes, secs, pmFlagStr);
-			}
-		#else
-			wchar_t	buf[1024];
-			buf[0] = 0;
-			__time64_t	t	=	fTime;
-			struct tm	 temp;
-			memset (&temp, 0, sizeof (temp));
-			temp.tm_hour = fTime/(60*60);
-			temp.tm_min = fTime - temp.tm_hour * 60 * 60;
-			wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);
-			return buf;
-		#endif
+		int hour = fTime/(60*60);
+		int minutes = (fTime - hour * 60 * 60) / 60;
+		int secs = fTime - hour * 60 * 60 - minutes * 60;
+		Assert (hour >= 0 and hour < 24);
+		Assert (minutes >= 0 and minutes < 60);
+		Assert (secs >= 0 and secs < 60);
+		return GenTimeStr4TOD_ (hour, minutes, secs);
 	}
 }
 #endif

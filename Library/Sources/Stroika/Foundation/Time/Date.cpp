@@ -32,17 +32,9 @@ using	namespace	Time;
 
 
 
-#if		qPlatform_Windows
-namespace	{
-	wstring	GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
-		{
-			int	sizeNeeded	=	::GetLocaleInfoW (Locale, LCType, nullptr, 0);
-			SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
-			Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
-			return wstring (buf);
-		}
-}
-#endif
+
+
+
 
 
 
