@@ -14,6 +14,7 @@
 #if		qPlatform_Windows
 	#include	<windows.h>
 #elif	qPlatform_POSIX
+	#include	<time.h>
 	#include	<unistd.h>
 #endif
 
