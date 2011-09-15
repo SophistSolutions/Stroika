@@ -36,6 +36,7 @@ namespace	Stroika {
 							timespec	ts;
 							ts.tv_sec = int (seconds2Wait);
 							ts.tv_nsec = int (1000 * 1000 * 1000 * (seconds2Wait - ts.tv_sec));
+							Assert (0 >= ts.tv_nsec and ts.tv_nsec <= 999999999);
 							(void)::nanosleep (&ts, nullptr);
 						#else
 							AssertNotImplemented ();
