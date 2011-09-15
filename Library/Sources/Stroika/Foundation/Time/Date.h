@@ -24,27 +24,12 @@
 			operator
 		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
 		o	add if POSIX to list of ifdefs we support and where easy support them and where not - oh well
-		o	Replace (reserach firrst) use of name XML here with iso8601.
+		o	Replace (research first) use of name XML here with iso8601.
 			+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
 				XML really is its own - nearly identical to iso8601, but see deviations...
 				Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
-
 		o	Add regression test suite (TEST 7)
-
-		o	Probably use times() for tickcount:
-				#include <sys/times.h>
-				clock_t times(struct tms *buf);
  */
-
-
-
-/*
-	+	Only test suite code to lift from old stroika is:
- */
-#if 0
-
-
-#endif
 
 
 

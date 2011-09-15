@@ -3,18 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	<algorithm>
-
-#if		qPlatform_Windows
-	#include	<atlbase.h>		// For CComBSTR
-#elif	qPlatform_POSIX
-	#include <time.h>
-	//not sure needed?#include	<sys/times.h>
-#endif
-
 #include	"../Debug/Assertions.h"
-#include	"../Execution/Exceptions.h"
-#include	"../Memory/SmallStackBuffer.h"
 #include	"../Linguistics/Words.h"
 
 #include	"Duration.h"
@@ -22,27 +11,12 @@
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
-using	namespace	Stroika::Foundation::Execution;
-using	namespace	Stroika::Foundation::Memory;
 using	namespace	Stroika::Foundation::Time;
 
 using	Debug::TraceContextBumper;
 
 using	namespace	Time;
 
-
-
-#if		qPlatform_Windows
-namespace	{
-	wstring	GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
-		{
-			int	sizeNeeded	=	::GetLocaleInfoW (Locale, LCType, nullptr, 0);
-			SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
-			Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
-			return wstring (buf);
-		}
-}
-#endif
 
 
 
