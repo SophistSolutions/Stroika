@@ -7,6 +7,8 @@
 
 #if		qPlatform_Windows
 	#include	<Windows.h>
+#elif	qPlatform_POSIX
+	#include	<time.h>
 #endif
 
 #include	"../Debug/Assertions.h"
@@ -27,21 +29,6 @@ using	namespace	Stroika::Foundation::Time;
 
 
 
-/*
-@METHOD:		GetTickCount
-@DESCRIPTION:	<p>Get the number of seconds since some constant, system-specified reference time. This is used
-			to tell how much time has elapsed since a particular event.</p>
-				<p>Note - though this is based on the same reference time as an time values packed into event records,
-			it maybe differently normalized. These times are all in seconds, whereas event records are often in
-			other units (ticks - 1/60 of a second, or milliseconds).</p>
-				<p>In the case of X-Windows - this business is very complicated because there are two different times
-			one might be intersted in. There is the time on the client (where Led is running) and the time on the X-Server
-			(users computer screen). Alas - X11R4 appears to have quite weak support for time - and offers no way I've found
-			to accurately get the time from the users computer. As a result - with X-Windows - you must arrange to call
-			@'SyncronizeLedXTickCount' for each event that specifies a time value (as soon as that event arrives). This
-			data - together with time values from the client (where Led is running) computer will be used to provide a
-			better approximation of the true elapsed time.</p>
-*/
 DurationSecondsType	Stroika::Foundation::Time::GetTickCount ()
 {
 	#if		qPlatform_Windows
@@ -62,10 +49,12 @@ DurationSecondsType	Stroika::Foundation::Time::GetTickCount ()
 			Verify (::QueryPerformanceCounter (&counter));
 			return static_cast<DurationSecondsType> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
 		}
+	#elif	qPlatform_POSIX
+		timespec ts;
+		Verify (clock_gettime (CLOCK_REALTIME, &ts) == 0);
+		return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 	#else
 		return time (0);	//tmphack... not good but better than assert erorr
-		AssertNotReached ();
-		return 0;
 	#endif
 }
 

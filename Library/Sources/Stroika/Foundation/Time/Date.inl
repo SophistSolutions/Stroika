@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Time_DateUtils_inl_
-#define	_Stroika_Foundation_Time_DateUtils_inl_	1
+#ifndef	_Stroika_Foundation_Time_Date_inl_
+#define	_Stroika_Foundation_Time_Date_inl_	1
 
 
 /*
@@ -54,60 +54,6 @@ namespace	Stroika {
 						return lhs.GetJulianRep () != rhs.GetJulianRep ();
 					}
 
-
-
-
-			//	class TimeOfDay
-				inline	bool	TimeOfDay::empty () const
-					{
-						return fTime == static_cast<unsigned int> (-1);
-					}
-				inline	unsigned int	TimeOfDay::GetAsSecondsCount () const
-					{
-						if (empty ()) {
-							return 0;
-						}
-						return fTime;
-					}
-				inline	bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs)
-					{
-						return lhs.GetAsSecondsCount () < rhs.GetAsSecondsCount ();
-					}
-				inline	bool operator> (const TimeOfDay& lhs, const TimeOfDay& rhs)
-					{
-						return lhs.GetAsSecondsCount () > rhs.GetAsSecondsCount ();
-					}
-				inline	bool operator== (const TimeOfDay& lhs, const TimeOfDay& rhs)
-					{
-						return lhs.GetAsSecondsCount () == rhs.GetAsSecondsCount ();
-					}
-				inline	bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs)
-					{
-						return lhs.GetAsSecondsCount () != rhs.GetAsSecondsCount ();
-					}
-
-
-
-
-		//	class TimeOfDay
-			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay):
-				fDate (date),
-				fTimeOfDay (timeOfDay)
-				{
-				}
-			inline	Date	DateTime::GetDate () const
-				{
-					return fDate;
-				}
-			inline	TimeOfDay	DateTime::GetTimeOfDay () const
-				{
-					return fTimeOfDay;
-				}
-			inline	DateTime::operator Date () const
-				{
-					return fDate;
-				}
-
 		}
 
 
@@ -118,14 +64,8 @@ namespace	Stroika {
 						DbgTrace (L"Throwing Date::FormatException");
 						throw e2Throw;
 					}
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const Time::TimeOfDay::FormatException& e2Throw)
-					{
-						DbgTrace (L"Throwing TimeOfDay::FormatException");
-						throw e2Throw;
-					}
 		}
 
 	}
 }
-#endif	/*_Stroika_Foundation_Time_DateUtils_inl_*/
+#endif	/*_Stroika_Foundation_Time_Date_inl_*/

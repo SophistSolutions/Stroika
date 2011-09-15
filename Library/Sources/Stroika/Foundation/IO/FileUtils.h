@@ -22,7 +22,7 @@
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Execution/Thread.h"
-#include	"../Time/DateUtils.h"
+#include	"../Time/DateTime.h"
 
 #include	"FileAccessMode.h"
 

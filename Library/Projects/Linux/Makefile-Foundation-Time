@@ -9,8 +9,11 @@ SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroi
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)DateUtils.o\
+	$(ObjDir)Date.o\
+	$(ObjDir)DateTime.o\
+	$(ObjDir)Duration.o\
 	$(ObjDir)Realtime.o\
+	$(ObjDir)TimeOfDay.o\
 
 all:	$(Objs)
 

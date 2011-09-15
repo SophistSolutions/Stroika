@@ -7,7 +7,7 @@
 #include	"../../StroikaPreComp.h"
 
 #include	"../../Memory/SharedPtr.h"
-#include	"../../Time/DateUtils.h"
+#include	"../../Time/DateTime.h"
 
 #include	"SAXReader.h"
 
