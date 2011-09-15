@@ -317,7 +317,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTime.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h" />

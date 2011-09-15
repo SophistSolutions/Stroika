@@ -1,66 +1,31 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Time_DateUtils_h_
-#define	_Stroika_Foundation_Time_DateUtils_h_	1
+#include	"Stroika/Foundation/StroikaPreComp.h"
 
-#include	"../StroikaPreComp.h"
+#include	<iostream>
+#include	<sstream>
 
-#include	<climits>
-#include	<string>
+#include	"Stroika/Foundation/Debug/Assertions.h"
+#include	"Stroika/Foundation/Debug/Trace.h"
+#include	"Stroika/Foundation/Time/Date.h"
+#include	"Stroika/Foundation/Time/DateTime.h"
+#include	"Stroika/Foundation/Time/Duration.h"
+#include	"Stroika/Foundation/Time/Realtime.h"
 
-#if		qPlatform_Windows
-	#include	<Windows.h>
-#endif
-
-#include	"../Characters/TString.h"
-#include	"../Configuration/Common.h"
-
-
-#include	"Date.h"
-#include	"DateTime.h"
-#include	"Duration.h"
-#include	"TimeOfDay.h"
+#include	"../TestHarness/TestHarness.h"
 
 
-/*
- * SHORT TERM - TODAY - TODO:
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Characters;
 
-	+	GET RID OF THIS FILE ASAP - ONCE HEALTHFRAME HAS BEEN UPDATED
-
-	+	add if POSIX to list of ifdefs we support and where easy support them and where not - oh well
-
-	+	Replace (reserach firrst) use of name XML here with iso8601.
-		+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
-			XML really is its own - nearly identical to iso8601, but see deviations...
-			Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
-
-	+	Add regression test suite (TEST 7)
-
-	+	Probably use times() for tickcount:
-			#include <sys/times.h>
-			clock_t times(struct tms *buf);
-
-	+	Only test suite code to lift from old stroika is:
+using	Stroika::Foundation::Debug::TraceContextBumper;
 
 
-
- */
-#if 0
 
 
 static	void	SimpleTimeTests ();
 static	void	TestTime ();
-
-int	main (int /*argc*/, char* /*argv*/[])
-{
-	cout << "Testing Time..." << endl;
-
-	TestTime ();
-	
-	cout << "Done Testing Time" << endl;
-	return (0);
-}
 
 void	SimpleTimeTests ()
 {
@@ -98,7 +63,7 @@ TestCondition ((0.0015 * 1000000.0) == 1500.0);
 TestCondition ((0.000999 * 1000000.0) == 999.0);
 #endif
 
-	TestCondition (Time () == 0);
+	//VerifyTestResult (Time () == 0);
 #if 0
 //	TestCondition ((kOneMicroSecond * 1000) == kOneMilliSecond);
 Time f = Time::kOneMicroSecond * 1000;
@@ -141,13 +106,31 @@ void	TestTime ()
 {
 	SimpleTimeTests ();
 	
+#if 0
 	Time t = GetCurrentTime ();
 //	cerr << "current time = " << t.GetSeconds () << ", " << t.fSeconds << endl;
 	Time t1 = GetCurrentTime ();
 	Assert (t <= t1);
+#endif
 }
-#endif
+
+
+namespace	{
+
+	void	DoRegressionTests_ ()
+		{
+			TestTime ();
+		}
+}
 
 
 
-#endif
+
+
+int		main (int argc, const char* argv[])
+{
+	Stroika::TestHarness::Setup ();
+	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+	return EXIT_SUCCESS;
+}
+

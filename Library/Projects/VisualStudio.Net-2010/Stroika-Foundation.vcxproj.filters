@@ -341,9 +341,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateUtils.h">
-      <Filter>Sources\Time</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>

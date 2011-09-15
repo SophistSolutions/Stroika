@@ -21,9 +21,14 @@
 
 
 /*
- * SHORT TERM - TODAY - TODO:
+ * TODO:
+ *		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
+			operator
+		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
 
  */
+
+
 
 namespace	Stroika {
 	namespace	Foundation {
