@@ -30,7 +30,7 @@ namespace	Stroika {
 					{
 						Require (seconds2Wait >= 0.0);
 						#if		qPlatform_Windows
-							::SleepEx (static_cast<int> (seconds2Wait * 1000), true);
+							(void)::SleepEx (static_cast<int> (seconds2Wait * 1000), true);
 						#elif		qPlatform_POSIX
 							timespec	ts;
 							ts.tv_sec = int (seconds2Wait);
