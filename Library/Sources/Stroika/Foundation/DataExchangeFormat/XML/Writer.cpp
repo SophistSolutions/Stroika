@@ -69,6 +69,20 @@ string	XML::QuoteForXMLAttribute (const wstring& s)
 	return r;
 }
 
+string	XML::QuoteForXMLAttribute (const String& s)
+{
+	return QuoteForXMLAttribute (s.As<wstring> ());
+}
+
+string	QuoteForXMLAttribute (const Memory::Optional<String>& s)
+{
+	if (s.empty ()) {
+		return string ();
+	}
+	return QuoteForXMLAttribute (*s);
+}
+
+
 wstring	XML::QuoteForXMLAttributeW (const wstring& s)
 {
 	string	tmp	=	QuoteForXMLAttribute (s);
@@ -160,6 +174,19 @@ wstring	XML::QuoteForXMLW (const wstring& s)
 {
 	string	tmp	=	QuoteForXML (s);
 	return NarrowSDKStringToWide (tmp);
+}
+
+string	XML::QuoteForXML (const String& s)
+{
+	return QuoteForXML (s.As<wstring> ());
+}
+
+string	QuoteForXML (const Memory::Optional<String>& s)
+{
+	if (s.empty ()) {
+		return string ();
+	}
+	return QuoteForXML (*s);
 }
 
 
