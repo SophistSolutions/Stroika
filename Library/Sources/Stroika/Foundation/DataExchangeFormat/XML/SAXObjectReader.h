@@ -87,6 +87,20 @@ namespace	Stroika {
 					class	BuiltinReader<Time::DateTime>;
 
 
+				/*
+				 * Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read. This is necessary to balance out
+				 * the Start Tag / End Tag combinations.
+				 */
+				class	IgnoreNodeReader : public SAXObjectReader::ObjectBase {
+					public:
+						IgnoreNodeReader ();
+					private:
+						int	fDepth_;
+					public:
+						virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+						virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+						virtual	void	HandleEndTag (SAXObjectReader &r) override;
+				};
 
 				/*
 				 * Helper class for reading complex (structured) objects.

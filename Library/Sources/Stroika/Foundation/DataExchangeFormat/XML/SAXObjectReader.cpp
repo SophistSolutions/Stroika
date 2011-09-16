@@ -132,6 +132,8 @@ void	SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, c
 
 
 
+
+
 /*
  ********************************************************************************
  ********************* XML::SAXObjectReader::ObjectBase *************************
@@ -140,6 +142,8 @@ void	SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, c
 SAXObjectReader::ObjectBase::~ObjectBase ()
 {
 }
+
+
 
 
 
@@ -239,6 +243,40 @@ void	BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader &r) override
 	r.Pop ();
 }
 
+
+
+
+
+
+/*
+ ********************************************************************************
+ ******************************* XML::IgnoreNodeReader **************************
+ ********************************************************************************
+ */
+IgnoreNodeReader::IgnoreNodeReader ()
+	: fDepth_ (0)
+{
+}
+
+void	IgnoreNodeReader::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+{
+	Require (fDepth_ >= 0);
+	fDepth_++;
+}
+
+void	IgnoreNodeReader::HandleTextInside (SAXObjectReader &r, const String& text) override
+{
+	// Ignore text
+}
+
+void	IgnoreNodeReader::HandleEndTag (SAXObjectReader &r) override
+{
+	Require (fDepth_ >= 0);
+	--fDepth_;
+	if (fDepth_ < 0) {
+		r.Pop ();
+	}
+}
 
 
 
