@@ -36,7 +36,7 @@ namespace	Stroika {
 							ts.tv_sec = int (seconds2Wait);
 							const	long	kNanoSecondsPerSecond	=	1000L * 1000L * 1000L;
 							ts.tv_nsec = static_cast<time_t> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
-							Assert (0 >= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
+							Assert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
 							(void)::nanosleep (&ts, nullptr);
 						#else
 							AssertNotImplemented ();
