@@ -29,6 +29,7 @@
 				XML really is its own - nearly identical to iso8601, but see deviations...
 				Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
 		o	Add regression test suite (TEST 7)
+		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  */
 
 
