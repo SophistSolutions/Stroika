@@ -11,6 +11,7 @@ Objs	=	\
 	$(ObjDir)Namespace.o\
 	$(ObjDir)SAXObjectReader.o\
 	$(ObjDir)SAXReader.o\
+	$(ObjDir)Writer.o\
 
 all:	$(Objs)
 
