@@ -26,6 +26,7 @@
 			operator
 		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
 		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?
+		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  */
 
 
