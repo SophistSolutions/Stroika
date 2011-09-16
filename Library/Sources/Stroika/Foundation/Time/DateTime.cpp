@@ -239,7 +239,7 @@ wstring	DateTime::Format4XML () const
 		if (not fTimeOfDay.empty ()) {
 			// be sure using DateWithOptionalTime
 
-			// someting like append T22:33:11 - apx...
+			// something like append T22:33:11 - apx...
 			wchar_t	buf[1024];
 			buf[0] = 0;
 			unsigned int	t	=	fTimeOfDay.GetAsSecondsCount ();
@@ -263,7 +263,7 @@ wstring	DateTime::Format4XML () const
 #elif	qPlatform_POSIX
 				AssertNotImplemented ();
 #else
-	AssertNotImplemented ();
+				AssertNotImplemented ();
 #endif
 			}
 			r += wstring (L"T") + buf + tzBiasString;
