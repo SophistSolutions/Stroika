@@ -88,6 +88,9 @@ namespace	{
 	// VERY PRIMITIVE UNIX
 	void convert_iso8601 (const char *time_string, struct tm *tm_data)
 		{
+#if 1
+		strptime(time_string, "%FT%T%z", tm_data);
+#else
 			tzset();
 
 			struct tm ctime;
@@ -96,6 +99,7 @@ namespace	{
 
 			long ts = mktime(&ctime) - timezone;
 			localtime_r (&ts, tm_data);
+#endif
 		}
 }
 #endif
