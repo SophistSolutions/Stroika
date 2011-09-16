@@ -50,7 +50,9 @@
  *
  *
 	(0)	Document if we store NUL-terminated strings internally or not. If not - how do we implement the stdC++ c_str () API safely? Perhaps temporarily store the extra char* in teh ENVOLOPE to be freed
-		when the envelope next changes gets copied/etc? Sucky). Do we really need that API? Maybe return PROXY OBJECT which has operator char* in iT! THAT maybe safest thing!!!!
+		when the envelope next changes gets copied/etc? Sucky). Do we really need that API? 
+		Maybe return PROXY OBJECT which has operator char* in iT! THAT maybe safest thing!!!!
+		ANMYHOW - RIGHT NOW - As<const wchar_t*> () works - but it will be confusing to people cuz NOT nul-termianted!
 
 	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
 
@@ -132,6 +134,11 @@ namespace	Stroika {
                     nonvirtual	size_t	GetLength () const;
                     nonvirtual	void	SetLength (size_t newLength);
 
+                public:
+					nonvirtual	bool	empty () const;
+					nonvirtual	void	clear ();
+
+                public:
                     nonvirtual	Character	operator[] (size_t i) const;
                     nonvirtual	void		SetCharAt (Character c, size_t i);
 

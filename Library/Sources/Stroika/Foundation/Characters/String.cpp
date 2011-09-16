@@ -496,14 +496,7 @@ template	<>
 	void	String::AsUTF8 (string* into) const
 		{
 			RequireNotNull (into);
-			AssertNotImplemented ();
-#if 0
-			size_t	n	=	GetLength ();
-			const Character* cp	=	Peek ();
-			Assert (sizeof (Character) == sizeof (wchar_t));		// going to want to clean this up!!!	--LGP 2011-09-01
-			const wchar_t* wcp	=	(const wchar_t*)cp;
-			into->assign (wcp, wcp + n);
-#endif
+			*into = WideStringToUTF8 (As<wstring> ());	//tmphack impl (but shoudl work)
 		}
 
 template	<>

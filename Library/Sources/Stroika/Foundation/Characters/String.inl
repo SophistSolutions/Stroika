@@ -82,6 +82,14 @@ namespace	Stroika {
 				{
 					return (fRep->GetLength ());
 				}
+			inline	bool	String::empty () const
+				{
+					return fRep->GetLength () == 0;
+				}
+			inline	void	String::clear ()
+				{
+					*this = String ();
+				}
             inline	Character	String::operator[] (size_t i) const
 				{
 					Require (i >= 0);
