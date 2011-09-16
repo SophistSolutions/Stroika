@@ -16,6 +16,15 @@
 #include	"Common.h"
 
 
+/*
+ * TODO:
+ *
+ *		o	Memory::VariantValue uses wstring instead of String. I cannot change this immediately because HealthFrame uses VariantValue in a handful of cases
+ *			(really just JSON stuff). When we fix HealtHFrame to use String (at least in that case), we can fixup this code to no longer refer to
+ *			any wstring hacks.
+ *			>>> WEHN I FIX THIS - LOSE ALL REFERENCE TO string and wstring from this module
+ *
+ */
 
 
 namespace	Stroika {	

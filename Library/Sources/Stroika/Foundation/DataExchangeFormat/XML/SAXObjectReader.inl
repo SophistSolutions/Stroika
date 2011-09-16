@@ -16,14 +16,35 @@ namespace	Stroika {
 			namespace	XML {
 
 				//	class	SAXObjectReader
+				inline	SAXObjectReader::SAXObjectReader ()
+					#if		qDefaultTracingOn
+						: fTraceThisReader (false)
+					#endif
+					{
+					}
 				inline	void	SAXObjectReader::Push (const Memory::SharedPtr<ObjectBase>& elt)
 					{
+						#if		qDefaultTracingOn
+							if (fTraceThisReader) {
+								DbgTrace ("%sSAXObjectReader::Push", TraceLeader_ ().c_str ());
+							}
+						#endif
 						Containers::ReserveSpeedTweekAdd1 (fStack_);
 						fStack_.push_back (elt);
 					}
 				inline	void	SAXObjectReader::Pop ()
 					{
 						fStack_.pop_back ();
+						#if		qDefaultTracingOn
+							if (fTraceThisReader) {
+								DbgTrace ("%sSAXObjectReader::Popped", TraceLeader_ ().c_str ());
+							}
+						#endif
+					}
+				inline	Memory::SharedPtr<SAXObjectReader::ObjectBase>	SAXObjectReader::GetTop () const
+					{
+						Require (not fStack_.empty ());
+						return fStack_.back ();
 					}
 
 

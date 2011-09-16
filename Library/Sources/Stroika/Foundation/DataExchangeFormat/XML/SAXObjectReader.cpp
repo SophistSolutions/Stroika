@@ -25,6 +25,16 @@ using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
  ****************************** XML::SAXObjectReader ****************************
  ********************************************************************************
  */
+#if		qDefaultTracingOn
+wstring	SAXObjectReader::TraceLeader_ () const
+{
+	wstring	l;
+	for (size_t i = 0; i < fStack_.size (); ++i) {
+		l += L" ";
+	}
+	return l;
+}
+#endif
 class	SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 	public:
 		MyCallback_ (SAXObjectReader& r)
@@ -42,18 +52,33 @@ class	SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 			}
 		virtual	void	StartElement (const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 			{
-				AssertNotNull (fSAXObjectReader_.fStack_.back ());
-				fSAXObjectReader_.fStack_.back ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
+				AssertNotNull (fSAXObjectReader_.GetTop ());
+				#if		qDefaultTracingOn
+					if (fSAXObjectReader_.fTraceThisReader) {
+						DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.As<wstring> ().c_str ());
+					}
+				#endif
+				fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
 			}
 		virtual	void	EndElement (const String& uri, const String& localName, const String& qname) override
 			{
-				AssertNotNull (fSAXObjectReader_.fStack_.back ());
-				fSAXObjectReader_.fStack_.back ()->HandleEndTag (fSAXObjectReader_);
+				AssertNotNull (fSAXObjectReader_.GetTop ());
+				#if		qDefaultTracingOn
+					if (fSAXObjectReader_.fTraceThisReader) {
+						DbgTrace (L"%sCalling EndElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.As<wstring> ().c_str ());
+					}
+				#endif
+				fSAXObjectReader_.GetTop ()->HandleEndTag (fSAXObjectReader_);
 			}
 		virtual	void	CharactersInsideElement (const String& text) override
 			{
-				AssertNotNull (fSAXObjectReader_.fStack_.back ());
-				fSAXObjectReader_.fStack_.back ()->HandleTextInside (fSAXObjectReader_, text);
+				AssertNotNull (fSAXObjectReader_.GetTop ());
+				#if		qDefaultTracingOn
+					if (fSAXObjectReader_.fTraceThisReader) {
+						DbgTrace (L"%sCalling CharactersInsideElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), text.As<wstring> ().c_str () );
+					}
+				#endif
+				fSAXObjectReader_.GetTop ()->HandleTextInside (fSAXObjectReader_, text);
 			}
 };
 
@@ -157,6 +182,7 @@ BuiltinReader<String>::BuiltinReader (String* intoVal)
 	: value_ (intoVal)
 {
 	RequireNotNull (intoVal);
+	*intoVal = String ();
 }
 
 void	BuiltinReader<String>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
@@ -224,6 +250,7 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
 	, tmpVal_ ()
 {
 	RequireNotNull (intoVal);
+	*intoVal = Time::DateTime ();
 }
 
 void	BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override

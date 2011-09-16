@@ -6,6 +6,7 @@
 
 #include	"../../StroikaPreComp.h"
 
+#include	"../../Memory/Optional.h"
 #include	"../../Memory/SharedPtr.h"
 #include	"../../Time/DateTime.h"
 
@@ -33,8 +34,20 @@ namespace	Stroika {
 						class	ObjectBase;
 
 					public:
+						SAXObjectReader ();
+
+					#if		qDefaultTracingOn
+					public:
+						bool	fTraceThisReader;		// very noisy - off by default even for tracemode
+						wstring	TraceLeader_ () const;
+					#endif
+
+					public:
 						nonvirtual	void	Push (const Memory::SharedPtr<ObjectBase>& elt);
 						nonvirtual	void	Pop ();
+
+					public:
+						nonvirtual	Memory::SharedPtr<ObjectBase>	GetTop () const;
 
 					public:
 						// puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve recieved
@@ -85,6 +98,58 @@ namespace	Stroika {
 					class	BuiltinReader<int>;
 				template	<>
 					class	BuiltinReader<Time::DateTime>;
+
+
+				/*
+				 * OptionalTypesReader supports reads of optional types. This will work - for any types for which BuiltinReader<T>
+				 * is implemented.
+				 * 
+				 *	Note - this ALWAYS produces a result. Its only called when the element in quesiton has already occurred. The reaosn for Optional<>
+				 *	part is because the caller had an optional element which might never have triggered the invocation of this class.
+				 */
+				template	<typename	T, typename ACTUAL_READER = BuiltinReader<T>>
+					class	OptionalTypesReader : public SAXObjectReader::ObjectBase {
+						public:
+							OptionalTypesReader (Memory::Optional<T>* intoVal);
+						
+						private:
+							Memory::Optional<T>*	value_;
+							T						proxyValue_;
+							ACTUAL_READER			actualReader_;	// this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+	
+						public:
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
+					};
+				template	<typename	T, typename ACTUAL_READER>
+					OptionalTypesReader<T,ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal)
+						: value_ (intoVal)
+						, proxyValue_ ()
+						, actualReader_ (&proxyValue_)
+						{
+						}
+				template	<typename	T, typename ACTUAL_READER>
+					void	OptionalTypesReader<T,ACTUAL_READER>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+						{
+							actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
+						}
+				template	<typename	T, typename ACTUAL_READER>
+					void	OptionalTypesReader<T,ACTUAL_READER>::HandleTextInside (SAXObjectReader &r, const String& text) override
+						{
+							actualReader_.HandleTextInside (r, text);
+						}
+				template	<typename	T, typename ACTUAL_READER>
+					void	OptionalTypesReader<T,ACTUAL_READER>::HandleEndTag (SAXObjectReader &r) override
+						{
+							Memory::SharedPtr<ObjectBase>	saveCopyOfUs		=	r.GetTop ();	// bump our reference count til the end of the procedure
+																									// because the HandleEndTag will typically cause a POP on the reader that destroys us!
+																									// However, we cannot do the copy back to value beofre the base POP, because
+																									// it also might do some additioanl processing on its value
+							actualReader_.HandleEndTag (r);
+							*value_ = proxyValue_;
+						}
+
 
 
 				/*

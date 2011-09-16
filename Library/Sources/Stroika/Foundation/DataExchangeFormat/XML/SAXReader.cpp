@@ -589,7 +589,7 @@ namespace	{
 					for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
 						const XMLCh* localAttrName = attributes.getLocalName (i);
 						const XMLCh* val = attributes.getValue (i);
-						attrs.insert (map<String,VariantValue>::value_type (xercesString2String_ (localAttrName), val));
+						attrs.insert (map<String,VariantValue>::value_type (xercesString2String_ (localAttrName), xercesString2String_ (val).As<wstring> ()));
 					}
 					fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname), attrs);
 				}

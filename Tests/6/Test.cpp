@@ -150,6 +150,7 @@ namespace	{
 	struct	Person_ {
 		String firstName;
 		String lastName;
+		Memory::Optional<String> middleName;
 	};
 	struct PersonReader_ : public ComplexObjectReader<Person_> {
 		PersonReader_ (Person_* v):
@@ -164,6 +165,9 @@ namespace	{
 				}
 				else if (localName == L"LastName") {
 					_PushNewObjPtr (r, new BuiltinReader<String> (&valuePtr->lastName));
+				}
+				else if (localName == L"MiddleName") {
+					_PushNewObjPtr (r, new OptionalTypesReader<String> (&valuePtr->middleName));
 				}
 				else {
 					ThrowUnRecognizedStartElt (uri, localName);
@@ -203,6 +207,7 @@ namespace	{
 					L"	<WithWhom>\n"
 					L"		<FirstName>Jim</FirstName>"
 					L"		<LastName>Smith</LastName>"
+					L"		<MiddleName>Up</MiddleName>"
 					L"	</WithWhom>\n"
 					L"</Appointment>\n"
 				;
@@ -210,10 +215,14 @@ namespace	{
 			WriteTextStream_ (newDocXML, tmpStrm);
 
 			SAXObjectReader	reader;
+			#if		qDefaultTracingOn
+				reader.fTraceThisReader = true;	// handy to debug these SAX-object trees...
+			#endif
 			Appointment_		appointment;
 			reader.Run (Memory::SharedPtr<SAXObjectReader::ObjectBase> (new AppointmentReader_ (&appointment)), tmpStrm);
 			VerifyTestResult (appointment.withWhom.firstName == L"Jim");
 			VerifyTestResult (appointment.withWhom.lastName == L"Smith");
+			VerifyTestResult (appointment.withWhom.middleName == L"Up");
 			VerifyTestResult (appointment.when.GetDate () == Time::Date (Time::Date::Year (2005), Time::Date::eJune, Time::Date::DayOfMonth (1)));
 		}
 }
