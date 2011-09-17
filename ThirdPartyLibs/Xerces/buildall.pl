@@ -33,7 +33,9 @@ print ("Extracting Xerces...\n");
 
 system ("rm -rf $trgDirName CURRENT");
 system ("tar xf Origs/$BASENAME.tar.gz 2> /dev/null");
+sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 system ("mv $EXTRACTED_DIRNAME CURRENT");
+sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 system ("ln -s CURRENT $SLINKDIRNAME");
 
 print ("Patching Xerces...\n");
