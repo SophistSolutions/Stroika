@@ -1,5 +1,5 @@
-*** Origs\xerces-c-3.1.1\projects\Win32\VC10\xerces-all\XercesLib\XercesLib.vcxproj	2010-04-22 03:30:10.000000000 -0400
---- CURRENT\projects\Win32\VC10\xerces-all\XercesLib\XercesLib.vcxproj	2010-05-09 12:13:40.968142000 -0400
+*** xerces-c-3.1.1/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj	2010-04-22 03:30:10.000000000 -0400
+--- CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj	2011-09-17 11:12:12.765018600 -0400
 ***************
 *** 71,76 ****
 --- 71,77 ----
@@ -28,8 +28,22 @@
         <AdditionalIncludeDirectories>..\..\..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;NDEBUG;WIN32;_WINDOWS;XERCES_STATIC_LIBRARY;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 ***************
-*** 393,398 ****
---- 394,405 ----
+*** 389,398 ****
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(IntDir)XercesLib_vc100.pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <CompileAs>Default</CompileAs>
+        <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      </ClCompile>
+      <ResourceCompile>
+        <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+--- 390,405 ----
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
         <WarningLevel>Level3</WarningLevel>
         <CompileAs>Default</CompileAs>
         <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -42,3 +56,246 @@
       </ClCompile>
       <ResourceCompile>
         <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+***************
+*** 419,425 ****
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(IntDir)XercesLib_vc100.pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <CompileAs>Default</CompileAs>
+      </ClCompile>
+--- 426,432 ----
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <CompileAs>Default</CompileAs>
+      </ClCompile>
+***************
+*** 446,452 ****
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(OutDir)xerces-c_static_3D.pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+        <CompileAs>Default</CompileAs>
+--- 453,459 ----
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+        <CompileAs>Default</CompileAs>
+***************
+*** 475,481 ****
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(OutDir)xerces-c_static_3D.pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+        <CompileAs>Default</CompileAs>
+--- 482,488 ----
+        <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
+        <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+        <ObjectFileName>$(IntDir)</ObjectFileName>
+!       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+        <WarningLevel>Level3</WarningLevel>
+        <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+        <CompileAs>Default</CompileAs>
+***************
+*** 721,783 ****
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\ValueStackOf.hpp" />
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\ValueVectorOf.hpp" />
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\Xerces_autoconf_config.hpp">
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">%(FullPath);%(Outputs)</Outputs>
+--- 728,790 ----
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\ValueStackOf.hpp" />
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\ValueVectorOf.hpp" />
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\Xerces_autoconf_config.hpp">
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">%(FullPath);%(Outputs)</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">echo copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+! copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
+  </Command>
+        <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">%(FullPath);%(Outputs)</Outputs>
+***************
+*** 822,851 ****
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\XMLUTF8Transcoder.hpp" />
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\XMLWin1252Transcoder.hpp" />
+      <CustomBuild Include="..\..\..\..\..\src\xercesc\util\Xerces_autoconf_config.msvc.hpp">
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
+--- 829,858 ----
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\XMLUTF8Transcoder.hpp" />
+      <ClInclude Include="..\..\..\..\..\src\xercesc\util\XMLWin1252Transcoder.hpp" />
+      <CustomBuild Include="..\..\..\..\..\src\xercesc\util\Xerces_autoconf_config.msvc.hpp">
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Debug|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='ICU Release|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+!       <Command Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">echo copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"
+  copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
+        <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
