@@ -153,7 +153,7 @@ namespace	{
 		Memory::Optional<String> middleName;
 	};
 	struct PersonReader_ : public ComplexObjectReader<Person_> {
-		PersonReader_ (Person_* v):
+		PersonReader_ (Person_* v, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ()):
 			ComplexObjectReader<Person_> (v)
 			{
 			}
@@ -179,8 +179,8 @@ namespace	{
 		Person_			withWhom;
 	};
 	struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-		AppointmentReader_ (Appointment_* v):
-			ComplexObjectReader<Appointment_> (v)
+		AppointmentReader_ (Appointment_* v, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ()):
+			ComplexObjectReader<Appointment_> (v, attrs)
 			{
 			}
 		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
@@ -196,20 +196,37 @@ namespace	{
 				}
 			}
 	};
+	typedef	vector<Appointment_>	CalendarType_;
+	struct	CalendarReaderTraits_ {
+		typedef	Appointment_		ElementType;
+		typedef	AppointmentReader_	ReaderType;
+		static	const wchar_t		ElementName[];
+	};
+	const wchar_t	CalendarReaderTraits_::ElementName[]		=	L"Appointment";
+	typedef	ListOfObjectReader<CalendarReaderTraits_>		CalendarReader_;
 
 	void	Test_2_SAXObjectReader_ ()
 		{
 			TraceContextBumper ctx (TSTR ("Test_2_SAXObjectReader_"));
 			const wstring	kNSTest	=	L"Test-NAMESPACE";
 			wstring	newDocXML	=
-					L"<Appointment xmlns=\"" + wstring (kNSTest) + L"\">\n"
-					L"	<When>2005-06-01T13:00:00-05:00</When>"
-					L"	<WithWhom>\n"
-					L"		<FirstName>Jim</FirstName>"
-					L"		<LastName>Smith</LastName>"
-					L"		<MiddleName>Up</MiddleName>"
-					L"	</WithWhom>\n"
-					L"</Appointment>\n"
+					L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
+					L"  <Appointment>\n"
+					L"	  <When>2005-06-01T13:00:00-05:00</When>"
+					L"	  <WithWhom>\n"
+					L"		  <FirstName>Jim</FirstName>"
+					L"		  <LastName>Smith</LastName>"
+					L"		  <MiddleName>Up</MiddleName>"
+					L"	  </WithWhom>\n"
+					L"  </Appointment>\n"
+					L"  <Appointment>\n"
+					L"	  <When>2005-08-01T13:00:00-05:00</When>"
+					L"	  <WithWhom>\n"
+					L"		  <FirstName>Fred</FirstName>"
+					L"		  <LastName>Down</LastName>"
+					L"	  </WithWhom>\n"
+					L"  </Appointment>\n"
+					L"</Calendar>\n"
 				;
 			stringstream tmpStrm;
 			WriteTextStream_ (newDocXML, tmpStrm);
@@ -218,12 +235,15 @@ namespace	{
 			#if		qDefaultTracingOn
 				reader.fTraceThisReader = true;	// handy to debug these SAX-object trees...
 			#endif
-			Appointment_		appointment;
-			reader.Run (Memory::SharedPtr<SAXObjectReader::ObjectBase> (new AppointmentReader_ (&appointment)), tmpStrm);
-			VerifyTestResult (appointment.withWhom.firstName == L"Jim");
-			VerifyTestResult (appointment.withWhom.lastName == L"Smith");
-			VerifyTestResult (appointment.withWhom.middleName == L"Up");
-			VerifyTestResult (appointment.when.GetDate () == Time::Date (Time::Date::Year (2005), Time::Date::eJune, Time::Date::DayOfMonth (1)));
+			CalendarType_		calendar;
+			reader.Run (Memory::SharedPtr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), tmpStrm);
+			VerifyTestResult (calendar.size () == 2);
+			VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+			VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+			VerifyTestResult (calendar[0].withWhom.middleName == L"Up");
+			VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Date::Year (2005), Time::Date::eJune, Time::Date::DayOfMonth (1)));
+			VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+			VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
 		}
 }
 

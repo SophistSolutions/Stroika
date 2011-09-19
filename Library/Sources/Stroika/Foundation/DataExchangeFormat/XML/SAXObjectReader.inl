@@ -51,7 +51,7 @@ namespace	Stroika {
 				template	<>
 					class	BuiltinReader<String> : public SAXObjectReader::ObjectBase {
 						public:
-							BuiltinReader (String* intoVal);
+							BuiltinReader (String* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 						private:
 							String* value_;
 						public:
@@ -62,7 +62,7 @@ namespace	Stroika {
 				template	<>
 					class	BuiltinReader<int> : public SAXObjectReader::ObjectBase {
 						public:
-							BuiltinReader (int* intoVal);
+							BuiltinReader (int* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 						private:
 							String	tmpVal_;
 							int*	value_;
@@ -74,7 +74,7 @@ namespace	Stroika {
 				template	<>
 					class	BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
 						public:
-							BuiltinReader (Time::DateTime* intoVal);
+							BuiltinReader (Time::DateTime* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 						private:
 							String			tmpVal_;
 							Time::DateTime* value_;
@@ -85,10 +85,45 @@ namespace	Stroika {
 					};
 
 
+					
+					
+					
+					
+				template	<typename	T, typename ACTUAL_READER>
+					OptionalTypesReader<T,ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String,Memory::VariantValue>& attrs)
+						: value_ (intoVal)
+						, proxyValue_ ()
+						, actualReader_ (&proxyValue_)
+						{
+						}
+				template	<typename	T, typename ACTUAL_READER>
+					void	OptionalTypesReader<T,ACTUAL_READER>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+						{
+							actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
+						}
+				template	<typename	T, typename ACTUAL_READER>
+					void	OptionalTypesReader<T,ACTUAL_READER>::HandleTextInside (SAXObjectReader &r, const String& text) override
+						{
+							actualReader_.HandleTextInside (r, text);
+						}
+				template	<typename	T, typename ACTUAL_READER>
+					void	OptionalTypesReader<T,ACTUAL_READER>::HandleEndTag (SAXObjectReader &r) override
+						{
+							Memory::SharedPtr<ObjectBase>	saveCopyOfUs		=	r.GetTop ();	// bump our reference count til the end of the procedure
+																									// because the HandleEndTag will typically cause a POP on the reader that destroys us!
+																									// However, we cannot do the copy back to value beofre the base POP, because
+																									// it also might do some additioanl processing on its value
+							actualReader_.HandleEndTag (r);
+							*value_ = proxyValue_;
+						}
+
+
+
+
 
 
 				template	<typename	T>
-					inline	ComplexObjectReader<T>::ComplexObjectReader (T* vp)
+					inline	ComplexObjectReader<T>::ComplexObjectReader (T* vp, const map<String,Memory::VariantValue>& attrs)
 						: valuePtr (vp)
 						{
 							RequireNotNull (vp);
@@ -111,6 +146,43 @@ namespace	Stroika {
 							RequireNotNull (newlyAllocatedObject2Push);
 							r.Push (Memory::SharedPtr<ObjectBase> (newlyAllocatedObject2Push));
 						}
+
+
+
+
+
+				template	<typename TRAITS>
+					ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String,Memory::VariantValue>& attrs)
+						: ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
+						, readingAT_ (false)
+						{
+						}
+				template	<typename TRAITS>
+					void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+						{
+							if (localName == TRAITS::ElementName) {
+								if (readingAT_) {
+									this->valuePtr->push_back (curTReading_);
+									readingAT_ = false;
+								}
+								readingAT_ = true;
+								curTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
+								_PushNewObjPtr (r, new typename TRAITS::ReaderType (&curTReading_, attrs));
+							}
+							else {
+								ThrowUnRecognizedStartElt (uri, localName);
+							}
+						}
+				template	<typename TRAITS>
+					void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader &r) override
+						{
+							if (readingAT_) {
+								this->valuePtr->push_back (curTReading_);
+								readingAT_ = false;
+							}
+							ComplexObjectReader<vector<typename TRAITS::ElementType>>::HandleEndTag (r);
+						}
+
 
 
 			}

@@ -178,7 +178,7 @@ SAXObjectReader::ObjectBase::~ObjectBase ()
  ************************* XML::BuiltinReader<String> ***************************
  ********************************************************************************
  */
-BuiltinReader<String>::BuiltinReader (String* intoVal)
+BuiltinReader<String>::BuiltinReader (String* intoVal, const map<String,Memory::VariantValue>& attrs)
 	: value_ (intoVal)
 {
 	RequireNotNull (intoVal);
@@ -212,7 +212,7 @@ void	BuiltinReader<String>::HandleEndTag (SAXObjectReader &r) override
  **************************** XML::BuiltinReader<int> ***************************
  ********************************************************************************
  */
-BuiltinReader<int>::BuiltinReader (int* intoVal)
+BuiltinReader<int>::BuiltinReader (int* intoVal, const map<String,Memory::VariantValue>& attrs)
 	: value_ (intoVal)
 	, tmpVal_ ()
 {
@@ -245,7 +245,7 @@ void	BuiltinReader<int>::HandleEndTag (SAXObjectReader &r) override
  ********************** XML::BuiltinReader<Time::DateTime> **********************
  ********************************************************************************
  */
-BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
+BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const map<String,Memory::VariantValue>& attrs)
 	: value_ (intoVal)
 	, tmpVal_ ()
 {

@@ -63,6 +63,7 @@ namespace	Stroika {
 				};
 
 
+
 				class	SAXObjectReader::ObjectBase {
 					public:
 						virtual ~ObjectBase ();
@@ -70,6 +71,7 @@ namespace	Stroika {
 						virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) = 0;
 						virtual	void	HandleEndTag (SAXObjectReader &r) = 0;
 				};
+
 
 
 				/*
@@ -81,7 +83,7 @@ namespace	Stroika {
 				template	<typename	T>
 					class	BuiltinReader : public SAXObjectReader::ObjectBase {
 						public:
-							BuiltinReader (T* intoVal);
+							BuiltinReader (T* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 						
 						private:
 							T* value_;
@@ -100,6 +102,7 @@ namespace	Stroika {
 					class	BuiltinReader<Time::DateTime>;
 
 
+
 				/*
 				 * OptionalTypesReader supports reads of optional types. This will work - for any types for which BuiltinReader<T>
 				 * is implemented.
@@ -110,7 +113,7 @@ namespace	Stroika {
 				template	<typename	T, typename ACTUAL_READER = BuiltinReader<T>>
 					class	OptionalTypesReader : public SAXObjectReader::ObjectBase {
 						public:
-							OptionalTypesReader (Memory::Optional<T>* intoVal);
+							OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 						
 						private:
 							Memory::Optional<T>*	value_;
@@ -122,33 +125,7 @@ namespace	Stroika {
 							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
 							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
-				template	<typename	T, typename ACTUAL_READER>
-					OptionalTypesReader<T,ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal)
-						: value_ (intoVal)
-						, proxyValue_ ()
-						, actualReader_ (&proxyValue_)
-						{
-						}
-				template	<typename	T, typename ACTUAL_READER>
-					void	OptionalTypesReader<T,ACTUAL_READER>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
-						{
-							actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
-						}
-				template	<typename	T, typename ACTUAL_READER>
-					void	OptionalTypesReader<T,ACTUAL_READER>::HandleTextInside (SAXObjectReader &r, const String& text) override
-						{
-							actualReader_.HandleTextInside (r, text);
-						}
-				template	<typename	T, typename ACTUAL_READER>
-					void	OptionalTypesReader<T,ACTUAL_READER>::HandleEndTag (SAXObjectReader &r) override
-						{
-							Memory::SharedPtr<ObjectBase>	saveCopyOfUs		=	r.GetTop ();	// bump our reference count til the end of the procedure
-																									// because the HandleEndTag will typically cause a POP on the reader that destroys us!
-																									// However, we cannot do the copy back to value beofre the base POP, because
-																									// it also might do some additioanl processing on its value
-							actualReader_.HandleEndTag (r);
-							*value_ = proxyValue_;
-						}
+
 
 
 
@@ -167,13 +144,15 @@ namespace	Stroika {
 						virtual	void	HandleEndTag (SAXObjectReader &r) override;
 				};
 
+
+
 				/*
 				 * Helper class for reading complex (structured) objects.
 				 */
 				template	<typename	T>
 					class	ComplexObjectReader : public SAXObjectReader::ObjectBase {
 						protected:
-							ComplexObjectReader (T* vp);
+							ComplexObjectReader (T* vp, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 
 						public:
 							T*	valuePtr;
@@ -185,6 +164,33 @@ namespace	Stroika {
 							nonvirtual	void	_PushNewObjPtr (SAXObjectReader &r, ObjectBase* newlyAllocatedObject2Push);
 					};
 	
+
+
+
+				/*
+				 * The ListOfObjectReader<> template can be used to create a vector of type "T" - to capture repeating elements
+				 * in a sequence.
+				 *
+				 *
+				 *  EXAMPLE TRAITS:
+				 *  	struct	ReaderTraits {
+				 *  			typedef	String					ElementType;
+				 *  			typedef	BuiltinReader<String>	ReaderType;
+				 *  			static	const wchar_t			ElementName[] =  L"Name";
+				 *  	};
+				 */
+				template	<typename TRAITS>
+					struct ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
+						bool							readingAT_;
+						typename TRAITS::ElementType	curTReading_;
+
+						ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
+						
+						virtual void HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+						virtual void HandleEndTag (SAXObjectReader &r) override;
+					};
+
+
 
 				void	ThrowUnRecognizedStartElt (const String& uri, const String& localName);
 
