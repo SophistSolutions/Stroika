@@ -15,6 +15,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test4", "4\Test4.vcxproj", "{0C9C499C-1E4A-41EC-887C-8A8C08D3757B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1898E448-0FDC-48D2-84BA-D2D797E35BEF}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests-Description.txt = ..\..\Tests-Description.txt
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test5", "5\Test5.vcxproj", "{659A2FC5-7210-49C2-B579-E0E1C53CCAFD}"
 EndProject
