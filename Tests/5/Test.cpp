@@ -513,6 +513,32 @@ namespace	{
 
 
 
+
+namespace	{
+	#if		!qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+	static	bool	Test15_STRIPALLTEST_ (Character c)				{		return c.IsWhitespace ();		}
+	#endif
+	void	Test15_StripAll_ ()
+		{
+			String w = L"Le wis";
+			#if		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+				VerifyTestResult (w.StripAll ([](Character c) -> bool { return c.IsWhitespace (); }) == L"Lewis");
+			#else
+				VerifyTestResult (w.StripAll (Test15_STRIPALLTEST_) == L"Lewis");
+			#endif
+
+			w = L"This is a very good test    ";
+			#if		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+				VerifyTestResult (w.StripAll ([](Character c) -> bool { return c.IsWhitespace (); }) == L"Thisisaverygoodtest");
+			#else
+				VerifyTestResult (w.StripAll (Test15_STRIPALLTEST_) == L"Thisisaverygoodtest");
+			#endif
+		}
+}
+
+
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -547,6 +573,7 @@ namespace	{
 			Test12_CodePageConverter_ ();
 			Test13_ToLowerUpper_ ();
 			Test14_String_StackLifetime_ ();
+			Test15_StripAll_ ();
 		}
 }
 

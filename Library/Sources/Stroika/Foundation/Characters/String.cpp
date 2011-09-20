@@ -98,6 +98,8 @@ class	String_CharArray::MyRep_ : public String::StringRep {
 
 
 
+
+
 /*
     * Subclasses from String_CharArray::MyRep_ instead of StringRep as a convenience (inheriting implementation).
     * In nearly all cases, such inheritance is a bad idea, but here it is justified because people
@@ -151,6 +153,14 @@ class	String_ExternalMemoryOwnership::MyRep_ : public String_CharArray::MyRep_ {
 
 
 namespace	{
+	// For now - disable this class cuz its broken - run regression tests to see.
+	// I'm not clear on how this is supposed to work. While read-only, it works FINE. But if anyone ever makes ANY modifications (removall, etc), 
+	// we REALLY want to switch to a differnt REP!!! Like o flength goes zero - we want to return the global kEmptyStringRep (maybe not).
+	// But we more likely want to swithc the the string buffered rep or something. Maybe have virtual methods like InsertAt<>(in rep) retuirn SharedPtr<Rep> so it can be changed?
+	// Or take ref-param of that guy so it can be changed???
+	#define	qString_SubStringClassWorks	0
+
+	#if		qString_SubStringClassWorks
 	struct String_Substring_ : public String {
 		class	MyRep_ : public String::StringRep {
 			public:
@@ -178,6 +188,7 @@ namespace	{
 				size_t	fLength;
 		};
 	};
+	#endif
 }
 
 
@@ -213,6 +224,21 @@ String::String (const wchar_t* cString)
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+}
+
+String::String (const wchar_t* from, const wchar_t* to)
+	: fRep (new String_CharArray::MyRep_ ((const Character*)from, to-from), &Clone_)
+{
+	Require (from <= to);
+	Require (from != nullptr or from == to);
+	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+}
+
+String::String (const Character* from, const Character* to)
+	: fRep (new String_CharArray::MyRep_ (from, to-from), &Clone_)
+{
+	Require (from <= to);
+	Require (from != nullptr or from == to);
 }
 
 String::String (const std::wstring& r)
@@ -397,7 +423,11 @@ String	String::SubString (size_t from, size_t to) const
 		// just bump reference count
 		return *this;
 	}
-	return (String (new String_Substring_::MyRep_ (fRep, from, length), false));
+	#if		qString_SubStringClassWorks
+		return (String (new String_Substring_::MyRep_ (fRep, from, length), false));
+	#else
+		return (String (Peek () + from, Peek () + from + length));
+	#endif
 }
 
 String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
@@ -450,6 +480,33 @@ String	String::Trim (bool (*shouldBeTrimmmed) (Character)) const
 	 * This could be implemented more efficient, but this is simpler for now..
 	 */
 	return LTrim (shouldBeTrimmmed).RTrim (shouldBeTrimmmed);
+}
+
+String	String::StripAll (bool (*removeCharIf) (Character)) const
+{
+	RequireNotNull (removeCharIf);
+
+	// optimize special case where removeCharIf is always false
+	//
+	// Walk string and find first character we need to remove
+	size_t	n	=	GetLength ();
+	for (size_t i = 0; i < n; ++i) {
+		Character	c	=	operator[] (i);
+		if ((removeCharIf) (c)) {
+			// on first removal, clone part of string done so far, and start appending
+			String	tmp	=	SubString (0, i);
+			// Now keep iterating IN THIS LOOP appending characters and return at the end of this loop
+			i++;
+			for (; i < n; ++i) {
+				c	=	operator[] (i);
+				if (not (removeCharIf) (c)) {
+					tmp += c;
+				}
+			}
+			return tmp;
+		}
+	}
+	return *this;	// if we NEVER get removeCharIf return false, just clone this
 }
 
 String	String::ToLowerCase () const
@@ -903,6 +960,7 @@ void	String_ExternalMemoryOwnership::MyRep_::AssureWeOwnBuffer_ ()
 
 
 
+#if		qString_SubStringClassWorks
 /*
  ********************************************************************************
  ************************** String_Substring_::MyRep_ ***************************
@@ -963,6 +1021,10 @@ void	String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Chara
 {
 	Require (index <= GetLength ());
 	Assert ((fFrom+index) <= fBase->GetLength ());
+
+	size_t	lenBeforeInsert	=	GetLength();
+
+
 	fBase->InsertAt (srcStart, srcEnd, (fFrom+index));
 	fLength++;
 }
@@ -993,6 +1055,7 @@ const Character*	String_Substring_::MyRep_::Peek () const
 	const Character* buffer = fBase->Peek ();
 	return (&buffer[fFrom]);
 }
+#endif
 
 
 

@@ -116,6 +116,8 @@ namespace	Stroika {
                     String ();
                     String (const char16_t* cString);
                     String (const wchar_t* cString);
+                    String (const wchar_t* from, const wchar_t* to);
+                    String (const Character* from, const Character* to);
 					String (const std::wstring& r);
 					String (const String& from);
                     ~String ();
@@ -209,6 +211,9 @@ namespace	Stroika {
 					nonvirtual	String	Trim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
 					#endif
 
+				public:
+					// Walk the entire string, and produce a new string consisting of all characters for which the predicate 'removeCharIf' returned false
+					nonvirtual	String	StripAll (bool (*removeCharIf) (Character)) const;
 
 				public:
 					/*
