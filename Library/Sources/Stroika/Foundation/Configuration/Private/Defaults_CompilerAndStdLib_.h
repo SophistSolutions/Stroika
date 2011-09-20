@@ -227,7 +227,7 @@
 
 	/*
 	@CONFIGVAR:		qCompilerAndStdLib_Supports_lambda_default_argument
-	@DESCRIPTION:	<p>Defined true if the compiler supports constexpr</p>
+	@DESCRIPTION:	<p>Defined true if the compiler supports lamba functions as default arguments to other functions</p>
 	*/
 	#ifndef	qCompilerAndStdLib_Supports_lambda_default_argument
 		#if		defined (__GNUC__)
@@ -251,6 +251,7 @@
 			The value returned by this conversion function shall be the address of a function that, when invoked, has the same effect
 			as invoking the closure type’s function call operator."
 		Not implemented in VS.net 2010
+		Often results in compiler error "No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called"
 	</p>
 	*/
 	#ifndef	qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
