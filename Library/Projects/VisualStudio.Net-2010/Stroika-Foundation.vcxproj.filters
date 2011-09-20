@@ -76,6 +76,9 @@
     <Filter Include="Sources\Linguistics">
       <UniqueIdentifier>{6b1b3bae-d077-420d-82ed-25b7c63afda2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Private">
+      <UniqueIdentifier>{43e8aa54-497b-45a2-9fe6-33c7074b93a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -296,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp">
       <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -579,6 +588,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\Array.h">
+      <Filter>Sources\Containers\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -790,6 +811,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl">
       <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\Array.inl">
+      <Filter>Sources\Containers\Private</Filter>
     </None>
   </ItemGroup>
 </Project>

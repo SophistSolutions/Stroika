@@ -102,6 +102,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TString.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.cpp" />
@@ -250,8 +252,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_BlockAllocated_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h" />
@@ -332,8 +338,12 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl" />
