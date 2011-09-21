@@ -7,6 +7,7 @@
 #include	<set>
 
 #include	"../Configuration/Common.h"
+#include	"../Containers/Common.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 

@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	<typeinfo>
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
