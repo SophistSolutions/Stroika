@@ -842,5 +842,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl">
       <Filter>Sources\Characters</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
   </ItemGroup>
 </Project>

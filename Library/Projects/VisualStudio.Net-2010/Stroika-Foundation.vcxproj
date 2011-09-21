@@ -386,6 +386,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl" />
