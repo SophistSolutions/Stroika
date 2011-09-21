@@ -9,6 +9,7 @@
 #include	<map>
 #include	<cmath>
 
+#include	"../Characters/Format.h"
 #include	"../Characters/StringUtils.h"
 #include	"../Execution/CriticalSection.h"
 #include	"../Memory/Common.h"
