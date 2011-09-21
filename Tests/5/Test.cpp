@@ -17,6 +17,14 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
 
+/*
+ * TODO:
+ *
+ *
+ *		(o)	Must write ASAP a performance comparison suite for String class as part of string automated test.
+ *			Print a table of results (X/Y – wstring versus String (maybe versus other string types?)).
+ *			Compare inserting into start of vector<STRINGTYPE> - to test copying.
+ */
 
 
 
@@ -40,8 +48,7 @@ namespace	{
 namespace	{
 	namespace	Test2Helpers_ {
 		#if qDebug
-			//const	int	kLoopEnd = 1000;
-			const	int	kLoopEnd = 500;		// 1000 generates stackoverflow (because of String_Catentate stuff) on Windoze - clearly a Stroika bug!!! To use so much stack
+			const	int	kLoopEnd = 1000;
 		#else
 			const	int	kLoopEnd = 2000;
 		#endif
