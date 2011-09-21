@@ -155,7 +155,7 @@ namespace	Stroika {
 							ComplexObjectReader (T* vp, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
 
 						public:
-							T*	valuePtr;
+							T*	fValuePtr;
 	
 						public:
 							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;

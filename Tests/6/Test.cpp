@@ -159,15 +159,15 @@ namespace	{
 			}
 		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 			{
-				RequireNotNull (valuePtr);
+				RequireNotNull (fValuePtr);
 				if (localName == L"FirstName") {
-					_PushNewObjPtr (r, new BuiltinReader<String> (&valuePtr->firstName));
+					_PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
 				}
 				else if (localName == L"LastName") {
-					_PushNewObjPtr (r, new BuiltinReader<String> (&valuePtr->lastName));
+					_PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->lastName));
 				}
 				else if (localName == L"MiddleName") {
-					_PushNewObjPtr (r, new OptionalTypesReader<String> (&valuePtr->middleName));
+					_PushNewObjPtr (r, new OptionalTypesReader<String> (&fValuePtr->middleName));
 				}
 				else {
 					ThrowUnRecognizedStartElt (uri, localName);
@@ -186,10 +186,10 @@ namespace	{
 		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 			{
 				if (localName == L"When") {
-					_PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&valuePtr->when));
+					_PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
 				}
 				else if (localName == L"WithWhom") {
-					_PushNewObjPtr (r, new PersonReader_ (&valuePtr->withWhom));
+					_PushNewObjPtr (r, new PersonReader_ (&fValuePtr->withWhom));
 				}
 				else {
 					ThrowUnRecognizedStartElt (uri, localName);

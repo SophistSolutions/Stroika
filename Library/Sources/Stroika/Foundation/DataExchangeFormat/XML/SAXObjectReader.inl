@@ -124,7 +124,7 @@ namespace	Stroika {
 
 				template	<typename	T>
 					inline	ComplexObjectReader<T>::ComplexObjectReader (T* vp, const map<String,Memory::VariantValue>& attrs)
-						: valuePtr (vp)
+						: fValuePtr (vp)
 						{
 							RequireNotNull (vp);
 						}
@@ -162,7 +162,7 @@ namespace	Stroika {
 						{
 							if (localName == TRAITS::ElementName) {
 								if (readingAT_) {
-									this->valuePtr->push_back (curTReading_);
+									this->fValuePtr->push_back (curTReading_);
 									readingAT_ = false;
 								}
 								readingAT_ = true;
@@ -177,7 +177,7 @@ namespace	Stroika {
 					void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader &r) override
 						{
 							if (readingAT_) {
-								this->valuePtr->push_back (curTReading_);
+								this->fValuePtr->push_back (curTReading_);
 								readingAT_ = false;
 							}
 							ComplexObjectReader<vector<typename TRAITS::ElementType>>::HandleEndTag (r);
