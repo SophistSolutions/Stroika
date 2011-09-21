@@ -93,11 +93,19 @@
 
 
 MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
-	(1)	when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
+	(o)		when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
 
 
 	(o)		Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
 
+
+	(o)		Optimize bool	Stroika::Foundation::Characters::operator== (const String& lhs, const wchar_t* rhs)
+			by adding virtual ‘compare()’ method on rep – taking const wchar_t* arg. Current code 
+			quite slow (but only conclude this/do this AFTER we have a regression test to PROVE my theories!)
+	(o)		Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally. 
+			Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
+			(what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT – 
+			but pretty sure we want some sort of String_stdwstring(). 
  */
 
 
