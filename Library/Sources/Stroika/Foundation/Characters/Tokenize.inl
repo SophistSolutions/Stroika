@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Containers/Common.h"
+
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
