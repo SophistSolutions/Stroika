@@ -15,6 +15,7 @@ Objs	=	\
 	$(ObjDir)LineEndings.o\
 	$(ObjDir)String.o\
 	$(ObjDir)StringUtils.o\
+	$(ObjDir)Tokenize.o\
 	$(ObjDir)TChar.o\
 	$(ObjDir)TString.o\
 

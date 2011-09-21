@@ -165,10 +165,6 @@ namespace	Stroika {
 				vector<wstring>	Decode (const wstring& encodedString);
 			}
 
-
-			template	<typename STRING>
-				vector<STRING> Tokenize (const STRING& str, const STRING& delimiters);
-
 		}
 	}
 }

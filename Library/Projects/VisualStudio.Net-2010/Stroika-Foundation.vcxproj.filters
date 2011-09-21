@@ -309,6 +309,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -606,6 +609,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -831,6 +837,9 @@
       <Filter>Sources\Containers\Private</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl">
       <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
