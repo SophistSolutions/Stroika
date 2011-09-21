@@ -13,6 +13,13 @@
 #include	"../Execution/ModuleInit.h"
 
 
+/*
+ * TODO:
+ *		o	We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we should
+ *			force block allocation, or ONLY block-allocate if size is appropriate to one of our preformed pools.
+ *			Reason for this option is for better use in templates like LinkedList<> - where we might wnat to blockallocate
+ *			for small sizes of T, but not for ALL.
+ */
 
 namespace	Stroika {
 	namespace	Foundation {
