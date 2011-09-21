@@ -162,6 +162,7 @@ namespace	Stroika {
 						{
 							if (localName == TRAITS::ElementName) {
 								if (readingAT_) {
+									Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
 									this->fValuePtr->push_back (curTReading_);
 									readingAT_ = false;
 								}
@@ -177,6 +178,7 @@ namespace	Stroika {
 					void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader &r) override
 						{
 							if (readingAT_) {
+								Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
 								this->fValuePtr->push_back (curTReading_);
 								readingAT_ = false;
 							}
