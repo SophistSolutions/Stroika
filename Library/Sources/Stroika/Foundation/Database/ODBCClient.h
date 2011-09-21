@@ -12,7 +12,6 @@
 
 #include	<string>
 
-#include	"../Characters/StringUtils.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SharedPtr.h"
 

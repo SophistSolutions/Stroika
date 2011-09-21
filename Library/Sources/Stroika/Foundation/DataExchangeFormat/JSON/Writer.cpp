@@ -5,8 +5,6 @@
 
 #include	<sstream>
 
-#include	"../../Characters/StringUtils.h"
-
 #include	"Writer.h"
 
 

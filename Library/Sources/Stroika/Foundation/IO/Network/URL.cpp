@@ -10,6 +10,8 @@
 	#include	<URLMon.h>
 #endif
 
+#include	"../../Characters/StringUtils.h"
+#include	"../../Characters/Format.h"
 #include	"../../Execution/Exceptions.h"
 
 #include	"URL.h"
@@ -17,7 +19,7 @@
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
-#if	qPlatform_Windows
+#if		qPlatform_Windows
 using	Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
 #endif
 

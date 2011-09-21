@@ -16,7 +16,6 @@
 	#include	<Windows.h>
 #endif
 
-#include	"../Characters/StringUtils.h"
 #include	"../Characters/TChar.h"
 #include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"

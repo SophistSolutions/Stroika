@@ -9,7 +9,6 @@
 	#error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include	"../../../Characters/StringUtils.h"
 #include	"../../../Configuration/Common.h"
 #include	"../../../Containers/Common.h"
 #include	"../../../Debug/Trace.h"

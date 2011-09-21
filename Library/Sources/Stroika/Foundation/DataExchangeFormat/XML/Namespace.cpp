@@ -5,7 +5,6 @@
 
 #include	<sstream>
 
-#include	"../../Characters/StringUtils.h"
 #include	"../BadFormatException.h"
 
 #include	"Namespace.h"

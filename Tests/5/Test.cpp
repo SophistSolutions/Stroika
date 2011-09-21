@@ -6,8 +6,9 @@
 #include	<iostream>
 
 #include	"Stroika/Foundation/Characters/String.h"
-#include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Containers/Common.h"
+#include	"Stroika/Foundation/Debug/Assertions.h"
+#include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include	"Stroika/Foundation/Time/Realtime.h"
 
 #include	"../TestHarness/TestHarness.h"

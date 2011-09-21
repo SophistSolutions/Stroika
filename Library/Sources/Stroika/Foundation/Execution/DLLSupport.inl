@@ -9,7 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"../Characters/StringUtils.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
 

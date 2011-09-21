@@ -10,7 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"StringUtils.h"
+#include	"CodePage.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

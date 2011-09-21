@@ -101,8 +101,6 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"../../Characters/StringUtils.h"
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	IO {

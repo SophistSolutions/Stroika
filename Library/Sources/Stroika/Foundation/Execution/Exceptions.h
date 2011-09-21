@@ -10,7 +10,6 @@
 #include	<string>
 #include	<cerrno>
 
-#include	"../Characters/StringUtils.h"
 #include	"../Configuration/Common.h"
 #include	"../Debug/Trace.h"
 #include	"../IO/FileBusyException.h"

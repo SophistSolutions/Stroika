@@ -12,6 +12,7 @@
 	//not sure needed?#include	<sys/times.h>
 #endif
 
+#include	"../Characters/Format.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"

@@ -24,8 +24,6 @@
 
 /*
  * TODO:
- *		>> PERHPS create FORMAT module - and put there the FORMAT function(and FormatV), along with String2Int/Int2String, etc.
- *
  *		>> Probably move LineEdnings related stutff to Characters/LineEndings module
  */
 
@@ -73,9 +71,6 @@ namespace	Stroika {
 
 			using	Characters::CodePage;
 
-// Move to Characters/FORMAT module
-			string	Format (const char* format, ...);
-			wstring	Format (const wchar_t* format, ...);
 
 //See what this is used for? Seems too specific... See String::Trim()
 			string	StripTrailingCharIfAny (const string& s, char c);
@@ -87,14 +82,6 @@ namespace	Stroika {
 
 
 
-// Move to Characters/FORMAT module
-			int		HexString2Int (const string& s);
-			int		HexString2Int (const wstring& s);
-			int		String2Int (const string& s);
-			int		String2Int (const wstring& s);
-			float	String2Float (const wstring& s);	// returns R4LLib::nan () if invalid string
-			float	String2Float (const wstring& s, float returnValIfInvalidString);
-			wstring	Float2String (float f, unsigned int precision = 6);		// map nan to empty string, and use limited precision, and strip trialing .0...
 
 			// Speed-tweek versions of these ANSI-standard routines. NB: These assume a congtiguous range encoding of upper/lower characters,
 			// as with ASCII, and UNICODE character encodings

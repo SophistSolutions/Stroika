@@ -5,7 +5,6 @@
 
 #include	<sstream>
 
-#include	"../../Characters/StringUtils.h"
 #include	"../../Debug/Trace.h"
 #include	"../../Execution/AtomicOperations.h"
 #include	"../../Execution/ProgressMonitor.h"

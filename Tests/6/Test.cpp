@@ -6,11 +6,12 @@
 #include	<iostream>
 #include	<sstream>
 
+#include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h"
 #include	"Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
-#include	"Stroika/Foundation/Containers/Common.h"
+#include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include	"Stroika/Foundation/Time/Realtime.h"
 
 #include	"../TestHarness/TestHarness.h"

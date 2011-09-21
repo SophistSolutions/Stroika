@@ -5,7 +5,7 @@
 
 #include	<errno.h>
 
-#include	"../Characters/StringUtils.h"
+#include	"../Characters/Format.h"
 #include	"../Debug/Trace.h"
 #include	"../IO/FileAccessException.h"
 #include	"../IO/FileUtils.h"

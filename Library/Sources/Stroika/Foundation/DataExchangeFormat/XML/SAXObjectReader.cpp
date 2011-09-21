@@ -3,7 +3,7 @@
  */
 #include	"../../StroikaPreComp.h"
 
-#include	"../../Characters/StringUtils.h"
+#include	"../../Characters/Format.h"
 #include	"../BadFormatException.h"
 
 #include	"SAXObjectReader.h"

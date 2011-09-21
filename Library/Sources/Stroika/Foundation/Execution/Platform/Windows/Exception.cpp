@@ -12,6 +12,7 @@
 #endif
 
 #include	"../../../Characters/StringUtils.h"
+#include	"../../../Characters/Format.h"
 #include	"../../../Configuration/Common.h"
 #include	"../../../Containers/Common.h"
 #include	"../../../Debug/Trace.h"

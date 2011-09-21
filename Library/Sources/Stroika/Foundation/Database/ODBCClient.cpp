@@ -12,6 +12,8 @@
 	#include	<sqlext.h>
 #endif
 
+#include	"../Characters/Format.h"
+
 #include	"ODBCClient.h"
 
 

@@ -5,7 +5,7 @@
 
 #include	<sstream>
 
-#include	"../Characters/StringUtils.h"
+#include	"../Characters/Format.h"
 #include	"../Math/Common.h"
 
 #include	"VariantValue.h"

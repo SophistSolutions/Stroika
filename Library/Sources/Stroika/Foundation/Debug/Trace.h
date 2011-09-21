@@ -11,7 +11,6 @@
 	#include	<tchar.h>
 #endif
 
-#include	"../Characters/StringUtils.h"
 #include	"../Characters/TChar.h"
 #include	"../Characters/TString.h"
 #include	"../Configuration/Common.h"

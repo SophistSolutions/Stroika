@@ -3,6 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include	"../Characters/Format.h"
 #include	"../Debug/Assertions.h"
 #include	"../Linguistics/Words.h"
 

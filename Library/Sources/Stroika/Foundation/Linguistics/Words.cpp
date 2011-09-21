@@ -8,6 +8,7 @@
 #include	<iomanip>
 #include	<sstream>
 
+#include	"../Characters/StringUtils.h"
 #include	"../Containers/Common.h"
 #include	"../Debug/Assertions.h"
 #include	"../Debug/Trace.h"

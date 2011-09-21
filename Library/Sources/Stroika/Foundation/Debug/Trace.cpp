@@ -9,9 +9,7 @@
 #include	<map>
 #include	<cmath>
 
-#include	"../Configuration/StroikaConfig.h"
-
-
+#include	"../Characters/StringUtils.h"
 #include	"../Execution/CriticalSection.h"
 #include	"../Memory/Common.h"
 #include	"../Time/Realtime.h"
