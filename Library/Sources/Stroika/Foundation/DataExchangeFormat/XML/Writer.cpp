@@ -195,3 +195,9 @@ string	QuoteForXML (const Memory::Optional<String>& s)
 
 
 
+string	XML::Format4XML (bool v)
+{
+	return v? "true" : "false";
+}
+
+

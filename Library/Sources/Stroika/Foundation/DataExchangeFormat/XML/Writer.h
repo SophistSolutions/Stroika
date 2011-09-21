@@ -8,6 +8,9 @@
 
 #include	"../../Characters/String.h"
 #include	"../../Memory/Optional.h"
+#include	"../../Time/Date.h"
+#include	"../../Time/DateTime.h"
+#include	"../../Time/Duration.h"
 
 #include	"Common.h"
 
@@ -20,6 +23,9 @@
 *
 *		(o)		Short term- convert to using only Stroika string class (but make easy to still leverage from HF - think this out carefully befor change)
 *
+*		(o)		Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
+*				Maybe add optional params for some types (control enums).
+*				Supprot dates, and Memory::VariantUniion, and Memory::Ooptioan, etc...
 */
 
 
@@ -54,6 +60,19 @@ namespace	Stroika {
 				/*
 				 */
 				wstring	QuoteForXMLW (const wstring& s);
+
+
+				/*
+				 * Format values for XML output.
+				 *		PROBABLY should map QuoteForXML to this overloaded name?
+				 *
+				 * Note - this assumes we're outputting using UTF8.
+				 *
+				 * SHOULD probably include Memory::Optiona<> variations on all these as well - so we can fairly freely just say "Foramt4XML"
+				 */
+				string	Format4XML (bool v);
+				//string	Format4XML (Time::Date v);		NYI
+				//string	Format4XML (Time::DateTime v);
 
 			}
 		}
