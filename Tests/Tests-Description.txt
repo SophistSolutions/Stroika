@@ -1,9 +1,9 @@
 [1]	Cryptography
-[2]	Streams/JSON
-[3]	Threads
-[4]	Exceptions
-[5]	Strings
-[6]	XML-Sax-Parser
-[7]	Time/Date
-[8]	Array
-[9]	Bag
+[2]	Streams::JSON
+[3]	Execution::Threads
+[4]	Execution::Exceptions
+[5]	Characters::Strings
+[6]	DataX::XML::SaxParser
+[7]	Time::Date
+[8]	Containers::Array
+[9]	Containers::Bag
