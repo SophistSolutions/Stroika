@@ -4,11 +4,11 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
+#include	<time.h>
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
-	#include <time.h>
 	//not sure needed?#include	<sys/times.h>
 #endif
 

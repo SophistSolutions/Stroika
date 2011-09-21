@@ -13,13 +13,10 @@
 
 
 #include	"../Configuration/Common.h"
-#include	"CodePage.h"
-#include	"TChar.h"
 
 
 
 /// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
-
 
 
 /*
@@ -69,16 +66,12 @@ namespace	Stroika {
 			using	std::wstring;
 			using	std::basic_string;
 
-			using	Characters::CodePage;
+//			using	Characters::CodePage;
 
 
 //See what this is used for? Seems too specific... See String::Trim()
 			string	StripTrailingCharIfAny (const string& s, char c);
 			wstring	StripTrailingCharIfAny (const wstring& s, wchar_t c);
-
-// MOVE TO CODEPAGE STUFF???
-			wstring			MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
-			vector<Byte>	MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8);	// suitable for files
 
 
 

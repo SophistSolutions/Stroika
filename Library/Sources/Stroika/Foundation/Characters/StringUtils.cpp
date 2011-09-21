@@ -156,57 +156,6 @@ wstring	Characters::StripTrailingCharIfAny (const wstring& s, wchar_t c)
 
 
 
-
-/*
- ********************************************************************************
- *********************** MapUNICODETextWithMaybeBOMTowstring ********************
- ********************************************************************************
- */
-wstring	Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end)
-{
-	Require (start <= end);
-	if (start == end) {
-		return wstring ();
-	}
-	else {
-		size_t	outBufSize		=	end-start;
-		SmallStackBuffer<wchar_t>	wideBuf (outBufSize);
-		size_t	outCharCount	=	outBufSize;
-		MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end-start, wideBuf, &outCharCount);
-		Assert (outCharCount <= outBufSize);
-		if (outCharCount == 0) {
-			return wstring ();
-		}
-
-		// The wideBuf may be NUL-terminated or not (depending on whether the input was NUL-terminated or not).
-		// Be sure to construct the resuting string with the right end-of-string pointer (the length doesn't include
-		// the NUL-char)
-		return wstring (wideBuf, wideBuf[outCharCount-1] == '\0'? (outCharCount-1): outCharCount);
-	}
-}
-
-
-
-
-
-/*
- ********************************************************************************
- *********************** MapUNICODETextWithMaybeBOMTowstring ********************
- ********************************************************************************
- */
-vector<Byte>	Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
-{
-	CodePageConverter	cpc (useCP, CodePageConverter::eHandleBOM);
-	size_t	outCharCount	=	cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end-start);
-	SmallStackBuffer<char>	buf (outCharCount);
-	cpc.MapFromUNICODE (start, end-start, buf, &outCharCount);
-	const Byte* bs = reinterpret_cast<const Byte*> (static_cast<const char*> (buf));
-	return vector<Byte> (bs, bs + outCharCount);
-}
-
-
-
-
 /*
  ********************************************************************************
  ********************************* LimitLength **********************************

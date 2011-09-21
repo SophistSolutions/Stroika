@@ -289,6 +289,11 @@ namespace	Stroika {
 			wstring	ASCIIStringToWide (const string& s);
 			string	WideStringToASCII (const wstring& s);
 
+
+			wstring			MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+			vector<Byte>	MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8);	// suitable for files
+
+
 		}
 	}
 }

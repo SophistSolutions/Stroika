@@ -6,15 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	<cctype>
-#include	<locale>
-#include	<string>
-#include	<vector>
-
-
 #include	"../Configuration/Common.h"
 #include	"CodePage.h"
-#include	"TChar.h"
 
 
 
@@ -24,7 +17,6 @@ namespace	Stroika {
 
 			using	std::string;
 			using	std::wstring;
-			using	std::basic_string;
 
 			using	Characters::CodePage;
 
