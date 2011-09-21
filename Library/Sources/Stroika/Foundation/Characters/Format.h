@@ -6,6 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<string>
+
 #include	"../Configuration/Common.h"
 #include	"CodePage.h"
 

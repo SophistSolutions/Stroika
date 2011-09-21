@@ -13,6 +13,7 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<string>
 #include	<vector>
 
 #include	"../Configuration/Common.h"
@@ -37,6 +38,10 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Characters {
+
+			using	std::string;
+			using	std::wstring;
+			using	std::basic_string;
 
 			enum	{
 				kCodePage_INVALID					=	0xffffffff,	// I hope this is always an invalid code page???
