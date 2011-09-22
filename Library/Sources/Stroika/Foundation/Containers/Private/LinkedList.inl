@@ -1,3 +1,13 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
+#ifndef	_Stroika_Foundation_Containers_LinkedList_inl_
+#define	_Stroika_Foundation_Containers_LinkedList_inl_	1
+
+
+
+
+
 #include "../../Debug/Assertions.h"
 
 #include "../../Memory/BlockAllocated.h"
@@ -719,3 +729,4 @@ namespace	Stroika {
 }
 
 
+#endif /* _Stroika_Foundation_Containers_LinkedList_inl_ */

@@ -1,3 +1,10 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
+#ifndef	_Stroika_Foundation_Containers_Array_inl_
+#define	_Stroika_Foundation_Containers_Array_inl_	1
+
+
 #include "../../Debug/Assertions.h"
 
 
@@ -1151,3 +1158,6 @@ namespace	Stroika {
 		}
 	}
 }
+
+
+#endif /* _Stroika_Foundation_Containers_Array_inl_ */
