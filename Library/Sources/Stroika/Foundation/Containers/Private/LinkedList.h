@@ -144,7 +144,7 @@ namespace	Stroika {
 
 					protected:
 						const Link<T>*	fCurrent;
-						bool			fSupressMore;	// Indicates if More should do anything, or if were already Mored...
+						bool			fSuppressMore;	// Indicates if More should do anything, or if were already Mored...
 
 				#if		qDebug
 						virtual	void	Invariant_ () const;
@@ -237,7 +237,7 @@ namespace	Stroika {
 						/*
 						 * Shadow more to keep track of prev.
 						 */
-						nonvirtual	bool	More ();
+						nonvirtual	bool	More (T* current);
 
 						nonvirtual	void	PatchAdd (const Link<T>* link);		//	call after add
 						nonvirtual	void	PatchRemove (const Link<T>* link);	//	call before remove

@@ -246,13 +246,13 @@ namespace	Stroika {
 
 				template	<class T>	inline	LinkedListIterator<T>::LinkedListIterator (const LinkedList<T>& data) :
 					fCurrent (data.fFirst),
-					fSupressMore (true)
+					fSuppressMore (true)
 				{
 				}
 
 				template	<class T>	inline	LinkedListIterator<T>::LinkedListIterator (const LinkedListIterator<T>& from) :
 					fCurrent (from.fCurrent),
-					fSupressMore (from.fSupressMore)
+					fSuppressMore (from.fSuppressMore)
 				{
 				}
 
@@ -260,7 +260,7 @@ namespace	Stroika {
 				{
 					Invariant ();
 					fCurrent = rhs.fCurrent;
-					fSupressMore = rhs.fSupressMore;
+					fSuppressMore = rhs.fSuppressMore;
 					Invariant ();
 					return (*this);
 				}
@@ -278,10 +278,10 @@ namespace	Stroika {
 					 * We could already be done since after the last Done() call, we could
 					 * have done a removeall.
 					 */
-					if (not fSupressMore and fCurrent != nullptr) {
+					if (not fSuppressMore and fCurrent != nullptr) {
 						fCurrent = fCurrent->fNext;
 					}
-					fSupressMore = false;
+					fSuppressMore = false;
 					Invariant ();
 					return (not Done ());
 				}
@@ -400,9 +400,9 @@ namespace	Stroika {
 					Require (this->fLength >= 1);
 
 					Invariant ();
-
-					for (LinkedListMutator_Patch<T> it (*this); it.More (); ) {
-						if (it.Current () == item) {
+					T current;
+					for (LinkedListMutator_Patch<T> it (*this); it.More (&current); ) {
+						if (current == item) {
 							it.RemoveCurrent ();
 							break;
 						}
@@ -501,8 +501,7 @@ namespace	Stroika {
 						 * Remove from old.
 						 */
 						if (fData->fIterators == this) {
-							//(~const)
-							((LinkedList_Patch<T>*)fData)->fIterators = fNext;
+							const_cast<LinkedList_Patch<T>*>(fData)->fIterators = fNext;
 						}
 						else {
 							LinkedListIterator_Patch<T>* v = fData->fIterators;
@@ -520,8 +519,7 @@ namespace	Stroika {
 						 */
 						fData = rhs.fData;
 						fNext = rhs.fData->fIterators;
-						//(~const)
-						((LinkedList_Patch<T>*)fData)->fIterators = this;
+						const_cast<LinkedList_Patch<T>*> (fData)->fIterators = this;
 					}
 
 					fData = rhs.fData;
@@ -533,18 +531,22 @@ namespace	Stroika {
 					return (*this);
 				}
 
-				template	<class T>	inline	bool	LinkedListIterator_Patch<T>::More ()
+				template	<class T>	inline	bool	LinkedListIterator_Patch<T>::More (T* current)
 				{
 					this->Invariant ();
 					/*
 					 * We could already be done since after the last Done() call, we could
 					 * have done a removeall.
 					 */
-					if (not this->fSupressMore and this->fCurrent != nullptr) {
+					if (not this->fSuppressMore and this->fCurrent != nullptr) {
 						fPrev = this->fCurrent;
 						this->fCurrent = this->fCurrent->fNext;
+
 					}
-					this->fSupressMore = false;
+					this->fSuppressMore = false;
+					if (not this->Done ()) {
+						*current = this->fCurrent->fItem;
+					}
 					this->Invariant ();
 					return (not this->Done ());
 				}
@@ -571,7 +573,7 @@ namespace	Stroika {
 					 *	There are basicly three cases:
 					 *
 					 *	(1)		We remove the current. In this case, we just advance current to the next
-					 *			item (prev is already all set), and set fSupressMore since we are advanced
+					 *			item (prev is already all set), and set fSuppressMore since we are advanced
 					 *			to the next item.
 					 *	(2)		We remove our previous. Technically this poses no problems, except then
 					 *			our previos pointer is invalid. We could recompute it, but that would
@@ -586,7 +588,7 @@ namespace	Stroika {
 						// fPrev remains the same - right now it points to a bad item, since
 						// PatchRemove() called before the actual removal, but right afterwards
 						// it will point to our new fCurrent.
-						this->fSupressMore = true;			// Since we advanced cursor...
+						this->fSuppressMore = true;			// Since we advanced cursor...
 					}
 					else if (fPrev == link) {
 						fPrev = nullptr;					// real value recomputed later, if needed
@@ -634,7 +636,7 @@ namespace	Stroika {
 				{
 					Require (not this->Done ());
 					this->Invariant ();
-					Link<T>*	victim	=	(Link<T>*)this->fCurrent;	//	(~const)
+					Link<T>*	victim	=const_cast<Link<T>*> (this->fCurrent);
 					AssertNotNull (this->fData);
 					this->fData->PatchViewsRemove (victim);
 					Assert (this->fCurrent != victim);				// patching should  have guaranteed this
@@ -644,6 +646,7 @@ namespace	Stroika {
 					 *	fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
 					 *	is still nullptr, that means update fFirst.
 					 */
+
 					if ((this->fPrev == nullptr) and (this->fData->fFirst != victim)) {
 						AssertNotNull (this->fData->fFirst);	// cuz there must be something to remove current
 						for (this->fPrev = this->fData->fFirst; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
@@ -651,13 +654,13 @@ namespace	Stroika {
 						}
 					}
 					if (this->fPrev == nullptr) {
-						((LinkedList_Patch<T>*)this->fData)->fFirst = victim->fNext;	//	(~const)
+						const_cast<LinkedList_Patch<T>*> (this->fData)->fFirst = victim->fNext;
 					}
 					else {
 						Assert (this->fPrev->fNext == victim);
-						((Link<T>*)this->fPrev)->fNext = victim->fNext; 				//	(~const)
+						const_cast<Link<T>*> (this->fPrev)->fNext = victim->fNext;
 					}
-					((LinkedList_Patch<T>*)this->fData)->fLength--;						//	(~const)
+					const_cast<LinkedList_Patch<T>*> (this->fData)->fLength--;
 					delete (victim);
 					this->Invariant ();
 					this->fData->Invariant ();	// calls by invariant
