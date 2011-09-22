@@ -21,7 +21,7 @@
     <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
       <Filter>TestHarness</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\8\Test.cpp">
+    <ClCompile Include="..\..\..\10\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">

@@ -114,12 +114,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.cpp">
-      <Filter>Sources\Containers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.cpp">
-      <Filter>Sources\Containers</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -147,9 +141,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp">
       <Filter>Sources\Cryptography</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.cpp">
-      <Filter>Sources\Containers</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Optional.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -158,9 +149,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp">
       <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.cpp">
-      <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp">
       <Filter>Sources\Execution</Filter>
@@ -299,12 +287,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp">
       <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.cpp">
-      <Filter>Sources\Containers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.cpp">
-      <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <Filter>Sources\Characters</Filter>
@@ -612,6 +594,21 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\LinkedList.h">
+      <Filter>Sources\Containers\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_LinkedList.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally_Array.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally_LinkedList.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -844,6 +841,21 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\LinkedList.inl">
+      <Filter>Sources\Containers\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag_LinkedList.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally_Array.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally_LinkedList.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>

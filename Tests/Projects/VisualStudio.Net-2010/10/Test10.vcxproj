@@ -51,7 +51,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C451C2FC-A83F-478C-9E0C-91D4F590694D}</ProjectGuid>
+    <ProjectGuid>{F6FB8BDC-2241-425A-96DB-71D9C726B72B}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -152,36 +152,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test8\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test8\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Test10\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Test10\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">false</LinkIncremental>
@@ -461,7 +461,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\8\Test.cpp" />
+    <ClCompile Include="..\..\..\10\Test.cpp" />
     <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp" />
     <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp" />
   </ItemGroup>

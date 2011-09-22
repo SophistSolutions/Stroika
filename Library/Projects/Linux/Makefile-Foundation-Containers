@@ -2,8 +2,6 @@ include ../Configuration.mk
 include	../SharedMakeVariables.mk
 include	../SharedBuildRules.mk
 
-#CFLAGS= -c -std=c++0x $(DEBUGFLAG)
-
 
 RelPathToDevRoot		=	../../../../../
 SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/Containers/
@@ -11,10 +9,6 @@ SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroi
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)LRUCache.o\
-	$(ObjDir)SetUtils.o\
-	$(ObjDir)TimedCache.o\
-	$(ObjDir)VectorUtils.o\
 
 
 all:	$(Objs)
