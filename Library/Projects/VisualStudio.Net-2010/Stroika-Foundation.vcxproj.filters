@@ -609,6 +609,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally_LinkedList.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -855,6 +858,9 @@
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally_LinkedList.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl">
       <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>

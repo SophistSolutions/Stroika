@@ -253,6 +253,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.h" />
@@ -346,6 +347,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag_LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl" />
