@@ -14,6 +14,7 @@
 #include	"../TestHarness/SimpleClass.h"
 #include	"../TestHarness/TestHarness.h"
 
+#include    "Stroika/Foundation/Containers/Bag_LinkedList.h"
 
 using   namespace   Stroika;
 using	namespace	Stroika::Foundation;
@@ -27,7 +28,7 @@ namespace	{
 
 static	void	BagIteratorTests(Bag<size_t>& s)
 {
-	const	size_t	kTestSize	= 100;    // keep an even number
+	const	size_t	kTestSize	= 100;
 
 	VerifyTestResult(s.GetLength() == 0);
 	/*
@@ -40,13 +41,14 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 
 		VerifyTestResult(s.GetLength() == kTestSize);
         ForEach(size_t, it, s) {
+        	size_t	oldLength = s.GetLength ();
             VerifyTestResult(s.Contains(it.Current ()));
             VerifyTestResult(s.Contains(s.GetLength ()));
             s.Remove (s.GetLength ());
-            VerifyTestResult(s.GetLength ());
-       }
+			VerifyTestResult(s.GetLength () == oldLength-1);
 
- 		VerifyTestResult(s.GetLength() == kTestSize/2);
+        }
+
  		s.RemoveAll ();
         for(size_t i = 1; i <= kTestSize; i++) {
 			s.Add(i);
@@ -280,15 +282,31 @@ namespace	{
 	void	DoRegressionTests_ ()
 		{
             {
-            Bag<size_t>	s;
+            Bag_LinkedList<size_t>	s;
+		    BagTests (s);
+            }
+
+			{
+            Bag_LinkedList<SimpleClass>	s;
+		    BagTests (s);
+            }
+
+			{
+            Bag_Array<size_t>	s;
 		    BagTests (s);
             }
 
             {
- 		    Bag<SimpleClass>	s;
+ 		    Bag_Array<SimpleClass>	s;
             BagTests (s);
             }
-		}
+
+            {
+            	// just proof that they can be constructed
+				Bag<size_t>	s;
+				Bag<SimpleClass>	s1;
+            }
+	}
 }
 
 

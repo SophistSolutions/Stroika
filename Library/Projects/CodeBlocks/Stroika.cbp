@@ -93,6 +93,8 @@
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_Array.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_Array.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_LinkedList.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/Containers/Bag_LinkedList.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Common.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Common.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/Containers/Iterator.cpp" />
