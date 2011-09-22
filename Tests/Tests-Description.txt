@@ -5,6 +5,7 @@
 [5]	Characters::Strings
 [6]	DataX::XML::SaxParser
 [7]	Time::Date
-[8]	Containers::Array
+[8]	Containers::Private::Array
 [9]	Containers::Bag
-[10]	Containers::LinkedList
+[10]	Containers::Private::LinkedList
+[11]	Containers::Tally

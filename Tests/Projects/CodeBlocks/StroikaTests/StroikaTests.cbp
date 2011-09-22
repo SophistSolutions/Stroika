@@ -55,6 +55,7 @@
 		</Compiler>
 		<Unit filename="../../../1/Test.cpp" />
 		<Unit filename="../../../10/Test.cpp" />
+		<Unit filename="../../../11/Test.cpp" />
 		<Unit filename="../../../2/Test.cpp" />
 		<Unit filename="../../../3/Test.cpp">
 			<Option target="Release" />

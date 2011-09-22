@@ -278,16 +278,10 @@ void	BagTests(Bag<SimpleClass>& s)
 }
 
 
-#include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Tally_LinkedList.h"
-
 namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			Tally<size_t> t;
-			Tally_LinkedList<size_t> t1;
-			//t.Add (5);
             {
             Bag_LinkedList<size_t>	s;
 		    BagTests (s);

@@ -23,7 +23,7 @@ my $intermediateFiles	=	"IntermediateFiles/";
 my $platform		=	"Platform_Linux";
 my $target		=	"Debug";
 
-my $forceRecreate = false;
+my $forceRecreate = true;
 
 my $useThirdPartyXerces	=	true;
 
@@ -99,6 +99,8 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test9 $intermediateFiles/$platform/$target/Test9/Makefile");
 		mkdir "$intermediateFiles/$platform/$target/Test10";
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test10 $intermediateFiles/$platform/$target/Test10/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test11";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test11 $intermediateFiles/$platform/$target/Test11/Makefile");
 	}
 }
 

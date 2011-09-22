@@ -67,6 +67,12 @@ int main()
         cout << "Testing Linked List" << endl;
         Test_LinkedList ();
     #endif
+
+    #if 1
+		extern  int Test_Tallys ();
+        cout << "Testing Tally" << endl;
+        Test_Tallys ();
+    #endif
     return 0;
 }
 
