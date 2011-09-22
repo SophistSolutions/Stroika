@@ -10,6 +10,7 @@
 #include	<string>
 
 #include	"../Math/Common.h"
+#include	"TString.h"
 
 #include	"String.h"
 
@@ -263,6 +264,16 @@ String	String::FromUTF8 (const std::string& from)
 {
 	AssertNotImplemented ();
 	return String ();
+}
+
+String	String::FromTString (const TChar* from)
+{
+	return TString2Wide (from);
+}
+
+String	String::FromTString (const basic_string<TChar>& from)
+{
+	return TString2Wide (from);
 }
 
 String&	String::operator+= (Character appendage)
@@ -555,6 +566,19 @@ template	<>
 			RequireNotNull (into);
 			*into = WideStringToUTF8 (As<wstring> ());	//tmphack impl (but shoudl work)
 		}
+
+TString	String::AsTString () const
+{
+	TString	result;
+	AsTString (&result);
+	return result;
+}
+
+void	String::AsTString (TString* into) const
+{
+	RequireNotNull (into);
+	*into = Wide2TString (As<wstring> ());	// poor inefficient implementation
+}
 
 template	<>
 	void	String::AsASCII (string* into) const

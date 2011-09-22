@@ -34,6 +34,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Memory/SharedByValue.h"
+#include	"TString.h"
 
 #include	"Character.h"
 
@@ -135,6 +136,8 @@ namespace	Stroika {
 				public:
 					static	String	FromUTF8 (const char* from);
 					static	String	FromUTF8 (const std::string& from);
+					static	String	FromTString (const TChar* from);
+					static	String	FromTString (const TString& from);
 
                 public:
                     nonvirtual	String&	operator+= (Character appendage);
@@ -271,6 +274,7 @@ namespace	Stroika {
 					template	<typename	T>
 						nonvirtual	void	As (T* into) const;
 
+				public:
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <string> supported)
 					 */
@@ -279,6 +283,13 @@ namespace	Stroika {
 					template	<typename	T>
 						nonvirtual	void	AsUTF8 (T* into) const;
 
+				public:
+					/*
+					 */
+					nonvirtual	TString	AsTString () const;
+					nonvirtual	void	AsTString (TString* into) const;
+
+				public:
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string MUST be valid ascii characters (asserted)
 					 */
