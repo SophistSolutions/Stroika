@@ -198,7 +198,7 @@ namespace	Stroika {
 
 				size_t index = Find (tmp);
 				if (index == 0) {
-					fData.InsertAt (tmp, GetLength () + 1);
+					fData.InsertAt (tmp, GetLength ());
 				}
 				else {
 					tmp.fCount += count;
@@ -234,8 +234,8 @@ namespace	Stroika {
 				TallyEntry<T> tmp (item);
 
 				size_t index = Find (tmp);
-				Require (index != 0);
-				Require (index <= GetLength ());
+				Require (index >= 0);
+				Require (index < GetLength ());
 				return (tmp.fCount);
 			}
 
@@ -257,7 +257,7 @@ namespace	Stroika {
 			template	<typename T>	size_t	Tally_ArrayRep<T>::Find (TallyEntry<T>& item) const
 			{
 				size_t length = fData.GetLength ();
-				for (size_t i = 1; i <= length; i++) {
+				for (size_t i = 0; i < length; i++) {
 					if (fData.GetAt (i).fItem == item.fItem) {
 						item = fData.GetAt (i);
 						return (i);
