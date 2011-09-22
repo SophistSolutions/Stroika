@@ -48,21 +48,21 @@ namespace	Stroika {
 					virtual	void	RemoveCurrent () 				=	0;
 					virtual	void	UpdateCount (size_t newCount) 	=	0;
 			};
-
+#if 1
 			template	<class T> class	TallyIterator1Rep : public IteratorRep<T> {
 				public:
-					TallyIterator1Rep (IteratorRep<TallyEntry<T> >* it) : fIt (it)	{ RequireNotNil (fIt); }
+					TallyIterator1Rep (IteratorRep<TallyEntry<T> >* it) : fIt (it)	{ RequireNotNull (fIt); }
 					~TallyIterator1Rep () { delete fIt; }
 
-					override	bool			Done () const		{ return (fIt->Done ()); }
-					override	bool			More (T* current)	{ return (fIt->More (current)); }
-					override	T				Current () const	{ return (fIt->Current ().fItem); }
-					override	IteratorRep<T>*	Clone () const 		{ return (new TallyIterator1Rep<T> (fIt->Clone ()));}
+					virtual	bool			Done () const override		{ return (fIt->Done ()); }
+					virtual	bool			More (T* current) override	{ return (fIt->More (current)); }
+					virtual	T				Current () const override	{ return (fIt->Current ().fItem); }
+					virtual	IteratorRep<T>*	Clone () const override 	{ return (new TallyIterator1Rep<T> (fIt->Clone ()));}
 
 				private:
 					IteratorRep<TallyEntry<T> >*	fIt;
 			};
-
+#endif
 
 
 
@@ -88,7 +88,8 @@ namespace	Stroika {
 			template	<class T> size_t	Tally<T>::TotalTally () const
 			{
 				size_t sum = 0;
-				ForEach (TallyEntry<T>, it, *this) {
+				//ForEach (TallyEntry<T>, it, *this) {
+				for (Iterator<TallyEntry<T> > it = begin (); it != end (); ++it) {
 					sum += it.Current ().fCount;
 				}
 				return (sum);
@@ -157,9 +158,22 @@ namespace	Stroika {
                 return it;
 			}
 
-            template	<typename T>	inline	Iterator<T>    Tally<T>::begin () const
+			template	<typename T>	inline	Tally<T>::operator Iterator<TallyEntry<T> > () const
+			{
+				//IteratorRep<TallyEntry<T> >*
+                Iterator<TallyEntry<T>> it = const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ();
+                it.More ();
+                return it;
+			}
+
+			template	<typename T>	inline	Tally<T>::operator TallyMutator<T> ()
+			{
+				return (fRep->MakeTallyMutator ());
+			}
+
+            template	<typename T>	inline	Iterator<TallyEntry<T>>    Tally<T>::begin () const
             {
-                return operator Iterator<T> ();
+            	return operator Iterator<TallyEntry<T> > ();
             }
 
             template	<typename T>	inline	IterationState    Tally<T>::end () const
@@ -167,15 +181,6 @@ namespace	Stroika {
                 return (IterationState::kAtEnd);
             }
 
-			template	<typename T>	inline	Tally<T>::operator Iterator<TallyEntry<T> > () const
-			{
-				return (((Tally<T>*) this)->fRep->MakeTallyIterator ());
-			}
-
-			template	<typename T>	inline	Tally<T>::operator TallyMutator<T> ()
-			{
-				return (fRep->MakeTallyMutator ());
-			}
 
 			template	<typename T>	inline	void	Tally<T>::Add (T item)
 			{
@@ -283,6 +288,11 @@ namespace	Stroika {
 			{
 			}
 
+			// class TallyIterator<T>
+			template	<typename T>	inline	TallyIterator<T>::TallyIterator (IteratorRep<TallyEntry<T> >* it) :
+				Iterator<TallyEntry<T> > (it)
+			{
+			}
 
 			// class TallyMutator<T>
 			template	<typename T>	inline	TallyMutator<T>::TallyMutator (TallyMutatorRep<T>* it) :
