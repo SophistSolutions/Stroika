@@ -287,7 +287,7 @@ namespace	{
 		{
 			Tally<size_t> t;
 			Tally_LinkedList<size_t> t1;
-			t.Add (5);
+			//t.Add (5);
             {
             Bag_LinkedList<size_t>	s;
 		    BagTests (s);
