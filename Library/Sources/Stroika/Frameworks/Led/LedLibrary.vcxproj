@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugU|Win32">
+      <Configuration>DebugU</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseU|Win32">
+      <Configuration>ReleaseU</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{467F9360-CE84-49C6-8AC9-46EB52F06242}</ProjectGuid>
+    <RootNamespace>LedLibrary</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\Led_BiDiLayoutEngine.h" />
+    <ClInclude Include="Headers\Led_CodePage.h" />
+    <ClInclude Include="Headers\Led_Command.h" />
+    <ClInclude Include="Headers\Led_Config.h" />
+    <ClInclude Include="Headers\Led_FlavorPackage.h" />
+    <ClInclude Include="Headers\Led_GDI.h" />
+    <ClInclude Include="Headers\Led_HiddenText.h" />
+    <ClInclude Include="Headers\Led_IdleManager.h" />
+    <ClInclude Include="Headers\Led_LineBasedPartition.h" />
+    <ClInclude Include="Headers\Led_Marker.h" />
+    <ClInclude Include="Headers\Led_MarkerCover.h" />
+    <ClInclude Include="Headers\Led_MultiRowTextImager.h" />
+    <ClInclude Include="Headers\Led_PartitioningTextImager.h" />
+    <ClInclude Include="Headers\Led_SimpleTextStore.h" />
+    <ClInclude Include="Headers\Led_SpellCheckEngine.h" />
+    <ClInclude Include="Headers\Led_StandardStyledTextImager.h" />
+    <ClInclude Include="Headers\Led_StandardStyledTextInteractor.h" />
+    <ClInclude Include="Headers\Led_StyledTextEmbeddedObjects.h" />
+    <ClInclude Include="Headers\Led_StyledTextImager.h" />
+    <ClInclude Include="Headers\Led_StyledTextIO.h" />
+    <ClInclude Include="Headers\Led_StyledTextIO_HTML.h" />
+    <ClInclude Include="Headers\Led_StyledTextIO_PlainText.h" />
+    <ClInclude Include="Headers\Led_StyledTextIO_RTF.h" />
+    <ClInclude Include="Headers\Led_Support.h" />
+    <ClInclude Include="Headers\Led_TextBreaks.h" />
+    <ClInclude Include="Headers\Led_TextImager.h" />
+    <ClInclude Include="Headers\Led_TextInteractor.h" />
+    <ClInclude Include="Headers\Led_TextInteractorMixins.h" />
+    <ClInclude Include="Headers\Led_TextStore.h" />
+    <ClInclude Include="Headers\Led_WordProcessor.h" />
+    <ClInclude Include="Headers\Led_WordWrappedTextImager.h" />
+    <ClInclude Include="Headers\Led_WordWrappedTextInteractor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\Led_BiDiLayoutEngine.cpp" />
+    <ClCompile Include="Sources\Led_CodePage.cpp" />
+    <ClCompile Include="Sources\Led_Command.cpp" />
+    <ClCompile Include="Sources\Led_FlavorPackage.cpp" />
+    <ClCompile Include="Sources\Led_GDI.cpp" />
+    <ClCompile Include="Sources\Led_HiddenText.cpp" />
+    <ClCompile Include="Sources\Led_IdleManager.cpp" />
+    <ClCompile Include="Sources\Led_LineBasedPartition.cpp" />
+    <ClCompile Include="Sources\Led_Marker.cpp" />
+    <ClCompile Include="Sources\Led_MarkerCover.cpp" />
+    <ClCompile Include="Sources\Led_MultiRowTextImager.cpp" />
+    <ClCompile Include="Sources\Led_PartitioningTextImager.cpp" />
+    <ClCompile Include="Sources\Led_SimpleTextStore.cpp" />
+    <ClCompile Include="Sources\Led_SpellCheckEngine.cpp" />
+    <ClCompile Include="Sources\Led_StandardStyledTextImager.cpp" />
+    <ClCompile Include="Sources\Led_StandardStyledTextInteractor.cpp" />
+    <ClCompile Include="Sources\Led_StyledTextEmbeddedObjects.cpp" />
+    <ClCompile Include="Sources\Led_StyledTextImager.cpp" />
+    <ClCompile Include="Sources\Led_StyledTextIO.cpp" />
+    <ClCompile Include="Sources\Led_StyledTextIO_HTML.cpp" />
+    <ClCompile Include="Sources\Led_StyledTextIO_PlainText.cpp" />
+    <ClCompile Include="Sources\Led_StyledTextIO_RTF.cpp" />
+    <ClCompile Include="Sources\Led_Support.cpp" />
+    <ClCompile Include="Sources\Led_TextBreaks.cpp" />
+    <ClCompile Include="Sources\Led_TextImager.cpp" />
+    <ClCompile Include="Sources\Led_TextInteractor.cpp" />
+    <ClCompile Include="Sources\Led_TextInteractorMixins.cpp" />
+    <ClCompile Include="Sources\Led_TextStore.cpp" />
+    <ClCompile Include="Sources\Led_WordProcessor.cpp" />
+    <ClCompile Include="Sources\Led_WordWrappedTextImager.cpp" />
+    <ClCompile Include="Sources\Led_WordWrappedTextInteractor.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
