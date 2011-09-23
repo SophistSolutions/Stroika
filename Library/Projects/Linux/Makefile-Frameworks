@@ -1,0 +1,51 @@
+include Configuration.mk
+include	SharedMakeVariables.mk
+include	SharedBuildRules.mk
+
+RelPathToDevRoot		=	../../../../
+SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Frameworks/
+
+
+VPATH = $(SrcDir) $(LibDir)
+
+SubDirs=	\
+
+
+
+all-objs:
+	@for i in $(SubDirs);\
+	do\
+	    (cd $$i; make -s all)\
+	done
+
+
+$(StroikaFrameworkLib):	all-objs
+	@mkdir -p $(LibDir)
+	@echo Creating $(StroikaFrameworkLib)...
+	@rm -f $(StroikaFrameworkLib)
+	@for i in $(SubDirs);\
+	do\
+	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
+	done
+	@ranlib $(StroikaFrameworkLib)
+
+
+all:	$(StroikaFrameworkLib)
+
+
+clean::
+	@for i in $(SubDirs);\
+	do\
+	    (cd $$i; make -s clean;)\
+	done
+
+clobber::
+	do\
+	    (cd $$i; make -s clobber;)\
+	done
+	@rm -f $(StroikaFrameworkLib)
+
+
+Build:	all
+
+
