@@ -1,6 +1,4 @@
-IntermediateFiles
 ipch
-Stroika-Foundation.sdf
-Stroika-Foundation.opensdf
-Stroika-Foundation.vcxproj.user
-Stroika-Foundation.suo
+*.sdf
+*.vcxproj.user
+*.suo
