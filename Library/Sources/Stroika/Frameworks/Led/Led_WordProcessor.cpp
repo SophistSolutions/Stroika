@@ -1866,7 +1866,7 @@ bool	WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
 }
 
 #if		qWindows
-UINT CALLBACK	WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+UINT_PTR CALLBACK	WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (hWnd != NULL and message == WM_INITDIALOG) {
 		Led_CenterWindowInParent (hWnd);

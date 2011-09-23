@@ -1450,7 +1450,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardMacPictureWithURLStyleMarker::mk (const
 			Led_ThrowBadFormatDataException ();
 		}
 
-		size_t	picSize	=	*(size_t*)data;
+		uint32_t	picSize	=	*(uint32_t*)data;
 		picSize = Led_BufToULONG (&picSize);
 
 		Led_Picture*	picBuf	=	(Led_Picture*)((char*)data + 4);
@@ -1533,7 +1533,7 @@ Led_Distance	StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const S
 void	StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink)
 {
 	{
-		size_t	picSize	=	GetPictureByteSize ();
+		uint32_t	picSize	=	GetPictureByteSize ();
 		Led_ULONGToBuf (picSize, &picSize);
 		Led_Assert (sizeof (picSize) == 4);
 		sink.write (&picSize, sizeof (picSize));
@@ -1638,7 +1638,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardDIBWithURLStyleMarker::mk (const char* 
 		Led_ThrowBadFormatDataException ();
 	}
 
-	size_t	picSize	=	*(size_t*)data;
+	uint32_t	picSize	=	*(uint32_t*)data;
 	picSize = Led_BufToULONG (&picSize);
 
 	Led_DIB*	picBuf	=	(Led_DIB*)((char*)data + 4);
@@ -1741,7 +1741,7 @@ void	StandardDIBWithURLStyleMarker::Write (SinkStream& sink)
 {
 	const Led_DIB*	dib	=	GetDIBData ();
 	{
-		size_t	dibSize	=	Led_GetDIBImageByteCount (dib);
+		uint32_t	dibSize	=	Led_GetDIBImageByteCount (dib);
 		Led_ULONGToBuf (dibSize, &dibSize);
 		Led_Assert (sizeof (dibSize) == 4);
 		sink.write (&dibSize, sizeof (dibSize));

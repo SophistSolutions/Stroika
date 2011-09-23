@@ -3028,7 +3028,7 @@ class	WordProcessor::DialogSupport {
 
 	#if		qWindows
 	private:
-		static	UINT CALLBACK	ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		static	UINT_PTR CALLBACK	ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	#endif
 };
 

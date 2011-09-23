@@ -1214,7 +1214,7 @@ void	TextImager::SetDefaultFont_ (const Led_IncrementalFontSpecification& defaul
 				return score;
 			}
 	};
-	static	BOOL	FAR	PASCAL	EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /*lpntm*/, DWORD fontType, long arg)
+	static	int	FAR	PASCAL	EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /*lpntm*/, DWORD fontType, LPARAM arg)
 		{
 			// Score each font choice, and pick the 'best' one. Pick randomly if several are 'best'.
 			Led_RequireNotNil (lplf);

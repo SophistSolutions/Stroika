@@ -757,6 +757,7 @@
 #endif
 
 #include	<climits>
+#include	<cstdint>
 #include	<new>
 #include	<cstddef>
 #include	<cstring>
@@ -2773,7 +2774,7 @@ string	MakeSophistsAppNameVersionURL (const string& relURL, const string& appNam
 			Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
 			Led_USHORTToBuf((unsigned short)(ul), buf + 1);
 		}
-	inline	unsigned int	Led_BufToULONG (const unsigned int* buf)
+	inline	unsigned int	Led_BufToULONG (const uint32_t* buf)
 		{
 			unsigned short*	bufAsShortArray	=	(unsigned short*)buf;
 			return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
