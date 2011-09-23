@@ -57,20 +57,19 @@ foreach (@kConfigurations) {
 
 
 print("Building Stroika-Frameworks...\n");
-
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Framework-Led.vcxproj /p:$curConfig /target:$useBld");
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$useBld");
 }
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Framework-Service.vcxproj /p:$curConfig /target:$useBld");
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$useBld");
 }
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Framework-WebServer.vcxproj /p:$curConfig /target:$useBld");
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$useBld");
 }
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Framework.vcxproj /p:$curConfig /target:$useBld");
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$useBld");
 }
