@@ -546,12 +546,7 @@ class	RTFIO {
 				{
 					fName[0] = '\0';
 				}
-			ControlWordAtomName (const char* c)
-				//:fName ()
-				{
-					::strncpy (fName, c, eMaxControlAtomNameLen);
-					fName[eMaxControlAtomNameLen] = '\0';
-				}
+			ControlWordAtomName (const char* c);
 			operator char* ()				{ return fName; }
 			operator const char* () const	{ return fName; }
 			char& operator[] (size_t i)		{ Led_Require (i <= eMaxControlAtomNameLen); return fName[i]; }

@@ -2024,6 +2024,14 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::~GroupContext ()
 
 
 
+RTFIO::ControlWordAtomName::ControlWordAtomName (const char* c)
+				//:fName ()
+				{
+					::strncpy (fName, c, eMaxControlAtomNameLen);
+					fName[eMaxControlAtomNameLen] = '\0';
+				}
+
+
 
 /*
  ********************************************************************************

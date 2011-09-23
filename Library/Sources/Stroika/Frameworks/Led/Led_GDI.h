@@ -4124,11 +4124,6 @@ void	Led_CenterWindowInParent (HWND w);
 			{
 				fName[0] = '\0';
 			}
-		inline	Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
-			{
-				(void)::_tcsncpy (fName, from, LF_FACESIZE);
-				fName[LF_FACESIZE-1] = '\0';
-			}
 		inline	bool	operator== (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs)
 			{
 				return (::_tcscmp (lhs.fName, rhs.fName) == 0);
@@ -4195,30 +4190,6 @@ void	Led_CenterWindowInParent (HWND w);
 				return fFontFamily;
 			#endif
 		}
-	/*
-	@METHOD:		Led_FontSpecification::SetFontName
-	@DESCRIPTION:	<p>See also @'Led_FontSpecification::GetFontName'.</p>
-	*/
-	inline	void	Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
-		{
-			#if		qMacOS
-				Str255	pFontName;
-				pFontName[0] = fontName.length ();
-				memcpy (&pFontName[1], fontName.c_str (), pFontName[0]);
-				short	fontNum	=	0;
-				::GetFNum (pFontName, &fontNum);
-				// Alas, the Mac font Manager returns ZERO as the font number if it really
-				// has no idea about the font. This is NOT what we want. But unsure what we can do better at this point!
-				fFontSpecifier = fontNum;
-			#elif	qWindows
-				const	size_t	kBufLen	=	sizeof (fFontInfo.lfFaceName)/sizeof (fFontInfo.lfFaceName[0]);
-				(void)_tcsncpy (fFontInfo.lfFaceName, fontName.c_str (), kBufLen);
-				fFontInfo.lfFaceName[kBufLen-1] = '\0';
-				fFontInfo.lfCharSet = DEFAULT_CHARSET;
-			#elif	qXWindows
-				fFontFamily = fontName;
-			#endif
-		}
 	// FontName info
 	inline	Led_FontSpecification::FontNameSpecifier	Led_FontSpecification::GetFontNameSpecifier () const
 		{
@@ -4228,19 +4199,6 @@ void	Led_CenterWindowInParent (HWND w);
 				return fFontInfo.lfFaceName;
 			#elif	qXWindows
 				return fFontFamily;
-			#endif
-		}
-	inline	void	Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
-		{
-			#if		qMacOS
-				fFontSpecifier = fontNameSpecifier;
-			#elif	qWindows
-				const	size_t	kBufLen	=	sizeof (fFontInfo.lfFaceName)/sizeof (fFontInfo.lfFaceName[0]);
-				(void)::_tcsncpy (fFontInfo.lfFaceName, fontNameSpecifier.fName, kBufLen);
-				fFontInfo.lfFaceName[kBufLen-1] = '\0';
-				fFontInfo.lfCharSet = DEFAULT_CHARSET;
-			#elif	qXWindows
-				fFontFamily = fontNameSpecifier;
 			#endif
 		}
 	// Style info

@@ -2523,32 +2523,6 @@ string	MakeSophistsAppNameVersionURL (const string& relURL, const string& appNam
 		}
 
 
-#if		!qNoSTRNICMP
-	inline	int	Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
-		{
-			Led_RequireNotNil (l);
-			Led_RequireNotNil (r);
-			#if		qSingleByteCharacters
-				return ::strnicmp (l, r, n);
-			#elif	qMultiByteCharacters
-				return ::_mbsnicmp (l, r, n);
-			#elif	qWideCharacters
-				return ::wcsnicmp (l, r, n);
-			#endif	
-		}
-	inline	int	Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
-		{
-			Led_RequireNotNil (l);
-			Led_RequireNotNil (r);
-			#if		qSingleByteCharacters
-				return ::stricmp (l, r);
-			#elif	qMultiByteCharacters
-				return ::_mbsicmp (l, r);
-			#elif	qWideCharacters
-				return ::wcsicmp (l, r);
-			#endif	
-		}
-#endif
 
 	inline	const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c)
 		{

@@ -921,6 +921,35 @@ void	Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ())
 
 
 
+#if		!qNoSTRNICMP
+int	Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
+{
+	Led_RequireNotNil (l);
+	Led_RequireNotNil (r);
+	#if		qSingleByteCharacters
+		return ::strnicmp (l, r, n);
+	#elif	qMultiByteCharacters
+		return ::_mbsnicmp (l, r, n);
+	#elif	qWideCharacters
+		return ::wcsnicmp (l, r, n);
+	#endif	
+}
+
+int	Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
+{
+	Led_RequireNotNil (l);
+	Led_RequireNotNil (r);
+	#if		qSingleByteCharacters
+		return ::stricmp (l, r);
+	#elif	qMultiByteCharacters
+		return ::_mbsicmp (l, r);
+	#elif	qWideCharacters
+		return ::wcsicmp (l, r);
+	#endif	
+}
+#endif
+
+
 
 
 /*
