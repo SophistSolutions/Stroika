@@ -1,10 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-/*
- * Note - used PUBLIC DOMAIN http://sourceforge.net/projects/libb64/files/libb64/libb64/libb64-1.2.src.zip/download
- * code as a starting point.
- */
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
@@ -32,6 +28,6 @@ using	namespace	Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- *********************** Cryptography::EncodeBase64 *****************************
+ ************************************ Service::Main *****************************
  ********************************************************************************
  */
