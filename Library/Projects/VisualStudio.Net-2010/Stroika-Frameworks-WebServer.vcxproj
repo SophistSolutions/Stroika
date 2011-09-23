@@ -74,6 +74,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPListener.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPListener.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPListener.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
