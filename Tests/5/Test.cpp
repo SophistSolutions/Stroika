@@ -502,8 +502,7 @@ namespace	{
 namespace	{
 	void    Test14_String_StackLifetime_ ()
 		{
-			wchar_t	buf[1024];
-			wcscpy (buf, L"fred");
+			wchar_t	buf[1024]	=	L"fred";
 			{
 				String_StackLifetime s (buf);
 				VerifyTestResult (s[0] == 'f');
