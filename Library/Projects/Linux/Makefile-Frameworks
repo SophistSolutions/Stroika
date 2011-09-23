@@ -9,7 +9,7 @@ SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroi
 VPATH = $(SrcDir) $(LibDir)
 
 SubDirs=	\
-
+		Service\
 
 
 all-objs:
@@ -19,18 +19,18 @@ all-objs:
 	done
 
 
-$(StroikaFrameworkLib):	all-objs
+$(StroikaFrameworksLib):	all-objs
 	@mkdir -p $(LibDir)
-	@echo Creating $(StroikaFrameworkLib)...
-	@rm -f $(StroikaFrameworkLib)
+	@echo Creating $(StroikaFramesworkLib)...
+	@rm -f $(StroikaFramesworkLib)
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
+	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFrameworksLib) $$i/$$oo); done )\
 	done
-	@ranlib $(StroikaFrameworkLib)
+	@ranlib $(StroikaFrameworksLib)
 
 
-all:	$(StroikaFrameworkLib)
+all:	$(StroikaFrameworksLib)
 
 
 clean::
@@ -43,7 +43,7 @@ clobber::
 	do\
 	    (cd $$i; make -s clobber;)\
 	done
-	@rm -f $(StroikaFrameworkLib)
+	@rm -f $(StroikaFrameworksLib)
 
 
 Build:	all

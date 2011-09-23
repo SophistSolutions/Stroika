@@ -65,6 +65,7 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles/$platform/$target";
 		mkdir "$intermediateFiles/$platform/$target/Library";
 		mkdir "$intermediateFiles/$platform/$target/Library/Foundation";
+		mkdir "$intermediateFiles/$platform/$target/Library/Frameworks";
 
 		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/$target/Library/Foundation/Makefile");
 		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/$target/Library/Configuration.mk");
@@ -89,6 +90,11 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Memory", "Makefile-Foundation-Memory");
 		mkDirWithLinks("Foundation/Streams", "Makefile-Foundation-Streams");
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
+
+		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Library/Frameworks/Makefile");
+
+		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
+
 
 		mkdir "$intermediateFiles/$platform/$target/Test1";
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test1 $intermediateFiles/$platform/$target/Test1/Makefile");
