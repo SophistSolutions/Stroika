@@ -79,6 +79,9 @@
     <Filter Include="Sources\Containers\Private">
       <UniqueIdentifier>{43e8aa54-497b-45a2-9fe6-33c7074b93a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\IO\Network\Transfer">
+      <UniqueIdentifier>{695f0de1-3dbf-43e4-b9d9-07b4cd35924b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -293,6 +296,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp">
       <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -612,6 +618,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -862,6 +871,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
   </ItemGroup>
 </Project>
