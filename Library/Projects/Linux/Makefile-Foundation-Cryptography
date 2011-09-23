@@ -1,9 +1,9 @@
-include ../Configuration.mk
-include	../SharedMakeVariables.mk
-include	../SharedBuildRules.mk
+include ../../Configuration.mk
+include	../../SharedMakeVariables.mk
+include	../../SharedBuildRules.mk
 
 
-RelPathToDevRoot		=	../../../../../
+RelPathToDevRoot		=	../../../../../../
 SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/Cryptography/
 
 VPATH = $(SrcDir)

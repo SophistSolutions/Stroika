@@ -35,7 +35,7 @@ sub mkDirWithLinks
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
-	system ("ln -s ../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
+	system ("ln -s ../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
@@ -43,7 +43,7 @@ sub mkDirWithLinks2
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
-	system ("ln -s ../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
+	system ("ln -s ../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
 }
 
 
@@ -56,28 +56,30 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles/$platform";
 		mkdir "$intermediateFiles/$platform/$target";
 		mkdir "$intermediateFiles/$platform/$target/Library";
-		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/$target/Library/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Library/Foundation";
+
+		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/$target/Library/Foundation/Makefile");
 		system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/$target/Library/Configuration.mk");
 		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/$target/Library/SharedBuildRules.mk");
 		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles/$platform/$target/Library/SharedMakeVariables.mk");
 
-		mkDirWithLinks("Characters", "Makefile-Foundation-Characters");
-		mkDirWithLinks("Configuration", "Makefile-Foundation-Configuration");
-		mkDirWithLinks("Containers", "Makefile-Foundation-Containers");
-		mkDirWithLinks("Cryptography", "Makefile-Foundation-Cryptography");
-		mkDirWithLinks("Database", "Makefile-Foundation-Database");
-		mkDirWithLinks("DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
-		mkDirWithLinks2("DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
-		mkDirWithLinks2("DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
-		mkDirWithLinks("Debug", "Makefile-Foundation-Debug");
-		mkDirWithLinks("Execution", "Makefile-Foundation-Execution");
-		mkDirWithLinks("IO", "Makefile-Foundation-IO");
-		mkDirWithLinks2("IO/Network", "Makefile-Foundation-IO-Network");
-		mkDirWithLinks("Linguistics", "Makefile-Foundation-Linguistics");
-		mkDirWithLinks("Math", "Makefile-Foundation-Math");
-		mkDirWithLinks("Memory", "Makefile-Foundation-Memory");
-		mkDirWithLinks("Streams", "Makefile-Foundation-Streams");
-		mkDirWithLinks("Time", "Makefile-Foundation-Time");
+		mkDirWithLinks("Foundation/Characters", "Makefile-Foundation-Characters");
+		mkDirWithLinks("Foundation/Configuration", "Makefile-Foundation-Configuration");
+		mkDirWithLinks("Foundation/Containers", "Makefile-Foundation-Containers");
+		mkDirWithLinks("Foundation/Cryptography", "Makefile-Foundation-Cryptography");
+		mkDirWithLinks("Foundation/Database", "Makefile-Foundation-Database");
+		mkDirWithLinks("Foundation/DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
+		mkDirWithLinks2("Foundation/DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
+		mkDirWithLinks2("Foundation/DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
+		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
+		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
+		mkDirWithLinks("Foundation/IO", "Makefile-Foundation-IO");
+		mkDirWithLinks2("Foundation/IO/Network", "Makefile-Foundation-IO-Network");
+		mkDirWithLinks("Foundation/Linguistics", "Makefile-Foundation-Linguistics");
+		mkDirWithLinks("Foundation/Math", "Makefile-Foundation-Math");
+		mkDirWithLinks("Foundation/Memory", "Makefile-Foundation-Memory");
+		mkDirWithLinks("Foundation/Streams", "Makefile-Foundation-Streams");
+		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
 
 		mkdir "$intermediateFiles/$platform/$target/Test1";
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test1 $intermediateFiles/$platform/$target/Test1/Makefile");

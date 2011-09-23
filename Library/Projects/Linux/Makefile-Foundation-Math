@@ -1,8 +1,8 @@
-include ../Configuration.mk
-include	../SharedBuildRules.mk
-include	../SharedMakeVariables.mk
+include ../../Configuration.mk
+include	../../SharedBuildRules.mk
+include	../../SharedMakeVariables.mk
 
-RelPathToDevRoot		=	../../../../../
+RelPathToDevRoot		=	../../../../../../
 SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/Math/
 
 VPATH = $(SrcDir)
