@@ -1,0 +1,15 @@
+include ../../../../Configuration.mk
+include	../../../../SharedBuildRules.mk
+include	../../../../SharedMakeVariables.mk
+
+RelPathToDevRoot		=	../../../../../../../../
+SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/Network/Transfer/
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Client.o\
+
+all:	$(Objs)
+

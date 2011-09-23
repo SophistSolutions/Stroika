@@ -13,10 +13,10 @@ if ("$^O" eq "linux") {
 		$useBld = "all";
 	}
 	if ($useBld eq "rebuild") {
-	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library; make clobber");
+	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make clobber");
 		$useBld = "all";
 	}
-    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make $useBld");
 }
 else {
     system ("cd Projects/VisualStudio.Net-2010; perl buildall.pl $useBld");

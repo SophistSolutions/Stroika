@@ -45,6 +45,14 @@ sub mkDirWithLinks2
 	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
 	system ("ln -s ../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
 }
+sub mkDirWithLinks3
+{
+	local $relPath = $_[0];
+	local $makefileName = $_[1];
+
+	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
+	system ("ln -s ../../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
+}
 
 
 sub MakeUnixDirs {
@@ -75,6 +83,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
 		mkDirWithLinks("Foundation/IO", "Makefile-Foundation-IO");
 		mkDirWithLinks2("Foundation/IO/Network", "Makefile-Foundation-IO-Network");
+		mkDirWithLinks3("Foundation/IO/Network/Transfer", "Makefile-Foundation-IO-Network-Transfer");
 		mkDirWithLinks("Foundation/Linguistics", "Makefile-Foundation-Linguistics");
 		mkDirWithLinks("Foundation/Math", "Makefile-Foundation-Math");
 		mkDirWithLinks("Foundation/Memory", "Makefile-Foundation-Memory");
