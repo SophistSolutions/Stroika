@@ -17,7 +17,9 @@
 
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
-
+using	namespace	Stroika::Foundation::IO;
+using	namespace	Stroika::Foundation::IO::Network;
+using	namespace	Stroika::Foundation::IO::Network::Transfer;
 
 
 
