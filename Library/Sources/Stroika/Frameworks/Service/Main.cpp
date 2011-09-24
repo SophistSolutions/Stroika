@@ -119,7 +119,8 @@ void	Main::RunAsService ()
 
 	try {
 #if		qPlatform_POSIX
-		IO::WriteString (ofstream (_fRep->GetPIDFileName ().AsTString ().c_str ()), Characters::Format (L"%d", getpid ()));
+		ofstream	out (_fRep->GetPIDFileName ().AsTString ().c_str ());
+		IO::WriteString (out, Characters::Format (L"%d", getpid ()));
 #endif
 		_fRep->OnStartRequest ();
 	}
