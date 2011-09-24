@@ -9,6 +9,7 @@
 #include	<exception>
 #include	<string>
 #include	<cerrno>
+#include	<stdexcept>
 
 #include	"../Configuration/Common.h"
 #include	"../Debug/Trace.h"
