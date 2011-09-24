@@ -104,7 +104,7 @@ Main::Main (Memory::SharedPtr<IRep> rep)
 #if		qPlatform_POSIX
 pid_t	Main::GetServicePID () const
 {
-	wstring	tmp	=	ReadString (ifstream (_fRep->GetPIDFileName ().AsTString ().c_str ()));
+	wstring	tmp	=	IO::ReadString (ifstream (_fRep->GetPIDFileName ().AsTString ().c_str ()));
 	if (tmp.empty ()) {
 		return 0;
 	}
@@ -118,7 +118,7 @@ void	Main::RunAsService ()
 
 	try {
 #if		qPlatform_POSIX
-		WriteString (ofstream (_fRep->GetPIDFileName ().AsTString ().c_str ()), Format (L"%d", getpid ()));
+		IO::WriteString (ofstream (_fRep->GetPIDFileName ().AsTString ().c_str ()), Characters::Format (L"%d", getpid ()));
 #endif
 		_fRep->OnStartRequest ();
 	}
@@ -144,7 +144,7 @@ void	Main::Start ()
 #if		qPlatform_POSIX
 	// REALLY should use GETSTATE - and return state based on if PID file exsits...
 	if (GetServicePID ()  != 0) {
-		Execution::DoThrow (StringException (L"Cannot Start service because its already running"));
+		Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
 	}
 #endif
 	Characters::TString	thisEXEPath	=	Execution::GetEXEPath ();
