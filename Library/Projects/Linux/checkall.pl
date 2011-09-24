@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 #EVENTUALYL fix to do  stuff like this
 #CheckFileExists ("../../../Builds/Windows/Lib/Debug-A-32/Stroika-Foundation.lib");
 #CheckFileExists ("../../../Builds/Windows/Lib/Release-A-32/Stroika-Foundation.lib");
@@ -14,6 +15,7 @@
 
 
 CheckFileExists ("../../../Builds/Platform_Linux/Stroika-Foundation.a");
+CheckFileExists ("../../../Builds/Platform_Linux/Stroika-Frameworks.a");
 
 
 print "[SUCCEEDED]\r\n";

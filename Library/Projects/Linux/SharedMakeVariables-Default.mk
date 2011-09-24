@@ -14,12 +14,14 @@ ObjDir                          =       ./
 LibDir				=	$(RelPathToDevRoot)Builds/Platform_Linux/
 Includes                        =       -I$(RelPathToDevRoot)/Library/Sources/
 
+
 StroikaFoundationLib		=	$(LibDir)Stroika-Foundation.a
+StroikaFrameworksLib		=	$(LibDir)Stroika-Frameworks.a
 CFLAGS= -c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Includes)
 
 StroikaFoundationSupportLibs	=	$(RelPathToDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a
 
-LIBS	=	$(StroikaFoundationLib) $(StroikaFoundationSupportLibs) -lpthread -lrt
+LIBS	=	$(StroikaFrameworksLib) $(StroikaFoundationLib) $(StroikaFoundationSupportLibs) -lpthread -lrt
 
 
 
