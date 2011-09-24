@@ -13,6 +13,7 @@
 	#include	<signal.h>
 #endif
 
+#include	"../../Foundation/Characters/Format.h"
 #include	"../../Foundation/Containers/Common.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
@@ -69,7 +70,7 @@ void	Main::IRep::OnReReadConfigurationRequest ()
 #if		qPlatform_POSIX
 String	Main::IRep::GetPIDFileName () const
 {
-	return TSTR ("/tmp/") + GetServiceDescription ().fName + TSTR (".pid");
+	return L"/tmp/" + GetServiceDescription ().fName + L".pid";
 }
 #endif
 
