@@ -7,6 +7,7 @@
 	#include	<windows.h>
 #endif
 
+#include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 #include	"../IO/FileUtils.h"
 
@@ -58,16 +59,17 @@ TString	Execution::GetEXEPath ()
 #elif	qPlatform_POSIX && qSupport_Proc_Filesystem
 	// readlink () isn't clear about finding the right size. THe only way to tell it wasn't enuf (maybe) is if all the
 	// bytes passed in are used. That COULD mean it all fit, or there was more. If we get that - double buf size and try again
+	Memory::SmallStackBuffer<Characters::TChar> buf (1000);
 	ssize_t	n;
 	while ( (n = readlink ("/proc/self/exe", buf, buf.GetSize () - 1)) == buf.GetSize ()) {
 		buf.GrowToSize (buf.GetSize () * 2);
 	}
 	if (n < 0) {
-		ThrowIfError_errno_t ();
+		Execution::ThrowIfError_errno_t ();
 		Assert (false);	// errno SB set!!!
 	}
 	(buf.begin () + n) = '\0';
-	return buf;
+	return buf.begin ();
 #else
 	AssertNotImplemented ();
 	return TString ();
