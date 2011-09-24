@@ -19,9 +19,7 @@ Objs	=	\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
 	$(ObjDir)ProgressMonitor.o\
-	$(ObjDir)StringException.o\
 	$(ObjDir)Thread.o\
-	$(ObjDir)ThreadAbortException.o\
 	$(ObjDir)WaitAbandonedException.o\
 	$(ObjDir)WaitTimedOutException.o\
 
