@@ -9,6 +9,10 @@
 #include	<string>
 #include	<vector>
 
+#if		qPlatform_POSIX
+	#include	<csignal>
+#enidf
+
 #include	"../../Foundation/Characters/String.h"
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
