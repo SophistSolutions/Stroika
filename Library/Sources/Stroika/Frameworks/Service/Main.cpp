@@ -115,13 +115,12 @@ void	Main::Start ()
 	pid_t	pid	=	fork ();
 	if (pid == 0) {
 		// Child - exec
-		const char*	v[]	=	{ CommandNames::kRunAsService., NULL };
 		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), CommandNames::kRunAsService.AsTString ().c_str (), nullptr);
 		exit (-1);
 	}
 	else if (pid < 0) {
 		// failed to fork - serious error
-		ThrowIfError_errno_t ();
+		Execution::ThrowIfError_errno_t ();
 		Assert (false);	// errno SB set!!!
 	}
 	else {
