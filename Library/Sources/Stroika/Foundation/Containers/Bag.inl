@@ -70,7 +70,7 @@ namespace	Stroika {
             template	<typename T>	inline	Bag<T>::operator Iterator<T> () const
             {
                 Iterator<T> it = const_cast<Bag<T> *> (this)->fRep->MakeIterator ();
-                it.More ();
+                ++it;
                 return it;
             }
 
@@ -118,7 +118,7 @@ namespace	Stroika {
             template	<typename T>	inline	Bag<T>::operator BagMutator<T> ()
             {
                 BagMutator<T> it = fRep->MakeBagMutator ();
-                it.More ();
+                ++it;
                 return it;
             }
 

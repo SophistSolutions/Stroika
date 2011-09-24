@@ -152,14 +152,14 @@ namespace	Stroika {
 			template	<typename T>	inline	Tally<T>::operator Iterator<T> () const
 			{
                 Iterator<T> it = const_cast<Tally<T> *> (this)->fRep->MakeIterator ();
-                it.More ();
+                ++it;
                 return it;
 			}
 
 			template	<typename T>	inline	Tally<T>::operator Iterator<TallyEntry<T> > () const
 			{
                 Iterator<TallyEntry<T>> it = const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ();
-                it.More ();
+                ++it;
                 return it;
 			}
 

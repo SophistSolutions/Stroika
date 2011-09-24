@@ -111,24 +111,18 @@
 
 /*
  *		Iterator are used primarily to get auto-destruction
- *	at the end of a scope where they are used. They are not intended to be used
- *	directly, but just from the ForEach macros.
+ *	at the end of a scope where they are used. They can be used directly,
+ *	or using ranged for syntax (currently imitated by For macro)
  *
+ *  Current is a synonym for operator*. Done is a synonym for iterator != container.end ()
+ *	Current can be called at anytime not Done. The value of
+ *  Current is guaranteed to be valid if it was called before Done, even if that value
+ *	was removed from the container at some point after Current was called.
  *
- */
-
-/*
+ *	The value of Current is undefined if called when Done.
  *
- *  Current () can be called anytime More has been called at least once, and has returned true. It returns the
- *	current item in the iteration process. It is undefined what Current ()
- *	will return if it is deleted while current - however - if anything
- *	else is deleted, Current () is guaranteed to be valid, and remain
- *	the same.
- *  More can be called anytime. If not done, then it iterates to the next
+ *  Operator++ can be called anytime. If not done, then it iterates to the next
  *  item in the collection (i.e. it changes the value returned by Current).
- *  It returns the true if iteration can continue, and false if there is nothing
- *  left to iterate over, allowing looping as
- *  for (Iterator<T > It = (Iterator<T >)(Init); It.More ();)
  *
  *
  */
@@ -153,64 +147,23 @@ namespace	Stroika {
                     // support for Range based for, and stl style iteration in general (containers must also support begin, end)
                     nonvirtual  T       operator* () const;
                     nonvirtual  void    operator++ ();
+                    nonvirtual  void    operator++ (int);
                     nonvirtual  bool    operator!= (Iterator rhs);
 
-
+					// Synonyms for above, sometimes making code more readable
+					// Current -> operator*
+					// Done -> (it != container.end ())
                 public:
-                    nonvirtual	bool	More ();
                     nonvirtual	T		Current () const;
+                    nonvirtual	bool	Done () const;
 
                 protected:
                     IteratorRep<T>*	fIterator;
                     T               fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
             };
 
-			/*
-				Support for ranged for syntax: for (it : v) { it.Current (); }
-				This typedef lets you easily construct iterators other than the basic
-				iterator for the container.
-				Sample usage:
-				typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
-			*/
-			template	<typename Container, typename IteratorClass>	class	RangedForIterator {
-				public:
-					RangedForIterator (Container& t) :
-						fIt (t)
-					{
-					}
-
-					nonvirtual  IteratorClass    begin () const
-					{
-						return fIt;
-					}
-
-					IteratorClass end () const
-					{
-						return (nullptr);
-					}
-
-				private:
-					IteratorClass	fIt;
-			};
 
 
-            /*
-             *		An iterator is a helper class, that allows ordered access to the
-             *	elements of an ADT. Iterators cannot alter the contents of their ADT,
-             *	but are robust over changes to their ADT.
-             */
-            template	<typename T> class	IteratorRep {
-                protected:
-                    IteratorRep ();
-
-                public:
-                    virtual	~IteratorRep ();
-
-                public:
-                    virtual	bool			More (T* current, bool advance)   = 0;
-                    virtual	IteratorRep<T>*	Clone () const		= 0;
-                    nonvirtual bool         Done () const;
-            };
 
             /*
              For macro:
@@ -218,8 +171,6 @@ namespace	Stroika {
              For (it, myBag) with for (it : myBag)
              */
 			#define	For(_it,_Container)			for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
-
-
 
 		}
     }

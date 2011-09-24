@@ -14,6 +14,65 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
+			/*
+				Subclassed by front-end container writers.
+				Most of the work is done in More, which does a lot of work because it is the
+				only virtual function called during iteration, and will need to lock its
+				container when doing "safe" iteration. More does the following:
+					iterate to the next container value if advance is true
+					(then) copy the current value into current, if current is not null
+					return true if iteration can continue (not done iterating)
+
+					typical uses:
+						it++ -> More (null, true)
+						*it -> More (&v, false); return v;
+						Done -> More (null, false)
+
+						(note that for performance and safety reasons the iterator envelope actually
+						passes fCurrent into More when implenenting ++it
+			*/
+            template	<typename T> class	IteratorRep {
+                protected:
+                    IteratorRep ();
+
+                public:
+                    virtual	~IteratorRep ();
+
+                public:
+                    virtual	bool			More (T* current, bool advance)   = 0;
+                    virtual	IteratorRep<T>*	Clone () const		= 0;
+                    nonvirtual bool         Done () const;
+            };
+
+			/*
+				Support for ranged for syntax: for (it : v) { it.Current (); }
+				This typedef lets you easily construct iterators other than the basic
+				iterator for the container.
+				Sample usage:
+				typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
+			*/
+			template	<typename Container, typename IteratorClass>	class	RangedForIterator {
+				public:
+					RangedForIterator (Container& t) :
+						fIt (t)
+					{
+					}
+
+					nonvirtual  IteratorClass    begin () const
+					{
+						return fIt;
+					}
+
+					IteratorClass end () const
+					{
+						return (nullptr);
+					}
+
+				private:
+					IteratorClass	fIt;
+			};
+
+
             // class IteratorRep<T>
             template	<typename T> inline	IteratorRep<T>::IteratorRep ()
             {
@@ -70,27 +129,33 @@ namespace	Stroika {
                 return (*this);
             }
 
-            template	<typename T> inline	bool	Iterator<T>::More ()
+            template	<typename T> inline	T	Iterator<T>::Current () const
             {
-                RequireNotNull (fIterator);
-                return (fIterator->More (&fCurrent, true));
+                return (operator* ());
             }
 
-            template	<typename T> inline	T	Iterator<T>::Current () const
+            template	<typename T> inline	bool	Iterator<T>::Done () const
+            {
+            	return fIterator->Done ();
+            }
+
+            template	<typename T>  inline    T   Iterator<T>::operator* () const
             {
                 RequireNotNull (fIterator);
                 return (fCurrent);
             }
 
-            template	<typename T>  inline    T   Iterator<T>::operator* () const
-            {
-                return Current ();
-            }
-
             template	<typename T>   inline   void  Iterator<T>::operator++ ()
             {
-                More ();
-            }
+                RequireNotNull (fIterator);
+                fIterator->More (&fCurrent, true);
+			}
+
+            template	<typename T>   inline   void  Iterator<T>::operator++ (int)
+            {
+                RequireNotNull (fIterator);
+                fIterator->More (&fCurrent, true);
+			}
 
             template	<typename T> inline bool   Iterator<T>::operator!= (Iterator rhs)
             {
