@@ -172,23 +172,24 @@ pid_t	Main::GetServicePID () const
 
 String		Main::GetServiceStatusMessage () const
 {
+	const	wchar_t	kTAB[]	=	L"    ";	// use spaces instead of tab so formatting independent of tabstop settings
 	ServiceDescription	svd	=	GetServiceDescription ();
 	wstringstream	tmp;
 	tmp << L"Service '" << svd.fName.As<wstring> () << "'" << endl;
 	switch (this->GetState ()) {
 		case	eStopped:	
-			tmp << L"    State:    STOPPED" << endl;
+			tmp << kTAB << L"State:  " << kTAB << "STOPPED" << endl;
 			break;
 		case	eRunning:	
-			tmp << L"    State:    Running" << endl; 
+			tmp << kTAB << L"State:  " << kTAB << "Running" << endl; 
 			#if		qPlatform_POSIX
-				tmp << L"    PID:    " << GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB << GetServicePID () << endl;
 			#endif
 			break;
 		case	ePaused:	
-			tmp << L"    State:    PAUSED" << endl; 
+			tmp << kTAB << L"State:  " << kTAB << "PAUSED" << endl; 
 			#if		qPlatform_POSIX
-				tmp << L"    PID:    " << GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB<< GetServicePID () << endl;
 			#endif
 			break;
 		default:
