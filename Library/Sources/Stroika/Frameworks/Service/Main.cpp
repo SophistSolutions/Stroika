@@ -120,8 +120,7 @@ void	Main::Start ()
 	}
 	else if (pid < 0) {
 		// failed to fork - serious error
-		Execution::ThrowIfError_errno_t ();
-		Assert (false);	// errno SB set!!!
+		Execution::errno_ErrorException::DoThrow (errno);
 	}
 	else {
 		// parent - in this case - no reason to wait - our work is done... Future versions might wait to

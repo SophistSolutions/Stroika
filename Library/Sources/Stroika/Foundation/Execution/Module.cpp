@@ -65,8 +65,7 @@ TString	Execution::GetEXEPath ()
 		buf.GrowToSize (buf.GetSize () * 2);
 	}
 	if (n < 0) {
-		Execution::ThrowIfError_errno_t ();
-		Assert (false);	// errno SB set!!!
+		errno_ErrorException::DoThrow (errno);
 	}
 	Assert (n < buf.GetSize ());
 	*(buf.begin () + n) = '\0';
