@@ -8,7 +8,6 @@ SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroi
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Angle.o\
 
 
 all:	$(Objs)

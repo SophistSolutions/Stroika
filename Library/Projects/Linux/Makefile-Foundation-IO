@@ -17,8 +17,6 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)FileAccessException.o\
-	$(ObjDir)FileBusyException.o\
-	$(ObjDir)FileFormatException.o\
 	$(ObjDir)FileUtils.o\
 
 all:	$(Objs) $(SubDirs)

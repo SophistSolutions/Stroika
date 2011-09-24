@@ -96,9 +96,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -132,20 +129,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp">
       <Filter>Sources\Cryptography</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp">
       <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Optional.cpp">
-      <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp">
       <Filter>Sources\Database</Filter>
@@ -156,29 +144,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TString.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.cpp">
-      <Filter>Sources\Memory\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp">
-      <Filter>Sources\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp">
-      <Filter>Sources\IO</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
       <Filter>Sources\IO</Filter>
@@ -187,9 +157,6 @@
       <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp">
@@ -206,12 +173,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp">
       <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Angle.cpp">
-      <Filter>Sources\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
-      <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp">
       <Filter>Sources\Memory</Filter>
@@ -258,9 +219,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <Filter>Sources\Characters\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
@@ -275,9 +233,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp">
       <Filter>Sources\Linguistics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.cpp">
-      <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp">
       <Filter>Sources\Time</Filter>
@@ -683,9 +638,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl">
-      <Filter>Sources\Cryptography</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl">
       <Filter>Sources\Cryptography</Filter>
     </None>
@@ -697,9 +649,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl">
-      <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl">
       <Filter>Sources\Characters</Filter>
@@ -782,12 +731,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.inl">
-      <Filter>Sources\DataExchangeFormat\JSON</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.inl">
-      <Filter>Sources\DataExchangeFormat\JSON</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl">
       <Filter>Sources\DataExchangeFormat</Filter>
     </None>
@@ -823,9 +766,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.inl">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.inl">
-      <Filter>Sources\Linguistics</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
       <Filter>Sources\Characters</Filter>

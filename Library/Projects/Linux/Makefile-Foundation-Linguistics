@@ -9,7 +9,6 @@ SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroi
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Words.o\
 
 all:	$(Objs)
 

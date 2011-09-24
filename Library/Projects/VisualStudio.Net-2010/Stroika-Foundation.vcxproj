@@ -75,10 +75,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
@@ -101,9 +99,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TChar.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
@@ -182,7 +178,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp" />
@@ -191,28 +186,18 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\StringException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Angle.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Optional.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
@@ -344,7 +329,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\TChar.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
@@ -364,11 +348,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.inl" />
@@ -400,7 +381,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />

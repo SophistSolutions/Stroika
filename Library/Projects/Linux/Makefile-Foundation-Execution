@@ -16,11 +16,9 @@ Objs	=	\
 	$(ObjDir)Event.o\
 	$(ObjDir)Exceptions.o\
 	$(ObjDir)ExceptionPropagate.o\
-	$(ObjDir)IRunnable.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
 	$(ObjDir)ProgressMonitor.o\
-	$(ObjDir)Sleep.o\
 	$(ObjDir)StringException.o\
 	$(ObjDir)Thread.o\
 	$(ObjDir)ThreadAbortException.o\

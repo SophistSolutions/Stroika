@@ -9,15 +9,11 @@ SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroi
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Character.o\
 	$(ObjDir)CodePage.o\
 	$(ObjDir)Format.o\
-	$(ObjDir)LineEndings.o\
 	$(ObjDir)String.o\
 	$(ObjDir)StringUtils.o\
 	$(ObjDir)Tokenize.o\
-	$(ObjDir)TChar.o\
-	$(ObjDir)TString.o\
 
 all:	$(Objs)
 
