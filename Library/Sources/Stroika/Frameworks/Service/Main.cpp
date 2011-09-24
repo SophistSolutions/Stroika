@@ -104,11 +104,12 @@ Main::Main (Memory::SharedPtr<IRep> rep)
 #if		qPlatform_POSIX
 pid_t	Main::GetServicePID () const
 {
-	wstring	tmp	=	IO::ReadString (ifstream (_fRep->GetPIDFileName ().AsTString ().c_str ()));
+	ifstream	in (_fRep->GetPIDFileName ().AsTString ().c_str ());
+	wstring	tmp	=	IO::ReadString (in);
 	if (tmp.empty ()) {
 		return 0;
 	}
-	return String2Int (tmp);
+	return Characters::String2Int (tmp);
 }
 #endif
 
