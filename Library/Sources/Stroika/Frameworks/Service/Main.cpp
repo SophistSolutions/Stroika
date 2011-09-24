@@ -47,6 +47,12 @@ using	namespace	Stroika::Frameworks::Service;
  ****************************** Service::Main::IRep *****************************
  ********************************************************************************
  */
+Main::IRep::IRep ()
+	: fStopping_ (false)
+	, fMustReReadConfig (false)
+{
+}
+
 Main::IRep::~IRep ()
 {
 }
@@ -61,6 +67,7 @@ void	Main::IRep::OnStartRequest ()
 void	Main::IRep::OnStopRequest ()
 {
 	// default to using thread stuff to send us a signal to abort...
+	fStopping_ = true;
 }
 
 void	Main::IRep::OnReReadConfigurationRequest ()
@@ -71,6 +78,26 @@ void	Main::IRep::OnReReadConfigurationRequest ()
 String	Main::IRep::GetPIDFileName () const
 {
 	return L"/tmp/" + GetServiceDescription ().fName + L".pid";
+}
+#endif
+
+#if		qPlatform_POSIX
+void	Main::IRep::SignalHandler (int signum) const
+{
+	// VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
+	switch (signum) {
+	case	SIGTERM:
+		fStopping_ = true;
+		break;
+	#if		qCompilerAndStdLib_Supports_constexpr
+		case	kSIG_ReReadConfiguration:
+	#else
+		case	SIGHUP:
+	#endif
+			fMustReReadConfig = true;
+			break;
+
+	}
 }
 #endif
 
@@ -96,15 +123,29 @@ const	wchar_t	Service::Main::CommandNames::kReloadConfiguration[]	=	L"Reload-Con
 const	wchar_t	Service::Main::CommandNames::kPause[]				=	L"Pause";
 const	wchar_t	Service::Main::CommandNames::kContinue[]			=	L"Continue";
 
+Memory::SharedPtr<Main::IRep>	Main::_sRep;
+
 Main::Main (Memory::SharedPtr<IRep> rep)
-	: _fRep (rep)
 {
+	Ensure  (_sRep.IsNull ());
+	_sRep = rep;
+	#if		qPlatform_POSIX
+		SetupSignalHanlders_ ();
+	#endif
 }
+
+#if		qPlatform_POSIX
+void	Main::SetupSignalHanlders_ ()
+{
+	signal (SIGTERM, SignalHandler);
+	signal (kSIG_ReReadConfiguration, SignalHandler);
+}
+#endif
 
 #if		qPlatform_POSIX
 pid_t	Main::GetServicePID () const
 {
-	ifstream	in (_fRep->GetPIDFileName ().AsTString ().c_str ());
+	ifstream	in (_sRep->GetPIDFileName ().AsTString ().c_str ());
 	if (in) {
 		pid_t	n = 0;
 		in >> n;
@@ -120,21 +161,21 @@ void	Main::RunAsService ()
 
 	try {
 #if		qPlatform_POSIX
-		ofstream	out (_fRep->GetPIDFileName ().AsTString ().c_str ());
+		ofstream	out (_sRep->GetPIDFileName ().AsTString ().c_str ());
 		out << getpid () << endl;
 #endif
-		_fRep->OnStartRequest ();
+		_sRep->OnStartRequest ();
 	}
 	catch (const Execution::ThreadAbortException& /*threadAbort*/) {
 #if		qPlatform_POSIX
-		unlink (_fRep->GetPIDFileName ().AsTString ().c_str ());
+		unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
 		// ignore this - just means service ended normally
 	}
 	catch (...) {
 		DbgTrace (TSTR ("Unexpected exception ended running service"));
 #if		qPlatform_POSIX
-		unlink (_fRep->GetPIDFileName ().AsTString ().c_str ());
+		unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
 		throw;
 	}
@@ -185,7 +226,7 @@ void	Main::Kill ()
 #if		qPlatform_POSIX
 	kill (GetServicePID (), SIGKILL);
 	// REALY should WAIT for server to stop and only do this it fails - 
-	unlink (_fRep->GetPIDFileName ().AsTString ().c_str ());
+	unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
 }
 
@@ -194,7 +235,7 @@ void	Main::Restart ()
 	IgnoreExceptionsForCall (Stop ());
 #if		qPlatform_POSIX
 	// REALY should WAIT for server to stop and only do this it fails - 
-	unlink (_fRep->GetPIDFileName ().AsTString ().c_str ());
+	unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
 	Start ();
 }
@@ -205,14 +246,21 @@ void	Main::ReReadConfiguration ()
 #if		qPlatform_POSIX
 	pid_t	pid	=	GetServicePID ();
 	Assert (pid != 0);	// maybe throw if non-zero???
-	kill (GetServicePID (), SIGHUP);
+	kill (GetServicePID (), kSIG_ReReadConfiguration);
 #endif
 }
 
 Main::ServiceDescription	Main::GetServiceDescription () const
 {
-	return _fRep->GetServiceDescription ();
+	return _sRep->GetServiceDescription ();
 }
+
+#if		qPlatform_POSIX
+void	Main::SignalHandler (int signum) const
+{
+	_sRep->SignalHandler (signum);
+}
+#endif
 
 bool	Main::_HandleStandardCommandLineArgument (const String& arg)
 {

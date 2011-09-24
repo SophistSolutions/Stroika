@@ -57,24 +57,87 @@ namespace	Stroika {
 					 */
 					class	IRep {
 						public:
+							IRep ();
 							virtual ~IRep ();
 
+						public:
 							// This should be overridden by each service, and should  never return until the service is done (stop request).
 							virtual	void				MainLoop () = 0;
 
+						public:
 							virtual	void				OnStartRequest ();
 							virtual	void				OnStopRequest ();
 							virtual	void				OnReReadConfigurationRequest ();
 							virtual	ServiceDescription	GetServiceDescription () const = 0;
+
 						#if		qPlatform_POSIX
+						public:
 							virtual	String				GetPIDFileName () const;
 						#endif
+
+						#if		qPlatform_POSIX
+						public:
+							virtual	void				SignalHandler (int signum) const;
+						#endif
+
+
+						// MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
+						protected:
+							nonvirtual	bool	_CheckShouldReReadConfig () const;
+							nonvirtual	void	_DidReReadConfig ();
+						private:
+							bool	fMustReReadConfig;
+
+						protected:
+							// Called periodically in subclasses of MainLoop to abort processing when the service is being shut down. Triggers a
+							// ThreadAborted exception when its time...
+							nonvirtual	void	_CheckAndAbortThread () const;
+						
+						private:
+							bool	fStopping_;	// set to true externally (from other thread) and MainLoop should terminate itself cleanly
+
 					};
 				public:
+					/*
+					 * Note - besides the obvios, the Main () function also sets signal handlers to point to this objects signal handler.
+					 */
 					Main (Memory::SharedPtr<IRep> rep);
 
 				protected:
-					Memory::SharedPtr<IRep>	_fRep;
+					static	Memory::SharedPtr<IRep>	_sRep;
+
+
+				#if		qPlatform_POSIX
+				private:
+					nonvirtual	void	SetupSignalHanlders_ ();
+				#endif
+
+
+				#if		qPlatform_POSIX
+				/*
+				 * By default, ServiceMain sets up its own signal handlers for
+				 *
+				 *		SIGTERM
+				 *		SIGHUP
+				 *		....
+				 *<<should  add more - like TSTP and CONT - but not high priorities since the default UNIX behavior of these is pretty reasonable
+				 *>>>--LGP 2011-09-24
+				 *
+				 *	If the user of this class needs there own signal handlers, but still wnats to leverage the default handling in this
+				 *	class, there are two easy ways:
+				 *		(1)		overide the 'rep' method Signalhandler and delegate t your own handlers.
+				 *		(2)		or, replace the signal hanlder yourself (with the signal system call), and call
+				 *				SignalHandler () directly on this class.
+				 */
+				public:
+					#if		qCompilerAndStdLib_Supports_constexpr
+						constexpr	int	kSIG_ReReadConfiguration	=	SIGHUP;
+					#else
+						static	const	int	kSIG_ReReadConfiguration	=	SIGHUP;
+					#endif
+				public:
+					static	void	SignalHandler (int signum) const;
+				#endif
 
 				public:
 					/*
