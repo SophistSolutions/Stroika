@@ -68,7 +68,8 @@ TString	Execution::GetEXEPath ()
 		Execution::ThrowIfError_errno_t ();
 		Assert (false);	// errno SB set!!!
 	}
-	(buf.begin () + n) = '\0';
+	Assert (n < buf.GetSize ());
+	*(buf.begin () + n) = '\0';
 	return buf.begin ();
 #else
 	AssertNotImplemented ();
