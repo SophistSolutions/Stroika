@@ -6,6 +6,7 @@
 #include	<algorithm>
 #include	<cstdlib>
 #include	<fstream>
+#include	<sstream>
 
 #if		qPlatform_POSIX
 	#include	<sys/types.h>
@@ -15,7 +16,6 @@
 
 #include	"../../Foundation/Characters/Format.h"
 #include	"../../Foundation/Containers/Common.h"
-#include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
 #include	"../../Foundation/Debug/Trace.h"
 #include	"../../Foundation/Execution/CommandLine.h"
