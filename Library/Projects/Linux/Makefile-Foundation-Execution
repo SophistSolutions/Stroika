@@ -9,6 +9,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AtomicOperations.o\
+	$(ObjDir)CommandLine.o\
 	$(ObjDir)CopyableCriticalSection.o\
 	$(ObjDir)CriticalSection.o\
 	$(ObjDir)DLLSupport.o\
