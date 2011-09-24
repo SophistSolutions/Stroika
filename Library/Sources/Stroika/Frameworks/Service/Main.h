@@ -131,7 +131,7 @@ namespace	Stroika {
 				 */
 				public:
 					#if		qCompilerAndStdLib_Supports_constexpr
-						constexpr	int	kSIG_ReReadConfiguration	=	SIGHUP;
+						static	constexpr	int	kSIG_ReReadConfiguration	=	SIGHUP;
 					#else
 						static	const	int	kSIG_ReReadConfiguration	=	SIGHUP;
 					#endif
