@@ -50,6 +50,11 @@ using	Time::DurationSecondsType;
 using	namespace	Characters;
 using	namespace	Execution;
 
+#ifndef	qUseTLSForSAbortingFlag
+	#if		defined (__GNUC__)
+	#define	qUseTLSForSAbortingFlag		1
+	#endif
+#endif
 
 // RE-Examine altenrate appraoches to this and beter docuemnt!!!!
 //
@@ -63,7 +68,11 @@ using	namespace	Execution;
 
 
 #if		qUseTLSForSAbortingFlag
+#if		defined (__GNUC__)
+__thread bool	s_Aborting	=	false;
+#else
 __declspec( thread )	bool	s_Aborting	=	false;
+#endif
 #endif
 
 
