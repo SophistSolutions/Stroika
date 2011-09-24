@@ -30,13 +30,14 @@ using	namespace	Stroika::Foundation::Containers;
 
 namespace	{
 
+
 static	void	TallyIteratorTests(Tally<size_t>& s)
 {
 	const	size_t	kTestSize	=	6;
 
 	VerifyTestResult (s.GetLength () == 0);
 
-	for (Iterator<TallyEntry<size_t> > It = s.begin (); It != s.end (); ++It) {
+	For (it, s ) {
 		VerifyTestResult (false);
 	}
 
@@ -48,19 +49,21 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 			s.Add (i);
 		}
 
+
+		For (it, Tally<size_t>::Mutator (s)) {
+			it.UpdateCount (1);
+		}
+
 		VerifyTestResult (s.GetLength () == kTestSize);
 
 		{
-			//ForEach (size_t, it, s) {
-			for (Iterator<TallyEntry<size_t> > It = s.begin (); It != s.end (); ++It) {
+			For (it, s) {
 				for (size_t i = 1; i <= kTestSize; i++) {
-cerr << "i = " << i << endl;
 					VerifyTestResult (s.Contains (i));
 					VerifyTestResult (s.GetLength () == kTestSize - i + 1);
 					s.Remove (i);
 					VerifyTestResult (not s.Contains (i-1));
 				}
-cerr << "  now length = " << s.GetLength () << endl;
 			}
 			VerifyTestResult (s.IsEmpty ());
 			VerifyTestResult (s.GetLength () == 0);
@@ -71,7 +74,7 @@ cerr << "  now length = " << s.GetLength () << endl;
 		}
 		VerifyTestResult (s.GetLength () == kTestSize);
 		{
-			ForEachT (TallyMutator, size_t, it, s) {
+			For (it, Tally<size_t>::Mutator (s)) {
 				it.RemoveCurrent ();
 			}
 			VerifyTestResult (s.IsEmpty ());
@@ -82,8 +85,7 @@ cerr << "  now length = " << s.GetLength () << endl;
 			s.Add (i);
 		}
 		VerifyTestResult (s.GetLength () == kTestSize);
-		//ForEach (size_t, it2, s) {
-		for (Iterator<TallyEntry<size_t> > it2 = s.begin (); it2 != s.end (); ++it2) {
+		For (it2, s) {
 			s.Remove (it2.Current ().fItem);
 		}
 		VerifyTestResult (s.GetLength () == 0);
@@ -100,11 +102,11 @@ cerr << "  now length = " << s.GetLength () << endl;
 		}
 		VerifyTestResult (s.GetLength () == kTestSize);
 		size_t i =	1;
-		//ForEach (size_t, it, s) {
+
 		for (Iterator<TallyEntry<size_t> > it = s.begin (); it != s.end (); ++it) {
-		  ForEachT (TallyMutator, size_t, it2, s) {
-			ForEachT (TallyMutator, size_t, it3, s) {
-				 if (s.GetLength () != 0) {
+			For (it2, Tally<size_t>::Mutator (s)) {
+				For (it3, Tally<size_t>::Mutator (s)) {
+					if (s.GetLength () != 0) {
 						it3.UpdateCount (3);
 						it3.RemoveCurrent ();
 						s.Add (i);
@@ -162,25 +164,22 @@ void	SimpleTallyTests (Tally<size_t>& s)
 	}
 
 	for (size_t i = 1; i <= s.GetLength (); i++) {
-		ForEachT (Iterator, TallyEntry<size_t>, it, s) {
+		For (it, Tally<size_t>::Mutator (s)) {
 			if (it.Current ().fItem == i) {
 				break;
 			}
 		}
 	}
-	for (Iterator<TallyEntry<size_t> > it (s); it.More (); )	{
-		ForEachT (Iterator, TallyEntry<size_t>, it1, s) {
-		//ForEach (size_t, it1, s) {
+	For (it, s) {
+		For (it1, Tally<size_t>::KeyIterator (s)) {
 			s.RemoveAll ();
 		}
 	}
 	VerifyTestResult (s.IsEmpty ());
 	VerifyTestResult (s.GetLength () == 0);
 
-	//ForEach (size_t, it1, s) {
-	ForEachT (Iterator, TallyEntry<size_t>, it1, s) {
-		//ForEach (size_t, it2, s) {
-		ForEachT (Iterator, TallyEntry<size_t>, it2, s) {
+	For (it1, s) {
+		For (it2, s) {
 			VerifyTestResult (false);
 		}
 	}

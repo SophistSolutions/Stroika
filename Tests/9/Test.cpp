@@ -37,16 +37,16 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 	{
 		for(size_t i = 1; i <= kTestSize; i++) {
 			s.Add(i);
+           VerifyTestResult(s.Contains(i));
 		}
 
 		VerifyTestResult(s.GetLength() == kTestSize);
-        ForEach(size_t, it, s) {
+		For (it, s) {
         	size_t	oldLength = s.GetLength ();
             VerifyTestResult(s.Contains(it.Current ()));
             VerifyTestResult(s.Contains(s.GetLength ()));
             s.Remove (s.GetLength ());
 			VerifyTestResult(s.GetLength () == oldLength-1);
-
         }
 
  		s.RemoveAll ();
@@ -55,7 +55,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 
 		{
-			ForEach(size_t, it, s) {
+			For (it, s) {
 				for(size_t i = 1; i <= kTestSize; i++) {
 					VerifyTestResult(s.Contains(i));
 					VerifyTestResult(s.GetLength() == kTestSize - i + 1);
@@ -73,11 +73,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
 		{
-#if 1
-            for (BagMutator<size_t> it (s); it != s.end (); ++it) {
-#else
-			ForEachT(BagMutator, size_t, it, s) {
-#endif
+			For (it, Bag<size_t>::Mutator (s)) {
 				it.RemoveCurrent();
 			}
 
@@ -90,7 +86,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
 
-		ForEach(size_t, it2, s) {
+		For(it2, s) {
 			s.Remove(it2.Current());
 		}
 		VerifyTestResult(s.GetLength() == 0);
@@ -107,9 +103,9 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		VerifyTestResult(s.GetLength() == kTestSize);
 
 		size_t i =	1;
-		ForEach(size_t, it, s) {
-			ForEach(size_t, it2, s) {
-				ForEachT(BagMutator, size_t, it3, s) {
+		For(it, s) {
+			For(it2, s) {
+				For(it3, Bag<size_t>::Mutator (s)) {
 					it3.UpdateCurrent(i);
 					it3.RemoveCurrent();
 					s.Add(i);
@@ -139,22 +135,22 @@ static	void	BagTimings(Bag<size_t>& s)
 	}
 
 	for(size_t i = 1; i <= s.GetLength(); i++) {
-		ForEach(size_t, it, s) {
+		For(it, s) {
 			if(it.Current() == i) {
 				break;
 			}
 		}
 	}
-	ForEach(size_t, it, s) {
-		ForEach(size_t, it1, s) {
+	For(it, s) {
+		For(it1, s) {
 			s.RemoveAll();
 		}
 	}
 	VerifyTestResult(s.IsEmpty());
 	VerifyTestResult(s.GetLength() == 0);
 
-	ForEach(size_t, it1, s) {
-		ForEach(size_t, it2, s) {
+	For(it1, s) {
+		For(it2, s) {
 			VerifyTestResult(false);
 		}
 	}
@@ -282,7 +278,7 @@ namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-            {
+           {
             Bag_LinkedList<size_t>	s;
 		    BagTests (s);
             }
@@ -291,7 +287,6 @@ namespace	{
             Bag_LinkedList<SimpleClass>	s;
 		    BagTests (s);
             }
-
 			{
             Bag_Array<size_t>	s;
 		    BagTests (s);
