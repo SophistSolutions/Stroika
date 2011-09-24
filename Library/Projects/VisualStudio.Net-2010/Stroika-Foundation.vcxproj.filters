@@ -300,6 +300,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -621,6 +624,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -874,6 +883,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl">
       <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
