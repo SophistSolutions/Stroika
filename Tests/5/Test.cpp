@@ -342,10 +342,10 @@ namespace	{
 			VerifyTestResult (t5.RIndexOf ('f') == kBadStringIndex);
 			VerifyTestResult (t5.RIndexOf (L"f") == kBadStringIndex);
 
-			VerifyTestResult ((t5.Peek ())[0] == 'D');
-			VerifyTestResult ((t5.Peek ())[1] == 'D');
-			VerifyTestResult ((t5.Peek ())[2] == 'D');
-			VerifyTestResult ((t5.Peek ())[3] == 'D');
+			VerifyTestResult (t5[0] == 'D');
+			VerifyTestResult (t5[1] == 'D');
+			VerifyTestResult (t5[2] == 'D');
+			VerifyTestResult (t5[3] == 'D');
 		}
 
 	void	Test5_ ()
