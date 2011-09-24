@@ -115,7 +115,7 @@ void	Main::Start ()
 	pid_t	pid	=	fork ();
 	if (pid == 0) {
 		// Child - exec
-		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), CommandNames::kRunAsService.AsTString ().c_str (), nullptr);
+		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), String (CommandNames::kRunAsService).AsTString ().c_str (), nullptr);
 		exit (-1);
 	}
 	else if (pid < 0) {
