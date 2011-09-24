@@ -66,6 +66,9 @@ namespace	Stroika {
 							virtual	void				OnStopRequest ();
 							virtual	void				OnReReadConfigurationRequest ();
 							virtual	ServiceDescription	GetServiceDescription () const = 0;
+						#if		qPlatform_POSIX
+							virtual	String				GetPIDFileName () const;
+						#endif
 					};
 				public:
 					Main (Memory::SharedPtr<IRep> rep);
@@ -85,6 +88,12 @@ namespace	Stroika {
 					};
 					nonvirtual	State				GetState () const;
 
+			#if		qPlatform_POSIX
+				public:
+					// Return 0 if no service running
+					nonvirtual	pid_t	GetServicePID () const;
+			#endif
+
 				public:
 					/*
 					 *	RunAsService () will not return - until the service has terminated. It runs the service 'MainLoop'.
@@ -96,6 +105,9 @@ namespace	Stroika {
 					/*
 					 */
 					nonvirtual	void				Stop ();
+					/*
+					 */
+					nonvirtual	void				Kill ();
 					/*
 					 */
 					nonvirtual	void				Restart ();
