@@ -82,7 +82,7 @@ String	Main::IRep::GetPIDFileName () const
 #endif
 
 #if		qPlatform_POSIX
-void	Main::IRep::SignalHandler (int signum) const
+void	Main::IRep::SignalHandler (int signum)
 {
 	// VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
 	switch (signum) {
@@ -256,7 +256,7 @@ Main::ServiceDescription	Main::GetServiceDescription () const
 }
 
 #if		qPlatform_POSIX
-void	Main::SignalHandler (int signum) const
+void	Main::SignalHandler (int signum)
 {
 	_sRep->SignalHandler (signum);
 }

@@ -77,7 +77,7 @@ namespace	Stroika {
 
 						#if		qPlatform_POSIX
 						public:
-							virtual	void				SignalHandler (int signum) const;
+							virtual	void				SignalHandler (int signum);
 						#endif
 
 
@@ -136,7 +136,7 @@ namespace	Stroika {
 						static	const	int	kSIG_ReReadConfiguration	=	SIGHUP;
 					#endif
 				public:
-					static	void	SignalHandler (int signum) const;
+					static	void	SignalHandler (int signum);
 				#endif
 
 				public:
