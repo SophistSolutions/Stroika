@@ -1208,7 +1208,7 @@ AppTempFileManager::AppTempFileManager ():
 	fTmpDir = tmpDir;
 	DbgTrace (TSTR ("AppTempFileManager::CTOR: created '%s'"), fTmpDir.c_str ());
 #else
-	AssertNotImplemented ();
+	//AssertNotImplemented ();
 #endif
 }
 
@@ -1219,7 +1219,7 @@ AppTempFileManager::~AppTempFileManager ()
 	DeleteAllFilesInDirectory (fTmpDir, true);
 	Verify (::RemoveDirectory (fTmpDir.c_str ()));
 #else
-	AssertNotImplemented ();
+	//AssertNotImplemented ();
 #endif
 }
 
