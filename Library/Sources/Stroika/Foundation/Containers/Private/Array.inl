@@ -112,12 +112,16 @@ namespace	Stroika {
                      * Cannot call invariant () here since fCurrent not yet setup.
                      */
                 }
-                template	<typename T>	bool	ArrayIteratorBase<T>::More (T* current)
+                template	<typename T>	bool	ArrayIteratorBase<T>::More (T* current, bool advance)
                 {
-                    this->fSuppressMore = false;
+                	if (advance) {
+						this->fSuppressMore = false;
+                	}
                     Invariant ();
                     if (not Done ()) {
-                        *current = fCurrent->fItem;
+                    	if (current != nullptr) {
+							*current = fCurrent->fItem;
+                    	}
                         return true;
                     }
 
@@ -154,15 +158,17 @@ namespace	Stroika {
                     Invariant ();
                 }
 
-                template	<typename T>	inline	bool	ForwardArrayIterator<T>::More (T* current)
+                template	<typename T>	inline	bool	ForwardArrayIterator<T>::More (T* current, bool advance)
                 {
                     Invariant ();
-                    if (not this->fSuppressMore and not Done ()) {
-                        Assert (this->fCurrent < this->fEnd);
-                        this->fCurrent++;
+                    if (advance) {
+						if (not this->fSuppressMore and not Done ()) {
+							Assert (this->fCurrent < this->fEnd);
+							this->fCurrent++;
+						}
                     }
 
-                    return (inherited::More (current));
+                    return (inherited::More (current, advance));
                 }
 
                 template	<typename T>	inline	bool	ForwardArrayIterator<T>::Done () const
@@ -190,9 +196,9 @@ namespace	Stroika {
                     const_cast<ArrayNode<T>*> (this->fCurrent)->fItem = newValue;
                 }
 
-                template	<typename T>	inline	bool	ForwardArrayMutator<T>::More (T* current)
+                template	<typename T>	inline	bool	ForwardArrayMutator<T>::More (T* current, bool advance)
                 {
-                    return (inherited::More (current));
+                    return (inherited::More (current, advance));
                 }
 
                 template	<typename T>	inline	bool	ForwardArrayMutator<T>::Done () const
@@ -218,20 +224,22 @@ namespace	Stroika {
                     Invariant ();
                 }
 
-                template	<typename T>	inline	bool	BackwardArrayIterator<T>::More (T* current)
+                template	<typename T>	inline	bool	BackwardArrayIterator<T>::More (T* current, bool advance)
                 {
                     Invariant ();
-                    if (not this->fSuppressMore and not Done ()) {
-                        if (this->fCurrent == this->fStart) {
-                            this->fCurrent = this->fEnd;	// magic to indicate done
-                            Ensure (Done ());
-                        }
-                        else {
-                            this->fCurrent--;
-                            Ensure (not Done ());
-                        }
+                    if (advance) {
+						if (not this->fSuppressMore and not Done ()) {
+							if (this->fCurrent == this->fStart) {
+								this->fCurrent = this->fEnd;	// magic to indicate done
+								Ensure (Done ());
+							}
+							else {
+								this->fCurrent--;
+								Ensure (not Done ());
+							}
+						}
                     }
-                    return (inherited::More (current));
+                    return (inherited::More (current, advance));
                 }
 
                 template	<typename T>	inline	bool	BackwardArrayIterator<T>::Done () const
@@ -258,9 +266,9 @@ namespace	Stroika {
                     const_cast<ArrayNode<T>*> (this->fCurrent)->fItem = newValue;	// not sure how to handle better the (~const)
                 }
 
-                template	<typename T>	inline	bool	BackwardArrayMutator<T>::More (T* current)
+                template	<typename T>	inline	bool	BackwardArrayMutator<T>::More (T* current, bool advance)
                 {
-                    return (inherited::More (current));
+                    return (inherited::More (current, advance));
                 }
 
                 template	<typename T>	inline	bool	BackwardArrayMutator<T>::Done () const
@@ -624,17 +632,19 @@ namespace	Stroika {
                     Invariant ();
                 }
 
-                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::More (T* current)
+                template	<typename T>	inline	bool	ForwardArrayIterator_Patch<T>::More (T* current, bool advance)
                 {
                     Invariant ();
-                    if (not this->fSuppressMore and not Done ()) {
-                        Assert ( this->fCurrent <  this->fEnd);
-                         this->fCurrent++;
-                    }
+                    if (advance) {
+						if (not this->fSuppressMore and not Done ()) {
+							Assert ( this->fCurrent <  this->fEnd);
+							 this->fCurrent++;
+						}
 
-                    this->fSuppressMore = false;
-                    if (not Done ()) {
-                        *current = (*this->fCurrent).fItem;
+						this->fSuppressMore = false;
+						if ((current != nullptr) and (not Done ())) {
+							*current = (*this->fCurrent).fItem;
+						}
                     }
                     Invariant ();
                     return (not Done ());
@@ -729,35 +739,37 @@ namespace	Stroika {
                 }
 
                 // Careful to keep hdr and src copies identical...
-                template	<typename T>	inline	bool	BackwardArrayIterator_Patch<T>::More (T* current)
+                template	<typename T>	inline	bool	BackwardArrayIterator_Patch<T>::More (T* current, bool advance)
                 {
                     Invariant ();
-                    if (this->fSuppressMore) {
-                        this->fSuppressMore = false;
-                        if (not Done ()) {
-                            *current = *(this->fCurrent);
-                        }
-                        return (not Done ());
+                    if (advance) {
+						if (this->fSuppressMore) {
+							this->fSuppressMore = false;
+							if (not Done ()) {
+								*current = *(this->fCurrent);
+							}
+							return (not Done ());
+						}
+						else {
+							if (Done ()) {
+								return (false);
+							}
+							else {
+								if (this->fCurrent == this->fStart) {
+									this->fCurrent = this->fEnd;	// magic to indicate done
+									Ensure (Done ());
+									return (false);
+								}
+								else {
+									this->fCurrent--;
+									*current = *(this->fCurrent);
+									Ensure (not Done ());
+									return (true);
+								}
+							}
+						}
                     }
-                    else {
-                        if (Done ()) {
-                            return (false);
-                        }
-                        else {
-                            if (this->fCurrent == this->fStart) {
-                                this->fCurrent = this->fEnd;	// magic to indicate done
-                                Ensure (Done ());
-                                return (false);
-                            }
-                            else {
-                                this->fCurrent--;
-                                *current = *(this->fCurrent);
-                                Ensure (not Done ());
-                                return (true);
-                            }
-                        }
-                    }
-                    AssertNotReached ();	return (false);
+                    return (not Done ());
                 }
 
                 template	<typename T>	inline	void	BackwardArrayIterator_Patch<T>::PatchRemoveCurrent ()

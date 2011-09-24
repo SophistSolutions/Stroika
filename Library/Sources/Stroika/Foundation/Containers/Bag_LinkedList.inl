@@ -49,8 +49,7 @@ namespace	Stroika {
 					Bag_LinkedListMutatorRep (Bag_LinkedListRep<T>& owner);
 					Bag_LinkedListMutatorRep (Bag_LinkedListMutatorRep<T>& from);
 
-					virtual	bool	Done () const override;
-					virtual	bool	More (T* current) override;
+					virtual	bool	More (T* current, bool advance) override;
 
 					virtual	IteratorRep<T>*		Clone () const override;
 
@@ -193,14 +192,9 @@ namespace	Stroika {
 			{
 			}
 
-			template	<typename T>	bool	Bag_LinkedListMutatorRep<T>::Done () const
+			template	<typename T>	bool	Bag_LinkedListMutatorRep<T>::More (T* current, bool advance)
 			{
-				return (fIterator.Done());
-			}
-
-			template	<typename T>	bool	Bag_LinkedListMutatorRep<T>::More (T* current)
-			{
-				return (fIterator.More(current));
+				return (fIterator.More(current, advance));
 			}
 
 			template	<typename T>	IteratorRep<T>*	Bag_LinkedListMutatorRep<T>::Clone () const

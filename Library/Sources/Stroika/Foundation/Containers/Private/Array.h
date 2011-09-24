@@ -173,7 +173,7 @@ namespace	Stroika {
 
                         nonvirtual	T		Current () const;			//	Error to call if Done (), otherwise OK
                         nonvirtual	size_t	CurrentIndex () const;		//	NB: This can be called if we are done - if so, it returns GetLength() + 1.
-                        nonvirtual	bool	More (T* current);
+                        nonvirtual	bool	More (T* current, bool advance);
                         nonvirtual	bool	Done () const;
 
                         nonvirtual	void	Invariant () const;
@@ -203,7 +203,7 @@ namespace	Stroika {
                     public:
                         ForwardArrayIterator (const Array<T>& data);
 
-                        nonvirtual	bool	More (T* current);
+                        nonvirtual	bool	More (T* current, bool advance);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -223,7 +223,7 @@ namespace	Stroika {
                     public:
                         ForwardArrayMutator (Array<T>& data);
 
-                        nonvirtual	bool	More (T* current);                // shadow to avoid scope ambiguity
+                        nonvirtual	bool	More (T* current, bool advance);                // shadow to avoid scope ambiguity
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -246,7 +246,7 @@ namespace	Stroika {
                     public:
                         BackwardArrayIterator (const Array<T>& data);
 
-                        nonvirtual	bool	More (T* current);
+                        nonvirtual	bool	More (T* current, bool advance);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -266,7 +266,7 @@ namespace	Stroika {
                     public:
                         BackwardArrayMutator (Array<T>& data);
 
-                        nonvirtual	bool	More (T* current);      // shadow to avoid scope ambiguity
+                        nonvirtual	bool	More (T* current, bool advance);      // shadow to avoid scope ambiguity
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -401,7 +401,7 @@ namespace	Stroika {
                         ForwardArrayIterator_Patch (const Array_Patch<T>& data);
 
                     public:
-                        nonvirtual	bool	More (T* current);
+                        nonvirtual	bool	More (T* current, bool advance);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity
@@ -457,7 +457,7 @@ namespace	Stroika {
                     public:
                         nonvirtual	size_t	CurrentIndex () const;  // shadow to avoid scope ambiguity
 
-                        nonvirtual	bool	More (T* current);
+                        nonvirtual	bool	More (T* current, bool advance);
                         nonvirtual	bool	Done () const;          // shadow to avoid scope ambiguity
 
                         nonvirtual	void	Invariant () const;     // shadow to avoid scope ambiguity

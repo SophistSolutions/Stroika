@@ -54,8 +54,7 @@ namespace	Stroika {
 					Tally_LinkedListMutatorRep (Tally_LinkedListRep<T>& owner);
 					Tally_LinkedListMutatorRep (const Tally_LinkedListMutatorRep<T>& from);
 
-					virtual	bool			Done () const override;
-					virtual	bool			More (TallyEntry<T>* current) override;
+					virtual	bool			More (TallyEntry<T>* current, bool advance) override;
 
 					virtual	IteratorRep<TallyEntry<T> >*	Clone () const override;
 
@@ -116,14 +115,9 @@ namespace	Stroika {
 			{
 			}
 
-			template	<typename T>	bool	Tally_LinkedListMutatorRep<T>::Done () const
+			template	<typename T>	bool	Tally_LinkedListMutatorRep<T>::More (TallyEntry<T>* current, bool advance)
 			{
-				return (fIterator.Done ());
-			}
-
-			template	<typename T>	bool	Tally_LinkedListMutatorRep<T>::More (TallyEntry<T>* current)
-			{
-				return (fIterator.More (current));
+				return (fIterator.More (current, advance));
 			}
 
 
@@ -188,8 +182,8 @@ namespace	Stroika {
 
 			template	<typename T> bool	Tally_LinkedListRep<T>::Contains (T item) const
 			{
-				for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (); ) {
-					TallyEntry<T>	c	=	it.Current ();
+				TallyEntry<T>	c;
+				for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (&c, true); ) {
 					if (c.fItem == item) {
 						Assert (c.fCount != 0);
 						return (true);
@@ -211,7 +205,7 @@ namespace	Stroika {
 			{
 				if (count != 0) {
 					TallyEntry<T>	current (item);
-					for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current); ) {
+					for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current, true); ) {
 						if (current.fItem == item) {
 							current.fCount += count;
 							it.UpdateCurrent (current);
@@ -226,7 +220,7 @@ namespace	Stroika {
 			{
 				if (count != 0) {
 					TallyEntry<T>	current (item);
-					for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current); ) {
+					for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current, true); ) {
 
 						if (current.fItem == item) {
 							if (current.fCount > count) {
@@ -254,8 +248,8 @@ namespace	Stroika {
 
 			template	<typename T> size_t	Tally_LinkedListRep<T>::TallyOf (T item) const
 			{
-				for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (); ) {
-					TallyEntry<T>	c	=	it.Current ();
+				TallyEntry<T>	c;
+				for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (&c, true); ) {
 					if (c.fItem == item) {
 						Ensure (c.fCount != 0);
 						return (c.fCount);

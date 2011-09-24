@@ -79,9 +79,9 @@ namespace	Stroika {
                 return operator Iterator<T> ();
             }
 
-            template	<typename T>	inline	IterationState    Bag<T>::end () const
+            template	<typename T>	inline	Iterator<T>    Bag<T>::end () const
             {
-                return (IterationState::kAtEnd);
+                return (nullptr);
             }
 
             template	<typename T>	inline	Bag<T>&	Bag<T>::operator+= (T item)
@@ -130,7 +130,7 @@ namespace	Stroika {
 
             template	<class T> void	Bag<T>::Add (Bag<T> items)
             {
-                ForEach (T, it, items) {
+            	For (it, items) {
                     GetRep ()->Add (it.Current ());
                 }
             }
@@ -146,7 +146,7 @@ namespace	Stroika {
                     RemoveAll ();
                 }
                 else {
-                    ForEach (T, it, items) {
+					For (it, items) {
                         GetRep ()->Remove (it.Current ());
                     }
                 }
@@ -155,7 +155,7 @@ namespace	Stroika {
             template	<class T> size_t	Bag<T>::TallyOf (T item) const
             {
                 size_t count = 0;
-                ForEach (T, it, (*this)) {
+             	For (it, (*this)) {
                     if (it.Current () == item) {
                         count++;
                     }
@@ -192,7 +192,7 @@ namespace	Stroika {
                 }
 
                 // n^2 algorithm!!!
-                ForEach (T, it, lhs) {
+                For (it, lhs) {
                     if (lhs.TallyOf (it.Current ()) != rhs.TallyOf (it.Current ())) {
                         return (false);
                     }
