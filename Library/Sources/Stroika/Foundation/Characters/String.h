@@ -8,6 +8,7 @@
  *
  * Description:
  *
+ *
  *		This family of classes using something akin to the Letter/Envelope paradigm
  *		described in Copliens "Advanced C++ Programming Styles and Idioms").
  *
@@ -17,10 +18,10 @@
  *		for optimizations in places where an alternate text representation is preferred,
  *		there may be some interest in the "letters" inside of Strings.
  *
- *		The class that String's own is a reference counted pointer to StringRep.
+ *		The class that String's own is a reference counted pointer to String::Rep.
  *		This class is abstract, and defines a protocol for getting at the string data
  *		(Character*) and for getting/setting the string length. All the rest of the
- *		String class is built in this interface, and subclasses of StringRep only
+ *		String class is built in this interface, and subclasses of String::Rep only
  *		needed follow that prootcol to be used interchangably with the rest of Strings.
  *
  *		This is which NEED be used. However, Stroika provides several String SUBTYPES
@@ -44,10 +45,30 @@
 /*
  * TODO:
  *
+ *		o	REWRITE DOCS ABOUT
  *		o	WRITEUP THREAD SAFETY:
  *		 THREAD SAFETY:
  *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
  *			 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+ *
+ *		o	WRITEUP NUL-TERMIANTED STINGS:
+ *			Stroika String classes do NOT - in general - NUL-terminate strings. Most implementations - in fact - will support
+ *			intenral NUL characters, but not all implementations, and so you shoudln't count on this behavior.
+ *
+ *			Stroika Strings make it easy to be created from NUL-terminated strings (String has such a constructor), and make it
+ *			easy to create NUL-terminated strings (String::As<wstring> ().c_str ()). Note - however - this can be inefficnet
+ *			if the strings are large, or this conversion must be done alot. For that situation, use String_stdwstring.
+ *
+ *			Among the reasons to NOT promise NUL-terminated strings internally stored inside String classes are:
+ *				(1)	Would cost extra byte (very minor)
+ *				(2)	Would prevent 'Substring::Rep' style optimized classes, or String_Catentation::Rep either.
+ *				(3)	We might wnat to do a String::Rep that stores stirngs as UTF8, and that wouldn't fit well with
+ *					constraints on the represnetation of internal sequence of chars being wchar_t* with NUL-term byte. In general
+ *					we want to HIDE the representation chocies as mcuh as practical.
+ *				(4)	MIGHT possible cause 'lifetime of pointer' issues. Maybe not. But I'd need to think through carefully the implications - especailly
+ *					with multithreading etc.
+ *
+ *
  *
  *
 	(0)	Document if we store NUL-terminated strings internally or not. If not - how do we implement the stdC++ c_str () API safely? Perhaps temporarily store the extra char* in teh ENVOLOPE to be freed
@@ -58,7 +79,7 @@
 	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
 
 	(0)	Try and get rid of the Peek () API
-	(0)	Fix const	Memory::SharedByValue<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+	(0)	Fix const	Memory::SharedByValue<String::String::Rep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
 		to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
 			just in CPP file
 	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
@@ -242,6 +263,7 @@ namespace	Stroika {
 					 */
 					nonvirtual	bool	IsWhitespace () const;
 
+#if 0
 				public:
                     /*
                      * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
@@ -254,6 +276,7 @@ namespace	Stroika {
 					 *			--LGP 2011-09-09
                      */
                     nonvirtual	const Character* Peek () const;
+#endif
 
 
 				public:
@@ -313,19 +336,24 @@ namespace	Stroika {
 
 
 				protected:
-                    class	StringRep;
+                    class	_Rep;
 
 				protected:
-					// StringRep MUST be not-null
-                    String (StringRep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
+					// _Rep MUST be not-null
+                    String (_Rep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
                 private:
-                    Memory::SharedByValue<StringRep>	fRep;
+                    Memory::SharedByValue<_Rep>	fRep_;
 
-                    static	StringRep*	Clone_ (const StringRep& rep);
+                    static	_Rep*	Clone_ (const _Rep& rep);
+
+				// Try to get rid of _PeekRep () Or at least make protected
+				protected:
+				public:
+					nonvirtual	Memory::SharedByValue<_Rep>	_PeekRep () const;
 
 				private:
-					static	const	Memory::SharedByValue<String::StringRep>	kEmptyStringRep_;
+					static	const	Memory::SharedByValue<String::_Rep>	kEmptyStringRep_;
 
 				private:
 					/*
@@ -362,14 +390,14 @@ namespace	Stroika {
 
 
 
-            class	String::StringRep {
+            class	String::_Rep {
                 protected:
-                    StringRep ();
+                    _Rep ();
 
                 public:
-                    virtual	~StringRep ();
+                    virtual	~_Rep ();
 
-                    virtual	StringRep*	Clone () const		= 0;
+                    virtual	_Rep*	Clone () const		= 0;
 
                     virtual	size_t	GetLength () const 					= 0;
                     virtual	bool	Contains (Character item) const		= 0;
@@ -425,6 +453,11 @@ namespace	Stroika {
  *		StringRep_CharArray uses buffering to make dynamically sizing String
  *		operations faster, at some cost in memory. It keeps a buffer that is at
  *		least as long as the String, but is often somewhat longer.
+			 *
+			 *
+			 * TODO:
+			 *		Consider possibly adding a const wchar_t* Peek () const method to this type. We don't want that for String in general,
+			 *		but its probably OK here (if we carefully document the thread / lifetime issues)
              */
             class	String_CharArray : public String {
                 public:
@@ -436,6 +469,7 @@ namespace	Stroika {
                     String_CharArray (const String_CharArray& s);
 
                    String_CharArray& operator= (const String_CharArray& s);
+
 
 				public:
 					class	MyRep_;
@@ -569,6 +603,26 @@ namespace	Stroika {
                     explicit String_Common (const String& from);
             };
 			#endif
+
+
+			#if		0
+            /*
+			 *
+			 *	NOT YET IMPLEMETNED
+			 *
+			 *	String_stdwstring is completely compatible with any other String implementation, except that it represents things
+			 *	internally using the stdC++ wstring class. The principle advantage of this is that converting TO wstrings
+			 *	is much more efficient.
+			 *
+			 *		(AS OF YET UNCLEAR IF/HOW WE CAN SUPPORT MANIPULATIONS OF A wstring* or wstring& alias to the String rep's owned copy.
+			 *		probably won't be allowed, but it would be helpful to some applicaitons if we could)
+			 */
+            class	String_stdwstring : public String {
+                public:
+                    explicit String_stdwstring (const String& from);
+            };
+			#endif
+
 
 
 		}

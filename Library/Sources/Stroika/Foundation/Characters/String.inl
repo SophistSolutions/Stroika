@@ -17,21 +17,21 @@ namespace	Stroika {
 
 
 
-			//	class	String::StringRep
-            inline	String::StringRep::StringRep ()
+			//	class	String::_Rep
+            inline	String::_Rep::_Rep ()
 				{
 				}
-            inline	String::StringRep::~StringRep ()
+            inline	String::_Rep::~_Rep ()
 				{
 				}
-			inline	void	String::StringRep::CopyTo (Character* bufFrom, Character* bufTo) const
+			inline	void	String::_Rep::CopyTo (Character* bufFrom, Character* bufTo) const
 				{
 					RequireNotNull (bufFrom);
 					Require (bufFrom + GetLength () >= bufTo);
 					size_t	nChars	=	GetLength ();
 					(void)::memcpy (bufFrom, Peek (), nChars*sizeof (Character));
 				}
-			inline	void	String::StringRep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
+			inline	void	String::_Rep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
 				{
 					RequireNotNull (bufFrom);
 					Require (bufFrom + GetLength () >= bufTo);
@@ -43,48 +43,48 @@ namespace	Stroika {
 
 			//	class	String
 			inline	String::String (const String& from)
-				: fRep (from.fRep)
+				: fRep_ (from.fRep_)
 				{
 				}
             inline	String&	String::operator= (const String& newString)
 				{
-					fRep = newString.fRep;
+					fRep_ = newString.fRep_;
 					return (*this);
 				}
             inline	String::~String ()
 				{
 				}
-			inline	String::StringRep*	String::Clone_ (const StringRep& rep)
+			inline	String::_Rep*	String::Clone_ (const _Rep& rep)
 				{
 					return (rep.Clone ());
+				}
+			inline	Memory::SharedByValue<String::_Rep>	String::_PeekRep () const
+				{
+					return fRep_;
 				}
             inline	void	String::RemoveAt (size_t i)
 				{
 					RemoveAt (i, 1);
 				}
-            inline	const Character*	String::Peek () const
-				{
-					return (fRep->Peek ());
-				}
 			inline	void	String::CopyTo (Character* bufFrom, Character* bufTo) const
 				{
 					RequireNotNull (bufFrom);
 					Require (bufFrom + GetLength () >= bufTo);
-					fRep->CopyTo (bufFrom, bufTo);
+					fRep_->CopyTo (bufFrom, bufTo);
 				}
 			inline	void	String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
 				{
 					RequireNotNull (bufFrom);
 					Require (bufFrom + GetLength () >= bufTo);
-					fRep->CopyTo (bufFrom, bufTo);
+					fRep_->CopyTo (bufFrom, bufTo);
 				}
             inline	size_t	String::GetLength () const
 				{
-					return (fRep->GetLength ());
+					return (fRep_->GetLength ());
 				}
 			inline	bool	String::empty () const
 				{
-					return fRep->GetLength () == 0;
+					return fRep_->GetLength () == 0;
 				}
 			inline	void	String::clear ()
 				{
@@ -94,14 +94,14 @@ namespace	Stroika {
 				{
 					Require (i >= 0);
 					Require (i < GetLength ());
-					return (fRep->GetAt (i));
+					return (fRep_->GetAt (i));
 				}
 			template	<>
 				inline	void	String::As (wstring* into) const
 					{
 						RequireNotNull (into);
 						size_t	n	=	GetLength ();
-						const Character* cp	=	Peek ();
+						const Character* cp	=	fRep_->Peek ();
 						Assert (sizeof (Character) == sizeof (wchar_t));		// going to want to clean this up!!!	--LGP 2011-09-01
 						const wchar_t* wcp	=	(const wchar_t*)cp;
 						into->assign (wcp, wcp + n);
@@ -117,7 +117,7 @@ namespace	Stroika {
 				inline	const wchar_t*	String::As () const
 					{
 // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!	-- LGP 2011-09-01
-						return (const wchar_t*)Peek ();
+						return (const wchar_t*)fRep_->Peek ();
 					}
 			template	<>
 				inline	string	String::AsUTF8 () const

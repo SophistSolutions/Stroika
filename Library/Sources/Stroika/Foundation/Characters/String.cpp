@@ -27,28 +27,28 @@ using	namespace	Stroika::Foundation::Characters;
  *
  *		StringRep_Substring is a subclass of StringRep useful in the
  *		implementation of SubString operations. It allows for the sharing of memory
- *		of the original StringRep (whatever its representation) and still have
+ *		of the original String::_Rep (whatever its representation) and still have
  *		the concept of a separate string.
  *		This can be a very big efficiency win when applying substring operations
  *		in a fashion that does not then modify the substrings. Then we get away with
  *		being lazy, in our lazy copy, and never really have to.
  *
- *		There are a whole raft of other potentially useful StringReps. For example,
- *		a StringRep that hooks into a backend database, or into the system
- *		TextEdit's implementations. A StringRep could compress its text to save
+ *		There are a whole raft of other potentially useful String::_Reps. For example,
+ *		a String::_Rep that hooks into a backend database, or into the system
+ *		TextEdit's implementations. A String::_Rep could compress its text to save
  *		space. A possibility used in GCC is to build a buffer that points to two
  *		other buffers as a way to implement operator+ in String efficiently. (NOTE:
- *		some of the above would require adding more interface to StringRep,
+ *		some of the above would require adding more interface to String::_Rep,
  *		in particular to make GetChar be a virtual method. This will probably be
  *		done, but it remains controversial due to the intrinsic overhead of
  *		virtual function invocations).
  *
- *		Although you can create a String from any one of these StringReps
+ *		Although you can create a String from any one of these String::_Reps
  *		directly, it is far more common to do so via a convience interface. The
  *		constructor for String is overloaded to take an enum AllocMode argument
  *		which specifies how to interpret the rest of the arguments to the
  *		constructor (really those args are just passed on directly to the
- *		appropriate subclass of StringRep mentioned above by conditioned on
+ *		appropriate subclass of String::_Rep mentioned above by conditioned on
  *		the enum argument).
  *
  *		These AllocModes are:
@@ -65,12 +65,12 @@ using	namespace	Stroika::Foundation::Characters;
 
 
 
-class	String_CharArray::MyRep_ : public String::StringRep {
+class	String_CharArray::MyRep_ : public String::_Rep {
 	public:
 		MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
 		~MyRep_ ();
 
-		virtual		StringRep*	Clone () const override;
+		virtual		_Rep*	Clone () const override;
 
 		virtual		size_t	GetLength () const override;
 		virtual		bool	Contains (Character item) const override;
@@ -102,12 +102,12 @@ class	String_CharArray::MyRep_ : public String::StringRep {
 
 
 /*
-    * Subclasses from String_CharArray::MyRep_ instead of StringRep as a convenience (inheriting implementation).
+    * Subclasses from String_CharArray::MyRep_ instead of String::_Rep as a convenience (inheriting implementation).
     * In nearly all cases, such inheritance is a bad idea, but here it is justified because people
     * never directly manipulate the Reps, only the envelope classes, which have the conceptually
     * proper derivation. And the code savings is significant, since they differ only in
     * their buffering schemes.
-    * Of course, not all subclasses of StringRep can do this, and if it ever posed a problem here it
+    * Of course, not all subclasses of String::_Rep can do this, and if it ever posed a problem here it
     * could be modified without having any effect on peoples code.
     *
     */
@@ -115,7 +115,7 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
     public:
         MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
 
-        virtual		StringRep*	Clone () const override;
+        virtual		_Rep*	Clone () const override;
 
     protected:
         virtual		size_t	CalcAllocChars_ (size_t requested) override;
@@ -163,11 +163,11 @@ namespace	{
 
 	#if		qString_SubStringClassWorks
 	struct String_Substring_ : public String {
-		class	MyRep_ : public String::StringRep {
+		class	MyRep_ : public String::_Rep {
 			public:
-				MyRep_ (const Memory::SharedByValue<StringRep>& baseString, size_t from, size_t length);
+				MyRep_ (const Memory::SharedByValue<_Rep>& baseString, size_t from, size_t length);
 
-				virtual		StringRep*	Clone () const override;
+				virtual		_Rep*	Clone () const override;
 
 				virtual		size_t	GetLength () const override;
 				virtual		bool	Contains (Character item) const override;
@@ -183,7 +183,7 @@ namespace	{
 				virtual		const Character*	Peek () const override;
 
 			private:
-				Memory::SharedByValue<StringRep>	fBase;
+				Memory::SharedByValue<_Rep>	fBase;
 
 				size_t	fFrom;
 				size_t	fLength;
@@ -203,15 +203,15 @@ namespace	{
  ************************************* String ***********************************
  ********************************************************************************
  */
-const	Memory::SharedByValue<String::StringRep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+const	Memory::SharedByValue<String::_Rep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
 
 String::String ()
-	: fRep (kEmptyStringRep_)
+	: fRep_ (kEmptyStringRep_)
 {
 }
 
 String::String (const char16_t* cString)
-	: fRep (kEmptyStringRep_)
+	: fRep_ (kEmptyStringRep_)
 {
 	RequireNotNull (cString);
 	// Horrible, but temporarily OK impl
@@ -221,14 +221,14 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-	: fRep (new String_CharArray::MyRep_ ((const Character*)cString, wcslen (cString)), &Clone_)
+	: fRep_ (new String_CharArray::MyRep_ ((const Character*)cString, wcslen (cString)), &Clone_)
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-	: fRep (new String_CharArray::MyRep_ ((const Character*)from, to-from), &Clone_)
+	: fRep_ (new String_CharArray::MyRep_ ((const Character*)from, to-from), &Clone_)
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
@@ -236,22 +236,22 @@ String::String (const wchar_t* from, const wchar_t* to)
 }
 
 String::String (const Character* from, const Character* to)
-	: fRep (new String_CharArray::MyRep_ (from, to-from), &Clone_)
+	: fRep_ (new String_CharArray::MyRep_ (from, to-from), &Clone_)
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
 }
 
 String::String (const std::wstring& r)
-    : fRep (new String_CharArray::MyRep_ ((const Character*)r.c_str (), r.length ()), &Clone_)
+    : fRep_ (new String_CharArray::MyRep_ ((const Character*)r.c_str (), r.length ()), &Clone_)
 {
 }
 
-String::String (StringRep* sharedPart, bool)
-	: fRep (sharedPart, &Clone_)
+String::String (_Rep* sharedPart, bool)
+	: fRep_ (sharedPart, &Clone_)
 {
 	RequireNotNull (sharedPart);
-	Require (fRep.unique ());
+	Require (fRep_.unique ());
 }
 
 String	String::FromUTF8 (const char* from)
@@ -278,13 +278,13 @@ String	String::FromTString (const basic_string<TChar>& from)
 
 String&	String::operator+= (Character appendage)
 {
-	fRep->InsertAt (&appendage, &appendage + 1, GetLength ());
+	fRep_->InsertAt (&appendage, &appendage + 1, GetLength ());
 	return (*this);
 }
 
 String&	String::operator+= (const String& appendage)
 {
-	if ((fRep == appendage.fRep) and fRep.unique ()) {
+	if ((fRep_ == appendage.fRep_) and fRep_.unique ()) {
 		/*
 		 * We must be careful about this case since blowing aways "this"s memory, and then
 		 * trying to copy from "appendage"s would be bad.
@@ -297,8 +297,8 @@ String&	String::operator+= (const String& appendage)
 		size_t	appendLength = appendage.GetLength ();
 		SetLength (oldLength + appendLength);
 		Assert (appendage.GetLength () == appendLength);
-		Assert (fRep.unique ());
-		Character*	dstBuf	=	const_cast<Character*>(&(fRep->Peek ())[oldLength]);
+		Assert (fRep_.unique ());
+		Character*	dstBuf	=	const_cast<Character*>(&(fRep_->Peek ())[oldLength]);
 		appendage.CopyTo (dstBuf, dstBuf + appendLength);
 	}
 	return (*this);
@@ -307,10 +307,10 @@ String&	String::operator+= (const String& appendage)
 void	String::SetLength (size_t newLength)
 {
 	if (newLength == 0) {
-		fRep->RemoveAll ();
+		fRep_->RemoveAll ();
 	}
 	else {
-		fRep->SetLength (newLength);
+		fRep_->SetLength (newLength);
 	}
 }
 
@@ -318,28 +318,28 @@ void	String::SetCharAt (Character c, size_t i)
 {
 	Require (i >= 0);
 	Require (i < GetLength ());
-	fRep->SetAt (c, i);
+	fRep_->SetAt (c, i);
 }
 
 void	String::InsertAt (Character c, size_t i)
 {
 	Require (i >= 0);
 	Require (i <= (GetLength ()));
-	fRep->InsertAt (&c, &c + 1, i);
+	fRep_->InsertAt (&c, &c + 1, i);
 }
 
 void	String::RemoveAt (size_t i, size_t amountToRemove)
 {
 	Require (i >= 0);
 	Require ((i+amountToRemove) <= (GetLength ()));
-	fRep->RemoveAt (i, amountToRemove);
+	fRep_->RemoveAt (i, amountToRemove);
 }
 
 void	String::Remove (Character c)
 {
 	size_t index = IndexOf (c);
 	if (index != kBadStringIndex) {
-		fRep->RemoveAt (index, 1);
+		fRep_->RemoveAt (index, 1);
 	}
 }
 
@@ -347,7 +347,7 @@ size_t	String::IndexOf (Character c) const
 {
 	size_t length = GetLength ();
 	for (size_t i = 0; i < length; i++) {
-		if (fRep->GetAt (i) == c) {
+		if (fRep_->GetAt (i) == c) {
 			return (i);
 		}
 	}
@@ -367,7 +367,7 @@ size_t	String::IndexOf (const String& subString) const
 	size_t	limit		=	GetLength () - subStrLen;
 	for (size_t i = 0; i <= limit; i++) {
 		for (size_t j = 0; j < subStrLen; j++) {
-			if (fRep->GetAt (i+j) != subString.fRep->GetAt (j)) {
+			if (fRep_->GetAt (i+j) != subString.fRep_->GetAt (j)) {
 				goto nogood;
 			}
 		}
@@ -382,7 +382,7 @@ size_t	String::RIndexOf (Character c) const
 {
 	size_t length = GetLength ();
 	for (size_t i = length; i > 0; --i) {
-		if (fRep->GetAt (i-1) == c) {
+		if (fRep_->GetAt (i-1) == c) {
 			return (i-1);
 		}
 	}
@@ -410,7 +410,7 @@ size_t	String::RIndexOf (const String& subString) const
 
 bool	String::Contains (Character c) const
 {
-	return (fRep->Contains (c));
+	return (fRep_->Contains (c));
 }
 
 bool	String::Contains (const String& subString) const
@@ -435,9 +435,9 @@ String	String::SubString (size_t from, size_t to) const
 		return *this;
 	}
 	#if		qString_SubStringClassWorks
-		return (String (new String_Substring_::MyRep_ (fRep, from, length), false));
+		return (String (new String_Substring_::MyRep_ (fRep_, from, length), false));
 	#else
-		return (String (Peek () + from, Peek () + from + length));
+		return (String (fRep_->Peek () + from, fRep_->Peek () + from + length));
 	#endif
 }
 
@@ -447,7 +447,7 @@ String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 	// Could be much more efficient if pushed into REP - so we avoid each character virtual call...
 	size_t length = GetLength ();
 	for (size_t i = 0; i < length; ++i) {
-		if (not (*shouldBeTrimmmed) (fRep->GetAt (i))) {
+		if (not (*shouldBeTrimmmed) (fRep_->GetAt (i))) {
 			if (i == 0) {
 				// no change in string
 				return *this;
@@ -468,7 +468,7 @@ String	String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 	size_t length = GetLength ();
 	if (length != 0) {
 		for (ptrdiff_t i = length - 1; i != 0; --i) {
-			if (not (*shouldBeTrimmmed) (fRep->GetAt (i))) {
+			if (not (*shouldBeTrimmmed) (fRep_->GetAt (i))) {
 				size_t	nCharsRemoved	=	(length - 1) - i;
 				if (nCharsRemoved == 0) {
 					// no change in string
@@ -627,7 +627,7 @@ String_CharArray::String_CharArray (const wstring& str)
 
 
 String_CharArray::String_CharArray (const String& from)
-	: String (new String_CharArray::MyRep_ (from.Peek (), from.GetLength ()), false)
+	: String (new String_CharArray::MyRep_ (from._PeekRep ()->Peek (), from.GetLength ()), false)
 {
 }
 
@@ -664,9 +664,12 @@ String_BufferedCharArray::String_BufferedCharArray (const wstring& str)
 }
 
 String_BufferedCharArray::String_BufferedCharArray (const String& from)
-	: String (new MyRep_ (from.Peek (), from.GetLength ()), false)
+	: String (new MyRep_ (from._PeekRep ()->Peek (), from.GetLength ()), false)
 {
 }
+
+
+
 
 
 
@@ -715,9 +718,11 @@ String_StackLifetime::String_StackLifetime (const wchar_t* cString)
 
 /*
  ********************************************************************************
- *********************************** StringRep **********************************
+ ******************************** String::_Rep **********************************
  ********************************************************************************
  */
+
+
 
 
 
@@ -730,7 +735,7 @@ String_StackLifetime::String_StackLifetime (const wchar_t* cString)
  ********************************************************************************
  */
 String_CharArray::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
-	: StringRep ()
+	: _Rep ()
 	, fStorage (nullptr)
 	, fLength (nCharacters)
 {
@@ -743,7 +748,7 @@ String_CharArray::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCh
 }
 
 String_CharArray::MyRep_::MyRep_ ()
-	: StringRep ()
+	: _Rep ()
 	, fStorage (nullptr)
 	, fLength (0)
 {
@@ -754,7 +759,7 @@ String_CharArray::MyRep_::~MyRep_ ()
 	delete fStorage;
 }
 
-String::StringRep*	String_CharArray::MyRep_::Clone () const
+String::_Rep*	String_CharArray::MyRep_::Clone () const
 {
 	return (new String_CharArray::MyRep_ ((const Character*)fStorage, fLength));
 }
@@ -894,7 +899,7 @@ String_BufferedCharArray::MyRep_::MyRep_ (const Character* arrayOfCharacters, si
 	SetStorage ((Character*)storage, nCharacters);
 }
 
-String::StringRep*	String_BufferedCharArray::MyRep_::Clone () const
+String::_Rep*	String_BufferedCharArray::MyRep_::Clone () const
 {
 	return (new String_BufferedCharArray::MyRep_ (Peek (), GetLength ()));
 }
@@ -990,7 +995,7 @@ void	String_ExternalMemoryOwnership::MyRep_::AssureWeOwnBuffer_ ()
  ************************** String_Substring_::MyRep_ ***************************
  ********************************************************************************
  */
-String_Substring_::MyRep_::MyRep_ (const Memory::SharedByValue<StringRep>& baseString, size_t from, size_t length)
+String_Substring_::MyRep_::MyRep_ (const Memory::SharedByValue<_Rep>& baseString, size_t from, size_t length)
 	: fBase (baseString)
 	, fFrom (from)
 	, fLength (length)
@@ -1000,7 +1005,7 @@ String_Substring_::MyRep_::MyRep_ (const Memory::SharedByValue<StringRep>& baseS
 	Require ((from + length) <= fBase->GetLength ());
 }
 
-String::StringRep*	String_Substring_::MyRep_::Clone () const
+String::_Rep*	String_Substring_::MyRep_::Clone () const
 {
 	return (new String_CharArray::MyRep_ (Peek (), GetLength ()));
 }
@@ -1125,7 +1130,7 @@ String	Stroika::Foundation::Characters::operator+ (const String& lhs, const Stri
  */
 bool	Stroika::Foundation::Characters::operator== (const String& lhs, const String& rhs)
 {
-    if (lhs.fRep == rhs.fRep) {
+    if (lhs.fRep_ == rhs.fRep_) {
         return (true);
     }
     size_t length = lhs.GetLength ();
@@ -1188,7 +1193,7 @@ bool	Stroika::Foundation::Characters::operator== (const String& lhs, const wchar
  */
 bool	Stroika::Foundation::Characters::operator< (const String& lhs, const String& rhs)
 {
-    if (lhs.fRep == rhs.fRep) {
+    if (lhs.fRep_ == rhs.fRep_) {
         return (false);
     }
     size_t length = min (lhs.GetLength (), rhs.GetLength ());
@@ -1222,7 +1227,7 @@ bool	Stroika::Foundation::Characters::operator< (const String& lhs, const wchar_
  */
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const String& rhs)
 {
-    if (lhs.fRep == rhs.fRep) {
+    if (lhs.fRep_ == rhs.fRep_) {
         return (true);
     }
     size_t length = min (lhs.GetLength (), rhs.GetLength ());
