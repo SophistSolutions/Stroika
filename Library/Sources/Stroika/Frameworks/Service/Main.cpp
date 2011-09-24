@@ -74,6 +74,11 @@ void	Main::IRep::OnReReadConfigurationRequest ()
 {
 }
 
+String	Main::IRep::GetServiceStatusMessage () const
+{
+	return String (); 
+}
+
 #if		qPlatform_POSIX
 String	Main::IRep::GetPIDFileName () const
 {
@@ -142,6 +147,16 @@ void	Main::SetupSignalHanlders_ ()
 }
 #endif
 
+Main::State	Main::GetState () const
+{
+	#if		qPlatform_POSIX
+	if (GetServicePID () != 0) {
+		return eRunning;
+	}
+	#endif
+	return eStopped;	// otherwise (esp on other platforms where not implemtned) must  be stopped
+}
+
 #if		qPlatform_POSIX
 pid_t	Main::GetServicePID () const
 {
@@ -154,6 +169,35 @@ pid_t	Main::GetServicePID () const
 	return 0;
 }
 #endif
+
+String		Main::GetServiceStatusMessage () const
+{
+	ServiceDescription	svd	=	GetServiceDescription ();
+	wstringstream	tmp;
+	tmp << L"Service '" << svd.fName.As<wstring> () << "'" << endl;
+	switch (this->GetState ()) {
+		case	eStopped:	
+			tmp << L"    State:    STOPPED" << endl;
+			break;
+		case	eRunning:	
+			tmp << L"    State:    Running" << endl; 
+			#if		qPlatform_POSIX
+				pid_t	Main::GetServicePID () const
+				tmp << L"    PID:    " << GetServicePID () << endl;
+			#endif
+			break;
+		case	ePaused:	
+			tmp << L"    State:    PAUSED" << endl; 
+			#if		qPlatform_POSIX
+				pid_t	Main::GetServicePID () const
+				tmp << L"    PID:    " << GetServicePID () << endl;
+			#endif
+			break;
+		default:
+			AssertNotReached ();
+	}
+	return tmp.str ();
+}
 
 void	Main::RunAsService ()
 {
@@ -250,6 +294,16 @@ void	Main::ReReadConfiguration ()
 #endif
 }
 
+void	Main::Pause ()
+{
+	AssertNotImplemented ();
+}
+
+void	Main::Continue ()
+{
+	AssertNotImplemented ();
+}
+
 Main::ServiceDescription	Main::GetServiceDescription () const
 {
 	return _sRep->GetServiceDescription ();
@@ -277,23 +331,23 @@ bool	Main::_HandleStandardCommandLineArgument (const String& arg)
 		return true;
 	}
 	else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kKill)) {
-		AssertNotImplemented ();
+		Kill ();
 		return true;
 	}
 	else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRestart)) {
-		AssertNotImplemented ();
+		Restart ();
 		return true;
 	}
 	else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kReloadConfiguration)) {
-		AssertNotImplemented ();
+		ReReadConfiguration ();
 		return true;
 	}
 	else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kPause)) {
-		AssertNotImplemented ();
+		Pause ();
 		return true;
 	}
 	else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kContinue)) {
-		AssertNotImplemented ();
+		Continue ();
 		return true;
 	}
 	/// MANY more neeeded, and fix to use named constants...

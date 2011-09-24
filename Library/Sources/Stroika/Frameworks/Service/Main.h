@@ -11,7 +11,7 @@
 
 #if		qPlatform_POSIX
 	#include	<csignal>
-#enidf
+#endif
 
 #include	"../../Foundation/Characters/String.h"
 #include	"../../Foundation/Configuration/Common.h"
@@ -71,7 +71,11 @@ namespace	Stroika {
 						public:
 							virtual	void				OnStartRequest ();
 							virtual	void				OnStopRequest ();
-							virtual	void				OnReReadConfigurationRequest ();
+							virtual	void				OnReReadConfigurationRequest ();	//NOT USED NOW - UNCLEAR IF/HOW WE WANT TODO THIS -- LGP 2011-09-24
+
+							// 	returns a readable string about the service status. Note most of this is done by the envelope class, and this is just a way to add
+							//	service specific extras
+							virtual	String				GetServiceStatusMessage () const;
 							virtual	ServiceDescription	GetServiceDescription () const = 0;
 
 						#if		qPlatform_POSIX
@@ -161,6 +165,11 @@ namespace	Stroika {
 					nonvirtual	pid_t	GetServicePID () const;
 			#endif
 
+
+				public:
+					// Return non-structured, human readable summary of service status
+					nonvirtual	String		GetServiceStatusMessage () const;
+
 				public:
 					/*
 					 *	RunAsService () will not return - until the service has terminated. It runs the service 'MainLoop'.
@@ -181,6 +190,14 @@ namespace	Stroika {
 					/*
 					 */
 					nonvirtual	void				ReReadConfiguration ();
+					/*
+					 */
+					nonvirtual	void				Pause ();
+					/*
+					 */
+					nonvirtual	void				Continue ();
+
+				public:
 					/*
 					 */
 					nonvirtual	ServiceDescription	GetServiceDescription () const;
