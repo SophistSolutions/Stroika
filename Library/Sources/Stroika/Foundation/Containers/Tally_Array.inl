@@ -21,6 +21,7 @@ namespace	Stroika {
 
 
 			template	<typename T>	class	Tally_ArrayMutatorRep;
+
 			template	<typename T>	class	Tally_ArrayRep : public TallyRep<T> {
 				public:
 					Tally_ArrayRep ();
@@ -46,6 +47,9 @@ namespace	Stroika {
 				private:
 					Array_Patch<TallyEntry<T> >	fData;
 
+					enum {
+						kNotFound = (size_t)-1,
+					};
 					nonvirtual	size_t	Find (TallyEntry<T>& item) const;
 
 				friend	class	Tally_Array<T>;
@@ -56,8 +60,7 @@ namespace	Stroika {
 				public:
 					Tally_ArrayMutatorRep (Tally_ArrayRep<T>& owner);
 
-					virtual	bool			Done () const override;
-					virtual	bool			More (TallyEntry<T>* current) override;
+					virtual	bool			More (TallyEntry<T>* current, bool advance) override;
 
 					virtual	IteratorRep<TallyEntry<T> >*	Clone () const override;
 
@@ -114,14 +117,10 @@ namespace	Stroika {
 			{
 			}
 
-			template	<class	T>	bool	Tally_ArrayMutatorRep<T>::Done () const
-			{
-				return (fIterator.Done());
-			}
 
-			template	<class	T>	bool	Tally_ArrayMutatorRep<T>::More (TallyEntry<T>* current)
+			template	<class	T>	bool	Tally_ArrayMutatorRep<T>::More (TallyEntry<T>* current, bool advance)
 			{
-				return (fIterator.More(current));
+				return (fIterator.More(current, advance));
 			}
 
 			template	<typename T>	IteratorRep<TallyEntry<T> >*	Tally_ArrayMutatorRep<T>::Clone () const
@@ -179,7 +178,7 @@ namespace	Stroika {
 			template	<typename T>	bool	Tally_ArrayRep<T>::Contains (T item) const
 			{
 				TallyEntry<T> tmp (item);
-				return (bool (Find (tmp) != 0));
+				return (bool (Find (tmp) != kNotFound));
 			}
 
 			template	<typename T>	void	Tally_ArrayRep<T>::Compact ()
@@ -197,7 +196,7 @@ namespace	Stroika {
 				TallyEntry<T> tmp (item, count);
 
 				size_t index = Find (tmp);
-				if (index == 0) {
+				if (index == kNotFound) {
 					fData.InsertAt (tmp, GetLength ());
 				}
 				else {
@@ -211,8 +210,8 @@ namespace	Stroika {
 				TallyEntry<T> tmp (item);
 
 				size_t index = Find (tmp);
-				if (index != 0) {
-					Assert (index <= GetLength ());
+				if (index != kNotFound) {
+					Assert (index < GetLength ());
 					Assert (tmp.fCount >= count);
 					tmp.fCount -= count;
 					if (tmp.fCount == 0) {
@@ -263,7 +262,7 @@ namespace	Stroika {
 						return (i);
 					}
 				}
-				return (0);
+				return (kNotFound);
 			}
 
 

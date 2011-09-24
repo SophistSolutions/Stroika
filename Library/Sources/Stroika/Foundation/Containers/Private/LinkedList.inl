@@ -281,18 +281,24 @@ namespace	Stroika {
 					return bool (fCurrent == nullptr);
 				}
 
-				template	<class T>	inline	bool	LinkedListIterator<T>::More ()
+				template	<class T>	inline	bool	LinkedListIterator<T>::More (T* current, bool advance)
 				{
 					Invariant ();
-					/*
-					 * We could already be done since after the last Done() call, we could
-					 * have done a removeall.
-					 */
-					if (not fSuppressMore and fCurrent != nullptr) {
-						fCurrent = fCurrent->fNext;
+
+					if (advance) {
+						/*
+						 * We could already be done since after the last Done() call, we could
+						 * have done a removeall.
+						 */
+						if (not fSuppressMore and fCurrent != nullptr) {
+							fCurrent = fCurrent->fNext;
+						}
+						fSuppressMore = false;
 					}
-					fSuppressMore = false;
 					Invariant ();
+					if (current != nullptr and not Done ()) {
+						*current = fCurrent->fItem;
+					}
 					return (not Done ());
 				}
 
@@ -411,7 +417,7 @@ namespace	Stroika {
 
 					Invariant ();
 					T current;
-					for (LinkedListMutator_Patch<T> it (*this); it.More (&current); ) {
+					for (LinkedListMutator_Patch<T> it (*this); it.More (&current, true); ) {
 						if (current == item) {
 							it.RemoveCurrent ();
 							break;
@@ -541,23 +547,26 @@ namespace	Stroika {
 					return (*this);
 				}
 
-				template	<class T>	inline	bool	LinkedListIterator_Patch<T>::More (T* current)
+				template	<class T>	inline	bool	LinkedListIterator_Patch<T>::More (T* current, bool advance)
 				{
 					this->Invariant ();
-					/*
-					 * We could already be done since after the last Done() call, we could
-					 * have done a removeall.
-					 */
-					if (not this->fSuppressMore and this->fCurrent != nullptr) {
-						fPrev = this->fCurrent;
-						this->fCurrent = this->fCurrent->fNext;
 
-					}
-					this->fSuppressMore = false;
-					if (not this->Done ()) {
-						*current = this->fCurrent->fItem;
+					if (advance) {
+						/*
+						 * We could already be done since after the last Done() call, we could
+						 * have done a removeall.
+						 */
+						if (not this->fSuppressMore and this->fCurrent != nullptr) {
+							fPrev = this->fCurrent;
+							this->fCurrent = this->fCurrent->fNext;
+
+						}
+						this->fSuppressMore = false;
 					}
 					this->Invariant ();
+					if ((current != nullptr) and (not this->Done ())) {
+						*current = this->fCurrent->fItem;
+					}
 					return (not this->Done ());
 				}
 

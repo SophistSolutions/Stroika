@@ -61,8 +61,7 @@ namespace	Stroika {
                 public:
                     Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner);
 
-                    virtual	bool	Done () const override;
-                    virtual	bool	More (T* current) override;
+                    virtual	bool	More (T* current, bool advance) override;
                     virtual	T		Current () const override;
 
                     virtual	IteratorRep<T>*		Clone () const override;
@@ -104,14 +103,9 @@ namespace	Stroika {
             {
             }
 
-            template	<class	T>	bool	Bag_ArrayMutatorRep<T>::Done () const
+            template	<class	T>	bool	Bag_ArrayMutatorRep<T>::More (T* current, bool advance)
             {
-                return (fIterator.Done ());
-            }
-
-            template	<class	T>	bool	Bag_ArrayMutatorRep<T>::More (T* current)
-            {
-                return (fIterator.More (current));
+                return (fIterator.More (current, advance));
             }
 
             template	<class	T>	T	Bag_ArrayMutatorRep<T>::Current () const
@@ -206,11 +200,9 @@ namespace	Stroika {
                  *		Iterate backwards since removing from the end of an array
                  *	will be faster.
                  */
-#if qIteratorsRequireNoArgContructorForT
-                T temp;
-#endif
-                for (BackwardArrayIterator<T> it (fData); it.More (&temp);) {
-                    if (temp == item) {
+
+                for (BackwardArrayIterator<T> it (fData); it.More (nullptr, true);) {
+                    if (it.Current () == item) {
                         fData.RemoveAt (it.CurrentIndex ());
                         return;
                     }

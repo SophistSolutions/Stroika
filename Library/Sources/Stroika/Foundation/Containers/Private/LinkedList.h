@@ -137,7 +137,7 @@ namespace	Stroika {
 
 					public:
 						nonvirtual	bool	Done () const;
-						nonvirtual	bool	More ();
+						nonvirtual	bool	More (T* current, bool advance);
 						nonvirtual	T		Current () const;
 
 						nonvirtual	void	Invariant () const;
@@ -237,7 +237,7 @@ namespace	Stroika {
 						/*
 						 * Shadow more to keep track of prev.
 						 */
-						nonvirtual	bool	More (T* current);
+						nonvirtual	bool	More (T* current, bool advance);
 
 						nonvirtual	void	PatchAdd (const Link<T>* link);		//	call after add
 						nonvirtual	void	PatchRemove (const Link<T>* link);	//	call before remove

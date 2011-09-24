@@ -14,20 +14,10 @@
 
 
 
-/*
- * TODO:
- *		(o)		Class Documentation
- *		(o)		TallyEntry<> should be a nested type under Tally (Tally::Entry)
- */
-
-
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-
-
-			
 			template	<typename T>	class	TallyEntry {
 				public:
 #if qIteratorsRequireNoArgContructorForT
@@ -52,33 +42,18 @@ namespace	Stroika {
             template	<typename T>	bool	operator== (const Tally<T>& lhs, const Tally<T>& rhs);
             template	<typename T>	bool	operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
-			template	<typename T> class	TallyIterator : public Iterator<TallyEntry<T> > {
-				public:
-					TallyIterator (IteratorRep<TallyEntry<T> >* it);
-			};
 
-			// Must be more careful about copying TallyMutators...Now that iterators are copyable...
 			template	<typename T> class	TallyMutator : public Iterator<TallyEntry<T> > {
 				public:
 					TallyMutator (TallyMutatorRep<T>* it);
 
 					nonvirtual	void	RemoveCurrent ();
 
-				/*
-				 *		Update the
-				 * NB: if newCount == 0, equivilent to RemoveCurrent().
-				 */
-				public:
+					// if newCount == 0, equivilent to RemoveCurrent().
 					nonvirtual	void	UpdateCount (size_t newCount);
 			};
 
 
-
-			/*
-			 * DESCRIPTION:
-			 *		A Tally is like a Bag<> - except that it keeps COUNT of how many of a given thing are in it.
-			 *	As the name implies, its very handy for counting things.
-			 */
 			template	<typename T> class	Tally {
 				public:
 					Tally ();
@@ -117,7 +92,11 @@ namespace	Stroika {
 
 					// Support for ranged for, and stl syntax in general
                     nonvirtual  Iterator<TallyEntry<T> >    begin () const;
-                    nonvirtual  IterationState end () const;
+                    nonvirtual  Iterator<TallyEntry<T> > 	end () const;
+
+					// support for non-default iterator. By default, we iterator over TallyEntry<T>
+					typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
+					typedef	RangedForIterator<Tally<T>, Iterator<T> >			KeyIterator;
 
 				protected:
 					nonvirtual	void	AddItems (const T* items, size_t size);
