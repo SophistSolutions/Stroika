@@ -105,11 +105,12 @@ Main::Main (Memory::SharedPtr<IRep> rep)
 pid_t	Main::GetServicePID () const
 {
 	ifstream	in (_fRep->GetPIDFileName ().AsTString ().c_str ());
-	wstring	tmp	=	IO::ReadString (in);
-	if (tmp.empty ()) {
-		return 0;
+	if (in) {
+		pid_t	n = 0;
+		in >> n;
+		return n;
 	}
-	return Characters::String2Int (tmp);
+	return 0;
 }
 #endif
 
@@ -120,7 +121,7 @@ void	Main::RunAsService ()
 	try {
 #if		qPlatform_POSIX
 		ofstream	out (_fRep->GetPIDFileName ().AsTString ().c_str ());
-		IO::WriteString (out, Characters::Format (L"%d", getpid ()));
+		out << getpid () << endl;
 #endif
 		_fRep->OnStartRequest ();
 	}
