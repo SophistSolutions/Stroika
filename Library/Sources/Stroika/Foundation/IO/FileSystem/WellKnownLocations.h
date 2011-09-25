@@ -19,14 +19,41 @@ namespace	Stroika {
 				// These GetSpecialDir_XXX routines always return a valid directory (if createIfNotPresent) - and
 				// it always ends in a '\\'
 				//
-				TString	GetSpecialDir_MyDocuments (bool createIfNotPresent = true);
-				TString	GetSpecialDir_AppData (bool createIfNotPresent = true);
-	#if			qPlatform_Windows
-				TString	GetSpecialDir_WinSxS ();	// empty string if doesn't exist
-	#endif
+				// 
+				// See also http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
+				//
+				namespace	WellKnownLocations {
 
-				TString	GetSpecialDir_GetTempDir ();
+					TString	GetMyDocuments (bool createIfNotPresent = true);
 
+					/*
+					 * Return directory whcih contains top-level application data - which should be persistent. Store long-term applicaiton
+					 * data (which is not user specific) such as databases etc here.
+					 */
+					TString	GetApplicationData (bool createIfNotPresent = true);
+
+					/*
+					 * This returns the directory where an appliation may write temporary files - files which should not
+					 * be preserved across reboots (though the OS may not enforce this). This directory may or may not be current-user-specific.
+					 */
+					TString	GetTemporary ();
+
+					#if			qPlatform_Windows
+						// empty string if doesn't exist
+						TString	GetWinSxS ();
+					#endif
+
+				}
+
+
+// LEGACY NAMES
+//tmphack
+inline	TString	GetSpecialDir_MyDocuments (bool createIfNotPresent = true)	{ return WellKnownLocations::GetMyDocuments (createIfNotPresent); }
+inline	TString	GetSpecialDir_AppData (bool createIfNotPresent = true)	{ return WellKnownLocations::GetApplicationData (createIfNotPresent); }
+#if			qPlatform_Windows
+inline	TString	GetSpecialDir_WinSxS ()	{ return WellKnownLocations::GetWinSxS (); }
+#endif
+inline	TString	GetSpecialDir_GetTempDir ()	{ return WellKnownLocations::GetTemporary (); }
 
 			}
 		}

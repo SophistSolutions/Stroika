@@ -4,10 +4,10 @@
 #include	"../../StroikaPreComp.h"
 
 #if		qPlatform_Windows
-	#include	<aclapi.h>
-	#include	<io.h>
 	#include	<shlobj.h>
 	#include	<windows.h>
+#elif	qPlatoform_POSIX
+	#include	<cstdlib>
 #endif
 
 #include	"../../Execution/Exceptions.h"
@@ -28,12 +28,14 @@ using	Characters::TChar;
 
 
 
+
+
 /*
  ********************************************************************************
- ******************** FileSystem::GetSpecialDir_MyDocuments *********************
+ ************ FileSystem::WellKnownLocations::GetMyDocuments ********************
  ********************************************************************************
  */
-TString	FileSystem::GetSpecialDir_MyDocuments (bool createIfNotPresent)
+TString	FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
 #if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
@@ -51,6 +53,12 @@ TString	FileSystem::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 	Ensure (result[result.size ()-1] == '\\');
 	Ensure (not createIfNotPresent or DirectoryExists (result));
 	return result;
+#elif	qPlatform_POSIX
+	const char *pPath = getenv ("HOME");
+	if (pPath == nullptr) {
+		return TString ();
+	}
+	return pPath;
 #else
 	AssertNotImplemented ();
 	return TString ();
@@ -64,10 +72,10 @@ TString	FileSystem::GetSpecialDir_MyDocuments (bool createIfNotPresent)
 
 /*
  ********************************************************************************
- ******************** FileSystem::GetSpecialDir_AppData *************************
+ ******** FileSystem::WellKnownLocations::GetApplicationData ********************
  ********************************************************************************
  */
-TString	FileSystem::GetSpecialDir_AppData (bool createIfNotPresent)
+TString	FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
@@ -85,6 +93,8 @@ TString	FileSystem::GetSpecialDir_AppData (bool createIfNotPresent)
 	Ensure (result[result.size ()-1] == '\\');
 	Ensure (not createIfNotPresent or DirectoryExists (result));
 	return result;
+#elif	qPlatform_POSIX
+	return TSTR ("/var/lib/");
 #else
 	AssertNotImplemented ();
 	return TString ();
@@ -99,10 +109,10 @@ TString	FileSystem::GetSpecialDir_AppData (bool createIfNotPresent)
 #if		qPlatform_Windows
 /*
  ********************************************************************************
- ********************* FileSystem::GetSpecialDir_WinSxS *************************
+ ************** FileSystem::WellKnownLocations::GetWinSxS ***********************
  ********************************************************************************
  */
-TString	FileSystem::GetSpecialDir_WinSxS ()
+TString	FileSystem::WellKnownLocations::GetWinSxS ()
 {
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
@@ -129,10 +139,10 @@ TString	FileSystem::GetSpecialDir_WinSxS ()
 
 /*
  ********************************************************************************
- ********************* FileSystem::GetSpecialDir_GetTempDir *********************
+ ************* FileSystem::WellKnownLocations::GetTemporary *********************
  ********************************************************************************
  */
-TString	FileSystem::GetSpecialDir_GetTempDir ()
+TString	FileSystem::WellKnownLocations::GetTemporary ()
 {
 	TString	tempPath;
 #if		qPlatform_Windows
@@ -143,6 +153,8 @@ TString	FileSystem::GetSpecialDir_GetTempDir ()
 	else {
 		tempPath = buf;
 	}
+#elif	qPlatform_POSIX
+	return TSTR ("/tmp");
 #else
 	AssertNotImplemented ();
 #endif
