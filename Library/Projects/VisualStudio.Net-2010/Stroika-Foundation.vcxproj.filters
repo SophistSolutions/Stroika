@@ -82,6 +82,9 @@
     <Filter Include="Sources\IO\Network\Transfer">
       <UniqueIdentifier>{695f0de1-3dbf-43e4-b9d9-07b4cd35924b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\IO\FileSystem">
+      <UniqueIdentifier>{59229ad2-d85b-4b0a-bf59-30a861769be5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -104,9 +107,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.cpp">
-      <Filter>Sources\IO</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp">
       <Filter>Sources\Characters</Filter>
@@ -149,9 +149,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
-      <Filter>Sources\IO</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
       <Filter>Sources\Memory</Filter>
@@ -258,6 +255,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
+      <Filter>Sources\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -286,9 +289,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.h">
-      <Filter>Sources\IO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h">
       <Filter>Sources\Characters</Filter>
@@ -365,18 +365,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h">
-      <Filter>Sources\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h">
-      <Filter>Sources\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h">
-      <Filter>Sources\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h">
-      <Filter>Sources\IO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h">
       <Filter>Sources\Configuration</Filter>
@@ -585,6 +573,21 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -607,9 +610,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileUtils.inl">
-      <Filter>Sources\IO</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl">
       <Filter>Sources\Characters</Filter>
@@ -658,15 +658,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl">
-      <Filter>Sources\IO</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl">
-      <Filter>Sources\IO</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
-      <Filter>Sources\IO</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl">
       <Filter>Sources\Configuration</Filter>
@@ -826,6 +817,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
+      <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl">
+      <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl">
+      <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
 </Project>

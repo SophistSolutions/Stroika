@@ -22,7 +22,7 @@
 #include	"../../Foundation/Execution/Exceptions.h"
 #include	"../../Foundation/Execution/Module.h"
 #include	"../../Foundation/Execution/ThreadAbortException.h"
-#include	"../../Foundation/IO/FileUtils.h"
+#include	"../../Foundation/IO/FileSystem/FileUtils.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 #include	"Main.h"

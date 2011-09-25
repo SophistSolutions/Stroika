@@ -9,7 +9,7 @@
 
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
-#include	"../IO/FileUtils.h"
+#include	"../IO/FileSystem/FileUtils.h"
 
 #include	"Module.h"
 

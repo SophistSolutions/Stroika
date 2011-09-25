@@ -8,7 +8,7 @@
 #include	"../Characters/Format.h"
 #include	"../Debug/Trace.h"
 #include	"../IO/FileAccessException.h"
-#include	"../IO/FileUtils.h"
+#include	"../IO/FileSystem/FileUtils.h"
 
 #include	"Exceptions.h"
 

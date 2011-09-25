@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_IO_FileUtils_h_
-#define	_Stroika_Foundation_IO_FileUtils_h_	1
+#ifndef	_Stroika_Foundation_IO_FileSystem_FileUtils_h_
+#define	_Stroika_Foundation_IO_FileSystem_FileUtils_h_	1
 
-#include	"../StroikaPreComp.h"
+#include	"../../StroikaPreComp.h"
 
 #include	<fstream>
 #include	<sstream>
@@ -16,14 +16,14 @@
 	#include	<Windows.h>
 #endif
 
-#include	"../Characters/TChar.h"
-#include	"../Configuration/Common.h"
-#include	"../Debug/Assertions.h"
-#include	"../Execution/Exceptions.h"
-#include	"../Execution/Thread.h"
-#include	"../Time/DateTime.h"
+#include	"../../Characters/TChar.h"
+#include	"../../Configuration/Common.h"
+#include	"../../Debug/Assertions.h"
+#include	"../../Execution/Exceptions.h"
+#include	"../../Execution/Thread.h"
+#include	"../../Time/DateTime.h"
 
-#include	"FileAccessMode.h"
+#include	"../FileAccessMode.h"
 
 
 namespace	Stroika {	
@@ -329,7 +329,7 @@ namespace	Stroika {
 
 	}
 }
-#endif	/*_Stroika_Foundation_IO_FileUtils_h_*/
+#endif	/*_Stroika_Foundation_IO_FileSystem_FileUtils_h_*/
 
 
 

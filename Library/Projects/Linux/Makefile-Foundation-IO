@@ -3,31 +3,36 @@ include	../../SharedBuildRules.mk
 include	../../SharedMakeVariables.mk
 
 
-RelPathToDevRoot		=	../../../../../../
-SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/
+RelPathToDevRoot	=	../../../../../../
+SrcDir				=	$(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/
 
-.PHONY:				Network
+.PHONY:			File	Network
 
 
 SubDirs	=	\
-	Network
+	File	\
+	Network	\
 
 
 VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)FileAccessException.o\
-	$(ObjDir)FileUtils.o\
 
 all:	$(Objs) $(SubDirs)
 
+
+FILE_OBJS := $(shell cd File; make -s list-objs)
+FILE_OBJS := $(addprefix "./File/", $(FILE_OBJS))
 
 NETWORK_OBJS := $(shell cd Network; make -s list-objs)
 NETWORK_OBJS := $(addprefix "./Network/", $(NETWORK_OBJS))
 
 list-objs::
-	@echo $(NETWORK_OBJS)
+	@echo $(FILE_OBJS) $(NETWORK_OBJS)
 
+File:
+	(cd File; make)
 
 Network:
 	(cd Network; make)

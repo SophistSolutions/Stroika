@@ -2,14 +2,19 @@ include ../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
+
 RelPathToDevRoot	=	../../../../../../../
-SrcDir				=	$(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/Network/
+SrcDir				=	$(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
 
 
 VPATH = $(SrcDir)
 
+
 Objs	=	\
-	$(ObjDir)URL.o\
+	$(ObjDir)FileUtils.o\
+
 
 all:	$(Objs)
+
+
 

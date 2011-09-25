@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-
 		..\Linux\Makefile-Foundation-Debug = ..\Linux\Makefile-Foundation-Debug
 		..\Linux\Makefile-Foundation-Execution = ..\Linux\Makefile-Foundation-Execution
 		..\Linux\Makefile-Foundation-IO = ..\Linux\Makefile-Foundation-IO
+		..\Linux\Makefile-Foundation-IO-FileSystem = ..\Linux\Makefile-Foundation-IO-FileSystem
 		..\Linux\Makefile-Foundation-IO-Network = ..\Linux\Makefile-Foundation-IO-Network
 		..\Linux\Makefile-Foundation-IO-Network-Transfer = ..\Linux\Makefile-Foundation-IO-Network-Transfer
 		..\Linux\Makefile-Foundation-Linguistics = ..\Linux\Makefile-Foundation-Linguistics

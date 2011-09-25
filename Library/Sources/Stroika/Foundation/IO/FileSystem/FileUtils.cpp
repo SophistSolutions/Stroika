@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#include	"../StroikaPreComp.h"
+#include	"../../StroikaPreComp.h"
 
 #include	<sys/stat.h>
 #include	<ctime>
@@ -17,14 +17,14 @@
 	#include	<windows.h>
 #endif
 
-#include	"../Characters/Format.h"
-#include	"../Characters/StringUtils.h"
-#include	"../Execution/Exceptions.h"
-#include	"../Containers/Common.h"
-#include	"../Containers/SetUtils.h"
-#include	"../Debug/Trace.h"
-#include	"../IO/FileAccessException.h"
-#include	"../Memory/SmallStackBuffer.h"
+#include	"../../Characters/Format.h"
+#include	"../../Characters/StringUtils.h"
+#include	"../../Execution/Exceptions.h"
+#include	"../../Containers/Common.h"
+#include	"../../Containers/SetUtils.h"
+#include	"../../Debug/Trace.h"
+#include	"../../IO/FileAccessException.h"
+#include	"../../Memory/SmallStackBuffer.h"
 
 #include	"FileUtils.h"
 
