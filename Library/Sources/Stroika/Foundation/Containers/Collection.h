@@ -215,7 +215,7 @@ namespace	Stroika {
 						 *
 						 *	This function returns true iff doToElement ever returned true.
 						 */
-						nonvirtual	bool	Apply (bool (*doToElement) (T item)) const;
+						nonvirtual	bool	ApplyUntil (bool (*doToElement) (T item)) const;
 
 
 					private:
