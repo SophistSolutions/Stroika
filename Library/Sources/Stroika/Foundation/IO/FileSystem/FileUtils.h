@@ -26,6 +26,16 @@
 #include	"../FileAccessMode.h"
 
 
+
+/**
+ * TODO:
+ *
+ *			o	This file is obsolete, and will be gradually replaced - moving its contents out to other modules
+ */
+
+
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	IO {
