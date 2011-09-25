@@ -23,7 +23,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (buffer);
 					Require (bufSize >= 1);
-					Write_ (buffer, bufSize);
+					_Write (buffer, bufSize);
 				}
 
 		}

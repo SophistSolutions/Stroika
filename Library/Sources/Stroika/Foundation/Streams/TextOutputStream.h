@@ -34,7 +34,7 @@ namespace	Stroika {
 				protected:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					virtual	void	Write_ (const wchar_t* buffer, size_t bufSize)			=	0;
+					virtual	void	_Write (const wchar_t* buffer, size_t bufSize)			=	0;
 			};
 
 		}

@@ -9,6 +9,7 @@ SrcDir				=	$(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/Network/
 VPATH = $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)SocketStream.o\
 	$(ObjDir)URL.o\
 
 all:	$(Objs)

@@ -23,7 +23,7 @@ namespace	Stroika {
 				{
 					RequireNotNull (buffer);
 					Require (bufSize >= 1);
-					return Read_ (buffer, bufSize);
+					return _Read (buffer, bufSize);
 				}
 		}
 	}

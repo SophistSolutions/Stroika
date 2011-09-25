@@ -23,12 +23,12 @@ namespace	Stroika {
 				{
 					RequireNotNull (buffer);
 					Require (bufSize >= 1);
-					return Read_ (buffer, bufSize);
+					return _Read (buffer, bufSize);
 				}
 			inline	wchar_t	TextInputStream::Read ()
 				{
 					wchar_t	c	=	'\0';
-					size_t	n	=	Read_ (&c, 1);
+					size_t	n	=	_Read (&c, 1);
 					Assert (n == 0 or n == 1);
 					return (n == 0)? '\0': c;
 				}
