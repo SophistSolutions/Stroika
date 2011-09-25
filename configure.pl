@@ -83,6 +83,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
 		mkDirWithLinks("Foundation/IO", "Makefile-Foundation-IO");
+		mkDirWithLinks2("Foundation/IO/File", "Makefile-Foundation-IO-File");
 		mkDirWithLinks2("Foundation/IO/Network", "Makefile-Foundation-IO-Network");
 		mkDirWithLinks3("Foundation/IO/Network/Transfer", "Makefile-Foundation-IO-Network-Transfer");
 		mkDirWithLinks("Foundation/Linguistics", "Makefile-Foundation-Linguistics");

@@ -6,11 +6,11 @@ include	../../SharedMakeVariables.mk
 RelPathToDevRoot	=	../../../../../../
 SrcDir				=	$(RelPathToDevRoot)Library/Sources/Stroika/Foundation/IO/
 
-.PHONY:			File	Network
+.PHONY:			FileSystem	Network
 
 
 SubDirs	=	\
-	File	\
+	FileSystem	\
 	Network	\
 
 
@@ -22,8 +22,8 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-FILE_OBJS := $(shell cd File; make -s list-objs)
-FILE_OBJS := $(addprefix "./File/", $(FILE_OBJS))
+FILE_OBJS := $(shell cd FileSystem; make -s list-objs)
+FILE_OBJS := $(addprefix "./FileSystem/", $(FILE_OBJS))
 
 NETWORK_OBJS := $(shell cd Network; make -s list-objs)
 NETWORK_OBJS := $(addprefix "./Network/", $(NETWORK_OBJS))
@@ -31,8 +31,8 @@ NETWORK_OBJS := $(addprefix "./Network/", $(NETWORK_OBJS))
 list-objs::
 	@echo $(FILE_OBJS) $(NETWORK_OBJS)
 
-File:
-	(cd File; make)
+FileSystem:
+	(cd FileSystem; make)
 
 Network:
 	(cd Network; make)
