@@ -37,7 +37,7 @@ namespace	Stroika {
                     virtual	void		Compact () override;
                     virtual	BagRep<T>*	Clone () const override;
 
-                    virtual	IteratorRep<T>*		MakeIterator () override;
+                    virtual	typename Iterator<T>::Rep*		MakeIterator () override;
                     virtual	BagIteratorRep<T>*	MakeBagIterator () override;
                     virtual	BagMutatorRep<T>*	MakeBagMutator () override;
 
@@ -64,7 +64,7 @@ namespace	Stroika {
                     virtual	bool	More (T* current, bool advance) override;
                     virtual	T		Current () const override;
 
-                    virtual	IteratorRep<T>*		Clone () const override;
+                    virtual	typename Iterator<T>::Rep*		Clone () const override;
 
                     virtual	void	RemoveCurrent () override;
                     virtual	void	UpdateCurrent (T newValue) override;
@@ -113,7 +113,7 @@ namespace	Stroika {
                 return (fIterator.Current());
             }
 
-            template	<typename T>	IteratorRep<T>*	Bag_ArrayMutatorRep<T>::Clone () const
+            template	<typename T>	typename Iterator<T>::Rep*	Bag_ArrayMutatorRep<T>::Clone () const
             {
                 return (new Bag_ArrayMutatorRep<T> (*this));
             }
@@ -173,7 +173,7 @@ namespace	Stroika {
                 return (fData.Contains (item));
             }
 
-            template	<typename T>	IteratorRep<T>*	Bag_ArrayRep<T>:: MakeIterator ()
+            template	<typename T>	typename Iterator<T>::Rep*	Bag_ArrayRep<T>:: MakeIterator ()
             {
                 return (new Bag_ArrayMutatorRep<T> (*this));
             }

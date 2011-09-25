@@ -170,7 +170,7 @@ namespace	Stroika {
 
 
 
-            template	<typename T>	class	BagIteratorRep : public IteratorRep<T> {
+            template	<typename T>	class	BagIteratorRep : public Iterator<T>::Rep {
                 protected:
                     BagIteratorRep ();
             };
@@ -201,7 +201,7 @@ namespace	Stroika {
                     virtual	void		Add (T item)					=	0;
                     virtual	void		Remove (T item)					=	0;
 
-                    virtual	IteratorRep<T>*		MakeIterator () 		=	0;
+                    virtual	typename Iterator<T>::Rep*		MakeIterator () 		=	0;
                     virtual	BagIteratorRep<T>*	MakeBagIterator () 		=	0;
                     virtual	BagMutatorRep<T>*	MakeBagMutator () 		=	0;
             };

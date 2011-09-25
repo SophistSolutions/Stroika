@@ -34,7 +34,7 @@ namespace	Stroika {
 
 			template	<typename T> class	Tally;
 			template	<typename T> class	TallyRep;
-			template	<typename T> class	IteratorRep;
+			template	<typename T> class	TallyIteratorRep;
 			template	<typename T> class	TallyMutatorRep;
 
 			template	<typename T> bool	operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);

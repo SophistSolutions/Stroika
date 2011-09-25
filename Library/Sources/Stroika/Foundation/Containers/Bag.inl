@@ -222,7 +222,7 @@ namespace	Stroika {
 
             // class BagIteratorRep<T>
             template	<typename T>	inline	BagIteratorRep<T>::BagIteratorRep () :
-                IteratorRep<T> ()
+                Iterator<T>::Rep ()
             {
             }
 

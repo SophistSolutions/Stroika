@@ -14,35 +14,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-			/*
-				Subclassed by front-end container writers.
-				Most of the work is done in More, which does a lot of work because it is the
-				only virtual function called during iteration, and will need to lock its
-				container when doing "safe" iteration. More does the following:
-					iterate to the next container value if advance is true
-					(then) copy the current value into current, if current is not null
-					return true if iteration can continue (not done iterating)
-
-					typical uses:
-						it++ -> More (null, true)
-						*it -> More (&v, false); return v;
-						Done -> More (null, false)
-
-						(note that for performance and safety reasons the iterator envelope actually
-						passes fCurrent into More when implenenting ++it
-			*/
-            template	<typename T> class	IteratorRep {
-                protected:
-                    IteratorRep ();
-
-                public:
-                    virtual	~IteratorRep ();
-
-                public:
-                    virtual	bool			More (T* current, bool advance)   = 0;
-                    virtual	IteratorRep<T>*	Clone () const		= 0;
-                    nonvirtual bool         Done () const;
-            };
 
 			/*
 				Support for ranged for syntax: for (it : v) { it.Current (); }
@@ -73,18 +44,18 @@ namespace	Stroika {
 			};
 
 
-            // class IteratorRep<T>
-            template	<typename T> inline	IteratorRep<T>::IteratorRep ()
+            // class Rep<T>
+            template	<typename T> inline	Iterator<T>::Rep::Rep ()
             {
             }
 
-            template	<typename T> inline	IteratorRep<T>::~IteratorRep ()
+            template	<typename T> inline	Iterator<T>::Rep::~Rep ()
             {
             }
 
-            template	<typename T> inline	bool	IteratorRep<T>::Done () const
+            template	<typename T> inline	bool	Iterator<T>::Rep::Done () const
             {
-                return not const_cast<IteratorRep<T>*> (this)->More (nullptr, false);
+                return not const_cast<Iterator<T>::Rep*> (this)->More (nullptr, false);
             }
 
             // class Iterator<T>
@@ -103,7 +74,7 @@ namespace	Stroika {
 #endif
             }
 
-            template	<typename T> inline	Iterator<T>::Iterator (IteratorRep<T>* it)   :
+            template	<typename T> inline	Iterator<T>::Iterator (Rep* it)   :
                 fIterator (it)
             {
 #if !qIteratorUsingNullRepAsSentinalValue

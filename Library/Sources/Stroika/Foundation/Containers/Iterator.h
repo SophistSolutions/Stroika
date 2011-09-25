@@ -131,10 +131,11 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-            template	<typename T> class	IteratorRep;
             template	<typename T> class	Iterator {
-                public:
-					explicit	Iterator (IteratorRep<T>* it);
+             	public:
+					class	Rep;
+				public:
+					explicit	Iterator (Rep* it);
                     Iterator (const Iterator<T>& from);
                     ~Iterator ();
 
@@ -158,11 +159,40 @@ namespace	Stroika {
                     nonvirtual	bool	Done () const;
 
                 protected:
-                    IteratorRep<T>*	fIterator;
-                    T               fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
+                    Rep*	fIterator;
+                    T       fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
             };
 
 
+			/*
+				Subclassed by front-end container writers.
+				Most of the work is done in More, which does a lot of work because it is the
+				only virtual function called during iteration, and will need to lock its
+				container when doing "safe" iteration. More does the following:
+					iterate to the next container value if advance is true
+					(then) copy the current value into current, if current is not null
+					return true if iteration can continue (not done iterating)
+
+					typical uses:
+						it++ -> More (null, true)
+						*it -> More (&v, false); return v;
+						Done -> More (null, false)
+
+						(note that for performance and safety reasons the iterator envelope actually
+						passes fCurrent into More when implenenting ++it
+			*/
+            template	<typename T> class	Iterator<T>::Rep {
+                protected:
+                    Rep ();
+
+                public:
+                    virtual	~Rep ();
+
+                public:
+                    virtual	bool			More (T* current, bool advance)   = 0;
+                    virtual	Rep*	Clone () const		= 0;
+                    nonvirtual bool         Done () const;
+            };
 
 
             /*
