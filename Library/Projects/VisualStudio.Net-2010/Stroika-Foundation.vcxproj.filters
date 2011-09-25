@@ -842,9 +842,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>

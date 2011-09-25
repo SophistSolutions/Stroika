@@ -1021,14 +1021,14 @@ void	FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 
 /*
  ********************************************************************************
- ******************************* FileSystem::AppTempFileManager *************************
+ *********************** FileSystem::AppTempFileManager *************************
  ********************************************************************************
  */
 AppTempFileManager::AppTempFileManager ():
 	fTmpDir ()
 {
 #if		qPlatform_Windows
-	TString	tmpDir	=	GetSpecialDir_GetTempDir ();
+	TString	tmpDir	=	WellKnownLocations::GetTemporary ();
 
 	TChar	exePath[MAX_PATH];
 	memset (exePath, 0, sizeof exePath);

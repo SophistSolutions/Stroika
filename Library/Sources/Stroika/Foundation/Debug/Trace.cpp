@@ -148,7 +148,7 @@ mfname= TSTR("test");
 				*i = '-';
 			}
 		}
-		sTraceFileName = IO::GetSpecialDir_GetTempDir () + Format (TSTR ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
+		sTraceFileName = IO::FileSystem::WellKnownLocations::GetTemporary () + Format (TSTR ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
 	}
 	return sTraceFileName;
 }

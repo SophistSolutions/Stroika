@@ -383,7 +383,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
