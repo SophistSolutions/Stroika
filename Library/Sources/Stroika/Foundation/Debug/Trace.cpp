@@ -16,7 +16,7 @@
 #include	"../Time/Realtime.h"
 
 #if		qTraceToFile
-#include	"../IO/FileSystem/FileUtils.h"
+#include	"../IO/FileSystem/WellKnownLocations.h"
 #include	"../Time/DateTime.h"
 #endif
 
