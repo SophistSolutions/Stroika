@@ -243,9 +243,16 @@
 		<Unit filename="../../Sources/Stroika/Foundation/IO/FileBusyException.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/FileFormatException.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/FileFormatException.inl" />
-		<Unit filename="../../Sources/Stroika/Foundation/IO/FileUtils.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileSystem/FileUtils.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileSystem/FileUtils.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileSystem/FileUtils.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileSystem/WellKnownLocations.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/FileSystem/WellKnownLocations.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/FileUtils.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/FileUtils.inl" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/SocketStream.cpp" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/SocketStream.h" />
+		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/SocketStream.inl" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/Transfer/Client.cpp" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/Transfer/Client.h" />
 		<Unit filename="../../Sources/Stroika/Foundation/IO/Network/Transfer/Client.inl" />
