@@ -69,4 +69,3 @@ inline	TString	GetSpecialDir_GetTempDir ()	{ return WellKnownLocations::GetTempo
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"WellKnownLocations.inl"
