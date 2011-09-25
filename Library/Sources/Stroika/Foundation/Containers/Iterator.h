@@ -134,7 +134,7 @@ namespace	Stroika {
             template	<typename T> class	IteratorRep;
             template	<typename T> class	Iterator {
                 public:
-					Iterator (IteratorRep<T>* it);
+					explicit	Iterator (IteratorRep<T>* it);
                     Iterator (const Iterator<T>& from);
                     ~Iterator ();
 

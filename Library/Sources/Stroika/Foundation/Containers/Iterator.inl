@@ -65,7 +65,7 @@ namespace	Stroika {
 
 					IteratorClass end () const
 					{
-						return (nullptr);
+						return (IteratorClass (nullptr));
 					}
 
 				private:
@@ -103,7 +103,7 @@ namespace	Stroika {
 #endif
             }
 
-            template	<typename T> inline	Iterator<T>::Iterator (IteratorRep<T>* it) :
+            template	<typename T> inline	Iterator<T>::Iterator (IteratorRep<T>* it)   :
                 fIterator (it)
             {
 #if !qIteratorUsingNullRepAsSentinalValue

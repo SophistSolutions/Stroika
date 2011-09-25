@@ -151,14 +151,14 @@ namespace	Stroika {
 
 			template	<typename T>	inline	Tally<T>::operator Iterator<T> () const
 			{
-                Iterator<T> it = const_cast<Tally<T> *> (this)->fRep->MakeIterator ();
+                Iterator<T> it (const_cast<Tally<T> *> (this)->fRep->MakeIterator ());
                 ++it;
                 return it;
 			}
 
 			template	<typename T>	inline	Tally<T>::operator Iterator<TallyEntry<T> > () const
 			{
-                Iterator<TallyEntry<T>> it = const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ();
+                Iterator<TallyEntry<T>> it (const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ());
                 ++it;
                 return it;
 			}
@@ -175,7 +175,7 @@ namespace	Stroika {
 
             template	<typename T>	inline	Iterator<TallyEntry<T>>    Tally<T>::end () const
             {
-                return (nullptr);
+                return (Iterator<TallyEntry<T>> (nullptr));
             }
 
 
