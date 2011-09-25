@@ -45,16 +45,6 @@ namespace	Stroika {
 
 				}
 
-
-// LEGACY NAMES
-//tmphack
-inline	TString	GetSpecialDir_MyDocuments (bool createIfNotPresent = true)	{ return WellKnownLocations::GetMyDocuments (createIfNotPresent); }
-inline	TString	GetSpecialDir_AppData (bool createIfNotPresent = true)	{ return WellKnownLocations::GetApplicationData (createIfNotPresent); }
-#if			qPlatform_Windows
-inline	TString	GetSpecialDir_WinSxS ()	{ return WellKnownLocations::GetWinSxS (); }
-#endif
-inline	TString	GetSpecialDir_GetTempDir ()	{ return WellKnownLocations::GetTemporary (); }
-
 			}
 		}
 	}
