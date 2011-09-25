@@ -261,6 +261,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -588,6 +591,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -828,6 +834,9 @@
       <Filter>Sources\IO</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>

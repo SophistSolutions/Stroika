@@ -28,7 +28,7 @@ using	namespace	Stroika::Foundation::Execution;
  */
 TString	Execution::GetEXEDir ()
 {
-	return IO::GetFileDirectory (GetEXEPath ());
+	return IO::FileSystem::GetFileDirectory (GetEXEPath ());
 }
 
 
