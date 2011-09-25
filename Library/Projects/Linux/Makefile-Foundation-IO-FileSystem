@@ -12,7 +12,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)FileUtils.o\
-	$(ObjDir)WellKnownLocation.o\
+	$(ObjDir)WellKnownLocations.o\
 
 
 all:	$(Objs)
