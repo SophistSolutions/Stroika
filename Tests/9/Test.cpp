@@ -22,13 +22,13 @@ using	namespace	Stroika::Foundation::Containers;
 
 
 
-
-
 namespace	{
 
 static	void	BagIteratorTests(Bag<size_t>& s)
 {
 	const	size_t	kTestSize	= 100;
+
+	const	Bag<size_t>& sCont = s;
 
 	VerifyTestResult(s.GetLength() == 0);
 	/*
@@ -41,7 +41,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 
 		VerifyTestResult(s.GetLength() == kTestSize);
-		For (it, s) {
+		For (it, sCont) {
         	size_t	oldLength = s.GetLength ();
             VerifyTestResult(s.Contains(it.Current ()));
             VerifyTestResult(s.Contains(s.GetLength ()));
