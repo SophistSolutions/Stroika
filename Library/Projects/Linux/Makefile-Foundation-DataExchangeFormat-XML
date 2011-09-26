@@ -2,8 +2,8 @@ include ../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
-RelPathToDevRoot		=	../../../../../../../
-SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/
+RelPathToStroikaDevRoot		=	../../../../../../../
+SrcDir                          =       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/
 
 VPATH = $(SrcDir)
 
@@ -16,7 +16,7 @@ Objs	=	\
 all:	$(Objs)
 
 
-$(ObjDir)SAXReader.o:	$(SrcDir)SAXReader.cpp
-	@echo "Compiling $<"
-	@gcc $(CFLAGS) -I$(RelPathToDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/ $< -o $@
+#$(ObjDir)SAXReader.o:	$(SrcDir)SAXReader.cpp
+#	@echo "Compiling $<"
+#	@gcc $(CFLAGS) -I$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/ $< -o $@
 
