@@ -69,7 +69,8 @@ void	errno_ErrorException::DoThrow (errno_t error)
 {
 	switch (error) {
 		case	ENOMEM: {
-			Execution::DoThrow (bad_alloc (), "errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
+			DbgTrace ("errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
+			Execution::DoThrow (bad_alloc ());
 		}
 		// If I decide to pursue mapping, this maybe a good place to start
 		//	http://aplawrence.com/Unixart/errors.html

@@ -1126,7 +1126,8 @@ TString	AppTempFileManager::GetTempFile (const TString& fileNameBase)
 #else
 	AssertNotImplemented ();
 #endif
-	Execution::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
+	DbgTrace ("AppTempFileManager::GetTempFile (): failed to create tempfile");
+	Execution::DoThrow (StringException (L"Unknown error creating file"));
 }
 
 TString	AppTempFileManager::GetTempDir (const TString& fileNameBase)
@@ -1145,7 +1146,8 @@ TString	AppTempFileManager::GetTempDir (const TString& fileNameBase)
 			return s;
 		}
 	}
-	Execution::DoThrow (StringException (L"Unknown error creating temporary file"), "AppTempFileManager::GetTempDir (): failed to create tempdir");
+	DbgTrace ("AppTempFileManager::GetTempDir (): failed to create tempdir");
+	Execution::DoThrow (StringException (L"Unknown error creating temporary file"));
 }
 
 

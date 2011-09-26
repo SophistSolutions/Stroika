@@ -99,10 +99,6 @@ namespace	Stroika {
 			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
 			template	<typename T>
 				void	 _NoReturn_	DoThrow (const T& e2Throw);
-			template	<typename T>
-				void	_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg);
-			template	<typename T>
-				void	_NoReturn_ 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
 			// Just a regular C++ rethrow, but with a DbgTrace message...
 			void	_NoReturn_	DoReThrow ();

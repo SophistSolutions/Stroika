@@ -32,6 +32,17 @@ namespace	Stroika {
 
 				}
 			}
+
+
+			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
+			template	<typename T>
+				void	 _NoReturn_	DoThrow (const T& e2Throw);
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const Platform::Windows::Exception& e2Throw)
+					{
+						// Go directly through class DoThrow() since that may remap to differnt kinds of exceptions, and already has trace messages
+						Platform::Windows::Exception::DoThrow (e2Throw);
+					}
 		}
 	}
 }
