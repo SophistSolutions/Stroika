@@ -4,25 +4,70 @@
 # One would mostly want to edit this file if there was some flag one wanted to add to CFLAGS for example, that wasn't arleady controlled
 # by a value in Configuration.mk
 #
-# NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list, or (all of them should) override RelPathToDevRoot)
+# NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list, or (all of them should) override RelPathToStroikaDevRoot)
 
 
 
 
-RelPathToDevRoot		=	_NO_DEFAULT_
-ObjDir                          =       ./
-LibDir				=	$(RelPathToDevRoot)Builds/Platform_Linux/
-Includes                        =       -I$(RelPathToDevRoot)/Library/Sources/
+ifndef RelPathToStroikaDevRoot
+	RelPathToStroikaDevRoot		=	_NO_DEFAULT_
+endif
 
 
-StroikaFoundationLib		=	$(LibDir)Stroika-Foundation.a
-StroikaFrameworksLib		=	$(LibDir)Stroika-Frameworks.a
-CFLAGS= -c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Includes)
+ifndef ObjDir
+	ObjDir		:=	./
+endif
 
-StroikaFoundationSupportLibs	=	$(RelPathToDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a
 
-LIBS	=	$(StroikaFrameworksLib) $(StroikaFoundationLib) $(StroikaFoundationSupportLibs) -lpthread -lrt
+ifndef StroikaLibDir
+	StroikaLibDir		:=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
+endif
 
+
+ifndef Includes
+	Includes	=	-I$(RelPathToStroikaDevRoot)/Library/Sources/
+endif
+
+ifndef StroikaFoundationLib
+	StroikaFoundationLib		:=	$(StroikaLibDir)Stroika-Foundation.a
+endif
+ifndef StroikaFrameworksLib
+	StroikaFrameworksLib		:=	$(StroikaLibDir)Stroika-Frameworks.a
+endif
+
+
+# Intentionally use '=' instead of ':=' so $Includes can get re-evaluated
+ifndef CFLAGS
+	CFLAGS		=	-c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Includes)
+endif
+
+
+
+ifndef StroikaFoundationSupportLibs
+	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+	StroikaFoundationSupportLibs	=	$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a  -lpthread -lrt -lstdc++
+endif
+ifndef StroikaFrameworksSupportLibs
+	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+	StroikaFrameworksSupportLibs	=	
+endif
+
+ifndef StroikaLibs
+	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+	StroikaLibs					=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
+endif
+
+ifndef StroikaSupportLibs
+	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+	StroikaSupportLibs			=	$(StroikaFoundationSupportLibs) $(StroikaFrameworksSupportLibs)
+endif
+ifndef StroikaLibsWithSupportLibs
+	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+	StroikaLibsWithSupportLibs	=	$(StroikaLibs) $(StroikaSupportLibs) 
+endif
+
+### PROABBLY GET RID OF THIS NAME
+#LIBS	=	$(StroikaLibsWithSupportLib)
 
 
 ifeq ($(INCLUDE_SYMBOLS), 1)

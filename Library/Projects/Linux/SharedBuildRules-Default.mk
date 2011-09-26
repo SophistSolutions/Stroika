@@ -1,6 +1,6 @@
 .cpp.o:
 	@echo "Compiling $<"
-	@gcc $(CFLAGS) $< -o $@
+	@$(CPlusPlus) $(CFLAGS) $< -o $@
 
 
 .DEFAULT_GOAL := all

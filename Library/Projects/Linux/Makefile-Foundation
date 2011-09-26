@@ -2,11 +2,11 @@ include ../Configuration.mk
 include	../SharedMakeVariables.mk
 include	../SharedBuildRules.mk
 
-RelPathToDevRoot		=	../../../../../
-SrcDir                          =       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/
+RelPathToDevRoot	=	../../../../../
+SrcDir				=       $(RelPathToDevRoot)Library/Sources/Stroika/Foundation/
 
 
-VPATH = $(SrcDir) $(LibDir)
+VPATH		=	$(SrcDir) $(LibDir)
 
 SubDirs=	\
 	Characters		\
@@ -45,7 +45,6 @@ $(StroikaFoundationLib):	all-objs
 
 
 all:	$(StroikaFoundationLib)
-
 
 clean::
 	@for i in $(SubDirs);\
