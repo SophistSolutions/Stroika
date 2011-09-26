@@ -84,6 +84,16 @@ namespace	Stroika {
                 return (Iterator<T> (nullptr));
             }
 
+            template	<typename T>	inline	BagMutator<T>    Bag<T>::begin ()
+            {
+                return operator BagMutator<T> ();
+            }
+
+            template	<typename T>	inline	BagMutator<T>    Bag<T>::end ()
+            {
+                return (BagMutator<T> (nullptr));
+            }
+
             template	<typename T>	inline	Bag<T>&	Bag<T>::operator+= (T item)
             {
                 Add (item);

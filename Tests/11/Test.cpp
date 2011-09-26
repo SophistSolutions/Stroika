@@ -50,7 +50,7 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 		}
 
 
-		For (it, Tally<size_t>::Mutator (s)) {
+		For (it, s) {
 			it.UpdateCount (1);
 		}
 
@@ -74,7 +74,7 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 		}
 		VerifyTestResult (s.GetLength () == kTestSize);
 		{
-			For (it, Tally<size_t>::Mutator (s)) {
+			For (it, s) {
 				it.RemoveCurrent ();
 			}
 			VerifyTestResult (s.IsEmpty ());
@@ -103,9 +103,9 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 		VerifyTestResult (s.GetLength () == kTestSize);
 		size_t i =	1;
 
-		for (Iterator<TallyEntry<size_t> > it = s.begin (); it != s.end (); ++it) {
-			For (it2, Tally<size_t>::Mutator (s)) {
-				For (it3, Tally<size_t>::Mutator (s)) {
+		For (it, s) {
+			For (it2, s) {
+				For (it3, s) {
 					if (s.GetLength () != 0) {
 						it3.UpdateCount (3);
 						it3.RemoveCurrent ();
@@ -164,14 +164,14 @@ void	SimpleTallyTests (Tally<size_t>& s)
 	}
 
 	for (size_t i = 1; i <= s.GetLength (); i++) {
-		For (it, Tally<size_t>::Mutator (s)) {
+		For (it, s) {
 			if (it.Current ().fItem == i) {
 				break;
 			}
 		}
 	}
-	For (it, s) {
-		For (it1, Tally<size_t>::KeyIterator (s)) {
+	For (it, Tally<size_t>::It (s)) {
+		For (it1, s) {
 			s.RemoveAll ();
 		}
 	}

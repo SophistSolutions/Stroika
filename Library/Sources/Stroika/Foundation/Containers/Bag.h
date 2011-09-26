@@ -141,8 +141,10 @@ namespace	Stroika {
                     nonvirtual  Iterator<T> begin () const;
                     nonvirtual  Iterator<T> end () const;
 
+                    nonvirtual  BagMutator<T> begin ();
+                    nonvirtual  BagMutator<T> end ();
 					// support for non-default iterator. By default, we iterator with Bag_Iterator<T>
-					typedef	RangedForIterator<Bag<T>, BagMutator<T> >		Mutator;
+					//typedef	RangedForIterator<Bag<T>, BagMutator<T> >		Mutator;
 
                 public:
                     nonvirtual	size_t	TallyOf (T item) const;

@@ -86,16 +86,15 @@ namespace	Stroika {
 			template	<typename T> size_t	Tally<T>::TotalTally () const
 			{
 				size_t sum = 0;
-				//ForEach (TallyEntry<T>, it, *this) {
-				for (Iterator<TallyEntry<T> > it = begin (); it != end (); ++it) {
+				For (it, It (*this)) {
 					sum += it.Current ().fCount;
 				}
 				return (sum);
 			}
 
-			template	<typename T> Tally<T>&	Tally<T>::operator+= (Tally<T> t)
+			template	<typename T> Tally<T>&	Tally<T>::operator+= (const Tally<T>& t)
 			{
-				For (it, t) {
+				For (it,  It (t)) {
 					Add (it.Current ().fItem, it.Current ().fCount);
 				}
 				return (*this);
@@ -168,16 +167,25 @@ namespace	Stroika {
 				return (fRep->MakeTallyMutator ());
 			}
 
-            template	<typename T>	inline	Iterator<TallyEntry<T>>    Tally<T>::begin () const
+            template	<typename T>	inline	Iterator<T>    Tally<T>::begin () const
             {
-            	return operator Iterator<TallyEntry<T> > ();
+            	return operator Iterator<T> ();
             }
 
-            template	<typename T>	inline	Iterator<TallyEntry<T>>    Tally<T>::end () const
+            template	<typename T>	inline	Iterator<T>    Tally<T>::end () const
             {
-                return (Iterator<TallyEntry<T>> (nullptr));
+                return (Iterator<T> (nullptr));
             }
 
+            template	<typename T>	inline	TallyMutator<T>    Tally<T>::begin ()
+            {
+            	return operator TallyMutator<T> ();
+            }
+
+            template	<typename T>	inline	TallyMutator<T>    Tally<T>::end ()
+            {
+                return (TallyMutator<T> (nullptr));
+            }
 
 			template	<typename T>	inline	void	Tally<T>::Add (T item)
 			{
@@ -264,7 +272,7 @@ namespace	Stroika {
 					return (false);
 				}
 
-				For (it, lhs) {
+				For (it, typename Tally<T>::It (lhs)) {
 					if (it.Current ().fCount != rhs.TallyOf (it.Current ().fItem)) {
 						return (false);
 					}

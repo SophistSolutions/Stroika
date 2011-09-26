@@ -29,6 +29,10 @@ namespace	Stroika {
 					{
 					}
 
+					RangedForIterator (const Container& t) :
+						fIt (t)
+					{
+					}
 					nonvirtual  IteratorClass    begin () const
 					{
 						return fIt;

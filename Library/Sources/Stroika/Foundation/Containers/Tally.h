@@ -83,7 +83,7 @@ namespace	Stroika {
 					nonvirtual	size_t	TotalTally () const;
 
 					nonvirtual	Tally<T>&	operator+= (T item);
-					nonvirtual	Tally<T>&	operator+= (Tally<T> t);
+					nonvirtual	Tally<T>&	operator+= (const Tally<T>& t);
 
 				public:
 					nonvirtual	operator Iterator<T> () const;
@@ -91,12 +91,17 @@ namespace	Stroika {
 					nonvirtual	operator TallyMutator<T> ();
 
 					// Support for ranged for, and stl syntax in general
-                    nonvirtual  Iterator<TallyEntry<T> >    begin () const;
-                    nonvirtual  Iterator<TallyEntry<T> > 	end () const;
+                    nonvirtual  Iterator<T>	begin () const;
+                    nonvirtual  Iterator<T>	end () const;
 
-					// support for non-default iterator. By default, we iterator over TallyEntry<T>
-					typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
-					typedef	RangedForIterator<Tally<T>, Iterator<T> >			KeyIterator;
+                    nonvirtual  TallyMutator<T>	begin ();
+                    nonvirtual  TallyMutator<T>	end ();
+
+					// by default, you only iterator over T, not TallyEntry<T>
+					// that is unfortunate in most uses of Tally, so you can modify your for call
+					// for (it, t) -> for (it, Tally::It (t))
+					// to get the more useful iterator
+					typedef	RangedForIterator<Tally<T>, Iterator<TallyEntry<T>> >	It;
 
 				protected:
 					nonvirtual	void	AddItems (const T* items, size_t size);

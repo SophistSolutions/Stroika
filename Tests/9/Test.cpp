@@ -73,7 +73,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		}
 		VerifyTestResult(s.GetLength() == kTestSize);
 		{
-			For (it, Bag<size_t>::Mutator (s)) {
+			For (it, s) {
 				it.RemoveCurrent();
 			}
 
@@ -105,7 +105,7 @@ static	void	BagIteratorTests(Bag<size_t>& s)
 		size_t i =	1;
 		For(it, s) {
 			For(it2, s) {
-				For(it3, Bag<size_t>::Mutator (s)) {
+				For(it3, s) {
 					it3.UpdateCurrent(i);
 					it3.RemoveCurrent();
 					s.Add(i);
