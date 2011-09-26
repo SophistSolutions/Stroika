@@ -75,7 +75,7 @@ namespace	Stroika {
 						class	IRep;
 
 					protected:
-						explicit Collection (const Memory::SharedByValue<IRep<T>>& rep);
+						explicit Collection (const Memory::SharedByValue<IRep<T,TTRAITS>>& rep);
 
 					public:
 						/*
@@ -228,7 +228,7 @@ namespace	Stroika {
 
 
 					private:
-						Memory::SharedByValue<IRep<T>>	fRep_;
+						Memory::SharedByValue<IRep<T,TTRAITS>>	fRep_;
 				};
 
 
@@ -270,7 +270,7 @@ namespace	Stroika {
 						virtual	void		Compact ()								=	0;
 
 					public:
-						virtual	typename Iterator<T>::Rep	MakeIterator () const	=	0;
+						virtual	typename Memory::SharedByValue<Iterator<T>::Rep>	MakeIterator () const	=	0;
 					public:
 						virtual	void		Add (const T& item)						=	0;
 						virtual	void		Remove (const T& item)					=	0;
