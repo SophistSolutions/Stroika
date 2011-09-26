@@ -3,26 +3,26 @@ include	../SharedMakeVariables.mk
 include	../SharedBuildRules.mk
 
 RelPathToStroikaDevRoot	=	../../../../../
-SrcDir				=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/
+SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/
 
 
-VPATH		=	$(SrcDir) $(LibDir)
+VPATH		=	$(SrcDir) $(StroikaLibDir)
 
-SubDirs=	\
-	Characters		\
+SubDirs=				\
+	Characters			\
 	Configuration		\
-	Containers		\
+	Containers			\
 	Cryptography		\
-	Database		\
+	Database			\
 	DataExchangeFormat	\
-	Debug			\
-	Execution		\
-	IO			\
-	Linguistics		\
-	Math			\
-	Memory			\
-	Streams			\
-	Time			\
+	Debug				\
+	Execution			\
+	IO					\
+	Linguistics			\
+	Math				\
+	Memory				\
+	Streams				\
+	Time				\
 
 
 
@@ -34,7 +34,7 @@ all-objs:
 
 
 $(StroikaFoundationLib):	all-objs
-	@mkdir -p $(LibDir)
+	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFoundationLib)...
 	@rm -f $(StroikaFoundationLib)
 	@for i in $(SubDirs);\
@@ -46,11 +46,13 @@ $(StroikaFoundationLib):	all-objs
 
 all:	$(StroikaFoundationLib)
 
+
 clean::
 	@for i in $(SubDirs);\
 	do\
 	    (cd $$i; make -s clean;)\
 	done
+
 
 clobber::
 	@rm -f $(StroikaFoundationLib)
