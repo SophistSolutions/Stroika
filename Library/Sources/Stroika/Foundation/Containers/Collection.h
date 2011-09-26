@@ -17,7 +17,7 @@
  *
  *		(o)		Unclear if we should use MUTATORS or not here. Probably YES.
  *
- *		(o)		Since Iterator is so closely related to Collection<T>, maybe it should be in the same file?
+ *		(o)		Since Iterator is so closely related to Collection<T,TTRAITS>, maybe it should be in the same file?
  *
  * Notes:
  *
@@ -43,11 +43,22 @@ namespace	Stroika {
 
 
 
+			// MAYBE SEPARATE MODULE FOR THIS
+			template	<typename T>
+				struct	TWithCompareEquals {
+					inline	bool	opererator== (const T& lhs, const T& rhs)
+						{
+							return lhs == rhs;
+						}
+				};
+
+
+
 			/*
 			 * Description:
-			 *		A Collection<T> is a container class representing a bunch of objects of type T. Here the word 'bunch' is chosen to mean
-			 *	almost nothing. The details of meaning for what happens when something is put into a Collection<T> (like if duplicates are retained or not)
-			 *	depends on subtypes of Collection<T>.
+			 *		A Collection<T,TTRAITS> is a container class representing a bunch of objects of type T. Here the word 'bunch' is chosen to mean
+			 *	almost nothing. The details of meaning for what happens when something is put into a Collection<T,TTRAITS> (like if duplicates are retained or not)
+			 *	depends on subtypes of Collection<T,TTRAITS>.
 			 *
 			 *		Note also that this code uses a Letter-Envelope paradigm - mostly in order to achieve greater performance with less effort. The actual
 			 *	subclassing is done with the Reps, and the subclassing relationships presented with the envelopes or mostly for documentation purposes.
@@ -56,11 +67,9 @@ namespace	Stroika {
 			 *	when you iterate.
 			 *
 			 *		CONCEPT (I HAVENT READ ABOUT THIS - SO I DONT KNOW THE RIGHT SYNTAX - IM FAKING IT)
-			 *			Concept<T>	{
-			 *				bool operator==()
-			 *			}
+			 *			Concept<T>	=	TWithCompareEquals<T>, or pass default TTRAITS param with operator==
 			 */
-			template	<typename T>
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
 				class	Collection {
 					public:
 						class	IRep;
@@ -80,7 +89,7 @@ namespace	Stroika {
 						nonvirtual	bool	IsEmpty () const;
 
 						/*
-						 *	Contains () is true iff an iteration over the Collection<T> would return at least one element such that (*it == item).
+						 *	Contains () is true iff an iteration over the Collection<T,TTRAITS> would return at least one element such that (*it == item).
 						 */
 						nonvirtual	bool	Contains (T item) const;
 
@@ -146,7 +155,7 @@ namespace	Stroika {
 						/*
 						 *	This calls Add (item) for each element of the Items collection.
 						 */
-						nonvirtual	void	Add (const Collection<T>& items);
+						nonvirtual	void	Add (const Collection<T,TTRAITS>& items);
 
 					public:
 						/*
@@ -157,7 +166,7 @@ namespace	Stroika {
 						/*
 						 *	This calls Remove (item) for each element of the Items collection.
 						 */
-						nonvirtual	void	Remove (const Collection<T>& items);
+						nonvirtual	void	Remove (const Collection<T,TTRAITS>& items);
 
 
 					public:
@@ -174,7 +183,7 @@ namespace	Stroika {
 						/*
 						 *	This calls RemoveIfPresent (item) for each element of the Items collection.
 						 */
-						nonvirtual	void	RemoveIfPresent (const Collection<T>& items);
+						nonvirtual	void	RemoveIfPresent (const Collection<T,TTRAITS>& items);
 
 
 					/*
@@ -182,10 +191,10 @@ namespace	Stroika {
 					 *	are just syntactic sugar.
 					 */
 					public:
-						nonvirtual	Collection<T>&	operator+= (T item);
-						nonvirtual	Collection<T>&	operator+= (const Collection<T>& items);
-						nonvirtual	Collection<T>&	operator-= (T item);
-						nonvirtual	Collection<T>&	operator-= (const Collection<T>& items);
+						nonvirtual	Collection<T,TTRAITS>&	operator+= (T item);
+						nonvirtual	Collection<T,TTRAITS>&	operator+= (const Collection<T,TTRAITS>& items);
+						nonvirtual	Collection<T,TTRAITS>&	operator-= (T item);
+						nonvirtual	Collection<T,TTRAITS>&	operator-= (const Collection<T,TTRAITS>& items);
 
 
 					public:
@@ -219,7 +228,7 @@ namespace	Stroika {
 
 
 					private:
-						Memory::SharedByValue<IRep<T>>	fRep;
+						Memory::SharedByValue<IRep<T>>	fRep_;
 				};
 
 
@@ -227,26 +236,26 @@ namespace	Stroika {
 			/* 
 		     *	Two collections are Equal, if iterating over each would produce the same results (in the same order)
 			 */
-            template	<typename T>
-				bool	operator== (const Collection<T>& lhs, const Collection<T>& rhs);
-            template	<typename T>	
-				bool	operator!= (const Collection<T>& lhs, const Collection<T>& rhs);
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
+				bool	operator== (const Collection<T,TTRAITS>& lhs, const Collection<T,TTRAITS>& rhs);
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
+				bool	operator!= (const Collection<T,TTRAITS>& lhs, const Collection<T,TTRAITS>& rhs);
 			
 			/* 
-		     *	Here operator+ is defined in the obvious way, using the Collection<T>::Add () method
+		     *	Here operator+ is defined in the obvious way, using the Collection<T,TTRAITS>::Add () method
 			 */
-            template	<typename T>	
-				Collection<T>	operator+ (const Collection<T>& lhs, const Collection<T>& rhs);
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
+				Collection<T,TTRAITS>	operator+ (const Collection<T,TTRAITS>& lhs, const Collection<T,TTRAITS>& rhs);
 
 			/* 
-		     *	Here operator+ is defined in the obvious way, using the Collection<T>::Remove () method
+		     *	Here operator+ is defined in the obvious way, using the Collection<T,TTRAITS>::Remove () method
 			 */
-            template	<typename T>	
-				Collection<T>	operator- (const Collection<T>& lhs, const Collection<T>& rhs);
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
+				Collection<T,TTRAITS>	operator- (const Collection<T,TTRAITS>& lhs, const Collection<T,TTRAITS>& rhs);
 
 
 
-			template	<typename T>	
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
 				class	Collection::IRep {
 					protected:
 						IRep ();
