@@ -218,13 +218,6 @@ namespace	Stroika {
 							*this = SharedPtr<T> (p);
 						}
 					}
-#if 0
-			template	<typename T>
-				inline	T*	SharedPtr<T>::DefaultElementCopier (const T& t)
-					{
-						return new T (t);
-					}
-#endif
 			template	<typename T>
 				inline	void	SharedPtr<T>::Assure1Reference (T* (*copier) (const T&))
 					{
@@ -323,24 +316,22 @@ namespace	Stroika {
 						return fCountHolder;
 					}
 
-
-
-
-
-//REDO AS TEMPLATE SPECIALIZATIONS
-//	void	ThrowIfNull ()
-template	<typename	T>
-	inline	void	ThrowIfNull (const Memory::SharedPtr<T>& p)
-		{
-			if (p.get () == nullptr) {
-				Execution::DoThrow (bad_alloc (), TSTR ("ThrowIfNull (SharedPtr<typename T> ()) - throwing bad_alloc ()"));
-			}
-		}
-
 		}
 
 
 
+		namespace	Execution {
+			template	<typename	T>
+				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
+			template	<typename	T>
+				inline	void	ThrowIfNull (const Memory::SharedPtr<T>& p)
+					{
+						if (p.get () == nullptr) {
+							DbgTrace ("ThrowIfNull (SharedPtr<typename T> ()) - throwing bad_alloc ()");
+							Execution::DoThrow (bad_alloc ());
+						}
+					}
+		}
 
 
 	}
