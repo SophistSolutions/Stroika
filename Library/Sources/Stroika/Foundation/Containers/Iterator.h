@@ -22,31 +22,6 @@
  *	items added after the current traversal index, and will never traverse
  *	items added with an index before the current traversal index.
  *
- *		IteratorRep is an envelope class over IteratorRep. Iterators can be
- *	directly used as follows:
- *		for (IteratorRep<int> it (fIntList); not it.Done (); it.Next ()) {
- *			int	current = it.Current ();	// etc
- *		}
- *
- *		Two macros, ForEach and ForEachT (stands for ForEachTyped) can be used
- *	to minimize typing. The ForEach macro takes three arguments: the type (T)
- *	of the collection, the name of the iterator, and the collection to be
- *	iterated over. Thus the equivalent to the above is:
- *		ForEach (int, it, fList) {
- *			int current = it.Current ();	// etc
- *		}
- *
- *		The ForEachT macro takes one additional argument as the first
- *	parameter: the type of iterator. This is used in places where a subclass
- *	of the class IteratorRep is desired. Common subclasses include
- *	SequenceIterator, which provides a CurrentIndex method and can be
- *	traversed in either direction, and Mutators, which are subclasses of
- *	Iterators that allow Collection modifications through methods such as
- *	RemoveCurrent () or UpdateCurrent (). Sample Usage:
- *		ForEachT (SequenceIterator, int, it, fList) {
- *			int current = it.Current ();
- *			size_t	index = it.CurrentIndex ();		// etc
- *		}
  *
  *		Note that we utilize a for-loop based approach to iteration. A
  *	somewhat popular alternative is modeled on Lisp usage: iterating over a
@@ -58,10 +33,9 @@
  *	DieHards can write ForEach style macros to support the passive style.
  *	For example:
  *		#define	Apply(T,Init,F)\
- 			{for (IteratorRep<T> it (Init); not it.Done (); it.Next ())	{ (*F) (it.Current ()); }}
+ 			for (IteratorRep<T> it (Init); not it.Done (); it.Next ())	{ (*F) (it.Current ()); }
  *	allows usages like Apply(int, fList, PrintInt);
- *	Note: the extra braces above avoid variable name collisions, a minor
- *	benefit of the passive approach.
+ *
  *
  *
  * MORE RULES ABOUT ITERATORS (TO BE INTEGRATED INTO DOCS BETTER)
@@ -80,21 +54,11 @@
  *
  *
  *	TODO:
- *		->	Should we keep the done variable in Iterator, and assert not
- *			done in Current(), and maybe allow Done () be called on iterators.
- *			Now sure will ever be used given usual More() interface, but it
- *			could be useful. Trouble is that it would cost some to store this
- *			variable, and it might never be used??? Might be OK if its use
- *			could be optimized away???
  *
  *		->	Merge Current virtual call into More() call? Trouble is constructing
  *			T. We could make fields char fCurrent[sizeof(T)] but that poses problems
  *			for copying iterators. On balance, probably best to bag it!!!
  *
- *			Another possability here is having IteratorRep have a ptr to T (ie T*),
- *			that can be peeked at by Current(). This would still involve extra indirection,
- *			but at least no virtual function overhead on the call. That is probably
- *			the best compromise!!!
  *
  */
 
@@ -134,6 +98,7 @@ namespace	Stroika {
             template	<typename T> class	Iterator {
              	public:
 					class	Rep;
+					//class	RepSentinal;
 				public:
 					explicit	Iterator (Rep* it);
                     Iterator (const Iterator<T>& from);
@@ -149,7 +114,8 @@ namespace	Stroika {
                     nonvirtual  T       operator* () const;
                     nonvirtual  void    operator++ ();
                     nonvirtual  void    operator++ (int);
-                    nonvirtual  bool    operator!= (Iterator rhs);
+                    nonvirtual  bool    operator!= (Iterator rhs) const;
+                    nonvirtual  bool    operator== (Iterator rhs) const;
 
 					// Synonyms for above, sometimes making code more readable
 					// Current -> operator*
@@ -158,10 +124,15 @@ namespace	Stroika {
                     nonvirtual	T		Current () const;
                     nonvirtual	bool	Done () const;
 
+				public:
+					static	Iterator<T>			GetSentinal ();
+
                 protected:
-                    Rep*	fIterator;
+                    Memory::SharedByValue<Rep>	fIterator;
                     T       fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
-            };
+
+					static	Rep*	Clone_ (const Rep& rep);
+			};
 
 
 			/*
@@ -189,10 +160,11 @@ namespace	Stroika {
                     virtual	~Rep ();
 
                 public:
-                    virtual	bool			More (T* current, bool advance)   = 0;
+                    virtual	bool	More (T* current, bool advance)   = 0;
                     virtual	Rep*	Clone () const		= 0;
-                    nonvirtual bool         Done () const;
+                    nonvirtual bool Done () const;
             };
+
 
 
             /*

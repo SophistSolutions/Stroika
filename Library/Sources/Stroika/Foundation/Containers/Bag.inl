@@ -81,7 +81,7 @@ namespace	Stroika {
 
             template	<typename T>	inline	Iterator<T>    Bag<T>::end () const
             {
-                return (Iterator<T> (nullptr));
+                return (Iterator<T>::GetSentinal ());
             }
 
             template	<typename T>	inline	BagMutator<T>    Bag<T>::begin ()
@@ -91,7 +91,7 @@ namespace	Stroika {
 
             template	<typename T>	inline	BagMutator<T>    Bag<T>::end ()
             {
-                return (BagMutator<T> (nullptr));
+                 return (BagMutator<T> (nullptr));
             }
 
             template	<typename T>	inline	Bag<T>&	Bag<T>::operator+= (T item)
@@ -261,9 +261,7 @@ namespace	Stroika {
                  * this cast is safe. We could have kept an extra var of the right
                  * static type, but this would have been a waste of time and memory.
                  */
-                 // SSW 8/8/2011: If I don't scope fIterator, I get an error in gcc 'fIterator was not declared in this scope
-                 // see http://stackoverflow.com/questions/11405/gcc-problem-using-a-member-of-a-base-class-that-depends-on-a-template-argument
-                 return (dynamic_cast<BagMutatorRep<T>*> (this->fIterator));
+                 return &(dynamic_cast<BagMutatorRep<T>&> (*this->fIterator));
             }
 
             template	<typename T>	inline	void	BagMutator<T>::RemoveCurrent ()

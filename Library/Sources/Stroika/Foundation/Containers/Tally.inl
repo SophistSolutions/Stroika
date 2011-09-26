@@ -174,7 +174,7 @@ namespace	Stroika {
 
             template	<typename T>	inline	Iterator<T>    Tally<T>::end () const
             {
-                return (Iterator<T> (nullptr));
+                return (Iterator<T>::GetSentinal ());
             }
 
             template	<typename T>	inline	TallyMutator<T>    Tally<T>::begin ()
@@ -220,12 +220,12 @@ namespace	Stroika {
 
 			template	<typename T>	inline	const TallyRep<T>*	Tally<T>::GetRep () const
 			{
-				return ((const TallyRep<T>*) fRep.GetPointer ());
+				return fRep.GetPointer ();
 			}
 
 			template	<typename T>	inline	TallyRep<T>*		Tally<T>::GetRep ()
 			{
-				return ((TallyRep<T>*) fRep.GetPointer ());
+				return (fRep.GetPointer ());
 			}
 
 			// operator!=
@@ -293,22 +293,30 @@ namespace	Stroika {
 			{
 			}
 
+            template	<typename T> inline bool   TallyEntry<T>::operator== (const TallyEntry<T>& rhs)  const
+            {
+            	return (fCount == rhs.fCount and fItem == rhs.fItem);
+            }
 
+            template	<typename T> inline bool   TallyEntry<T>::operator!= (const TallyEntry<T>& rhs)  const
+            {
+            	return not (operator== (rhs));
+            }
 
 			// typename TallyMutator<T>
 			template	<typename T>	inline	TallyMutator<T>::TallyMutator (TallyMutatorRep<T>* it) :
-				Iterator<TallyEntry<T> > (it)
+				Iterator<TallyEntry<T>> (it)
 			{
 			}
 
 			template	<typename T>	inline	void	TallyMutator<T>::RemoveCurrent ()
 			{
-				((TallyMutatorRep<T>*)this->fIterator)->RemoveCurrent ();
+				dynamic_cast<TallyMutatorRep<T>*> (this->fIterator.GetPointer ())->RemoveCurrent ();
 			}
 
 			template	<typename T>	inline	void	TallyMutator<T>::UpdateCount (size_t newCount)
 			{
-				((TallyMutatorRep<T>*)this->fIterator)->UpdateCount (newCount);
+				dynamic_cast<TallyMutatorRep<T>*> (this->fIterator.GetPointer ())->UpdateCount (newCount);
 			}
 
 			// typename TallyMutatorRep<T>

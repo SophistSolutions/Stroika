@@ -27,6 +27,9 @@ namespace	Stroika {
 					TallyEntry (T item);
 					TallyEntry (T item, size_t count);
 
+                    nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;
+                    nonvirtual  bool    operator== (const TallyEntry<T>& rhs) const;
+
 					T		fItem;
 					size_t	fCount;
 			};
@@ -43,7 +46,7 @@ namespace	Stroika {
             template	<typename T>	bool	operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
 
-			template	<typename T> class	TallyMutator : public Iterator<TallyEntry<T> > {
+			template	<typename T> class	TallyMutator : public Iterator<TallyEntry<T>> {
 				public:
 					TallyMutator (TallyMutatorRep<T>* it);
 
