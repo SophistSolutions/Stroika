@@ -3,16 +3,16 @@ include	../Library/SharedBuildRules.mk
 include	../Library/SharedMakeVariables.mk
 
 
-ifndef TEST_NUM=
-	TEST_NUM=		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
+ifndef TEST_NUM
+	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
 endif
 
 
-RelPathToDevRoot		=	../../../../
-SrcDir				=	$(RelPathToDevRoot)Tests/$(TEST_NUM)/
+RelPathToStroikaDevRoot	=	../../../../
+SrcDir				=	$(RelPathToStroikaDevRoot)Tests/$(TEST_NUM)/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToDevRoot)Builds/Platform_Linux/Test$(TEST_NUM)
+TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Test$(TEST_NUM)
 
 
 VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
