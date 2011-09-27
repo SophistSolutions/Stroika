@@ -19,11 +19,19 @@ namespace	Stroika {
 				public:
 					StringException (const wstring& reasonForError);
 
+					// Only implemented for wstring
+					template	<typename T>
+						T	As () const;
+
 					operator wstring () const;
 
 				private:
 					wstring	fError;
 			};
+
+			template	<>
+				wstring	StringException::As () const;
+
 
 			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
 			template	<typename T>
