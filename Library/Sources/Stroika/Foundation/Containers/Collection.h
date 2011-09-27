@@ -19,6 +19,10 @@
  *
  *		(o)		Since Iterator is so closely related to Collection<T,TTRAITS>, maybe it should be in the same file?
  *
+ *		(o)		MUST GO THRU WRAPPER FOR APPLY – MUST BE DONE INSIDE VIRTUAL REP!!! - works as is, but to get right performance/threading behavior - put inside virtual rep!
+ *				MAYBE true for some of the otehrs as well? If so - maybe write PRIVATE COLLECTIONHELPERREP class todo the gruntwork of implemetning that stufff. Or do
+ *				it inline in Colleciton<T>::Rep. Not sure which is better/worse?
+ *
  * Notes:
  *
  *
