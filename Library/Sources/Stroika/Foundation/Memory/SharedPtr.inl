@@ -327,8 +327,7 @@ namespace	Stroika {
 				inline	void	ThrowIfNull (const Memory::SharedPtr<T>& p)
 					{
 						if (p.get () == nullptr) {
-							DbgTrace ("ThrowIfNull (SharedPtr<typename T> ()) - throwing bad_alloc ()");
-							Execution::DoThrow (bad_alloc ());
+							Execution::DoThrow (bad_alloc (), "ThrowIfNull (SharedPtr<typename T> ()) - throwing bad_alloc ()");
 						}
 					}
 		}

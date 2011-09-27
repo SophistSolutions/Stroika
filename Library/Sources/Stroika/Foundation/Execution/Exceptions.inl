@@ -38,6 +38,18 @@ namespace	Stroika {
 						DbgTrace ("Throwing exception: %s", typeid (T).name ());
 						throw e2Throw;
 					}
+			template	<typename T>
+				inline	void		_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg)
+					{
+						DbgTrace ("%s", traceMsg);
+						DoThrow (e2Throw);		// important todo this way to get its template specialization
+					}
+			template	<typename T>
+				inline	void		_NoReturn_	DoThrow (const T& e2Throw, const wchar_t* traceMsg)
+					{
+						DbgTrace (L"%s", traceMsg);
+						DoThrow (e2Throw);		// important todo this way to get its template specialization
+					}
 
 
 
@@ -151,16 +163,14 @@ namespace	Stroika {
 			inline	void	ThrowIfNull (const void* p)
 				{
 					if (p == nullptr) {
-						DbgTrace ("ThrowIfNull (nullptr) - throwing bad_alloc");
-						DoThrow (bad_alloc ());
+						DoThrow (bad_alloc (), "ThrowIfNull (nullptr) - throwing bad_alloc");
 					}
 				}
 			template	<typename E>
 				inline	void	ThrowIfNull (const void* p, const E& e)
 					{
 						if (p == nullptr) {
-							DbgTrace ("ThrowIfNull (nullptr,X) - throwing X");
-							DoThrow (e);
+							DoThrow (e, "ThrowIfNull (nullptr,X) - throwing X");
 						}
 					}
 			#if		qPlatform_Windows

@@ -96,9 +96,20 @@ namespace	Stroika {
 
 
 
-			// Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown...
+			/*
+			 * Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown... But this function is also specailized to
+			 * do call D::DoThrow() for several types - which CAN translate the kind of exception throw. For example, for Platoform:Windows::Execption - 
+			 * ERROR_OUTOFMEMORY is translated to std::bad_alloc ().
+			 *
+			 * ONLY the first variation (with no traceMessage) is template specailized. The overloads which take an extra message are JUST for convenience,
+			 * and vector through the 1-arg overload - so as to get is specialization.
+			 */
 			template	<typename T>
 				void	 _NoReturn_	DoThrow (const T& e2Throw);
+			template	<typename T>
+				void	_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg);
+			template	<typename T>
+				void	_NoReturn_ 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
 			// Just a regular C++ rethrow, but with a DbgTrace message...
 			void	_NoReturn_	DoReThrow ();
