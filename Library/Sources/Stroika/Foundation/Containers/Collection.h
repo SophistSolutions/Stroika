@@ -31,6 +31,7 @@
 #include	"../Configuration/Common.h"
 #include	"../Memory/SharedByValue.h"
 
+#include	"CollectionElementTraits.h"
 #include    "Iterator.h"
 
 
@@ -40,17 +41,6 @@
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
-
-
-
-			// MAYBE SEPARATE MODULE FOR THIS
-			template	<typename T>
-				struct	TWithCompareEquals {
-					inline	bool	opererator== (const T& lhs, const T& rhs)
-						{
-							return lhs == rhs;
-						}
-				};
 
 
 

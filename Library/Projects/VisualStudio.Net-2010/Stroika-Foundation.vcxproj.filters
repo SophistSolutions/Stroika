@@ -600,6 +600,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -844,6 +847,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>
