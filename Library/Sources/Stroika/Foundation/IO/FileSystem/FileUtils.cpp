@@ -385,11 +385,16 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 
 /*
  ********************************************************************************
- ******************************** FileSystem::CreateDirectory ***************************
+ ************************ FileSystem::CreateDirectory ***************************
  ********************************************************************************
  */
 void	FileSystem::CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded)
 {
+	/*
+	 * TODO:
+	 *		(o)		This implementation is HORRIBLE!!!! Major cleanup required!
+	 */
+
 #if		qPlatform_Windows
 	if (createParentComponentsIfNeeded) {
 		// walk path and break into parts, and from top down - try to create parent directory structure.
@@ -407,6 +412,27 @@ void	FileSystem::CreateDirectory (const TString& directoryPath, bool createParen
 		DWORD error = ::GetLastError ();
 		if (error != ERROR_ALREADY_EXISTS) {
 			Execution::DoThrow (Execution::Platform::Windows::Exception (error));
+		}
+	}
+#elif	qPlatform_POSIX
+	if (createParentComponentsIfNeeded) {
+		// walk path and break into parts, and from top down - try to create parent directory structure.
+		// Ignore any failures - and just let the report of failure (if any must result) come from original basic
+		// CreateDirectory call.
+		size_t	index	=	directoryPath.find (TSTR ("/"));
+		while (index != -1 and index + 1 < directoryPath.length ()) {
+			if (index != 0)
+			{
+				TString	parentPath = directoryPath.substr (0, index);
+				IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
+			}
+			index = directoryPath.find ('/', index+1);
+		}
+	}
+	// Horrible - needs CLEANUP!!! -- LGP 2011-09-26
+	if (mkdir (directoryPath.c_str (), 0755) != 0) {
+		if (errno != 0 and errno != EEXIST) {
+			Execution::DoThrow (errno_ErrorException (errno));
 		}
 	}
 #else
@@ -604,7 +630,7 @@ TString	FileSystem::StripFileSuffix (const TString& pathName)
 
 /*
  ********************************************************************************
- ******************************** FileSystem::GetFileDirectory **************************
+ ************************ FileSystem::GetFileDirectory **************************
  ********************************************************************************
  */
 TString	FileSystem::GetFileDirectory (const TString& pathName)
@@ -613,6 +639,14 @@ TString	FileSystem::GetFileDirectory (const TString& pathName)
 	// could use splitpath, but this maybe better, since works with \\UNCNAMES
 	TString	tmp		=	pathName;
 	size_t	idx		=	tmp.rfind ('\\');
+	if (idx != TString::npos) {
+		tmp.erase (idx + 1);
+	}
+	return tmp;
+#elif	qPlatform_POSIX
+	// could use splitpath, but this maybe better, since works with \\UNCNAMES
+	TString	tmp		=	pathName;
+	size_t	idx		=	tmp.rfind ('/');
 	if (idx != TString::npos) {
 		tmp.erase (idx + 1);
 	}
