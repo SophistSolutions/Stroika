@@ -140,7 +140,7 @@ namespace	Stroika {
 						and fCurrent == rhs.fCurrent);
 			}
 
-			template	<typename T> inline  typename Iterator<T>::Rep*   Iterator<T>::Clone_ (typename const Iterator<T>::Rep& rep)
+			template	<typename T> inline  typename Iterator<T>::Rep*   Iterator<T>::Clone_ (const typename Iterator<T>::Rep& rep)
 			{
 				return rep.Clone ();
 			}
