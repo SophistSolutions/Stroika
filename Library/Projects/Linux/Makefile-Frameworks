@@ -22,8 +22,8 @@ all-objs:
 
 $(StroikaFrameworksLib):	all-objs
 	@mkdir -p $(StroikaLibDir)
-	@echo Creating $(StroikaFramesworkLib)...
-	@rm -f $(StroikaFramesworkLib)
+	@echo Creating $(StroikaFrameworksLib)...
+	@rm -f $(StroikaFrameworksLib)
 	@for i in $(SubDirs);\
 	do\
 	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFrameworksLib) $$i/$$oo); done )\
