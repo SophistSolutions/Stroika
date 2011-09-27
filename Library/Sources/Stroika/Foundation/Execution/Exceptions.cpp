@@ -58,13 +58,14 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 		/*
 		 * A bit quirky - gcc and POSIX handle this API fairly differently. Hopefully I have both cases correct???
 		 */
-		#if defined (_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600
+		#if (defined (_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600) && !defined (_GNU_SOURCE)
 			if (strerror_r (e, buf, NEltsOf (buf)) == 0) {
 				return buf;
 			}
 		#else
-			if (strerror_r (e, buf, NEltsOf (buf)) != nullptr) {
-				return buf;
+			char* res	=	nullptr;
+			if ((res = strerror_r (e, buf, NEltsOf (buf))) != nullptr) {
+				return res;
 			}
 		#endif
 		(void) ::snprintf (buf, NEltsOf (buf), TSTR ("errno_t error code: 0x%x"), e);
