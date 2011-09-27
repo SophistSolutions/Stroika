@@ -46,6 +46,19 @@ namespace	{
 
 bool	Execution::MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern)
 {
+	// Command-line arguments must start with - or / (windows only)
+	if (actualArg.empty ()) {
+		return false;
+	}
+#if		qPlatform_Windows
+	if (actualArg[0] != '-' and actualArg[0] != '/') {
+		return false;
+	}
+#else
+	if (actualArg[0] != '-') {
+		return false;
+	}
+#endif
 	return Simplify2Compare_ (actualArg) == Simplify2Compare_ (matchesArgPattern);
 }
 
