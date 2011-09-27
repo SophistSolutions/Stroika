@@ -62,7 +62,7 @@ namespace	Stroika {
 				public:
 					// throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
 					// as good a fit.
-					static	void	DoThrow (errno_t error);
+					static	_NoReturn_	void	DoThrow (errno_t error);
 
 				private:
 					errno_t	fError;

@@ -75,7 +75,7 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 	return buf;	
 }
 
-void	errno_ErrorException::DoThrow (errno_t error)
+void	_NoReturn_	errno_ErrorException::DoThrow (errno_t error)
 {
 	switch (error) {
 		case	ENOMEM: {
