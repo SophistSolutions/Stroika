@@ -28,6 +28,31 @@ namespace	Stroika {
 					return LookupMessage (fHResult);
 				}
 
+
+
+			inline	void	ThrowIfErrorHRESULT (HRESULT hr)
+				{
+					if (not SUCCEEDED (hr)) {
+						DoThrow (Platform::Windows::HRESULTErrorException (hr));
+					}
+				}
+
+
+
+			template<>
+				inline	void	ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
+					{
+						ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
+					}
+
+
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw)
+					{
+						DbgTrace ("Throwing Platform::Windows::HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
+						throw e2Throw;
+					}
+
 		}
 	}
 }

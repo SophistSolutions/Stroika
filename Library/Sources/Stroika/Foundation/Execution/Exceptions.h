@@ -123,43 +123,15 @@ namespace	Stroika {
 		#if		qPlatform_Windows
 			void	ThrowIfFalseGetLastError (BOOL test);
 			void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
-			void	ThrowIfErrorHRESULT (HRESULT hr);
 			void	ThrowIfShellExecError (HINSTANCE r);
 		#endif
 
 			template	<typename E>
 				void	ThrowIfNull (const void* p, const E& e = E ());
-		#if		qPlatform_Windows
-			template<>
-				void	ThrowIfNull (const void* p, const HRESULT& hr);
-		#endif
 			void	ThrowIfNull (const void* p);
 
 
 			#define	IgnoreExceptionsForCall(theCode)		try {theCode;} catch (...) {}
-
-
-		#if		qPlatform_Windows
-			#define	CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()\
-				catch (HRESULT hr) {\
-					return hr;\
-				}\
-				catch (const Stroika::Foundation::Execution::Platform::Windows::Exception& we) {\
-					return (HRESULT_FROM_WIN32 (we));\
-				}\
-				catch (const Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException& h) {\
-					return static_cast<HRESULT> (h);\
-				}\
-				catch (const bad_alloc&) {\
-					return E_OUTOFMEMORY;\
-				}\
-				catch (...) {\
-					return DISP_E_EXCEPTION;\
-				}\
-
-		#endif
-
-
 
 
 

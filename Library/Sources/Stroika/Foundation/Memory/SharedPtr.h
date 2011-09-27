@@ -240,13 +240,17 @@ namespace	Stroika {
 					nonvirtual	SharedPtrBase*		_PEEK_CNT_PTR_ () const;
 			};
 
-
-
-// REDO THIS - SB PaRTIAL TEMPLATE SPECIALIZATION
-template	<typename	T>
-	void	ThrowIfNull (const Memory::SharedPtr<T>& p);
-	
 		}
+
+
+		namespace	Execution {
+			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
+			template	<typename	T>
+				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
+			template	<typename	T>
+				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
+		}
+
 	}
 }
 #endif	/*_Stroika_Foundation_Memory_SharedPtr_h_*/

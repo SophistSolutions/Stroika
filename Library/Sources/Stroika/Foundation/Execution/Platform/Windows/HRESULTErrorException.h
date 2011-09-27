@@ -39,8 +39,47 @@ namespace	Stroika {
 							HRESULT	fHResult;
 					};
 
+
+					void	ThrowIfErrorHRESULT (HRESULT hr);
+
 				}
 			}
+
+
+			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
+			template	<typename T>
+				void	 _NoReturn_	DoThrow (const T& e2Throw);
+			template	<>
+				void	_NoReturn_	DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw);
+
+
+			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
+			template	<typename E>
+				void	ThrowIfNull (const void* p, const E& e);
+			template<>
+				void	ThrowIfNull (const void* p, const HRESULT& hr);
+
+
+
+
+			#define	CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()\
+				catch (HRESULT hr) {\
+					return hr;\
+				}\
+				catch (const Stroika::Foundation::Execution::Platform::Windows::Exception& we) {\
+					return (HRESULT_FROM_WIN32 (we));\
+				}\
+				catch (const Stroika::Foundation::Execution::Platform::Windows::HRESULTErrorException& h) {\
+					return static_cast<HRESULT> (h);\
+				}\
+				catch (const bad_alloc&) {\
+					return E_OUTOFMEMORY;\
+				}\
+				catch (...) {\
+					return DISP_E_EXCEPTION;\
+				}\
+
+
 		}
 	}
 }

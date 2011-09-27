@@ -30,6 +30,19 @@ namespace	Stroika {
 						}
 				}
 			}
+
+
+			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
+			template	<typename T>
+				void	 _NoReturn_	DoThrow (const T& e2Throw);
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const Platform::Windows::StructuredException& e2Throw)
+					{
+						DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
+						throw e2Throw;
+					}
+
+
 		}
 	}
 }

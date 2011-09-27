@@ -322,8 +322,6 @@ namespace	Stroika {
 
 		namespace	Execution {
 			template	<typename	T>
-				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
-			template	<typename	T>
 				inline	void	ThrowIfNull (const Memory::SharedPtr<T>& p)
 					{
 						if (p.get () == nullptr) {

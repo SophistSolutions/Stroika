@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Debug/Trace.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
@@ -24,6 +26,12 @@ namespace	Stroika {
 						return fError;
 					}
 
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const StringException& e2Throw)
+					{
+						DbgTrace (L"Throwing StringException: '%s'", static_cast<wstring> (e2Throw).substr (0, 20).c_str ());
+						throw e2Throw;
+					}
 		}
 	}
 }

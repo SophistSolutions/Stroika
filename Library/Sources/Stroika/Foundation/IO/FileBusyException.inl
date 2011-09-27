@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Debug/Trace.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	IO {
@@ -20,6 +22,14 @@ namespace	Stroika {
 				{
 				}
 
+		}
+		namespace	Execution {
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const IO::FileBusyException& e2Throw)
+					{
+						DbgTrace (TSTR ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
+						throw e2Throw;
+					}
 		}
 	}
 }

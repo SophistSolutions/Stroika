@@ -17,8 +17,6 @@ namespace	Stroika {
 		namespace	Execution {
 
 
-
-
 	
 		//	class	errno_ErrorException
 			inline	errno_ErrorException::operator errno_t () const
@@ -72,27 +70,11 @@ namespace	Stroika {
 
 
 			template	<>
-				inline	void	_NoReturn_	DoThrow (const StringException& e2Throw)
+				inline	void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw)
 					{
-						DbgTrace (L"Throwing StringException: '%s'", static_cast<wstring> (e2Throw).substr (0, 20).c_str ());
-						throw e2Throw;
+						// Go directly through class DoThrow() since that may remap to differnt kinds of exceptions, and already has trace messages
+						errno_ErrorException::DoThrow (e2Throw);
 					}
-		#if		qPlatform_Windows
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const Platform::Windows::StructuredException& e2Throw)
-					{
-						DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
-						throw e2Throw;
-					}
-		#endif
-		#if		qPlatform_Windows
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw)
-					{
-						DbgTrace ("Throwing Platform::Windows::HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
-						throw e2Throw;
-					}
-		#endif
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw)
 					{
@@ -109,12 +91,6 @@ namespace	Stroika {
 				inline	void	_NoReturn_	DoThrow (const UserCanceledException& e2Throw)
 					{
 						DbgTrace (TSTR ("Throwing UserCanceledException"));
-						throw e2Throw;
-					}
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const IO::FileBusyException& e2Throw)
-					{
-						DbgTrace (TSTR ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
 						throw e2Throw;
 					}
 
@@ -144,22 +120,12 @@ namespace	Stroika {
 					}
 				}
 			#endif
-			#if		qPlatform_Windows
-			inline	void	ThrowIfErrorHRESULT (HRESULT hr)
-				{
-					if (not SUCCEEDED (hr)) {
-						DoThrow (Platform::Windows::HRESULTErrorException (hr));
-					}
-				}
-			#endif
-			#if		qPlatform_Windows
 			inline	void	ThrowIfError_errno_t (errno_t e)
 				{
 					if (e != 0) {
 						errno_ErrorException::DoThrow (e);
 					}
 				}
-			#endif
 			inline	void	ThrowIfNull (const void* p)
 				{
 					if (p == nullptr) {
@@ -173,13 +139,6 @@ namespace	Stroika {
 							DoThrow (e, "ThrowIfNull (nullptr,X) - throwing X");
 						}
 					}
-			#if		qPlatform_Windows
-			template<>
-				inline	void	ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
-					{
-						ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
-					}
-			#endif
 		}
 	}
 }
