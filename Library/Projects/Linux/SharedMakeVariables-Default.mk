@@ -15,12 +15,12 @@ endif
 
 
 ifndef ObjDir
-	ObjDir		:=	./
+	ObjDir		=	./
 endif
 
 
 ifndef StroikaLibDir
-	StroikaLibDir		:=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
+	StroikaLibDir		=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
 endif
 
 
@@ -29,10 +29,10 @@ ifndef Includes
 endif
 
 ifndef StroikaFoundationLib
-	StroikaFoundationLib		:=	$(StroikaLibDir)Stroika-Foundation.a
+	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation.a
 endif
 ifndef StroikaFrameworksLib
-	StroikaFrameworksLib		:=	$(StroikaLibDir)Stroika-Frameworks.a
+	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks.a
 endif
 
 
@@ -65,9 +65,6 @@ ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaLibsWithSupportLibs	=	$(StroikaLibs) $(StroikaSupportLibs) 
 endif
-
-### PROABBLY GET RID OF THIS NAME
-#LIBS	=	$(StroikaLibsWithSupportLib)
 
 
 ifeq ($(INCLUDE_SYMBOLS), 1)

@@ -3,10 +3,11 @@ include	../SharedMakeVariables.mk
 include	../SharedBuildRules.mk
 
 RelPathToStroikaDevRoot		=	../../../../../
-SrcDir                          =       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/
+SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/
 
 
-VPATH = $(SrcDir) $(LibDir)
+VPATH		=	$(SrcDir) $(StroikaLibDir)
+
 
 SubDirs=	\
 		Service\
@@ -20,7 +21,7 @@ all-objs:
 
 
 $(StroikaFrameworksLib):	all-objs
-	@mkdir -p $(LibDir)
+	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFramesworkLib)...
 	@rm -f $(StroikaFramesworkLib)
 	@for i in $(SubDirs);\

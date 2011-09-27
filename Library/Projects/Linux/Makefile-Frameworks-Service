@@ -3,7 +3,7 @@ include	../../SharedBuildRules.mk
 include	../../SharedMakeVariables.mk
 
 RelPathToStroikaDevRoot		=	../../../../../../
-SrcDir                          =       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/Service/
+SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/Service/
 
 VPATH = $(SrcDir)
 

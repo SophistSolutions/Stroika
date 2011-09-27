@@ -2,9 +2,8 @@ include ../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
-
-RelPathToStroikaDevRoot	=	../../../../../../../
-SrcDir				=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
+RelPathToStroikaDevRoot		=	../../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
 
 
 VPATH = $(SrcDir)
