@@ -128,7 +128,10 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 			Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
 			(what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT – 
 			but pretty sure we want some sort of String_stdwstring(). 
- */
+
+	(o)		Consider optimizing Sting::operator== () to check if reps ptrs are equal. Reason maybe opt is cuz of String::Common
+			stuff and special case of emptyu string. If it hits seldom enuf, just a wasted effort.
+*/
 
 
 
