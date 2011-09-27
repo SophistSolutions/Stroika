@@ -22,31 +22,6 @@
  *	items added after the current traversal index, and will never traverse
  *	items added with an index before the current traversal index.
  *
- *		IteratorRep is an envelope class over IteratorRep. Iterators can be
- *	directly used as follows:
- *		for (IteratorRep<int> it (fIntList); not it.Done (); it.Next ()) {
- *			int	current = it.Current ();	// etc
- *		}
- *
- *		Two macros, ForEach and ForEachT (stands for ForEachTyped) can be used
- *	to minimize typing. The ForEach macro takes three arguments: the type (T)
- *	of the collection, the name of the iterator, and the collection to be
- *	iterated over. Thus the equivalent to the above is:
- *		ForEach (int, it, fList) {
- *			int current = it.Current ();	// etc
- *		}
- *
- *		The ForEachT macro takes one additional argument as the first
- *	parameter: the type of iterator. This is used in places where a subclass
- *	of the class IteratorRep is desired. Common subclasses include
- *	SequenceIterator, which provides a CurrentIndex method and can be
- *	traversed in either direction, and Mutators, which are subclasses of
- *	Iterators that allow Collection modifications through methods such as
- *	RemoveCurrent () or UpdateCurrent (). Sample Usage:
- *		ForEachT (SequenceIterator, int, it, fList) {
- *			int current = it.Current ();
- *			size_t	index = it.CurrentIndex ();		// etc
- *		}
  *
  *		Note that we utilize a for-loop based approach to iteration. A
  *	somewhat popular alternative is modeled on Lisp usage: iterating over a
@@ -58,10 +33,9 @@
  *	DieHards can write ForEach style macros to support the passive style.
  *	For example:
  *		#define	Apply(T,Init,F)\
- 			{for (IteratorRep<T> it (Init); not it.Done (); it.Next ())	{ (*F) (it.Current ()); }}
+ 			for (IteratorRep<T> it (Init); not it.Done (); it.Next ())	{ (*F) (it.Current ()); }
  *	allows usages like Apply(int, fList, PrintInt);
- *	Note: the extra braces above avoid variable name collisions, a minor
- *	benefit of the passive approach.
+ *
  *
  *
  * MORE RULES ABOUT ITERATORS (TO BE INTEGRATED INTO DOCS BETTER)
@@ -80,21 +54,11 @@
  *
  *
  *	TODO:
- *		->	Should we keep the done variable in Iterator, and assert not
- *			done in Current(), and maybe allow Done () be called on iterators.
- *			Now sure will ever be used given usual More() interface, but it
- *			could be useful. Trouble is that it would cost some to store this
- *			variable, and it might never be used??? Might be OK if its use
- *			could be optimized away???
  *
  *		->	Merge Current virtual call into More() call? Trouble is constructing
  *			T. We could make fields char fCurrent[sizeof(T)] but that poses problems
  *			for copying iterators. On balance, probably best to bag it!!!
  *
- *			Another possability here is having IteratorRep have a ptr to T (ie T*),
- *			that can be peeked at by Current(). This would still involve extra indirection,
- *			but at least no virtual function overhead on the call. That is probably
- *			the best compromise!!!
  *
  */
 
@@ -111,24 +75,18 @@
 
 /*
  *		Iterator are used primarily to get auto-destruction
- *	at the end of a scope where they are used. They are not intended to be used
- *	directly, but just from the ForEach macros.
+ *	at the end of a scope where they are used. They can be used directly,
+ *	or using ranged for syntax (currently imitated by For macro)
  *
+ *  Current is a synonym for operator*. Done is a synonym for iterator != container.end ()
+ *	Current can be called at anytime not Done. The value of
+ *  Current is guaranteed to be valid if it was called before Done, even if that value
+ *	was removed from the container at some point after Current was called.
  *
- */
-
-/*
+ *	The value of Current is undefined if called when Done.
  *
- *  Current () can be called anytime More has been called at least once, and has returned true. It returns the
- *	current item in the iteration process. It is undefined what Current ()
- *	will return if it is deleted while current - however - if anything
- *	else is deleted, Current () is guaranteed to be valid, and remain
- *	the same.
- *  More can be called anytime. If not done, then it iterates to the next
+ *  Operator++ can be called anytime. If not done, then it iterates to the next
  *  item in the collection (i.e. it changes the value returned by Current).
- *  It returns the true if iteration can continue, and false if there is nothing
- *  left to iterate over, allowing looping as
- *  for (Iterator<T > It = (Iterator<T >)(Init); It.More ();)
  *
  *
  */
@@ -137,10 +95,12 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-            template	<typename T> class	IteratorRep;
             template	<typename T> class	Iterator {
-                public:
-					Iterator (IteratorRep<T>* it);
+             	public:
+					class	Rep;
+					//class	RepSentinal;
+				public:
+					explicit	Iterator (Rep* it);
                     Iterator (const Iterator<T>& from);
                     ~Iterator ();
 
@@ -153,64 +113,59 @@ namespace	Stroika {
                     // support for Range based for, and stl style iteration in general (containers must also support begin, end)
                     nonvirtual  T       operator* () const;
                     nonvirtual  void    operator++ ();
-                    nonvirtual  bool    operator!= (Iterator rhs);
+                    nonvirtual  void    operator++ (int);
+                    nonvirtual  bool    operator!= (Iterator rhs) const;
+                    nonvirtual  bool    operator== (Iterator rhs) const;
 
-
+					// Synonyms for above, sometimes making code more readable
+					// Current -> operator*
+					// Done -> (it != container.end ())
                 public:
-                    nonvirtual	bool	More ();
                     nonvirtual	T		Current () const;
+                    nonvirtual	bool	Done () const;
+
+				public:
+					static	Iterator<T>			GetSentinal ();
 
                 protected:
-                    IteratorRep<T>*	fIterator;
-                    T               fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
-            };
+                    Memory::SharedByValue<Rep>	fIterator;
+                    T       fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
-			/*
-				Support for ranged for syntax: for (it : v) { it.Current (); }
-				This typedef lets you easily construct iterators other than the basic
-				iterator for the container.
-				Sample usage:
-				typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
-			*/
-			template	<typename Container, typename IteratorClass>	class	RangedForIterator {
-				public:
-					RangedForIterator (Container& t) :
-						fIt (t)
-					{
-					}
-
-					nonvirtual  IteratorClass    begin () const
-					{
-						return fIt;
-					}
-
-					IteratorClass end () const
-					{
-						return (nullptr);
-					}
-
-				private:
-					IteratorClass	fIt;
+					static	Rep*	Clone_ (const Rep& rep);
 			};
 
 
-            /*
-             *		An iterator is a helper class, that allows ordered access to the
-             *	elements of an ADT. Iterators cannot alter the contents of their ADT,
-             *	but are robust over changes to their ADT.
-             */
-            template	<typename T> class	IteratorRep {
+			/*
+				Subclassed by front-end container writers.
+				Most of the work is done in More, which does a lot of work because it is the
+				only virtual function called during iteration, and will need to lock its
+				container when doing "safe" iteration. More does the following:
+					iterate to the next container value if advance is true
+					(then) copy the current value into current, if current is not null
+					return true if iteration can continue (not done iterating)
+
+					typical uses:
+						it++ -> More (null, true)
+						*it -> More (&v, false); return v;
+						Done -> More (null, false)
+
+						(note that for performance and safety reasons the iterator envelope actually
+						passes fCurrent into More when implenenting ++it
+			*/
+            template	<typename T> class	Iterator<T>::Rep {
                 protected:
-                    IteratorRep ();
+                    Rep ();
 
                 public:
-                    virtual	~IteratorRep ();
+                    virtual	~Rep ();
 
                 public:
-                    virtual	bool			More (T* current, bool advance)   = 0;
-                    virtual	IteratorRep<T>*	Clone () const		= 0;
-                    nonvirtual bool         Done () const;
+                    virtual	bool	More (T* current, bool advance)   = 0;
+                    virtual	Rep*	Clone () const		= 0;
+                    nonvirtual bool Done () const;
             };
+
+
 
             /*
              For macro:
@@ -218,8 +173,6 @@ namespace	Stroika {
              For (it, myBag) with for (it : myBag)
              */
 			#define	For(_it,_Container)			for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
-
-
 
 		}
     }

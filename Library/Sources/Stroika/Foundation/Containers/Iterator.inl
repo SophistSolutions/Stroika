@@ -14,91 +14,160 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Containers {
 
-            // class IteratorRep<T>
-            template	<typename T> inline	IteratorRep<T>::IteratorRep ()
+
+			/*
+				Support for ranged for syntax: for (it : v) { it.Current (); }
+				This typedef lets you easily construct iterators other than the basic
+				iterator for the container.
+				Sample usage:
+				typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
+			*/
+			template	<typename Container, typename IteratorClass>	class	RangedForIterator {
+				public:
+					RangedForIterator (Container& t) :
+						fIt (t)
+					{
+					}
+
+					RangedForIterator (const Container& t) :
+						fIt (t)
+					{
+					}
+					nonvirtual  IteratorClass    begin () const
+					{
+						return fIt;
+					}
+
+					IteratorClass end () const
+					{
+						return (IteratorClass (nullptr));
+					}
+
+				private:
+					IteratorClass	fIt;
+			};
+
+
+            // class Rep<T>
+            template	<typename T> inline	Iterator<T>::Rep::Rep ()
             {
             }
 
-            template	<typename T> inline	IteratorRep<T>::~IteratorRep ()
+            template	<typename T> inline	Iterator<T>::Rep::~Rep ()
             {
             }
 
-            template	<typename T> inline	bool	IteratorRep<T>::Done () const
+            template	<typename T> inline	bool	Iterator<T>::Rep::Done () const
             {
-                return not const_cast<IteratorRep<T>*> (this)->More (nullptr, false);
+                return not const_cast<Iterator<T>::Rep*> (this)->More (nullptr, false);
             }
 
             // class Iterator<T>
             template	<typename T> inline	Iterator<T>::Iterator (const Iterator<T>& from) :
-                fIterator (0),
+                fIterator (from.fIterator, &Clone_),
                 fCurrent (from.fCurrent)
             {
-#if qIteratorUsingNullRepAsSentinalValue
-				if (from.fIterator != nullptr) {
-#endif
-					RequireNotNull (from.fIterator);
-					fIterator = from.fIterator->Clone ();
-					EnsureNotNull (fIterator);
-#if qIteratorUsingNullRepAsSentinalValue
-				}
-#endif
+				RequireNotNull (from.fIterator);
             }
 
-            template	<typename T> inline	Iterator<T>::Iterator (IteratorRep<T>* it) :
-                fIterator (it)
+            template	<typename T> inline	Iterator<T>::Iterator (Rep* it)   :
+                fIterator (it, &Clone_)
             {
-#if !qIteratorUsingNullRepAsSentinalValue
-				RequireNotNull (it);
+				if (it == nullptr) {
+					fIterator = GetSentinal ().fIterator;
+				}
+
 				EnsureNotNull (fIterator);
-#endif
             }
 
             template	<typename T> inline	Iterator<T>::~Iterator ()
             {
-                delete fIterator;
             }
 
             template	<typename T> inline	Iterator<T>&	Iterator<T>::operator= (const Iterator<T>& rhs)
             {
-                RequireNotNull (fIterator);
-                RequireNotNull (rhs.fIterator);
-                if (fIterator != rhs.fIterator) {
-                    delete fIterator;
-                    fIterator = rhs.fIterator->Clone ();
-                    EnsureNotNull (fIterator);
-                }
+            	fIterator = rhs.fIterator;
+            	fCurrent = rhs.fCurrent;
                 return (*this);
             }
 
-            template	<typename T> inline	bool	Iterator<T>::More ()
+            template	<typename T> inline	T	Iterator<T>::Current () const
             {
-                RequireNotNull (fIterator);
-                return (fIterator->More (&fCurrent, true));
+                return (operator* ());
             }
 
-            template	<typename T> inline	T	Iterator<T>::Current () const
+            template	<typename T> inline	bool	Iterator<T>::Done () const
+            {
+            	return fIterator->Done ();
+            }
+
+            template	<typename T>  inline    T   Iterator<T>::operator* () const
             {
                 RequireNotNull (fIterator);
                 return (fCurrent);
             }
 
-            template	<typename T>  inline    T   Iterator<T>::operator* () const
-            {
-                return Current ();
-            }
-
             template	<typename T>   inline   void  Iterator<T>::operator++ ()
             {
-                More ();
+                RequireNotNull (fIterator);
+                fIterator->More (&fCurrent, true);
+			}
+
+            template	<typename T>   inline   void  Iterator<T>::operator++ (int)
+            {
+                RequireNotNull (fIterator);
+                fIterator->More (&fCurrent, true);
+			}
+
+            template	<typename T> inline bool   Iterator<T>::operator!= (Iterator rhs)  const
+            {
+            	return not operator== (rhs);
             }
 
-            template	<typename T> inline bool   Iterator<T>::operator!= (Iterator rhs)
+            template	<typename T> inline bool   Iterator<T>::operator== (Iterator rhs)  const
             {
-            	if (rhs.fIterator == nullptr) {
-					return (not fIterator->Done ());
+            	if (rhs.Done ()) {
+					return Done ();
             	}
-                return (fIterator != rhs.fIterator);
-            }
+            	else if (not Done ()) {
+					return false;
+            	}
+
+            	// assigning to local variables to ensure const version called
+            	const	Iterator<T>::Rep* lhsRep = fIterator.GetPointer ();
+            	const	Iterator<T>::Rep* rhsRep = fIterator.GetPointer ();
+                return (lhsRep == rhsRep
+						and fCurrent == rhs.fCurrent);
+			}
+
+			template	<typename T> inline  typename Iterator<T>::Rep*   Iterator<T>::Clone_ (const Iterator<T>::Rep& rep)
+			{
+				return rep.Clone ();
+			}
+
+			template	<typename T> 	Iterator<T>	Iterator<T>::GetSentinal ()
+			{
+				class RepSentinal : public Iterator<T>::Rep  {
+					public:
+						RepSentinal () {}
+					public:
+						virtual	bool	More (T* current, bool advance) override
+						{
+							return false;
+						}
+						virtual	Rep*	Clone () const override
+						{
+							RequireNotReached ();
+							return nullptr;
+						}
+
+				};
+
+				static	Iterator<T> kSentinal = Iterator<T> (new RepSentinal ());
+				return Iterator<T> (kSentinal);
+			}
+
+
 		}
     }
 }

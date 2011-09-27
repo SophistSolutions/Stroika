@@ -27,6 +27,9 @@ namespace	Stroika {
 					TallyEntry (T item);
 					TallyEntry (T item, size_t count);
 
+                    nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;
+                    nonvirtual  bool    operator== (const TallyEntry<T>& rhs) const;
+
 					T		fItem;
 					size_t	fCount;
 			};
@@ -34,7 +37,7 @@ namespace	Stroika {
 
 			template	<typename T> class	Tally;
 			template	<typename T> class	TallyRep;
-			template	<typename T> class	IteratorRep;
+			template	<typename T> class	TallyIteratorRep;
 			template	<typename T> class	TallyMutatorRep;
 
 			template	<typename T> bool	operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
@@ -43,7 +46,7 @@ namespace	Stroika {
             template	<typename T>	bool	operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
 
-			template	<typename T> class	TallyMutator : public Iterator<TallyEntry<T> > {
+			template	<typename T> class	TallyMutator : public Iterator<TallyEntry<T>> {
 				public:
 					TallyMutator (TallyMutatorRep<T>* it);
 
@@ -83,7 +86,7 @@ namespace	Stroika {
 					nonvirtual	size_t	TotalTally () const;
 
 					nonvirtual	Tally<T>&	operator+= (T item);
-					nonvirtual	Tally<T>&	operator+= (Tally<T> t);
+					nonvirtual	Tally<T>&	operator+= (const Tally<T>& t);
 
 				public:
 					nonvirtual	operator Iterator<T> () const;
@@ -91,12 +94,17 @@ namespace	Stroika {
 					nonvirtual	operator TallyMutator<T> ();
 
 					// Support for ranged for, and stl syntax in general
-                    nonvirtual  Iterator<TallyEntry<T> >    begin () const;
-                    nonvirtual  Iterator<TallyEntry<T> > 	end () const;
+                    nonvirtual  Iterator<T>	begin () const;
+                    nonvirtual  Iterator<T>	end () const;
 
-					// support for non-default iterator. By default, we iterator over TallyEntry<T>
-					typedef	RangedForIterator<Tally<T>, TallyMutator<T> >		Mutator;
-					typedef	RangedForIterator<Tally<T>, Iterator<T> >			KeyIterator;
+                    nonvirtual  TallyMutator<T>	begin ();
+                    nonvirtual  TallyMutator<T>	end ();
+
+					// by default, you only iterator over T, not TallyEntry<T>
+					// that is unfortunate in most uses of Tally, so you can modify your for call
+					// for (it, t) -> for (it, Tally::It (t))
+					// to get the more useful iterator
+					typedef	RangedForIterator<Tally<T>, Iterator<TallyEntry<T>> >	It;
 
 				protected:
 					nonvirtual	void	AddItems (const T* items, size_t size);

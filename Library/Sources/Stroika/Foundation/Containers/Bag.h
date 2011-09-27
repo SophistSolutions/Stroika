@@ -141,12 +141,11 @@ namespace	Stroika {
                     nonvirtual  Iterator<T> begin () const;
                     nonvirtual  Iterator<T> end () const;
 
-					// support for non-default iterator. By default, we iterator with Bag_Iterator<T>
-					typedef	RangedForIterator<Bag<T>, BagMutator<T> >		Mutator;
+                    nonvirtual  BagMutator<T> begin ();
+                    nonvirtual  BagMutator<T> end ();
 
                 public:
                     nonvirtual	size_t	TallyOf (T item) const;
-
 
                 protected:
                     nonvirtual	void	AddItems (const T* items, size_t size);
@@ -170,7 +169,7 @@ namespace	Stroika {
 
 
 
-            template	<typename T>	class	BagIteratorRep : public IteratorRep<T> {
+            template	<typename T>	class	BagIteratorRep : public Iterator<T>::Rep {
                 protected:
                     BagIteratorRep ();
             };
@@ -201,7 +200,7 @@ namespace	Stroika {
                     virtual	void		Add (T item)					=	0;
                     virtual	void		Remove (T item)					=	0;
 
-                    virtual	IteratorRep<T>*		MakeIterator () 		=	0;
+                    virtual	typename Iterator<T>::Rep*		MakeIterator () 		=	0;
                     virtual	BagIteratorRep<T>*	MakeBagIterator () 		=	0;
                     virtual	BagMutatorRep<T>*	MakeBagMutator () 		=	0;
             };
