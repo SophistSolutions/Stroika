@@ -111,6 +111,18 @@ namespace	Stroika {
 			template	<typename T>
 				void	_NoReturn_ 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
+
+
+			template	<>
+				void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw);
+			template	<>
+				void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw);
+			template	<>
+				void	_NoReturn_	DoThrow (const SilentException& e2Throw);
+			template	<>
+				void	_NoReturn_	DoThrow (const UserCanceledException& e2Throw);
+
+
 			// Just a regular C++ rethrow, but with a DbgTrace message...
 			void	_NoReturn_	DoReThrow ();
 			void	_NoReturn_	DoReThrow (const char* traceMsg);

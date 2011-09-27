@@ -47,21 +47,30 @@ errno_ErrorException::errno_ErrorException (errno_t e)
 
 TString	errno_ErrorException::LookupMessage (errno_t e)
 {
-#if 0
-	switch (hr) {
-		case	E_FAIL:						return TSTR ("HRESULT failure (E_FAIL)");
-	}
-#endif
 	TChar	buf[2048];
 	buf[0] = '\0';
-#if		qPlatform_Windows
-	if (_tcserror_s (buf, e) != 0) {
-		return buf;
-	}
-	(void)::_stprintf_s (buf, TSTR ("errno_t error code: 0x%x"), e);
-#else
-	AssertNotImplemented ();
-#endif
+	#if		qPlatform_Windows
+		if (_tcserror_s (buf, e) != 0) {
+			return buf;
+		}
+		(void)::_stprintf_s (buf, TSTR ("errno_t error code: 0x%x"), e);
+	#elif	qPlatform_POSIX
+		/*
+		 * A bit quirky - gcc and POSIX handle this API fairly differently. Hopefully I have both cases correct???
+		 */
+		#if defined (_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600
+			if (strerror_r (e, buf, NEltsOf (buf)) == 0) {
+				return buf;
+			}
+		#else
+			if (strerror_r (e, buf, NEltsOf (buf)) != nullptr) {
+				return buf;
+			}
+		#endif
+		(void) ::snprintf (buf, NEltsOf (buf), TSTR ("errno_t error code: 0x%x"), e);
+	#else
+		AssertNotImplemented ();
+	#endif
 	return buf;	
 }
 
