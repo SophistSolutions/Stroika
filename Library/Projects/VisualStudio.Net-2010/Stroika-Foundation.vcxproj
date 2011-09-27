@@ -190,6 +190,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
@@ -297,6 +298,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
@@ -384,6 +386,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />

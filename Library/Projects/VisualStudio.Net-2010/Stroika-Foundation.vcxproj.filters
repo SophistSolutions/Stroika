@@ -267,6 +267,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -603,6 +606,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -850,6 +856,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
 </Project>
