@@ -422,24 +422,20 @@ void	FileSystem::CreateDirectory (const TString& directoryPath, bool createParen
 
 /*
  ********************************************************************************
- ************************* FileSystem::CreateDirectoryForFile ***************************
+ ******************* FileSystem::CreateDirectoryForFile *************************
  ********************************************************************************
  */
 void	FileSystem::CreateDirectoryForFile (const TString& filePath)
 {
-#if		qPlatform_Windows
-// REALLY NEED PORTABLE STROIKA FILE_NOT_FOUND EXCEPTION HERE ?? MAYBE EXISTS AND JUST MUST USE IT!!!
 	if (filePath.empty ()) {
-		Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));
+		// NOT sure this is the best exception to throw here?
+		Execution::DoThrow (IO::FileAccessException ());
 	}
 	if (FileExists (filePath)) {
 		// were done
 		return;
 	}
 	CreateDirectory (GetFileDirectory (filePath), true);
-#else
-	AssertNotImplemented ();
-#endif
 }
 
 
@@ -635,7 +631,7 @@ TString	FileSystem::GetFileDirectory (const TString& pathName)
 
 /*
  ********************************************************************************
- ************************************* FileSystem::FileExists ***************************
+ ***************************** FileSystem::FileExists ***************************
  ********************************************************************************
  */
 bool	FileSystem::FileExists (const TChar* filePath)
@@ -647,6 +643,10 @@ bool	FileSystem::FileExists (const TChar* filePath)
 		return false;
 	}	
 	return not (attribs & FILE_ATTRIBUTE_DIRECTORY);
+#elif	qPlatform_POSIX
+	// Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
+	//http://linux.die.net/man/2/access
+	return access(filePath, R_OK) == 0;
 #else
 	AssertNotImplemented ();
 	return false;

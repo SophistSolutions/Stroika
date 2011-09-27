@@ -71,7 +71,23 @@ namespace	Stroika {
 
 				void	SetFileAccessWideOpened (const TString& filePathName);
 
+
+				/*
+				 * CreateDirectory makes sure the directory with the given name exists on the filesystem. If it already exists, this is NOT an error.
+				 * If it already exists, but is a FILE (anything but a directory) - then it is an error).
+				 *
+				 * If createParentComponentsIfNeeded - the function braks the directory paoth into parts, and recursively applies itself to each segment from
+				 * the root down.
+				 *
+				 * The net effect - this makes sure the given DIRECTORY exists or raises an exception.
+				 *
+				 *			TODO:
+				 *				(o)	We need an overload which takes the directory permissions as argument.
+				 */
 				void	CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded = true);
+
+
+
 
 				void	CreateDirectoryForFile (const TString& filePath);
 
