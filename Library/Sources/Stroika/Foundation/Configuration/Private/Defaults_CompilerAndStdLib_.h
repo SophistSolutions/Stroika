@@ -13,6 +13,14 @@
 	
 
 
+//tmphack - goes someplace else...
+// LGP 2011-09-27
+#ifndef	qHas_Syslog
+#define	qHas_Syslog		qPlatform_POSIX
+#endif
+
+
+
 
 	/*
 	@CONFIGVAR:		qCompilerAndStdLib_Supports_constexpr

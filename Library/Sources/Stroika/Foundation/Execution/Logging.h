@@ -6,6 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<cstdarg>
+
 #include	"../Configuration/Common.h"
 #include	"../Characters/String.h"
 #include	"../Debug/Assertions.h"
@@ -22,10 +24,6 @@ namespace	Stroika {
 			using	Characters::String;
 
 
-
-#ifndef	qHas_Syslog
-#define	qHas_Syslog		qPlatform_POSIX
-#endif
 
 
 			/*
