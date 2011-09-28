@@ -8,7 +8,7 @@
 
 #include	<fstream>
 
-#include	"../../Characters/TSTring.h"
+#include	"../../Characters/TString.h"
 
 
 
