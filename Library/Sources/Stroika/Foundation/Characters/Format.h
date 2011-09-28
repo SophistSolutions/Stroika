@@ -96,6 +96,8 @@ namespace	Stroika {
 			 *
 			 *		See also qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
 			 */
+			string	FormatV (const char* format, va_list argsList);
+			wstring	FormatV (const wchar_t* format, va_list argsList);
 			string	Format (const char* format, ...);
 			wstring	Format (const wchar_t* format, ...);
 

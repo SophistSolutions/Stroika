@@ -279,6 +279,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logging.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -624,6 +627,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logging.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -876,6 +882,9 @@
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Logging.inl">
       <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>

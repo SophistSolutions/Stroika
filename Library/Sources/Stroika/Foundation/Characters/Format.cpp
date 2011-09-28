@@ -34,12 +34,10 @@ using	namespace	Stroika::Foundation::Memory;
  ************************************* Format ***********************************
  ********************************************************************************
  */
-string	Characters::Format (const char* format, ...)
+string	Characters::FormatV (const char* format, va_list argsList)
 {
 	RequireNotNull (format);
 	Memory::SmallStackBuffer<char, 10*1024>	msgBuf (10*1024);
-	va_list		argsList;
-	va_start (argsList, format); 
 	#if		__STDC_WANT_SECURE_LIB__
 		while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize ()-1, format, argsList) < 0) {
 			msgBuf.GrowToSize (msgBuf.GetSize () * 2);
@@ -49,18 +47,23 @@ string	Characters::Format (const char* format, ...)
 			msgBuf.GrowToSize (msgBuf.GetSize () * 2);
 		}
 	#endif
-	va_end (argsList);
 	Assert (::strlen (msgBuf) < NEltsOf (msgBuf));
 	return string (msgBuf);
 }
 
-wstring	Characters::Format (const wchar_t* format, ...)
+string	Characters::Format (const char* format, ...)
+{
+	va_list		argsList;
+	va_start (argsList, format); 
+	string	tmp	= FormatV (format, argsList);
+	va_end (argsList);
+	return tmp;
+}
+
+wstring	Characters::FormatV (const wchar_t* format, va_list argsList)
 {
 	RequireNotNull (format);
 	Memory::SmallStackBuffer<wchar_t, 10*1024>	msgBuf (10*1024);
-	va_list		argsList;
-	va_start (argsList, format);
-
 	const	wchar_t*	useFormat	=	format;
 	#if		!qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
 		wchar_t		newFormat[5 * 1024];
@@ -118,10 +121,17 @@ wstring	Characters::Format (const wchar_t* format, ...)
 	while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argsList) < 0) {
 		msgBuf.GrowToSize (msgBuf.GetSize () * 2);
 	}
-
-	va_end (argsList);
 	Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
 	return wstring (msgBuf);
+}
+
+wstring	Characters::Format (const wchar_t* format, ...)
+{
+	va_list		argsList;
+	va_start (argsList, format); 
+	wstring	tmp	= FormatV (format, argsList);
+	va_end (argsList);
+	return tmp;
 }
 
 
