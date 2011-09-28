@@ -51,26 +51,107 @@ string	Characters::Format (const char* format, ...)
 
 wstring	Characters::Format (const wchar_t* format, ...)
 {
-	wchar_t		msgBuf [10*1024];	// no idea how big to make it...
+	Memory::SmallStackBuffer<wchar_t, 10*1024>	msgBuf (10*1024);
 	va_list		argsList;
 	va_start (argsList, format);
-#if		qPlatform_Windows
-	#if		__STDC_WANT_SECURE_LIB__
-	//	(void)::vswprintf_s (msgBuf, format, argsList);
-		(void)::_vsnwprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
-	#else
-		(void)::vsnwprintf (msgBuf, NEltsOf (msgBuf), format, argsList); 
+
+	const	wchar_t*	useFormat	=	format;
+	#if		!qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+		wchar_t		newFormat[5 * 1024];
+		{
+			size_t	origFormatLen	=	wcslen (format);
+			Require (origFormatLen < NEltsOf (newFormat) / 2);	// just to be sure safe - this is already crazy-big for format string...
+																// Could use Memory::SmallStackBuffer<> but I doubt this will ever get triggered
+			bool lookingAtFmtCvt = false;
+			size_t	newFormatIdx	=	0;
+			for (size_t i = 0; i < origFormatLen; ++i) {
+				if (lookingAtFmtCvt) {
+					switch (format[i]) {
+						case	'%': {
+							lookingAtFmtCvt = false;
+						}
+						break;
+						case	's': {
+							newFormat[newFormatIdx] = 'l';
+							newFormatIdx++;
+						}
+						break;
+						case	'.': {
+							// could still be part for format string
+						}
+						break;
+						default: {
+							if (isdigit (format[i])) {
+								// could still be part for format string
+							}
+							else {
+								lookingAtFmtCvt = false;	// DONE
+							}
+						}
+						break;
+					}
+				}
+				else {
+					if (format[i] == '%') {
+						lookingAtFmtCvt = true;
+					}
+				}
+				newFormat[newFormatIdx] = format[i];
+				newFormatIdx++;
+			}
+			Assert (newFormatIdx >= origFormatLen);
+			if (newFormatIdx > origFormatLen) {
+				newFormat[newFormatIdx] = '\0';
+				useFormat	=	newFormat;
+			}
+		}
 	#endif
-#else
-		(void)::vswprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
-#endif
+
+	// Assume only reason for failure is not enuf bytes, so allocate more.
+	// If I'm wrong, we'll just runout of memory and throw out...
+	while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argsList) < 0) {
+		msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+	}
+
 	va_end (argsList);
-	Assert (::wcslen (msgBuf) < NEltsOf (msgBuf));
+	Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
 	return msgBuf;
 }
 
 
-
+#if 0
+wstring newformat;
+bool lookingAtFmtCvt = false;
+for (int i = 0; i < ::wcslen (format); ++i) {
+	if (lookingAtFmtCvt) {
+		if (format[i] == '%') {
+			lookingAtFmtCvt = false;
+		}
+		else if (format [i] == 's') {
+			newformat.push_back ('l');
+		}
+		else if (isdigit (format[i])) {
+			// could still be part for format string
+		}
+		else if (format[i] == '.') {
+			// could still be part for format string
+		}
+		else {
+			lookingAtFmtCvt = false;	// DONE
+		}
+	}
+	else {
+		if (format[i] == '%') {
+			lookingAtFmtCvt = true;
+		}
+	}
+	newformat.push_back (format[i]);
+}
+Assert (newformat.size () >= wcslen (format));
+if (newformat != format)
+{
+	cerr << "CHANGED FORMAT STRING FROM '" << Characters::ToTString (format) << "' to '" << Characters::ToTString (newformat) << "'" << endl;
+#endif
 
 
 

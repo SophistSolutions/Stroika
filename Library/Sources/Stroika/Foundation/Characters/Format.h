@@ -13,6 +13,62 @@
 
 
 
+
+
+/*
+@CONFIGVAR:		qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+@DESCRIPTION:	Very surprising difference between Microsoft of Linux interpretations of sprintf(). It appears the Linux/gcc approach was
+				blessed by ISO - and so is now 'correct'. But no matter, because its so fundementally different, they will have a difficult
+				time changing.
+
+				The issue is - for sprintf - and in our case vswprintf - what is the interpretation of '%s'. Does this match a char* or
+				wchar_t* string in the argument list?
+
+				According to Microsoft, it would appear to match wchar_t*.
+					From http://msdn.microsoft.com/en-us/library/ybk95axf(v=vs.71).aspx:
+					int main( void )
+					{
+					   wchar_t buf[100];
+					   int len = swprintf( buf, L"%s", L"Hello world" );
+					   printf( "wrote %d characters\n", len );
+					   len = swprintf( buf, L"%s", L"Hello\xffff world" );
+					   // swprintf fails because string contains WEOF (\xffff)
+					   printf( "wrote %d characters\n", len );
+					}
+
+				But according to http://www.tin.org/bin/man.cgi?section=3&topic=vsnprintf:
+					  s      If  no  l  modifier  is  present:  The  const char * argument is
+							  expected to be a pointer to an array of character type  (pointer
+							  to  a string).  Characters from the array are written up to (but
+							  not including) a terminating null byte ('\0'); if a precision is
+							  specified,  no more than the number specified are written.  If a
+							  precision is given, no null byte need be present; if the  preci-
+							  sion is not specified, or is greater than the size of the array,
+							  the array must contain a terminating null byte.
+
+							  If an l modifier is present: The const  wchar_t  *  argument  is
+							  expected  to  be a pointer to an array of wide characters.  Wide
+							  characters from the array are converted to multibyte  characters
+							  (each  by  a  call  to the wcrtomb() function, with a conversion
+							  state starting in the initial state before the first wide  char-
+							  acter),  up  to and including a terminating null wide character.
+							  The resulting multibyte characters are written up  to  (but  not
+							  including)  the  terminating null byte. If a precision is speci-
+							  fied, no more bytes than the number specified are  written,  but
+							  no  partial multibyte characters are written. Note that the pre-
+							  cision determines the number of bytes written, not the number of
+							  wide  characters  or screen positions.  The array must contain a
+							  terminating null wide character, unless a precision is given and
+							  it  is  so  small  that  the  number of bytes written exceeds it
+							  before the end of the array is reached.
+	*/
+#ifndef	qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+	#error "qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Characters {

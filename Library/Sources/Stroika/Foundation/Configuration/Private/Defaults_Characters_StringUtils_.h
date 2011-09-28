@@ -4,6 +4,20 @@
 #ifndef	_Stroika_Foundation_Configuration_Private_Defaults_Chracters_Common_h_
 #define	_Stroika_Foundation_Configuration_Private_Defaults_Chracters_Common_h_	1
 
+
+
+	/*
+	 * See DOCS in Stroika/Foundation/Characters/Format.h
+	 */
+	#ifndef	qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+		#if		defined (_MSC_VER)
+			#define	qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat	1
+		#else
+			#define	qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat	0
+		#endif
+	#endif
+
+
 	/*
 	 * See DOCS in Stroika/Foundation/Characters/StringUtils.h
 	 */
