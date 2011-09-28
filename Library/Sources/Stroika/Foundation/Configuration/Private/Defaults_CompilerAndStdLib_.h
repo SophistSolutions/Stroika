@@ -155,7 +155,7 @@
 	#if defined(_MSC_VER)
 		#define	_NoOp_	__noop
 	#else
-		#define	_NoOp_
+		#define	_NoOp_(...)
 	#endif
 
 
