@@ -85,6 +85,9 @@
     <Filter Include="Sources\IO\FileSystem">
       <UniqueIdentifier>{59229ad2-d85b-4b0a-bf59-30a861769be5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Streams\iostream">
+      <UniqueIdentifier>{4f8744f9-b834-4bc2-be46-013348768bcf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -269,6 +272,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp">
+      <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -608,6 +614,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h">
       <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h">
+      <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

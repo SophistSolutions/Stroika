@@ -5,7 +5,12 @@ include	../../SharedBuildRules.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Streams/
 
+.PHONY:			iostream
+
 VPATH = $(SrcDir)
+
+SubDirs	=	\
+	iostream	\
 
 Objs	=	\
 	$(ObjDir)BinaryInputStream.o\
@@ -14,5 +19,14 @@ Objs	=	\
 	$(ObjDir)TextInputStream.o\
 	$(ObjDir)TextOutputStream.o\
 
-all:	$(Objs)
+all:	$(Objs)  $(SubDirs)
 
+
+iostream_OBJS := $(shell cd iostream; make -s list-objs)
+iostream_OBJS := $(addprefix "./iostream/", $(iostream_OBJS))
+
+list-objs::
+	@echo $(iostream_OBJS)
+
+iostream:
+	(cd iostream; make)

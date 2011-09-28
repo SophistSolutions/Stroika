@@ -90,6 +90,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Math", "Makefile-Foundation-Math");
 		mkDirWithLinks("Foundation/Memory", "Makefile-Foundation-Memory");
 		mkDirWithLinks("Foundation/Streams", "Makefile-Foundation-Streams");
+		mkDirWithLinks2("Foundation/Streams/iostream", "Makefile-Foundation-Streams-iostream");
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
 
 		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Library/Frameworks/Makefile");
