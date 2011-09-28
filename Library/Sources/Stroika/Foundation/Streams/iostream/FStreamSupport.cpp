@@ -4,6 +4,7 @@
 #include	"../../StroikaPreComp.h"
 
 #include	"../../Execution/Exceptions.h"
+#include	"../../Execution/ErrNoException.h"
 
 #include	"FStreamSupport.h"
 
