@@ -20,6 +20,7 @@
 #include	"../../Foundation/Debug/Trace.h"
 #include	"../../Foundation/Execution/CommandLine.h"
 #include	"../../Foundation/Execution/Exceptions.h"
+#include	"../../Foundation/Execution/ErrNoException.h"
 #include	"../../Foundation/Execution/Module.h"
 #include	"../../Foundation/Execution/ThreadAbortException.h"
 #include	"../../Foundation/IO/FileSystem/FileUtils.h"
