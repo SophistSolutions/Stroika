@@ -1,0 +1,19 @@
+include ../../../Configuration.mk
+include	../../../SharedBuildRules.mk
+include	../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Streams/iostream/
+
+
+VPATH = $(SrcDir)
+
+
+Objs	=	\
+	$(ObjDir)FStreamSupport.o\
+
+
+all:	$(Objs)
+
+
+
