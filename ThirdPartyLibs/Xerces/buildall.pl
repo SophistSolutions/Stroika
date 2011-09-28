@@ -55,7 +55,9 @@ sub RunAndPrint
 
 if ("$^O" eq "linux") {
 	print ("Configurating Xerces...\n");
-	system ("cd CURRENT ; ./configure --enable-static --disable-shared");
+	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
+	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
+	system ("cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl");
 }
 
 print ("Building Xerces...\n");
