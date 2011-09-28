@@ -379,13 +379,13 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 	if (filePathName.empty ()) {
 		Execution::DoThrow (StringException (L"bad filename"));
 	}
-	stat	s;
+	struct	stat	s;
 	if (::stat (filePathName.c_str (), &s) < 0) {
 		Execution::ThrowIfError_errno_t ();
 	}
 
 	mode_t	desiredMode	=	(S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH);
-	if (S_ISDIR (s)) {
+	if (S_ISDIR (s.st_mode)) {
 		desiredMode |= (S_IXUSR|S_IXGRP|S_IXOTH);
 	}
 
@@ -739,12 +739,12 @@ bool	FileSystem::DirectoryExists (const TChar* filePath)
 	}	
 	return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
 #elif	qPlatform_POSIX
-	stat	s;
+	struct	stat	s;
 	if (::stat (filePath, &s) < 0) {
 		// If file doesn't exist - or other error reading, just say not exist
 		return false;
 	}
-	return S_ISDIR (s);
+	return S_ISDIR (s.st_mode);
 #else
 	AssertNotImplemented ();
 	return false;
