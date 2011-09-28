@@ -178,23 +178,24 @@ String		Main::GetServiceStatusMessage () const
 	tmp << L"Service '" << svd.fName.As<wstring> () << "'" << endl;
 	switch (this->GetState ()) {
 		case	eStopped:	
-			tmp << kTAB << L"State:  " << kTAB << "STOPPED" << endl;
+			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << "STOPPED" << endl;
 			break;
 		case	eRunning:	
-			tmp << kTAB << L"State:  " << kTAB << "Running" << endl; 
+			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << "Running" << endl; 
 			#if		qPlatform_POSIX
-				tmp << kTAB << L"PID:    " << kTAB << GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << GetServicePID () << endl;
 			#endif
 			break;
 		case	ePaused:	
-			tmp << kTAB << L"State:  " << kTAB << "PAUSED" << endl; 
+			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << "PAUSED" << endl; 
 			#if		qPlatform_POSIX
-				tmp << kTAB << L"PID:    " << kTAB<< GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB<< kTAB << kTAB << GetServicePID () << endl;
 			#endif
 			break;
 		default:
 			AssertNotReached ();
 	}
+	tmp << _sRep->GetServiceStatusMessage ().As<wstring> ();
 	return tmp.str ();
 }
 
@@ -238,8 +239,10 @@ void	Main::Start ()
 #if		qPlatform_POSIX
 	pid_t	pid	=	fork ();
 	if (pid == 0) {
-		// Child - exec
-		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), String (CommandNames::kRunAsService).AsTString ().c_str (), nullptr);
+		// Child - exec -
+		//		TODO:		SHOULD BE CAREFUL ABOUT CLOSING FILE DESCRIPTORS BEFORE THIS ACTION - WE DONT WANT HTEM INHERITED!!!
+		//					BUT DONT DO WILLYNILLY - THINK THROUGH - I CANNNOT RECALL THE EXACT RIGHT ANSWER
+		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
 		exit (-1);
 	}
 	else if (pid < 0) {
