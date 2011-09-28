@@ -5,6 +5,7 @@
 
 #include	<iostream>
 
+#include	"Stroika/Foundation/Characters/Format.h"
 #include	"Stroika/Foundation/Characters/String.h"
 #include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
@@ -547,6 +548,19 @@ namespace	{
 
 
 namespace	{
+	void	Test16_Format_ ()
+		{
+			VerifyTestResult (Format ("%d", 3) == "3");
+			VerifyTestResult (Format ("%s", "3") == "3");
+			VerifyTestResult (Format (L"%s", L"3") == L"3");
+		}
+}
+
+
+
+
+
+namespace	{
 
 	void	DoRegressionTests_ ()
 		{
@@ -581,6 +595,7 @@ namespace	{
 			Test13_ToLowerUpper_ ();
 			Test14_String_StackLifetime_ ();
 			Test15_StripAll_ ();
+			Test16_Format_ ();
 		}
 }
 
