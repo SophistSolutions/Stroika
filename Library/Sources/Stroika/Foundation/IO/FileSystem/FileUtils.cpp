@@ -318,7 +318,7 @@ DateTime	FileSystem::GetFileLastAccessDate (const TString& fileName)
 
 /*
  ********************************************************************************
- ***************************** FileSystem::SetFileAccessWideOpened **********************
+ ************************ FileSystem::SetFileAccessWideOpened *******************
  ********************************************************************************
  */
 /*
@@ -371,6 +371,26 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 			nullptr
 		);                       // don't change SACL
 	// ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
+#elif	qPlatform_POSIX
+	////TODO: VERY PRIMITIVE - TMPHACK
+	if (filePathName.empty ()) {
+		Execution::DoThrow (StringException (L"bad filename"));
+	}
+	/*
+	 * TODO:
+		// SHOULD find better way to check if isDIr
+	*/
+	bool isDir = filePathName[filePathName.size()-1] == '/';
+	int result = 0;
+	if (isDir) {
+		result = chmod (filePathName.c_str (), (S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH) | (S_IXUSR|S_IXGRP|S_IXOTH));
+	}
+	else {
+		result= chmod (filePathName.c_str (), (S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH));
+	}
+	if (result < 0) {
+		Execution::ThrowIfError_errno_t ();
+	}
 #else
 	AssertNotImplemented ();
 #endif
