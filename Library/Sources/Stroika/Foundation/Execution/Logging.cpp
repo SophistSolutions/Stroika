@@ -3,6 +3,10 @@
  */
 #include	"../StroikaPreComp.h"
 
+#if		qHas_Syslog
+#include	<syslog.h>
+#endif
+
 #include	"../Characters/Format.h"
 
 #include	"Logging.h"
@@ -10,6 +14,7 @@
 
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
+
 
 
 
@@ -50,9 +55,23 @@ Logger::IAppenderRep::~IAppenderRep ()
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
 	: fApplicationName_ (applicationName)
 {
+	openlog (fApplicationName_.AsTString ().c_str (), 0, LOG_DAEMON);	// not sure what facility to pass?
 }
+
+Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facility)
+	: fApplicationName_ (applicationName)
+{
+	openlog (fApplicationName_.AsTString ().c_str (), 0, facility);
+}
+
+Logger::SysLogAppender::~SysLogAppender ()
+{
+	closelog ();
+}
+
 void	Log (int logLevel, const String& message) override
 {
+	syslog (logLevel, "%s", message.AsTString ().c_str ());
 }
 #endif
 

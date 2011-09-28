@@ -102,6 +102,8 @@ namespace	Stroika {
 			class	Logger::SysLogAppender : public Logger::IAppenderRep {
 				public:
 					SysLogAppender (const String& applicationName);
+					SysLogAppender (const String& applicationName, int facility);
+					~SysLogAppender ();
 				public:
 					virtual	void	Log (int logLevel, const String& message) override;
 				private:
