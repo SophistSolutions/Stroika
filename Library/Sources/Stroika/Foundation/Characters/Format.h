@@ -81,18 +81,18 @@ namespace	Stroika {
 			/*
 			 * Format is the Stroika wrapper on sprintf().
 			 * The main differences between sprintf () and Format are:
-			 *		(1)		No need for buffer managment. ANY sized buffer will be automatically allocated internally and returned as a
-			 *				string (eventaully probably using Stroika::String - but for now std::string).
+			 *		(1)		No need for buffer management. ANY sized buffer will be automatically allocated internally and returned as a
+			 *				string (eventually probably using Stroika::String - but for now std::string).
 			 *
-			 *		(2)		This version of format has a SUBTLE - but important differnce from std::c++ / sprintf() in the interpretation of
-			 *				%s format strings in Format(const wchar_t*).  The interpration of Format (const char*,...) is the same
+			 *		(2)		This version of format has a SUBTLE - but important difference from std::c++ / sprintf() in the interpretation of
+			 *				%s format strings in Format(const wchar_t*).  The interpretation of Format (const char*,...) is the same
 			 *				but for Format (const wchar_t* format, ...) - %s is assumed to match a const wchar_t* string in the variable
 			 *				argument list.
 			 *	
 			 *				This deviation from the c++ standard (technically not a deviation because Stroika::Foundation::Characters::Format() isn't
 			 *				covered by the stdc++ ;-)) - is because of two reasons:
-			 *					a)	Microsoft has this interpration.
-			 *					b)	Its a BETTER interpration (allowing for stuff like (Format (TSTR("time%s"), count==1? TSTR (""): TSTR ("s"));
+			 *					a)	Microsoft has this interpretation.
+			 *					b)	Its a BETTER interpretation (allowing for stuff like (Format (TSTR("time%s"), count==1? TSTR (""): TSTR ("s"));
 			 *
 			 *		See also qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
 			 */

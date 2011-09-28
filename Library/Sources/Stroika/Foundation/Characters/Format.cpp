@@ -36,6 +36,7 @@ using	namespace	Stroika::Foundation::Memory;
  */
 string	Characters::Format (const char* format, ...)
 {
+	RequireNotNull (format);
 	Memory::SmallStackBuffer<char, 10*1024>	msgBuf (10*1024);
 	va_list		argsList;
 	va_start (argsList, format); 
@@ -50,11 +51,12 @@ string	Characters::Format (const char* format, ...)
 	#endif
 	va_end (argsList);
 	Assert (::strlen (msgBuf) < NEltsOf (msgBuf));
-	return msgBuf;
+	return string (msgBuf);
 }
 
 wstring	Characters::Format (const wchar_t* format, ...)
 {
+	RequireNotNull (format);
 	Memory::SmallStackBuffer<wchar_t, 10*1024>	msgBuf (10*1024);
 	va_list		argsList;
 	va_start (argsList, format);
@@ -119,7 +121,7 @@ wstring	Characters::Format (const wchar_t* format, ...)
 
 	va_end (argsList);
 	Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
-	return msgBuf;
+	return wstring (msgBuf);
 }
 
 
