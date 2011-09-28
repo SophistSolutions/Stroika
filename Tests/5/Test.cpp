@@ -550,9 +550,16 @@ namespace	{
 namespace	{
 	void	Test16_Format_ ()
 		{
-			VerifyTestResult (Format ("%d", 3) == "3");
-			VerifyTestResult (Format ("%s", "3") == "3");
-			VerifyTestResult (Format (L"%s", L"3") == L"3");
+			VerifyTestResult (Format ("%d", 123) == "123");
+			VerifyTestResult (Format ("%s", "123") == "123");
+
+			// SUBTLE - this would FAIL with vsnprintf on gcc -- See docs in Header for
+			// Format string
+			VerifyTestResult (Format (L"%s", L"123") == L"123");
+
+			VerifyTestResult (Format (L"%20s", L"123") == L"                 123");
+			VerifyTestResult (Format (L"%.20s", L"123") == L"123");
+	
 		}
 }
 
