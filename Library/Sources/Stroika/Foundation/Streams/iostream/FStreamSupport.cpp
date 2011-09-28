@@ -24,10 +24,10 @@ using	namespace	Stroika::Foundation::Streams::iostream;
  ********************** iostream::OpenInputFileStream ***************************
  ********************************************************************************
  */
-void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode _Mode, int _Prot)
+void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode _Mode)
 {
 	RequireNotNull (ifStream);
-	ifStream->open (fileName.c_str (), _Mode, _Prot);
+	ifStream->open (fileName.c_str (), _Mode);
 	if (!(*ifStream)) {
 		#if		qPlatform_Windows
 			Execution::ThrowIfNotERROR_SUCCESS (::GetLastError ());
@@ -40,9 +40,9 @@ void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& 
 	}
 }
 
-ifstream&	Streams::iostream::OpenInputFileStream (ifstream& ifStream, const TString& fileName, ios_base::openmode _Mode, int _Prot)
+ifstream&	Streams::iostream::OpenInputFileStream (ifstream& ifStream, const TString& fileName, ios_base::openmode _Mode)
 {
-	OpenInputFileStream (&ifStream, fileName, _Mode, _Prot);
+	OpenInputFileStream (&ifStream, fileName, _Mode);
 	return ifStream;
 }
 
@@ -55,10 +55,10 @@ ifstream&	Streams::iostream::OpenInputFileStream (ifstream& ifStream, const TStr
  ****************** StreamUtils::OpenOutputFileStream ***************************
  ********************************************************************************
  */
-void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode _Mode, int _Prot)
+void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode _Mode)
 {
 	RequireNotNull (ofStream);
-	ofStream->open (fileName.c_str (), _Mode, _Prot);
+	ofStream->open (fileName.c_str (), _Mode);
 	if (!(*ofStream)) {
 		#if		qPlatform_Windows
 			Execution::ThrowIfNotERROR_SUCCESS (::GetLastError ());
@@ -71,9 +71,9 @@ void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString&
 	}
 }
 
-ofstream&	Streams::iostream::OpenOutputFileStream (ofstream& ofStream, const TString& fileName, ios_base::openmode _Mode, int _Prot)
+ofstream&	Streams::iostream::OpenOutputFileStream (ofstream& ofStream, const TString& fileName, ios_base::openmode _Mode)
 {
-	OpenOutputFileStream (&ofStream, fileName, _Mode, _Prot);
+	OpenOutputFileStream (&ofStream, fileName, _Mode);
 	return ofStream;
 }
 

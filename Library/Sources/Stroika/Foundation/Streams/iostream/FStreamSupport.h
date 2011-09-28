@@ -24,30 +24,38 @@ namespace	Stroika {
 				// like ifstream::open CTOR - but throws FILE exceptions on failure, and defaults to binary mode
 				void		OpenInputFileStream (ifstream* ifStream,
 												const TString& fileName,
-												ios_base::openmode _Mode = ios_base::in | ios_base::binary,
+												ios_base::openmode _Mode = ios_base::in | ios_base::binary
+#if 0
 												int _Prot = (int)ios_base::_Openprot
+#endif
 									);
 
 				// like ifstream::open CTOR - but throws FILE exceptions on failure, and defaults to binary mode
 				ifstream&	OpenInputFileStream (ifstream& ifStream,
 												const TString& fileName,
-												ios_base::openmode _Mode = ios_base::in | ios_base::binary,
+												ios_base::openmode _Mode = ios_base::in | ios_base::binary
+#if 0
 												int _Prot = (int)ios_base::_Openprot
+#endif
 									);
 
 
 				// like ofstream::open CTOR - but throws FILE exceptions on failure, and defaults to binary mode
 				void		OpenOutputFileStream (ofstream* ofStream,
 												const TString& fileName,
-												ios_base::openmode _Mode = ios_base::out | ios_base::binary,
+												ios_base::openmode _Mode = ios_base::out | ios_base::binary
+#if 0
 												int _Prot = (int)ios_base::_Openprot
+#endif
 									);
 
 				// like ofstream::open CTOR - but throws FILE exceptions on failure, and defaults to binary mode
 				ofstream&	OpenOutputFileStream (ofstream& ofStream,
 												const TString& fileName,
-												ios_base::openmode _Mode = ios_base::out | ios_base::binary,
+												ios_base::openmode _Mode = ios_base::out | ios_base::binary
+#if 0
 												int _Prot = (int)ios_base::_Openprot
+#endif
 									);
 
 
