@@ -13,9 +13,10 @@ Objs	=	\
 	$(ObjDir)CopyableCriticalSection.o\
 	$(ObjDir)CriticalSection.o\
 	$(ObjDir)DLLSupport.o\
-	$(ObjDir)Event.o\
+	$(ObjDir)ErrNoException.o\
 	$(ObjDir)Exceptions.o\
 	$(ObjDir)ExceptionPropagate.o\
+	$(ObjDir)Event.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
 	$(ObjDir)ProgressMonitor.o\

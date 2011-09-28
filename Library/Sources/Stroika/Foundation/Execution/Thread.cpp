@@ -13,6 +13,7 @@
 #include	"DLLSupport.h"
 #include	"../Debug/Trace.h"
 #include	"../Containers/VectorUtils.h"
+#include	"../Execution/ErrNoException.h"
 #include	"../Time/Realtime.h"
 
 #if		qUseThreads_WindowsNative

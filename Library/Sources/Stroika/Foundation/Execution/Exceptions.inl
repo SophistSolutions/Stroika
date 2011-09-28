@@ -17,17 +17,6 @@ namespace	Stroika {
 		namespace	Execution {
 
 
-	
-		//	class	errno_ErrorException
-			inline	errno_ErrorException::operator errno_t () const
-				{
-					return fError;
-				}
-			inline	TString	errno_ErrorException::LookupMessage () const
-				{
-					return LookupMessage (fError);
-				}
-
 
 
 			template	<typename T>
@@ -69,12 +58,6 @@ namespace	Stroika {
 				}
 
 
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw)
-					{
-						// Go directly through class DoThrow() since that may remap to differnt kinds of exceptions, and already has trace messages
-						errno_ErrorException::DoThrow (e2Throw);
-					}
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw)
 					{
@@ -120,12 +103,6 @@ namespace	Stroika {
 					}
 				}
 			#endif
-			inline	void	ThrowIfError_errno_t (errno_t e)
-				{
-					if (e != 0) {
-						errno_ErrorException::DoThrow (e);
-					}
-				}
 			inline	void	ThrowIfNull (const void* p)
 				{
 					if (p == nullptr) {

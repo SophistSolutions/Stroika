@@ -22,6 +22,7 @@
 
 #include	"../../Characters/Format.h"
 #include	"../../Characters/StringUtils.h"
+#include	"../../Execution/ErrNoException.h"
 #include	"../../Execution/Exceptions.h"
 #include	"../../Containers/Common.h"
 #include	"../../Containers/SetUtils.h"

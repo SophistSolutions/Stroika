@@ -7,6 +7,7 @@
 	#include	<windows.h>
 #endif
 
+#include	"../Execution/ErrNoException.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 #include	"../IO/FileSystem/FileUtils.h"

@@ -8,7 +8,6 @@
 
 #include	<exception>
 #include	<string>
-#include	<cerrno>
 #include	<stdexcept>
 
 #include	"../Configuration/Common.h"
@@ -41,31 +40,6 @@ namespace	Stroika {
 
 			// mostly treat the same as SilentException
 			class	UserCanceledException : public SilentException {
-			};
-
-
-
-			#if		!qCompilerAndStdLib_Supports_errno_t
-				typedef	int	errno_t;
-			#endif
-
-			class	errno_ErrorException : public StringException {
-				public:
-					explicit errno_ErrorException (errno_t e);
-
-					operator errno_t () const;
-
-				public:
-					static	TString	LookupMessage (errno_t e);
-					nonvirtual	TString	LookupMessage () const;
-
-				public:
-					// throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
-					// as good a fit.
-					static	_NoReturn_	void	DoThrow (errno_t error);
-
-				private:
-					errno_t	fError;
 			};
 
 
@@ -114,8 +88,6 @@ namespace	Stroika {
 
 
 			template	<>
-				void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw);
-			template	<>
 				void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw);
 			template	<>
 				void	_NoReturn_	DoThrow (const SilentException& e2Throw);
@@ -131,7 +103,6 @@ namespace	Stroika {
 
 
 			void	ThrowIfFalseGetLastError (bool test);
-			void	ThrowIfError_errno_t (errno_t e = errno);
 		#if		qPlatform_Windows
 			void	ThrowIfFalseGetLastError (BOOL test);
 			void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
