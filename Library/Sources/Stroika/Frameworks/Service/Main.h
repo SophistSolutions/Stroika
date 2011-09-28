@@ -174,28 +174,28 @@ namespace	Stroika {
 					/*
 					 *	RunAsService () will not return - until the service has terminated. It runs the service 'MainLoop'.
 					 */
-					nonvirtual	void				RunAsService ();
+					virtual	void				RunAsService ();
 					/*
 					 */
-					nonvirtual	void				Start ();
+					virtual	void				Start ();
 					/*
 					 */
-					nonvirtual	void				Stop ();
+					virtual	void				Stop ();
 					/*
 					 */
-					nonvirtual	void				Kill ();
+					virtual	void				Kill ();
 					/*
 					 */
-					nonvirtual	void				Restart ();
+					virtual	void				Restart ();
 					/*
 					 */
-					nonvirtual	void				ReReadConfiguration ();
+					virtual	void				ReReadConfiguration ();
 					/*
 					 */
-					nonvirtual	void				Pause ();
+					virtual	void				Pause ();
 					/*
 					 */
-					nonvirtual	void				Continue ();
+					virtual	void				Continue ();
 
 				public:
 					/*
