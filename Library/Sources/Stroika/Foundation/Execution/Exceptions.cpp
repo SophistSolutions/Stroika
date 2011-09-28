@@ -81,6 +81,9 @@ void	_NoReturn_	errno_ErrorException::DoThrow (errno_t error)
 		case	ENOMEM: {
 			Execution::DoThrow (bad_alloc (), "errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
 		}
+		case EACCES: {
+			Execution::DoThrow (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
+		}
 		// If I decide to pursue mapping, this maybe a good place to start
 		//	http://aplawrence.com/Unixart/errors.html
 		//		-- LGP 2009-01-02
