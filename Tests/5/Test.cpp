@@ -559,7 +559,11 @@ namespace	{
 
 			VerifyTestResult (Format (L"%20s", L"123") == L"                 123");
 			VerifyTestResult (Format (L"%.20s", L"123") == L"123");
-	
+
+			for (int i = 1; i < 1000; ++i) {
+				String	format	=	Format (L"%%%ds", i);
+				VerifyTestResult (Format (format.As<wstring> ().c_str (), "x").length () == i);
+			}
 		}
 }
 

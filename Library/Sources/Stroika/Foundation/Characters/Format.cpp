@@ -36,13 +36,17 @@ using	namespace	Stroika::Foundation::Memory;
  */
 string	Characters::Format (const char* format, ...)
 {
-	char		msgBuf [10*1024];	// no idea how big to make it...
+	Memory::SmallStackBuffer<char, 10*1024>	msgBuf (10*1024);
 	va_list		argsList;
 	va_start (argsList, format); 
 	#if		__STDC_WANT_SECURE_LIB__
-		(void)::vsnprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
+		while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize ()-1, format, argsList) < 0) {
+			msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+		}
 	#else
-		(void)::vsnprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
+		while (::vsnprintf (msgBuf, msgBuf.GetSize (), format, argsList) < 0) {
+			msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+		}
 	#endif
 	va_end (argsList);
 	Assert (::strlen (msgBuf) < NEltsOf (msgBuf));
@@ -119,39 +123,6 @@ wstring	Characters::Format (const wchar_t* format, ...)
 }
 
 
-#if 0
-wstring newformat;
-bool lookingAtFmtCvt = false;
-for (int i = 0; i < ::wcslen (format); ++i) {
-	if (lookingAtFmtCvt) {
-		if (format[i] == '%') {
-			lookingAtFmtCvt = false;
-		}
-		else if (format [i] == 's') {
-			newformat.push_back ('l');
-		}
-		else if (isdigit (format[i])) {
-			// could still be part for format string
-		}
-		else if (format[i] == '.') {
-			// could still be part for format string
-		}
-		else {
-			lookingAtFmtCvt = false;	// DONE
-		}
-	}
-	else {
-		if (format[i] == '%') {
-			lookingAtFmtCvt = true;
-		}
-	}
-	newformat.push_back (format[i]);
-}
-Assert (newformat.size () >= wcslen (format));
-if (newformat != format)
-{
-	cerr << "CHANGED FORMAT STRING FROM '" << Characters::ToTString (format) << "' to '" << Characters::ToTString (newformat) << "'" << endl;
-#endif
 
 
 
