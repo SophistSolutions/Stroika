@@ -3,6 +3,7 @@
  */
 #include	"../../StroikaPreComp.h"
 
+#include	<sys/types.h>
 #include	<sys/stat.h>
 #include	<ctime>
 #include	<limits>
@@ -15,6 +16,8 @@
 	#include	<io.h>
 	#include	<shlobj.h>
 	#include	<windows.h>
+#elif	qPlatform_POSIX
+	#include	<unistd.h>
 #endif
 
 #include	"../../Characters/Format.h"
@@ -723,7 +726,7 @@ bool	FileSystem::FileExists (const TString& filePath)
 
 /*
  ********************************************************************************
- ******************************** FileSystem::DirectoryExists ***************************
+ ************************** FileSystem::DirectoryExists *************************
  ********************************************************************************
  */
 bool	FileSystem::DirectoryExists (const TChar* filePath)
@@ -735,6 +738,13 @@ bool	FileSystem::DirectoryExists (const TChar* filePath)
 		return false;
 	}	
 	return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
+#elif	qPlatform_POSIX
+	stat	s;
+	if (::stat (filePath, &s) < 0) {
+		// If file doesn't exist - or other error reading, just say not exist
+		return false;
+	}
+	return S_ISDIR (s);
 #else
 	AssertNotImplemented ();
 	return false;
