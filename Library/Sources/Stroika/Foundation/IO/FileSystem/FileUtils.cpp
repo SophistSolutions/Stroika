@@ -372,21 +372,24 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 		);                       // don't change SACL
 	// ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
 #elif	qPlatform_POSIX
-	////TODO: VERY PRIMITIVE - TMPHACK
+	////TODO: Somewhat PRIMITIVE - TMPHACK
 	if (filePathName.empty ()) {
 		Execution::DoThrow (StringException (L"bad filename"));
 	}
-	/*
-	 * TODO:
-		// SHOULD find better way to check if isDIr
-	*/
-	bool isDir = filePathName[filePathName.size()-1] == '/';
-	int result = 0;
-	if (isDir) {
-		result = chmod (filePathName.c_str (), (S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH) | (S_IXUSR|S_IXGRP|S_IXOTH));
+	stat	s;
+	if (::stat (filePathName.c_str (), &s) < 0) {
+		Execution::ThrowIfError_errno_t ();
 	}
-	else {
-		result= chmod (filePathName.c_str (), (S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH));
+
+	mode_t	desiredMode	=	(S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH);
+	if (S_ISDIR (s)) {
+		desiredMode |= (S_IXUSR|S_IXGRP|S_IXOTH);
+	}
+
+	int result = 0;
+	// Don't call chmod if mode is already open (because doing so could fail even though we already have what we wnat if were not the owner)
+	if ((s.st_mode & desiredMode) != desiredMode) {
+		result = chmod (filePathName.c_str (), desiredMode);
 	}
 	if (result < 0) {
 		Execution::ThrowIfError_errno_t ();
