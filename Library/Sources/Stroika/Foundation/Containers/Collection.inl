@@ -14,6 +14,43 @@ namespace	Stroika {
 		namespace	Containers {
 
 
+
+			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
+				class	Collection::IRep {
+					protected:
+						IRep ();
+					public:
+	                    virtual ~IRep ();
+
+					public:
+						virtual	size_t		GetLength () const 						=	0;
+						virtual	bool		IsEmpty () const 						=	0;
+						virtual	bool		Contains (const T& item) const			=	0;
+						virtual	void		RemoveAll () 							=	0;
+
+					public:
+						virtual	bool		Equals (const Memory::SharedByValue<Collection<T,TRAITS>::IRep>& rhs) const 		=	0;
+
+					public:
+						virtual	typename Memory::SharedByValue<Iterator<T>::Rep>	MakeIterator () const						=	0;
+
+					public:
+						virtual	void		Add (const T& item)																	=	0;
+						virtual	void		Add (const Memory::SharedByValue<Collection<T,TRAITS>::IRep>& item)					=	0;
+						virtual	void		Remove (const T& item)																=	0;
+						virtual	void		Remove (const Memory::SharedByValue<Collection<T,TRAITS>::IRep>& item)				=	0;
+						virtual	void		RetainAll (const Memory::SharedByValue<Collection<T,TRAITS>::IRep>& item)			=	0;
+						virtual	void		RemoveIfPresent (const T& item)														=	0;
+						virtual	void		RemoveIfPresent (const Memory::SharedByValue<Collection<T,TRAITS>::IRep>& item)		=	0;
+
+					public:
+						virtual	void	Apply (void (*doToElement) (const T& item)) const										=	0;
+						virtual	typename Memory::SharedByValue<Iterator<T>::Rep>
+										ApplyUntil (void (*doToElement) (const T& item)) const									=	0;
+				};
+
+
+
 			//	Collection::IRep
 			template	<typename T, typename TTRAITS>
 				inline	Collection<T,TRAITS>::Collection (const Memory::SharedByValue<IRep<T>>& rep)
@@ -40,11 +77,13 @@ namespace	Stroika {
 					{
 						return fRep->RemoveAll ();
 					}
+#if 0
 			template	<typename T, typename TTRAITS>
 				inline	size_t	Collection<T,TRAITS>::Compact ()
 					{
 						return fRep->Compact ();
 					}
+#endif
 			template	<typename T, typename TTRAITS>
 				inline	size_t	Collection<T,TRAITS>::empty () const
 					{

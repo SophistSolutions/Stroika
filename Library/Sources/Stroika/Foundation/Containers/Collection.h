@@ -65,7 +65,7 @@ namespace	Stroika {
 			 */
 			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
 				class	Collection {
-					public:
+					protected:
 						class	IRep;
 
 					protected:
@@ -93,6 +93,7 @@ namespace	Stroika {
 						nonvirtual	void	RemoveAll ();
 
 
+#if 0
 						/*
 						 *	DESCRIPTION:
 						 *		Compact () has no operational semantics, except that if the object in question has allocated extra memory - in order to optimize future additions,
@@ -101,8 +102,11 @@ namespace	Stroika {
 						 *
 						 *	TODO:
 						 *			NOTE SURE WE WANT THIS HERE??? PROBABLY NO. We DO want it - but maybe only in subtypes?
+	<<AS OF EMAIL DISCUSSION WITH STERL 2011-09-28 - I lean HEAVILY towards getting rid of this. JUST DO IT with 
+						Bag_Compact<T> () or Sequnece_Compact<T>()...
 						 */
 						nonvirtual	void	Compact ();
+#endif
 
 
 					// STL-style wrapper names
@@ -111,6 +115,28 @@ namespace	Stroika {
 						nonvirtual	size_t	length () const;
 						nonvirtual	void	clear ();
 
+
+					public:
+						/*
+						 * This function returns true iff the collections are - by value - equal. 
+						 *
+						 *This at least conceptually involves iterating
+						 * over each item, and seeing if the results are the same.
+								{{{ SEE EMIAL DISCUSSION WITH STERL - NOT ADEUqte dfeinfiotn}}}
+						 *
+						 *	Two containers are considered Equal if they the can be expected to give the exact same sequence of results
+						 *	when iterating over their contents.
+						 *
+						 *	Note - this does NOT necessarily mean they will give the same results, because some amount of non-deterinism is allowed
+						 *	in iteration. For example, if you have an abstract collection of random numbers (us Collection to represent a sequnce of a 
+						 *	billion random numbers) - and then make a copy of that sequence (just incrementing a reference count). Intuitively one
+						 *	would consdier those two Collections<> equal, and Stroika will report them as such.  But when you go to iterate over each
+						 *	they might produce different answers.
+						 *
+						 *	For most normal cases - Arrays, Linked Lists, etc, this is a 'too subtle' and 'academic' distinction, and the obvious
+						 *	interpetation applies (you iterate over both - in order - and get the same answer).
+						 */
+						nonvirtual	bool	Equals (const Collection<T>& rhs) const;
 
 					public:
 						/*
@@ -165,6 +191,16 @@ namespace	Stroika {
 
 					public:
 						/*
+						 *	This calls Remove (item) for each element of the this collection not found in the argument 'items' collection.
+						 *	{NOTE - from Java collection::retainAll() - not sure this is a good idea - hard todo fast if items not a 'set' type}
+						 *	{NOTE- I THINK THIS AMOUTNS TO INSERSECT-WITH  - and that maybe a better name. But also - CNA be done effecitaly 
+						 *		even for collection using conerter Set<T> on items - as impl - so if already a set - fast - and if not - not too bad to constrct
+						 *		tmp set.
+						 */
+						nonvirtual	void	RetainAll (const Collection<T,TTRAITS>& items);
+
+					public:
+						/*
 						 *	This function is logically equivilent to
 						 *		if (Contains (item)) {
 						 *			Remove (item);
@@ -208,17 +244,18 @@ namespace	Stroika {
 						 * Take the given function argument, and call it for each element of the Collection. This is equivilent to:
 						 *		for (Iterator<T> i = begin (); i != end (); ++i) {
 						 *			if ((doToElement) (item)) {
-						 *				return true;
+						 *				return it;
 						 *			}
 						 *		}
-						 *		return false;
+						 *		return end();
 						 *
 						 *	However, in threading scenarios, this maybe preferable, since it counts as an atomic operation that will happen to each element without other
 						 *	threads intervening to modify the container.
 						 *
-						 *	This function returns true iff doToElement ever returned true.
+						 *	This function returns an iteartor pointing to the element that triggered the abrupt loop end (for example the element you were searching for?).
+						 *	It returns the specail iterator end () to indicate no doToElemet() functions returned true.
 						 */
-						nonvirtual	bool	ApplyUntil (bool (*doToElement) (T item)) const;
+						nonvirtual	typename Iterator<T>	ApplyUntil (bool (*doToElement) (T item)) const;
 
 
 					private:
@@ -248,35 +285,11 @@ namespace	Stroika {
 				Collection<T,TTRAITS>	operator- (const Collection<T,TTRAITS>& lhs, const Collection<T,TTRAITS>& rhs);
 
 
-
-			template	<typename T, typename TTRAITS = TWithCompareEquals<T>>
-				class	Collection::IRep {
-					protected:
-						IRep ();
-					public:
-	                    virtual ~IRep ();
-
-					public:
-						virtual	size_t		GetLength () const 						=	0;
-						virtual	bool		IsEmpty () const 						=	0;
-						virtual	bool		Contains (const T& item) const			=	0;
-						virtual	void		RemoveAll () 							=	0;
-						virtual	void		Compact ()								=	0;
-
-					public:
-						virtual	typename Memory::SharedByValue<Iterator<T>::Rep>	MakeIterator () const	=	0;
-					public:
-						virtual	void		Add (const T& item)						=	0;
-						virtual	void		Remove (const T& item)					=	0;
-				};
-
-
 		}
     }
 }
-
-
 #endif	/*_Stroika_Foundation_Containers_Collection_h_ */
+
 
 
 /*
