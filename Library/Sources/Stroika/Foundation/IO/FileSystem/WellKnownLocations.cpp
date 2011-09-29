@@ -154,7 +154,7 @@ TString	FileSystem::WellKnownLocations::GetTemporary ()
 		tempPath = buf;
 	}
 #elif	qPlatform_POSIX
-	return TSTR ("/tmp");
+	return TSTR ("/tmp/");
 #else
 	AssertNotImplemented ();
 #endif
