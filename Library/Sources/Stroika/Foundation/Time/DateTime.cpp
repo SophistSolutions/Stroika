@@ -169,7 +169,11 @@ DateTime::DateTime (time_t unixTime):
 	ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
 	*this = DateTime (ft);
 #elif	qPlatform_POSIX
-	AssertNotImplemented ();
+	time_t	clk = time (0);
+	const tm* now = localtime (&clk);
+	fDate = Date (Date::Year (now->tm_year+1900), Date::Month (now->tm_mon+1), Date::Day (now->tm_mday));
+
+	fTimeOfDay = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
 #else
 	Assert (false);
 #endif
@@ -191,8 +195,7 @@ DateTime	DateTime::Now ()
 	::GetLocalTime (&st);
 	return DateTime (st);
 #elif	qPlatform_POSIX
-	AssertNotImplemented ();
-	return DateTime ();
+	return DateTime (time (nullptr));
 #else
 	AssertNotImplemented ();
 	return DateTime ();
@@ -262,7 +265,9 @@ wstring	DateTime::Format4XML () const
 				int mins = unsignedBias - hrs * 60;
 				tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
 #elif	qPlatform_POSIX
-				AssertNotImplemented ();
+				//AssertNotImplemented ();
+				// WRONG - but let things limp along for a little while...
+				//		--:LGP 2011-09-28
 #else
 				AssertNotImplemented ();
 #endif

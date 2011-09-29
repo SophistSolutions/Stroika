@@ -29,7 +29,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-Linux", "{BDB956CB-14E0-4DE1-A36E-C852F928E761}"
 	ProjectSection(SolutionItems) = preProject
 		..\Linux\checkall.pl = ..\Linux\checkall.pl
-		..\Linux\Configuration-Default.mk = ..\Linux\Configuration-Default.mk
 		..\Linux\Makefile-Foundation = ..\Linux\Makefile-Foundation
 		..\Linux\Makefile-Foundation-Characters = ..\Linux\Makefile-Foundation-Characters
 		..\Linux\Makefile-Foundation-Configuration = ..\Linux\Makefile-Foundation-Configuration
