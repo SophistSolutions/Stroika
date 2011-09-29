@@ -26,6 +26,15 @@ foreach $i (@ARGV) {
 	}
 }
 
+
+my $useExtraConfigDefines	=	"";
+my $useExtraConfigDefines_LINUX	=	"-c-define 'qTraceToFile 1'";
+
+if ("$^O" eq "linux") {
+    $useExtraConfigDefines = $useExtraConfigDefines_LINUX;
+}
+
+
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
@@ -62,7 +71,7 @@ if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean") or (lc ($BLD_TRG)
 }
 
 if ($isBuildingMode) {
-	system ("perl configure.pl --only-if-unconfigured");
+	system ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
 }
 
 my $useBld	=	$BLD_TRG;
