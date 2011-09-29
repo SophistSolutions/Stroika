@@ -24,8 +24,7 @@ my $target			=	"Debug";
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileCName		=	"Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
-my $configFileMakeName	=	"$intermediateFiles/$platform/$target/Library/Configuration.mk";
-my $configFileMakeName	=	"Configuration.mk";
+my $configFileMakeName	=	"$intermediateFiles$platform/$target/Library/Configuration.mk";
 
 
 my $forceRecreate = true;
@@ -171,7 +170,7 @@ sub WriteStroikaConfigCHeader
 
 
 	print (OUT "\n");
-	print (OUT "#Configure Command Line Arguments (-c-define)\n");
+	print (OUT "//Configure Command Line Arguments (-c-define)\n");
 	foreach $var (@useExtraCDefines)
 	{
 		print (OUT "$var\n");
@@ -212,8 +211,7 @@ sub WriteStroikaConfigCHeader
 
 sub WriteStroikaConfigMakeHeader
 {
-	#open(OUT,">$configFileMakeName");
-	open(OUT,">:crlf", "$configFileMakeName");
+	open(OUT,">$configFileMakeName");
 	print (OUT "#\n");
 	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved\n");
 	print (OUT "#\n");
@@ -282,24 +280,26 @@ for ($i = 0; $i <= $#ARGV; $i++) {
 	}
 }
 
+#print ("OS: $^O\n");
+
 
 
 if ($forceRecreate) {
     system ("rm -f $configFileCName $configFileMakeName");
 }
 
+if ("$^O" eq "linux") {
+    MakeUnixDirs ();
+}
+
+
 unless (-e $configFileCName) {
 	print("Writing \"$configFileCName\"...\n");
 	WriteStroikaConfigCHeader ();
 }
 
+
 unless (-e $configFileMakeName) {
 	print("Writing \"$configFileMakeName\"...\n");
 	WriteStroikaConfigMakeHeader ();
-}
-
-#print ("OS: $^O\n");
-
-if ("$^O" eq "linux") {
-    MakeUnixDirs ();
 }
