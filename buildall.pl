@@ -28,7 +28,7 @@ foreach $i (@ARGV) {
 
 
 my $useExtraConfigDefines	=	"";
-my $useExtraConfigDefines_LINUX	=	"-c-define 'qTraceToFile 1'";
+my $useExtraConfigDefines_LINUX	=	"-c-define '#define qTraceToFile 1'";
 
 if ("$^O" eq "linux") {
     $useExtraConfigDefines = $useExtraConfigDefines_LINUX;
