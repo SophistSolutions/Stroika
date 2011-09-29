@@ -256,7 +256,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");
-	print (OUT "Linker=	$(CPlusPlus)\n");
+	print (OUT "Linker=	\$(CPlusPlus)\n");
 	print (OUT "\n");
 
 	close(OUT);
