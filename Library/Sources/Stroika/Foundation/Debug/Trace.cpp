@@ -12,6 +12,7 @@
 #include	"../Characters/Format.h"
 #include	"../Characters/StringUtils.h"
 #include	"../Execution/CriticalSection.h"
+#include	"../Execution/Module.h"
 #include	"../Memory/Common.h"
 #include	"../Time/Realtime.h"
 
@@ -108,39 +109,35 @@ namespace	{
 
 
 #if		qTraceToFile
-TString	Emitter::GetTraceFileName () const
-{
-	static	TString	sTraceFileName;
-	if (sTraceFileName.empty ()) {
+namespace	{
+	TString	mkTraceFileName_ ()
+	{
 		// Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
 		// (could fix of course, but I'm not sure desirable - reasonable defaults)
 		//
 		// Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
 		TString	mfname;
 		{
-			#if		qPlatform_Windows
-				TCHAR	mfbuf[MAX_PATH];
-				memset (mfbuf, 0, sizeof (mfbuf));
-				Verify (::GetModuleFileName (nullptr, mfbuf, NEltsOf (mfbuf)));
-				mfname = mfbuf;
-				size_t i = mfname.rfind ('\\');
-				if (i != TString::npos) {
-					mfname = mfname.substr (i + 1);
+			mfname = Execution::GetEXEPath ();
+
+			// NEED DEFINED CHAR - OR BETTER PATHPARSING - SO DONT HAVE TODO THIS ALL OVER THE PLACE!!!
+#if qPlatform_Windows
+			size_t i = mfname.rfind ('\\');
+#elif	qPlatform_POSIX
+			size_t i = mfname.rfind ('/');
+#endif
+			if (i != TString::npos) {
+				mfname = mfname.substr (i + 1);
+			}
+			i = mfname.rfind ('.');
+			if (i != TString::npos) {
+				mfname.erase (i);
+			}
+			for (TString::iterator i = mfname.begin (); i != mfname.end (); ++i) {
+				if (*i == ' ') {
+					*i = '-';
 				}
-				i = mfname.rfind ('.');
-				if (i != TString::npos) {
-					mfname.erase (i);
-				}
-				for (TString::iterator i = mfname.begin (); i != mfname.end (); ++i) {
-					if (*i == ' ') {
-						*i = '-';
-					}
-				}
-			#else
-// redo above portably using Execution::GetEXEPath () and portable code to find filepath separator char and GetBaseFileName...
-//AssertNotImplemented ();
-mfname= TSTR("test");
-			#endif
+			}
 		}
 		TString nowstr	=	ToTString (Time::DateTime::Now ().Format4XML ());
 		for (TString::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
@@ -148,9 +145,15 @@ mfname= TSTR("test");
 				*i = '-';
 			}
 		}
-		sTraceFileName = IO::FileSystem::WellKnownLocations::GetTemporary () + Format (TSTR ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
+		return IO::FileSystem::WellKnownLocations::GetTemporary () + Format (TSTR ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
 	}
-	return sTraceFileName;
+}
+
+
+TString	Emitter::GetTraceFileName () const
+{
+	static	TString	sTraceFileName_	=	mkTraceFileName_ ();
+	return sTraceFileName_;
 }
 #endif
 
