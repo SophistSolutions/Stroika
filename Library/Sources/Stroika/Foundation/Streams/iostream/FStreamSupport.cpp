@@ -41,11 +41,6 @@ void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& 
 	}
 }
 
-ifstream&	Streams::iostream::OpenInputFileStream (ifstream& ifStream, const TString& fileName, ios_base::openmode _Mode)
-{
-	OpenInputFileStream (&ifStream, fileName, _Mode);
-	return ifStream;
-}
 
 
 
@@ -70,12 +65,6 @@ void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString&
 			AssertNotImplemented ();
 		#endif
 	}
-}
-
-ofstream&	Streams::iostream::OpenOutputFileStream (ofstream& ofStream, const TString& fileName, ios_base::openmode _Mode)
-{
-	OpenOutputFileStream (&ofStream, fileName, _Mode);
-	return ofStream;
 }
 
 
