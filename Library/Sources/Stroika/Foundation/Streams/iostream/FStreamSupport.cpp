@@ -74,6 +74,15 @@ void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& 
 	CATCH_REBIND_FILENAMES_HELPER_(fileName);
 }
 
+ifstream&	Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream,
+								const TString& fileName,
+								ios_base::openmode _Mode
+					)
+{
+	OpenInputFileStream (&tmpIFStream, fileName, _Mode);
+	return tmpIFStream;
+}
+
 
 
 
@@ -101,6 +110,15 @@ void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString&
 		}
 	}
 	CATCH_REBIND_FILENAMES_HELPER_(fileName);
+}
+
+ofstream&	Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream,
+							const TString& fileName,
+							ios_base::openmode _Mode
+				)
+{
+	OpenOutputFileStream (&tmpOfStream, fileName, _Mode);
+	return tmpOfStream;
 }
 
 

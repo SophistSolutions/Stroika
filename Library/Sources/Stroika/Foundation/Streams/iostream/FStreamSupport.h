@@ -26,10 +26,18 @@ namespace	Stroika {
 												const TString& fileName,
 												ios_base::openmode _Mode = ios_base::in
 									);
+				ifstream&	OpenInputFileStream (ifstream& tmpIFStream,
+												const TString& fileName,
+												ios_base::openmode _Mode = ios_base::in
+									);
 
 
 				// like ofstream::open CTOR - but throws FILE exceptions on failure, and defaults to binary mode
 				void		OpenOutputFileStream (ofstream* ofStream,
+												const TString& fileName,
+												ios_base::openmode _Mode = ios_base::out | ios_base::trunc
+									);
+				ofstream&	OpenOutputFileStream (ofstream& tmpOfStream,
 												const TString& fileName,
 												ios_base::openmode _Mode = ios_base::out | ios_base::trunc
 									);
