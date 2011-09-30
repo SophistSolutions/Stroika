@@ -245,16 +245,13 @@ void	Main::Start ()
 	Characters::TString	thisEXEPath	=	Execution::GetEXEPath ();
 #if		qPlatform_POSIX
 	pid_t	pid	=	fork ();
+	Execution::ThrowErrNoIfNegative (pid);
 	if (pid == 0) {
 		// Child - exec -
 		//		TODO:		SHOULD BE CAREFUL ABOUT CLOSING FILE DESCRIPTORS BEFORE THIS ACTION - WE DONT WANT HTEM INHERITED!!!
 		//					BUT DONT DO WILLYNILLY - THINK THROUGH - I CANNNOT RECALL THE EXACT RIGHT ANSWER
 		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
 		exit (-1);
-	}
-	else if (pid < 0) {
-		// failed to fork - serious error
-		Execution::errno_ErrorException::DoThrow (errno);
 	}
 	else {
 		// parent - in this case - no reason to wait - our work is done... Future versions might wait to
@@ -269,7 +266,7 @@ void	Main::Stop ()
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Stop"));
 	// Send signal to server to stop
 #if		qPlatform_POSIX
-	ThrowErrNoIfNegative (kill (GetServicePID (), SIGTERM));
+	Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGTERM));
 #endif
 }
 
@@ -279,7 +276,7 @@ void	Main::Kill ()
 	Stop ();
 	// Send signal to server to stop
 #if		qPlatform_POSIX
-	ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
+	Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
 	// REALY should WAIT for server to stop and only do this it fails - 
 	unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
@@ -303,7 +300,7 @@ void	Main::ReReadConfiguration ()
 #if		qPlatform_POSIX
 	pid_t	pid	=	GetServicePID ();
 	Assert (pid != 0);	// maybe throw if non-zero???
-	ThrowErrNoIfNegative (kill (GetServicePID (), kSIG_ReReadConfiguration));
+	Execution::ThrowErrNoIfNegative (kill (GetServicePID (), kSIG_ReReadConfiguration));
 #endif
 }
 
