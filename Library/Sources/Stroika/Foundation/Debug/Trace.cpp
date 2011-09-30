@@ -13,6 +13,7 @@
 #include	"../Characters/StringUtils.h"
 #include	"../Execution/CriticalSection.h"
 #include	"../Execution/Module.h"
+#include	"../Execution/Process.h"
 #include	"../Memory/Common.h"
 #include	"../Time/Realtime.h"
 
@@ -145,10 +146,9 @@ namespace	{
 				*i = '-';
 			}
 		}
-		return IO::FileSystem::WellKnownLocations::GetTemporary () + Format (TSTR ("TraceLog_%s_%s.txt"), mfname.c_str (), nowstr.c_str ());
+		return IO::FileSystem::WellKnownLocations::GetTemporary () + Format (TSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
 	}
 }
-
 
 TString	Emitter::GetTraceFileName () const
 {

@@ -13,6 +13,13 @@
 
 
 
+
+#ifndef	qHas_pid_t
+#define	qHas_pid_t	qPlatform_POSIX
+#endif
+
+
+
 	/*
 	 * See DOCS in Stroika/Foundation/Execution/Thread.h
 	 */
