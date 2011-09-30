@@ -62,6 +62,23 @@ namespace	Stroika {
 				wstring	QuoteForXMLW (const wstring& s);
 
 
+
+				class	Indenter {
+					public:
+						Indenter (const String& indentText = String (L"\t"));
+
+					public:
+						nonvirtual	void	Indent (unsigned int indentLevel, ostream& out) const;
+						nonvirtual	void	Indent (unsigned int indentLevel, wostream& out) const;
+
+					private:
+						string	fTabS_;
+						wstring	fTabW_;
+				};
+
+
+
+
 				/*
 				 * Format values for XML output.
 				 *		PROBABLY should map QuoteForXML to this overloaded name?

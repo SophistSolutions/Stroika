@@ -21,7 +21,7 @@ using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
 
 /*
  ********************************************************************************
- ************************* QuoteForXMLAttribute *********************************
+ ****************************** QuoteForXMLAttribute ****************************
  ********************************************************************************
  */
 string	XML::QuoteForXMLAttribute (const string& s)
@@ -74,14 +74,13 @@ string	XML::QuoteForXMLAttribute (const String& s)
 	return QuoteForXMLAttribute (s.As<wstring> ());
 }
 
-string	QuoteForXMLAttribute (const Memory::Optional<String>& s)
+string	XML::QuoteForXMLAttribute (const Memory::Optional<String>& s)
 {
 	if (s.empty ()) {
 		return string ();
 	}
 	return QuoteForXMLAttribute (*s);
 }
-
 
 wstring	XML::QuoteForXMLAttributeW (const wstring& s)
 {
@@ -181,13 +180,46 @@ string	XML::QuoteForXML (const String& s)
 	return QuoteForXML (s.As<wstring> ());
 }
 
-string	QuoteForXML (const Memory::Optional<String>& s)
+string	XML::QuoteForXML (const Memory::Optional<String>& s)
 {
 	if (s.empty ()) {
 		return string ();
 	}
 	return QuoteForXML (*s);
 }
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** XML::Indenter ***********************************
+ ********************************************************************************
+ */
+Indenter::Indenter (const String& indentText)
+	: fTabS_ (indentText.AsUTF8<string> ())
+	, fTabW_ (indentText.As<wstring> ())
+{
+}
+
+void	Indenter::Indent (unsigned indentLevel, ostream& out) const
+{
+	for (unsigned int i = 0; i < indentLevel; ++i) {
+		out << fTabS_;
+	}
+}
+
+void	Indenter::Indent (unsigned int indentLevel, wostream& out) const
+{
+	for (unsigned int i = 0; i < indentLevel; ++i) {
+		out << fTabW_;
+	}
+}
+
+
+
 
 
 
