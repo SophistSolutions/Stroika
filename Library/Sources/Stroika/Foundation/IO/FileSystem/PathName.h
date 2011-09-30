@@ -15,7 +15,11 @@
 /**
  * TODO:
  *
- *			o	
+ *		o	See Stroika 1.0. It has some stuff about breaking paths into components. I'm not sure I like that design -but its woth looking
+ *			at more closely. We need something like that here.
+ *				-- LGP 2011-09-29
+ *
+ *
  */
 
 
@@ -39,14 +43,22 @@ namespace	Stroika {
 					extern	const	TChar	kPathComponentSeperator;
 				#endif
 
-
+				/*
+				 * This funciton presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
+				 * at the end. Use this when given a directory from some source that isn't so careful, so code can generally
+				 * operate with the assumption that directories have that trailing slash, so its easier to compose
+				 * pathanmes.
+				 */
 				TString	AssureDirectoryPathSlashTerminated (const TString& dirPath);
 
 				// map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
 				TString	SafeFilenameChars (const TString& s);
 
 
-				TString	AssureLongFileName (const TString& fileName);		// if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
+				/*
+				 * if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
+				 */
+				TString	AssureLongFileName (const TString& fileName);
 
 
 				/*
@@ -63,13 +75,16 @@ namespace	Stroika {
 				 * 	get the base name (strippping path and suffix)
 				 */
 				TString	GetFileBaseName (const TString& pathName);
-				TString	StripFileSuffix (const TString& pathName);		// get the full path WITHOUT the file suffix at the end
-				TString	GetFileDirectory (const TString& pathName);		// get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
 
+				/*
+				 * 	// get the full path WITHOUT the file suffix at the end
+				 */
+				TString	StripFileSuffix (const TString& pathName);
 
-				// See Stroika 1.0. It has some stuff about breaking paths into components. I'm not sure I like that design -but its woth looking
-				// at more closely. We need something like that here.
-				//		-- LGP 2011-09-29
+				/*
+				 * 		// get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
+				 */
+				TString	GetFileDirectory (const TString& pathName);
 
 			}
 		}
