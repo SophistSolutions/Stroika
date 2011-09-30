@@ -12,6 +12,8 @@
 	#include	<sys/types.h>
 	#include	<unistd.h>
 	#include	<signal.h>
+	#include	<sys/stat.h>
+	#include	<fcntl.h>
 #endif
 
 #include	"../../Foundation/Characters/Format.h"
