@@ -356,9 +356,6 @@ namespace	Stroika {
 					nonvirtual	Memory::SharedByValue<_Rep>	_PeekRep () const;
 
 				private:
-					static	const	Memory::SharedByValue<String::_Rep>	kEmptyStringRep_;
-
-				private:
 					/*
 					 * These are made friends so they can peek at the shared part, as an optimization/
 					 */

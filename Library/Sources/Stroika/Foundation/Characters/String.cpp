@@ -203,15 +203,32 @@ namespace	{
  ************************************* String ***********************************
  ********************************************************************************
  */
-const	Memory::SharedByValue<String::_Rep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+namespace	{
+	struct	MyEmptyString_ : String {
+		static	String::_Rep*	Clone_ (const _Rep& rep)
+			{
+				return (rep.Clone ());
+			}
+		static	Memory::SharedByValue<String::_Rep>	mkEmptyStrRep_ ()
+			{
+				static	bool								sInited_	=	false;
+				static	Memory::SharedByValue<String::_Rep>	s_;
+				if (not sInited_) {
+					sInited_ = true;
+					s_ = Memory::SharedByValue<String::_Rep> (DEBUG_NEW String_CharArray::MyRep_ (nullptr, 0), &Clone_);
+				}
+				return s_;
+			}
+	};
+}
 
 String::String ()
-	: fRep_ (kEmptyStringRep_)
+	: fRep_ (MyEmptyString_::mkEmptyStrRep_ ())
 {
 }
 
 String::String (const char16_t* cString)
-	: fRep_ (kEmptyStringRep_)
+	: fRep_ (MyEmptyString_::mkEmptyStrRep_ ())
 {
 	RequireNotNull (cString);
 	// Horrible, but temporarily OK impl
