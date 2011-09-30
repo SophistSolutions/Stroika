@@ -408,7 +408,7 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 				Execution::DoThrow (StringException (L"bad filename"));
 			}
 			struct	stat	s;
-			ThrowErrNoIfNegative (::stat (filePathName.c_str (), &s);
+			ThrowErrNoIfNegative (::stat (filePathName.c_str (), &s));
 
 			mode_t	desiredMode	=	(S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH);
 			if (S_ISDIR (s.st_mode)) {
