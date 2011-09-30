@@ -247,9 +247,19 @@ void	Main::Start ()
 	pid_t	pid	=	fork ();
 	Execution::ThrowErrNoIfNegative (pid);
 	if (pid == 0) {
-		// Child - exec -
-		//		TODO:		SHOULD BE CAREFUL ABOUT CLOSING FILE DESCRIPTORS BEFORE THIS ACTION - WE DONT WANT HTEM INHERITED!!!
-		//					BUT DONT DO WILLYNILLY - THINK THROUGH - I CANNNOT RECALL THE EXACT RIGHT ANSWER
+		/*
+		 * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
+		 *
+		 * Possibly should close more descriptors?
+		 */
+		for (int i = 0; i < 3; ++i) {
+			::close (i);
+		}
+		int id = open ("/dev/null", O_RDWR);
+		dup2 (id, 0);
+		dup2 (id, 1);
+		dup2 (id, 2);
+
 		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
 		exit (-1);
 	}
