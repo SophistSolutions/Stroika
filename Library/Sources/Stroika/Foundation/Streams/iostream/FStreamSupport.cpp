@@ -50,16 +50,17 @@ using	namespace	Stroika::Foundation::IO;
 
 
 
+
 /*
  ********************************************************************************
  ********************** iostream::OpenInputFileStream ***************************
  ********************************************************************************
  */
-void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode _Mode)
+ifstream&	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode mode)
 {
 	RequireNotNull (ifStream);
 	try {
-		ifStream->open (fileName.c_str (), _Mode);
+		ifStream->open (fileName.c_str (), mode | ios_base::in);
 		if (!(*ifStream)) {
 			#if		qPlatform_Windows
 				Execution::ThrowIfNotERROR_SUCCESS (::GetLastError ());
@@ -70,18 +71,17 @@ void	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& 
 				AssertNotImplemented ();
 			#endif
 		}
+		return *ifStream;
 	}
 	CATCH_REBIND_FILENAMES_HELPER_(fileName);
 }
 
-ifstream&	Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream,
-								const TString& fileName,
-								ios_base::openmode _Mode
-					)
+ifstream&	Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const TString& fileName, ios_base::openmode mode)
 {
-	OpenInputFileStream (&tmpIFStream, fileName, _Mode);
+	OpenInputFileStream (&tmpIFStream, fileName, mode);
 	return tmpIFStream;
 }
+
 
 
 
@@ -93,11 +93,11 @@ ifstream&	Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream,
  ****************** StreamUtils::OpenOutputFileStream ***************************
  ********************************************************************************
  */
-void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode _Mode)
+ofstream&	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode mode)
 {
 	RequireNotNull (ofStream);
 	try {
-		ofStream->open (fileName.c_str (), _Mode);
+		ofStream->open (fileName.c_str (), mode | ios_base::out);
 		if (!(*ofStream)) {
 			#if		qPlatform_Windows
 				Execution::ThrowIfNotERROR_SUCCESS (::GetLastError ());
@@ -108,16 +108,14 @@ void	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString&
 				AssertNotImplemented ();
 			#endif
 		}
+		return *ofStream;
 	}
 	CATCH_REBIND_FILENAMES_HELPER_(fileName);
 }
 
-ofstream&	Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream,
-							const TString& fileName,
-							ios_base::openmode _Mode
-				)
+ofstream&	Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const TString& fileName, ios_base::openmode mode)
 {
-	OpenOutputFileStream (&tmpOfStream, fileName, _Mode);
+	OpenOutputFileStream (&tmpOfStream, fileName, mode);
 	return tmpOfStream;
 }
 
