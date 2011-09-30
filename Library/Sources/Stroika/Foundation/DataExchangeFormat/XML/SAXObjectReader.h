@@ -99,6 +99,12 @@ namespace	Stroika {
 				template	<>
 					class	BuiltinReader<int>;
 				template	<>
+					class	BuiltinReader<unsigned int>;
+				template	<>
+					class	BuiltinReader<bool>;
+				template	<>
+					class	BuiltinReader<float>;
+				template	<>
 					class	BuiltinReader<Time::DateTime>;
 
 
