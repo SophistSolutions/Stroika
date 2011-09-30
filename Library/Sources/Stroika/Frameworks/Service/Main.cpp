@@ -76,6 +76,7 @@ void	Main::IRep::OnStopRequest ()
 
 void	Main::IRep::OnReReadConfigurationRequest ()
 {
+	fMustReReadConfig = true;
 }
 
 String	Main::IRep::GetServiceStatusMessage () const
@@ -97,15 +98,15 @@ void	Main::IRep::SignalHandler (int signum)
 	DbgTrace (L"Signal #%d", signum);
 	// VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
 	switch (signum) {
-	case	SIGTERM:
-		fStopping_ = true;
-		break;
-	#if		qCompilerAndStdLib_Supports_constexpr
+		case	SIGTERM:
+			fStopping_ = true;
+			break;
+#if		qCompilerAndStdLib_Supports_constexpr
 		case	kSIG_ReReadConfiguration:
-	#else
+#else
 		case	SIGHUP:
-	#endif
-			fMustReReadConfig = true;
+#endif
+			OnReReadConfigurationRequest ();
 			break;
 	}
 }
@@ -159,7 +160,7 @@ Main::State	Main::GetState () const
 		return eRunning;
 	}
 	#endif
-	return eStopped;	// otherwise (esp on other platforms where not implemtned) must  be stopped
+	return eStopped;	// otherwise (esp on other platforms where not implemented) must  be stopped
 }
 
 #if		qPlatform_POSIX
@@ -184,18 +185,18 @@ String		Main::GetServiceStatusMessage () const
 	tmp << L"Service '" << svd.fName.As<wstring> () << "'" << endl;
 	switch (this->GetState ()) {
 		case	eStopped:	
-			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << "STOPPED" << endl;
+			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "STOPPED" << endl;
 			break;
 		case	eRunning:	
-			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << "Running" << endl; 
+			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "Running" << endl; 
 			#if		qPlatform_POSIX
-				tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB kTAB << << GetServicePID () << endl;
 			#endif
 			break;
 		case	ePaused:	
-			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << "PAUSED" << endl; 
+			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "PAUSED" << endl; 
 			#if		qPlatform_POSIX
-				tmp << kTAB << L"PID:    " << kTAB<< kTAB << kTAB << GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB<< kTAB << kTAB kTAB << << GetServicePID () << endl;
 			#endif
 			break;
 		default:
