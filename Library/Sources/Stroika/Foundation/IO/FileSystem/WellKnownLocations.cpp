@@ -13,6 +13,7 @@
 #include	"../../Execution/Exceptions.h"
 
 #include	"FileUtils.h"
+#include	"PathName.h"
 
 #include	"WellKnownLocations.h"
 

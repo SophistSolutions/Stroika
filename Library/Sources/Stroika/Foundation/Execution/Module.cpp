@@ -10,7 +10,7 @@
 #include	"../Execution/ErrNoException.h"
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
-#include	"../IO/FileSystem/FileUtils.h"
+#include	"../IO/FileSystem/PathName.h"
 
 #include	"Module.h"
 

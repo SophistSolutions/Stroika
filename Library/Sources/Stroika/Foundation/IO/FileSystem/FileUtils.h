@@ -55,12 +55,6 @@ namespace	Stroika {
 				void	CheckFileAccess (const TString& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
 
 
-
-				TString	AssureDirectoryPathSlashTerminated (const TString& dirPath);
-
-				// map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
-				TString	SafeFilenameChars (const TString& s);
-
 				TString	ResolveShortcut (const TString& path2FileOrShortcut);
 
 				wstring	FileSizeToDisplayString (FileOffset_t bytes);
@@ -92,13 +86,6 @@ namespace	Stroika {
 				void	CreateDirectoryForFile (const TString& filePath);
 
 				TString	GetVolumeName (const TString& driveLetterAbsPath);
-
-				TString	AssureLongFileName (const TString& fileName);		// if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
-
-				TString	GetFileSuffix (const TString& fileName);
-				TString	GetFileBaseName (const TString& pathName);		// get the base name (strippping path and suffix)
-				TString	StripFileSuffix (const TString& pathName);		// get the full path WITHOUT the file suffix at the end
-				TString	GetFileDirectory (const TString& pathName);		// get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
 
 				bool	FileExists (const TChar* filePath);
 				bool	FileExists (const TString& filePath);
