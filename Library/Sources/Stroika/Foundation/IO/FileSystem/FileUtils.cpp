@@ -408,9 +408,7 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 				Execution::DoThrow (StringException (L"bad filename"));
 			}
 			struct	stat	s;
-			if (::stat (filePathName.c_str (), &s) < 0) {
-				Execution::ThrowIfError_errno_t ();
-			}
+			ThrowErrNoIfNegative (::stat (filePathName.c_str (), &s);
 
 			mode_t	desiredMode	=	(S_IRUSR|S_IRGRP|S_IROTH) | (S_IWUSR|S_IWGRP|S_IWOTH);
 			if (S_ISDIR (s.st_mode)) {
@@ -422,9 +420,7 @@ void	FileSystem::SetFileAccessWideOpened (const TString& filePathName)
 			if ((s.st_mode & desiredMode) != desiredMode) {
 				result = chmod (filePathName.c_str (), desiredMode);
 			}
-			if (result < 0) {
-				Execution::ThrowIfError_errno_t ();
-			}
+			ThrowErrNoIfNegative (result);
 		#else
 			AssertNotImplemented ();
 		#endif

@@ -26,6 +26,14 @@ namespace	Stroika {
 				}
 
 
+			inline	void	ThrowErrNoIfNegative (int returnCode)
+				{
+					if (returnCode < 0) {
+						errno_ErrorException::DoThrow (errno);
+					}
+				}
+
+
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw)
 					{

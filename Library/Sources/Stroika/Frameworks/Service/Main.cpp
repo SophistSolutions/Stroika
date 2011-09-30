@@ -269,7 +269,7 @@ void	Main::Stop ()
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Stop"));
 	// Send signal to server to stop
 #if		qPlatform_POSIX
-	kill (GetServicePID (), SIGTERM);
+	ThrowErrNoIfNegative (kill (GetServicePID (), SIGTERM));
 #endif
 }
 
@@ -279,7 +279,7 @@ void	Main::Kill ()
 	Stop ();
 	// Send signal to server to stop
 #if		qPlatform_POSIX
-	kill (GetServicePID (), SIGKILL);
+	ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
 	// REALY should WAIT for server to stop and only do this it fails - 
 	unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
@@ -303,7 +303,7 @@ void	Main::ReReadConfiguration ()
 #if		qPlatform_POSIX
 	pid_t	pid	=	GetServicePID ();
 	Assert (pid != 0);	// maybe throw if non-zero???
-	kill (GetServicePID (), kSIG_ReReadConfiguration);
+	ThrowErrNoIfNegative (kill (GetServicePID (), kSIG_ReReadConfiguration));
 #endif
 }
 

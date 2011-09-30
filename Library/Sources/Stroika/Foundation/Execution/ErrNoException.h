@@ -46,12 +46,23 @@ namespace	Stroika {
 			};
 
 
+			/*
+			 * Many - mostly POSIX - APIs - return a number which is zero if good, or -1 if errno is set and there is an error.
+			 * This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
+			 * throws and errno_ErrorException () excpetion.
+			 */
+			void	ThrowErrNoIfNegative (int returnCode);
+
+
 			// Just pre-declare DoThrow><> template here so we can specailize
 			template	<typename T>
 				void	 _NoReturn_	DoThrow (const T& e2Throw);
 			template	<>
 				void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw);
 
+			/*
+			 * Throw if errno is non-zero. Not an error - silently ignored - if errno is 0 (NOERROR)
+			 */
 			void	ThrowIfError_errno_t (errno_t e = errno);
 
 		}
