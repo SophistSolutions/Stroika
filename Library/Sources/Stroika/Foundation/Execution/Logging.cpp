@@ -17,10 +17,11 @@ using	namespace	Stroika::Foundation::Execution;
 
 
 
+Logger	Logger::sThe_;
 
 Logger::Logger ()
 	: fAppender_ ()
-	, fLogLevel_ (0)
+	, fMinLogLevel_ (eInfo_P)
 {
 }
 
@@ -29,7 +30,7 @@ void	Logger::SetAppender (Memory::SharedPtr<IAppenderRep> rep)
 	fAppender_ = rep;
 }
 
-void	Logger::Log_ (int logLevel, const String& format, va_list argList)
+void	Logger::Log_ (Priority logLevel, const String& format, va_list argList)
 {
 	Memory::SharedPtr<IAppenderRep>	tmp	=	sThe_.fAppender_;	// avoid races and critical sections
 	if (not tmp.IsNull ()) {
@@ -51,17 +52,19 @@ Logger::IAppenderRep::~IAppenderRep ()
 
 
 
+
+
 #if		qHas_Syslog
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
-	: fApplicationName_ (applicationName)
+	: fApplicationName_ (applicationName.AsTString ())
 {
-	openlog (fApplicationName_.AsTString ().c_str (), 0, LOG_DAEMON);	// not sure what facility to pass?
+	openlog (fApplicationName_.c_str (), 0, LOG_DAEMON);	// not sure what facility to pass?
 }
 
 Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facility)
-	: fApplicationName_ (applicationName)
+	: fApplicationName_ (applicationName.AsTString ())
 {
-	openlog (fApplicationName_.AsTString ().c_str (), 0, facility);
+	openlog (fApplicationName_.c_str (), 0, facility);
 }
 
 Logger::SysLogAppender::~SysLogAppender ()
@@ -69,18 +72,22 @@ Logger::SysLogAppender::~SysLogAppender ()
 	closelog ();
 }
 
-void	Log (int logLevel, const String& message) override
+void	Logger::SysLogAppender::Log (Priority logLevel, const String& message) override
 {
 	syslog (logLevel, "%s", message.AsTString ().c_str ());
 }
 #endif
 
 
+
+
+
+
 Logger::FileAppender::FileAppender (const String& fileName)
 {
 	AssertNotImplemented ();
 }
-void	Logger::FileAppender::Log (int logLevel, const String& message) override
+void	Logger::FileAppender::Log (Priority logLevel, const String& message) override
 {
 	AssertNotImplemented ();
 }

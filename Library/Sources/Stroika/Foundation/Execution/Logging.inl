@@ -23,9 +23,10 @@ namespace	Stroika {
 				{
 					return fAppender_;
 				}
-			inline	void	Logger::Log (int logLevel, const String& format, ...)
+			inline	void	Logger::Log (Priority logLevel, const String& format, ...)
 				{
-					if (logLevel >= sThe_.fLogLevel_ and not sThe_.fAppender_.IsNull ()) {
+					// CANNOT DO NUMBNERIC FILTERING TIL I WORK OUT IF I WANT THE SAME GOFFY NUMBERING AS SYSLOG?
+					if (/*logLevel >= sThe_.fMinLogLevel_ and*/ not sThe_.fAppender_.IsNull ()) {
 						va_list		argsList;
 						va_start (argsList, format);
 						Log_ (logLevel, format, argsList);

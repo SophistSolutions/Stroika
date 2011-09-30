@@ -74,15 +74,40 @@ namespace	Stroika {
 				private:
 					Memory::SharedPtr<IAppenderRep>	fAppender_;
 
+
+			public:
+
+				/*
+				 * Stroika uses this facility for NO DEBUGGING - but and to be portbale, but 
+					convenitnetly these numbers corredspond to teh SYSLOG values (so they can be substeid as needed).
+
+					NOTE: I don't think so many levels makes sense and I dont think these are well defined. I should probably trim the list,
+					 and keep the 
+
+					 UPDATE DOCS
+				 */
+				enum	Priority {
+					// Names and numbers for syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
+					eInfo_P				=	6,				// SYSLOG name LOG_INFO		-	The message is purely informational
+					eNotice_P			=	5,				// SYSLOG name LOG_NOTICE	-	The message describes a normal but important event
+					eWarning_P			=	4,				// SYSLOG name LOG_WARNING	-	The message is a warning
+					eError_P			=	3,				// SYSLOG name LOG_ERR		-	The message describes an error
+					eCriticalError_P	=	2,				// SYSLOG name LOG_CRIT		-	The message states a critical condition
+					eAlertError_P		=	1,				// SYSLOG name LOG_ALERT	-	Action on the message must be taken immediately
+					eEmergency_P		=	0,				// SYSLOG name LOG_EMERG	-	The message says the system is unusable
+				};
 				public:
-					int	fLogLevel_;	// SB PRIVATE
+	// EITHER RENAME AND DO ORDER DIFRNELY OR DONT TIE NNUMBERS TO SYSLOG NUMBERS
+					Priority	fMinLogLevel_;	// SB PRIVATE
 					// Get/Set LogLevel - this affects what WE EAT INLINE versus passon
+
+
 
 				public:
 					// DoLog
-					static	void	Log (int logLevel, const String& format, ...);	// varargs logger
+					static	void	Log (Priority logLevel, const String& format, ...);	// varargs logger
 				private:
-					static	void	Log_ (int logLevel, const String& format, va_list argList);
+					static	void	Log_ (Priority logLevel, const String& format, va_list argList);
 
 
 				private:
@@ -94,7 +119,7 @@ namespace	Stroika {
 				public:
 					virtual ~IAppenderRep ();
 				public:
-					virtual	void	Log (int logLevel, const String& message) = 0;
+					virtual	void	Log (Priority logLevel, const String& message) = 0;
 			};
 			#if		qHas_Syslog
 			class	Logger::SysLogAppender : public Logger::IAppenderRep {
@@ -103,16 +128,16 @@ namespace	Stroika {
 					SysLogAppender (const String& applicationName, int facility);
 					~SysLogAppender ();
 				public:
-					virtual	void	Log (int logLevel, const String& message) override;
+					virtual	void	Log (Priority logLevel, const String& message) override;
 				private:
-					String	fApplicationName_;
+					TString	fApplicationName_;	// must save like this because open-syslog appears to KEEP ahold of pointer (http://www.gnu.org/s/hello/manual/libc/openlog.html)
 			};
 			#endif
 			class	Logger::FileAppender : public Logger::IAppenderRep {
 				public:
 					FileAppender (const String& fileName);
 				public:
-					virtual	void	Log (int logLevel, const String& message) override;
+					virtual	void	Log (Priority logLevel, const String& message) override;
 			};
 
 		}
