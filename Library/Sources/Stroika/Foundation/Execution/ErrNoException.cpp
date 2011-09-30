@@ -70,9 +70,13 @@ TString	errno_ErrorException::LookupMessage (errno_t e)
 
 void	_NoReturn_	errno_ErrorException::DoThrow (errno_t error)
 {
+	//REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
 	switch (error) {
 		case	ENOMEM: {
 			Execution::DoThrow (bad_alloc (), "errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
+		}
+		case ENOENT: {
+			Execution::DoThrow (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
 		}
 		case EACCES: {
 			Execution::DoThrow (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
