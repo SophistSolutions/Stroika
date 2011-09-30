@@ -38,28 +38,26 @@ using	namespace	Stroika::Foundation::IO::FileSystem;
 
 /*
  ********************************************************************************
- ********************** FileSystem::AssureDirectoryPathSlashTerminated ******************
+ ************** FileSystem::AssureDirectoryPathSlashTerminated ******************
  ********************************************************************************
  */
 TString	FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath)
 {
-#if		qPlatform_Windows
 	if (dirPath.empty ()) {
-		Assert (false);	// not sure if this is an error or not. Not sure how code used.
-						// put assert in there to find out... Probably should THROW!
-						//		-- LGP 2009-05-12
-		return TSTR ("\\");
+		AssertNotReached ();	// not sure if this is an error or not. Not sure how code used.
+								// put assert in there to find out... Probably should THROW!
+								//		-- LGP 2009-05-12
+		return TString (&kPathComponentSeperator, &kPathComponentSeperator + 1);
 	}
 	else {
-		TChar	lastChar = dirPath[dirPath.length ()-1];
-		return (lastChar == '\\')?
-				dirPath: 
-				(dirPath + TSTR ("\\"))
-			;
+		TChar	lastChar = dirPath.back ();
+		if (lastChar == kPathComponentSeperator) {
+			return dirPath;
+		}
+		TString	result	=	dirPath;
+		result += kPathComponentSeperator;
+		return result;
 	}
-#else
-	AssertNotImplemented (); return TString ();
-#endif
 }
 
 
@@ -98,7 +96,7 @@ Again:
 
 /*
  ********************************************************************************
- ***************************** FileSystem::AssureLongFileName ***************************
+ ********************* FileSystem::AssureLongFileName ***************************
  ********************************************************************************
  */
 TString	FileSystem::AssureLongFileName (const TString& fileName)
@@ -122,7 +120,7 @@ TString	FileSystem::AssureLongFileName (const TString& fileName)
 
 /*
  ********************************************************************************
- ********************************** FileSystem::GetFileSuffix ***************************
+ ************************** FileSystem::GetFileSuffix ***************************
  ********************************************************************************
  */
 TString	FileSystem::GetFileSuffix (const TString& fileName)
@@ -150,6 +148,7 @@ TString	FileSystem::GetFileSuffix (const TString& fileName)
 	// returns leading '.' in name...
 	return ext;
 #else
+
 	AssertNotImplemented ();
 	return TString ();
 #endif
@@ -160,7 +159,7 @@ TString	FileSystem::GetFileSuffix (const TString& fileName)
 
 /*
  ********************************************************************************
- ******************************** FileSystem::GetFileBaseName ***************************
+ ************************ FileSystem::GetFileBaseName ***************************
  ********************************************************************************
  */
 TString	FileSystem::GetFileBaseName (const TString& pathName)
@@ -196,7 +195,7 @@ TString	FileSystem::GetFileBaseName (const TString& pathName)
 
 /*
  ********************************************************************************
- ******************************** FileSystem::StripFileSuffix ***************************
+ ************************ FileSystem::StripFileSuffix ***************************
  ********************************************************************************
  */
 TString	FileSystem::StripFileSuffix (const TString& pathName)
@@ -223,26 +222,13 @@ TString	FileSystem::StripFileSuffix (const TString& pathName)
  */
 TString	FileSystem::GetFileDirectory (const TString& pathName)
 {
-#if		qPlatform_Windows
 	// could use splitpath, but this maybe better, since works with \\UNCNAMES
 	TString	tmp		=	pathName;
-	size_t	idx		=	tmp.rfind ('\\');
+	size_t	idx		=	tmp.rfind (kPathComponentSeperator);
 	if (idx != TString::npos) {
 		tmp.erase (idx + 1);
 	}
 	return tmp;
-#elif	qPlatform_POSIX
-	// could use splitpath, but this maybe better, since works with \\UNCNAMES
-	TString	tmp		=	pathName;
-	size_t	idx		=	tmp.rfind ('/');
-	if (idx != TString::npos) {
-		tmp.erase (idx + 1);
-	}
-	return tmp;
-#else
-	AssertNotImplemented ();
-	return TString ();	// GRACEFULLY DEAL IWTH DIRECTION OF SLAHSES!!!
-#endif
 }
 
 
