@@ -131,12 +131,13 @@ int MyGetThreadId (HANDLE thread)
 
 using	Debug::TraceContextBumper;
 
+
 /*
  ********************************************************************************
- ******************************** Thread::Rep *****************************
+ ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */
-Thread::Rep::Rep ()
+Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 #if			qUseThreads_WindowsNative
 	: fThread (INVALID_HANDLE_VALUE)
 	, fStatusCriticalSection ()
@@ -146,26 +147,33 @@ Thread::Rep::Rep ()
 	, fStatus (eNotYetRunning)
 	, fOK2StartEvent (false, false)
 	, fRefCountBumpedEvent (false, false)
+	, fRunnable (runnable)
 {
-	TraceContextBumper ctx (TSTR ("Thread::Rep::Rep"));
-#if			qUseThreads_WindowsNative
-	fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep::ThreadProc, this, 0, nullptr));
-	if (fThread == nullptr) {
-		ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
-		Platform::Windows::Exception::DoThrow (::GetLastError ());
-	}
-	try {
-		fRefCountBumpedEvent.Wait ();	// assure we wait for this, so we don't ever let refcount go to zero before the
-										// thread has started...
-	}
-	catch (...) {
-		::CloseHandle (fThread);
-		Execution::DoReThrow ();
-	}
-#endif
+	TraceContextBumper ctx (TSTR ("Thread::Rep_::Rep_"));
+	RequireNotNull (runnable);
+
 }
 
-Thread::Rep::~Rep ()
+void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
+{
+	#if			qUseThreads_WindowsNative
+		(*repSharedPtr)->fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc, repSharedPtr, 0, nullptr));
+		if ((*repSharedPtr)->fThread == nullptr) {
+			ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
+			Platform::Windows::Exception::DoThrow (::GetLastError ());
+		}
+		try {
+			(*repSharedPtr)->fRefCountBumpedEvent.Wait ();	// assure we wait for this, so we don't ever let refcount go to zero before the
+											// thread has started...
+		}
+		catch (...) {
+			::CloseHandle ((*repSharedPtr)->fThread);
+			Execution::DoReThrow ();
+		}
+	#endif
+}
+
+Thread::Rep_::~Rep_ ()
 {
 	Assert (fStatus != eRunning);
 #if			qUseThreads_WindowsNative
@@ -175,14 +183,13 @@ Thread::Rep::~Rep ()
 #endif
 }
 
-void	Thread::Rep::DO_DELETE_REF_CNT ()
+void	Thread::Rep_::Run () override
 {
-	// nothing todo, cuz we don't want to get deleted twice!!!'
-	// See docs for SharedPtr<>
+	fRunnable->Run ();
 }
 
 #if			qUseThreads_WindowsNative
-unsigned int	__stdcall	Thread::Rep::ThreadProc (void* lpParameter)
+unsigned int	__stdcall	Thread::Rep_::ThreadProc (void* lpParameter)
 {
 	RequireNotNull (lpParameter);
 	/*
@@ -190,15 +197,14 @@ unsigned int	__stdcall	Thread::Rep::ThreadProc (void* lpParameter)
 	 * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
 	 * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
 	 */
-	Rep*			rep			=	reinterpret_cast<Rep*> (lpParameter);
-	SharedPtr<Rep>	incRefCnt	=	SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, rep);	// assure refcount incremented so object not deleted while the thread is running
-
+	SharedPtr<Rep_>* repSharedPtr	=	reinterpret_cast<SharedPtr<Rep_>*> (lpParameter);
+	SharedPtr<Rep_>	incRefCnt	=	*repSharedPtr;	// assure refcount incremented so object not deleted while the thread is running
 	incRefCnt->fRefCountBumpedEvent.Set ();
 
 	incRefCnt->fOK2StartEvent.Wait ();	// we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
 										// we really want to start this thread.
 	try {
-		DbgTrace ("In Thread::Rep::ThreadProc - setting state to RUNNING for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to RUNNING for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
 		bool	doRun	=	false;
 		{
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
@@ -210,7 +216,7 @@ unsigned int	__stdcall	Thread::Rep::ThreadProc (void* lpParameter)
 		if (doRun) {
 			incRefCnt->Run ();
 		}
-		DbgTrace ("In Thread::Rep::ThreadProc - setting state to COMPLETED for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to COMPLETED for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
 		{
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 			incRefCnt->fStatus = eCompleted;
@@ -218,13 +224,13 @@ unsigned int	__stdcall	Thread::Rep::ThreadProc (void* lpParameter)
 		return 0;
 	}
 	catch (ThreadAbortException&) {
-		DbgTrace ("In Thread::Rep::ThreadProc - setting state to COMPLETED (ThreadAbortException) for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to COMPLETED (ThreadAbortException) for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
 		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 		incRefCnt->fStatus = eCompleted;
 		return 0;
 	}
 	catch (...) {
-		DbgTrace ("In Thread::Rep::ThreadProc - setting state to COMPLETED (EXCEPT) for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to COMPLETED (EXCEPT) for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
 		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 		incRefCnt->fStatus = eCompleted;
 		return -1;
@@ -232,7 +238,7 @@ unsigned int	__stdcall	Thread::Rep::ThreadProc (void* lpParameter)
 }
 #endif
 
-void	Thread::Rep::NotifyOfAbort ()
+void	Thread::Rep_::NotifyOfAbort ()
 {
 	Require (fStatus == eAborting or fStatus == eCompleted);
 	// CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
@@ -251,10 +257,10 @@ void	Thread::Rep::NotifyOfAbort ()
 }
 
 #if			qUseThreads_WindowsNative
-void	CALLBACK	Thread::Rep::AbortProc_ (ULONG_PTR lpParameter)
+void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 {
-	TraceContextBumper ctx (TSTR ("Thread::Rep::AbortProc_"));
-	Thread::Rep*	rep	=	reinterpret_cast<Thread::Rep*> (lpParameter);
+	TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
+	Thread::Rep_*	rep	=	reinterpret_cast<Thread::Rep_*> (lpParameter);
 	Require (rep->fStatus == eAborting || rep->fStatus == eCompleted);
 	rep->ThrowAbortIfNeeded ();
 	Require (rep->fStatus == eCompleted);	// normally we don't reach this - but we could if we've already been marked completed somehow
@@ -262,33 +268,12 @@ void	CALLBACK	Thread::Rep::AbortProc_ (ULONG_PTR lpParameter)
 	//Assert (false);
 }
 
-int	Thread::Rep::MyGetThreadId_ () const
+int	Thread::Rep_::MyGetThreadId_ () const
 {
 	return MyGetThreadId (fThread);
 }
 #endif
 
-
-
-
-//namespace	{
-	class	Thread::RunnableRunRep_ : public Thread::Rep {
-		public:
-			RunnableRunRep_ (const SharedPtr<IRunnable>& runnable)
-				{
-					fRunnable = runnable;
-				}
-			RunnableRunRep_ (void (*fun2CallOnce) (void* arg), void* arg)
-				{
-					fRunnable = SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg));
-				}
-		protected:
-			virtual	void	Run () override
-				{
-					fRunnable->Run ();
-				}
-	};
-//}
 
 
 
@@ -300,34 +285,37 @@ int	Thread::Rep::MyGetThreadId_ () const
  ********************************************************************************
  */
 Thread::Thread ()
-	: fRep ()
+	: fRep_ ()
 {
 }
 
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunnableRunRep_ (fun2CallOnce, arg)))
+	: fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg)))))
 {
+	Rep_::DoCreate (&fRep_);
 }
 
 Thread::Thread (const SharedPtr<IRunnable>& runnable)
-	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunnableRunRep_ (runnable)))
+	: fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (runnable)))
 {
+	Rep_::DoCreate (&fRep_);
 }
 
 #if			qUseThreads_WindowsNative
 void	Thread::SetThreadPriority (int nPriority)
 {
-	RequireNotNull (fRep);
+	RequireNotNull (fRep_);
 	Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
 }
 #endif
 
 void	Thread::SetThreadName (const wstring& threadName)
 {
-	if (fRep->fThreadName != threadName) {
+	RequireNotNull (fRep_);
+	if (fRep_->fThreadName != threadName) {
 		TraceContextBumper	ctx (TSTR ("Execution::Thread::SetThreadName"));
 		DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
-		fRep->fThreadName = threadName;
+		fRep_->fThreadName = threadName;
 		#if		qSupportSetThreadNameDebuggerCall
 			if (::IsDebuggerPresent ()) {
 				// This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
@@ -342,7 +330,7 @@ void	Thread::SetThreadName (const wstring& threadName)
 				{
 					info.dwType = 0x1000;
 					info.szName = useThreadName.c_str ();
-					info.dwThreadID = MyGetThreadId (fRep->fThread);
+					info.dwThreadID = MyGetThreadId (fRep_->fThread);
 					info.dwFlags = 0;
 				}
 				IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info));
@@ -353,17 +341,17 @@ void	Thread::SetThreadName (const wstring& threadName)
 
 void	Thread::Start ()
 {
-	RequireNotNull (fRep);
+	RequireNotNull (fRep_);
 #if			qUseThreads_WindowsNative
-	Assert (fRep->fThread != INVALID_HANDLE_VALUE);
-	DbgTrace (L"Thread::Start: (thread = 0x%x, name='%s')", MyGetThreadId (fRep->fThread), fRep->fThreadName.c_str ());
+	Assert (fRep_->fThread != INVALID_HANDLE_VALUE);
+	DbgTrace (L"Thread::Start: (thread = 0x%x, name='%s')", MyGetThreadId (fRep_->fThread), fRep_->fThreadName.c_str ());
 #endif
-	fRep->fOK2StartEvent.Set ();
+	fRep_->fOK2StartEvent.Set ();
 }
 
 void	Thread::Abort ()
 {
-	if (fRep.IsNull ()) {
+	if (fRep_.IsNull ()) {
 		// then its effectively already stopped.
 		return;
 	}
@@ -374,42 +362,42 @@ void	Thread::Abort ()
 	//		-- LGP 2009-01-14
 
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
-	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
+	Require (::GetCurrentThreadId () != MyGetThreadId (fRep_->fThread));
 #endif
 
 	// first try to send abort exception, and then - if force - get serious!
-	AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
-	if (fRep->fStatus != eCompleted) {
-		fRep->fStatus = eAborting;
+	AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
+	if (fRep_->fStatus != eCompleted) {
+		fRep_->fStatus = eAborting;
 	}
-	if (fRep->fStatus == eAborting) {
+	if (fRep_->fStatus == eAborting) {
 		// by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
-		fRep->NotifyOfAbort ();
+		fRep_->NotifyOfAbort ();
 	}
 }
 
 void	Thread::Abort_Forced_Unsafe ()
 {
-	if (fRep.IsNull ()) {
+	if (fRep_.IsNull ()) {
 		// then its effectively already stopped.
 		return;
 	}
 
 #if			qUseThreads_WindowsNative
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
-	Require (::GetCurrentThreadId () != MyGetThreadId (fRep->fThread));
+	Require (::GetCurrentThreadId () != MyGetThreadId (fRep_->fThread));
 #endif
 
 	Abort ();
 
 	// Wait some reasonable amount of time for the thread to abort
 	IgnoreExceptionsForCall (WaitForDone (5.0f));
-	AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
+	AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
 #if			qUseThreads_WindowsNative
-	if (fRep->fStatus != eCompleted and fRep->fThread != INVALID_HANDLE_VALUE) {
+	if (fRep_->fStatus != eCompleted and fRep_->fThread != INVALID_HANDLE_VALUE) {
 		// This is VERY bad to do. Put assert here that it never happens...
 		Assert (false);
-		::TerminateThread (fRep->fThread, -1);
+		::TerminateThread (fRep_->fThread, -1);
 	}
 #else
 	AssertNotImplemented ();
@@ -418,7 +406,7 @@ void	Thread::Abort_Forced_Unsafe ()
 
 void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 {
-	if (fRep.IsNull ()) {
+	if (fRep_.IsNull ()) {
 		// then its effectively already done.
 		return;
 	}
@@ -427,10 +415,10 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 #if			qUseThreads_WindowsNative
 	HANDLE	thread	=	nullptr;
 	{
-		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
-		if (fRep->fThread != INVALID_HANDLE_VALUE and fRep->fStatus != eCompleted) {
+		AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
+		if (fRep_->fThread != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
 			doWait = true;
-			thread = fRep->fThread;
+			thread = fRep_->fThread;
 		}
 	}
 	if (doWait) {
@@ -444,7 +432,7 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 
 void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
 {
-	if (fRep.IsNull ()) {
+	if (fRep_.IsNull ()) {
 		// then its effectively already done.
 		return;
 	}
@@ -452,9 +440,9 @@ void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType
 #if			qUseThreads_WindowsNative
 	HANDLE	thread	=	nullptr;
 	{
-		AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
-		if (fRep->fThread != INVALID_HANDLE_VALUE and fRep->fStatus != eCompleted) {
-			thread = fRep->fThread;
+		AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
+		if (fRep_->fThread != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
+			thread = fRep_->fThread;
 		}
 	}
 	if (thread != nullptr) {
@@ -485,13 +473,15 @@ void	Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout)
 
 Thread::Status	Thread::GetStatus_ () const
 {
-	Require (not fRep.IsNull ());
-	if (fRep.IsNull ()) {
+	Require (not fRep_.IsNull ());
+	if (fRep_.IsNull ()) {
 		return eNull;
 	}
-	AutoCriticalSection enterCritcalSection (fRep->fStatusCriticalSection);
-	return fRep->fStatus;
+	AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
+	return fRep_->fStatus;
 }
+
+
 
 
 

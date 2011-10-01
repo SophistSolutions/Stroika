@@ -16,18 +16,23 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-// SOON TO BE PRIVATE
-			class	Thread::Rep : public virtual Memory::SharedPtrBase {
-				protected:
-					Rep ();
+
+			class	Thread::Rep_ {
 				public:
-					virtual ~Rep ();
+					Rep_ (const SharedPtr<IRunnable>& runnable);
+
+				public:
+					static	void	DoCreate (SharedPtr<Rep_>* repSharedPtr);
+
+				public:
+					virtual ~Rep_ ();
+
 
 				public:
 					nonvirtual	void	Start ();
 
 				protected:
-					virtual	void	Run ()	=	0;
+					virtual	void	Run () override;
 
 				protected:
 					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
@@ -41,9 +46,6 @@ namespace	Stroika {
 					// Called from WITHIN this thread (asserts thats true), and does throw of ThreadAbortException if in eAborting state
 					nonvirtual	void	ThrowAbortIfNeeded () const;
 
-				public:
-					virtual	void	DO_DELETE_REF_CNT () override;
-
 			#if			qUseThreads_WindowsNative
 				private:
 					static	unsigned int	__stdcall	ThreadProc (void* lpParameter);
@@ -52,11 +54,8 @@ namespace	Stroika {
 					static	void	CALLBACK	AbortProc_ (ULONG_PTR lpParameter);
 			#endif
 
-
 				public:
-					SharedPtr<IRunnable>	fRunnable;		//// 
-
-
+					SharedPtr<IRunnable>	fRunnable;
 
 				private:
 					nonvirtual	int	MyGetThreadId_ () const;
@@ -76,12 +75,12 @@ namespace	Stroika {
 			};
 
 
-		// class	Thread::Rep
-			inline	void	Thread::Rep::Start ()
+		// class	Thread::Rep_
+			inline	void	Thread::Rep_::Start ()
 				{
 					fOK2StartEvent.Set ();
 				}
-			inline	void	Thread::Rep::ThrowAbortIfNeeded () const
+			inline	void	Thread::Rep_::ThrowAbortIfNeeded () const
 				{
 				#if			qUseThreads_WindowsNative
 					Require (::GetCurrentThreadId () == MyGetThreadId_ ());
@@ -97,23 +96,19 @@ namespace	Stroika {
 		#if			qUseThreads_WindowsNative
 			inline	HANDLE	Thread::GetOSThreadHandle () const
 				{
-					return fRep->fThread;
+					return fRep_->fThread;
 				}
 		#endif
-			inline	SharedPtr<Thread::Rep>	Thread::GetRep () const
-				{
-					return fRep;
-				}
 			inline	SharedPtr<IRunnable>	Thread::GetRunnable () const
 				{
-					if (fRep.IsNull ()) {
+					if (fRep_.IsNull ()) {
 						return SharedPtr<IRunnable> ();
 					}
-					return fRep->fRunnable;
+					return fRep_->fRunnable;
 				}
 			inline	bool	Thread::operator< (const Thread& rhs) const
 				{
-					return fRep < rhs.fRep;
+					return fRep_ < rhs.fRep_;
 				}
 			inline	void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 				{
@@ -122,11 +117,11 @@ namespace	Stroika {
 				}
 			inline	wstring	Thread::GetThreadName () const
 				{
-					return fRep->fThreadName;
+					return fRep_->fThreadName;
 				}
 			inline	Thread::Status	Thread::GetStatus () const
 				{
-					if (fRep.IsNull ()) {
+					if (fRep_.IsNull ()) {
 						return eNull;
 					}
 					return GetStatus_ ();

@@ -66,11 +66,17 @@ namespace	Stroika {
 			//
 			class	Thread {
 				private:
-					class	Rep;
-				private:
-					class	RunnableRunRep_;		//tmphack
+					class	Rep_;
 				public:
+					// TODO:
+					//			(o)		Either get rid of no-arg CTOR, or explain why its useful
+					//
 					Thread ();
+
+					// TODO:
+					//			(o)		Add more function-pointer overloads (e.g. function with no args, and function with 2 args - and maybe templated variant?
+					//
+					//
 					// fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
 					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
 					explicit Thread (const SharedPtr<IRunnable>& runnable);
@@ -79,8 +85,6 @@ namespace	Stroika {
 				#if			qUseThreads_WindowsNative
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
-				private:
-					nonvirtual	SharedPtr<Rep>	GetRep () const;
 
 				public:
 					nonvirtual	SharedPtr<IRunnable>	GetRunnable () const;
@@ -141,7 +145,7 @@ namespace	Stroika {
 					nonvirtual	bool	operator< (const Thread& rhs) const;
 
 				private:
-					SharedPtr<Rep>	fRep;
+					SharedPtr<Rep_>	fRep_;
 			};
 
 
@@ -152,7 +156,6 @@ namespace	Stroika {
 
 			template	<unsigned int kEveryNTimes>
 				void	CheckForThreadAborting ();
-
 
 
 		}
