@@ -54,8 +54,11 @@
 
 
 
-
-
+// Get rid of this ASAP - make it PRIVATE!!! Just use RUNABLE API!!!!
+//		-- LGP 2011-09-30
+#ifndef	qAllowPublicThreadRep
+#define	qAllowPublicThreadRep	1
+#endif
 
 
 
@@ -99,8 +102,10 @@ namespace	Stroika {
 					class	Rep;
 				public:
 					Thread ();
+#if		qAllowPublicThreadRep
 					explicit Thread (const SharedPtr<Rep>& threadObj);
 					explicit Thread (Rep* newThreadObj);
+#endif
 					// fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
 					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
 					explicit Thread (const SharedPtr<IRunnable>& runnable);
@@ -109,7 +114,13 @@ namespace	Stroika {
 				#if			qUseThreads_WindowsNative
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
+#if		qAllowPublicThreadRep
+				private:
+#endif
 					nonvirtual	SharedPtr<Rep>	GetRep () const;
+
+				public:
+					nonvirtual	SharedPtr<IRunnable>	GetRunnable () const;
 
 				public:
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
@@ -168,57 +179,6 @@ namespace	Stroika {
 
 				private:
 					SharedPtr<Rep>	fRep;
-			};
-			class	Thread::Rep : public virtual Memory::SharedPtrBase {
-				protected:
-					Rep ();
-				public:
-					virtual ~Rep ();
-
-				public:
-					nonvirtual	void	Start ();
-
-				protected:
-					virtual	void	Run ()	=	0;
-
-				protected:
-					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
-					// and is just called by Thread::Abort (). It CAN be hooked by subclassses to do soemthing to
-					// force a quicker abort.
-					//
-					// BUT BEWARE WHEN OVERRIDING - WORKS ON ANOTHER THREAD!!!!
-					virtual	void	NotifyOfAbort ();
-
-				protected:
-					// Called from WITHIN this thread (asserts thats true), and does throw of ThreadAbortException if in eAborting state
-					nonvirtual	void	ThrowAbortIfNeeded () const;
-
-				public:
-					virtual	void	DO_DELETE_REF_CNT () override;
-
-			#if			qUseThreads_WindowsNative
-				private:
-					static	unsigned int	__stdcall	ThreadProc (void* lpParameter);
-
-				private:
-					static	void	CALLBACK	AbortProc_ (ULONG_PTR lpParameter);
-			#endif
-
-				private:
-					nonvirtual	int	MyGetThreadId_ () const;
-
-				private:
-					friend class	Thread;
-
-				private:
-				#if			qUseThreads_WindowsNative
-					HANDLE					fThread;
-				#endif
-					mutable	CriticalSection	fStatusCriticalSection;
-					Status					fStatus;
-					Event					fRefCountBumpedEvent;
-					Event					fOK2StartEvent;
-					wstring					fThreadName;
 			};
 			#endif
 

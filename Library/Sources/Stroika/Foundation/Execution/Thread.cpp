@@ -271,36 +271,16 @@ int	Thread::Rep::MyGetThreadId_ () const
 
 
 
-
-namespace	{
-	class	RunOnceRep_ : public Thread::Rep {
-		public:
-			RunOnceRep_ (void (*fun2CallOnce) (void* arg), void* arg):
-				fFun2CallOnce (fun2CallOnce),
-				fArg (arg)
-				{
-				}
-		protected:
-			virtual	void	Run () override
-				{
-					(fFun2CallOnce) (fArg);
-				}
-
-		private:
-			void	(*fFun2CallOnce) (void* arg);
-			void*	fArg;
-	};
-}
-
-
 namespace	{
 	class	RunnableRunRep_ : public Thread::Rep {
-		private:
-			SharedPtr<IRunnable>	fRunnable;
 		public:
 			RunnableRunRep_ (const SharedPtr<IRunnable>& runnable)
-				: fRunnable (runnable)
 				{
+					fRunnable = runnable;
+				}
+			RunnableRunRep_ (void (*fun2CallOnce) (void* arg), void* arg)
+				{
+					fRunnable = SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg));
 				}
 		protected:
 			virtual	void	Run () override
@@ -324,6 +304,7 @@ Thread::Thread ()
 {
 }
 
+#if		qAllowPublicThreadRep
 Thread::Thread (const SharedPtr<Rep>& threadObj)
 	: fRep (threadObj)
 {
@@ -333,9 +314,10 @@ Thread::Thread (Rep* newThreadObj):
 	fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, newThreadObj))
 {
 }
+#endif
 
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunOnceRep_ (fun2CallOnce, arg)))
+	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunnableRunRep_ (fun2CallOnce, arg)))
 {
 }
 
