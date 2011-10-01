@@ -51,23 +51,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-
 			using	Memory::SharedPtr;
-
-
-			// ADD THREADPOOL (Thread Pool) SUPPORT:
-			//
-			//		Basic idea is to separate out this existing class into two parts - the part that has
-			//		NotifyOfAbort/MainLoop () - and the surrounding code that does the ThreadMain etc stuff.
-			//
-			//		Then do one backend impl that does just what we have here, and one that pools the thread objects
-			//		(handles) - and keeps them sleeping when not used.
-			//
-			//		LOW PRIORITY - but a modest change. Its mainly useful for servicing lost-cost calls/threads, where
-			//		the overhead of constructing the thread is significant compared to the cost of performing the
-			//		action, and where the priority & stacksize can all be predeterimed and 'shared'.
-			//
-
 
 			// Using the smartpointer wrapper Thread around a thread guarnatees its reference counting
 			// will work safely - so that even when all external references go away, the fact that the thread
