@@ -114,7 +114,7 @@ namespace	Stroika {
 				#if			qUseThreads_WindowsNative
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
-#if		qAllowPublicThreadRep
+#if		!qAllowPublicThreadRep
 				private:
 #endif
 					nonvirtual	SharedPtr<Rep>	GetRep () const;
