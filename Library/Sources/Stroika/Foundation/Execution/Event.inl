@@ -92,11 +92,12 @@ namespace	Stroika {
 						}
 						Verify (result == WAIT_OBJECT_0);
 					#elif		qUseThreads_StdCPlusPlus
-						fMutex_.lock ();
+						std::unique_lock<std::mutex> lock (fMutex_);
+						//fMutex_.lock ();
 						while (not fTriggered_) {
-							fConditionVariable_.wait (fMutex_);
+							fConditionVariable_.wait (lock);
 						}
-						fMutex_.unlock ();
+						//fMutex_.unlock ();
 					#else
 						AssertNotImplemented ();
 					#endif

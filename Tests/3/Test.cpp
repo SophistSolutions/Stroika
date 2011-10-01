@@ -88,8 +88,8 @@ namespace	{
 
 
 namespace	{
-	Execution::Event	sRegTest3Event_T1_ (false, false);
-	Execution::Event	sRegTest3Event_T2_ (false, false);
+	Execution::Event	sRegTest3Event_T1_;
+	Execution::Event	sRegTest3Event_T2_;
 	void	RegressionTest3_ ()
 		{
 
