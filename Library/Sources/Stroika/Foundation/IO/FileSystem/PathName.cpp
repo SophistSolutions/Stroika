@@ -50,7 +50,8 @@ TString	FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath)
 		return TString (&kPathComponentSeperator, &kPathComponentSeperator + 1);
 	}
 	else {
-		TChar	lastChar = dirPath.back ();
+		//TChar	lastChar = dirPath.back ();	// try later - or not deendingon other code chnages - but didn;t' workw th gcc 4.5
+		TChar	lastChar = dirPath[dirPath.size ()-1];
 		if (lastChar == kPathComponentSeperator) {
 			return dirPath;
 		}
