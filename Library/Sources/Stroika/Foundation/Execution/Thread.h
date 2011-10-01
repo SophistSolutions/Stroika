@@ -46,14 +46,6 @@
 
 
 
-// Get rid of this ASAP - make it PRIVATE!!! Just use RUNABLE API!!!!
-//		-- LGP 2011-09-30
-#ifndef	qAllowPublicThreadRep
-#define	qAllowPublicThreadRep	0
-#endif
-
-
-
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -89,20 +81,12 @@ namespace	Stroika {
 		// -- LGP 2009-05-08
 			//
 			class	Thread {
-#if		qAllowPublicThreadRep
-				public:
-#else
 				private:
-#endif
 					class	Rep;
 				private:
 					class	RunnableRunRep_;		//tmphack
 				public:
 					Thread ();
-#if		qAllowPublicThreadRep
-					explicit Thread (const SharedPtr<Rep>& threadObj);
-					explicit Thread (Rep* newThreadObj);
-#endif
 					// fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
 					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
 					explicit Thread (const SharedPtr<IRunnable>& runnable);
@@ -111,9 +95,7 @@ namespace	Stroika {
 				#if			qUseThreads_WindowsNative
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
-#if		!qAllowPublicThreadRep
 				private:
-#endif
 					nonvirtual	SharedPtr<Rep>	GetRep () const;
 
 				public:

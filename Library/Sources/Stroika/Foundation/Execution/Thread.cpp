@@ -296,25 +296,13 @@ int	Thread::Rep::MyGetThreadId_ () const
 
 /*
  ********************************************************************************
- *********************************** Thread *******************************
+ *********************************** Thread *************************************
  ********************************************************************************
  */
 Thread::Thread ()
 	: fRep ()
 {
 }
-
-#if		qAllowPublicThreadRep
-Thread::Thread (const SharedPtr<Rep>& threadObj)
-	: fRep (threadObj)
-{
-}
-
-Thread::Thread (Rep* newThreadObj):
-	fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, newThreadObj))
-{
-}
-#endif
 
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
 	: fRep (SharedPtr<Rep> (SharedPtr<Rep>::eUsesSharedPtrBase, DEBUG_NEW RunnableRunRep_ (fun2CallOnce, arg)))
