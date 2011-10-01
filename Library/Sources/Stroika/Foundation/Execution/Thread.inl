@@ -16,8 +16,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-			#if		qUseThreads
-
 // SOON TO BE PRIVATE
 			class	Thread::Rep : public virtual Memory::SharedPtrBase {
 				protected:
@@ -76,7 +74,6 @@ namespace	Stroika {
 					Event					fOK2StartEvent;
 					wstring					fThreadName;
 			};
-			#endif
 
 
 		// class	Thread::Rep

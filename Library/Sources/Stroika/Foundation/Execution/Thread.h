@@ -38,14 +38,6 @@
 	#error "qUseThreads_StdCPlusPlus should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-/*
-@CONFIGVAR:		qUseThreads
-@DESCRIPTION:	<p>This defines whether or not the Stroika thread classes are supported at all</p>
-*/
-#if		!defined (qUseThreads)
-	#error "qUseThreads should normally be defined indirectly by StroikaConfig.h"
-#endif
-
 
 
 #if		qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus
@@ -96,7 +88,6 @@ namespace	Stroika {
 		// NotifyOfAbort/SleepEx/QueueUserAPC stuff - it should be pretty automatic...
 		// -- LGP 2009-05-08
 			//
-			#if		qUseThreads
 			class	Thread {
 				public:
 					class	Rep;
@@ -180,7 +171,6 @@ namespace	Stroika {
 				private:
 					SharedPtr<Rep>	fRep;
 			};
-			#endif
 
 
 

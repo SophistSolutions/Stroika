@@ -42,12 +42,6 @@
 		#endif
 	#endif
 
-	/*
-	 * See DOCS in Stroika/Foundation/Execution/Thread.h
-	 */
-	#if		!defined (qUseThreads)
-		#define	qUseThreads	(qUseThreads_WindowsNative || qUseThreads_StdCPlusPlus)
-	#endif
 
 
 #endif	/*_Stroika_Foundation_Configuration_Private_Defaults_Execution_Exceptions_h_*/
