@@ -151,11 +151,12 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 {
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::Rep_"));
 	RequireNotNull (runnable);
-
 }
 
 void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 {
+	RequireNotNull (repSharedPtr);
+	RequireNotNull (*repSharedPtr);
 	#if			qUseThreads_WindowsNative
 		(*repSharedPtr)->fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc, repSharedPtr, 0, nullptr));
 		if ((*repSharedPtr)->fThread == nullptr) {
@@ -164,10 +165,11 @@ void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 		}
 		try {
 			(*repSharedPtr)->fRefCountBumpedEvent.Wait ();	// assure we wait for this, so we don't ever let refcount go to zero before the
-											// thread has started...
+															// thread has started...
 		}
 		catch (...) {
 			::CloseHandle ((*repSharedPtr)->fThread);
+			(*repSharedPtr)->fThread = INVALID_HANDLE_VALUE;
 			Execution::DoReThrow ();
 		}
 	#endif

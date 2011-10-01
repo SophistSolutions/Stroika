@@ -20,19 +20,16 @@ namespace	Stroika {
 			class	Thread::Rep_ {
 				public:
 					Rep_ (const SharedPtr<IRunnable>& runnable);
+					~Rep_ ();
 
 				public:
 					static	void	DoCreate (SharedPtr<Rep_>* repSharedPtr);
 
 				public:
-					virtual ~Rep_ ();
-
-
-				public:
 					nonvirtual	void	Start ();
 
 				protected:
-					virtual	void	Run () override;
+					nonvirtual	void	Run () override;
 
 				protected:
 					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
@@ -40,7 +37,7 @@ namespace	Stroika {
 					// force a quicker abort.
 					//
 					// BUT BEWARE WHEN OVERRIDING - WORKS ON ANOTHER THREAD!!!!
-					virtual	void	NotifyOfAbort ();
+					nonvirtual	void	NotifyOfAbort ();
 
 				protected:
 					// Called from WITHIN this thread (asserts thats true), and does throw of ThreadAbortException if in eAborting state
