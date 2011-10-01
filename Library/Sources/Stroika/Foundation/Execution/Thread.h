@@ -41,7 +41,7 @@
 
 
 #if		qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus
-	#error "Configuraiton Error: cannot define both qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus"
+	#error "Configuration Error: cannot define both qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus"
 #endif
 
 

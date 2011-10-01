@@ -28,7 +28,7 @@ namespace	Stroika {
 				#if		qUseThreads_StdCPlusPlus
 					: fMutex_ ()
 					, fConditionVariable_ ()
-					fTriggered_ (false)
+					, fTriggered_ (false)
 				#endif
 				{
 					//bool manualReset, bool initialState
@@ -60,7 +60,7 @@ namespace	Stroika {
 					#elif		qUseThreads_StdCPlusPlus
 						fMutex_.lock ();
 						fTriggered_ = false;
-						pthread_mutex_unlock(&ev->mutex);
+						fMutex_.unlock ();
 					#else
 						AssertNotImplemented ();
 					#endif
@@ -79,7 +79,7 @@ namespace	Stroika {
 						AssertNotImplemented ();
 					#endif
 				}
-			inline	void	Event::Wait (Time::DurationSecondsType timeout) const
+			inline	void	Event::Wait (Time::DurationSecondsType timeout)
 				{
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);

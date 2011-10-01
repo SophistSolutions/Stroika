@@ -54,7 +54,7 @@ namespace	Stroika {
 					nonvirtual	void	Set () throw ();
 
 					// Simple wait. Can use operator HANDLE() to do fancier waits
-					nonvirtual	void	Wait (Time::DurationSecondsType timeout = Time::kInfinite) const;
+					nonvirtual	void	Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
 				#if			qPlatform_Windows
 				public:
