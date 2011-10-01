@@ -49,7 +49,7 @@
 // Get rid of this ASAP - make it PRIVATE!!! Just use RUNABLE API!!!!
 //		-- LGP 2011-09-30
 #ifndef	qAllowPublicThreadRep
-#define	qAllowPublicThreadRep	1
+#define	qAllowPublicThreadRep	0
 #endif
 
 
@@ -89,8 +89,14 @@ namespace	Stroika {
 		// -- LGP 2009-05-08
 			//
 			class	Thread {
+#if		qAllowPublicThreadRep
 				public:
+#else
+				private:
+#endif
 					class	Rep;
+				private:
+					class	RunnableRunRep_;		//tmphack
 				public:
 					Thread ();
 #if		qAllowPublicThreadRep

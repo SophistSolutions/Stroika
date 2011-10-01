@@ -271,8 +271,8 @@ int	Thread::Rep::MyGetThreadId_ () const
 
 
 
-namespace	{
-	class	RunnableRunRep_ : public Thread::Rep {
+//namespace	{
+	class	Thread::RunnableRunRep_ : public Thread::Rep {
 		public:
 			RunnableRunRep_ (const SharedPtr<IRunnable>& runnable)
 				{
@@ -288,7 +288,7 @@ namespace	{
 					fRunnable->Run ();
 				}
 	};
-}
+//}
 
 
 
