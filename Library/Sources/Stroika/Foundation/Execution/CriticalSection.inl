@@ -33,14 +33,18 @@ namespace	Stroika {
 				}
 			inline	void	CriticalSection::Lock () 
 				{
-				#if qUseThreads_WindowsNative
+				#if		qUseThreads_WindowsNative
 					::EnterCriticalSection (&fCritSec);
+				#elif		qUseThreads_StdCPlusPlus
+					fMutex_.lock ();
 				#endif
 				}
 			inline	void CriticalSection::Unlock()
 				{
-				#if qUseThreads_WindowsNative
+				#if		qUseThreads_WindowsNative
 					::LeaveCriticalSection (&fCritSec);
+				#elif		qUseThreads_StdCPlusPlus
+					fMutex_.unlock ();
 				#endif
 				}
 			#if		qUseThreads_WindowsNative

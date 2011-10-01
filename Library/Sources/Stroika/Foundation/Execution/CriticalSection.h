@@ -9,6 +9,9 @@
 #if		qUseThreads_WindowsNative
 	#include	<windows.h>
 #endif
+#if		qUseThreads_StdCPlusPlus
+	#include	<mutex>
+#endif
 
 #include	"../Configuration/Common.h"
 
@@ -35,6 +38,9 @@ namespace	Stroika {
 
 				private:
 					CRITICAL_SECTION fCritSec;
+				#endif
+				#if		qUseThreads_StdCPlusPlus
+					std::recursive_mutex	fMutex_;
 				#endif
 			};
 
