@@ -190,7 +190,7 @@ String		Main::GetServiceStatusMessage () const
 		case	eRunning:	
 			tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "Running" << endl; 
 			#if		qPlatform_POSIX
-				tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << kTAB< << GetServicePID () << endl;
+				tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << kTAB << GetServicePID () << endl;
 			#endif
 			break;
 		case	ePaused:	
