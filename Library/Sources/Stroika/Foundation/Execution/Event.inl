@@ -21,16 +21,24 @@ namespace	Stroika {
 
 
 		// class	Event
-			inline	Event::Event (bool manualReset, bool initialState)
+			inline	Event::Event ()
 #if			qPlatform_Windows
-				: fEventHandle (::CreateEvent (nullptr, manualReset, initialState, nullptr))
+				: fEventHandle (::CreateEvent (nullptr, false, false, nullptr))
 #endif
+				#if		qUseThreads_StdCPlusPlus
+					: fMutex_ ()
+					, fConditionVariable_ ()
+					fTriggered_ (false)
+				#endif
 				{
+					//bool manualReset, bool initialState
 					#if			qPlatform_Windows
 						ThrowIfFalseGetLastError (fEventHandle != nullptr);
 						#if		qTrack_Execution_HandleCounts
 							Execution::AtomicIncrement (&sCurAllocatedHandleCount);
 						#endif
+					#elif		qUseThreads_StdCPlusPlus
+						// initialized above
 					#else
 						AssertNotImplemented ();
 					#endif
@@ -42,17 +50,6 @@ namespace	Stroika {
 						#if		qTrack_Execution_HandleCounts
 							AtomicDecrement (&sCurAllocatedHandleCount);
 						#endif
-					#else
-						AssertNotImplemented ();
-					#endif
-				}
-			inline	void	Event::Pulse() throw ()
-				{
-					#if			qPlatform_Windows
-						AssertNotNull (fEventHandle);
-						Verify (::PulseEvent (fEventHandle));
-					#else
-						AssertNotImplemented ();
 					#endif
 				}
 			inline	void	Event::Reset () throw ()
@@ -60,6 +57,10 @@ namespace	Stroika {
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
 						Verify (::ResetEvent (fEventHandle));
+					#elif		qUseThreads_StdCPlusPlus
+						fMutex_.lock ();
+						fTriggered_ = false;
+						pthread_mutex_unlock(&ev->mutex);
 					#else
 						AssertNotImplemented ();
 					#endif
@@ -69,6 +70,11 @@ namespace	Stroika {
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
 						Verify (::SetEvent (fEventHandle));
+					#elif		qUseThreads_StdCPlusPlus
+						fMutex_.lock ();
+						fTriggered_ = true;
+						fConditionVariable_.notify_all ();
+						fMutex_.unlock ();
 					#else
 						AssertNotImplemented ();
 					#endif
@@ -85,6 +91,12 @@ namespace	Stroika {
 							case	WAIT_ABANDONED:	DoThrow (WaitAbandonedException ());
 						}
 						Verify (result == WAIT_OBJECT_0);
+					#elif		qUseThreads_StdCPlusPlus
+						fMutex_.lock ();
+						while (not fTriggered_) {
+							fConditionVariable_.wait (fMutex_);
+						}
+						fMutex_.unlock ();
 					#else
 						AssertNotImplemented ();
 					#endif

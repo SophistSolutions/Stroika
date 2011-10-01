@@ -145,8 +145,8 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 	: fStatusCriticalSection ()
 #endif
 	, fStatus (eNotYetRunning)
-	, fOK2StartEvent (false, false)
-	, fRefCountBumpedEvent (false, false)
+	, fOK2StartEvent ()
+	, fRefCountBumpedEvent ()
 	, fRunnable (runnable)
 {
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::Rep_"));

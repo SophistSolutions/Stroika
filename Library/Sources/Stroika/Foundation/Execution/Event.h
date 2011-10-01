@@ -9,6 +9,10 @@
 #if			qPlatform_Windows
 	#include	<windows.h>
 #endif
+#if		qUseThreads_StdCPlusPlus
+	#include	<mutex>
+	#include	<condition_variable>
+#endif
 
 #include	"../Configuration/Common.h"
 #include	"../Memory/SharedPtr.h"
@@ -25,13 +29,17 @@ namespace	Stroika {
 			#define	qTrack_ThreadUtils_HandleCounts		qDebug
 			#endif
 
+
+			/*
+			 * AutoReset Event (like Windwow CreateEvent (false, false).
+			 */
 			class	Event {
 			#if		qTrack_ThreadUtils_HandleCounts
 				public:
 					static	uint32_t	sCurAllocatedHandleCount;
 			#endif
 				public:
-					Event (bool manualReset, bool initialState);
+					Event ();
 					~Event ();
 
 				private:
@@ -39,9 +47,6 @@ namespace	Stroika {
 					const Event operator= (const Event&);		// NOT IMPL
 
 				public:
-					// Pulse the event (signals waiting objects, then resets)
-					nonvirtual	void	Pulse () throw ();
-
 					// Set the event to the non-signaled state
 					nonvirtual	void	Reset () throw ();
 
@@ -57,6 +62,11 @@ namespace	Stroika {
 
 				private:
 					HANDLE	fEventHandle;
+				#endif
+				#if		qUseThreads_StdCPlusPlus
+					std::mutex				fMutex_;
+					std::condition_variable	fConditionVariable_;
+					bool					fTriggered_;
 				#endif
 			};
 
