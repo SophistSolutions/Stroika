@@ -9,6 +9,9 @@
 #if			qUseThreads_WindowsNative
 	#include	<windows.h>
 #endif
+#if		qUseThreads_StdCPlusPlus
+	#include	<thread>
+#endif
 
 #include	"../Configuration/Common.h"
 #include	"../Memory/SharedPtr.h"
@@ -53,23 +56,33 @@ namespace	Stroika {
 
 			using	Memory::SharedPtr;
 
-			// Using the smartpointer wrapper Thread around a thread guarnatees its reference counting
-			// will work safely - so that even when all external references go away, the fact that the thread
-			// is still running will keep the reference count non-zero.
-			//
-			//
-			// To make STOP code more safe - and have Stop really throw ThreadAbortException - then associate a PROGRESS object with this REP, and
-			// make sure the REP (Run method) takes that guy as arg, and call 'CheckCanceled' periodically - which can do the throw properlly!!!!
-		// (actually - above is out of date - but dont delete til I verify - but since I added the 
-		// NotifyOfAbort/SleepEx/QueueUserAPC stuff - it should be pretty automatic...
-		// -- LGP 2009-05-08
-			//
+
+			/*
+			 * TODO:
+			 *		o	Add a Method (maybe overload of Start) - which takes a new Runnable, so that the thread object can be re-run.
+			 *			This will be needed (or at least highly advantageous) for implementing thread pools.
+			 */
+
+
+
+			/*
+			 * Thread Class
+			 *
+			 *		Using the smartpointer wrapper Thread around a thread guarnatees its reference counting
+			 *	will work safely - so that even when all external references go away, the fact that the thread
+			 *	is still running will keep the reference count non-zero.
+			 *
+			 */
+// To make STOP code more safe - and have Stop really throw ThreadAbortException - then associate a PROGRESS object with this REP, and
+// make sure the REP (Run method) takes that guy as arg, and call 'CheckCanceled' periodically - which can do the throw properlly!!!!
+// (actually - above is out of date - but dont delete til I verify - but since I added the 
+// NotifyOfAbort/SleepEx/QueueUserAPC stuff - it should be pretty automatic...
+// -- LGP 2009-05-08
+//
 			class	Thread {
-				private:
-					class	Rep_;
 				public:
-					// TODO:
-					//			(o)		Either get rid of no-arg CTOR, or explain why its useful
+					//
+					// No arg- constructor is available for use in applications like thread pools.
 					//
 					Thread ();
 
@@ -81,8 +94,8 @@ namespace	Stroika {
 					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
 					explicit Thread (const SharedPtr<IRunnable>& runnable);
 
-				public:
 				#if			qUseThreads_WindowsNative
+				public:
 					nonvirtual	HANDLE			GetOSThreadHandle () const;
 				#endif
 
@@ -145,6 +158,7 @@ namespace	Stroika {
 					nonvirtual	bool	operator< (const Thread& rhs) const;
 
 				private:
+					class	Rep_;
 					SharedPtr<Rep_>	fRep_;
 			};
 
