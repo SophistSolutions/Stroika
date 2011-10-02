@@ -151,16 +151,15 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 	, fRefCountBumpedEvent ()
 	, fRunnable (runnable)
 {
-	TraceContextBumper ctx (TSTR ("Thread::Rep_::Rep_"));
-	RequireNotNull (runnable);
 }
 
 void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 {
+	TraceContextBumper ctx (TSTR ("Thread::Rep_::DoCreate"));
 	RequireNotNull (repSharedPtr);
 	RequireNotNull (*repSharedPtr);
 	#if		qUseThreads_StdCPlusPlus
-		//(*repSharedPtr)->fThread = thread (DOLABMADA);
+		(*repSharedPtr)->fThread = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
 	#elif	qUseThreads_WindowsNative
 		(*repSharedPtr)->fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc_, repSharedPtr, 0, nullptr));
 		if ((*repSharedPtr)->fThread == nullptr) {
@@ -201,6 +200,7 @@ void	Thread::Rep_::Run () override
 void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 {
 	RequireNotNull (thisThreadRep);
+	TraceContextBumper ctx (TSTR ("Thread::Rep_::ThreadMain_"));
 	/*
 	 * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
 	 * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
