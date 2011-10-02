@@ -276,11 +276,10 @@ void	Thread::Rep_::NotifyOfAbort ()
 
 Thread::IDType	Thread::Rep_::GetID () const
 {
-	#if		qUseThreads_WindowsNative
+	#if		qUseThreads_StdCPlusPlus
+		return fThread.get_id ();
+	#elif	qUseThreads_WindowsNative
 		return MyGetThreadId (fThread);
-	#elif	qUseThreads_StdCPlusPlus
-		AssertNotImplemented ();
-		return IDType ();
 	#else
 		AssertNotImplemented ();
 		return IDType ();
@@ -437,24 +436,27 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 	}
 
 	bool	doWait	=	false;
-#if			qUseThreads_WindowsNative
-	HANDLE	thread	=	nullptr;
-	{
-		AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
-		if (fRep_->fThread != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
-			doWait = true;
-			thread = fRep_->fThread;
+	#if		qUseThreads_StdCPlusPlus
+		//tmphack - must check status and if fRep null and timeout...
+		fRep_->fThread.join ();
+	#elif	qUseThreads_WindowsNative
+		HANDLE	thread	=	nullptr;
+		{
+			AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
+			if (fRep_->fThread != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
+				doWait = true;
+				thread = fRep_->fThread;
+			}
 		}
-	}
-	if (doWait) {
-		DWORD	dTimeout	=	timeout < 0.0f? UINT_MAX: (DWORD)(timeout * 1000);
-		if (::WaitForSingleObject (thread, dTimeout) == WAIT_TIMEOUT) {
-			Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
+		if (doWait) {
+			DWORD	dTimeout	=	timeout < 0.0f? UINT_MAX: (DWORD)(timeout * 1000);
+			if (::WaitForSingleObject (thread, dTimeout) == WAIT_TIMEOUT) {
+				Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
+			}
 		}
-	}
-#else
-	AssertNotImplemented ();
-#endif
+	#else
+		AssertNotImplemented ();
+	#endif
 }
 
 void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
