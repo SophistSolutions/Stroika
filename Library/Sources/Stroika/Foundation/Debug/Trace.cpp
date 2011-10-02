@@ -14,6 +14,7 @@
 #include	"../Execution/CriticalSection.h"
 #include	"../Execution/Module.h"
 #include	"../Execution/Process.h"
+#include	"../Execution/Thread.h"
 #include	"../Memory/Common.h"
 #include	"../Time/Realtime.h"
 
@@ -48,13 +49,8 @@ namespace	{
 	#if		qTraceToFile
 		static	ofstream*	sTraceFile	=	nullptr;
 	#endif
-	#if		qPlatform_Windows
-		typedef	DWORD	ThreadID;
-	#else
-		typedef	int	ThreadID;		//tmphack
-	#endif
 	#if		qDefaultTracingOn
-		static	map<ThreadID,unsigned int>*	sCounts;
+		static	map<Thread::IDType,unsigned int>*	sCounts;
 	#endif
 }
 
@@ -65,7 +61,7 @@ Private::MODULE_INIT::MODULE_INIT ()
 	sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
 	#if		qDefaultTracingOn
 		Assert (sCounts == nullptr);
-		sCounts = DEBUG_NEW map<ThreadID,unsigned int> ();
+		sCounts = DEBUG_NEW map<Thread::IDType,unsigned int> ();
 	#endif
 	#if		qTraceToFile
 		Assert (sTraceFile == nullptr);
@@ -324,8 +320,8 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 
 namespace	{
 	// Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
-	static	bool		sFirstTime	=	true;
-	static	ThreadID	sMainThread;
+	static	bool			sFirstTime	=	true;
+	static	Thread::IDType	sMainThread;
 }
 
 template	<typename	CHARTYPE>
@@ -340,12 +336,7 @@ template	<typename	CHARTYPE>
 			Time::DurationSecondsType	curRelativeTime	=	Time::GetTickCount () - sStartOfTime;
 			{
 				char	buf[1024];
-				#if		qPlatform_Windows
-					ThreadID	threadID	=	::GetCurrentThreadId ();
-				#else
-//AssertNotImplemented ();
-					ThreadID	threadID	=	0;
-				#endif
+				Thread::IDType	threadID	=	Execution::GetCurrentThreadID ();
 				if (sFirstTime) {
 					sMainThread = threadID;
 				}
@@ -490,15 +481,9 @@ namespace	{
 	//		-- LGP 2009-05-27
 	inline	unsigned int	GetCount_ ()
 		{
-			#if		qPlatform_Windows
-				ThreadID	threadID	=	::GetCurrentThreadId ();
-			#else
-//tmpahack to test
-//AssertNotImplemented ();
-				ThreadID	threadID = 0;
-			#endif
+			Thread::IDType	threadID	=	Execution::GetCurrentThreadID ();
 			AutoCriticalSection critSec (GetCritSection_ ());
-			map<ThreadID,unsigned int>::const_iterator	i	=	sCounts->find (threadID);
+			map<Thread::IDType,unsigned int>::const_iterator	i	=	sCounts->find (threadID);
 			if (i == sCounts->end ()) {
 				return 0;
 			}
@@ -507,17 +492,11 @@ namespace	{
 		}
 	inline	void	IncCount_ ()
 		{
-			#if		qPlatform_Windows
-				ThreadID	threadID	=	::GetCurrentThreadId ();
-			#else
-//tmphack disable til we fix thread stuff for unix
-//AssertNotImplemented ();
-				ThreadID	threadID = 0;
-			#endif
+			Thread::IDType	threadID	=	Execution::GetCurrentThreadID ();
 			AutoCriticalSection critSec (GetCritSection_ ());
-			map<ThreadID,unsigned int>::iterator	i	=	sCounts->find (threadID);
+			map<Thread::IDType,unsigned int>::iterator	i	=	sCounts->find (threadID);
 			if (i == sCounts->end ()) {
-				(void)sCounts->insert (map<ThreadID,unsigned int>::value_type (threadID, 1)).first;
+				(void)sCounts->insert (map<Thread::IDType,unsigned int>::value_type (threadID, 1)).first;
 			}
 			else {
 				Assert (i != sCounts->end ());
@@ -526,15 +505,9 @@ namespace	{
 		}
 	inline	void	DecrCount_ ()
 		{
-			#if		qPlatform_Windows
-				ThreadID	threadID	=	::GetCurrentThreadId ();
-			#else
-// get rid of this temporarily while testing - til we fix linux stuff
-//AssertNotImplemented ();
-				ThreadID	threadID = 0;
-			#endif
+			Thread::IDType	threadID	=	Execution::GetCurrentThreadID ();
 			AutoCriticalSection critSec (GetCritSection_ ());
-			map<ThreadID,unsigned int>::iterator	i	=	sCounts->find (threadID);
+			map<Thread::IDType,unsigned int>::iterator	i	=	sCounts->find (threadID);
 			Assert (i != sCounts->end ());
 			i->second--;
 			if (i->second == 0) {

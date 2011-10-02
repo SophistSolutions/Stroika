@@ -6,11 +6,10 @@
 
 #include	"../StroikaPreComp.h"
 
-#if			qUseThreads_WindowsNative
-	#include	<windows.h>
-#endif
 #if		qUseThreads_StdCPlusPlus
 	#include	<thread>
+#elif	qUseThreads_WindowsNative
+	#include	<windows.h>
 #endif
 
 #include	"../Configuration/Common.h"
@@ -21,6 +20,13 @@
 
 
 
+/*
+@CONFIGVAR:		qUseThreads_StdCPlusPlus
+@DESCRIPTION:	<p>qUseThreads_StdCPlusPlus is true iff Stroika is built to use portable standard C++ implementation of threads</p>
+*/
+#if		!defined (qUseThreads_StdCPlusPlus)
+	#error "qUseThreads_StdCPlusPlus should normally be defined indirectly by StroikaConfig.h"
+#endif
 
 /*
 @CONFIGVAR:		qUseThreads_WindowsNative
@@ -30,17 +36,12 @@
 	#error "qUseThreads_WindowsNative should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-/*
-@CONFIGVAR:		qUseThreads_StdCPlusPlus
-@DESCRIPTION:	<p>qUseThreads_StdCPlusPlus is true iff Stroika is built to use portable standard C++ implementation of threads</p>
-*/
-#if		!defined (qUseThreads_StdCPlusPlus)
-	#error "qUseThreads_StdCPlusPlus should normally be defined indirectly by StroikaConfig.h"
-#endif
 
 
 
-#if		qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus
+
+
+#if		qUseThreads_StdCPlusPlus && qUseThreads_WindowsNative
 	#error "Configuration Error: cannot define both qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus"
 #endif
 
@@ -77,6 +78,12 @@ namespace	Stroika {
 // -- LGP 2009-05-08
 //
 			class	Thread {
+				public:
+					/*
+					 * Thread::IDType is a portable representation which is a key to currently existing system threads.
+					 */
+					typedef	int	IDType;
+
 				public:
 					//
 					// No arg- constructor is available for use in applications like thread pools.
@@ -160,6 +167,8 @@ namespace	Stroika {
 			};
 
 
+			Thread::IDType	GetCurrentThreadID ();
+
 
 			// Our thread abort mechanism only throws at certain 'signalable' spots in the code - like sleeps, most reads, etc.
 			// This function will also trigger a throw if called inside a thread which is being aborted.
@@ -167,6 +176,8 @@ namespace	Stroika {
 
 			template	<unsigned int kEveryNTimes>
 				void	CheckForThreadAborting ();
+
+
 
 
 		}

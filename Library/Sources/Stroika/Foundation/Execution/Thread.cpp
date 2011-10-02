@@ -103,26 +103,26 @@ namespace	{
 		typedef NTSTATUS (__stdcall *pfnNtQueryInformationThread) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
 	}
 	#endif
-int MyGetThreadId (HANDLE thread)
-	{
-		#if (_WIN32_WINNT >= 0x0502)
-			return ::GetThreadId (thread);
-		#else
-			// See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
-			// GetThreadId (HANDLE) in Win 2003 Server or later
-			using namespace XXX;
-			static	DLLLoader	ntdll (TSTR ("ntdll.dll"));
-			static	pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
-			if (NtQueryInformationThread == nullptr)
-				return 0;	// failed to get proc address
-			THREAD_BASIC_INFORMATION	tbi;
-			THREAD_INFORMATION_CLASS	tic = ThreadBasicInformation;
-			if (NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
-				return 0;
-			}
-			return tbi.ClientId.UniqueThread;
-		#endif
-	}
+	int MyGetThreadId (HANDLE thread)
+		{
+			#if (_WIN32_WINNT >= 0x0502)
+				return ::GetThreadId (thread);
+			#else
+				// See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
+				// GetThreadId (HANDLE) in Win 2003 Server or later
+				using namespace XXX;
+				static	DLLLoader	ntdll (TSTR ("ntdll.dll"));
+				static	pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
+				if (NtQueryInformationThread == nullptr)
+					return 0;	// failed to get proc address
+				THREAD_BASIC_INFORMATION	tbi;
+				THREAD_INFORMATION_CLASS	tic = ThreadBasicInformation;
+				if (NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
+					return 0;
+				}
+				return tbi.ClientId.UniqueThread;
+			#endif
+		}
 }
 #endif
 
@@ -130,6 +130,7 @@ int MyGetThreadId (HANDLE thread)
 
 
 using	Debug::TraceContextBumper;
+
 
 
 /*
@@ -267,7 +268,6 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 	rep->ThrowAbortIfNeeded ();
 	Require (rep->fStatus == eCompleted);	// normally we don't reach this - but we could if we've already been marked completed somehow
 											// before the abortProc got called/finsihed...
-	//Assert (false);
 }
 
 int	Thread::Rep_::MyGetThreadId_ () const

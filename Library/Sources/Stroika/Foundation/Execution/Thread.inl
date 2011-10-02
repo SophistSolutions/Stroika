@@ -126,6 +126,19 @@ namespace	Stroika {
 
 
 
+		inline	Thread::IDType	GetCurrentThreadID ()
+			{
+				#if		qUseThreads_WindowsNative
+					return ::GetCurrentThreadId ();
+				#elif	qUseThreads_StdCPlusPlus
+					return reintepret_cast<int> (pth_self ());
+				#else
+					AssertNotImplemented ();
+					return 0;
+				#endif
+			}
+
+
 		// class	CheckForThreadAborting
 		template	<unsigned int kEveryNTimes>
 			void	CheckForThreadAborting ()
