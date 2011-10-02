@@ -497,6 +497,7 @@ Thread::Status	Thread::GetStatus_ () const
  */
 string	Execution::FormatThreadID (Thread::IDType threadID)
 {
+	// it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
 	#if		qUseThreads_StdCPlusPlus
 		Assert (sizeof (threadID) >= sizeof (int));
 		char	buf[1024];

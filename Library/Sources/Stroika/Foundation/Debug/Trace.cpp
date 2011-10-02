@@ -354,10 +354,6 @@ template	<typename	CHARTYPE>
 						#endif
 					}
 				}
-				else if (threadID <= 0xffff) {
-					// it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
-					::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), curRelativeTime);
-				}
 				else {
 					::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), curRelativeTime);
 				}
