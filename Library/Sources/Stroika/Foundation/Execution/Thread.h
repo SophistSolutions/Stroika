@@ -17,9 +17,6 @@
 #include	"../Memory/SharedPtr.h"
 #include	"../Time/Realtime.h"
 
-#include	"CriticalSection.h"
-#include	"Exceptions.h"
-#include	"Event.h"
 #include	"IRunnable.h"
 
 
