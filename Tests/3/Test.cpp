@@ -102,7 +102,7 @@ namespace	{
 							sRegTest3Event_T1_.Wait ();
 							int	tmp = *argP;
 							Execution::Sleep (.01);
-							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							//DbgTrace ("FRED1: Updating value in of %d", tmp);
 							*argP = tmp + 1;
 							sRegTest3Event_T2_.Set ();
 						}
@@ -116,7 +116,7 @@ namespace	{
 							sRegTest3Event_T2_.Wait ();
 							int	tmp = *argP;
 							Execution::Sleep (.01);
-							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							//DbgTrace ("FRED2: Updating value in of %d", tmp);
 							*argP = tmp + 1;
 							sRegTest3Event_T1_.Set ();
 						}
@@ -133,6 +133,7 @@ namespace	{
 			sRegTest3Event_T1_.Set ();
 			thread1.WaitForDone ();
 			thread2.WaitForDone ();
+			//DbgTrace ("Test3 - updaterValue = %d", updaterValue);
 			VerifyTestResult (updaterValue == 2 * 10);
 		}
 }
