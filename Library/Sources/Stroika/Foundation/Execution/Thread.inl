@@ -64,9 +64,13 @@ namespace	Stroika {
 					friend class	Thread;
 
 				private:
-				#if			qUseThreads_WindowsNative
-					HANDLE					fThread;
+				#if		qUseThreads_StdCPlusPlus
+					std::thread		fThread;
+				#elif	qUseThreads_WindowsNative
+					HANDLE			fThread;
 				#endif
+
+				private:
 					mutable	CriticalSection	fStatusCriticalSection;
 					Status					fStatus;
 					Event					fRefCountBumpedEvent;

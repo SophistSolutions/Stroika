@@ -140,12 +140,12 @@ using	Debug::TraceContextBumper;
  ********************************************************************************
  */
 Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
-#if			qUseThreads_WindowsNative
+#if		qUseThreads_StdCPlusPlus
+	: fThread ()
+#elif	qUseThreads_WindowsNative
 	: fThread (INVALID_HANDLE_VALUE)
-	, fStatusCriticalSection ()
-#else
-	: fStatusCriticalSection ()
 #endif
+	, fStatusCriticalSection ()
 	, fStatus (eNotYetRunning)
 	, fOK2StartEvent ()
 	, fRefCountBumpedEvent ()
@@ -159,22 +159,28 @@ void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 {
 	RequireNotNull (repSharedPtr);
 	RequireNotNull (*repSharedPtr);
-	#if			qUseThreads_WindowsNative
+	#if		qUseThreads_StdCPlusPlus
+		//(*repSharedPtr)->fThread = thread (DOLABMADA);
+	#elif	qUseThreads_WindowsNative
 		(*repSharedPtr)->fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc_, repSharedPtr, 0, nullptr));
 		if ((*repSharedPtr)->fThread == nullptr) {
 			ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
 			Platform::Windows::Exception::DoThrow (::GetLastError ());
 		}
-		try {
-			(*repSharedPtr)->fRefCountBumpedEvent.Wait ();	// assure we wait for this, so we don't ever let refcount go to zero before the
-															// thread has started...
-		}
-		catch (...) {
+	#endif
+	try {
+		(*repSharedPtr)->fRefCountBumpedEvent.Wait ();	// assure we wait for this, so we don't ever let refcount go to zero before the
+														// thread has started...
+	}
+	catch (...) {
+		#if		qUseThreads_StdCPlusPlus
+			//???
+		#elif	qUseThreads_WindowsNative
 			::CloseHandle ((*repSharedPtr)->fThread);
 			(*repSharedPtr)->fThread = INVALID_HANDLE_VALUE;
-			Execution::DoReThrow ();
-		}
-	#endif
+		#endif
+		Execution::DoReThrow ();
+	}
 }
 
 Thread::Rep_::~Rep_ ()
