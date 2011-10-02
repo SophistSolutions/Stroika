@@ -131,7 +131,7 @@ namespace	Stroika {
 				#if		qUseThreads_WindowsNative
 					return ::GetCurrentThreadId ();
 				#elif	qUseThreads_StdCPlusPlus
-					return reintepret_cast<int> (pth_self ());
+					return this_thread::get_id ();
 				#else
 					AssertNotImplemented ();
 					return 0;

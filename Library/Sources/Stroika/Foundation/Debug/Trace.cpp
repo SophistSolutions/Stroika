@@ -340,17 +340,13 @@ template	<typename	CHARTYPE>
 				if (sFirstTime) {
 					sMainThread = threadID;
 				}
+				string	threadIDStr	=	FormatThreadID (threadID);
 				if (sMainThread == threadID) {
 					::snprintf  (buf, NEltsOf (buf), "[-MAIN-][%08.3f]\t", curRelativeTime);
 					if (sFirstTime) {
 						sFirstTime = false;
 						char buf2[1024];
-						if (threadID <= 0xffff) {
-							::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=0x%04x)\t", threadID);
-						}
-						else {
-							::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=0x%08x)\t", threadID);
-						}
+						::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ());
 						#if		__STDC_WANT_SECURE_LIB__
 							strcat_s (buf, buf2);
 						#else
@@ -360,10 +356,10 @@ template	<typename	CHARTYPE>
 				}
 				else if (threadID <= 0xffff) {
 					// it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
-					::snprintf  (buf, NEltsOf (buf), "[0x%04x][%08.3f]\t", threadID, curRelativeTime);
+					::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), curRelativeTime);
 				}
 				else {
-					::snprintf  (buf, NEltsOf (buf), "[0x%08x][%08.3f]\t", threadID, curRelativeTime);
+					::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), curRelativeTime);
 				}
 				DoEmit_ (buf);
 			}

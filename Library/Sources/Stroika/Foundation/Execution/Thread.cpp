@@ -12,6 +12,7 @@
 
 #include	"DLLSupport.h"
 #include	"../Debug/Trace.h"
+#include	"../Characters/StringUtils.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Execution/ErrNoException.h"
 #include	"../Time/Realtime.h"
@@ -483,6 +484,43 @@ Thread::Status	Thread::GetStatus_ () const
 	return fRep_->fStatus;
 }
 
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Execution::FormatThreadID *************************
+ ********************************************************************************
+ */
+string	Execution::FormatThreadID (Thread::IDType threadID)
+{
+	#if		qUseThreads_StdCPlusPlus
+		Assert (sizeof (threadID) >= sizeof (int));
+		char	buf[1024];
+		unsigned int	threadIDInt	=	*reinterpret_cast<unsigned int*> (&threadID);
+		if (threadIDInt <= 0xffff) {
+			snprintf (buf, NEltsOf (buf), "0x%04x", threadIDInt);
+		}
+		else {
+			snprintf (buf, NEltsOf (buf), "0x%08x", threadIDInt);
+		}
+		return buf;
+	#elif	qUseThreads_WindowsNative
+		char	buf[1024];
+		if (threadID <= 0xffff) {
+			snprintf (buf, NEltsOf (buf), "0x%04x", threadID);
+		}
+		else {
+			snprintf (buf, NEltsOf (buf), "0x%08x", threadID);
+		}
+		return buf;
+	#else
+		AssertNotImplemented ();
+	#endif
+}
 
 
 

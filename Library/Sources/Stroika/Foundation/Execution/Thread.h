@@ -82,7 +82,11 @@ namespace	Stroika {
 					/*
 					 * Thread::IDType is a portable representation which is a key to currently existing system threads.
 					 */
-					typedef	int	IDType;
+					#if		qUseThreads_StdCPlusPlus
+						typedef	thread::id	IDType;
+					#elif	qUseThreads_WindowsNative
+						typedef	int	IDType;
+					#endif
 
 				public:
 					//
@@ -168,6 +172,10 @@ namespace	Stroika {
 
 
 			Thread::IDType	GetCurrentThreadID ();
+
+
+			// Represent the thread ID for display - typically as an integer
+			string	FormatThreadID (Thread::IDType threadID);
 
 
 			// Our thread abort mechanism only throws at certain 'signalable' spots in the code - like sleeps, most reads, etc.
