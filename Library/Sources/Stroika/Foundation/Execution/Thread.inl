@@ -29,7 +29,7 @@ namespace	Stroika {
 					nonvirtual	void	Start ();
 
 				protected:
-					nonvirtual	void	Run () override;
+					nonvirtual	void	Run ();
 
 				protected:
 					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
