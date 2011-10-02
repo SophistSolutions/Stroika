@@ -192,7 +192,7 @@ void	Thread::Rep_::Run () override
 	fRunnable->Run ();
 }
 
-void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep)
+void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 {
 	RequireNotNull (thisThreadRep);
 	/*
