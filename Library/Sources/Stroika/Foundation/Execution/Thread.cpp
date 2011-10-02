@@ -160,7 +160,7 @@ void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 	RequireNotNull (repSharedPtr);
 	RequireNotNull (*repSharedPtr);
 	#if			qUseThreads_WindowsNative
-		(*repSharedPtr)->fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc, repSharedPtr, 0, nullptr));
+		(*repSharedPtr)->fThread = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc_, repSharedPtr, 0, nullptr));
 		if ((*repSharedPtr)->fThread == nullptr) {
 			ThrowIfError_errno_t ();	// I THINK errno sb set, but in case not, do Win32 / GetLastError throw
 			Platform::Windows::Exception::DoThrow (::GetLastError ());
@@ -192,23 +192,21 @@ void	Thread::Rep_::Run () override
 	fRunnable->Run ();
 }
 
-#if			qUseThreads_WindowsNative
-unsigned int	__stdcall	Thread::Rep_::ThreadProc (void* lpParameter)
+void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep)
 {
-	RequireNotNull (lpParameter);
+	RequireNotNull (thisThreadRep);
 	/*
 	 * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
 	 * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
 	 * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
 	 */
-	SharedPtr<Rep_>* repSharedPtr	=	reinterpret_cast<SharedPtr<Rep_>*> (lpParameter);
-	SharedPtr<Rep_>	incRefCnt	=	*repSharedPtr;	// assure refcount incremented so object not deleted while the thread is running
+	SharedPtr<Rep_>	incRefCnt	=	*thisThreadRep;	// assure refcount incremented so object not deleted while the thread is running
 	incRefCnt->fRefCountBumpedEvent.Set ();
 
 	incRefCnt->fOK2StartEvent.Wait ();	// we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
 										// we really want to start this thread.
 	try {
-		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to RUNNING for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		bool	doRun	=	false;
 		{
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
@@ -220,25 +218,35 @@ unsigned int	__stdcall	Thread::Rep_::ThreadProc (void* lpParameter)
 		if (doRun) {
 			incRefCnt->Run ();
 		}
-		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to COMPLETED for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		{
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 			incRefCnt->fStatus = eCompleted;
 		}
-		return 0;
 	}
 	catch (ThreadAbortException&) {
-		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to COMPLETED (ThreadAbortException) for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 		incRefCnt->fStatus = eCompleted;
-		return 0;
 	}
 	catch (...) {
-		DbgTrace ("In Thread::Rep_::ThreadProc - setting state to COMPLETED (EXCEPT) for thread= 0x%x", MyGetThreadId (incRefCnt->fThread));
+		DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 		incRefCnt->fStatus = eCompleted;
-		return -1;
 	}
+}
+
+#if			qUseThreads_WindowsNative
+unsigned int	__stdcall	Thread::Rep_::ThreadProc_ (void* lpParameter)
+{
+	RequireNotNull (lpParameter);
+	/*
+	 * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
+	 * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
+	 * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
+	 */
+	ThreadMain_ (reinterpret_cast<SharedPtr<Rep_>*> (lpParameter));
+	return 0;
 }
 #endif
 
@@ -248,7 +256,7 @@ void	Thread::Rep_::NotifyOfAbort ()
 	// CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
 	AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
 #if			qUseThreads_WindowsNative
-	if (::GetCurrentThreadId () == MyGetThreadId_ ()) {
+	if (::GetCurrentThreadId () == GetID ()) {
 		ThrowAbortIfNeeded ();
 	}
 	if (fStatus == eAborting) {
@@ -260,6 +268,19 @@ void	Thread::Rep_::NotifyOfAbort ()
 #endif
 }
 
+Thread::IDType	Thread::Rep_::GetID () const
+{
+	#if		qUseThreads_WindowsNative
+		return MyGetThreadId (fThread);
+	#elif	qUseThreads_StdCPlusPlus
+		AssertNotImplemented ();
+		return IDType ();
+	#else
+		AssertNotImplemented ();
+		return IDType ();
+	#endif
+}
+
 #if			qUseThreads_WindowsNative
 void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 {
@@ -269,11 +290,6 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 	rep->ThrowAbortIfNeeded ();
 	Require (rep->fStatus == eCompleted);	// normally we don't reach this - but we could if we've already been marked completed somehow
 											// before the abortProc got called/finsihed...
-}
-
-int	Thread::Rep_::MyGetThreadId_ () const
-{
-	return MyGetThreadId (fThread);
 }
 #endif
 
@@ -347,8 +363,8 @@ void	Thread::Start ()
 	RequireNotNull (fRep_);
 #if			qUseThreads_WindowsNative
 	Assert (fRep_->fThread != INVALID_HANDLE_VALUE);
-	DbgTrace (L"Thread::Start: (thread = 0x%x, name='%s')", MyGetThreadId (fRep_->fThread), fRep_->fThreadName.c_str ());
 #endif
+	DbgTrace (L"Thread::Start: (thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName.c_str ());
 	fRep_->fOK2StartEvent.Set ();
 }
 
@@ -430,6 +446,8 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 			Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
 		}
 	}
+#else
+	AssertNotImplemented ();
 #endif
 }
 
@@ -451,6 +469,8 @@ void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType
 	if (thread != nullptr) {
 		Platform::Windows::WaitAndPumpMessages (nullptr, Containers::mkV<HANDLE> (thread), timeToPump);
 	}
+#else
+	AssertNotImplemented ();
 #endif
 }
 

@@ -43,19 +43,22 @@ namespace	Stroika {
 					// Called from WITHIN this thread (asserts thats true), and does throw of ThreadAbortException if in eAborting state
 					nonvirtual	void	ThrowAbortIfNeeded () const;
 
+				private:
+					static	void	ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ();
+
 			#if			qUseThreads_WindowsNative
 				private:
-					static	unsigned int	__stdcall	ThreadProc (void* lpParameter);
+					static	unsigned int	__stdcall	ThreadProc_ (void* lpParameter);
 
 				private:
 					static	void	CALLBACK	AbortProc_ (ULONG_PTR lpParameter);
 			#endif
 
 				public:
-					SharedPtr<IRunnable>	fRunnable;
+					nonvirtual	Thread::IDType	GetID () const;
 
-				private:
-					nonvirtual	int	MyGetThreadId_ () const;
+				public:
+					SharedPtr<IRunnable>	fRunnable;
 
 				private:
 					friend class	Thread;
@@ -80,7 +83,7 @@ namespace	Stroika {
 			inline	void	Thread::Rep_::ThrowAbortIfNeeded () const
 				{
 				#if			qUseThreads_WindowsNative
-					Require (::GetCurrentThreadId () == MyGetThreadId_ ());
+					Require (::GetCurrentThreadId () == GetID ());
 				#endif
 					AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
 					if (fStatus == eAborting) {
@@ -96,6 +99,13 @@ namespace	Stroika {
 					return fRep_->fThread;
 				}
 		#endif
+			inline	Thread::IDType	Thread::GetID () const
+				{
+					if (fRep_.IsNull ()) {
+						return Thread::IDType (0);
+					}
+					return fRep_->GetID ();
+				}
 			inline	SharedPtr<IRunnable>	Thread::GetRunnable () const
 				{
 					if (fRep_.IsNull ()) {

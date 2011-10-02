@@ -85,7 +85,7 @@ namespace	Stroika {
 					#if		qUseThreads_StdCPlusPlus
 						typedef	thread::id	IDType;
 					#elif	qUseThreads_WindowsNative
-						typedef	int	IDType;
+						typedef	int			IDType;
 					#endif
 
 				public:
@@ -104,11 +104,14 @@ namespace	Stroika {
 
 				#if			qUseThreads_WindowsNative
 				public:
-					nonvirtual	HANDLE			GetOSThreadHandle () const;
+					nonvirtual	HANDLE		GetOSThreadHandle () const;
 				#endif
 
 				public:
 					nonvirtual	SharedPtr<IRunnable>	GetRunnable () const;
+
+				public:
+					nonvirtual	IDType	GetID () const;
 
 				public:
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
