@@ -6,12 +6,11 @@
 
 #include	"../StroikaPreComp.h"
 
-#if			qPlatform_Windows
-	#include	<windows.h>
-#endif
 #if		qUseThreads_StdCPlusPlus
 	#include	<mutex>
 	#include	<condition_variable>
+#elif	qUseThreads_WindowsNative
+	#include	<windows.h>
 #endif
 
 #include	"../Configuration/Common.h"
@@ -32,6 +31,8 @@ namespace	Stroika {
 
 			/*
 			 * AutoReset Event (like Windwow CreateEvent (false, false).
+			 * Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm, and simpler to assume always in unset
+			 * state by default.
 			 */
 			class	Event {
 			#if		qTrack_ThreadUtils_HandleCounts

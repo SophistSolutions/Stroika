@@ -22,16 +22,14 @@ namespace	Stroika {
 
 		// class	Event
 			inline	Event::Event ()
-#if			qPlatform_Windows
-				: fEventHandle (::CreateEvent (nullptr, false, false, nullptr))
-#endif
 				#if		qUseThreads_StdCPlusPlus
 					: fMutex_ ()
 					, fConditionVariable_ ()
 					, fTriggered_ (false)
+				#elif	qUseThreads_WindowsNative
+					: fEventHandle (::CreateEvent (nullptr, false, false, nullptr))
 				#endif
 				{
-					//bool manualReset, bool initialState
 					#if			qPlatform_Windows
 						ThrowIfFalseGetLastError (fEventHandle != nullptr);
 						#if		qTrack_Execution_HandleCounts
@@ -93,11 +91,10 @@ namespace	Stroika {
 						Verify (result == WAIT_OBJECT_0);
 					#elif		qUseThreads_StdCPlusPlus
 						std::unique_lock<std::mutex> lock (fMutex_);
-						//fMutex_.lock ();
 						while (not fTriggered_) {
 							fConditionVariable_.wait (lock);
 						}
-						//fMutex_.unlock ();
+						fTriggered_ = false	;	// atuoreset
 					#else
 						AssertNotImplemented ();
 					#endif
