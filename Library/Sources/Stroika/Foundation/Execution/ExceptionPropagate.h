@@ -15,6 +15,23 @@
 #include	"Exceptions.h"
 
 
+/*
+ * TODO:
+ *		(o)	Re-implement using new C++11 feature:
+			Copying and rethrowing exceptions
+			How do you catch an exception and then rethrow it on another thread? Use a bit of library magic as described in the standard 18.8.5 Exception Propagation:
+			exception_ptr current_exception(); Returns: An exception_ptr object that refers to the currently handled exception (15.3) or a copy of the currently handled exception, or a null exception_ptr object if no exception is being handled. The referenced object shall remain valid at least as long as there is an exception_ptr object that refers to it. ...
+			void rethrow_exception(exception_ptr p);
+			template<class E> exception_ptr copy_exception(E e); Effects: as if
+
+				try {
+					throw e;
+				} catch(...) {
+					return current_exception();
+				}
+			This is particularly useful for transmitting an exception from one thread to another
+*/
+
 
 
 namespace	Stroika {	
