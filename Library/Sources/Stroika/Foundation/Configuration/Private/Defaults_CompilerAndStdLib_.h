@@ -21,6 +21,18 @@
 
 
 
+//NEED DOCS SOMPEPLACE
+#ifndef	qCompilerAndStdLib_Supports_CTORDELETE
+	#if		defined (__GNUC__)
+		#define	qCompilerAndStdLib_Supports_CTORDELETE	1
+	#elif	defined (_MSC_VER) && _MSC_VER <= 1600
+		#define	qCompilerAndStdLib_Supports_CTORDELETE	0
+	#else
+		// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+		#define	qCompilerAndStdLib_Supports_CTORDELETE	1
+	#endif
+#endif
+
 
 	/*
 	@CONFIGVAR:		qCompilerAndStdLib_Supports_constexpr

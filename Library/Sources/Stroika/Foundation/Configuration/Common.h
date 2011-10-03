@@ -31,6 +31,28 @@ namespace	Stroika {
 			template	<typename	ENUM>
 				ENUM	Inc (ENUM e);
 
+
+			/*
+			 * NB: we can lose these macros once all our compilers support the new C++ syntax.
+			 */
+			#if		qCompilerAndStdLib_Supports_CTORDELETE
+				#define	NO_DEFAULT_CONSTRUCTOR(NAME)\
+					NAME () = delete;
+				#define	NO_COPY_CONSTRUCTOR(NAME)\
+					NAME (const NAME&) = delete;
+				#define	NO_ASSIGNMENT_OPERATOR(NAME)\
+					const NAME operator= (const NAME&) = delete;
+			#else
+				#define	NO_DEFAULT_CONSTRUCTOR(NAME)\
+					private:	NAME ();
+				#define	NO_COPY_CONSTRUCTOR(NAME)\
+					private:	NAME (const NAME&);
+				#define	NO_ASSIGNMENT_OPERATOR(NAME)\
+					private:	const NAME operator= (const NAME&);
+			#endif
+
+
+
 		}
 
 		using	Configuration::Byte;

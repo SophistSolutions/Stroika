@@ -40,12 +40,12 @@ namespace	Stroika {
 					static	uint32_t	sCurAllocatedHandleCount;
 			#endif
 				public:
+					NO_COPY_CONSTRUCTOR(Event);
+					NO_ASSIGNMENT_OPERATOR(Event);
+
+				public:
 					Event ();
 					~Event ();
-
-				private:
-					Event (const Event&);						// NOT IMPL
-					const Event operator= (const Event&);		// NOT IMPL
 
 				public:
 					// Set the event to the non-signaled state

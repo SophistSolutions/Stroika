@@ -22,12 +22,12 @@ namespace	Stroika {
 
 			class	CriticalSection {
 				public:
+					NO_COPY_CONSTRUCTOR(CriticalSection);
+					NO_ASSIGNMENT_OPERATOR(CriticalSection);
+
+				public:
 					CriticalSection () throw ();
 					~CriticalSection ();
-
-				private:
-					CriticalSection (const CriticalSection&);					// not allowed
-					const CriticalSection& operator= (const CriticalSection&);	// not allowed
 
 				public:
 					nonvirtual	void	Lock (); 
