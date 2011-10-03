@@ -3,11 +3,19 @@
  */
 #include	"../../StroikaPreComp.h"
 
+#include	<sys/types.h>
+
 #if		qPlatform_Windows
+	#include	<winsock2.h>
+	#include	<ws2tcpip.h>
 	#include	<io.h>
 #elif	qPlatform_POSIX
 	#include	<unistd.h>
+	#include	<sys/socket.h>
 #endif
+
+
+
 #include	<cstdlib>
 
 #include	"Socket.h"
@@ -71,13 +79,36 @@ class	Socket::Rep_ {
 	public:
 		void	Bind (const Socket::BindProperties& bindProperties)
 			{
-			//
+				addrinfo hints;
+				addrinfo* res = nullptr;
+				memset ((void*)&hints, 0, sizeof(hints));
+				hints.ai_family = AF_UNSPEC;
+			    hints.ai_socktype = SOCK_STREAM;
+				hints.ai_flags = AI_PASSIVE;
+				string	tmp	=	bindProperties.fHostName.AsUTF8<string> ();	// BAD - SB tstring - or??? not sure what...
+				if (getaddrinfo (tmp.c_str (), nullptr, &hints, &res) < 0) {
+					// throw
+				}
+				fSD_ = socket(AF_INET, SOCK_STREAM, 0);
+
+				if (::bind (fSD_, res->ai_addr, res->ai_addrlen) < 0) {
+					// throw
+				}
 			}
 
 	public:
 		Socket	Accept ()
 			{
-				return Socket ();
+				sockaddr	peer;
+				memset (&peer, 0, sizeof (peer));
+
+				int	sz	=	sizeof (peer);
+				int r = accept(fSD_, &peer, &sz);
+// must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
+				if (r < 0) {
+					// throw...
+				}
+				return Socket (r);
 			}
 
 };
