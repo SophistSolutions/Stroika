@@ -9,6 +9,8 @@
 #include	"../../Configuration/Common.h"
 #include	"../../Streams/BinaryInputStream.h"
 #include	"../../Streams/BinaryOutputStream.h"
+#include	"Socket.h"
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -25,7 +27,7 @@ namespace	Stroika {
 						//			We will need an abstract Socket object, and maybe have  it refernce counted so close can happen when last refernce goes
 						//	away!
 						//
-						explicit SocketStream (SocketDescriptor sd);
+						explicit SocketStream (Socket sd);
 						~SocketStream ();
 	
 					public:
@@ -33,7 +35,7 @@ namespace	Stroika {
 						virtual	void	_Write (const Byte* buffer, size_t bufSize) override;
 
 					private:
-						SocketDescriptor	fSD_;
+						Socket	fSD_;
 				};
 
 			}

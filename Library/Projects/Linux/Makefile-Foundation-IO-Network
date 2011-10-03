@@ -1,4 +1,4 @@
-include ../../../Configuration.mk
+include	../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
@@ -9,6 +9,7 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/Ne
 VPATH = $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)Socket.o\
 	$(ObjDir)SocketStream.o\
 	$(ObjDir)URL.o\
 
