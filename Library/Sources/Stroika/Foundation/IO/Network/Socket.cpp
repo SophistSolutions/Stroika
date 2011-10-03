@@ -103,7 +103,7 @@ class	Socket::Rep_ {
 				sockaddr	peer;
 				memset (&peer, 0, sizeof (peer));
 
-				int	sz	=	sizeof (peer);
+				socklen_t	sz	=	sizeof (peer);
 				int r = accept(fSD_, &peer, &sz);
 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
 				if (r < 0) {
