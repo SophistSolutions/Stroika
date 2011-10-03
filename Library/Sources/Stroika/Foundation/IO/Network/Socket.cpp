@@ -12,6 +12,7 @@
 #elif	qPlatform_POSIX
 	#include	<unistd.h>
 	#include	<sys/socket.h>
+	#include	<netdb.h>
 #endif
 
 
