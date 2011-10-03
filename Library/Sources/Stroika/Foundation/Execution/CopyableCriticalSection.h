@@ -30,10 +30,18 @@ namespace	Stroika {
 				public:
 					nonvirtual	void	Lock (); 
 					nonvirtual	void	Unlock ();
-				#if		qUseThreads_WindowsNative
-					nonvirtual	operator CRITICAL_SECTION& ();
-				#endif
+
+				public:
+					template	<typename T>
+						T	As ();
 			};
+			#if		qUseThreads_WindowsNative
+			template	<>
+				inline	CRITICAL_SECTION&	CopyableCriticalSection::As ()
+					{
+						return fCritSec->As<CRITICAL_SECTION&> ();
+					}
+			#endif
 
 
 		}

@@ -6,14 +6,14 @@
 
 #include	"../StroikaPreComp.h"
 
-#if		qUseThreads_WindowsNative
-	#include	<windows.h>
-#endif
 #if		qUseThreads_StdCPlusPlus
 	#include	<mutex>
+#elif	qUseThreads_WindowsNative
+	#include	<windows.h>
 #endif
 
 #include	"../Configuration/Common.h"
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -33,16 +33,26 @@ namespace	Stroika {
 					nonvirtual	void	Lock (); 
 					nonvirtual	void	Unlock ();
 
-				#if		qUseThreads_WindowsNative
-					operator CRITICAL_SECTION& ();
+				public:
+					template	<typename T>
+						T	As ();
 
+				#if		qUseThreads_StdCPlusPlus
+				private:
+					std::recursive_mutex	fMutex_;
+				#elif	qUseThreads_WindowsNative
 				private:
 					CRITICAL_SECTION fCritSec;
 				#endif
-				#if		qUseThreads_StdCPlusPlus
-					std::recursive_mutex	fMutex_;
-				#endif
 			};
+			#if		qUseThreads_WindowsNative
+			template	<>
+				inline	CRITICAL_SECTION&	CriticalSection::As ()
+					{
+						return fCritSec;
+					}
+			#endif
+
 
 
 

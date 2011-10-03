@@ -47,12 +47,6 @@ namespace	Stroika {
 					fMutex_.unlock ();
 				#endif
 				}
-			#if		qUseThreads_WindowsNative
-			inline	CriticalSection::operator CRITICAL_SECTION& ()
-				{
-					return fCritSec;
-				}
-			#endif
 
 
 		//	class	AutoCriticalSection
