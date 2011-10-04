@@ -86,14 +86,15 @@ namespace	Stroika {
 				private:
 					// This is the same as EmitTraceMessage_ - but it takes a plain string - and assumes the caller does any 'sprintf' stuff...
 					template	<typename	CHARTYPE>
-						nonvirtual	TraceLastBufferedWriteTokenType	DoEmitMessage_ (size_t bufferLastNChars, CHARTYPE* p);
+						nonvirtual	TraceLastBufferedWriteTokenType	DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e);
+
 				private:
-					size_t							fLastNCharBufCharCount;
-					char							fLastNCharBuf_CHAR[10]; 
-					wchar_t							fLastNCharBuf_WCHAR[10];
-					bool							fLastNCharBuf_WCHARFlag;
-					TraceLastBufferedWriteTokenType	fLastNCharBuf_Token;
-					Time::DurationSecondsType		fLastNCharBuf_WriteTickcount;
+					size_t							fLastNCharBufCharCount_;
+					char							fLastNCharBuf_CHAR_[10]; 
+					wchar_t							fLastNCharBuf_WCHAR_[10];
+					bool							fLastNCharBuf_WCHARFlag_;
+					TraceLastBufferedWriteTokenType	fLastNCharBuf_Token_;
+					Time::DurationSecondsType		fLastNCharBuf_WriteTickcount_;
 
 					nonvirtual	void	BufferNChars_ (size_t nChars, const char* p);
 					nonvirtual	void	BufferNChars_ (size_t nChars, const wchar_t* p);
@@ -104,6 +105,8 @@ namespace	Stroika {
 				private:
 					nonvirtual	void	DoEmit_ (const char* p);
 					nonvirtual	void	DoEmit_ (const wchar_t* p);
+					nonvirtual	void	DoEmit_ (const char* p, const char* e);
+					nonvirtual	void	DoEmit_ (const wchar_t* p, const wchar_t* e);
 
 				private:
 					friend	struct	Private::MODULE_INIT;

@@ -38,6 +38,15 @@ using	namespace	Execution;
 
 
 
+/*
+ * TODO:
+ *
+ *		(o)		The buffering code here maybe now correct, but isn't simple/clear, so rewrite/improve...
+ *				-- LGP 2011-10-03
+ */
+
+
+
 
 
 
@@ -185,12 +194,12 @@ namespace	{
  ********************************************************************************
  */
 Emitter::Emitter ()
-	: fLastNCharBufCharCount (0)
-//	, fLastNCharBuf_CHAR () 
-//	, fLastNCharBuf_WCHAR ()
-	, fLastNCharBuf_WCHARFlag (false)
-	, fLastNCharBuf_Token (0)
-	, fLastNCharBuf_WriteTickcount (0.0f)
+	: fLastNCharBufCharCount_ (0)
+//	, fLastNCharBuf_CHAR_ () 
+//	, fLastNCharBuf_WCHAR_ ()
+	, fLastNCharBuf_WCHARFlag_ (false)
+	, fLastNCharBuf_Token_ (0)
+	, fLastNCharBuf_WriteTickcount_ (0.0f)
 {
 }
 
@@ -208,10 +217,7 @@ void	Emitter::EmitTraceMessage (const char* format, ...)
 		string	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
 		AssureHasLineTermination (&tmp);
-		size_t len = tmp.length ();
-		Memory::SmallStackBuffer<char> buf (len + 1);
-		strcpy (buf.begin (), tmp.c_str ());
-		DoEmitMessage_ (0, buf.begin ());
+		DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -227,10 +233,7 @@ void	Emitter::EmitTraceMessage (const wchar_t* format, ...)
 		wstring	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
 		AssureHasLineTermination (&tmp);
-		size_t	len	=	tmp.length ();
-		Memory::SmallStackBuffer<wchar_t> buf (len + 1);
-		wcscpy (buf.begin (), tmp.c_str ());
-		DoEmitMessage_ (0, buf.begin ());
+		DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -246,11 +249,7 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 		string	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
 		AssureHasLineTermination (&tmp);
-		size_t	len	=	tmp.length ();
-		len = tmp.length ();
-		Memory::SmallStackBuffer<char> buf (len + 1);
-		strcpy (buf.begin (), tmp.c_str ());
-		return DoEmitMessage_ (bufferLastNChars, buf.begin ());
+		return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -267,11 +266,7 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 		wstring	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
 		AssureHasLineTermination (&tmp);
-		size_t	len	=	tmp.length ();
-		len = tmp.length ();
-		Memory::SmallStackBuffer<wchar_t> buf (len + 1);
-		wcscpy (buf.begin (), tmp.c_str ());
-		return DoEmitMessage_ (bufferLastNChars, buf.begin ());
+		return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -287,7 +282,7 @@ namespace	{
 }
 
 template	<typename	CHARTYPE>
-	Emitter::TraceLastBufferedWriteTokenType	Emitter::DoEmitMessage_ (size_t bufferLastNChars, CHARTYPE* p)
+	Emitter::TraceLastBufferedWriteTokenType	Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
 		{
 			AutoCriticalSection critSec (GetCritSection_ ());
 			FlushBufferedCharacters_ ();
@@ -329,64 +324,63 @@ template	<typename	CHARTYPE>
 			#endif
 			if (bufferLastNChars == 0) {
 				DoEmit_ (p);
-				fLastNCharBuf_Token++;	// even if not buffering, increment, so other buffers known to be invalid
+				fLastNCharBuf_Token_++;	// even if not buffering, increment, so other buffers known to be invalid
 			}
 			else {
 				Assert (Characters::Length (p) > bufferLastNChars);
 				BufferNChars_ (bufferLastNChars, p + Characters::Length (p) - bufferLastNChars);
-				p[Characters::Length (p) - bufferLastNChars] = '\0';
-				DoEmit_ (p);
-				fLastNCharBuf_WriteTickcount = curRelativeTime + sStartOfTime;
-				fLastNCharBuf_Token++;	// even if not buffering, increment, so other buffers known to be invalid
+				DoEmit_ (p, p + (Characters::Length (p) - bufferLastNChars));
+				fLastNCharBuf_WriteTickcount_ = curRelativeTime + sStartOfTime;
+				fLastNCharBuf_Token_++;	// even if not buffering, increment, so other buffers known to be invalid
 			}
-			return fLastNCharBuf_Token;
+			return fLastNCharBuf_Token_;
 		}
 
 void	Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
-	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR));
-	fLastNCharBufCharCount = bufferLastNChars;
+	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR_));
+	fLastNCharBufCharCount_ = bufferLastNChars;
 	#if		__STDC_WANT_SECURE_LIB__
-		strcpy_s (fLastNCharBuf_CHAR, p);
+		strcpy_s (fLastNCharBuf_CHAR_, p);
 	#else
-		strcpy (fLastNCharBuf_CHAR, p);
+		strcpy (fLastNCharBuf_CHAR_, p);
 	#endif
-	fLastNCharBuf_WCHARFlag = false;
+	fLastNCharBuf_WCHARFlag_ = false;
 }
 
 void	Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
-	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR));
-	fLastNCharBufCharCount = bufferLastNChars;
+	Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR_));
+	fLastNCharBufCharCount_ = bufferLastNChars;
 	#if		__STDC_WANT_SECURE_LIB__
-		::wcscpy_s (fLastNCharBuf_WCHAR, p);
+		::wcscpy_s (fLastNCharBuf_WCHAR_, p);
 	#else
-		::wcscpy (fLastNCharBuf_WCHAR, p);
+		::wcscpy (fLastNCharBuf_WCHAR_, p);
 	#endif
-	fLastNCharBuf_WCHARFlag = true;
+	fLastNCharBuf_WCHARFlag_ = true;
 }
 
 void	Emitter::FlushBufferedCharacters_ ()
 {
-	if (fLastNCharBufCharCount != 0) {
-		if (fLastNCharBuf_WCHARFlag) {
-			DoEmit_ (fLastNCharBuf_WCHAR);
+	if (fLastNCharBufCharCount_ != 0) {
+		if (fLastNCharBuf_WCHARFlag_) {
+			DoEmit_ (fLastNCharBuf_WCHAR_);
 		}
 		else {
-			DoEmit_ (fLastNCharBuf_CHAR);
+			DoEmit_ (fLastNCharBuf_CHAR_);
 		}
-		fLastNCharBufCharCount = 0;
+		fLastNCharBufCharCount_ = 0;
 	}
 }
 
 bool	Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-	// If the fLastNCharBuf_Token matches (no new tokens written since the saved one) and the time
+	// If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
 	// hasn't been too long (we currently write 1/100th second timestamp resolution).
 	// then blank unput (ignore) buffered characters, and return true so caller knows to write
 	// funky replacement for those characters.
-	if (fLastNCharBuf_Token == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount < 0.02f)) {
-		fLastNCharBufCharCount = 0;
+	if (fLastNCharBuf_Token_ == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount_ < 0.02f)) {
+		fLastNCharBufCharCount_ = 0;
 		return true;
 	}
 	return false;	// assume old behavior for now
@@ -410,6 +404,24 @@ void	Emitter::DoEmit_ (const wchar_t* p)
 	#if		qTraceToFile
 		Emit2File_ (p);
 	#endif
+}
+
+void	Emitter::DoEmit_ (const char* p, const char* e)
+{
+	size_t	len	=	e - p;
+	Memory::SmallStackBuffer<char>	buf (len + 1);
+	memcpy (buf.begin (), p, len);
+	buf.begin () [len] = '\0';
+	DoEmit_ (buf.begin ());
+}
+
+void	Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e)
+{
+	size_t	len	=	e - p;
+	Memory::SmallStackBuffer<char>	buf (len + 1);
+	memcpy (buf.begin (), p, len);
+	buf.begin () [len] = '\0';
+	DoEmit_ (buf.begin ());
 }
 
 
