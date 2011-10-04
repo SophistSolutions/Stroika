@@ -626,9 +626,9 @@ namespace	Stroika {
 
 
 			/*
-			 * Legacy "C" string utilities.
+			 * Legacy "C_String" string utilities.
 			 */
-			namespace	C	{
+			namespace	C_String	{
 
 				// Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
 				template	<typename T>

@@ -16,13 +16,13 @@ namespace	Stroika {
 		namespace	Characters {
 
 			template	<>
-				inline	size_t	C::Length (const char* p)
+				inline	size_t	C_String::Length (const char* p)
 					{
 						RequireNotNull (p);
 						return ::strlen (p);
 					}
 			template	<>
-				inline	size_t	C::Length (const wchar_t* p)
+				inline	size_t	C_String::Length (const wchar_t* p)
 					{
 						RequireNotNull (p);
 						return ::wcslen (p);
