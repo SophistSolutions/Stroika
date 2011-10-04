@@ -15,6 +15,18 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
+			template	<>
+				inline	size_t	C::Length (const char* p)
+					{
+						RequireNotNull (p);
+						return ::strlen (p);
+					}
+			template	<>
+				inline	size_t	C::Length (const wchar_t* p)
+					{
+						RequireNotNull (p);
+						return ::wcslen (p);
+					}
 
 
 			//	class	String::_Rep

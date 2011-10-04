@@ -625,6 +625,22 @@ namespace	Stroika {
 
 
 
+			/*
+			 * Legacy "C" string utilities.
+			 */
+			namespace	C	{
+
+				// Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
+				template	<typename T>
+					size_t	Length (const T* p);
+				template	<>
+					size_t	Length (const char* p);
+				template	<>
+					size_t	Length (const wchar_t* p);
+
+
+			}
+
 		}
 	}
 }
