@@ -7,6 +7,7 @@
 #include	<cstdlib>
 
 #include	"Debugger.h"
+#include	"Trace.h"
 
 #include	"Assertions.h"
 
@@ -22,7 +23,15 @@ using	namespace	Stroika::Foundation::Debug;
 	namespace	{
 		void	DefaultAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 			{
+				DbgTrace ("%s (%s) failed in '%s'; %s:%d", 
+						assertCategory==nullptr? "Unknown assertion" : assertCategory,
+						assertionText==nullptr? "" : assertionText,
+						functionName==nullptr? "" : functionName,
+						fileName==nullptr? "" : fileName,
+						lineNum
+					);
 				DropIntoDebuggerIfPresent ();
+				DbgTrace ("ABORTING...");
 				#if		defined (__GNUC__)
 					__assert_fail (assertionText==nullptr? "": assertionText, fileName, lineNum, functionName==nullptr? "": functionName);
 				#else
