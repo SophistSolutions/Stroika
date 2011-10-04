@@ -12,15 +12,30 @@
 #include	"../../Foundation/Execution/Exceptions.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
-#include	"HTTPListener.h"
+#include	"HTTPConnection.h"
 
 
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
 using	namespace	Stroika::Foundation::Memory;
 
+using	namespace	Stroika::Framework;
+using	namespace	Stroika::Framework::Service;
 
 
+
+
+
+HTTPConnection::HTTPConnection (Socket s)
+	: fSocketStream_ (s)
+{
+}
+
+
+HTTPConnection::HTTPConnection (SocketStream s)
+	: fSocketStream_ (s)
+{
+}
 
 
 

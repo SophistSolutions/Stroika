@@ -12,6 +12,8 @@
 #include	"../../Foundation/Characters/String.h"
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
+#include	"../../Foundation/IO/Network/SocketStream.h"
+
 
 
 /*
@@ -26,9 +28,21 @@ namespace	Stroika {
 		namespace	Service {
 
 			using	namespace	Stroika::Foundation;
+			using	namespace	Stroika::Foundation::IO;
 			using	Characters::String;
 
+			using	Stroika::Foundation::IO::Network::Socket;
+			using	Stroika::Foundation::IO::Network::SocketStream;
 
+			class	HTTPConnection {
+				public:
+					HTTPConnection (Socket s);
+					HTTPConnection (SocketStream s);
+
+
+				private:
+					SocketStream	fSocketStream_;
+			};
 		}
 	}
 }
@@ -42,4 +56,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"HTTPListener.inl"
+#include	"HTTPConnection.inl"
