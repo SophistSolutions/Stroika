@@ -40,10 +40,9 @@
 	*/
 	#ifndef	qCompilerAndStdLib_Supports_constexpr
 		#if		defined (__GNUC__)
-			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 5))
 				#define	qCompilerAndStdLib_Supports_constexpr	1
 			#else
-				// Partly supported, but bugs with templates make it easier to just shutoff for now... Seems fine with v4.6
 				#define	qCompilerAndStdLib_Supports_constexpr	0
 			#endif
 		#elif	defined (_MSC_VER) && _MSC_VER <= 1600
@@ -53,6 +52,21 @@
 			#define	qCompilerAndStdLib_Supports_constexpr	1
 		#endif
 	#endif
+
+
+	#ifndef	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate
+		#if		defined (__GNUC__)
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ == 5))
+				#define	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate	1
+			#else
+				#define	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate	0
+			#endif
+		#else
+			// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+			#define	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate	1
+		#endif
+	#endif
+
 
 
 
