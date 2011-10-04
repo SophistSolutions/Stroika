@@ -15,6 +15,8 @@
 	#include	<netdb.h>
 #endif
 
+#include	"../../Execution/ErrNoException.h"
+
 
 
 #include	<cstdlib>
@@ -25,6 +27,7 @@
 
 
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Memory;
 using	namespace	Stroika::Foundation::IO;
 using	namespace	Stroika::Foundation::IO::Network;
 
@@ -77,24 +80,12 @@ class	Socket::Rep_ {
 					AssertNotImplemented ();
 				#endif
 			}
-	public:
-		void	Bind (const Socket::BindProperties& bindProperties)
-			{
-				addrinfo hints;
-				addrinfo* res = nullptr;
-				memset ((void*)&hints, 0, sizeof(hints));
-				hints.ai_family = AF_UNSPEC;
-			    hints.ai_socktype = SOCK_STREAM;
-				hints.ai_flags = AI_PASSIVE;
-				string	tmp	=	bindProperties.fHostName.AsUTF8<string> ();	// BAD - SB tstring - or??? not sure what...
-				if (getaddrinfo (tmp.c_str (), nullptr, &hints, &res) < 0) {
-					// throw
-				}
-				fSD_ = socket(AF_INET, SOCK_STREAM, 0);
 
-				if (::bind (fSD_, res->ai_addr, res->ai_addrlen) < 0) {
-					// throw
-				}
+		
+	public:
+		void	Listen (unsigned int backlog)
+			{
+				Execution::ThrowErrNoIfNegative (::listen (fSD_, backlog));
 			}
 
 	public:
@@ -115,6 +106,7 @@ class	Socket::Rep_ {
 };
 
 
+const	String	Socket::BindProperties::kANYHOST;
 
 
 
@@ -141,7 +133,38 @@ const Socket& Socket::operator= (const Socket& s)
 
 void	Socket::Bind (const BindProperties& bindProperties)
 {
-	fRep_->Bind (bindProperties);
+	// Should this throw if already has something bound - already non-null!???
+
+
+//	fRep_->Bind (bindProperties);
+	addrinfo hints;
+	addrinfo* res = nullptr;
+	memset ((void*)&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+	string	tmp	=	bindProperties.fHostName.AsUTF8<string> ();	// BAD - SB tstring - or??? not sure what...
+	if (getaddrinfo (tmp.c_str (), nullptr, &hints, &res) < 0) {
+		// throw
+	}
+
+	sockaddr_in	useAddr;
+	memset (&useAddr, 0, sizeof (useAddr));
+	useAddr.sin_family = AF_INET;
+	useAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	useAddr.sin_port = htons((short)bindProperties.fPort);
+
+	NativeSocket sd;
+	sd = socket(AF_INET, SOCK_STREAM, 0);
+
+	Execution::ThrowErrNoIfNegative (::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr)));
+
+	fRep_  = SharedPtr<Rep_> (new Rep_ (sd));
+}
+
+void	Socket::Listen (unsigned int backlog)
+{
+	fRep_->Listen (backlog);
 }
 
 Socket	Socket::Accept ()

@@ -54,6 +54,9 @@ namespace	Stroika {
 						void	Bind (const BindProperties& bindProperties);
 						Socket	Accept ();
 
+						// throws on error, and otherwise means should call accept
+						void	Listen (unsigned int backlog);
+
 					public:
 						nonvirtual	size_t	Read (Byte* buffer, size_t bufSize);
 						nonvirtual	void	Write (const Byte* buffer, size_t bufSize);
