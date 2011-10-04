@@ -10,17 +10,19 @@
 #include	<cmath>
 
 #include	"../Characters/Format.h"
+#include	"../Characters/LineEndings.h"
 #include	"../Characters/StringUtils.h"
 #include	"../Execution/CriticalSection.h"
 #include	"../Execution/Module.h"
 #include	"../Execution/Process.h"
 #include	"../Execution/Thread.h"
+#include	"../IO/FileSystem/PathName.h"
 #include	"../Memory/Common.h"
 #include	"../Time/Realtime.h"
 
 #if		qTraceToFile
-#include	"../IO/FileSystem/WellKnownLocations.h"
-#include	"../Time/DateTime.h"
+	#include	"../IO/FileSystem/WellKnownLocations.h"
+	#include	"../Time/DateTime.h"
 #endif
 
 
@@ -116,13 +118,7 @@ namespace	{
 		TString	mfname;
 		{
 			mfname = Execution::GetEXEPath ();
-
-			// NEED DEFINED CHAR - OR BETTER PATHPARSING - SO DONT HAVE TODO THIS ALL OVER THE PLACE!!!
-#if qPlatform_Windows
-			size_t i = mfname.rfind ('\\');
-#elif	qPlatform_POSIX
-			size_t i = mfname.rfind ('/');
-#endif
+			size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
 			if (i != TString::npos) {
 				mfname = mfname.substr (i + 1);
 			}
@@ -181,6 +177,8 @@ namespace	{
 
 
 
+
+
 /*
  ********************************************************************************
  ************************************ Emitter ***********************************
@@ -205,24 +203,15 @@ Emitter::Emitter ()
 void	Emitter::EmitTraceMessage (const char* format, ...)
 {
 	try {
-		char		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
 		va_list		argsList;
 		va_start (argsList, format);
-		#if		__STDC_WANT_SECURE_LIB__
-			(void)::vsnprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
-		#else
-			(void)::vsnprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
-		#endif
-		size_t	len	=	Characters::Length (msgBuf);
-		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			#if		__STDC_WANT_SECURE_LIB__
-				(void)::strcat_s (msgBuf, "\r\n");
-			#else
-				(void)::strcat (msgBuf, "\r\n");
-			#endif
-		}
+		string	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
-		DoEmitMessage_ (0, msgBuf);
+		AssureHasLineTermination (&tmp);
+		size_t len = tmp.length ();
+		Memory::SmallStackBuffer<char> buf (len + 1);
+		strcpy (buf.begin (), tmp.c_str ());
+		DoEmitMessage_ (0, buf.begin ());
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -233,25 +222,15 @@ void	Emitter::EmitTraceMessage (const char* format, ...)
 void	Emitter::EmitTraceMessage (const wchar_t* format, ...)
 {
 	try {
-		wchar_t		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
 		va_list		argsList;
 		va_start (argsList, format);
-
-		#if		__STDC_WANT_SECURE_LIB__
-			(void)::_vsnwprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
-		#else
-			(void)::vswprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
-		#endif
-		size_t	len	=	Characters::Length (msgBuf);
-		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			#if		__STDC_WANT_SECURE_LIB__
-				(void)::wcscat_s (msgBuf, L"\r\n");
-			#else
-				(void)::wcscat (msgBuf, L"\r\n");
-			#endif
-		}
+		wstring	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
-		DoEmitMessage_ (0, msgBuf);
+		AssureHasLineTermination (&tmp);
+		size_t	len	=	tmp.length ();
+		Memory::SmallStackBuffer<wchar_t> buf (len + 1);
+		wcscpy (buf.begin (), tmp.c_str ());
+		DoEmitMessage_ (0, buf.begin ());
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -262,24 +241,16 @@ void	Emitter::EmitTraceMessage (const wchar_t* format, ...)
 Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...)
 {
 	try {
-		char		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
 		va_list		argsList;
 		va_start (argsList, format);
-		#if		__STDC_WANT_SECURE_LIB__
-			(void)::vsnprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
-		#else
-			(void)::vsnprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
-		#endif
-		size_t	len	=	Characters::Length (msgBuf);
-		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			#if		__STDC_WANT_SECURE_LIB__
-				(void)::strcat_s (msgBuf, "\r\n");
-			#else
-				(void)::strcat (msgBuf, "\r\n");
-			#endif
-		}
+		string	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
-		return DoEmitMessage_ (bufferLastNChars, msgBuf);
+		AssureHasLineTermination (&tmp);
+		size_t	len	=	tmp.length ();
+		len = tmp.length ();
+		Memory::SmallStackBuffer<char> buf (len + 1);
+		strcpy (buf.begin (), tmp.c_str ());
+		return DoEmitMessage_ (bufferLastNChars, buf.begin ());
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -291,25 +262,16 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...)
 {
 	try {
-		wchar_t		msgBuf [4*1024];		// since we use safe version of printf (truncates) - we no longer need large buf
 		va_list		argsList;
 		va_start (argsList, format);
-
-		#if		__STDC_WANT_SECURE_LIB__
-			(void)::_vsnwprintf_s (msgBuf, NEltsOf (msgBuf), _TRUNCATE, format, argsList);
-		#else
-			(void)::vswprintf (msgBuf, NEltsOf (msgBuf), format, argsList);
-		#endif
-		size_t	len	=	Characters::Length (msgBuf);
-		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n' and len < NEltsOf (msgBuf) - 2) {
-			#if		__STDC_WANT_SECURE_LIB__
-				(void)::wcscat_s (msgBuf, L"\r\n");
-			#else
-				(void)::wcscat (msgBuf, L"\r\n");
-			#endif
-		}
+		wstring	tmp	=	Characters::FormatV (format, argsList);
 		va_end (argsList);
-		return DoEmitMessage_ (bufferLastNChars, msgBuf);
+		AssureHasLineTermination (&tmp);
+		size_t	len	=	tmp.length ();
+		len = tmp.length ();
+		Memory::SmallStackBuffer<wchar_t> buf (len + 1);
+		wcscpy (buf.begin (), tmp.c_str ());
+		return DoEmitMessage_ (bufferLastNChars, buf.begin ());
 	}
 	catch (...) {
 		Assert (false);	// Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -340,7 +302,7 @@ template	<typename	CHARTYPE>
 				if (sFirstTime) {
 					sMainThread = threadID;
 				}
-				string	threadIDStr	=	FormatThreadID (threadID);
+				string	threadIDStr	=	WideStringToNarrowSDKString (FormatThreadID (threadID));
 				if (sMainThread == threadID) {
 					::snprintf  (buf, NEltsOf (buf), "[-MAIN-][%08.3f]\t", curRelativeTime);
 					if (sFirstTime) {
