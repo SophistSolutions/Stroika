@@ -178,7 +178,7 @@ namespace	Stroika {
 
 
 			// Represent the thread ID for display - typically as an integer
-			string	FormatThreadID (Thread::IDType threadID);
+			wstring	FormatThreadID (Thread::IDType threadID);
 
 
 			// Our thread abort mechanism only throws at certain 'signalable' spots in the code - like sleeps, most reads, etc.

@@ -12,6 +12,25 @@
  */
 #include	"ThreadAbortException.h"
 
+
+// SHOULD BETTER HIDE THIS (qUseTLSForSAbortingFlag AND RELATED) implemenation details
+#ifndef	qUseTLSForSAbortingFlag
+	#if		defined (__GNUC__)
+	#define	qUseTLSForSAbortingFlag		1
+	#endif
+#endif
+
+// RE-Examine altenrate appraoches to this and beter docuemnt!!!!
+//
+//		http://bugzilla/show_bug.cgi?id=646
+#ifndef	qUseTLSForSAbortingFlag
+#define	qUseTLSForSAbortingFlag		0
+#endif
+#ifndef	qUseSleepExForSAbortingFlag
+#define	qUseSleepExForSAbortingFlag	qPlatform_Windows
+#endif
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
@@ -30,6 +49,13 @@ namespace	Stroika {
 
 				protected:
 					nonvirtual	void	Run ();
+
+
+				#if		qUseTLSForSAbortingFlag
+				protected:
+					bool*	fTLSAbortFlag;			// We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
+													// a pointer. This is that pointer - so another thread can terminate/abort this thread.
+				#endif
 
 				protected:
 					// Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,

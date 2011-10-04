@@ -12,6 +12,7 @@
 
 #include	"DLLSupport.h"
 #include	"../Debug/Trace.h"
+#include	"../Characters/Format.h"
 #include	"../Characters/StringUtils.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Execution/ErrNoException.h"
@@ -52,28 +53,13 @@ using	Time::DurationSecondsType;
 using	namespace	Characters;
 using	namespace	Execution;
 
-#ifndef	qUseTLSForSAbortingFlag
-	#if		defined (__GNUC__)
-	#define	qUseTLSForSAbortingFlag		1
-	#endif
-#endif
-
-// RE-Examine altenrate appraoches to this and beter docuemnt!!!!
-//
-//		http://bugzilla/show_bug.cgi?id=646
-#ifndef	qUseTLSForSAbortingFlag
-#define	qUseTLSForSAbortingFlag		0
-#endif
-#ifndef	qUseSleepExForSAbortingFlag
-#define	qUseSleepExForSAbortingFlag	qPlatform_Windows
-#endif
 
 
 #if		qUseTLSForSAbortingFlag
 #if		defined (__GNUC__)
 __thread bool	s_Aborting	=	false;
 #else
-__declspec( thread )	bool	s_Aborting	=	false;
+__declspec(thread)	bool	s_Aborting	=	false;
 #endif
 #endif
 
@@ -145,6 +131,9 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 #elif	qUseThreads_WindowsNative
 	: fThread (INVALID_HANDLE_VALUE)
 #endif
+	#if		qUseTLSForSAbortingFlag
+		,fTLSAbortFlag (nullptr)			// Can only be set properly within the MAINPROC of the thread
+	#endif
 	, fStatusCriticalSection ()
 	, fStatus (eNotYetRunning)
 	, fOK2StartEvent ()
@@ -207,12 +196,19 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 	 * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
 	 */
 	SharedPtr<Rep_>	incRefCnt	=	*thisThreadRep;	// assure refcount incremented so object not deleted while the thread is running
+
+	#if		qUseTLSForSAbortingFlag
+		s_Aborting = false;				// reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
+										// -- LGP 2011-10-03
+		incRefCnt->fTLSAbortFlag = &s_Aborting;
+	#endif
+
 	incRefCnt->fRefCountBumpedEvent.Set ();
 
 	incRefCnt->fOK2StartEvent.Wait ();	// we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
 										// we really want to start this thread.
 	try {
-		DbgTrace ("In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+		DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		bool	doRun	=	false;
 		{
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
@@ -224,19 +220,19 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 		if (doRun) {
 			incRefCnt->Run ();
 		}
-		DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+		DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		{
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 			incRefCnt->fStatus = eCompleted;
 		}
 	}
 	catch (ThreadAbortException&) {
-		DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+		DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 		incRefCnt->fStatus = eCompleted;
 	}
 	catch (...) {
-		DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+		DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 		incRefCnt->fStatus = eCompleted;
 	}
@@ -261,14 +257,15 @@ void	Thread::Rep_::NotifyOfAbort ()
 	Require (fStatus == eAborting or fStatus == eCompleted);
 	// CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
 	AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
-#if			qUseThreads_WindowsNative
-	if (::GetCurrentThreadId () == GetID ()) {
+	if (GetCurrentThreadID () == GetID ()) {
 		ThrowAbortIfNeeded ();
 	}
+#if		qUseTLSForSAbortingFlag
+	AssertNotNull (fTLSAbortFlag);
+	*fTLSAbortFlag = true;
+#elif	qUseThreads_StdCPlusPlus
+#elif	qUseThreads_WindowsNative
 	if (fStatus == eAborting) {
-		#if		qUseTLSForSAbortingFlag
-			s_Aborting = true;
-		#endif
 		Verify (::QueueUserAPC (&AbortProc_, fThread, reinterpret_cast<ULONG_PTR> (this)));
 	}
 #endif
@@ -523,29 +520,25 @@ Thread::Status	Thread::GetStatus_ () const
  **************************** Execution::FormatThreadID *************************
  ********************************************************************************
  */
-string	Execution::FormatThreadID (Thread::IDType threadID)
+wstring	Execution::FormatThreadID (Thread::IDType threadID)
 {
 	// it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
 	#if		qUseThreads_StdCPlusPlus
 		Assert (sizeof (threadID) >= sizeof (int));
-		char	buf[1024];
 		unsigned int	threadIDInt	=	*reinterpret_cast<unsigned int*> (&threadID);
 		if (threadIDInt <= 0xffff) {
-			snprintf (buf, NEltsOf (buf), "0x%04x", threadIDInt);
+			return Characters::Format (L"0x%04x", threadIDInt);
 		}
 		else {
-			snprintf (buf, NEltsOf (buf), "0x%08x", threadIDInt);
+			return Characters::Format (L"0x%08x", threadIDInt);
 		}
-		return buf;
 	#elif	qUseThreads_WindowsNative
-		char	buf[1024];
 		if (threadID <= 0xffff) {
-			snprintf (buf, NEltsOf (buf), "0x%04x", threadID);
+			return Characters::Format (L"0x%04x", threadID);
 		}
 		else {
-			snprintf (buf, NEltsOf (buf), "0x%08x", threadID);
+			return Characters::Format (L"0x%08x", threadID);
 		}
-		return buf;
 	#else
 		AssertNotImplemented ();
 	#endif
