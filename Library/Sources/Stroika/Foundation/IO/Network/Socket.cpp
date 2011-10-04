@@ -37,9 +37,6 @@ class	Socket::Rep_ {
 	public:
 		NativeSocket	fSD_;
 	public:
-		Rep_ ()
-			{
-			}
 		Rep_ (NativeSocket sd)
 			: fSD_ (sd)
 			{
@@ -134,10 +131,12 @@ Socket::Socket ()
 }
 
 Socket::Socket (const Socket& s)
+	: fRep_ (s.fRep_)
 {
 }
 
 Socket::Socket (NativeSocket sd)
+	: fRep_ (SharedPtr<Rep_> (new Rep_ (sd)))
 {
 }
 
@@ -147,6 +146,9 @@ Socket::~Socket ()
 
 const Socket& Socket::operator= (const Socket& s)
 {
+	if (fRep_ != s.fRep_) {
+		fRep_ = s.fRep_;
+	}
 	return *this;
 }
 
