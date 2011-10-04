@@ -3,6 +3,7 @@
  */
 #include	"../../StroikaPreComp.h"
 
+#include	<cstdlib>
 #include	<sys/types.h>
 
 #if		qPlatform_Windows
@@ -13,13 +14,12 @@
 	#include	<unistd.h>
 	#include	<sys/socket.h>
 	#include	<netdb.h>
+	#include	<sys/ioctl.h>
 #endif
 
+#include	"../../Execution/Sleep.h"
+#include	"../../Execution/Thread.h"
 #include	"../../Execution/ErrNoException.h"
-
-
-
-#include	<cstdlib>
 
 #include	"Socket.h"
 
@@ -91,13 +91,35 @@ class	Socket::Rep_ {
 	public:
 		Socket	Accept ()
 			{
+
+
+				// HACK - not right.... - Need to find a way to get interupted when abort is called
+				#if		qPlatform_POSIX && 0
+				fd_set	fs;
+				FD_ZERO (&fs);
+				FD_SET (fSD_, &fs);
+				timeval	timeout;
+				memset (&timeout, 0, sizeof (timeout));
+				timeout.tv_sec  = 5;
+				int	maxSD	=	fSD_;
+				#endif
+				
 				sockaddr	peer;
 				memset (&peer, 0, sizeof (peer));
 
+AGAIN:
 				socklen_t	sz	=	sizeof (peer);
 				int r = accept(fSD_, &peer, &sz);
 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
 				if (r < 0) {
+
+					// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
+					if (errno == EAGAIN or errno == EWOULDBLOCK)
+					{
+						Execution::Sleep(1.0);
+						Execution::CheckForThreadAborting();
+						goto AGAIN;
+					}
 					// throw...
 				}
 				return Socket (r);
@@ -156,6 +178,22 @@ void	Socket::Bind (const BindProperties& bindProperties)
 
 	NativeSocket sd;
 	sd = socket(AF_INET, SOCK_STREAM, 0);
+
+
+	// Allow socket descriptor to be reuseable
+	{
+		int    on = 1;
+		Execution::ThrowErrNoIfNegative (::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)));
+	}
+
+#if		qPlatform_POSIX
+	{
+		// Set socket to be non-blocking.  All of the sockets for the incoming connections will also be non-blocking since
+		// they will inherit that state from the listening socket
+		int    on = 1;
+		Execution::ThrowErrNoIfNegative (::ioctl (sd, FIONBIO, (char *)&on));
+	}
+#endif
 
 	Execution::ThrowErrNoIfNegative (::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr)));
 
