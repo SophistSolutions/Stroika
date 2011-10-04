@@ -40,7 +40,12 @@
 	*/
 	#ifndef	qCompilerAndStdLib_Supports_constexpr
 		#if		defined (__GNUC__)
-			#define	qCompilerAndStdLib_Supports_constexpr	1
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
+				#define	qCompilerAndStdLib_Supports_constexpr	1
+			#else
+				// Partly supported, but bugs with templates make it easier to just shutoff for now... Seems fine with v4.6
+				#define	qCompilerAndStdLib_Supports_constexpr	0
+			#endif
 		#elif	defined (_MSC_VER) && _MSC_VER <= 1600
 			#define	qCompilerAndStdLib_Supports_constexpr	0
 		#else

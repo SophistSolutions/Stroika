@@ -33,7 +33,7 @@ namespace	Stroika {
 							#endif
 						}
 				template	<>
-					inline	constexpr const wchar_t*	GetEOL ()
+					inline	constexpr  const wchar_t*	GetEOL ()
 						{
 							#if		qPlatform_Windows
 								return L"\r\n";

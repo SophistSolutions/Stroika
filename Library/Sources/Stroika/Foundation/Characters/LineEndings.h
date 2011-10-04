@@ -21,12 +21,21 @@ namespace	Stroika {
 			using	std::basic_string;
 
 
-			template	<typename T>
-				const T*	GetEOL ();
-			template	<>
-				const char*		GetEOL ();
-			template	<>
-				const wchar_t*	GetEOL ();
+			#if		qCompilerAndStdLib_Supports_constexpr
+				template	<typename T>
+					constexpr const T*	GetEOL ();
+				template	<>
+					constexpr const char*		GetEOL ();
+				template	<>
+					constexpr const wchar_t*	GetEOL ();
+			#else
+				template	<typename T>
+					const T*	GetEOL ();
+				template	<>
+					const char*		GetEOL ();
+				template	<>
+					const wchar_t*	GetEOL ();
+			#endif
 
 			template	<typename CHAR>
 				void	AssureHasLineTermination (basic_string<CHAR>* text);
