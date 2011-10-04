@@ -75,13 +75,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPListener.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPListener.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPListener.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}</ProjectGuid>

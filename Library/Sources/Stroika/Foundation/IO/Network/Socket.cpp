@@ -91,8 +91,6 @@ class	Socket::Rep_ {
 	public:
 		Socket	Accept ()
 			{
-
-
 				// HACK - not right.... - Need to find a way to get interupted when abort is called
 				#if		qPlatform_POSIX && 0
 				fd_set	fs;
@@ -112,7 +110,6 @@ AGAIN:
 				int r = accept(fSD_, &peer, &sz);
 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
 				if (r < 0) {
-
 					// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
 					if (errno == EAGAIN or errno == EWOULDBLOCK)
 					{
@@ -120,8 +117,8 @@ AGAIN:
 						Execution::CheckForThreadAborting();
 						goto AGAIN;
 					}
-					// throw...
 				}
+				Execution::ThrowErrNoIfNegative (r);
 				return Socket (r);
 			}
 
@@ -177,7 +174,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 	useAddr.sin_port = htons((short)bindProperties.fPort);
 
 	NativeSocket sd;
-	sd = socket(AF_INET, SOCK_STREAM, 0);
+	Execution::ThrowErrNoIfNegative (sd = socket(AF_INET, SOCK_STREAM, 0));
 
 
 	// Allow socket descriptor to be reuseable
