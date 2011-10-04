@@ -63,7 +63,7 @@
 			#endif
 		#else
 			// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
-			#define	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate	1
+			#define	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate	0
 		#endif
 	#endif
 
