@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Characters/String.h"
 #include	"../Containers/Common.h"
 #include	"../Memory/SmallStackBuffer.h"
 
@@ -21,7 +22,7 @@ namespace	Stroika {
 
 			#if		qCompilerAndStdLib_Supports_constexpr
 				template	<>
-					inline	constexpr char*		GetEOL ()
+					inline	constexpr const char*		GetEOL ()
 						{
 							#if		qPlatform_Windows
 								return "\r\n";
@@ -32,7 +33,7 @@ namespace	Stroika {
 							#endif
 						}
 				template	<>
-					constexpr wchar_t*	GetEOL ()
+					constexpr const wchar_t*	GetEOL ()
 						{
 							#if		qPlatform_Windows
 								return L"\r\n";

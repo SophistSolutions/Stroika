@@ -23,11 +23,11 @@ namespace	Stroika {
 
 			#if		qCompilerAndStdLib_Supports_constexpr
 				template	<typename T>
-					constexpr T*	GetEOL ();
+					constexpr const T*	GetEOL ();
 				template	<>
-					constexpr char*		GetEOL ();
+					constexpr const char*		GetEOL ();
 				template	<>
-					constexpr wchar_t*	GetEOL ();
+					constexpr const wchar_t*	GetEOL ();
 			#else
 				template	<typename T>
 					const T*	GetEOL ();
