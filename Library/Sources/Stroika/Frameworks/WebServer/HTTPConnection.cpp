@@ -19,8 +19,8 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
 using	namespace	Stroika::Foundation::Memory;
 
-using	namespace	Stroika::Framework;
-using	namespace	Stroika::Framework::Service;
+using	namespace	Stroika::Frameworks;
+using	namespace	Stroika::Frameworks::WebServer;
 
 
 

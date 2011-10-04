@@ -24,8 +24,8 @@
  */
 
 namespace	Stroika {	
-	namespace	Framework {
-		namespace	Service {
+	namespace	Frameworks {
+		namespace	WebServer {
 
 			using	namespace	Stroika::Foundation;
 			using	namespace	Stroika::Foundation::IO;
