@@ -109,6 +109,7 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Library/Frameworks/Makefile");
 
 		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
+		mkDirWithLinks("Frameworks/WebServer", "Makefile-Frameworks-WebServer");
 
 
 		mkdir "$intermediateFiles/$platform/$target/Test1";
