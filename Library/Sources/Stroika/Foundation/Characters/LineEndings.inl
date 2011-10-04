@@ -19,6 +19,74 @@ namespace	Stroika {
 
 
 
+			#if		qCompilerAndStdLib_Supports_constexpr
+				template	<>
+					inline	constexpr char*		GetEOL ()
+						{
+							#if		qPlatform_Windows
+								return "\r\n";
+							#elif	qPlatform_POSIX
+								return "\n";
+							#else
+								AssertNotImplemented ();
+							#endif
+						}
+				template	<>
+					constexpr wchar_t*	GetEOL ()
+						{
+							#if		qPlatform_Windows
+								return L"\r\n";
+							#elif	qPlatform_POSIX
+								return L"\n";
+							#else
+								AssertNotImplemented ();
+							#endif
+						}
+			#else
+				template	<>
+					inline	const char*		GetEOL ()
+						{
+							#if		qPlatform_Windows
+								return "\r\n";
+							#elif	qPlatform_POSIX
+								return "\n";
+							#else
+								AssertNotImplemented ();
+							#endif
+						}
+				template	<>
+					const wchar_t*	GetEOL ()
+						{
+							#if		qPlatform_Windows
+								return L"\r\n";
+							#elif	qPlatform_POSIX
+								return L"\n";
+							#else
+								AssertNotImplemented ();
+							#endif
+						}
+			#endif
+
+
+
+			template	<typename CHAR>
+				void	AssureHasLineTermination (basic_string<CHAR>* text)
+					{
+						RequireNotNull (text);
+						const	CHAR*	eol	=	GetEOL<CHAR> ();
+						size_t			eolLen	=	C_String::Length (eol);
+						size_t			len	=	text->length ();
+						bool			already	=	false;
+						if (eolLen < len) {
+							already = (text->compare (len - eolLen, eolLen, eol) == 0);
+						}
+						if (not already) {
+							text->append (eol);
+						}
+					}
+
+
+
 			template	<typename TCHAR>
 				size_t	CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
 					{

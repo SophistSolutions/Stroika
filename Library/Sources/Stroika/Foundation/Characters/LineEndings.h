@@ -20,6 +20,27 @@ namespace	Stroika {
 			using	std::wstring;
 			using	std::basic_string;
 
+
+			#if		qCompilerAndStdLib_Supports_constexpr
+				template	<typename T>
+					constexpr T*	GetEOL ();
+				template	<>
+					constexpr char*		GetEOL ();
+				template	<>
+					constexpr wchar_t*	GetEOL ();
+			#else
+				template	<typename T>
+					const T*	GetEOL ();
+				template	<>
+					const char*		GetEOL ();
+				template	<>
+					const wchar_t*	GetEOL ();
+			#endif
+
+			template	<typename CHAR>
+				void	AssureHasLineTermination (basic_string<CHAR>* text);
+
+
 			// return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 			// always big enough. OK for srcText and outBuf to be SAME PTR.
 			template	<typename TCHAR>
