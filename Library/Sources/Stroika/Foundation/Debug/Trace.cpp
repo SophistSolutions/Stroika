@@ -496,6 +496,22 @@ void	TraceContextBumper::DecrCount ()
 }
 #endif
 
+#if		qDefaultTracingOn
+TraceContextBumper::~TraceContextBumper ()
+{
+	DecrCount ();
+	if (fDoEndMarker) {
+		if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken)) {
+			Emitter::Get ().EmitUnadornedText ("/>");
+			Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
+		}
+		else {
+			Emitter::Get ().EmitTraceMessage (TSTR ("} </%s>"), fSavedContextName);
+		}
+	}
+}
+#endif
+
 
 
 
