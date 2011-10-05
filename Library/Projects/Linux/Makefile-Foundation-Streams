@@ -15,6 +15,8 @@ SubDirs	=	\
 Objs	=	\
 	$(ObjDir)BinaryInputStream.o\
 	$(ObjDir)BinaryOutputStream.o\
+	$(ObjDir)BufferedBinaryInputStream.o\
+	$(ObjDir)BufferedBinaryOutputStream.o\
 	$(ObjDir)Seekable.o\
 	$(ObjDir)TextInputStream.o\
 	$(ObjDir)TextOutputStream.o\

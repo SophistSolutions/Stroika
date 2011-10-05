@@ -20,6 +20,9 @@
  * TODO:
  *		(o)		REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *				INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
+ *
+ *		(o)		Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
+ *				to right codepage.
  */
 
 namespace	Stroika {	
