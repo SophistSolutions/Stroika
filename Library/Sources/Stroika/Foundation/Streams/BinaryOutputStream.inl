@@ -19,11 +19,11 @@ namespace	Stroika {
 			inline	BinaryOutputStream::BinaryOutputStream ()
 				{
 				}
-			inline	void	BinaryOutputStream::Write (const Byte* buffer, size_t bufSize)
+			inline	void	BinaryOutputStream::Write (const Byte* start, const Byte* end)
 				{
-					RequireNotNull (buffer);
-					Require (bufSize >= 1);
-					_Write (buffer, bufSize);
+					RequireNotNull (start);
+					Require ((end - start) >= 1);
+					_Write (start, end);
 				}
 
 		}

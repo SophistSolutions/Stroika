@@ -30,13 +30,13 @@ SocketStream::~SocketStream ()
 {
 }
 
-size_t	SocketStream::_Read (Byte* buffer, size_t bufSize) override
+size_t	SocketStream::_Read (Byte* intoStart, Byte* intoEnd) override
 {
-	return fSD_.Read (buffer, bufSize);
+	return fSD_.Read (intoStart, intoEnd);
 }
 
-void	SocketStream::_Write (const Byte* buffer, size_t bufSize) override
+void	SocketStream::_Write (const Byte* start, const Byte* end) override
 {
-	fSD_.Write (buffer, bufSize);
+	fSD_.Write (start, end);
 }
 

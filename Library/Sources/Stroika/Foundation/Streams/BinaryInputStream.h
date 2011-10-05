@@ -59,7 +59,7 @@ namespace	Stroika {
 			 *		o	Exceptions indicate something went wrong - like an IO error, or possibly in some cases a formatting effort (e.g. if the source is encrypted,
 			 *			and the stream is decrypting, then it might detect a format error and throw).
 			 *
-			 *		o	BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an input/output stream. Simlarly, they can both be
+			 *		o	BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an input/output stream. Similarly, they can both be
 			 *			mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
 			 */
 			class	BinaryInputStream {
@@ -69,12 +69,12 @@ namespace	Stroika {
 				public:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
-					nonvirtual	size_t	Read (Byte* buffer, size_t bufSize);
+					nonvirtual	size_t	Read (Byte* intoStart, Byte* intoEnd);
 
 				protected:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
-					virtual	size_t	_Read (Byte* buffer, size_t bufSize)			=	0;
+					virtual	size_t	_Read (Byte* intoStart, Byte* intoEnd)			=	0;
 			};
 
 		}

@@ -19,16 +19,16 @@ namespace	Stroika {
 			inline	TextInputStream::TextInputStream ()
 				{
 				}
-			inline	size_t	TextInputStream::Read (wchar_t* buffer, size_t bufSize)
+			inline	size_t	TextInputStream::Read (Character* intoStart, Character* intoEnd)
 				{
-					RequireNotNull (buffer);
-					Require (bufSize >= 1);
-					return _Read (buffer, bufSize);
+					RequireNotNull (intoStart);
+					Require ((intoEnd - intoStart) >= 1);
+					return _Read (intoStart, intoEnd);
 				}
-			inline	wchar_t	TextInputStream::Read ()
+			inline	Character	TextInputStream::Read ()
 				{
-					wchar_t	c	=	'\0';
-					size_t	n	=	_Read (&c, 1);
+					Character	c	=	'\0';
+					size_t	n	=	_Read (&c, &c + 1);
 					Assert (n == 0 or n == 1);
 					return (n == 0)? '\0': c;
 				}

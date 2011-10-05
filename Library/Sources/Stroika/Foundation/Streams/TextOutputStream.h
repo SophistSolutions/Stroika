@@ -6,6 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	"../Characters/Character.h"
 #include	"../Configuration/Common.h"
 
 
@@ -15,6 +16,8 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Streams {
+
+			using	Characters::Character;
 
 			/*
 			 * Design Overview:
@@ -29,12 +32,12 @@ namespace	Stroika {
 				public:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					nonvirtual	void	Write (const wchar_t* buffer, size_t bufSize);
+					nonvirtual	void	Write (const Character* start, const Character* end);
 				
 				protected:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					virtual	void	_Write (const wchar_t* buffer, size_t bufSize)			=	0;
+					virtual	void	_Write (const Character* start, const Character* end)			=	0;
 			};
 
 		}

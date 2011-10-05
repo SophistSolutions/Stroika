@@ -19,11 +19,11 @@ namespace	Stroika {
 			inline	TextOutputStream::TextOutputStream ()
 				{
 				}
-			void	TextOutputStream::Write (const wchar_t* buffer, size_t bufSize)
+			void	TextOutputStream::Write (const Character* start, const Character* end)
 				{
-					RequireNotNull (buffer);
-					Require (bufSize >= 1);
-					_Write (buffer, bufSize);
+					RequireNotNull (start);
+					Require (end - start >= 1);
+					_Write (start, end);
 				}
 		}
 	}

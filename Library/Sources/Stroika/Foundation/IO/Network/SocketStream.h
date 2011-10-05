@@ -31,8 +31,8 @@ namespace	Stroika {
 						~SocketStream ();
 	
 					public:
-						virtual	size_t	_Read (Byte* buffer, size_t bufSize) override;
-						virtual	void	_Write (const Byte* buffer, size_t bufSize) override;
+						virtual	size_t	_Read (Byte* intoStart, Byte* intoEnd) override;
+						virtual	void	_Write (const Byte* start, const Byte* end) override;
 
 					private:
 						Socket	fSD_;

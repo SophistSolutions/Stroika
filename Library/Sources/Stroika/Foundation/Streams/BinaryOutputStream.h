@@ -28,12 +28,12 @@ namespace	Stroika {
 				public:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					nonvirtual	void	Write (const Byte* buffer, size_t bufSize);
+					nonvirtual	void	Write (const Byte* start, const Byte* end);
 
 				protected:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					virtual	void	_Write (const Byte* buffer, size_t bufSize)			=	0;
+					virtual	void	_Write (const Byte* start, const Byte* end)			=	0;
 			};
 
 		}

@@ -54,25 +54,25 @@ class	Socket::Rep_ {
 				#endif
 			}
 	public:
-		size_t	Read (Byte* buffer, size_t bufSize) override
+		size_t	Read (Byte* intoStart, Byte* intoEnd) override
 			{
 				// Must do erorr checking and throw exceptions!!!
 				#if		qPlatform_Windows
-					return ::_read (fSD_, buffer, bufSize);
+					return ::_read (fSD_, intoStart, intoEnd - intoStart);
 				#elif	qPlatform_POSIX
-					return ::read (fSD_, buffer, bufSize);
+					return ::read (fSD_, intoStart, intoEnd - intoStart);
 				#else
 					AssertNotImplemented ();
 				#endif
 			}
 	public:
-		void	Write (const Byte* buffer, size_t bufSize) override
+		void	Write (const Byte* start, const Byte* end) override
 			{
 				// Must do erorr checking and throw exceptions!!!
 				#if		qPlatform_Windows
-					int		n	=	::_write (fSD_, buffer, bufSize);
+					int		n	=	::_write (fSD_, start, end - start);
 				#elif	qPlatform_POSIX
-					int		n	=	::write (fSD_, buffer, bufSize);
+					int		n	=	::write (fSD_, start, end - start);
 				#else
 					AssertNotImplemented ();
 				#endif
@@ -209,14 +209,14 @@ Socket	Socket::Accept ()
 	return fRep_->Accept ();
 }
 
-size_t	Socket::Read (Byte* buffer, size_t bufSize)
+size_t	Socket::Read (Byte* intoStart, Byte* intoEnd)
 {
-	return fRep_->Read (buffer, bufSize);
+	return fRep_->Read (intoStart, intoEnd);
 }
 
-void	Socket::Write (const Byte* buffer, size_t bufSize)
+void	Socket::Write (const Byte* start, const Byte* end)
 {
-	fRep_->Write (buffer, bufSize);
+	fRep_->Write (start, end);
 }
 
 void	Socket::Close ()

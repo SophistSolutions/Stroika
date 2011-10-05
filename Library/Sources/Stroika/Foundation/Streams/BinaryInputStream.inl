@@ -19,11 +19,11 @@ namespace	Stroika {
 			inline	BinaryInputStream::BinaryInputStream ()
 				{
 				}
-			inline	size_t	BinaryInputStream::Read (Byte* buffer, size_t bufSize)
+			inline	size_t	BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd)
 				{
-					RequireNotNull (buffer);
-					Require (bufSize >= 1);
-					return _Read (buffer, bufSize);
+					RequireNotNull (intoStart);
+					Require ((intoEnd-intoStart) >= 1);
+					return _Read (intoStart, intoEnd);
 				}
 		}
 	}

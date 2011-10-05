@@ -8,6 +8,7 @@
 
 #include	<string>
 
+#include	"../Characters/Character.h"
 #include	"../Configuration/Common.h"
 
 
@@ -18,7 +19,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Streams {
 
-
+			using	Characters::Character;
 
 			/*
 			 * Design Overview:
@@ -45,10 +46,10 @@ namespace	Stroika {
 				public:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
-					nonvirtual	size_t	Read (wchar_t* buffer, size_t bufSize);
+					nonvirtual	size_t	Read (Character* intoStart, Character* intoEnd);
 					
 					// Blocking read of a single character. Returns a NUL-character on EOF ('\0')
-					nonvirtual	wchar_t	Read ();
+					nonvirtual	Character	Read ();
 
 					// WANTED todo this - but cannot DO SO - without PEEK/SEEKABILITY!!!! (after you read CR, you must look ahead for LF, but cannot)
 					// We COULD define this API so it somehow worked out (set  aflag saying last read CR so if next Read of char is LF, then successive readlines work, but a bit kludgy)
@@ -58,7 +59,7 @@ namespace	Stroika {
 				protected:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
-					virtual	size_t	_Read (wchar_t* buffer, size_t bufSize)			=	0;
+					virtual	size_t	_Read (Character* intoStart, Character* intoEnd)			=	0;
 			};
 
 		}

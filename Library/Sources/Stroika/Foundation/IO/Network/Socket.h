@@ -58,8 +58,8 @@ namespace	Stroika {
 						void	Listen (unsigned int backlog);
 
 					public:
-						nonvirtual	size_t	Read (Byte* buffer, size_t bufSize);
-						nonvirtual	void	Write (const Byte* buffer, size_t bufSize);
+						nonvirtual	size_t	Read (Byte* intoStart, Byte* intoEnd);
+						nonvirtual	void	Write (const Byte* start, const Byte* end);
 
 					public:
 						nonvirtual	void	Close ();
