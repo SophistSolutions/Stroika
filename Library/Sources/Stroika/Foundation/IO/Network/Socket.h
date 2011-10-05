@@ -59,11 +59,12 @@ namespace	Stroika {
 							unsigned int	fListenBacklog;
 							unsigned int	fExtraBindFlags;		// eg. SO_REUSEADDR
 						};
-						void	Bind (const BindProperties& bindProperties);
-						Socket	Accept ();
+						// throws if socket already bound or valid - only legal on empty socket
+						nonvirtual	void	Bind (const BindProperties& bindProperties);
+						nonvirtual	Socket	Accept ();
 
 						// throws on error, and otherwise means should call accept
-						void	Listen (unsigned int backlog);
+						nonvirtual	void	Listen (unsigned int backlog);
 
 					public:
 						nonvirtual	size_t	Read (Byte* intoStart, Byte* intoEnd);

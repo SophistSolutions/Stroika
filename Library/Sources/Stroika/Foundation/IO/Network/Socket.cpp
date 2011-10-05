@@ -31,7 +31,13 @@ using	namespace	Stroika::Foundation::Memory;
 using	namespace	Stroika::Foundation::IO;
 using	namespace	Stroika::Foundation::IO::Network;
 
-
+namespace	{
+	#if		qPlatform_Windows
+		const	NativeSocket	kINVALID_NATIVE_HANDLE	=	INVALID_SOCKET;
+	#elif	qPlatform_POSIX
+		const	NativeSocket	kINVALID_NATIVE_HANDLE	=	-1;	// right value??
+	#endif
+}
 
 class	Socket::Rep_ {
 	public:
@@ -41,17 +47,26 @@ class	Socket::Rep_ {
 			: fSD_ (sd)
 			{
 			}
+		~Rep_ ()
+			{
+				if (fSD_ != kINVALID_NATIVE_HANDLE) {
+					Close ();
+				}
+			}
 
 	public:
 		void	Close ()
 			{
-				#if		qPlatform_Windows
-					::closesocket (fSD_);
-				#elif	qPlatform_POSIX
-					::close (fSD_);
-				#else
-					AssertNotImplemented ();
-				#endif
+				if (fSD_ != kINVALID_NATIVE_HANDLE) {
+					#if		qPlatform_Windows
+						::closesocket (fSD_);
+					#elif	qPlatform_POSIX
+						::close (fSD_);
+					#else
+						AssertNotImplemented ();
+					#endif
+					fSD_ = kINVALID_NATIVE_HANDLE;
+				}
 			}
 	public:
 		size_t	Read (Byte* intoStart, Byte* intoEnd) override
@@ -81,7 +96,6 @@ class	Socket::Rep_ {
 				#endif
 			}
 
-		
 	public:
 		void	Listen (unsigned int backlog)
 			{
@@ -134,6 +148,7 @@ const	String	Socket::BindProperties::kANYHOST;
 
 
 Socket::Socket ()
+	: fRep_ ()
 {
 }
 
@@ -162,9 +177,10 @@ const Socket& Socket::operator= (const Socket& s)
 void	Socket::Bind (const BindProperties& bindProperties)
 {
 	// Should this throw if already has something bound - already non-null!???
+	if (not fRep_.IsNull ()) {
+		throw Execution::StringException (L"Cannot bind an already bound socket");
+	}
 
-
-//	fRep_->Bind (bindProperties);
 	addrinfo hints;
 	addrinfo* res = nullptr;
 	memset ((void*)&hints, 0, sizeof(hints));
@@ -234,4 +250,5 @@ void	Socket::Write (const Byte* start, const Byte* end)
 void	Socket::Close ()
 {
 	fRep_->Close ();
+	fRep_.clear ();
 }
