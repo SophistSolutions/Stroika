@@ -7,7 +7,7 @@
 #include	"../../StroikaPreComp.h"
 
 #if		qPlatform_Windows
-	#include	<WinSock2.h>
+	#include	<WinSock.h>
 #endif
 
 #include	"../../Characters/String.h"
