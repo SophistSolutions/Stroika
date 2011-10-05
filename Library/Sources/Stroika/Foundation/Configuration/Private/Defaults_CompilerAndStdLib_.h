@@ -22,6 +22,19 @@
 
 
 //NEED DOCS SOMPEPLACE
+#ifndef	qCompilerAndStdLib_Supports_ConstructorDelegation
+	#if		defined (__GNUC__)
+		// not sure what version will/does support this
+		#define	qCompilerAndStdLib_Supports_ConstructorDelegation	0
+	#elif	defined (_MSC_VER) && _MSC_VER <= 1600
+		#define	qCompilerAndStdLib_Supports_ConstructorDelegation	0
+	#else
+		// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+		#define	qCompilerAndStdLib_Supports_ConstructorDelegation	1
+	#endif
+#endif
+
+//NEED DOCS SOMPEPLACE
 #ifndef	qCompilerAndStdLib_Supports_CTORDELETE
 	#if		defined (__GNUC__)
 		#define	qCompilerAndStdLib_Supports_CTORDELETE	1
