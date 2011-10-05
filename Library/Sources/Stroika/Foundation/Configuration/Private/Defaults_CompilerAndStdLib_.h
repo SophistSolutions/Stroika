@@ -34,6 +34,20 @@
 #endif
 
 
+#ifndef	qCompilerAndStdLib_Bug_regexpreplace
+	#if		defined (__GNUC__)
+		#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 5))
+			#define	qCompilerAndStdLib_Bug_regexpreplace	1
+		#else
+			#define	qCompilerAndStdLib_Bug_regexpreplace	0
+		#endif
+	#else
+		#define	qCompilerAndStdLib_Bug_regexpreplace	0
+	#endif
+#endif
+
+
+
 	/*
 	@CONFIGVAR:		qCompilerAndStdLib_Supports_constexpr
 	@DESCRIPTION:	<p>Defined true if the compiler supports constexpr</p>

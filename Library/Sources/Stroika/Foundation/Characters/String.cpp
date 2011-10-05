@@ -457,7 +457,12 @@ vector<String>	String::Find (const String& regEx) const
 
 String	String::Replace (const String& regEx) const
 {
-	return regex_replace (As<wstring> (), wregex (regEx.As<wstring> ()), regEx.As<wstring> ());
+	#if		qCompilerAndStdLib_Bug_regexpreplace
+		AssertNotImplemented ();
+		return String ();
+	#else
+		return regex_replace<regex_traits<wchar_t>,wchar_t> (As<wstring> (), wregex (regEx.As<wstring> ()), regEx.As<wstring> ());
+	#endif
 }
 
 String	String::SubString (size_t from, size_t to) const
