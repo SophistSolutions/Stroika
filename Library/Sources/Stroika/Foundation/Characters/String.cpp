@@ -438,8 +438,13 @@ bool	String::Contains (const String& subString) const
 
 bool	String::Match (const String& regEx) const
 {
-	wstring	tmp	=	As<wstring> ();
-	return regex_match (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
+	#if		qCompilerAndStdLib_Bug_regexpr
+		AssertNotImplemented ();
+		return false;
+	#else
+		wstring	tmp	=	As<wstring> ();
+		return regex_match (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
+	#endif
 }
 
 vector<String>	String::Find (const String& regEx) const
