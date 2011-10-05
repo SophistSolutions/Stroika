@@ -177,7 +177,7 @@ const Socket& Socket::operator= (const Socket& s)
 void	Socket::Bind (const BindProperties& bindProperties)
 {
 	// Should this throw if already has something bound - already non-null!???
-	if (not fRep_.IsNull ()) {
+	if (not fRep_.IsNull () or fRep_->fSD_ != kINVALID_NATIVE_HANDLE) {
 		throw Execution::StringException (L"Cannot bind an already bound socket");
 	}
 
@@ -249,6 +249,7 @@ void	Socket::Write (const Byte* start, const Byte* end)
 
 void	Socket::Close ()
 {
+	// not importnat to null-out, but may as well...
 	fRep_->Close ();
 	fRep_.clear ();
 }
