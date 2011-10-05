@@ -34,15 +34,16 @@
 #endif
 
 
-#ifndef	qCompilerAndStdLib_Bug_regexpreplace
+#ifndef	qCompilerAndStdLib_Bug_regexpr
 	#if		defined (__GNUC__)
 		#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 5))
-			#define	qCompilerAndStdLib_Bug_regexpreplace	1
+			// SEEMS fixed in GCC v4.6
+			#define	qCompilerAndStdLib_Bug_regexpr	1
 		#else
-			#define	qCompilerAndStdLib_Bug_regexpreplace	0
+			#define	qCompilerAndStdLib_Bug_regexpr	0
 		#endif
 	#else
-		#define	qCompilerAndStdLib_Bug_regexpreplace	0
+		#define	qCompilerAndStdLib_Bug_regexpr	0
 	#endif
 #endif
 

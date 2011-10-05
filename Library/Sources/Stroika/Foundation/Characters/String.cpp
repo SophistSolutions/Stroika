@@ -444,21 +444,25 @@ bool	String::Match (const String& regEx) const
 
 vector<String>	String::Find (const String& regEx) const
 {
-	wstring	tmp		=	As<wstring> ();
-	wregex	regExp	=	wregex (regEx.As<wstring> ());
-	std::wsmatch res;
-	regex_search (tmp, res, regExp);
 	vector<String>	result;
-	result.reserve (res.size ());
-	for (wsmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
-		result.push_back (String (*i));
-	}
+	#if		qCompilerAndStdLib_Bug_regexpr
+		AssertNotImplemented ();
+	#else
+		wstring	tmp		=	As<wstring> ();
+		wregex	regExp	=	wregex (regEx.As<wstring> ());
+		std::wsmatch res;
+		regex_search (tmp, res, regExp);
+		result.reserve (res.size ());
+		for (wsmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
+			result.push_back (String (*i));
+		}
+	#endif
 	return result;
 }
 
 String	String::Replace (const String& regEx, const String& with) const
 {
-	#if		qCompilerAndStdLib_Bug_regexpreplace
+	#if		qCompilerAndStdLib_Bug_regexpr
 		AssertNotImplemented ();
 		return String ();
 	#else

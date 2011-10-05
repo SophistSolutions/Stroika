@@ -575,10 +575,12 @@ namespace	{
 	void	Test17_RegExp_ ()
 		{
 			VerifyTestResult (not String (L"Hello world").Match (L"ello"));
+		#if		!qCompilerAndStdLib_Bug_regexpr
 			VerifyTestResult (String (L"Hello world").Find (L"ello").size () == 1);
 			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (L"<h(.)>([^<]+)");
 			VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
-		#if		!qCompilerAndStdLib_Bug_regexpreplace
+		#endif
+		#if		!qCompilerAndStdLib_Bug_regexpr
 			VerifyTestResult (String (L"Hello world").Replace (L"world", L"Planet") == L"Hello Planet");
 		#endif
 		}
