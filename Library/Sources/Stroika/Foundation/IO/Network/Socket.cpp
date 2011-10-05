@@ -46,7 +46,7 @@ class	Socket::Rep_ {
 		void	Close ()
 			{
 				#if		qPlatform_Windows
-					::_close (fSD_);
+					::closesocket (fSD_);
 				#elif	qPlatform_POSIX
 					::close (fSD_);
 				#else
@@ -58,7 +58,9 @@ class	Socket::Rep_ {
 			{
 				// Must do erorr checking and throw exceptions!!!
 				#if		qPlatform_Windows
-					return ::_read (fSD_, intoStart, intoEnd - intoStart);
+					AssertNotImplemented ();
+					return 0;
+					//return ::_read (fSD_, intoStart, intoEnd - intoStart);
 				#elif	qPlatform_POSIX
 					return ::read (fSD_, intoStart, intoEnd - intoStart);
 				#else
@@ -70,7 +72,8 @@ class	Socket::Rep_ {
 			{
 				// Must do erorr checking and throw exceptions!!!
 				#if		qPlatform_Windows
-					int		n	=	::_write (fSD_, start, end - start);
+					AssertNotImplemented ();
+					//int		n	=	::_write (fSD_, start, end - start);
 				#elif	qPlatform_POSIX
 					int		n	=	::write (fSD_, start, end - start);
 				#else
@@ -104,7 +107,7 @@ class	Socket::Rep_ {
 
 AGAIN:
 				socklen_t	sz	=	sizeof (peer);
-				int r = accept(fSD_, &peer, &sz);
+				NativeSocket	r = accept (fSD_, &peer, &sz);
 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
 				if (r < 0) {
 					// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
@@ -115,7 +118,11 @@ AGAIN:
 						goto AGAIN;
 					}
 				}
-				Execution::ThrowErrNoIfNegative (r);
+				#if		qPlatform_Windows
+					AssertNotImplemented ();
+				#elif	qPlatform_POSIX
+					Execution::ThrowErrNoIfNegative (r);
+				#endif
 				return Socket (r);
 			}
 
@@ -176,7 +183,12 @@ void	Socket::Bind (const BindProperties& bindProperties)
 	useAddr.sin_port = htons((short)bindProperties.fPort);
 
 	NativeSocket sd;
-	Execution::ThrowErrNoIfNegative (sd = socket(AF_INET, SOCK_STREAM, 0));
+#if		qPlatform_POSIX
+	Execution::ThrowErrNoIfNegative (sd = socket (AF_INET, SOCK_STREAM, 0));
+#else
+	sd = 0;
+	AssertNotImplemented ();
+#endif
 
 
 	// Allow socket descriptor to be reuseable

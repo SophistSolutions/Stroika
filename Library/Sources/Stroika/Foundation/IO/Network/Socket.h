@@ -6,6 +6,10 @@
 
 #include	"../../StroikaPreComp.h"
 
+#if		qPlatform_Windows
+	#include	<WinSock2.h>
+#endif
+
 #include	"../../Characters/String.h"
 #include	"../../Configuration/Common.h"
 #include	"../../Streams/BinaryInputStream.h"
@@ -21,7 +25,11 @@ namespace	Stroika {
 
 
 				// Platform Socket descriptor - file descriptor on unix (something like this on windoze)
-				typedef	int	NativeSocket;
+				#if		qPlatform_Windows
+					typedef	SOCKET	NativeSocket;
+				#else
+					typedef	int	NativeSocket;
+				#endif
 
 
 				class	Socket {
