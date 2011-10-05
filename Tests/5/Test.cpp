@@ -562,7 +562,7 @@ namespace	{
 
 			for (int i = 1; i < 1000; ++i) {
 				String	format	=	Format (L"%%%ds", i);
-				VerifyTestResult (Format (format.As<wstring> ().c_str (), "x").length () == i);
+				VerifyTestResult (Format (format.As<wstring> ().c_str (), L"x").length () == i);
 			}
 		}
 }
