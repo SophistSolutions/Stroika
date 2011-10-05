@@ -12,6 +12,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)BadFormatException.o\
+	$(ObjDir)InternetMediaType.o\
 
 SubDirs	=	\
 	JSON \
