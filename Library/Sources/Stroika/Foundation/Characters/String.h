@@ -231,9 +231,9 @@ namespace	Stroika {
 
 				public:
 					/*
-					 * Apply the given regular expression, and replace each match. This doesn't modify this string, but returns the replacement string.
+					 * Apply the given regular expression, with 'with' and replace each match. This doesn't modify this string, but returns the replacement string.
 					 */
-					nonvirtual	String	Replace (const String& regEx) const;
+					nonvirtual	String	Replace (const String& regEx, const String& with) const;
 
 				public:
 					#if		!qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
