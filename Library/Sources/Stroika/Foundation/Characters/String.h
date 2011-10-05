@@ -266,21 +266,6 @@ namespace	Stroika {
 					 */
 					nonvirtual	bool	IsWhitespace () const;
 
-#if 0
-				public:
-                    /*
-                     * Peeking is possible, but ill-advised since it is not wholly transparent when that internal
-                     * pointer might become invalid. Generally, if you don't call any routines of String (even
-                     * indirectly) you should be allright.
-					 *
-					 * FROM CODE REVIEW - IT APPEARS PEEK MUST NEVER RETURN NULL (except maybe if length = 0), and lifetime is (unclear but short)
-					 * and returns NON-NUL-TERMINATED Character array. But no matter the rep, it MUST always be able to return a Character* array (so not good design constraint)
-					 * We should PROBABYL try to find a way to change that or get rid of this API
-					 *			--LGP 2011-09-09
-                     */
-                    nonvirtual	const Character* Peek () const;
-#endif
-
 
 				public:
 					/*
