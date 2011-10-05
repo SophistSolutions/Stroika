@@ -217,6 +217,23 @@ namespace	Stroika {
                      */
                     nonvirtual	String		SubString (size_t from, size_t to = kBadStringIndex) const;
 
+                public:
+					/*
+					 * Apply the given regular expression return true if it matches this string
+					 */
+					nonvirtual	bool	Match (const String& regEx) const;
+
+                public:
+					/*
+					 * Apply the given regular expression, and return a vector of the starts of all substring matches.
+					 */
+					nonvirtual	vector<String>	Find (const String& regEx) const;
+
+				public:
+					/*
+					 * Apply the given regular expression, and replace each match. This doesn't modify this string, but returns the replacement string.
+					 */
+					nonvirtual	String	Replace (const String& regEx) const;
 
 				public:
 					#if		!qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported

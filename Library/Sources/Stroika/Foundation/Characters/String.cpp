@@ -8,6 +8,7 @@
 #include    <climits>
 #include    <istream>
 #include	<string>
+#include	<regex>
 
 #include	"../Math/Common.h"
 #include	"TString.h"
@@ -433,6 +434,30 @@ bool	String::Contains (Character c) const
 bool	String::Contains (const String& subString) const
 {
 	return bool (IndexOf (subString) != kBadStringIndex);
+}
+
+bool	String::Match (const String& regEx) const
+{
+	wstring	tmp	=	As<wstring> ();
+	return regex_match (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
+}
+
+vector<String>	String::Find (const String& regEx) const
+{
+	wstring	tmp	=	As<wstring> ();
+	std::wcmatch res;
+	regex_search (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
+	vector<String>	result;
+	result.reserve (res.size ());
+	for (wcmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
+		result.push_back (String (*i));
+	}
+	return result;
+}
+
+String	String::Replace (const String& regEx) const
+{
+	return regex_replace (As<wstring> (), wregex (regEx.As<wstring> ()), regEx.As<wstring> ());
 }
 
 String	String::SubString (size_t from, size_t to) const
