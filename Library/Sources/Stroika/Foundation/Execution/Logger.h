@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_Logging_h_
-#define	_Stroika_Foundation_Execution_Logging_h_	1
+#ifndef	_Stroika_Foundation_Execution_Logger_h_
+#define	_Stroika_Foundation_Execution_Logger_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -143,7 +143,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Execution_Logging_h_*/
+#endif	/*_Stroika_Foundation_Execution_Logger_h_*/
 
 
 
@@ -153,4 +153,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Logging.inl"
+#include	"Logger.inl"

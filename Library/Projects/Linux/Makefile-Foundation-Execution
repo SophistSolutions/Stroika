@@ -17,7 +17,7 @@ Objs	=	\
 	$(ObjDir)Exceptions.o\
 	$(ObjDir)ExceptionPropagate.o\
 	$(ObjDir)Event.o\
-	$(ObjDir)Logging.o\
+	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
 	$(ObjDir)ProgressMonitor.o\

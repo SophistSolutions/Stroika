@@ -10,7 +10,7 @@
 #include	"../Characters/Format.h"
 #include	"Process.h"
 
-#include	"Logging.h"
+#include	"Logger.h"
 
 
 using	namespace	Stroika::Foundation;

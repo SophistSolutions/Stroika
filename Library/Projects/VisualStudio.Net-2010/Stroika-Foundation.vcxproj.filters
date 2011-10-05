@@ -279,9 +279,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logging.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -293,6 +290,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.cpp">
       <Filter>Sources\DataExchangeFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp">
+      <Filter>Sources\Execution</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -639,9 +639,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logging.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -656,6 +653,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.h">
       <Filter>Sources\DataExchangeFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -911,9 +911,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Logging.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -928,6 +925,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.inl">
       <Filter>Sources\DataExchangeFormat</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>

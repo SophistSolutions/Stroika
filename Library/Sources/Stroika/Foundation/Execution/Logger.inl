@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_Logging_inl_
-#define	_Stroika_Foundation_Execution_Logging_inl_	1
+#ifndef	_Stroika_Foundation_Execution_Logger_inl_
+#define	_Stroika_Foundation_Execution_Logger_inl_	1
 
 
 /*
@@ -38,5 +38,5 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Execution_Logging_inl_*/
+#endif	/*_Stroika_Foundation_Execution_Logger_inl_*/
 
