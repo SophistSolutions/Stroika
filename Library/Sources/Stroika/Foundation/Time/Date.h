@@ -178,7 +178,7 @@ namespace	Stroika {
 					nonvirtual	JulianRepType	DaysSince () const;
 
 				private:
-					static 		JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year);			// from NIHCL
+					static 		JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year);
 					static 		JulianRepType	Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
 				private:

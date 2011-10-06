@@ -16,6 +16,8 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
+
+
 			//	class Date
 				inline	Date::JulianRepType	Date::GetJulianRep () const
 					{
