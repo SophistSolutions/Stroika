@@ -14,6 +14,7 @@ Objs	=	\
 	$(ObjDir)Duration.o\
 	$(ObjDir)Realtime.o\
 	$(ObjDir)TimeOfDay.o\
+	$(ObjDir)Timezone.o\
 
 all:	$(Objs)
 

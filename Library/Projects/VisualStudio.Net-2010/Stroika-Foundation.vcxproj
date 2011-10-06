@@ -221,6 +221,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
@@ -346,6 +347,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
