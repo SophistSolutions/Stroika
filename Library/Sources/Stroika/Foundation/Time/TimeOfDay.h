@@ -55,7 +55,6 @@ namespace	Stroika {
 					// we normalize to be within a given day (seconds since midnight)
 					explicit TimeOfDay (uint32_t t);
 
-
 					enum	PrintFormat {
 						eCurrentLocale_PF,
 						eCurrentXML_PF,
@@ -65,27 +64,6 @@ namespace	Stroika {
 					static	TimeOfDay	Parse (const wstring& rep, LCID lcid);
 				#endif
 
-#if 0
-//RENAME AS PARSE STATIUC METHOD?
-explicit TimeOfDay (const wstring& rep);
-#if		qPlatform_Windows
-explicit TimeOfDay (const wstring& rep, LCID lcid);
-#endif
-
-//LOSE THESE?
-/*
-* If a full date, just grab the time part, and ignore the rest.
-*/
-enum XML { eXML };
-explicit TimeOfDay (const wstring& rep, XML);
-
-#if 0
-					#if		qPlatform_Windows
-					explicit TimeOfDay (const SYSTEMTIME& sysTime);
-					explicit TimeOfDay (const FILETIME& fileTime);
-					#endif
-#endif
-#endif
 
 				public:
 					/*
@@ -114,14 +92,6 @@ explicit TimeOfDay (const wstring& rep, XML);
 					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid) const;
 					#endif
-//nonvirtual	wstring	Format4XML () const { return Format (eCurrentXML_PF); }
-
-#if 0
-				#if		qPlatform_Windows
-				public:
-					nonvirtual	operator SYSTEMTIME () const;
-				#endif
-#endif
 
 				private:
 					uint32_t	fTime;
@@ -135,8 +105,6 @@ explicit TimeOfDay (const wstring& rep, XML);
 
 			class	TimeOfDay::FormatException {
 			};
-
-
 
 
 		}

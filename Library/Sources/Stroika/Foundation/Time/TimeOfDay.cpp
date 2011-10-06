@@ -69,6 +69,7 @@ namespace	{
 
 
 
+
 /*
  ********************************************************************************
  *********************************** TimeOfDay **********************************
@@ -86,14 +87,6 @@ TimeOfDay::TimeOfDay (uint32_t t)
   : fTime (t < 24 * 60 * 60? t: (24 * 60 * 60-1))
 {
 }
-
-#if 0
-TimeOfDay::TimeOfDay (const wstring& rep)
-	: fTime (-1)
-{
-	*this = TimeOfDay::Parse (rep, TimeOfDay::eCurrentLocale_PF);
-}
-#endif
 
 TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 {
@@ -191,22 +184,6 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, LCID lcid)
 	memset (&sysTime, 0, sizeof (sysTime));
 	Verify (::VariantTimeToSystemTime (d, &sysTime));
 	return mkTimeOfDay_ (sysTime);
-}
-#endif
-
-#if 0
-#if		qPlatform_Windows
-TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid)
-	: fTime (-1)
-{
-	*this =TimeOfDay::Parse (rep, lcid);
-}
-#endif
-
-TimeOfDay::TimeOfDay (const wstring& rep, XML):
-	fTime (-1)
-{
-	*this =TimeOfDay::Parse (rep, eCurrentXML_PF);
 }
 #endif
 
@@ -402,50 +379,3 @@ wstring	TimeOfDay::Format (LCID lcid) const
 	}
 }
 #endif
-
-#if 0
-
-wstring	TimeOfDay::Format4XML () const
-{
-	if (empty ()) {
-		return wstring ();
-	}
-	else {
-		int hour = fTime/(60*60);
-		int minutes = (fTime - hour * 60 * 60) / 60;
-		int secs = fTime - hour * 60 * 60 - minutes * 60;
-		Assert (hour >= 0 and hour < 24);
-		Assert (minutes >= 0 and minutes < 60);
-		Assert (secs >= 0 and secs < 60);
-		return ::Format (L"%02d:%02d:%02d", hour, minutes, secs);
-	}
-}
-#endif
-
-#if 0
-#if		qPlatform_Windows
-TimeOfDay::operator SYSTEMTIME () const
-{
-	SYSTEMTIME	t;
-	memset (&t, 0, sizeof (t));
-	if (not empty ()) {
-		unsigned int	seconds	=	fTime;
-		unsigned int	minutes	=	seconds / 60;
-		unsigned int	hours	=	minutes / 60;
-
-		hours = min (hours, 23U);
-		t.wHour = hours;
-
-		minutes -= hours * 60;
-		minutes = min (minutes, 59U);
-		t.wMinute = minutes;
-
-		seconds -= (60*60 * hours + 60 * minutes);
-		seconds = min (seconds, 59U);
-		t.wSecond = seconds;
-	}
-	return t;
-}
-#endif
-#endif
-
