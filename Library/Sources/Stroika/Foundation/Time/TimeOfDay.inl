@@ -47,9 +47,7 @@ namespace	Stroika {
 					{
 						uint32_t	n	=	GetAsSecondsCount ();
 						n -= GetHours () * 60 * 60;
-						n /= 60;
 						n -= GetMinutes () * 60;
-						n /= 60;
 						Ensure (0 <= n and n <= 59);
 						return n;
 					}

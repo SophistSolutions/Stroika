@@ -35,16 +35,37 @@ namespace	{
 
 }
 
+
 namespace	{
 
-	void	Test_2_TestDate_ ()
+	void	Test_2_TestTimeOfDay_ ()
 		{
-			Date	d (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
-			VerifyTestResult (d.Format4XML () == L"1903-04-04");
-			d.AddDays (4);
-			VerifyTestResult (d.Format4XML () == L"1903-04-08");
-			d.AddDays (-4);
-			VerifyTestResult (d.Format4XML () == L"1903-04-04");
+			{
+				TimeOfDay	t;
+				VerifyTestResult (t.empty ());
+				TimeOfDay	t2 (2);
+				VerifyTestResult (t < t2);
+				VerifyTestResult (t.GetAsSecondsCount () == 0);
+				VerifyTestResult (not t2.empty ());
+				VerifyTestResult (t.Format ().empty ());
+				VerifyTestResult (not t2.Format ().empty ());
+				VerifyTestResult (t2.GetHours () == 0);
+				VerifyTestResult (t2.GetMinutes () == 0);
+				VerifyTestResult (t2.GetSeconds () == 2);
+			}
+			{
+				TimeOfDay	t2 (5 * 60 * 60 + 3 * 60 + 49);
+				VerifyTestResult (t2.GetHours () == 5);
+				VerifyTestResult (t2.GetMinutes () == 3);
+				VerifyTestResult (t2.GetSeconds () == 49);
+			}
+			{
+				TimeOfDay	t2 (25 * 60 * 60);
+				VerifyTestResult (t2.GetHours () == 23);
+				VerifyTestResult (t2.GetMinutes () == 59);
+				VerifyTestResult (t2.GetSeconds () == 59);
+				VerifyTestResult (t2 == TimeOfDay::kMax);
+			}
 		}
 
 }
@@ -52,10 +73,44 @@ namespace	{
 
 namespace	{
 
-	void	Test_3_TestDateTime_ ()
+	void	Test_3_TestDate_ ()
 		{
-			DateTime	d	=	Date (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
-			VerifyTestResult (d.Format4XML () == L"1903-04-04");
+			{
+				Date	d (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
+				VerifyTestResult (d.Format4XML () == L"1903-04-04");
+				d.AddDays (4);
+				VerifyTestResult (d.Format4XML () == L"1903-04-08");
+				d.AddDays (-4);
+				VerifyTestResult (d.Format4XML () == L"1903-04-04");
+			}
+		}
+
+}
+
+
+namespace	{
+
+	void	Test_4_TestDateTime_ ()
+		{
+			{
+				DateTime	d	=	Date (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
+				VerifyTestResult (d.Format4XML () == L"1903-04-04");
+			}
+#if 0
+			{
+				DateTime	d;
+				VerifyTestResult (d.empty ());
+				VerifyTestResult (d < DateTime::Now ());
+				VerifyTestResult (not (DateTime::Now () > d));
+			}
+			{
+				DateTime	d	=	DateTime::kMin;
+				VerifyTestResult (not d.empty ());
+				VerifyTestResult (d < DateTime::Now ());
+				VerifyTestResult (not (DateTime::Now () > d));
+				VerifyTestResult (d.Format4XML () == L"1752-01-01T00:00:00");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+			}
+#endif
 		}
 
 }
@@ -64,7 +119,7 @@ namespace	{
 
 namespace	{
 
-	void	Test_4_DateTimeTimeT_ ()
+	void	Test_5_DateTimeTimeT_ ()
 		{
 			{
 				DateTime	d	=	Date (Date::Year (2000), Date::eApril, Date::DayOfMonth (20));
@@ -97,9 +152,10 @@ namespace	{
 	void	DoRegressionTests_ ()
 		{
 			Test_1_TestTickCountGrowsMonotonically_ ();
-			Test_2_TestDate_ ();
-			Test_3_TestDateTime_ ();
-			Test_4_DateTimeTimeT_ ();
+			Test_2_TestTimeOfDay_ ();
+			Test_3_TestDate_ ();
+			Test_4_TestDateTime_ ();
+			Test_5_DateTimeTimeT_ ();
 		}
 }
 

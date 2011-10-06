@@ -24,6 +24,10 @@
 /*
  * TODO:
  *		
+		o	Private memobers need '_'.
+
+		o	Implement new (described below) 'empty' semantics.
+
 		o	Do support for enum Kind { eLocalTimezone, eGMT, eUnkownTimezone }
 			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
 			When comparing - if KIND != - convert BOTH to GMT and compare (interally).
@@ -50,9 +54,16 @@ namespace	Stroika {
 			/*
 			 *	Description:
 			 *
+			 *
+			 *
 			 *		DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
 			 *
 			 *		There are 3 possabilities for timezone - LOCALTIME, GMT, and UNKNOWN.
+			 *
+			 *		'empty' concept
+			 *			Treat it internally as DISTINCT from any other time. However, when converting it to a number of seconds since midnight or whatever,
+			 *			treat empty as DateTime::kMin. For format routine, return empty string. (this defintion must propagate to DATE and TIMEOFDAY - and must be documetned
+			 *			there as well. AND IMPLEMENTED. Already encoeded in one regression tests (which we now fail).
 			 */
 			class	DateTime {
 				private:

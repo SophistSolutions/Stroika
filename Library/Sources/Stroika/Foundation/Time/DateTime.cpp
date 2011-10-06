@@ -69,8 +69,8 @@ namespace	{
 	const	TimeOfDay	kMinT_	=	TimeOfDay (0);
 	const	TimeOfDay	kMaxT_	=	TimeOfDay (24 * 60 * 60 - 1);
 }
-const	DateTime	DateTime::kMin	=	DateTime (kMin_, kMinT_);
-const	DateTime	DateTime::kMax	=	DateTime (kMax_, kMaxT_);
+const	DateTime	DateTime::kMin	=	DateTime (kMin_, kMinT_);		//	unclear if this should use empty time or midnight?
+const	DateTime	DateTime::kMax	=	DateTime (kMax_, kMaxT_);		//	unclear if this should use end of day time or not?
 
 DateTime::DateTime (const wstring& rep)
 	: fDate ()
