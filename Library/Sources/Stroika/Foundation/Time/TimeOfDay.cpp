@@ -65,6 +65,139 @@ namespace	{
 }
 #endif
 
+#if		qPlatform_Windows
+namespace	{
+	wstring	GenTimeStr4TOD_ (unsigned int hour, unsigned int minutes, unsigned int seconds)
+		{
+// Consider rewriting using Win32 GetTimeFormat () - and just futzing with teh format string for the case
+// of zero minutes/seconds?? That might be more robust in case of changes in adding special tokens for some cultures/etc?
+//
+// Anyhow - I think what i have no works OK...
+//		-- LGP 2009-06-18
+			Require (hour < 24);
+			Require (minutes < 60);
+			Require (seconds < 60);
+		
+			/*
+			 * From Windows Vista Regional Settings control panel:
+			 *
+			 *		h = hour, m = minute, s = second
+			 *		tt = A.M. or P.M.
+			 *
+			 *		h = 12 hour
+			 *		H = 24 hour
+			 *
+			 *		hh,mm,ss = display leading zero
+			 *		h,m,s = do not display leading zero.
+			 */
+
+			// we could keep recomputing this, but why pay the runtime cost? Restart app to get new locale info
+			#if		qPlatform_Windows
+				static	const	wstring	kFormatStr	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT);
+			#else
+			#endif
+
+			// This is what I couldn't get the MSFT default locale display stuff todo
+			// We want to show 3pm, not 3:00:00pm.
+			bool	skipSeconds	=	seconds == 0;
+			bool	skipMinutes	=	skipSeconds and minutes == 0 and kFormatStr.find (L"tt") != wstring::npos;	// only do if showing AM/PM, else show 1300 for time - not 13...
+
+			wstring	outBuf;
+			outBuf.reserve (kFormatStr.length () + 4);
+			for (wstring::const_iterator i = kFormatStr.begin (); i != kFormatStr.end (); ++i) {
+				switch (*i) {
+					case 'h': {
+						bool	leadingZero	=	false;
+						if (i + 1 != kFormatStr.end () and *(i+1) == 'h') {
+							++i;
+							leadingZero = true;
+						}
+						unsigned int	useHour	=	hour;
+						if (useHour > 12) {
+							useHour -= 12;
+						}
+						outBuf += Format (leadingZero? L"%02d": L"%d", useHour);
+					}
+					break;
+					case 'H': {
+						bool	leadingZero	=	false;
+						if (i + 1 != kFormatStr.end () and *(i+1) == 'H') {
+							++i;
+							leadingZero = true;
+						}
+						outBuf += Format (leadingZero? L"%02d": L"%d", hour);
+					}
+					break;
+					case 'm': {
+						bool	leadingZero	=	false;
+						if (i + 1 != kFormatStr.end () and *(i+1) == 'm') {
+							++i;
+							leadingZero = true;
+						}
+						// This is what I couldn't get the MSFT default locale display stuff todo
+						// We want to show 3pm, not 3:00:00pm.
+						if (not skipMinutes) {
+							outBuf += Format (leadingZero? L"%02d": L"%d", minutes);
+						}
+					}
+					break;
+					case 's': {
+						bool	leadingZero	=	false;
+						if (i + 1 != kFormatStr.end () and *(i+1) == 's') {
+							++i;
+							leadingZero = true;
+						}
+						if (not skipSeconds) {
+							outBuf += Format (leadingZero? L"%02d": L"%d", seconds);
+						}
+					}
+					break;
+					case 't': {
+						if (i + 1 != kFormatStr.end () and *(i+1) == 't') {
+							/*
+							 *	From the WinSDK docs...
+							 *
+							 *	LOCALE_S1159 
+							 *		String for the AM designator. The maximum number of characters allowed for this string is nine. 
+							 *	LOCALE_S2359 
+							 *		String for the PM designator. The maximum number of characters allowed for this string is nine. 
+							 */
+							static	const	wstring	kAMSTR	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S1159);
+							static	const	wstring	kPMSTR	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S2359);
+							++i;
+							int pmFlag =	hour>=12;
+							//outBuf += (pmFlag?L"PM":L"AM");
+							outBuf += (pmFlag?kPMSTR:kAMSTR);
+						}
+						else {
+							outBuf.push_back (*i);
+						}
+					}
+					break;
+					case ':': {
+						// Skip ':' separator if we are going to omit the following
+						// stuff...
+						if (i + 1 != kFormatStr.end () and *(i+1) == 's' and skipSeconds) {
+							// SKIP
+						}
+						else if (i + 1 != kFormatStr.end () and *(i+1) == 'm' and skipMinutes) {
+							// SKIP
+						}
+						else {
+							outBuf.push_back (*i);
+						}
+					}
+					break;
+					default: {
+						outBuf.push_back (*i);
+					}
+					break;
+				}
+			}
+			return outBuf;
+		}
+}
+#endif
 
 
 
@@ -232,146 +365,15 @@ void	TimeOfDay::ClearSecondsField ()
 }
 
 #if		qPlatform_Windows
-namespace	{
-	wstring	GenTimeStr4TOD_ (unsigned int hour, unsigned int minutes, unsigned int seconds)
-		{
-// Consider rewriting using Win32 GetTimeFormat () - and just futzing with teh format string for the case
-// of zero minutes/seconds?? That might be more robust in case of changes in adding special tokens for some cultures/etc?
-//
-// Anyhow - I think what i have no works OK...
-//		-- LGP 2009-06-18
-			Require (hour < 24);
-			Require (minutes < 60);
-			Require (seconds < 60);
-		
-			/*
-			 * From Windows Vista Regional Settings control panel:
-			 *
-			 *		h = hour, m = minute, s = second
-			 *		tt = A.M. or P.M.
-			 *
-			 *		h = 12 hour
-			 *		H = 24 hour
-			 *
-			 *		hh,mm,ss = display leading zero
-			 *		h,m,s = do not display leading zero.
-			 */
-
-			// we could keep recomputing this, but why pay the runtime cost? Restart app to get new locale info
-			#if		qPlatform_Windows
-				static	const	wstring	kFormatStr	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT);
-			#else
-			#endif
-
-			// This is what I couldn't get the MSFT default locale display stuff todo
-			// We want to show 3pm, not 3:00:00pm.
-			bool	skipSeconds	=	seconds == 0;
-			bool	skipMinutes	=	skipSeconds and minutes == 0 and kFormatStr.find (L"tt") != wstring::npos;	// only do if showing AM/PM, else show 1300 for time - not 13...
-
-			wstring	outBuf;
-			outBuf.reserve (kFormatStr.length () + 4);
-			for (wstring::const_iterator i = kFormatStr.begin (); i != kFormatStr.end (); ++i) {
-				switch (*i) {
-					case 'h': {
-						bool	leadingZero	=	false;
-						if (i + 1 != kFormatStr.end () and *(i+1) == 'h') {
-							++i;
-							leadingZero = true;
-						}
-						unsigned int	useHour	=	hour;
-						if (useHour > 12) {
-							useHour -= 12;
-						}
-						outBuf += Format (leadingZero? L"%02d": L"%d", useHour);
-					}
-					break;
-					case 'H': {
-						bool	leadingZero	=	false;
-						if (i + 1 != kFormatStr.end () and *(i+1) == 'H') {
-							++i;
-							leadingZero = true;
-						}
-						outBuf += Format (leadingZero? L"%02d": L"%d", hour);
-					}
-					break;
-					case 'm': {
-						bool	leadingZero	=	false;
-						if (i + 1 != kFormatStr.end () and *(i+1) == 'm') {
-							++i;
-							leadingZero = true;
-						}
-						// This is what I couldn't get the MSFT default locale display stuff todo
-						// We want to show 3pm, not 3:00:00pm.
-						if (not skipMinutes) {
-							outBuf += Format (leadingZero? L"%02d": L"%d", minutes);
-						}
-					}
-					break;
-					case 's': {
-						bool	leadingZero	=	false;
-						if (i + 1 != kFormatStr.end () and *(i+1) == 's') {
-							++i;
-							leadingZero = true;
-						}
-						if (not skipSeconds) {
-							outBuf += Format (leadingZero? L"%02d": L"%d", seconds);
-						}
-					}
-					break;
-					case 't': {
-						if (i + 1 != kFormatStr.end () and *(i+1) == 't') {
-							/*
-							 *	From the WinSDK docs...
-							 *
-							 *	LOCALE_S1159 
-							 *		String for the AM designator. The maximum number of characters allowed for this string is nine. 
-							 *	LOCALE_S2359 
-							 *		String for the PM designator. The maximum number of characters allowed for this string is nine. 
-							 */
-							static	const	wstring	kAMSTR	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S1159);
-							static	const	wstring	kPMSTR	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S2359);
-							++i;
-							int pmFlag =	hour>=12;
-							//outBuf += (pmFlag?L"PM":L"AM");
-							outBuf += (pmFlag?kPMSTR:kAMSTR);
-						}
-						else {
-							outBuf.push_back (*i);
-						}
-					}
-					break;
-					case ':': {
-						// Skip ':' separator if we are going to omit the following
-						// stuff...
-						if (i + 1 != kFormatStr.end () and *(i+1) == 's' and skipSeconds) {
-							// SKIP
-						}
-						else if (i + 1 != kFormatStr.end () and *(i+1) == 'm' and skipMinutes) {
-							// SKIP
-						}
-						else {
-							outBuf.push_back (*i);
-						}
-					}
-					break;
-					default: {
-						outBuf.push_back (*i);
-					}
-					break;
-				}
-			}
-			return outBuf;
-		}
-}
 wstring	TimeOfDay::Format (LCID lcid) const
 {
 	if (empty ()) {
 		return wstring ();
 	}
 	else {
-		int hour = fTime/(60*60);
-		int minutes = (fTime - hour * 60 * 60) / 60;
-		int secs = fTime - hour * 60 * 60 - minutes * 60;
+		uint32_t hour = fTime/(60*60);
+		uint32_t minutes = (fTime - hour * 60 * 60) / 60;
+		uint32_t secs = fTime - hour * 60 * 60 - minutes * 60;
 		Assert (hour >= 0 and hour < 24);
 		Assert (minutes >= 0 and minutes < 60);
 		Assert (secs >= 0 and secs < 60);
@@ -379,3 +381,4 @@ wstring	TimeOfDay::Format (LCID lcid) const
 	}
 }
 #endif
+
