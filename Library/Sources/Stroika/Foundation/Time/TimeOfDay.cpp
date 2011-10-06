@@ -87,11 +87,13 @@ TimeOfDay::TimeOfDay (uint32_t t)
 {
 }
 
+#if 0
 TimeOfDay::TimeOfDay (const wstring& rep)
 	: fTime (-1)
 {
 	*this = TimeOfDay::Parse (rep, TimeOfDay::eCurrentLocale_PF);
 }
+#endif
 
 TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 {
@@ -192,6 +194,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, LCID lcid)
 }
 #endif
 
+#if 0
 #if		qPlatform_Windows
 TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid)
 	: fTime (-1)
@@ -205,6 +208,7 @@ TimeOfDay::TimeOfDay (const wstring& rep, XML):
 {
 	*this =TimeOfDay::Parse (rep, eCurrentXML_PF);
 }
+#endif
 
 wstring	TimeOfDay::Format (PrintFormat pf) const
 {

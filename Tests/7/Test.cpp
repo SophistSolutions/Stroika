@@ -71,18 +71,18 @@ namespace	{
 				VerifyTestResult (d.GetUNIXEpochTime () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay (L"3pm"));
+				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
 				VerifyTestResult (d.GetUNIXEpochTime () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay (L"3:00"));
+				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
 				VerifyTestResult (d.GetUNIXEpochTime () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 #if 0
 //this fails - on windows - fix asap
 			{
 				const	time_t	kTEST	=	802234800;
-				DateTime	d	=	DateTime (kTEST;
+				DateTime	d	=	DateTime (kTEST);
 				VerifyTestResult (d.GetUNIXEpochTime () == kTEST);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 #endif

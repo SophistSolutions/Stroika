@@ -65,7 +65,7 @@ namespace	Stroika {
 					static	TimeOfDay	Parse (const wstring& rep, LCID lcid);
 				#endif
 
-
+#if 0
 //RENAME AS PARSE STATIUC METHOD?
 explicit TimeOfDay (const wstring& rep);
 #if		qPlatform_Windows
@@ -84,6 +84,7 @@ explicit TimeOfDay (const wstring& rep, XML);
 					explicit TimeOfDay (const SYSTEMTIME& sysTime);
 					explicit TimeOfDay (const FILETIME& fileTime);
 					#endif
+#endif
 #endif
 
 				public:
@@ -113,7 +114,7 @@ explicit TimeOfDay (const wstring& rep, XML);
 					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid) const;
 					#endif
-nonvirtual	wstring	Format4XML () const { return Format (eCurrentXML_PF); }
+//nonvirtual	wstring	Format4XML () const { return Format (eCurrentXML_PF); }
 
 #if 0
 				#if		qPlatform_Windows
