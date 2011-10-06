@@ -170,7 +170,7 @@ Date::Date (const wstring& rep)
 	: fJulianDateRep (kEmptyJulianRep)
 {
 	if (not rep.empty ()) {
-		#if		qPlatform_Wiindows
+		#if		qPlatform_Windows
 			LCID lcid = LOCALE_USER_DEFAULT;
 			DATE		d;
 			(void)::memset (&d, 0, sizeof (d));
