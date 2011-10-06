@@ -127,7 +127,7 @@ namespace	Stroika {
 				public:
 					Date ();
 					explicit Date (JulianRepType julianRep);
-
+					explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
 				public:
 					enum	PrintFormat {
@@ -139,20 +139,6 @@ namespace	Stroika {
 				#if		qPlatform_Windows
 					static	Date	Parse (const wstring& rep, LCID lcid);
 				#endif
-
-
-#if 0
-	enum XML { eXML };
-	enum Javascript { eJavascript };
-	explicit Date (const wstring& rep, XML);
-	explicit Date (const wstring& rep, Javascript);
-	explicit Date (const wstring& rep);
-#if		qPlatform_Windows
-	explicit Date (const wstring& rep, LCID lcid);
-#endif
-#endif
-
-					explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
 				public:
 					/*

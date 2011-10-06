@@ -57,6 +57,7 @@ namespace	{
 
 
 
+
 /*
  ********************************************************************************
  ************************************** Date ************************************
@@ -101,34 +102,6 @@ namespace	{
 }
 #endif
 
-#if 0
-Date::Date (const wstring& rep, XML)
-	: fJulianDateRep_ (kEmptyJulianRep)
-{
-	*this = Date::Parse (rep, Date::eXML_PF);
-}
-
-Date::Date (const wstring& rep, Javascript)
-	: fJulianDateRep_ (kEmptyJulianRep)
-{
-	*this = Date::Parse (rep, Date::eJavascript_PF);
-}
-
-Date::Date (const wstring& rep)
-	: fJulianDateRep_ (kEmptyJulianRep)
-{
-	*this = Date::Parse (rep, Date::eCurrentLocale_PF);
-}
-
-#if		qPlatform_Windows
-Date::Date (const wstring& rep, LCID lcid)
-	: fJulianDateRep_ (kEmptyJulianRep)
-{
-	*this = Parse (rep, lcid);
-}
-#endif
-#endif
-
 Date	Date::Parse (const wstring& rep, PrintFormat pf)
 {
 	if (rep.empty ()) {
@@ -153,7 +126,7 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 		// horrible hack - very bad... but hopefully gets us limping along...
 				string tmp = WideStringToASCII (rep);
 				convert_iso8601 (tmp.c_str (), &tm);
-				fJulianDateRep_ = Safe_jday_ (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900));
+				return Date (Safe_jday_ (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900)));
 			#else
 				AssertNotImplemented ();
 			#endif
@@ -202,8 +175,6 @@ Date	Date::Parse (const wstring& rep, LCID lcid)
 	}
 }
 #endif
-
-
 
 wstring	Date::Format () const
 {
