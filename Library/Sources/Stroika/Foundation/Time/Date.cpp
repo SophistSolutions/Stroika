@@ -40,9 +40,9 @@ namespace	{
 		{
 			SYSTEMTIME	st;
 			memset (&st, 0, sizeof (st));
-			Date::MonthOfYear	m	=	Date::eEmptyMonthOfYear;
-			Date::DayOfMonth	d	=	Date::eEmptyDayOfMonth;
-			Date::Year			y	=	Date::eEmptyYear;
+			MonthOfYear	m	=	eEmptyMonthOfYear;
+			DayOfMonth	d	=	eEmptyDayOfMonth;
+			Year		y	=	eEmptyYear;
 			date.mdy (&m, &d, &y);
 			st.wYear = y;
 			st.wMonth = m;
@@ -297,7 +297,7 @@ Date::JulianRepType	Date::DaysSince () const
 	}
 }
 
-Date::Year	Date::GetYear () const
+Year	Date::GetYear () const
 {
 	MonthOfYear	m	=	eEmptyMonthOfYear;
 	DayOfMonth	d	=	eEmptyDayOfMonth;
@@ -306,7 +306,7 @@ Date::Year	Date::GetYear () const
 	return y;
 }
 
-Date::MonthOfYear	Date::GetMonth () const
+MonthOfYear	Date::GetMonth () const
 {
 	MonthOfYear	m	=	eEmptyMonthOfYear;
 	DayOfMonth	d	=	eEmptyDayOfMonth;
@@ -317,7 +317,7 @@ Date::MonthOfYear	Date::GetMonth () const
 	return m;
 }
 
-Date::DayOfMonth	Date::GetDayOfMonth () const
+DayOfMonth	Date::GetDayOfMonth () const
 {
 	MonthOfYear	m	=	eEmptyMonthOfYear;
 	DayOfMonth	d	=	eEmptyDayOfMonth;
@@ -342,7 +342,7 @@ Date::JulianRepType	Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
 		return kEmptyJulianRep;
 	}
 
-	Require (year > 1752 or (year == 1752 and (month > Date::eSeptember or (month == Date::eSeptember and day >= 14))));
+	Require (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14))));
 
 	JulianRepType	c;
 	JulianRepType	ya;
@@ -365,7 +365,7 @@ Date::JulianRepType	Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year ye
 	if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
 		return kEmptyJulianRep;
 	}
-	if (year > 1752 or (year == 1752 and (month > Date::eSeptember or (month == Date::eSeptember and day >= 14)))) {
+	if (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14)))) {
 		return jday_ (month, day, year);
 	}
 	else {
@@ -426,14 +426,14 @@ int	Time::YearDifference (const Date& lhs, const Date& rhs)
 	Require (not lhs.empty ());		// since meaning of diff wouldn't make much sense
 	Require (not rhs.empty ());		// ditto
 
-	Date::MonthOfYear	lm	=	Date::eEmptyMonthOfYear;
-	Date::DayOfMonth	ld	=	Date::eEmptyDayOfMonth;
-	Date::Year			ly	=	Date::eEmptyYear;
+	MonthOfYear	lm	=	eEmptyMonthOfYear;
+	DayOfMonth	ld	=	eEmptyDayOfMonth;
+	Year		ly	=	eEmptyYear;
 	lhs.mdy (&lm, &ld, &ly);
 	
-	Date::MonthOfYear	rm	=	Date::eEmptyMonthOfYear;
-	Date::DayOfMonth	rd	=	Date::eEmptyDayOfMonth;
-	Date::Year			ry	=	Date::eEmptyYear;
+	MonthOfYear	rm	=	eEmptyMonthOfYear;
+	DayOfMonth	rd	=	eEmptyDayOfMonth;
+	Year		ry	=	eEmptyYear;
 	rhs.mdy (&rm, &rd, &ry);
 
 	int	diff	=	ly - ry;

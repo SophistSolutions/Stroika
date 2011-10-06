@@ -76,7 +76,7 @@ namespace	{
 	void	Test_3_TestDate_ ()
 		{
 			{
-				Date	d (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
+				Date	d (Year (1903), eApril, DayOfMonth (4));
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
 				d.AddDays (4);
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-08");
@@ -93,7 +93,7 @@ namespace	{
 	void	Test_4_TestDateTime_ ()
 		{
 			{
-				DateTime	d	=	Date (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
+				DateTime	d	=	Date (Year (1903), eApril, DayOfMonth (4));
 				VerifyTestResult (d.Format4XML () == L"1903-04-04");
 			}
 #if 0
@@ -122,15 +122,15 @@ namespace	{
 	void	Test_5_DateTimeTimeT_ ()
 		{
 			{
-				DateTime	d	=	Date (Date::Year (2000), Date::eApril, Date::DayOfMonth (20));
+				DateTime	d	=	Date (Year (2000), eApril, DayOfMonth (20));
 				VerifyTestResult (d.GetUNIXEpochTime () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
 				VerifyTestResult (d.GetUNIXEpochTime () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
 				VerifyTestResult (d.GetUNIXEpochTime () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 #if 0

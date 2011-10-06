@@ -52,7 +52,7 @@ namespace	{
 namespace	{
 	Date	mkDate_ (const SYSTEMTIME& sysTime)
 		{
-			return Date (Date::Year (sysTime.wYear), Date::MonthOfYear (sysTime.wMonth), Date::DayOfMonth (sysTime.wDay));
+			return Date (Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay));
 		}
 }
 #endif
@@ -65,9 +65,9 @@ namespace	{
 		{
 			SYSTEMTIME	st;
 			memset (&st, 0, sizeof (st));
-			Date::MonthOfYear	m	=	Date::eEmptyMonthOfYear;
-			Date::DayOfMonth	d	=	Date::eEmptyDayOfMonth;
-			Date::Year			y	=	Date::eEmptyYear;
+			MonthOfYear	m	=	eEmptyMonthOfYear;
+			DayOfMonth	d	=	eEmptyDayOfMonth;
+			Year		y	=	eEmptyYear;
 			date.mdy (&m, &d, &y);
 			st.wYear = y;
 			st.wMonth = m;
