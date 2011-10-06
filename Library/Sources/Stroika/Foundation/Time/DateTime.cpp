@@ -304,7 +304,7 @@ wstring	DateTime::Format4XML () const
 		return wstring ();
 	}
 	else {
-		wstring	r	=	fDate.Format4XML ();
+		wstring	r	=	fDate.Format (Date::eXML_PF);
 		if (not fTimeOfDay.empty ()) {
 			// be sure using DateWithOptionalTime
 

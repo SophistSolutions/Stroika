@@ -77,11 +77,11 @@ namespace	{
 		{
 			{
 				Date	d (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
-				VerifyTestResult (d.Format4XML () == L"1903-04-04");
+				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
 				d.AddDays (4);
-				VerifyTestResult (d.Format4XML () == L"1903-04-08");
+				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-08");
 				d.AddDays (-4);
-				VerifyTestResult (d.Format4XML () == L"1903-04-04");
+				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
 			}
 		}
 

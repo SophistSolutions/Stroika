@@ -382,7 +382,7 @@ wstring	VariantValue::FormatXML () const
 		case	eDate: {
 			TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
 			AssertNotNull (v);
-			return v->fVal.Format4XML ();
+			return v->fVal.Format (Date::eXML_PF);
 		}
 		case	eDateTime: {
 			TValRep<DateTime,eDateTime>*	v	=	dynamic_cast<TValRep<DateTime,eDateTime>*> (fVal.get ());

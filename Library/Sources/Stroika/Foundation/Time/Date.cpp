@@ -176,14 +176,58 @@ Date	Date::Parse (const wstring& rep, LCID lcid)
 }
 #endif
 
-wstring	Date::Format () const
+wstring	Date::Format (PrintFormat pf) const
 {
-	#if		qPlatform_Windows
-		return Format (LOCALE_USER_DEFAULT);
-	#else
-		AssertNotImplemented ();
+	if (empty ()) {
 		return wstring ();
-	#endif
+	}
+	switch (pf) {
+		case	eCurrentLocale_PF: {
+			#if		qPlatform_Windows
+				return Format (LOCALE_USER_DEFAULT);
+			#else
+				AssertNotImplemented ();
+				return wstring ();
+			#endif
+		}
+		break;
+		case	eXML_PF: {
+			wchar_t	buf[20];
+			MonthOfYear	m	=	eEmptyMonthOfYear;
+			DayOfMonth	d	=	eEmptyDayOfMonth;
+			Year		y	=	eEmptyYear;
+			mdy (&m, &d, &y);
+			::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d);
+			return buf;
+		}
+		break;
+		case	eJavascript_PF: {
+			/*
+			 *	From 
+			 *		http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
+			 *
+			 *			parse Method (JScript 5.6)  
+			 *			...
+			 *			The following rules govern what the parse method can successfully parse: 
+			 *			Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96". 
+			 *
+			 *	See also 		explicit Date (const wstring& rep, Javascript);
+			 */
+			wchar_t	buf[20];
+			MonthOfYear	m	=	eEmptyMonthOfYear;
+			DayOfMonth	d	=	eEmptyDayOfMonth;
+			Year		y	=	eEmptyYear;
+			mdy (&m, &d, &y);
+			::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y);
+			return buf;
+		}
+		break;
+		default: {
+			AssertNotReached ();
+			return wstring ();
+		}
+		break;
+	}
 }
 
 #if		qPlatform_Windows
@@ -215,49 +259,6 @@ wstring	Date::Format (const TString& format, LCID lcid) const
 	}
 }
 #endif
-
-wstring	Date::Format4XML () const
-{
-	if (empty ()) {
-		return wstring ();
-	}
-	else {
-		wchar_t	buf[20];
-		MonthOfYear	m	=	eEmptyMonthOfYear;
-		DayOfMonth	d	=	eEmptyDayOfMonth;
-		Year		y	=	eEmptyYear;
-		mdy (&m, &d, &y);
-		::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d);
-		return buf;
-	}
-}
-
-wstring	Date::Format4JScript () const
-{
-	/*
-	 *	From 
-	 *		http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
-	 *
-	 *			parse Method (JScript 5.6)  
-	 *			...
-	 *			The following rules govern what the parse method can successfully parse: 
-	 *			Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96". 
-	 *
-	 *	See also 		explicit Date (const wstring& rep, Javascript);
-	 */
-	if (empty ()) {
-		return wstring ();
-	}
-	else {
-		wchar_t	buf[20];
-		MonthOfYear	m	=	eEmptyMonthOfYear;
-		DayOfMonth	d	=	eEmptyDayOfMonth;
-		Year		y	=	eEmptyYear;
-		mdy (&m, &d, &y);
-		::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y);
-		return buf;
-	}
-}
 
 #if		qPlatform_Windows
 wstring	Date::LongFormat (LCID lcid) const

@@ -157,20 +157,18 @@ namespace	Stroika {
 					nonvirtual	Year			GetYear () const;
 					nonvirtual	MonthOfYear		GetMonth () const;
 					nonvirtual	DayOfMonth		GetDayOfMonth () const;
-
-
+				public:
+					nonvirtual	void			mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
 				public:
-					nonvirtual	wstring	Format () const;
-					#if		qPlatform_Windows
+					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;
+
+				#if		qPlatform_Windows
+				public:
 					nonvirtual	wstring	Format (LCID lcid) const;
 					nonvirtual	wstring	Format (const TString& format, LCID lcid = LOCALE_USER_DEFAULT) const;				// See GetDateFormat () format args
-					#endif
-					nonvirtual	wstring	Format4XML () const;
-					nonvirtual	wstring	Format4JScript () const;
-					#if		qPlatform_Windows
 					nonvirtual	wstring	LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
-					#endif
+				#endif
 
 				public:
 					nonvirtual	Date	AddDays (int dayCount);
@@ -185,8 +183,6 @@ namespace	Stroika {
 				private:
 					static 		JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year);			// from NIHCL
 					static 		JulianRepType	Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
-				public:
-					nonvirtual	void			mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;	// from NIHCL
 
 				private:
 					JulianRepType	fJulianDateRep_;
