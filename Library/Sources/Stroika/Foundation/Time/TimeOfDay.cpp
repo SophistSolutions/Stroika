@@ -50,6 +50,21 @@ namespace	{
 #endif
 
 
+#if		qPlatform_Windows
+namespace	{
+	TimeOfDay	mkTimeOfDay_ (const SYSTEMTIME& sysTime)
+		{
+			WORD	hour = max (sysTime.wHour, static_cast<WORD> (0));
+			hour = min (hour, static_cast<WORD> (23));
+			WORD	minute = max (sysTime.wMinute, static_cast<WORD> (0));
+			minute = min (minute, static_cast<WORD> (59));
+			WORD	secs = max (sysTime.wSecond, static_cast<WORD> (0));
+			secs = min (secs, static_cast<WORD> (59));
+			return TimeOfDay ((hour * 60 + minute) * 60 + secs);
+		}
+}
+#endif
+
 
 
 
@@ -104,7 +119,7 @@ TimeOfDay::TimeOfDay (const wstring& rep)
 	SYSTEMTIME	sysTime;
 	memset (&sysTime, 0, sizeof (sysTime));
 	Verify (::VariantTimeToSystemTime (d, &sysTime));
-	*this = TimeOfDay (sysTime);
+	*this = mkTimeOfDay_ (sysTime);
 #elif	qPlatform_POSIX
 	AssertNotImplemented ();
 #else
@@ -143,7 +158,7 @@ TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid)
 	SYSTEMTIME	sysTime;
 	memset (&sysTime, 0, sizeof (sysTime));
 	Verify (::VariantTimeToSystemTime (d, &sysTime));
-	*this = TimeOfDay (sysTime);
+	*this = mkTimeOfDay_ (sysTime);
 }
 #endif
 
@@ -166,20 +181,6 @@ TimeOfDay::TimeOfDay (const wstring& rep, XML):
 	}
 	#pragma	warning (pop)
 }
-
-#if		qPlatform_Windows
-TimeOfDay::TimeOfDay (const SYSTEMTIME& sysTime):
-	fTime (-1)
-{
-	WORD	hour = max (sysTime.wHour, static_cast<WORD> (0));
-	hour = min (hour, static_cast<WORD> (23));
-	WORD	minute = max (sysTime.wMinute, static_cast<WORD> (0));
-	minute = min (minute, static_cast<WORD> (59));
-	WORD	secs = max (sysTime.wSecond, static_cast<WORD> (0));
-	secs = min (secs, static_cast<WORD> (59));
-	fTime = (hour * 60 + minute) * 60 + secs;
-}
-#endif
 
 void	TimeOfDay::ClearSecondsField ()
 {
@@ -357,6 +358,7 @@ wstring	TimeOfDay::Format4XML () const
 	}
 }
 
+#if 0
 #if		qPlatform_Windows
 TimeOfDay::operator SYSTEMTIME () const
 {
@@ -380,5 +382,6 @@ TimeOfDay::operator SYSTEMTIME () const
 	}
 	return t;
 }
+#endif
 #endif
 

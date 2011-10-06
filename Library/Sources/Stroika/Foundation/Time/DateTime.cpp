@@ -34,6 +34,20 @@ using	namespace	Time;
 
 
 
+#if		qPlatform_Windows
+namespace	{
+	TimeOfDay	mkTimeOfDay_ (const SYSTEMTIME& sysTime)
+		{
+			WORD	hour = max (sysTime.wHour, static_cast<WORD> (0));
+			hour = min (hour, static_cast<WORD> (23));
+			WORD	minute = max (sysTime.wMinute, static_cast<WORD> (0));
+			minute = min (minute, static_cast<WORD> (59));
+			WORD	secs = max (sysTime.wSecond, static_cast<WORD> (0));
+			secs = min (secs, static_cast<WORD> (59));
+			return TimeOfDay ((hour * 60 + minute) * 60 + secs);
+		}
+}
+#endif
 
 
 
@@ -79,7 +93,7 @@ DateTime::DateTime (const wstring& rep)
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fDate = Date (sysTime);
-		fTimeOfDay = TimeOfDay (sysTime);
+		fTimeOfDay = mkTimeOfDay_ (sysTime);
 #elif	qPlatform_POSIX
 		AssertNotImplemented ();
 #else
@@ -108,7 +122,7 @@ DateTime::DateTime (const wstring& rep, LCID lcid)
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
 		fDate = Date (sysTime);
-		fTimeOfDay = TimeOfDay (sysTime);
+		fTimeOfDay = mkTimeOfDay_ (sysTime);
 	}
 }
 #endif
@@ -146,7 +160,7 @@ DateTime::DateTime (const wstring& rep, XML):
 #if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime):
 	fDate (sysTime),
-	fTimeOfDay (sysTime)
+	fTimeOfDay (mkTimeOfDay_ (sysTime))
 {
 }
 
@@ -161,7 +175,7 @@ DateTime::DateTime (const FILETIME& fileTime):
 		(void)::memset (&sysTime, 0, sizeof (sysTime));
 		if (::FileTimeToSystemTime (&localTime, &sysTime)) {
 			fDate= Date (sysTime);
-			fTimeOfDay = TimeOfDay (sysTime);
+			fTimeOfDay = mkTimeOfDay_ (sysTime);
 		}
 	}
 }
@@ -290,11 +304,38 @@ wstring	DateTime::Format4XML () const
 	}
 }
 
+namespace	{
+#if		qPlatform_Windows
+	SYSTEMTIME	toSysTime_ (TimeOfDay tod)
+		{
+			SYSTEMTIME	t;
+			memset (&t, 0, sizeof (t));
+			if (not tod.empty ()) {
+				unsigned int	seconds	=	tod.GetAsSecondsCount ();
+				unsigned int	minutes	=	seconds / 60;
+				unsigned int	hours	=	minutes / 60;
+
+				hours = min (hours, 23U);
+				t.wHour = hours;
+
+				minutes -= hours * 60;
+				minutes = min (minutes, 59U);
+				t.wMinute = minutes;
+
+				seconds -= (60*60 * hours + 60 * minutes);
+				seconds = min (seconds, 59U);
+				t.wSecond = seconds;
+			}
+			return t;
+		}
+#endif
+}
+
 #if		qPlatform_Windows
 DateTime::operator SYSTEMTIME () const
 {
 	SYSTEMTIME	d	=	(SYSTEMTIME)fDate;
-	SYSTEMTIME	t	=	(SYSTEMTIME)fTimeOfDay;
+	SYSTEMTIME	t	=	(SYSTEMTIME)toSysTime_ (fTimeOfDay);
 	SYSTEMTIME	r	=	d;
 	r.wHour = t.wHour;
 	r.wMinute = t.wMinute;

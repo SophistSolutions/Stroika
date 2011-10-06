@@ -70,10 +70,13 @@ namespace	Stroika {
 					 */
 					enum XML { eXML };
 					explicit TimeOfDay (const wstring& rep, XML);
+
+#if 0
 					#if		qPlatform_Windows
 					explicit TimeOfDay (const SYSTEMTIME& sysTime);
 					explicit TimeOfDay (const FILETIME& fileTime);
 					#endif
+#endif
 
 				public:
 					/*
@@ -102,10 +105,12 @@ namespace	Stroika {
 					#endif
 					nonvirtual	wstring	Format4XML () const;
 
+#if 0
 				#if		qPlatform_Windows
 				public:
 					nonvirtual	operator SYSTEMTIME () const;
 				#endif
+#endif
 
 				private:
 					uint32_t	fTime;
