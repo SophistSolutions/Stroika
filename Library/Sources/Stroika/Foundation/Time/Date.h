@@ -20,7 +20,16 @@
 
 /*
  * TODO:
- *		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
+ *
+ 
+		o	Do Same PrintFormat () coding I did in TimeOfDay
+
+		o	Get rid of various CONSTURCTOR and conversiton ooeprators (as I did with TimeOfDay - replacing with Parse and Format osing PrintFormat enum.
+
+		o	get rid of CONVERT OPERTOR SYSTEMTIME (support only for DateTime code).
+ 
+ 
+		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
 			operator
 		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
 			(PROBABLY NOT time_t - since that doesn't make a ton of snese - but DO include struct tm support)!!!

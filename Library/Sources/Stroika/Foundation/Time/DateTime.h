@@ -23,7 +23,13 @@
 
 /*
  * TODO:
- *		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
+ *		
+		o	Do support for enum Kind { eLocalTimezone, eGMT, eUnkownTimezone }
+			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
+
+		o	Do SAME sort of PrintFormat code - I implemented for TimeOfDay ---
+
+		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
 			operator
 		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
 		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?

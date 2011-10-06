@@ -87,6 +87,14 @@ namespace	Stroika {
 					nonvirtual	void	ClearSecondsField ();
 
 				public:
+					// returns 0..23
+					nonvirtual	uint8_t	GetHours () const;
+					// returns 0..59
+					nonvirtual	uint8_t	GetMinutes () const;
+					// returns 0..59
+					nonvirtual	uint8_t	GetSeconds () const;
+
+				public:
 					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;
 
 					#if		qPlatform_Windows

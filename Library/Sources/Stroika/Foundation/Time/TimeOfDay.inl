@@ -29,6 +29,30 @@ namespace	Stroika {
 						}
 						return fTime;
 					}
+				inline	uint8_t	TimeOfDay::GetHours () const
+					{
+						uint32_t	n	=	GetAsSecondsCount () / (60 * 60);
+						Ensure (0 <= n and n <= 23);
+						return n;
+					}
+				inline	uint8_t	TimeOfDay::GetMinutes () const
+					{
+						uint32_t	n	=	GetAsSecondsCount ();
+						n -= GetHours () * 60 * 60;
+						n /= 60;
+						Ensure (0 <= n and n <= 59);
+						return n;
+					}
+				inline	uint8_t	TimeOfDay::GetSeconds () const
+					{
+						uint32_t	n	=	GetAsSecondsCount ();
+						n -= GetHours () * 60 * 60;
+						n /= 60;
+						n -= GetMinutes () * 60;
+						n /= 60;
+						Ensure (0 <= n and n <= 59);
+						return n;
+					}
 				inline	bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs)
 					{
 						return lhs.GetAsSecondsCount () < rhs.GetAsSecondsCount ();
