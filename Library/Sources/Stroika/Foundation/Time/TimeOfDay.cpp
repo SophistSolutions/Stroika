@@ -211,12 +211,12 @@ const	TimeOfDay	TimeOfDay::kMin	=	TimeOfDay (0);
 const	TimeOfDay	TimeOfDay::kMax	=	TimeOfDay (24 * 60 * 60 - 1);
 
 TimeOfDay::TimeOfDay ()
-  : fTime (-1)
+  : fTime_ (-1)
 {
 }
 
 TimeOfDay::TimeOfDay (uint32_t t)
-  : fTime (t < 24 * 60 * 60? t: (24 * 60 * 60-1))
+  : fTime_ (t < 24 * 60 * 60? t: (24 * 60 * 60-1))
 {
 }
 
@@ -313,9 +313,9 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 			#endif
 		}
 		case	eXML_PF: {
-			uint32_t	hour = fTime/(60*60);
-			uint32_t	minutes = (fTime - hour * 60 * 60) / 60;
-			uint32_t	secs = fTime - hour * 60 * 60 - minutes * 60;
+			uint32_t	hour = fTime_/(60*60);
+			uint32_t	minutes = (fTime_ - hour * 60 * 60) / 60;
+			uint32_t	secs = fTime_ - hour * 60 * 60 - minutes * 60;
 			Assert (hour >= 0 and hour < 24);
 			Assert (minutes >= 0 and minutes < 60);
 			Assert (secs >= 0 and secs < 60);
@@ -330,13 +330,13 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 
 void	TimeOfDay::ClearSecondsField ()
 {
-	int hour = fTime/(60*60);
-	int minutes = (fTime - hour * 60 * 60) / 60;
-	int secs = fTime - hour * 60 * 60 - minutes * 60;
+	int hour = fTime_/(60*60);
+	int minutes = (fTime_ - hour * 60 * 60) / 60;
+	int secs = fTime_ - hour * 60 * 60 - minutes * 60;
 	Assert (hour >= 0 and hour < 24);
 	Assert (minutes >= 0 and minutes < 60);
 	Assert (secs >= 0 and secs < 60);
-	fTime -= secs;
+	fTime_ -= secs;
 }
 
 #if		qPlatform_Windows
@@ -346,9 +346,9 @@ wstring	TimeOfDay::Format (LCID lcid) const
 		return wstring ();
 	}
 	else {
-		uint32_t hour = fTime/(60*60);
-		uint32_t minutes = (fTime - hour * 60 * 60) / 60;
-		uint32_t secs = fTime - hour * 60 * 60 - minutes * 60;
+		uint32_t hour = fTime_/(60*60);
+		uint32_t minutes = (fTime_ - hour * 60 * 60) / 60;
+		uint32_t secs = fTime_ - hour * 60 * 60 - minutes * 60;
 		Assert (hour >= 0 and hour < 24);
 		Assert (minutes >= 0 and minutes < 60);
 		Assert (secs >= 0 and secs < 60);

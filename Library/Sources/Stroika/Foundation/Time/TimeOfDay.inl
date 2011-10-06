@@ -20,14 +20,14 @@ namespace	Stroika {
 			//	class TimeOfDay
 				inline	bool	TimeOfDay::empty () const
 					{
-						return fTime == static_cast<unsigned int> (-1);
+						return fTime_ == static_cast<unsigned int> (-1);
 					}
 				inline	unsigned int	TimeOfDay::GetAsSecondsCount () const
 					{
 						if (empty ()) {
 							return 0;
 						}
-						return fTime;
+						return fTime_;
 					}
 				inline	uint8_t	TimeOfDay::GetHours () const
 					{
