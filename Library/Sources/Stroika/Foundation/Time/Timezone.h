@@ -9,13 +9,6 @@
 #include	<ctime>
 
 
-
-/*
- * TODO:
- *		o	
- */
-
-
 namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
