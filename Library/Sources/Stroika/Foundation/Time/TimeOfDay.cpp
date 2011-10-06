@@ -237,7 +237,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 				return TimeOfDay ();
 			#endif
 		}
-		case	eCurrentXML_PF: {
+		case	eXML_PF: {
 			int	hour	=	0;
 			int	minute	=	0;
 			int secs	=	0;
@@ -312,7 +312,7 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 				return wstring ();
 			#endif
 		}
-		case	eCurrentXML_PF: {
+		case	eXML_PF: {
 			uint32_t	hour = fTime/(60*60);
 			uint32_t	minutes = (fTime - hour * 60 * 60) / 60;
 			uint32_t	secs = fTime - hour * 60 * 60 - minutes * 60;

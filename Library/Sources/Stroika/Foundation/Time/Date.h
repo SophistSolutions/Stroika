@@ -40,6 +40,9 @@
 				Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
 		o	Add regression test suite (TEST 7)
 		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
+ *		
+ *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
+ *
  */
 
 

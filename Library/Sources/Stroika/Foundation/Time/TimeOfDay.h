@@ -22,7 +22,9 @@
 /*
  * TODO:
  *		o	Consider getting rid of empty () method and empty state. Instead - in DateTime code - use Optional<>
-
+ *		
+ *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
+ *
  */
 
 
@@ -57,7 +59,7 @@ namespace	Stroika {
 
 					enum	PrintFormat {
 						eCurrentLocale_PF,
-						eCurrentXML_PF,
+						eXML_PF,
 					};
 					static	TimeOfDay	Parse (const wstring& rep, PrintFormat pf);
 				#if		qPlatform_Windows
