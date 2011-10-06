@@ -26,7 +26,7 @@ using	Stroika::Foundation::Debug::TraceContextBumper;
 
 namespace	{
 
-	void	TestTickCountGrowsMonotonically_ ()
+	void	Test_1_TestTickCountGrowsMonotonically_ ()
 		{
 			DurationSecondsType	start	=	Time::GetTickCount ();
 			Execution::Sleep (0.1);
@@ -37,7 +37,7 @@ namespace	{
 
 namespace	{
 
-	void	TestDate_ ()
+	void	Test_2_TestDate_ ()
 		{
 			Date	d (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
 			VerifyTestResult (d.Format4XML () == L"1903-04-04");
@@ -52,7 +52,7 @@ namespace	{
 
 namespace	{
 
-	void	TestDateTime_ ()
+	void	Test_3_TestDateTime_ ()
 		{
 			DateTime	d	=	Date (Date::Year (1903), Date::eApril, Date::DayOfMonth (4));
 			VerifyTestResult (d.Format4XML () == L"1903-04-04");
@@ -62,14 +62,44 @@ namespace	{
 
 
 
+namespace	{
+
+	void	Test_4_DateTimeTimeT_ ()
+		{
+			{
+				DateTime	d	=	Date (Date::Year (2000), Date::eApril, Date::DayOfMonth (20));
+				VerifyTestResult (d.GetUNIXEpochTime () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
+			}
+			{
+				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay (L"3pm"));
+				VerifyTestResult (d.GetUNIXEpochTime () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
+			}
+			{
+				DateTime	d	=	DateTime (Date (Date::Year (1995), Date::eJune, Date::DayOfMonth (4)), TimeOfDay (L"3:00"));
+				VerifyTestResult (d.GetUNIXEpochTime () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
+			}
+#if 0
+//this fails - on windows - fix asap
+			{
+				const	time_t	kTEST	=	802234800;
+				DateTime	d	=	DateTime (kTEST;
+				VerifyTestResult (d.GetUNIXEpochTime () == kTEST);	// source - http://www.onlineconversion.com/unix_time.htm
+			}
+#endif
+		}
+
+}
+
+
 
 namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			TestTickCountGrowsMonotonically_ ();
-			TestDate_ ();
-			TestDateTime_ ();
+			Test_1_TestTickCountGrowsMonotonically_ ();
+			Test_2_TestDate_ ();
+			Test_3_TestDateTime_ ();
+			Test_4_DateTimeTimeT_ ();
 		}
 }
 

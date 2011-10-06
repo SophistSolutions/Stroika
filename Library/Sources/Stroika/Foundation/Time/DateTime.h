@@ -38,6 +38,13 @@ namespace	Stroika {
 			using	Characters::TString;
 
 
+			/*
+			 *	Description:
+			 *
+			 *		DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
+			 *
+			 *		There are 3 possabilities for timezone - LOCALTIME, GMT, and UNKNOWN.
+			 */
 			class	DateTime {
 				private:
 					Date		fDate;
@@ -80,7 +87,10 @@ namespace	Stroika {
 				#endif
 
 				public:
-					nonvirtual	time_t	GetUNIXEpochTime () const;	// seconds since midnight 1970 (its independent of timezone)
+					/*
+					 * 	Returns seconds since midnight 1970 (its independent of timezone)
+					 */
+					nonvirtual	time_t	GetUNIXEpochTime () const;
 
 				public:
 					nonvirtual	Date		GetDate () const;		// careful of timezone issues? (always in current timezone - I guess)

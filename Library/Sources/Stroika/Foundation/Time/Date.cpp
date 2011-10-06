@@ -45,7 +45,7 @@ using	namespace	Time;
  ************************************** Date ************************************
  ********************************************************************************
  */
-const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));
+const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));	//year eFirstYear  - January
 const	Date	Date::kMax	=	Date (Date::JulianRepType (UINT_MAX-1));
 
 Date::Date ()

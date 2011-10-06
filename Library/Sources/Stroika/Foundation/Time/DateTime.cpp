@@ -304,22 +304,59 @@ Date::JulianRepType	DateTime::DaysSince () const
 	}
 }
 
+#if		qPlatform_Windows
+namespace	{
+	time_t	OLD_GetUNIXEpochTime_ (const DateTime& dt)
+		{
+			SYSTEMTIME	st	=	dt;
+			struct tm tm;
+			memset(&tm, 0, sizeof(tm));
+			tm.tm_year = st.wYear - 1900;
+			tm.tm_mon = st.wMonth - 1;
+			tm.tm_mday = st.wDay;
+			tm.tm_hour = st.wHour;
+			tm.tm_min = st.wMinute;
+			tm.tm_sec = st.wSecond;
+			return mktime (&tm);
+		}
+}
+#endif
+
+namespace	{
+	time_t	GetTZOffset_ ()
+		{
+			struct tm tm;
+			memset(&tm, 0, sizeof(tm));
+			tm.tm_year = 70;
+			tm.tm_mday = 1;
+			time_t	result	=	mktime (&tm);
+			return result;
+		}
+}
+
 time_t	DateTime::GetUNIXEpochTime () const
 {
-#if		qPlatform_Windows
-	SYSTEMTIME	st	=	*this;
 	struct tm tm;
 	memset(&tm, 0, sizeof(tm));
-	tm.tm_year = st.wYear - 1900;
-	tm.tm_mon = st.wMonth - 1;
-	tm.tm_mday = st.wDay;
-	tm.tm_hour = st.wHour;
-	tm.tm_min = st.wMinute;
-	tm.tm_sec = st.wSecond;
-	return mktime (&tm);
-#else
-	Assert (false); return 0;
-#endif
+	tm.tm_year = fDate.GetYear () - 1900;
+	tm.tm_mon = fDate.GetMonth () - 1;
+	tm.tm_mday = fDate.GetDayOfMonth ();
+	unsigned int	totalSecondsRemaining	=	fTimeOfDay.GetAsSecondsCount ();
+	tm.tm_hour = totalSecondsRemaining / (60 * 60);
+	totalSecondsRemaining -= tm.tm_hour * 60 * 60;
+	tm.tm_min = totalSecondsRemaining / 60;
+	totalSecondsRemaining -= tm.tm_min * 60;
+	tm.tm_sec = totalSecondsRemaining;
+	time_t	result	=	mktime (&tm);
+	#if		qPlatform_Windows
+	Ensure (result == OLD_GetUNIXEpochTime_ (*this));		// OLD WINDOZE code was WRONG - neglecting the coorect for mktime () timezone nonsense
+	#endif
+	/*
+	 * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
+	 * DateTime() object.
+	 */
+	result -= GetTZOffset_ ();
+	return result;
 }
 
 void	DateTime::SetDate (const Date& d)

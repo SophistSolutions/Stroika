@@ -23,6 +23,7 @@
  *		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
 			operator
 		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
+			(PROBABLY NOT time_t - since that doesn't make a ton of snese - but DO include struct tm support)!!!
 		o	add if POSIX to list of ifdefs we support and where easy support them and where not - oh well
 		o	Replace (research first) use of name XML here with iso8601.
 			+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
@@ -42,6 +43,7 @@ namespace	Stroika {
 
 
 			/*
+			 * Description:
 			 * Based on Stroika code from 1992 (Date.hh/Date.cpp). From that - we have the comment:
 			 *
 			 * The Date class is based on SmallTalk-80, The Language & Its Implementation,
@@ -57,6 +59,7 @@ namespace	Stroika {
 			 *		->	a particular year might be a leap year."
 			 *
 			 *
+			 *			NB: Date implies NO NOTION of timezone.
 			 */
 			class	Date {
 				public:
