@@ -9,7 +9,6 @@
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
 	#include <time.h>
-	//not sure needed?#include	<sys/times.h>
 #endif
 
 #include	"../Characters/Format.h"
@@ -277,8 +276,8 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 				secs = min (secs, 59);
 				return TimeOfDay ((hour * 60 + minute) * 60 + secs);
 			}
-			return TimeOfDay ();
 			#pragma	warning (pop)
+			return TimeOfDay ();
 		}
 		default: {
 			AssertNotReached ();
@@ -338,9 +337,9 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 			#endif
 		}
 		case	eCurrentXML_PF: {
-			int hour = fTime/(60*60);
-			int minutes = (fTime - hour * 60 * 60) / 60;
-			int secs = fTime - hour * 60 * 60 - minutes * 60;
+			uint32_t	hour = fTime/(60*60);
+			uint32_t	minutes = (fTime - hour * 60 * 60) / 60;
+			uint32_t	secs = fTime - hour * 60 * 60 - minutes * 60;
 			Assert (hour >= 0 and hour < 24);
 			Assert (minutes >= 0 and minutes < 60);
 			Assert (secs >= 0 and secs < 60);
