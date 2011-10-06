@@ -21,9 +21,7 @@
 
 /*
  * TODO:
- *		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
-			operator
-		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
+ *		o	Consider getting rid of empty () method and empty state. Instead - in DateTime code - use Optional<>
 
  */
 
@@ -58,18 +56,28 @@ namespace	Stroika {
 					explicit TimeOfDay (uint32_t t);
 
 
-//RENAME AS PARSE STATIUC METHOD?
-					explicit TimeOfDay (const wstring& rep);
+					enum	PrintFormat {
+						eCurrentLocale_PF,
+						eCurrentXML_PF,
+					};
+					static	TimeOfDay	Parse (const wstring& rep, PrintFormat pf);
 				#if		qPlatform_Windows
-					explicit TimeOfDay (const wstring& rep, LCID lcid);
+					static	TimeOfDay	Parse (const wstring& rep, LCID lcid);
 				#endif
 
+
+//RENAME AS PARSE STATIUC METHOD?
+explicit TimeOfDay (const wstring& rep);
+#if		qPlatform_Windows
+explicit TimeOfDay (const wstring& rep, LCID lcid);
+#endif
+
 //LOSE THESE?
-					/*
-					 * If a full date, just grab the time part, and ignore the rest.
-					 */
-					enum XML { eXML };
-					explicit TimeOfDay (const wstring& rep, XML);
+/*
+* If a full date, just grab the time part, and ignore the rest.
+*/
+enum XML { eXML };
+explicit TimeOfDay (const wstring& rep, XML);
 
 #if 0
 					#if		qPlatform_Windows
@@ -100,10 +108,12 @@ namespace	Stroika {
 					nonvirtual	void	ClearSecondsField ();
 
 				public:
+					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;
+
 					#if		qPlatform_Windows
-					nonvirtual	wstring	Format (LCID lcid = LOCALE_USER_DEFAULT) const;
+					nonvirtual	wstring	Format (LCID lcid) const;
 					#endif
-					nonvirtual	wstring	Format4XML () const;
+nonvirtual	wstring	Format4XML () const { return Format (eCurrentXML_PF); }
 
 #if 0
 				#if		qPlatform_Windows

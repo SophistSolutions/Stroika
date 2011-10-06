@@ -90,12 +90,81 @@ TimeOfDay::TimeOfDay (uint32_t t)
 TimeOfDay::TimeOfDay (const wstring& rep)
 	: fTime (-1)
 {
+	*this = TimeOfDay::Parse (rep, TimeOfDay::eCurrentLocale_PF);
+}
+
+TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
+{
 	if (rep.empty ()) {
-		Ensure (empty ());
-		return;		// if empty string - just no time specified...
+		return TimeOfDay ();
 	}
+	switch (pf) {
+		case	eCurrentLocale_PF:	{
+			#if		qPlatform_Windows
+				LCID lcid = LOCALE_USER_DEFAULT;
+				DATE		d;
+				(void)::memset (&d, 0, sizeof (d));
+				try {
+					ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+				}
+				catch (...) {
+					// Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
+					// Detect that - and try to interpret it appropriately.
+					wstring	newRep = rep;
+					if (newRep.length () == 4 and
+						iswdigit (newRep[0]) and iswdigit (newRep[1]) and iswdigit (newRep[2]) and iswdigit (newRep[3])
+						) {
+						newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
+						ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+					}
+					else {
+						Execution::DoThrow (FormatException ());
+					}
+				}
+				// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+				SYSTEMTIME	sysTime;
+				memset (&sysTime, 0, sizeof (sysTime));
+				Verify (::VariantTimeToSystemTime (d, &sysTime));
+				return mkTimeOfDay_ (sysTime);
+			#elif	qPlatform_POSIX
+				AssertNotImplemented ();
+				return TimeOfDay ();
+			#else
+				AssertNotImplemented ();
+				return TimeOfDay ();
+			#endif
+		}
+		case	eCurrentXML_PF: {
+			int	hour	=	0;
+			int	minute	=	0;
+			int secs	=	0;
+			#pragma	warning (push)
+			#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
+			if (::swscanf (rep.c_str (), L"%d:%d:d", &hour, &minute, &secs) >= 2) {
+				hour = max (hour, 0);
+				hour = min (hour, 23);
+				minute = max (minute, 0);
+				minute = min (minute, 59);
+				secs = max (secs, 0);
+				secs = min (secs, 59);
+				return TimeOfDay ((hour * 60 + minute) * 60 + secs);
+			}
+			return TimeOfDay ();
+			#pragma	warning (pop)
+		}
+		default: {
+			AssertNotReached ();
+			return TimeOfDay ();
+		}
+	}
+}
+
 #if		qPlatform_Windows
-	LCID lcid = LOCALE_USER_DEFAULT;
+TimeOfDay	TimeOfDay::Parse (const wstring& rep, LCID lcid)
+{
+	if (rep.empty ()) {
+		return TimeOfDay ();
+	}
 	DATE		d;
 	(void)::memset (&d, 0, sizeof (d));
 	try {
@@ -119,67 +188,55 @@ TimeOfDay::TimeOfDay (const wstring& rep)
 	SYSTEMTIME	sysTime;
 	memset (&sysTime, 0, sizeof (sysTime));
 	Verify (::VariantTimeToSystemTime (d, &sysTime));
-	*this = mkTimeOfDay_ (sysTime);
-#elif	qPlatform_POSIX
-	AssertNotImplemented ();
-#else
-	AssertNotImplemented ();
-#endif
+	return mkTimeOfDay_ (sysTime);
 }
+#endif
 
 #if		qPlatform_Windows
 TimeOfDay::TimeOfDay (const wstring& rep, LCID lcid)
 	: fTime (-1)
 {
-	if (rep.empty ()) {
-		Ensure (empty ());
-		return;		// if empty string - just no time specified...
-	}
-	DATE		d;
-	(void)::memset (&d, 0, sizeof (d));
-	try {
-		ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-	}
-	catch (...) {
-		// Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
-		// Detect that - and try to interpret it appropriately.
-		wstring	newRep = rep;
-		if (newRep.length () == 4 and
-			iswdigit (newRep[0]) and iswdigit (newRep[1]) and iswdigit (newRep[2]) and iswdigit (newRep[3])
-			) {
-			newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
-			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-		}
-		else {
-			Execution::DoThrow (FormatException ());
-		}
-	}
-	// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-	SYSTEMTIME	sysTime;
-	memset (&sysTime, 0, sizeof (sysTime));
-	Verify (::VariantTimeToSystemTime (d, &sysTime));
-	*this = mkTimeOfDay_ (sysTime);
+	*this =TimeOfDay::Parse (rep, lcid);
 }
 #endif
 
 TimeOfDay::TimeOfDay (const wstring& rep, XML):
 	fTime (-1)
 {
-	int	hour	=	0;
-	int	minute	=	0;
-	int secs	=	0;
-	#pragma	warning (push)
-	#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
-	if (::swscanf (rep.c_str (), L"%d:%d:d", &hour, &minute, &secs) >= 2) {
-		hour = max (hour, 0);
-		hour = min (hour, 23);
-		minute = max (minute, 0);
-		minute = min (minute, 59);
-		secs = max (secs, 0);
-		secs = min (secs, 59);
-		fTime = (hour * 60 + minute) * 60 + secs;
+	*this =TimeOfDay::Parse (rep, eCurrentXML_PF);
+}
+
+wstring	TimeOfDay::Format (PrintFormat pf) const
+{
+	if (empty ()) {
+		return wstring ();
 	}
-	#pragma	warning (pop)
+	switch (pf) {
+		case	eCurrentLocale_PF:	{
+			#if		qPlatform_Windows
+				return Format (LOCALE_USER_DEFAULT);
+			#elif	qPlatform_POSIX
+				AssertNotImplemented ();
+				return wstring ();
+			#else
+				AssertNotImplemented ();
+				return wstring ();
+			#endif
+		}
+		case	eCurrentXML_PF: {
+			int hour = fTime/(60*60);
+			int minutes = (fTime - hour * 60 * 60) / 60;
+			int secs = fTime - hour * 60 * 60 - minutes * 60;
+			Assert (hour >= 0 and hour < 24);
+			Assert (minutes >= 0 and minutes < 60);
+			Assert (secs >= 0 and secs < 60);
+			return ::Format (L"%02d:%02d:%02d", hour, minutes, secs);
+		}
+		default: {
+			AssertNotReached ();
+			return wstring ();
+		}
+	}
 }
 
 void	TimeOfDay::ClearSecondsField ()
@@ -342,6 +399,8 @@ wstring	TimeOfDay::Format (LCID lcid) const
 }
 #endif
 
+#if 0
+
 wstring	TimeOfDay::Format4XML () const
 {
 	if (empty ()) {
@@ -357,6 +416,7 @@ wstring	TimeOfDay::Format4XML () const
 		return ::Format (L"%02d:%02d:%02d", hour, minutes, secs);
 	}
 }
+#endif
 
 #if 0
 #if		qPlatform_Windows
