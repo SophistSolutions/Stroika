@@ -46,6 +46,17 @@ using	namespace	Time;
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
+namespace	{
+	// Once we have all our compilers supporting constexp - this can go in header (Date.inl) - and then be shared
+	// across OBJS
+	const	Date	kMin_	=	Date (Date::JulianRepType (Date::kMinJulianRep));	//year eFirstYear  - January
+	const	Date	kMax_	=	Date (Date::JulianRepType (UINT_MAX-1));
+
+	const	TimeOfDay	kMinT_	=	TimeOfDay (0);
+	const	TimeOfDay	kMaxT_	=	TimeOfDay (24 * 60 * 60 - 1);
+}
+const	DateTime	DateTime::kMin	=	DateTime (kMin_, kMinT_);
+const	DateTime	DateTime::kMax	=	DateTime (kMax_, kMaxT_);
 
 DateTime::DateTime (const wstring& rep)
 	: fDate ()

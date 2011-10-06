@@ -73,6 +73,16 @@ namespace	Stroika {
 					static	Date		GetToday ();
 
 				public:
+					/*
+					 * DateTime::kMin is the first date this DateTime class supports representing.
+					 */
+					static	const	DateTime	kMin;
+					/*
+					 * DateTime::kMin is the first date this DateTime class supports representing.
+					 */
+					static	const	DateTime	kMax;
+
+				public:
 					nonvirtual	wstring	Format () const;
 					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid) const;

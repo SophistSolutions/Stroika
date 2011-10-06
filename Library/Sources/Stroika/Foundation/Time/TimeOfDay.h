@@ -64,7 +64,14 @@ namespace	Stroika {
 					#endif
 
 				public:
-					static	TimeOfDay	Now ();
+					/*
+					 * TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
+					 */
+					static	const	TimeOfDay	kMin;
+					/*
+					 * TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
+					 */
+					static	const	TimeOfDay	kMax;
 
 				public:
 					class	FormatException;

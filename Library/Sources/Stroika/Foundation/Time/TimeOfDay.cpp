@@ -59,6 +59,9 @@ namespace	{
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
+const	TimeOfDay	TimeOfDay::kMin	=	TimeOfDay (0);
+const	TimeOfDay	TimeOfDay::kMax	=	TimeOfDay (24 * 60 * 60 - 1);
+
 TimeOfDay::TimeOfDay ()
   : fTime (-1)
 {
@@ -179,11 +182,6 @@ TimeOfDay::TimeOfDay (const SYSTEMTIME& sysTime):
 	fTime = (hour * 60 + minute) * 60 + secs;
 }
 #endif
-
-TimeOfDay	TimeOfDay::Now ()
-{
-	return DateTime::Now ().GetTimeOfDay ();
-}
 
 void	TimeOfDay::ClearSecondsField ()
 {

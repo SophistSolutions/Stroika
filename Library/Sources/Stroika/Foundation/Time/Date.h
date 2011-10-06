@@ -130,7 +130,13 @@ namespace	Stroika {
 				#endif
 
 				public:
+					/*
+					 * Date::kMin is the first date this Date class supports representing.
+					 */
 					static	const	Date	kMin;
+					/*
+					 * Date::kMax is the last date this Date class supports representing.
+					 */
 					static	const	Date	kMax;
 
 				public:
