@@ -124,6 +124,19 @@ namespace	Stroika {
 				public:
 					Date ();
 					explicit Date (JulianRepType julianRep);
+
+
+		enum	PrintFormat {
+			eCurrentLocale_PF,
+			eXML_PF,
+			eJavascript_PF,
+		};
+		static	Date	Parse (const wstring& rep, PrintFormat pf);
+	#if		qPlatform_Windows
+		static	Date	Parse (const wstring& rep, LCID lcid);
+	#endif
+
+
 					enum XML { eXML };
 					enum Javascript { eJavascript };
 					explicit Date (const wstring& rep, XML);
@@ -133,10 +146,6 @@ namespace	Stroika {
 					explicit Date (const wstring& rep, LCID lcid);
 				#endif
 					explicit Date (Year year, MonthOfYear month, DayOfMonth day);
-				#if		qPlatform_Windows
-					Date (const SYSTEMTIME& sysTime);
-					Date (const FILETIME& fileTime);
-				#endif
 
 				public:
 					/*
@@ -156,10 +165,13 @@ namespace	Stroika {
 					nonvirtual	MonthOfYear		GetMonth () const;
 					nonvirtual	DayOfMonth		GetDayOfMonth () const;
 
+
+#if 0
 				#if		qPlatform_Windows
 				public:
 					operator SYSTEMTIME () const;
 				#endif
+#endif
 
 				public:
 					nonvirtual	wstring	Format () const;

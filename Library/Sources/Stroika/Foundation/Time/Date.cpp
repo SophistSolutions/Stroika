@@ -35,7 +35,23 @@ using	namespace	Time;
 
 
 
-
+namespace	{
+#if		qPlatform_Windows
+	SYSTEMTIME toSYSTEM_ (const Date& date)
+		{
+			SYSTEMTIME	st;
+			memset (&st, 0, sizeof (st));
+			Date::MonthOfYear	m	=	Date::eEmptyMonthOfYear;
+			Date::DayOfMonth	d	=	Date::eEmptyDayOfMonth;
+			Date::Year			y	=	Date::eEmptyYear;
+			date.mdy (&m, &d, &y);
+			st.wYear = y;
+			st.wMonth = m;
+			st.wDay = d;
+			return st;
+		}
+#endif
+}
 
 
 
@@ -63,27 +79,6 @@ Date::Date (Year year, MonthOfYear month, DayOfMonth day)
 	: fJulianDateRep (jday (month, day, year))
 {
 }
-
-#if		qPlatform_Windows
-Date::Date (const SYSTEMTIME& sysTime)
-	: fJulianDateRep (Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)))
-{
-}
-
-Date::Date (const FILETIME& fileTime)
-	: fJulianDateRep (kEmptyJulianRep)
-{
-	FILETIME localTime;
-	(void)::memset (&localTime, 0, sizeof (localTime));
-	if (::FileTimeToLocalFileTime (&fileTime, &localTime)) {
-		SYSTEMTIME sysTime;
-		(void)::memset (&sysTime, 0, sizeof (sysTime));
-		if (::FileTimeToSystemTime (&localTime, &sysTime)) {
-			fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
-		}
-	}
-}
-#endif
 
 #if		qPlatform_POSIX
 namespace	{
@@ -226,7 +221,7 @@ wstring	Date::Format () const
 #if		qPlatform_Windows
 wstring	Date::Format (LCID lcid) const
 {
-	SYSTEMTIME	st	=	*this;
+	SYSTEMTIME	st	=	toSYSTEM_ (*this);
 	int	nTChars	=	::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, nullptr, 0);
 	if (nTChars == 0) {
 		return wstring ();
@@ -240,7 +235,7 @@ wstring	Date::Format (LCID lcid) const
 
 wstring	Date::Format (const TString& format, LCID lcid) const
 {
-	SYSTEMTIME	st	=	*this;
+	SYSTEMTIME	st	=	toSYSTEM_ (*this);
 	int	nTChars	=	::GetDateFormat (lcid, 0, &st, format.c_str (), nullptr, 0);
 	if (nTChars == 0) {
 		return wstring ();
@@ -299,7 +294,7 @@ wstring	Date::Format4JScript () const
 #if		qPlatform_Windows
 wstring	Date::LongFormat (LCID lcid) const
 {
-	SYSTEMTIME	st	=	*this;
+	SYSTEMTIME	st	=	toSYSTEM_ (*this);
 	int	nTChars	=	::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
 	if (nTChars == 0) {
 		return wstring ();
@@ -332,22 +327,6 @@ Date::JulianRepType	Date::DaysSince () const
 		return r;
 	}
 }
-
-#if		qPlatform_Windows
-Date::operator SYSTEMTIME () const
-{
-	SYSTEMTIME	st;
-	memset (&st, 0, sizeof (st));
-	MonthOfYear	m	=	eEmptyMonthOfYear;
-	DayOfMonth	d	=	eEmptyDayOfMonth;
-	Year		y	=	eEmptyYear;
-	mdy (&m, &d, &y);
-	st.wYear = y;
-	st.wMonth = m;
-	st.wDay = d;
-	return st;
-}
-#endif
 
 Date::Year	Date::GetYear () const
 {

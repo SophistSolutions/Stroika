@@ -33,7 +33,6 @@ using	namespace	Time;
 
 
 
-
 #if		qPlatform_Windows
 namespace	{
 	TimeOfDay	mkTimeOfDay_ (const SYSTEMTIME& sysTime)
@@ -48,6 +47,35 @@ namespace	{
 		}
 }
 #endif
+
+#if		qPlatform_Windows
+namespace	{
+	Date	mkDate_ (const SYSTEMTIME& sysTime)
+		{
+			return Date (Date::Year (sysTime.wYear), Date::MonthOfYear (sysTime.wMonth), Date::DayOfMonth (sysTime.wDay));
+		}
+}
+#endif
+
+
+
+namespace	{
+#if		qPlatform_Windows
+	SYSTEMTIME toSYSTEM_ (const Date& date)
+		{
+			SYSTEMTIME	st;
+			memset (&st, 0, sizeof (st));
+			Date::MonthOfYear	m	=	Date::eEmptyMonthOfYear;
+			Date::DayOfMonth	d	=	Date::eEmptyDayOfMonth;
+			Date::Year			y	=	Date::eEmptyYear;
+			date.mdy (&m, &d, &y);
+			st.wYear = y;
+			st.wMonth = m;
+			st.wDay = d;
+			return st;
+		}
+#endif
+}
 
 
 
@@ -92,7 +120,7 @@ DateTime::DateTime (const wstring& rep)
 		SYSTEMTIME	sysTime;
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fDate = Date (sysTime);
+		fDate = mkDate_ (sysTime);
 		fTimeOfDay = mkTimeOfDay_ (sysTime);
 #elif	qPlatform_POSIX
 		AssertNotImplemented ();
@@ -121,7 +149,7 @@ DateTime::DateTime (const wstring& rep, LCID lcid)
 		SYSTEMTIME	sysTime;
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fDate = Date (sysTime);
+		fDate = mkDate_ (sysTime);
 		fTimeOfDay = mkTimeOfDay_ (sysTime);
 	}
 }
@@ -157,6 +185,7 @@ DateTime::DateTime (const wstring& rep, XML):
 	}
 }
 
+#if 0
 #if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime):
 	fDate (sysTime),
@@ -179,6 +208,7 @@ DateTime::DateTime (const FILETIME& fileTime):
 		}
 	}
 }
+#endif
 #endif
 
 DateTime::DateTime (time_t unixTime):
@@ -346,8 +376,9 @@ namespace	{
 #if		qPlatform_Windows
 DateTime::operator SYSTEMTIME () const
 {
-	SYSTEMTIME	d	=	(SYSTEMTIME)fDate;
-	SYSTEMTIME	t	=	(SYSTEMTIME)toSysTime_ (fTimeOfDay);
+	// CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
+	SYSTEMTIME	d	=	toSYSTEM_ (fDate);
+	SYSTEMTIME	t	=	toSysTime_ (fTimeOfDay);
 	SYSTEMTIME	r	=	d;
 	r.wHour = t.wHour;
 	r.wMinute = t.wMinute;
