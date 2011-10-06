@@ -228,31 +228,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
-				LCID lcid = LOCALE_USER_DEFAULT;
-				DATE		d;
-				(void)::memset (&d, 0, sizeof (d));
-				try {
-					ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-				}
-				catch (...) {
-					// Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
-					// Detect that - and try to interpret it appropriately.
-					wstring	newRep = rep;
-					if (newRep.length () == 4 and
-						iswdigit (newRep[0]) and iswdigit (newRep[1]) and iswdigit (newRep[2]) and iswdigit (newRep[3])
-						) {
-						newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
-						ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-					}
-					else {
-						Execution::DoThrow (FormatException ());
-					}
-				}
-				// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-				SYSTEMTIME	sysTime;
-				memset (&sysTime, 0, sizeof (sysTime));
-				Verify (::VariantTimeToSystemTime (d, &sysTime));
-				return mkTimeOfDay_ (sysTime);
+				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
 				AssertNotImplemented ();
 				return TimeOfDay ();
