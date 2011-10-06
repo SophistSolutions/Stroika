@@ -19,11 +19,11 @@ namespace	Stroika {
 			//	class Date
 				inline	Date::JulianRepType	Date::GetJulianRep () const
 					{
-						return (fJulianDateRep);
+						return (fJulianDateRep_);
 					}
 				inline	bool	Date::empty () const
 					{
-						return fJulianDateRep == kEmptyJulianRep;
+						return fJulianDateRep_ == kEmptyJulianRep;
 					}
 
 				inline	int	DayDifference (const Date& lhs, const Date& rhs)

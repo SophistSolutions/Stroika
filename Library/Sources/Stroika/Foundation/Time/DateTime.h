@@ -104,7 +104,6 @@ namespace	Stroika {
 					 */
 					static	const	DateTime	kMax;
 
-
 				public:
 					enum Timezone {
 						eLocalTime_TZ,

@@ -225,7 +225,7 @@ template	<>
 				case	eString: {
 					TValRep<wstring,eString>*	v	=	dynamic_cast<TValRep<wstring,eString>*> (fVal.get ());
 					AssertNotNull (v);
-					return Date (v->fVal, Date::eXML);
+					return Date::Parse (v->fVal, Date::eXML_PF);
 				}
 				default: {
 					Assert (false);	// bad type (or not yet supported)

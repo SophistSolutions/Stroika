@@ -173,7 +173,7 @@ DateTime::DateTime (const wstring& rep, XML):
 		int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
 		#pragma warning (pop)
 		if (nItems >= 3) {
-			fDate = Date (::Format (L"%d-%d-%d", year, month, day), Date::eXML);
+			fDate = Date::Parse (::Format (L"%d-%d-%d", year, month, day), Date::eXML_PF);
 		}
 		if (nItems >= 5) {
 			fTimeOfDay = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
@@ -185,10 +185,9 @@ DateTime::DateTime (const wstring& rep, XML):
 	}
 }
 
-#if 0
 #if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime):
-	fDate (sysTime),
+	fDate (mkDate_ (sysTime)),
 	fTimeOfDay (mkTimeOfDay_ (sysTime))
 {
 }
@@ -203,12 +202,11 @@ DateTime::DateTime (const FILETIME& fileTime):
 		SYSTEMTIME sysTime;
 		(void)::memset (&sysTime, 0, sizeof (sysTime));
 		if (::FileTimeToSystemTime (&localTime, &sysTime)) {
-			fDate= Date (sysTime);
+			fDate= mkDate_ (sysTime);
 			fTimeOfDay = mkTimeOfDay_ (sysTime);
 		}
 	}
 }
-#endif
 #endif
 
 DateTime::DateTime (time_t unixTime):

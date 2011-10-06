@@ -129,25 +129,29 @@ namespace	Stroika {
 					explicit Date (JulianRepType julianRep);
 
 
-		enum	PrintFormat {
-			eCurrentLocale_PF,
-			eXML_PF,
-			eJavascript_PF,
-		};
-		static	Date	Parse (const wstring& rep, PrintFormat pf);
-	#if		qPlatform_Windows
-		static	Date	Parse (const wstring& rep, LCID lcid);
-	#endif
-
-
-					enum XML { eXML };
-					enum Javascript { eJavascript };
-					explicit Date (const wstring& rep, XML);
-					explicit Date (const wstring& rep, Javascript);
-					explicit Date (const wstring& rep);
+				public:
+					enum	PrintFormat {
+						eCurrentLocale_PF,
+						eXML_PF,
+						eJavascript_PF,
+					};
+					static	Date	Parse (const wstring& rep, PrintFormat pf);
 				#if		qPlatform_Windows
-					explicit Date (const wstring& rep, LCID lcid);
+					static	Date	Parse (const wstring& rep, LCID lcid);
 				#endif
+
+
+#if 0
+	enum XML { eXML };
+	enum Javascript { eJavascript };
+	explicit Date (const wstring& rep, XML);
+	explicit Date (const wstring& rep, Javascript);
+	explicit Date (const wstring& rep);
+#if		qPlatform_Windows
+	explicit Date (const wstring& rep, LCID lcid);
+#endif
+#endif
+
 					explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
 				public:
@@ -169,12 +173,6 @@ namespace	Stroika {
 					nonvirtual	DayOfMonth		GetDayOfMonth () const;
 
 
-#if 0
-				#if		qPlatform_Windows
-				public:
-					operator SYSTEMTIME () const;
-				#endif
-#endif
 
 				public:
 					nonvirtual	wstring	Format () const;
@@ -199,13 +197,13 @@ namespace	Stroika {
 					nonvirtual	JulianRepType	DaysSince () const;
 
 				private:
-					static 		JulianRepType	jday (MonthOfYear month, DayOfMonth day, Year year);			// from NIHCL
-					static 		JulianRepType	Safe_jday (MonthOfYear month, DayOfMonth day, Year year);
+					static 		JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year);			// from NIHCL
+					static 		JulianRepType	Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 				public:
 					nonvirtual	void			mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;	// from NIHCL
 
 				private:
-					JulianRepType	fJulianDateRep;
+					JulianRepType	fJulianDateRep_;
 			};
 
 

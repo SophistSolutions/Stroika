@@ -5,11 +5,10 @@
 
 #include	<algorithm>
 
+#include	<ctime>
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
-	#include <time.h>
-	//not sure needed?#include	<sys/times.h>
 #endif
 
 #include	"../Characters/Format.h"
@@ -57,6 +56,7 @@ namespace	{
 
 
 
+
 /*
  ********************************************************************************
  ************************************** Date ************************************
@@ -66,17 +66,17 @@ const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));	//year
 const	Date	Date::kMax	=	Date (Date::JulianRepType (UINT_MAX-1));
 
 Date::Date ()
-	: fJulianDateRep (kEmptyJulianRep)
+	: fJulianDateRep_ (kEmptyJulianRep)
 {
 }
 
 Date::Date (JulianRepType julianRep)
-	: fJulianDateRep (julianRep)
+	: fJulianDateRep_ (julianRep)
 {
 }
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
-	: fJulianDateRep (jday (month, day, year))
+	: fJulianDateRep_ (jday_ (month, day, year))
 {
 }
 
@@ -101,96 +101,91 @@ namespace	{
 }
 #endif
 
+#if 0
 Date::Date (const wstring& rep, XML)
-	: fJulianDateRep (kEmptyJulianRep)
+	: fJulianDateRep_ (kEmptyJulianRep)
 {
-// SHOULD TAKE INTO ACCOUNT TIMEZONE FIELD - IF ANY - AND NOT CURRENT TIMEZONE!!! (LOCALE_USER_DEFAULT IS WRONG) -  LGP 2005-10-31
-	if (not rep.empty ()) {
-#if		qPlatform_Windows
-		DATE		d;
-		(void)::memset (&d, 0, sizeof (d));
-		try {
-			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), LOCALE_USER_DEFAULT, VAR_DATEVALUEONLY, &d));
-		}
-		catch (...) {
-			Execution::DoThrow (FormatException ());
-		}
-		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-		SYSTEMTIME	sysTime;
-		memset (&sysTime, 0, sizeof (sysTime));
-		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
-#elif	qPlatform_POSIX
-		struct tm tm;
-		memset(&tm, 0, sizeof(struct tm));
-// horrible hack - very bad... but hopefully gets us limping along...
-		string tmp = WideStringToASCII (rep);
-		convert_iso8601 (tmp.c_str (), &tm);
-		fJulianDateRep = Safe_jday (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900));
-#else
-		AssertNotImplemented ();
-#endif
-	}
+	*this = Date::Parse (rep, Date::eXML_PF);
 }
 
 Date::Date (const wstring& rep, Javascript)
-	: fJulianDateRep (kEmptyJulianRep)
+	: fJulianDateRep_ (kEmptyJulianRep)
 {
-#if		qPlatform_Windows
-	/*
-	 *	See also Format4JScript for javascript format info
-	 */
-	const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-	if (not rep.empty ()) {
-		DATE		d;
-		(void)::memset (&d, 0, sizeof (d));
-		try {
-			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), kUS_ENGLISH_LOCALE, VAR_DATEVALUEONLY, &d));
-		}
-		catch (...) {
-			Execution::DoThrow (FormatException ());
-		}
-		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-		SYSTEMTIME	sysTime;
-		memset (&sysTime, 0, sizeof (sysTime));
-		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
-	}
-#else
-	AssertNotImplemented ();
-#endif
+	*this = Date::Parse (rep, Date::eJavascript_PF);
 }
 
 Date::Date (const wstring& rep)
-	: fJulianDateRep (kEmptyJulianRep)
+	: fJulianDateRep_ (kEmptyJulianRep)
 {
-	if (not rep.empty ()) {
-		#if		qPlatform_Windows
-			LCID lcid = LOCALE_USER_DEFAULT;
-			DATE		d;
-			(void)::memset (&d, 0, sizeof (d));
-			try {
-				ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
-			}
-			catch (...) {
-				Execution::DoThrow (FormatException ());
-			}
-			// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-			SYSTEMTIME	sysTime;
-			memset (&sysTime, 0, sizeof (sysTime));
-			Verify (::VariantTimeToSystemTime (d, &sysTime));
-			fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
-		#else
-			AssertNotImplemented ();
-		#endif
-	}
+	*this = Date::Parse (rep, Date::eCurrentLocale_PF);
 }
 
 #if		qPlatform_Windows
 Date::Date (const wstring& rep, LCID lcid)
-	: fJulianDateRep (kEmptyJulianRep)
+	: fJulianDateRep_ (kEmptyJulianRep)
 {
-	if (not rep.empty ()) {
+	*this = Parse (rep, lcid);
+}
+#endif
+#endif
+
+Date	Date::Parse (const wstring& rep, PrintFormat pf)
+{
+	if (rep.empty ()) {
+		return Date ();
+	}
+	switch (pf) {
+		case	eCurrentLocale_PF: {
+			#if		qPlatform_Windows
+				return Parse (rep, LOCALE_USER_DEFAULT);
+			#else
+				AssertNotImplemented ();
+			#endif
+		}
+		break;
+		case	eXML_PF: {
+			#if		qPlatform_Windows
+				// SHOULD TAKE INTO ACCOUNT TIMEZONE FIELD - IF ANY - AND NOT CURRENT TIMEZONE!!! (LOCALE_USER_DEFAULT IS WRONG) -  LGP 2005-10-31
+				return Parse (rep, LOCALE_USER_DEFAULT);
+			#elif	qPlatform_POSIX
+				struct tm tm;
+				memset(&tm, 0, sizeof(struct tm));
+		// horrible hack - very bad... but hopefully gets us limping along...
+				string tmp = WideStringToASCII (rep);
+				convert_iso8601 (tmp.c_str (), &tm);
+				fJulianDateRep_ = Safe_jday_ (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900));
+			#else
+				AssertNotImplemented ();
+			#endif
+		}
+		break;
+		case	eJavascript_PF: {
+			#if		qPlatform_Windows
+				/*
+				 *	See also Format4JScript for javascript format info
+				 */
+				const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
+				return Parse (rep, kUS_ENGLISH_LOCALE);
+			#else
+				AssertNotImplemented ();
+			#endif
+		}
+		break;
+		default: {
+			AssertNotReached ();
+			return Date ();
+		}
+		break;
+	}
+}
+
+#if		qPlatform_Windows
+Date	Date::Parse (const wstring& rep, LCID lcid)
+{
+	if (rep.empty ()) {
+		return Date ();
+	}
+	else {
 		DATE		d;
 		(void)::memset (&d, 0, sizeof (d));
 		try {
@@ -203,10 +198,12 @@ Date::Date (const wstring& rep, LCID lcid)
 		SYSTEMTIME	sysTime;
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fJulianDateRep = Safe_jday (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear));
+		return Date (Safe_jday_ (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)));
 	}
 }
 #endif
+
+
 
 wstring	Date::Format () const
 {
@@ -313,7 +310,7 @@ Date	Date::AddDays (int dayCount)
 		// then assume was supposed to be relative to today
 		*this = DateTime::GetToday ();
 	}
-	fJulianDateRep += dayCount;
+	fJulianDateRep_ += dayCount;
 	return *this;
 }
 
@@ -367,7 +364,7 @@ Date::DayOfMonth	Date::GetDayOfMonth () const
  *
  * (This code originally from NIHCL)
  */
-Date::JulianRepType	Date::jday (MonthOfYear month, DayOfMonth day, Year year)
+Date::JulianRepType	Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
 {
 	if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
 		return kEmptyJulianRep;
@@ -389,7 +386,7 @@ Date::JulianRepType	Date::jday (MonthOfYear month, DayOfMonth day, Year year)
 	return (((146097*c)>>2) + ((1461*ya)>>2) + (153*month + 2)/5 + day + 1721119);
 }
 
-Date::JulianRepType	Date::Safe_jday (MonthOfYear month, DayOfMonth day, Year year)
+Date::JulianRepType	Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
 {
 	// 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
@@ -397,7 +394,7 @@ Date::JulianRepType	Date::Safe_jday (MonthOfYear month, DayOfMonth day, Year yea
 		return kEmptyJulianRep;
 	}
 	if (year > 1752 or (year == 1752 and (month > Date::eSeptember or (month == Date::eSeptember and day >= 14)))) {
-		return jday (month, day, year);
+		return jday_ (month, day, year);
 	}
 	else {
 		return kEmptyJulianRep;
@@ -417,7 +414,7 @@ void	Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
 	RequireNotNull (month);
 	RequireNotNull (day);
 	RequireNotNull (year);
-	if (fJulianDateRep == kEmptyJulianRep) {
+	if (fJulianDateRep_ == kEmptyJulianRep) {
 		*month = eEmptyMonthOfYear;
 		*day = eEmptyDayOfMonth;
 		*year = eEmptyYear;
@@ -427,7 +424,7 @@ void	Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
 	JulianRepType	d;
 	JulianRepType	y;
 
-	JulianRepType j = fJulianDateRep - 1721119;
+	JulianRepType j = fJulianDateRep_ - 1721119;
 	y = (((j<<2) - 1) / 146097);
 	j = (j<<2) - 1 - 146097*y;
 	d = (j>>2);
