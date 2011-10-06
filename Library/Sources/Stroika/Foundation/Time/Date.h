@@ -21,17 +21,24 @@
 /*
  * TODO:
  *
-		o	Replace (research first) use of name XML here with iso8601.
-			+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
-				XML really is its own - nearly identical to iso8601, but see deviations...
-				Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
-		o	Add regression test suite (TEST 7)
-		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
+ *		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
+ *
  *		
+ *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
+ *		
+ *
+ *
+ *
+ *
+ *
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
  *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
  *			Maybe where they differ doesn't matter for this class?
+ *			o	Replace (research first) use of name XML here with iso8601.
+ *				+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
+ *					XML really is its own - nearly identical to iso8601, but see deviations...
+ *					Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
  *
  */
 

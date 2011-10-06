@@ -26,6 +26,9 @@
  *		
 		o	Private memobers need '_'.
 
+ *		
+ *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
+ *		
 		o	Implement new (described below) 'empty' semantics.
 
 		o	Do support for enum Kind { eLocalTimezone, eGMT, eUnkownTimezone }
