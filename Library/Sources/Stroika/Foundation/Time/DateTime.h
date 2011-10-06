@@ -43,6 +43,9 @@
  *		
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
+ *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
+ *			Maybe where they differ doesn't matter for this class?
+ *
  */
 
 

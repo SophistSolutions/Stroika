@@ -21,19 +21,6 @@
 /*
  * TODO:
  *
- 
-		o	Do Same PrintFormat () coding I did in TimeOfDay
-
-		o	Get rid of various CONSTURCTOR and conversiton ooeprators (as I did with TimeOfDay - replacing with Parse and Format osing PrintFormat enum.
-
-		o	get rid of CONVERT OPERTOR SYSTEMTIME (support only for DateTime code).
- 
- 
-		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
-			operator
-		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
-			(PROBABLY NOT time_t - since that doesn't make a ton of snese - but DO include struct tm support)!!!
-		o	add if POSIX to list of ifdefs we support and where easy support them and where not - oh well
 		o	Replace (research first) use of name XML here with iso8601.
 			+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
 				XML really is its own - nearly identical to iso8601, but see deviations...
@@ -42,6 +29,9 @@
 		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  *		
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
+ *
+ *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
+ *			Maybe where they differ doesn't matter for this class?
  *
  */
 
