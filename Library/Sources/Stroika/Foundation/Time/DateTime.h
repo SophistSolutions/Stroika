@@ -26,6 +26,8 @@
  *		
 		o	Do support for enum Kind { eLocalTimezone, eGMT, eUnkownTimezone }
 			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
+			When comparing - if KIND != - convert BOTH to GMT and compare (interally).
+			STARTED  AsLocalTime - ETC - but INCOMPLETE AND WRONG!!!
 
 		o	Do SAME sort of PrintFormat code - I implemented for TimeOfDay ---
 
@@ -87,6 +89,24 @@ namespace	Stroika {
 					 * DateTime::kMin is the first date this DateTime class supports representing.
 					 */
 					static	const	DateTime	kMax;
+
+
+				public:
+					enum Timezone {
+						eLocalTime_TZ,
+						eGMT_TZ,
+						eUnknown_TZ,
+					};
+					nonvirtual	Timezone	GetTimezone () const;
+				private:
+					Timezone	fTimezone_;
+				public:
+					// Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
+					// conversion is also unknown (but either treat Kind as localtime or GMT)
+					nonvirtual	DateTime	AsLocalTime () const;
+					// Creates a new DateTime object known to be in GMT. If this DateTime is unknown, then the
+					// conversion is also unknown (but either treat Kind as localtime or GMT)
+					nonvirtual	DateTime	AsGMT () const;
 
 				public:
 					nonvirtual	wstring	Format () const;

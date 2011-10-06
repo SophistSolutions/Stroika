@@ -17,9 +17,10 @@ namespace	Stroika {
 		namespace	Time {
 
 		//	class DateTime
-			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay):
-				fDate (date),
-				fTimeOfDay (timeOfDay)
+			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay)
+				: fTimezone_ (eUnknown_TZ)
+				, fDate (date)
+				, fTimeOfDay (timeOfDay)
 				{
 				}
 			inline	Date	DateTime::GetDate () const
@@ -37,6 +38,10 @@ namespace	Stroika {
 			inline	Date	DateTime::GetToday ()
 				{
 					return Now ().GetDate ();
+				}
+			inline	DateTime::Timezone	DateTime::GetTimezone () const
+				{
+					return fTimezone_;
 				}
 
 		}

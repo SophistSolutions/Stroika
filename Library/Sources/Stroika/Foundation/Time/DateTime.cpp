@@ -204,6 +204,18 @@ DateTime::DateTime (time_t unixTime):
 #endif
 }
 
+DateTime	DateTime::AsLocalTime () const
+{
+	AssertNotImplemented ();
+	return *this;
+}
+
+DateTime	DateTime::AsGMT () const
+{
+	AssertNotImplemented ();
+	return *this;
+}
+
 bool	DateTime::empty () const
 {
 	// Risky change so late in the game - but this logic seems wrong (and causes some trouble).
