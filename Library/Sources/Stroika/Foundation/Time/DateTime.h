@@ -69,6 +69,7 @@ namespace	Stroika {
 
 				public:
 					static	DateTime	Now ();
+					static	Date		GetToday ();
 
 				public:
 					nonvirtual	wstring	Format () const;

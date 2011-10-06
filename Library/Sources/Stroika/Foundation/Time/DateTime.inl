@@ -34,6 +34,10 @@ namespace	Stroika {
 				{
 					return fDate;
 				}
+			inline	Date	DateTime::GetToday ()
+				{
+					return Now ().GetDate ();
+				}
 
 		}
 	}

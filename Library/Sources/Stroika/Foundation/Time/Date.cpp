@@ -17,6 +17,7 @@
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 #include	"../Linguistics/Words.h"
+#include	"DateTime.h"
 
 #include	"Date.h"
 
@@ -212,20 +213,6 @@ Date::Date (const wstring& rep, LCID lcid)
 }
 #endif
 
-Date	Date::GetToday ()
-{
-#if		qPlatform_Windows
-	SYSTEMTIME	st;
-	memset (&st, 0, sizeof (st));
-	::GetLocalTime (&st);
-
-	return Date (Year (st.wYear), MonthOfYear (st.wMonth), DayOfMonth (st.wDay));
-#else
-	Assert (false);
-	return Date ();
-#endif
-}
-
 wstring	Date::Format () const
 {
 	#if		qPlatform_Windows
@@ -329,7 +316,7 @@ Date	Date::AddDays (int dayCount)
 {
 	if (empty ()) {
 		// then assume was supposed to be relative to today
-		*this = GetToday ();
+		*this = DateTime::GetToday ();
 	}
 	fJulianDateRep += dayCount;
 	return *this;
@@ -337,7 +324,7 @@ Date	Date::AddDays (int dayCount)
 
 Date::JulianRepType	Date::DaysSince () const
 {
-	int	r	=	DayDifference (GetToday (), *this);
+	int	r	=	DayDifference (DateTime::GetToday (), *this);
 	if (r < 0) {
 		return 0;
 	}
@@ -532,7 +519,7 @@ wstring	Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
 		return L"?";
 	}
 	else {
-		int	yearDiff	=	deathDate.empty ()? YearDifference (Date::GetToday (), birthDate): YearDifference (deathDate, birthDate);
+		int	yearDiff	=	deathDate.empty ()? YearDifference (DateTime::GetToday (), birthDate): YearDifference (deathDate, birthDate);
 		return Format (L"%d", yearDiff);
 	}
 }
@@ -543,9 +530,9 @@ wstring	Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathD
 		return L"?";
 	}
 	else {
-		int	yearDiff	=	deathDate.empty ()? YearDifference (Date::GetToday (), birthDate): YearDifference (deathDate, birthDate);
+		int	yearDiff	=	deathDate.empty ()? YearDifference (DateTime::GetToday (), birthDate): YearDifference (deathDate, birthDate);
 		if (yearDiff >= 0 and yearDiff < 2) {
-			float	yearDiffF	=	deathDate.empty ()? YearDifferenceF (Date::GetToday (), birthDate): YearDifferenceF (deathDate, birthDate);
+			float	yearDiffF	=	deathDate.empty ()? YearDifferenceF (DateTime::GetToday (), birthDate): YearDifferenceF (deathDate, birthDate);
 			int		months		=	int (yearDiffF * 12.0f + 0.4999f);
 			wstring	unitBase	=	abbrevUnit? L"mo": L"month";
 			return Format (L"%d %s", months, Linguistics::PluralizeNoun (unitBase, months).c_str ());

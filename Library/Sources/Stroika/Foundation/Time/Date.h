@@ -130,7 +130,6 @@ namespace	Stroika {
 				#endif
 
 				public:
-					static	Date	GetToday ();
 					static	const	Date	kMin;
 					static	const	Date	kMax;
 
