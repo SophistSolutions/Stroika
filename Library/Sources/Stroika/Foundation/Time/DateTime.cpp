@@ -322,18 +322,6 @@ namespace	{
 }
 #endif
 
-namespace	{
-	time_t	GetTZOffset_ ()
-		{
-			struct tm tm;
-			memset(&tm, 0, sizeof(tm));
-			tm.tm_year = 70;
-			tm.tm_mday = 1;
-			time_t	result	=	mktime (&tm);
-			return result;
-		}
-}
-
 time_t	DateTime::GetUNIXEpochTime () const
 {
 	struct tm tm;
@@ -355,7 +343,7 @@ time_t	DateTime::GetUNIXEpochTime () const
 	 * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
 	 * DateTime() object.
 	 */
-	result -= GetTZOffset_ ();
+	result += Time::GetLocaltimeToGMTOffset ();
 	return result;
 }
 

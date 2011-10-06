@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	"../Configuration/Common.h"
+#include	<ctime>
 
 
 
@@ -20,6 +20,10 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
+			/*
+			 * Return the number of seconds which must be added to a LocalTime value to get GMT.
+			 */
+			time_t	GetLocaltimeToGMTOffset ();
 
 		}
 	}
