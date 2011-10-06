@@ -67,11 +67,9 @@ TimeOfDay::TimeOfDay ()
 {
 }
 
-TimeOfDay::TimeOfDay (unsigned int t)
-  : fTime (-1)
+TimeOfDay::TimeOfDay (uint32_t t)
+  : fTime (t < 24 * 60 * 60? t: (24 * 60 * 60-1))
 {
-	fTime = t;
-	fTime %= 60*60*24;				// assure small enuf to fit within a day
 }
 
 TimeOfDay::TimeOfDay (const wstring& rep)
