@@ -27,10 +27,6 @@
  *		
  *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
  *		
-		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
-			operator
-		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
-
 
 
 
@@ -139,16 +135,23 @@ namespace	Stroika {
 					// returns number of days since this point - relative to NOW. Never less than zero
 					nonvirtual	Date::JulianRepType	DaysSince () const;
 
-				#if		qPlatform_Windows
 				public:
-					nonvirtual	operator SYSTEMTIME () const;
-				#endif
+					/*
+					 * Defined for 
+					 *		time_t
+					 *		struct tm
+					 *		SYSTEMTIME			(WINDOWS ONLY)
+					 */
+					template	<typename T>
+						T	As () const;
+
 
 				public:
 					/*
 					 * 	Returns seconds since midnight 1970 (its independent of timezone)
+<<< OBSOLETE - USE As<time_t> () instead!
 					 */
-					nonvirtual	time_t	GetUNIXEpochTime () const;
+nonvirtual	time_t	GetUNIXEpochTime () const;
 
 				public:
 					nonvirtual	Date		GetDate () const;		// careful of timezone issues? (always in current timezone - I guess)
@@ -163,6 +166,16 @@ namespace	Stroika {
 					TimeOfDay	fTimeOfDay_;
 					Timezone	fTimezone_;
 			};
+			template	<>
+				time_t	DateTime::As () const;
+			template	<>
+				tm	DateTime::As () const;
+			#if		qPlatform_Windows
+			template	<>
+				SYSTEMTIME	DateTime::As () const;
+			#endif
+inline time_t	DateTime::GetUNIXEpochTime () const { return As<time_t> (); }
+
 
 			bool operator< (const DateTime& lhs, const DateTime& rhs);
 			bool operator<= (const DateTime& lhs, const DateTime& rhs);

@@ -363,6 +363,7 @@ wstring	DateTime::Format (LCID lcid) const
 }
 #endif
 
+#if 0
 #if		qPlatform_Windows
 DateTime::operator SYSTEMTIME () const
 {
@@ -376,6 +377,7 @@ DateTime::operator SYSTEMTIME () const
 	r.wMilliseconds = t.wMilliseconds;
 	return r;
 }
+#endif
 #endif
 
 Date::JulianRepType	DateTime::DaysSince () const
@@ -393,7 +395,7 @@ Date::JulianRepType	DateTime::DaysSince () const
 namespace	{
 	time_t	OLD_GetUNIXEpochTime_ (const DateTime& dt)
 		{
-			SYSTEMTIME	st	=	dt;
+			SYSTEMTIME	st	=	dt.As<SYSTEMTIME> ();
 			struct tm tm;
 			memset(&tm, 0, sizeof(tm));
 			tm.tm_year = st.wYear - 1900;
@@ -407,30 +409,67 @@ namespace	{
 }
 #endif
 
-time_t	DateTime::GetUNIXEpochTime () const
-{
-	struct tm tm;
-	memset(&tm, 0, sizeof(tm));
-	tm.tm_year = fDate_.GetYear () - 1900;
-	tm.tm_mon = fDate_.GetMonth () - 1;
-	tm.tm_mday = fDate_.GetDayOfMonth ();
-	unsigned int	totalSecondsRemaining	=	fTimeOfDay_.GetAsSecondsCount ();
-	tm.tm_hour = totalSecondsRemaining / (60 * 60);
-	totalSecondsRemaining -= tm.tm_hour * 60 * 60;
-	tm.tm_min = totalSecondsRemaining / 60;
-	totalSecondsRemaining -= tm.tm_min * 60;
-	tm.tm_sec = totalSecondsRemaining;
-	time_t	result	=	mktime (&tm);
-	#if		qPlatform_Windows
-	Ensure (result == OLD_GetUNIXEpochTime_ (*this));		// OLD WINDOZE code was WRONG - neglecting the coorect for mktime () timezone nonsense
-	#endif
-	/*
-	 * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
-	 * DateTime() object.
-	 */
-	result += Time::GetLocaltimeToGMTOffset ();
-	return result;
-}
+
+template	<>
+	time_t	DateTime::As () const
+	{
+		struct tm tm;
+		memset(&tm, 0, sizeof(tm));
+		tm.tm_year = fDate_.GetYear () - 1900;
+		tm.tm_mon = fDate_.GetMonth () - 1;
+		tm.tm_mday = fDate_.GetDayOfMonth ();
+		unsigned int	totalSecondsRemaining	=	fTimeOfDay_.GetAsSecondsCount ();
+		tm.tm_hour = totalSecondsRemaining / (60 * 60);
+		totalSecondsRemaining -= tm.tm_hour * 60 * 60;
+		tm.tm_min = totalSecondsRemaining / 60;
+		totalSecondsRemaining -= tm.tm_min * 60;
+		tm.tm_sec = totalSecondsRemaining;
+		time_t	result	=	mktime (&tm);
+		#if		qPlatform_Windows
+		Ensure (result == OLD_GetUNIXEpochTime_ (*this));		// OLD WINDOZE code was WRONG - neglecting the coorect for mktime () timezone nonsense
+		#endif
+		/*
+		 * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
+		 * DateTime() object.
+		 */
+		result += Time::GetLocaltimeToGMTOffset ();
+		return result;
+	}
+
+template	<>
+	tm	DateTime::As () const
+	{
+		struct tm tm;
+		memset(&tm, 0, sizeof(tm));
+		tm.tm_year = fDate_.GetYear () - 1900;
+		tm.tm_mon = fDate_.GetMonth () - 1;
+		tm.tm_mday = fDate_.GetDayOfMonth ();
+		unsigned int	totalSecondsRemaining	=	fTimeOfDay_.GetAsSecondsCount ();
+		tm.tm_hour = totalSecondsRemaining / (60 * 60);
+		totalSecondsRemaining -= tm.tm_hour * 60 * 60;
+		tm.tm_min = totalSecondsRemaining / 60;
+		totalSecondsRemaining -= tm.tm_min * 60;
+		tm.tm_sec = totalSecondsRemaining;
+
+AssertNotImplemented ();	//OK - sort of implemented - but needs reivew!!!! -- LGP 2011-10-06
+		return tm;
+	}
+
+#if		qPlatform_Windows
+template	<>
+	SYSTEMTIME	DateTime::As () const
+	{
+		// CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
+		SYSTEMTIME	d	=	toSYSTEM_ (fDate_);
+		SYSTEMTIME	t	=	toSysTime_ (fTimeOfDay_);
+		SYSTEMTIME	r	=	d;
+		r.wHour = t.wHour;
+		r.wMinute = t.wMinute;
+		r.wSecond = t.wSecond;
+		r.wMilliseconds = t.wMilliseconds;
+		return r;
+	}
+#endif
 
 void	DateTime::SetDate (const Date& d)
 {
