@@ -54,6 +54,34 @@ namespace	{
 
 namespace	{
 #if		qPlatform_Windows
+	SYSTEMTIME	toSysTime_ (TimeOfDay tod)
+		{
+			SYSTEMTIME	t;
+			memset (&t, 0, sizeof (t));
+			if (not tod.empty ()) {
+				unsigned int	seconds	=	tod.GetAsSecondsCount ();
+				unsigned int	minutes	=	seconds / 60;
+				unsigned int	hours	=	minutes / 60;
+
+				hours = min (hours, 23U);
+				t.wHour = hours;
+
+				minutes -= hours * 60;
+				minutes = min (minutes, 59U);
+				t.wMinute = minutes;
+
+				seconds -= (60*60 * hours + 60 * minutes);
+				seconds = min (seconds, 59U);
+				t.wSecond = seconds;
+			}
+			return t;
+		}
+#endif
+}
+
+
+namespace	{
+#if		qPlatform_Windows
 	SYSTEMTIME toSYSTEM_ (const Date& date)
 		{
 			SYSTEMTIME	st;
@@ -251,17 +279,70 @@ DateTime	DateTime::Now ()
 	#endif
 }
 
-wstring	DateTime::Format () const
+wstring	DateTime::Format (PrintFormat pf) const
 {
-	#if		qPlatform_Windows
-		return Format (LOCALE_USER_DEFAULT);
-	#elif	qPlatform_POSIX
-		AssertNotImplemented ();
+	if (empty ()) {
 		return wstring ();
-	#else
-		AssertNotImplemented ();
-		return wstring ();
-	#endif
+	}
+	switch (pf) {
+		case	eCurrentLocale_PF: {
+			#if		qPlatform_Windows
+				return Format (LOCALE_USER_DEFAULT);
+			#elif	qPlatform_POSIX
+				AssertNotImplemented ();
+				return wstring ();
+			#else
+				AssertNotImplemented ();
+				return wstring ();
+			#endif
+		}
+		break;
+		case	eXML_PF: {
+			wstring	r	=	fDate_.Format (Date::eXML_PF);
+			if (not fTimeOfDay_.empty ()) {
+				// be sure using DateWithOptionalTime
+
+				// something like append T22:33:11 - apx...
+				wchar_t	buf[1024];
+				buf[0] = 0;
+				unsigned int	t	=	fTimeOfDay_.GetAsSecondsCount ();
+				struct tm	 temp;
+				memset (&temp, 0, sizeof (temp));
+				temp.tm_hour = t/(60*60);
+				temp.tm_min = (t - temp.tm_hour * 60 * 60) / 60;
+				temp.tm_sec = (t - temp.tm_hour * 60 * 60 - temp.tm_min * 60);
+				wcsftime (buf, NEltsOf (buf), L"%H:%M:%S", &temp);
+
+				wstring	tzBiasString;
+				{
+					#if		qPlatform_Windows
+						TIME_ZONE_INFORMATION	tzInfo;
+						memset (&tzInfo, 0, sizeof (tzInfo));
+						(void)::GetTimeZoneInformation (&tzInfo);
+						int unsignedBias	=	abs (tzInfo.Bias);
+						int	hrs	=	unsignedBias / 60;
+						int mins = unsignedBias - hrs * 60;
+						tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
+					#elif	qPlatform_POSIX
+						//AssertNotImplemented ();
+						// WRONG - but let things limp along for a little while...
+						//		--:LGP 2011-09-28
+					#else
+						AssertNotImplemented ();
+					#endif
+				}
+				r += wstring (L"T") + buf + tzBiasString;
+			}
+			Assert (DateTime::Parse (r, eXML_PF) == *this);
+			return r;
+		}
+		break;
+		default: {
+			AssertNotReached ();
+			return wstring ();
+		}
+		break;
+	}
 }
 
 #if		qPlatform_Windows
@@ -281,79 +362,6 @@ wstring	DateTime::Format (LCID lcid) const
 	}
 }
 #endif
-
-wstring	DateTime::Format4XML () const
-{
-	if (empty ()) {
-		return wstring ();
-	}
-	else {
-		wstring	r	=	fDate_.Format (Date::eXML_PF);
-		if (not fTimeOfDay_.empty ()) {
-			// be sure using DateWithOptionalTime
-
-			// something like append T22:33:11 - apx...
-			wchar_t	buf[1024];
-			buf[0] = 0;
-			unsigned int	t	=	fTimeOfDay_.GetAsSecondsCount ();
-			struct tm	 temp;
-			memset (&temp, 0, sizeof (temp));
-			temp.tm_hour = t/(60*60);
-			temp.tm_min = (t - temp.tm_hour * 60 * 60) / 60;
-			temp.tm_sec = (t - temp.tm_hour * 60 * 60 - temp.tm_min * 60);
-			wcsftime (buf, NEltsOf (buf), L"%H:%M:%S", &temp);
-
-			wstring	tzBiasString;
-			{
-#if		qPlatform_Windows
-				TIME_ZONE_INFORMATION	tzInfo;
-				memset (&tzInfo, 0, sizeof (tzInfo));
-				(void)::GetTimeZoneInformation (&tzInfo);
-				int unsignedBias	=	abs (tzInfo.Bias);
-				int	hrs	=	unsignedBias / 60;
-				int mins = unsignedBias - hrs * 60;
-				tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
-#elif	qPlatform_POSIX
-				//AssertNotImplemented ();
-				// WRONG - but let things limp along for a little while...
-				//		--:LGP 2011-09-28
-#else
-				AssertNotImplemented ();
-#endif
-			}
-			r += wstring (L"T") + buf + tzBiasString;
-		}
-		Assert (DateTime::Parse (r, eXML_PF) == *this);
-		return r;
-	}
-}
-
-namespace	{
-#if		qPlatform_Windows
-	SYSTEMTIME	toSysTime_ (TimeOfDay tod)
-		{
-			SYSTEMTIME	t;
-			memset (&t, 0, sizeof (t));
-			if (not tod.empty ()) {
-				unsigned int	seconds	=	tod.GetAsSecondsCount ();
-				unsigned int	minutes	=	seconds / 60;
-				unsigned int	hours	=	minutes / 60;
-
-				hours = min (hours, 23U);
-				t.wHour = hours;
-
-				minutes -= hours * 60;
-				minutes = min (minutes, 59U);
-				t.wMinute = minutes;
-
-				seconds -= (60*60 * hours + 60 * minutes);
-				seconds = min (seconds, 59U);
-				t.wSecond = seconds;
-			}
-			return t;
-		}
-#endif
-}
 
 #if		qPlatform_Windows
 DateTime::operator SYSTEMTIME () const
