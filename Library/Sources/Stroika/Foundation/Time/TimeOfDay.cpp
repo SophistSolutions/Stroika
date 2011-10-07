@@ -4,12 +4,12 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
+#include	<ctime>
 #include	<sstream>
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
-	#include <time.h>
 #endif
 
 #include	"../Characters/Format.h"
@@ -348,13 +348,10 @@ wstring	TimeOfDay::Format (const locale& l) const
 	when.tm_min = GetMinutes ();
 	when.tm_sec = GetSeconds ();
 	wostringstream oss;
-	#if 0
-	wchar_t pattern[]=L"Now it's: %I:%M%p\n";
-	tmput.put (oss, oss, ' ', &when, pattern, pattern+sizeof(pattern)-1);
-	#endif
 	// Read docs - not sure how to use this to get the local-appropriate format
 	// %X MAYBE just what we want  - locale DEPENDENT!!!
 	wchar_t pattern[]=L"%X";
+	//wchar_t pattern[]=L"Now it's: %I:%M%p\n";
 	//wchar_t pattern[]=L"%I:%M%p";
 	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
 	return oss.str ();
