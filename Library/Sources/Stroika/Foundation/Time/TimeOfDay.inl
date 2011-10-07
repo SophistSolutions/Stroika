@@ -51,21 +51,25 @@ namespace	Stroika {
 						Ensure (0 <= n and n <= 59);
 						return n;
 					}
+				inline	int	TimeOfDay::Compare (const TimeOfDay& rhs) const
+					{
+						return GetAsSecondsCount () - rhs.GetAsSecondsCount ();
+					}
 				inline	bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs)
 					{
-						return lhs.GetAsSecondsCount () < rhs.GetAsSecondsCount ();
+						return lhs.Compare (rhs) < 0;
 					}
 				inline	bool operator> (const TimeOfDay& lhs, const TimeOfDay& rhs)
 					{
-						return lhs.GetAsSecondsCount () > rhs.GetAsSecondsCount ();
+						return lhs.Compare (rhs) > 0;
 					}
 				inline	bool operator== (const TimeOfDay& lhs, const TimeOfDay& rhs)
 					{
-						return lhs.GetAsSecondsCount () == rhs.GetAsSecondsCount ();
+						return lhs.Compare (rhs) == 0;
 					}
 				inline	bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs)
 					{
-						return lhs.GetAsSecondsCount () != rhs.GetAsSecondsCount ();
+						return lhs.Compare (rhs) != 0;
 					}
 
 		}

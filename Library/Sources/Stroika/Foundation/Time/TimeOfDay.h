@@ -23,12 +23,6 @@
 /*
  * TODO:
  *		
- *		
- *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
- *		
- *		
- *		
- *		
  *		o	Consider getting rid of empty () method and empty state. Instead - in DateTime code - use Optional<>
  *		
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
@@ -49,15 +43,16 @@ namespace	Stroika {
 
 			/*
 			 * Description:
-			 *			A time value - which is assumed to be within a given day - e.g 2:30 pm.
+			 *		A time value - which is assumed to be within a given day - e.g 2:30 pm.
 			 *	
-			 *			NB: this implies NO NOTION of timezone. Its a time relative to midnight of a given day.
+			 *		NB: this implies NO NOTION of timezone. Its a time relative to midnight of a given day.
 			 *
-			 *	TimeOfDay can also be (it is by default) the specail sentinal value 'empty'. This is useful - with a DateTime object for example,
-			 *	to represent the idea that a time has not been specified.
+			 *		TimeOfDay can also be (it is by default) the specail sentinal value 'empty'. This is useful - with a DateTime object for example,
+			 *	to represent the idea that a time has not been specified. For TimeOfDay comparisons (
 			 *
-			 *	(NOTE - that ALSO coudl have been done with Optional - but we don't want to change too much at once. Future direction - we may
-			 *		loise the 'empty' property).
+			 *		'empty' concept
+			 *			Treat it internally as DISTINCT from any other time. However, when converting it to a number of seconds,
+			 *			treat empty as TimeOfDay::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as TimeOfDay::kMin.
 			 */
 			class	TimeOfDay {
 				public:
@@ -114,6 +109,11 @@ namespace	Stroika {
 					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid) const;
 					#endif
+
+				public:
+					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+					// this comparison function - see the notes about 'empty' in the class description.
+					nonvirtual	int	Compare (const TimeOfDay& rhs) const;
 
 				private:
 					uint32_t	fTime_;
