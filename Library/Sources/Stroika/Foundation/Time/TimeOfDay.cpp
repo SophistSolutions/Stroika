@@ -232,7 +232,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
-				return Parse (locale ());
+				return Parse (rep, locale ());
 			#endif
 		}
 		case	eXML_PF: {

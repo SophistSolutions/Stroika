@@ -90,6 +90,12 @@ namespace	{
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 			{
+				Date	d;
+				VerifyTestResult (d.empty ());
+				VerifyTestResult (d < DateTime::GetToday ());
+				VerifyTestResult (not (DateTime::GetToday () > d));
+			}
+			{
 				Date	d	=	Date::kMin;
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ().GetDate ());
