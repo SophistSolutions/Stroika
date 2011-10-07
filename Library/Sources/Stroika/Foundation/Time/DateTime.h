@@ -32,7 +32,7 @@
 
 		o	Implement new (described below) 'empty' semantics.
 
-		o	Do support for enum Kind { eLocalTimezone, eGMT, eUnkownTimezone }
+		o	Do support for enum Timezone { eLocalTimezone, eGMT, eUnkownTimezone }
 			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
 			When comparing - if KIND != - convert BOTH to GMT and compare (interally).
 			STARTED  AsLocalTime - ETC - but INCOMPLETE AND WRONG!!!
@@ -70,7 +70,21 @@ namespace	Stroika {
 			 */
 			class	DateTime {
 				public:
-					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay ());
+					/*
+					 * Most of the time applications will utilize localtime. But occasionally its useful to use differnt timezones, and our approach to this
+					 * is to simply convert everything to GMT.
+					 *
+					 * eUnknown_TZ - for the most part - is treated as if it were localtime. However - the "Kind" function retunrs Unknown in case your application wants to
+					 * treat it differently.
+					 */
+					enum Timezone {
+						eLocalTime_TZ,
+						eGMT_TZ,
+						eUnknown_TZ,
+					};
+
+				public:
+					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = eUnknown_TZ);
 
 				public:
 					explicit DateTime (time_t unixTime);
@@ -92,6 +106,7 @@ namespace	Stroika {
 				#endif
 
 				public:
+					// If BOTH date and time are empty - this is empty. Timezone is ignored for the purpose of 'empty' check.
 					nonvirtual	bool	empty () const;
 
 				public:
@@ -109,11 +124,6 @@ namespace	Stroika {
 					static	const	DateTime	kMax;
 
 				public:
-					enum Timezone {
-						eLocalTime_TZ,
-						eGMT_TZ,
-						eUnknown_TZ,
-					};
 					nonvirtual	Timezone	GetTimezone () const;
 
 				public:

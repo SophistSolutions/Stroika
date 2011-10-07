@@ -18,8 +18,8 @@ namespace	Stroika {
 
 
 		//	class DateTime
-			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay)
-				: fTimezone_ (eUnknown_TZ)
+			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
+				: fTimezone_ (tz)
 				, fDate_ (date)
 				, fTimeOfDay_ (timeOfDay)
 				{
