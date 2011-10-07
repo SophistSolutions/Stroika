@@ -19,21 +19,21 @@ namespace	Stroika {
 		//	class DateTime
 			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay)
 				: fTimezone_ (eUnknown_TZ)
-				, fDate (date)
-				, fTimeOfDay (timeOfDay)
+				, fDate_ (date)
+				, fTimeOfDay_ (timeOfDay)
 				{
 				}
 			inline	Date	DateTime::GetDate () const
 				{
-					return fDate;
+					return fDate_;
 				}
 			inline	TimeOfDay	DateTime::GetTimeOfDay () const
 				{
-					return fTimeOfDay;
+					return fTimeOfDay_;
 				}
 			inline	DateTime::operator Date () const
 				{
-					return fDate;
+					return fDate_;
 				}
 			inline	Date	DateTime::GetToday ()
 				{

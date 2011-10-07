@@ -101,8 +101,8 @@ const	DateTime	DateTime::kMin	=	DateTime (kMin_, kMinT_);		//	unclear if this sh
 const	DateTime	DateTime::kMax	=	DateTime (kMax_, kMaxT_);		//	unclear if this should use end of day time or not?
 
 DateTime::DateTime (const wstring& rep)
-	: fDate ()
-	, fTimeOfDay ()
+	: fDate_ ()
+	, fTimeOfDay_ ()
 {
 	if (not rep.empty ()) {
 #if			qPlatform_Windows
@@ -120,8 +120,8 @@ DateTime::DateTime (const wstring& rep)
 		SYSTEMTIME	sysTime;
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fDate = mkDate_ (sysTime);
-		fTimeOfDay = mkTimeOfDay_ (sysTime);
+		fDate_ = mkDate_ (sysTime);
+		fTimeOfDay_ = mkTimeOfDay_ (sysTime);
 #elif	qPlatform_POSIX
 		AssertNotImplemented ();
 #else
@@ -132,8 +132,8 @@ DateTime::DateTime (const wstring& rep)
 
 #if		qPlatform_Windows
 DateTime::DateTime (const wstring& rep, LCID lcid)
-	: fDate ()
-	, fTimeOfDay ()
+	: fDate_ ()
+	, fTimeOfDay_ ()
 {
 	if (not rep.empty ()) {
 		DATE		d;
@@ -149,15 +149,15 @@ DateTime::DateTime (const wstring& rep, LCID lcid)
 		SYSTEMTIME	sysTime;
 		memset (&sysTime, 0, sizeof (sysTime));
 		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fDate = mkDate_ (sysTime);
-		fTimeOfDay = mkTimeOfDay_ (sysTime);
+		fDate_ = mkDate_ (sysTime);
+		fTimeOfDay_ = mkTimeOfDay_ (sysTime);
 	}
 }
 #endif
 
 DateTime::DateTime (const wstring& rep, XML):
-	fDate (),
-	fTimeOfDay ()
+	fDate_ (),
+	fTimeOfDay_ ()
 {
 	if (not rep.empty ()) {
 		int	year	=	0;
@@ -173,10 +173,10 @@ DateTime::DateTime (const wstring& rep, XML):
 		int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
 		#pragma warning (pop)
 		if (nItems >= 3) {
-			fDate = Date::Parse (::Format (L"%d-%d-%d", year, month, day), Date::eXML_PF);
+			fDate_ = Date::Parse (::Format (L"%d-%d-%d", year, month, day), Date::eXML_PF);
 		}
 		if (nItems >= 5) {
-			fTimeOfDay = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
+			fTimeOfDay_ = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
 		}
 		if (nItems >= 8) {
 			// CHECK TZ
@@ -187,14 +187,14 @@ DateTime::DateTime (const wstring& rep, XML):
 
 #if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime):
-	fDate (mkDate_ (sysTime)),
-	fTimeOfDay (mkTimeOfDay_ (sysTime))
+	fDate_ (mkDate_ (sysTime)),
+	fTimeOfDay_ (mkTimeOfDay_ (sysTime))
 {
 }
 
 DateTime::DateTime (const FILETIME& fileTime):
-	fDate (),
-	fTimeOfDay ()
+	fDate_ (),
+	fTimeOfDay_ ()
 {
 	FILETIME localTime;
 	(void)::memset (&localTime, 0, sizeof (localTime));
@@ -202,16 +202,16 @@ DateTime::DateTime (const FILETIME& fileTime):
 		SYSTEMTIME sysTime;
 		(void)::memset (&sysTime, 0, sizeof (sysTime));
 		if (::FileTimeToSystemTime (&localTime, &sysTime)) {
-			fDate= mkDate_ (sysTime);
-			fTimeOfDay = mkTimeOfDay_ (sysTime);
+			fDate_= mkDate_ (sysTime);
+			fTimeOfDay_ = mkTimeOfDay_ (sysTime);
 		}
 	}
 }
 #endif
 
 DateTime::DateTime (time_t unixTime):
-	fDate (),
-	fTimeOfDay ()
+	fDate_ (),
+	fTimeOfDay_ ()
 {
 #if		qPlatform_Windows
 	// From http://support.microsoft.com/kb/167296
@@ -224,9 +224,9 @@ DateTime::DateTime (time_t unixTime):
 #elif	qPlatform_POSIX
 	time_t	clk = time (0);
 	const tm* now = localtime (&clk);
-	fDate = Date (Date::Year (now->tm_year+1900), Date::MonthOfYear (now->tm_mon+1), Date::DayOfMonth (now->tm_mday));
+	fDate_ = Date (Date::Year (now->tm_year+1900), Date::MonthOfYear (now->tm_mon+1), Date::DayOfMonth (now->tm_mday));
 
-	fTimeOfDay = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
+	fTimeOfDay_ = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
 #else
 	Assert (false);
 #endif
@@ -249,7 +249,7 @@ bool	DateTime::empty () const
 	// Risky change so late in the game - but this logic seems wrong (and causes some trouble).
 	// DateTime is NOT empty just because date part is empty. We CAN use a DateTime record to store JUST a time!
 	//		-- LGP 2006-04-26
-	return fDate.empty () and fTimeOfDay.empty ();
+	return fDate_.empty () and fTimeOfDay_.empty ();
 }
 
 DateTime	DateTime::Now ()
@@ -287,9 +287,9 @@ wstring	DateTime::Format (LCID lcid) const
 		return wstring ();
 	}
 	else {
-		wstring	r	=	fDate.Format (lcid);
+		wstring	r	=	fDate_.Format (lcid);
 		Assert (not r.empty ());
-		wstring	tod	=	fTimeOfDay.Format (lcid);
+		wstring	tod	=	fTimeOfDay_.Format (lcid);
 		if (not tod.empty ()) {
 			r += L" " + tod;
 		}
@@ -304,14 +304,14 @@ wstring	DateTime::Format4XML () const
 		return wstring ();
 	}
 	else {
-		wstring	r	=	fDate.Format (Date::eXML_PF);
-		if (not fTimeOfDay.empty ()) {
+		wstring	r	=	fDate_.Format (Date::eXML_PF);
+		if (not fTimeOfDay_.empty ()) {
 			// be sure using DateWithOptionalTime
 
 			// something like append T22:33:11 - apx...
 			wchar_t	buf[1024];
 			buf[0] = 0;
-			unsigned int	t	=	fTimeOfDay.GetAsSecondsCount ();
+			unsigned int	t	=	fTimeOfDay_.GetAsSecondsCount ();
 			struct tm	 temp;
 			memset (&temp, 0, sizeof (temp));
 			temp.tm_hour = t/(60*60);
@@ -375,8 +375,8 @@ namespace	{
 DateTime::operator SYSTEMTIME () const
 {
 	// CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
-	SYSTEMTIME	d	=	toSYSTEM_ (fDate);
-	SYSTEMTIME	t	=	toSysTime_ (fTimeOfDay);
+	SYSTEMTIME	d	=	toSYSTEM_ (fDate_);
+	SYSTEMTIME	t	=	toSysTime_ (fTimeOfDay_);
 	SYSTEMTIME	r	=	d;
 	r.wHour = t.wHour;
 	r.wMinute = t.wMinute;
@@ -419,10 +419,10 @@ time_t	DateTime::GetUNIXEpochTime () const
 {
 	struct tm tm;
 	memset(&tm, 0, sizeof(tm));
-	tm.tm_year = fDate.GetYear () - 1900;
-	tm.tm_mon = fDate.GetMonth () - 1;
-	tm.tm_mday = fDate.GetDayOfMonth ();
-	unsigned int	totalSecondsRemaining	=	fTimeOfDay.GetAsSecondsCount ();
+	tm.tm_year = fDate_.GetYear () - 1900;
+	tm.tm_mon = fDate_.GetMonth () - 1;
+	tm.tm_mday = fDate_.GetDayOfMonth ();
+	unsigned int	totalSecondsRemaining	=	fTimeOfDay_.GetAsSecondsCount ();
 	tm.tm_hour = totalSecondsRemaining / (60 * 60);
 	totalSecondsRemaining -= tm.tm_hour * 60 * 60;
 	tm.tm_min = totalSecondsRemaining / 60;
@@ -442,12 +442,12 @@ time_t	DateTime::GetUNIXEpochTime () const
 
 void	DateTime::SetDate (const Date& d)
 {
-	fDate = d;
+	fDate_ = d;
 }
 
 void		DateTime::SetTimeOfDay (const TimeOfDay& tod)
 {
-	fTimeOfDay = tod;
+	fTimeOfDay_ = tod;
 }
 
 bool Time::operator< (const DateTime& lhs, const DateTime& rhs)

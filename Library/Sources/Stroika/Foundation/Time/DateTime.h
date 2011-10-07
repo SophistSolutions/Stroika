@@ -76,8 +76,8 @@ namespace	Stroika {
 			 */
 			class	DateTime {
 				private:
-					Date		fDate;
-					TimeOfDay	fTimeOfDay;
+					Date		fDate_;
+					TimeOfDay	fTimeOfDay_;
 
 				public:
 					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay ());
