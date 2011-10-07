@@ -137,8 +137,7 @@ DateTime::DateTime (time_t unixTime)
 	#elif	qPlatform_POSIX
 		time_t	clk = time (0);
 		const tm* now = localtime (&clk);
-		fDate_ = Date (Date::Year (now->tm_year+1900), Date::MonthOfYear (now->tm_mon+1), Date::DayOfMonth (now->tm_mday));
-
+		fDate_ = Date (Year (now->tm_year+1900), MonthOfYear (now->tm_mon+1), DayOfMonth (now->tm_mday));
 		fTimeOfDay_ = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
 	#else
 		Assert (false);
