@@ -94,7 +94,7 @@ namespace	{
 		{
 			{
 				DateTime	d	=	Date (Year (1903), eApril, DayOfMonth (4));
-				VerifyTestResult (d.Format4XML () == L"1903-04-04");
+				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1903-04-04");
 			}
 #if 0
 			{
