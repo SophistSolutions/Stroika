@@ -25,10 +25,15 @@
  * TODO:
  *		
  *		
-		o	Do SAME sort of PrintFormat code - I implemented for TimeOfDay ---
-
  *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
  *		
+		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
+			operator
+		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
+
+
+
+
 		o	Implement new (described below) 'empty' semantics.
 
 		o	Do support for enum Kind { eLocalTimezone, eGMT, eUnkownTimezone }
@@ -36,9 +41,6 @@
 			When comparing - if KIND != - convert BOTH to GMT and compare (interally).
 			STARTED  AsLocalTime - ETC - but INCOMPLETE AND WRONG!!!
 
-		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
-			operator
-		o	Add POSIX type support (constructor and As<>) - we have time_t but add struct tm (others?)
 		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?
 		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  *		
