@@ -141,7 +141,7 @@ namespace	{
 				}
 			}
 		}
-		TString nowstr	=	ToTString (Time::DateTime::Now ().Format4XML ());
+		TString nowstr	=	ToTString (Time::DateTime::Now ().Format (DateTime::eXML_PF));
 		for (TString::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
 			if (*i == ':') {
 				*i = '-';
