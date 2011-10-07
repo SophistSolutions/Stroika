@@ -4,12 +4,11 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
-#include	<time.h>
+#include	<ctime>
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
-	//not sure needed?#include	<sys/times.h>
 #endif
 
 #include	"../Characters/Format.h"
@@ -29,7 +28,6 @@ using	namespace	Stroika::Foundation::Time;
 
 using	Debug::TraceContextBumper;
 
-using	namespace	Time;
 
 
 
@@ -45,11 +43,6 @@ namespace	{
 			secs = min (secs, static_cast<WORD> (59));
 			return TimeOfDay ((hour * 60 + minute) * 60 + secs);
 		}
-}
-#endif
-
-#if		qPlatform_Windows
-namespace	{
 	Date	mkDate_ (const SYSTEMTIME& sysTime)
 		{
 			return Date (Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay));
@@ -100,101 +93,42 @@ namespace	{
 const	DateTime	DateTime::kMin	=	DateTime (kMin_, kMinT_);		//	unclear if this should use empty time or midnight?
 const	DateTime	DateTime::kMax	=	DateTime (kMax_, kMaxT_);		//	unclear if this should use end of day time or not?
 
-DateTime::DateTime (const wstring& rep)
-	: fDate_ ()
+DateTime::DateTime (time_t unixTime)
+	: fTimezone_ (eUnknown_TZ)
+	, fDate_ ()
 	, fTimeOfDay_ ()
 {
-	if (not rep.empty ()) {
-#if			qPlatform_Windows
-		LCID lcid = LOCALE_USER_DEFAULT;
-		DATE		d;
-		(void)::memset (&d, 0, sizeof (d));
-		try {
-			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, 0, &d));
-		}
-		catch (...) {
-			// though COULD be time format exception?
-			Execution::DoThrow (Date::FormatException ());
-		}
-		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-		SYSTEMTIME	sysTime;
-		memset (&sysTime, 0, sizeof (sysTime));
-		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fDate_ = mkDate_ (sysTime);
-		fTimeOfDay_ = mkTimeOfDay_ (sysTime);
-#elif	qPlatform_POSIX
-		AssertNotImplemented ();
-#else
-		AssertNotImplemented ();
-#endif
-	}
+	#if		qPlatform_Windows
+		// From http://support.microsoft.com/kb/167296
+		FILETIME	ft;
+		LONGLONG ll;
+		ll = Int32x32To64 (unixTime, 10000000) + 116444736000000000;
+		ft.dwLowDateTime = (DWORD)ll;
+		ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
+		*this = DateTime (ft);
+	#elif	qPlatform_POSIX
+		time_t	clk = time (0);
+		const tm* now = localtime (&clk);
+		fDate_ = Date (Date::Year (now->tm_year+1900), Date::MonthOfYear (now->tm_mon+1), Date::DayOfMonth (now->tm_mday));
+
+		fTimeOfDay_ = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
+	#else
+		Assert (false);
+	#endif
 }
 
 #if		qPlatform_Windows
-DateTime::DateTime (const wstring& rep, LCID lcid)
-	: fDate_ ()
+DateTime::DateTime (const SYSTEMTIME& sysTime)
+	: fTimezone_ (eUnknown_TZ)
+	, fDate_ (mkDate_ (sysTime))
+	, fTimeOfDay_ (mkTimeOfDay_ (sysTime))
+{
+}
+
+DateTime::DateTime (const FILETIME& fileTime)
+	: fTimezone_ (eUnknown_TZ)
+	, fDate_ ()
 	, fTimeOfDay_ ()
-{
-	if (not rep.empty ()) {
-		DATE		d;
-		(void)::memset (&d, 0, sizeof (d));
-		try {
-			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, 0, &d));
-		}
-		catch (...) {
-			// though COULD be time format exception?
-			Execution::DoThrow (Date::FormatException ());
-		}
-		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-		SYSTEMTIME	sysTime;
-		memset (&sysTime, 0, sizeof (sysTime));
-		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		fDate_ = mkDate_ (sysTime);
-		fTimeOfDay_ = mkTimeOfDay_ (sysTime);
-	}
-}
-#endif
-
-DateTime::DateTime (const wstring& rep, XML):
-	fDate_ (),
-	fTimeOfDay_ ()
-{
-	if (not rep.empty ()) {
-		int	year	=	0;
-		int	month	=	0;
-		int	day		=	0;
-		int	hour	=	0;
-		int	minute	=	0;
-		int	second	=	0;
-		int	tzHr	=	0;
-		int	tzMn	=	0;
-		#pragma	warning (push)
-		#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
-		int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
-		#pragma warning (pop)
-		if (nItems >= 3) {
-			fDate_ = Date::Parse (::Format (L"%d-%d-%d", year, month, day), Date::eXML_PF);
-		}
-		if (nItems >= 5) {
-			fTimeOfDay_ = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
-		}
-		if (nItems >= 8) {
-			// CHECK TZ
-			// REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
-		}
-	}
-}
-
-#if		qPlatform_Windows
-DateTime::DateTime (const SYSTEMTIME& sysTime):
-	fDate_ (mkDate_ (sysTime)),
-	fTimeOfDay_ (mkTimeOfDay_ (sysTime))
-{
-}
-
-DateTime::DateTime (const FILETIME& fileTime):
-	fDate_ (),
-	fTimeOfDay_ ()
 {
 	FILETIME localTime;
 	(void)::memset (&localTime, 0, sizeof (localTime));
@@ -209,28 +143,78 @@ DateTime::DateTime (const FILETIME& fileTime):
 }
 #endif
 
-DateTime::DateTime (time_t unixTime):
-	fDate_ (),
-	fTimeOfDay_ ()
+DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 {
-#if		qPlatform_Windows
-	// From http://support.microsoft.com/kb/167296
-	FILETIME	ft;
-	LONGLONG ll;
-	ll = Int32x32To64 (unixTime, 10000000) + 116444736000000000;
-	ft.dwLowDateTime = (DWORD)ll;
-	ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
-	*this = DateTime (ft);
-#elif	qPlatform_POSIX
-	time_t	clk = time (0);
-	const tm* now = localtime (&clk);
-	fDate_ = Date (Date::Year (now->tm_year+1900), Date::MonthOfYear (now->tm_mon+1), Date::DayOfMonth (now->tm_mday));
-
-	fTimeOfDay_ = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
-#else
-	Assert (false);
-#endif
+	if (rep.empty ()) {
+		return Date ();
+	}
+	switch (pf) {
+		case	eCurrentLocale_PF: {
+			#if			qPlatform_Windows
+				return Parse (rep, LOCALE_USER_DEFAULT);
+			#elif	qPlatform_POSIX
+					AssertNotImplemented ();
+			#else
+					AssertNotImplemented ();
+			#endif
+			return DateTime ();
+		}
+		break;
+		case	eXML_PF: {
+			int	year	=	0;
+			int	month	=	0;
+			int	day		=	0;
+			int	hour	=	0;
+			int	minute	=	0;
+			int	second	=	0;
+			int	tzHr	=	0;
+			int	tzMn	=	0;
+			#pragma	warning (push)
+			#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
+			int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
+			#pragma warning (pop)
+			Date		d;
+			TimeOfDay	t;
+			if (nItems >= 3) {
+				d = Date::Parse (::Format (L"%d-%d-%d", year, month, day), Date::eXML_PF);
+			}
+			if (nItems >= 5) {
+				t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
+			}
+			if (nItems >= 8) {
+				// CHECK TZ
+				// REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
+			}
+			return DateTime (d, t);
+		}
+		break;
+		default: {
+			AssertNotReached ();
+			return Date ();
+		}
+		break;
+	}
 }
+
+#if		qPlatform_Windows
+DateTime	DateTime::Parse (const wstring& rep, LCID lcid)
+{
+	DATE		d;
+	(void)::memset (&d, 0, sizeof (d));
+	try {
+		ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, 0, &d));
+	}
+	catch (...) {
+		// though COULD be time format exception?
+		Execution::DoThrow (Date::FormatException ());
+	}
+	// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+	SYSTEMTIME	sysTime;
+	memset (&sysTime, 0, sizeof (sysTime));
+	Verify (::VariantTimeToSystemTime (d, &sysTime));
+	return DateTime (mkDate_ (sysTime),  mkTimeOfDay_ (sysTime));
+}
+#endif
 
 DateTime	DateTime::AsLocalTime () const
 {
@@ -254,30 +238,30 @@ bool	DateTime::empty () const
 
 DateTime	DateTime::Now ()
 {
-#if		qPlatform_Windows
-	SYSTEMTIME	st;
-	memset (&st, 0, sizeof (st));
-	::GetLocalTime (&st);
-	return DateTime (st);
-#elif	qPlatform_POSIX
-	return DateTime (time (nullptr));
-#else
-	AssertNotImplemented ();
-	return DateTime ();
-#endif
+	#if		qPlatform_Windows
+		SYSTEMTIME	st;
+		memset (&st, 0, sizeof (st));
+		::GetLocalTime (&st);
+		return DateTime (st);
+	#elif	qPlatform_POSIX
+		return DateTime (time (nullptr));
+	#else
+		AssertNotImplemented ();
+		return DateTime ();
+	#endif
 }
 
 wstring	DateTime::Format () const
 {
-#if		qPlatform_Windows
-	return Format (LOCALE_USER_DEFAULT);
-#elif	qPlatform_POSIX
-	AssertNotImplemented ();
-	return wstring ();
-#else
-	AssertNotImplemented ();
-	return wstring ();
-#endif
+	#if		qPlatform_Windows
+		return Format (LOCALE_USER_DEFAULT);
+	#elif	qPlatform_POSIX
+		AssertNotImplemented ();
+		return wstring ();
+	#else
+		AssertNotImplemented ();
+		return wstring ();
+	#endif
 }
 
 #if		qPlatform_Windows
@@ -339,7 +323,7 @@ wstring	DateTime::Format4XML () const
 			}
 			r += wstring (L"T") + buf + tzBiasString;
 		}
-		Assert (DateTime (r, eXML) == *this);
+		Assert (DateTime::Parse (r, eXML_PF) == *this);
 		return r;
 	}
 }

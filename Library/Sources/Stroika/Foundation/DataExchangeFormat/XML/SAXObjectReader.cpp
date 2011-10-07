@@ -368,7 +368,7 @@ void	BuiltinReader<Time::DateTime>::HandleTextInside (SAXObjectReader &r, const 
 {
 	tmpVal_ += text;
 	// not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-	IgnoreExceptionsForCall ((*value_) = Time::DateTime (tmpVal_.As<wstring> (), Time::DateTime::eXML));
+	IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::eXML_PF));
 }
 
 void	BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader &r) override

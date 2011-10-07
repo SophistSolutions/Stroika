@@ -24,9 +24,9 @@
 /*
  * TODO:
  *		
-		o	Private memobers need '_'.
-
  *		
+		o	Do SAME sort of PrintFormat code - I implemented for TimeOfDay ---
+
  *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
  *		
 		o	Implement new (described below) 'empty' semantics.
@@ -35,8 +35,6 @@
 			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
 			When comparing - if KIND != - convert BOTH to GMT and compare (interally).
 			STARTED  AsLocalTime - ETC - but INCOMPLETE AND WRONG!!!
-
-		o	Do SAME sort of PrintFormat code - I implemented for TimeOfDay ---
 
 		o	Get rid of conversion operators. Replace them with the As<> template pattern, and then lose the conversion
 			operator
@@ -63,8 +61,6 @@ namespace	Stroika {
 			/*
 			 *	Description:
 			 *
-			 *
-			 *
 			 *		DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
 			 *
 			 *		There are 3 possabilities for timezone - LOCALTIME, GMT, and UNKNOWN.
@@ -75,23 +71,27 @@ namespace	Stroika {
 			 *			there as well. AND IMPLEMENTED. Already encoeded in one regression tests (which we now fail).
 			 */
 			class	DateTime {
-				private:
-					Date		fDate_;
-					TimeOfDay	fTimeOfDay_;
-
 				public:
 					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay ());
-					explicit DateTime (const wstring& rep);
-					#if		qPlatform_Windows
-					explicit DateTime (const wstring& rep, LCID lcid);
-					#endif
-					enum XML { eXML };
-					explicit DateTime (const wstring& rep, XML);
-					#if		qPlatform_Windows
-					DateTime (const SYSTEMTIME& sysTime);
-					DateTime (const FILETIME& fileTime);
-					#endif
+
+				public:
 					explicit DateTime (time_t unixTime);
+
+				#if		qPlatform_Windows
+				public:
+					explicit DateTime (const SYSTEMTIME& sysTime);
+					explicit DateTime (const FILETIME& fileTime);
+				#endif
+
+				public:
+					enum	PrintFormat {
+						eCurrentLocale_PF,
+						eXML_PF,
+					};
+					static	DateTime	Parse (const wstring& rep, PrintFormat pf);
+				#if		qPlatform_Windows
+					static	DateTime	Parse (const wstring& rep, LCID lcid);
+				#endif
 
 				public:
 					nonvirtual	bool	empty () const;
@@ -117,8 +117,7 @@ namespace	Stroika {
 						eUnknown_TZ,
 					};
 					nonvirtual	Timezone	GetTimezone () const;
-				private:
-					Timezone	fTimezone_;
+
 				public:
 					// Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
 					// conversion is also unknown (but either treat Kind as localtime or GMT)
@@ -156,6 +155,11 @@ namespace	Stroika {
 					nonvirtual	void		SetTimeOfDay (const TimeOfDay& tod);
 				public:
 					nonvirtual	operator Date () const;
+
+				private:
+					Date		fDate_;
+					TimeOfDay	fTimeOfDay_;
+					Timezone	fTimezone_;
 			};
 
 			bool operator< (const DateTime& lhs, const DateTime& rhs);
@@ -164,8 +168,6 @@ namespace	Stroika {
 			bool operator>= (const DateTime& lhs, const DateTime& rhs);
 			bool operator== (const DateTime& lhs, const DateTime& rhs);
 			bool operator!= (const DateTime& lhs, const DateTime& rhs);
-
-
 
 
 		}

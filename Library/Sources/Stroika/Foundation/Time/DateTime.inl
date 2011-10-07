@@ -16,6 +16,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
+
 		//	class DateTime
 			inline	DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay)
 				: fTimezone_ (eUnknown_TZ)
