@@ -8,6 +8,7 @@
 
 #include	<climits>
 #include	<string>
+#include	<locale>
 
 #if		qPlatform_Windows
 	#include	<Windows.h>
@@ -71,6 +72,7 @@ namespace	Stroika {
 						eXML_PF,
 					};
 					static	TimeOfDay	Parse (const wstring& rep, PrintFormat pf);
+					static	TimeOfDay	Parse (const wstring& rep, const locale& l);
 				#if		qPlatform_Windows
 					static	TimeOfDay	Parse (const wstring& rep, LCID lcid);
 				#endif

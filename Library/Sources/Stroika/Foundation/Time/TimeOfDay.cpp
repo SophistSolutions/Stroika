@@ -4,6 +4,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
+#include	<sstream>
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
@@ -230,11 +231,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 			#if		qPlatform_Windows
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
-				AssertNotImplemented ();
-				return TimeOfDay ();
-			#else
-				AssertNotImplemented ();
-				return TimeOfDay ();
+				return Parse (locale ());
 			#endif
 		}
 		case	eXML_PF: {
@@ -260,6 +257,18 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 			return TimeOfDay ();
 		}
 	}
+}
+
+TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
+{
+	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
+	ios::iostate state;
+	wistringstream iss (rep);
+	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
+	istreambuf_iterator<wchar_t> itend;          // end-of-stream
+	tm when;
+	tmget.get_time (itbegin, itend, iss, state, &when);
+	return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
 }
 
 #if		qPlatform_Windows
