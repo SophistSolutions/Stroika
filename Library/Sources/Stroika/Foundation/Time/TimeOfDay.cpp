@@ -229,6 +229,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
+Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
 				return Parse (locale ());
@@ -312,13 +313,13 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
+#if 0
+// %X in strformat() doesnt seem to be using Win32 GetLocale stuff??? For times... -- LGP 2011-10-07
+Assert (Format (LOCALE_USER_DEFAULT) == Format (locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
+#endif
 				return Format (LOCALE_USER_DEFAULT);
-			#elif	qPlatform_POSIX
-				AssertNotImplemented ();
-				return wstring ();
 			#else
-				AssertNotImplemented ();
-				return wstring ();
+				Format (locale ());
 			#endif
 		}
 		case	eXML_PF: {
@@ -335,6 +336,28 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 			return wstring ();
 		}
 	}
+}
+
+wstring	TimeOfDay::Format (const locale& l) const
+{
+	// http://new.cplusplus.com/reference/std/locale/time_put/put/
+	const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
+	tm when;
+	memset (&when, 0, sizeof (when));
+	when.tm_hour = GetHours ();
+	when.tm_min = GetMinutes ();
+	when.tm_sec = GetSeconds ();
+	wostringstream oss;
+	#if 0
+	wchar_t pattern[]=L"Now it's: %I:%M%p\n";
+	tmput.put (oss, oss, ' ', &when, pattern, pattern+sizeof(pattern)-1);
+	#endif
+	// Read docs - not sure how to use this to get the local-appropriate format
+	// %X MAYBE just what we want  - locale DEPENDENT!!!
+	wchar_t pattern[]=L"%X";
+	//wchar_t pattern[]=L"%I:%M%p";
+	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
+	return oss.str ();
 }
 
 void	TimeOfDay::ClearSecondsField ()

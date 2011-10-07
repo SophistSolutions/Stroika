@@ -109,6 +109,7 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;
+					nonvirtual	wstring	Format (const locale& l) const;
 
 					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid) const;
