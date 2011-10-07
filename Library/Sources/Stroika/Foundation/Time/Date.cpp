@@ -63,7 +63,9 @@ namespace	{
  ************************************** Date ************************************
  ********************************************************************************
  */
-const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));	//year eFirstYear  - January
+
+//const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));	//year eFirstYear  - January
+const	Date	Date::kMin	=	Date (Date::JulianRepType (2361222));	//year eFirstYear  - January
 const	Date	Date::kMax	=	Date (Date::JulianRepType (UINT_MAX-1));
 
 Date::Date ()

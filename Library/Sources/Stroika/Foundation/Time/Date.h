@@ -113,10 +113,12 @@ namespace	Stroika {
 			 * Based on Stroika code from 1992 (Date.hh/Date.cpp). From that - we have the comment:
 			 *
 			 * The Date class is based on SmallTalk-80, The Language & Its Implementation,
-			 * page 108 (apx).
+			 * page 108 (apx) - but changed to use gregorian instead of Julian calendar - evne thogh rep date is
+<<< EXPLAIN ISSUE BETTER - WHEN IN UNDDETAND --....
+-- LGP 2011-10-05
 			 *
-			 *		"...Date represents a specific data since the start of the Julian
-			 *	calendar. Class Date knows about some obvious information:
+			 *		o	Date represents a specific data since the start of the Gregorian (1752-09-14).
+			 *	Class Date knows about some obvious information:
 			 *		->	there are seven days in a week, each day having a symbolic name and
 			 * 			an index 1..7
 			 *		->	there are twelve months in a year, each having a symbolic name and
@@ -130,7 +132,9 @@ namespace	Stroika {
 			class	Date {
 				public:
 					typedef	unsigned int	JulianRepType;
-					enum { kMinJulianRep = 0 };
+					//enum { kMinJulianRep = 0 };
+					//Use constexpr and type JulianRepType when compilers support it --LGP 2011-10-05
+					enum { kMinJulianRep = 2361222 };		// This number corresponds to 1752-09-14
 					enum { kEmptyJulianRep = UINT_MAX };
 
 				public:

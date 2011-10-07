@@ -83,6 +83,19 @@ namespace	{
 				d.AddDays (-4);
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
 			}
+			{
+				Date	d	=	Date::Parse (L"1752-09-14", Date::eCurrentLocale_PF);
+				VerifyTestResult (not d.empty ());
+				VerifyTestResult (d == Date::kMin);
+				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+			}
+			{
+				Date	d	=	Date::kMin;
+				VerifyTestResult (not d.empty ());
+				VerifyTestResult (d < DateTime::Now ().GetDate ());
+				VerifyTestResult (not (DateTime::Now ().GetDate () < d));
+				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+			}
 		}
 
 }
@@ -96,7 +109,6 @@ namespace	{
 				DateTime	d	=	Date (Year (1903), eApril, DayOfMonth (4));
 				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1903-04-04");
 			}
-#if 0
 			{
 				DateTime	d;
 				VerifyTestResult (d.empty ());
@@ -108,9 +120,8 @@ namespace	{
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ());
 				VerifyTestResult (not (DateTime::Now () > d));
-				VerifyTestResult (d.Format4XML () == L"1752-01-01T00:00:00");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
-#endif
 		}
 
 }
