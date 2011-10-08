@@ -172,19 +172,11 @@ DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
 	, fDate_ ()
 	, fTimeOfDay_ ()
 {
-	/*
-	 * Not sure we should call FileTimeToLocalFileTime () ??? _ That maybe forces tz to localtime?
-	 *		-- LGP 2011-10-08
-	 */
-	FILETIME localTime;
-	(void)::memset (&localTime, 0, sizeof (localTime));
-	if (::FileTimeToLocalFileTime (&fileTime, &localTime)) {
-		SYSTEMTIME sysTime;
-		(void)::memset (&sysTime, 0, sizeof (sysTime));
-		if (::FileTimeToSystemTime (&localTime, &sysTime)) {
-			fDate_= mkDate_ (sysTime);
-			fTimeOfDay_ = mkTimeOfDay_ (sysTime);
-		}
+	SYSTEMTIME sysTime;
+	(void)::memset (&sysTime, 0, sizeof (sysTime));
+	if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
+		fDate_= mkDate_ (sysTime);
+		fTimeOfDay_ = mkTimeOfDay_ (sysTime);
 	}
 }
 #endif
@@ -231,7 +223,7 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 			Date		d;
 			TimeOfDay	t;
 			if (nItems >= 3) {
-				d = Date::Parse (::Format (L"%d-%d-%d", year, month, day), Date::eXML_PF);
+				d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
 			}
 			if (nItems >= 5) {
 				t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);

@@ -115,7 +115,12 @@ namespace	Stroika {
 				#if		qPlatform_Windows
 				public:
 					explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = eLocalTime_TZ);
-					explicit DateTime (const FILETIME& fileTime, Timezone tz = eLocalTime_TZ);
+
+					/*
+					 * Most windows APIs return filetimes in UTC (or so it appears). Because of this, our default interpretation of a
+					 * FILETIME structure as as UTC. Call DateTime (ft).AsLocalTime () to get the value returned in local time.
+					 */
+					explicit DateTime (const FILETIME& fileTime, Timezone tz = eUTC_TZ);
 				#endif
 
 				public:
