@@ -151,6 +151,10 @@ namespace	{
 				VerifyTestResult (d.As<time_t> () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
+				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", locale ()));
+				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
+			}
+			{
 				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
 				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}

@@ -274,7 +274,34 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
 	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
 	istreambuf_iterator<wchar_t> itend;          // end-of-stream
 	tm when;
+	memset (&when, 0, sizeof (when));
 	tmget.get_time (itbegin, itend, iss, state, &when);
+
+	#if		qPlatform_Windows
+		if (state & ios::failbit) {
+			//string	ln	=	l.name();	// This doesn't seem to produce anything useful - or easily mapepd to an LCID?
+			return Parse (rep, LOCALE_USER_DEFAULT);
+		}
+	#endif
+	#if		qPlatform_POSIX
+		if (state & ios::failbit) {
+			string	tmp	=	WideStringToNarrowSDKString (rep);
+			memset (&when, 0, sizeof (when));
+			//%T is the time as %H:%M:%S.
+			state = (strptime (tmp.c_str (), "%T", &when) == nullptr)? ios::failbit : ios::goodbit;
+		}
+		if (state & ios::failbit) {
+			string	tmp	=	WideStringToNarrowSDKString (rep);
+			memset (&when, 0, sizeof (when));
+			//%r   is the time as %I:%M:%S %p
+			state = (strptime (tmp.c_str (), "%r", &when) == nullptr)? ios::failbit : ios::goodbit;
+		}
+	#endif
+	if (state & ios::failbit) {
+		// THROW OR ???
+		int breakHere=1;
+		return TimeOfDay ();
+	}
 	return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
 }
 
