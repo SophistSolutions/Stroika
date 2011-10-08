@@ -30,11 +30,11 @@
  *		
  *		
  *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
- *		
-
-
-
 		o	Implement new (described below) 'empty' semantics.
+
+
+
+
 
 		o	Do support for enum Timezone { eLocalTimezone, eGMT, eUnkownTimezone }
 			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
@@ -51,7 +51,10 @@
 
 		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?
 		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
- *		
+<<<SEE COMMENTS IN DATE>>>
+
+
+
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
  *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
