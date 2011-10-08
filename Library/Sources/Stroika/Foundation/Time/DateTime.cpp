@@ -425,7 +425,7 @@ DateTime::operator SYSTEMTIME () const
 
 Date::JulianRepType	DateTime::DaysSince () const
 {
-	int	r	=	DayDifference (GetToday (), *this);
+	int	r	=	DayDifference (GetToday (), As<Date> ());
 	if (r < 0) {
 		return 0;
 	}

@@ -33,10 +33,10 @@ namespace	Stroika {
 					return fTimeOfDay_;
 				}
 			template	<>
-				Date	DateTime::As () const
-				{
-					return fDate_;
-				}
+				inline	Date	DateTime::As () const
+					{
+						return fDate_;
+					}
 			inline	Date	DateTime::GetToday ()
 				{
 					return Now ().GetDate ();
