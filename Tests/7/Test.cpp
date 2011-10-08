@@ -72,15 +72,22 @@ namespace	{
 
 
 namespace	{
+	void	VERIFY_ROUNDTRIP_XML_ (const Date& d) 
+		{
+			VerifyTestResult (Date::Parse (d.Format (Date::eXML_PF), Date::eXML_PF) == d);
+		}
 
 	void	Test_3_TestDate_ ()
 		{
 			{
 				Date	d (Year (1903), eApril, DayOfMonth (4));
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
+				VERIFY_ROUNDTRIP_XML_ (d);
 				d.AddDays (4);
+				VERIFY_ROUNDTRIP_XML_ (d);
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-08");
 				d.AddDays (-4);
+				VERIFY_ROUNDTRIP_XML_ (d);
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
 			}
 			{
