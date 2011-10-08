@@ -311,7 +311,7 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
 			string	tmp	=	WideStringToNarrowSDKString (rep);
 			for (const char*const* i = StartOfArray (kFmtStrs2Try); (state & ios::failbit) and (i != EndOfArray (kFmtStrs2Try)); ++i) {
 				memset (&when, 0, sizeof (when));
-				state = (strptime (tmp.c_str (), "%T", &when) == nullptr)? ios::failbit : ios::goodbit;
+				state = (strptime (tmp.c_str (), *i, &when) == nullptr)? ios::failbit : ios::goodbit;
 			}
 		}
 	#endif

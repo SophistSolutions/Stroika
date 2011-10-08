@@ -66,6 +66,20 @@ namespace	{
 				VerifyTestResult (t2.GetSeconds () == 59);
 				VerifyTestResult (t2 == TimeOfDay::kMax);
 			}
+			{
+				VerifyTestResult (TimeOfDay::Parse (L"3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
+			}
+			{
+				// Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
+				//		-- LGP 2011-10-08
+				VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 15 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 16 * 60 * 60);
+			}
 		}
 
 }
@@ -113,6 +127,20 @@ namespace	{
 			{
 				wstring	testCase	=	L"6/1/2005";
 				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+			}
+			{
+				wstring	testCase	=	L"4/20/1964";
+				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+			}
+			{
+				wstring	testCase	=	L"7/4/1776";
+				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+			}
+			{
+				wstring	testCase	=	L"7/4/2076";
+				//	TODO:
+				//		Fails - debug soon -- LGP 2011-10-08
+				//VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
 			}
 			#endif
 		}

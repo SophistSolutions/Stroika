@@ -231,7 +231,11 @@ Date	Date::Parse (const wstring& rep, const locale& l)
 	memset (&when, 0, sizeof (when));
 	tmget.get_date (itbegin, itend, iss, state, &when);
 	#if		qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
-		when.tm_year -= 1900;
+		// This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
+		// -- LGP 2011-10-09
+		if (not (-200 <= when.tm_year and when.tm_year < 200)) {
+			when.tm_year -= 1900;
+		}
 	#endif
 	return AsDate_ (when);
 }
