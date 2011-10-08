@@ -130,7 +130,9 @@ namespace	Stroika {
 				#endif
 
 				public:
-					// If BOTH date and time are empty - this is empty. Timezone is ignored for the purpose of 'empty' check.
+					// If the date is empty - this is empty (no date with a time doesn't make much sense as a DateTime - use TimeOfDay by itself if thats
+					// what you want).
+					// Timezone is ignored for the purpose of 'empty' check.
 					nonvirtual	bool	empty () const;
 
 				public:

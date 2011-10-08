@@ -293,14 +293,6 @@ DateTime	DateTime::AsGMT () const
 	return *this;
 }
 
-bool	DateTime::empty () const
-{
-	// Risky change so late in the game - but this logic seems wrong (and causes some trouble).
-	// DateTime is NOT empty just because date part is empty. We CAN use a DateTime record to store JUST a time!
-	//		-- LGP 2006-04-26
-	return fDate_.empty () and fTimeOfDay_.empty ();
-}
-
 DateTime	DateTime::Now ()
 {
 	#if		qPlatform_Windows
