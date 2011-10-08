@@ -286,14 +286,26 @@ DateTime	DateTime::Parse (const wstring& rep, LCID lcid)
 
 DateTime	DateTime::AsLocalTime () const
 {
-	AssertNotImplemented ();
-	return *this;
+	if (GetTimezone () == eGMT_TZ) {
+		AssertNotImplemented ();	// must convert....
+		return *this;
+	}
+	else {
+		// treat BOTH unknown and localetime as localtime
+		return *this;
+	}
 }
 
 DateTime	DateTime::AsGMT () const
 {
-	AssertNotImplemented ();
-	return *this;
+	if (GetTimezone () == eGMT_TZ) {
+		return *this;
+	}
+	else {
+		// treat BOTH unknown and localetime as localtime
+		AssertNotImplemented ();	// must convert....
+		return *this;
+	}
 }
 
 DateTime	DateTime::Now ()
@@ -513,46 +525,57 @@ void		DateTime::SetTimeOfDay (const TimeOfDay& tod)
 	fTimeOfDay_ = tod;
 }
 
+int	DateTime::Compare (const DateTime& rhs) const
+{
+	if (empty ()) {
+		return rhs.empty ()? 0: -1;
+	}
+	else {
+		if (rhs.empty ()) {
+			return 1;
+		}
+	}
+	Assert (not empty () and not rhs.empty ());
+	if (GetTimezone () == rhs.GetTimezone ()) {
+		int	cmp	=	GetDate ().Compare (rhs.GetDate ());
+		if (cmp == 0) {
+			cmp	=	GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());
+		}
+		return cmp;
+	}
+	else {
+		return AsGMT ().Compare (rhs.AsGMT ());
+	}
+}
+
 bool Time::operator< (const DateTime& lhs, const DateTime& rhs)
 {
-	if (lhs.GetDate () < rhs.GetDate ()) {
-		return true;
-	}
-	if (lhs.GetDate () == rhs.GetDate ()) {
-		return lhs.GetTimeOfDay () < rhs.GetTimeOfDay ();
-	}
-	return false;
+	return lhs.Compare (rhs) < 0;
 }
 
 bool Time::operator<= (const DateTime& lhs, const DateTime& rhs)
 {
-	return lhs < rhs or lhs == rhs;
+	return lhs.Compare (rhs) <= 0;
 }
 
 bool Time::operator> (const DateTime& lhs, const DateTime& rhs)
 {
-	if (lhs.GetDate () > rhs.GetDate ()) {
-		return true;
-	}
-	if (lhs.GetDate () == rhs.GetDate ()) {
-		return lhs.GetTimeOfDay () > rhs.GetTimeOfDay ();
-	}
-	return false;
+	return lhs.Compare (rhs) > 0;
 }
 
 bool Time::operator>= (const DateTime& lhs, const DateTime& rhs)
 {
-	return lhs == rhs or lhs > rhs;
+	return lhs.Compare (rhs) >= 0;
 }
 
 bool Time::operator== (const DateTime& lhs, const DateTime& rhs)
 {
-	return lhs.GetDate () == rhs.GetDate () and lhs.GetTimeOfDay () == rhs.GetTimeOfDay ();
+	return lhs.Compare (rhs) == 0;
 }
 
 bool Time::operator!= (const DateTime& lhs, const DateTime& rhs)
 {
-	return lhs.GetDate () != rhs.GetDate () or lhs.GetTimeOfDay () != rhs.GetTimeOfDay ();
+	return lhs.Compare (rhs) != 0;
 }
 
 

@@ -193,6 +193,14 @@ namespace	Stroika {
 					nonvirtual	void		SetDate (const Date& d);
 					nonvirtual	void		SetTimeOfDay (const TimeOfDay& tod);
 
+				public:
+					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+					// this comparison function - see the notes about 'empty' in the class description.
+					//
+					// Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered differnt. They
+					// will BOTH be converted to GMT, and compared as GMT.
+					nonvirtual	int	Compare (const DateTime& rhs) const;
+
 				private:
 					Date		fDate_;
 					TimeOfDay	fTimeOfDay_;
