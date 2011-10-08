@@ -21,15 +21,11 @@
 /*
  * TODO:
  *
- *		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
- *
- *		
- *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
- *		
- *
- *
- *
- *
+ *		o	Consider using strptime/strftime (or more likely the existing locale-based APIs) -
+ *			and possibly use that to replace windows formatting APIs? The problem with this is that the Windows
+ *			ones seem to currntly produce BETTER answers (more closely follow changes to the control panel regional settings).
+ *			MAYBE its a bug with the VisStudio locale stuff or maybe I'm not using it properly. Not super high priority to 
+ *			unravalel - but would be nice to lose (most of) the Windoze-specific code.
  *
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
