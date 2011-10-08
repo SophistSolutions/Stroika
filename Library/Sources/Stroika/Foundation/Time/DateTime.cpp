@@ -138,6 +138,7 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 		ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
 		*this = DateTime (ft, tz);
 	#else
+//MAYBE better to use just gmtime_r () - and ???? closer to what we are doing above? In fact - why not do gmtime_r portably? Instead of that FTIME stuff?
 		struct	tm	tmTime;
 		memset (&tmTime, 0, sizeof (tmTime));
 		if (tz == eLocalTime_TZ or tz == eUnknown_TZ) {
@@ -148,7 +149,6 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 		}
 		fDate_ = Date (Year (tmTime.tm_year+1900), MonthOfYear (tmTime.tm_mon+1), DayOfMonth (tmTime.tm_mday));
 		fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
-		Assert (false);
 	#endif
 }
 
