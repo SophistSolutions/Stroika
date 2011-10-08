@@ -232,7 +232,12 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 			}
 			Timezone	tz	=	eUnknown_TZ;
 			if (tzKnown) {
-				tz = eUTC_TZ;	// really wrong - should map given time to UTC??? - check HR value ETC
+				if (tzUTC) {
+					tz = eUTC_TZ;	// really wrong - should map given time to UTC??? - check HR value ETC
+				}
+				else {
+					tz = eLocalTime_TZ;	// really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
+				}
 
 				// CHECK TZ
 				// REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
