@@ -188,15 +188,22 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 		}
 		break;
 		case	eJavascript_PF: {
+			int	year	=	0;
+			int	month	=	0;
+			int	day		=	0;
+			#pragma	warning (push)
+			#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
+			int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%d", &month, &day, &year);
+			#pragma	warning (pop)
+			Date	result;
+			if (nItems == 3) {
+				result = Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
+			}
 			#if		qPlatform_Windows
-				/*
-				 *	See also Format4JScript for javascript format info
-				 */
 				const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-				return Parse (rep, kUS_ENGLISH_LOCALE);
-			#else
-				AssertNotImplemented ();
+				Ensure (result == Parse (rep, kUS_ENGLISH_LOCALE));
 			#endif
+			return result;
 		}
 		break;
 		default: {
