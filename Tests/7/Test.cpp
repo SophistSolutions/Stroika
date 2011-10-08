@@ -119,13 +119,13 @@ namespace	{
 				DateTime	d;
 				VerifyTestResult (d.empty ());
 				VerifyTestResult (d < DateTime::Now ());
-				VerifyTestResult (not (DateTime::Now () > d));
+				VerifyTestResult (DateTime::Now () > d);
 			}
 			{
 				DateTime	d	=	DateTime::kMin;
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ());
-				VerifyTestResult (not (DateTime::Now () > d));
+				VerifyTestResult (DateTime::Now () > d);
 				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 		}

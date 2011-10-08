@@ -108,7 +108,7 @@ namespace	{
 namespace	{
 	Date	AsDate_ (const tm& when)
 		{
-			return Date (Safe_jday_ (MonthOfYear (when.tm_mon+1), DayOfMonth (when.tm_mday), Year (when.tm_year+1900)));
+			return Date (Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900)));
 		}
 }
 
@@ -177,7 +177,7 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 				memset (&tm, 0, sizeof(struct tm));
 				// horrible hack - very bad... but hopefully gets us limping along...
 				strptime (Characters::WideStringToNarrowSDKString (rep).c_str (), "%FT%T%z", &tm);
-				return Date (Safe_jday_ (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900)));
+				return AsDate_ (tm);
 			#else
 				AssertNotImplemented ();
 			#endif
@@ -213,7 +213,10 @@ Date	Date::Parse (const wstring& rep, const locale& l)
 	tm when;
 	memset (&when, 0, sizeof (when));
 	tmget.get_date (itbegin, itend, iss, state, &when);
-	return Date (Safe_jday_ (MonthOfYear (when.tm_mon+1), DayOfMonth (when.tm_mday), Year (when.tm_year)));
+	#if		qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+		when.tm_year -= 1900;
+	#endif
+	return AsDate_ (when);
 }
 
 #if		qPlatform_Windows

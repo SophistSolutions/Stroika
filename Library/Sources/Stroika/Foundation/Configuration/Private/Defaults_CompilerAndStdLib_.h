@@ -21,6 +21,22 @@
 
 
 
+
+
+//NEED DOCS SOMPEPLACE
+#ifndef	qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+	#if		defined (__GNUC__)
+		// not sure what version will/does support this
+		#define	qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear	0
+	#elif	defined (_MSC_VER) && _MSC_VER <= 1600
+		#define	qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear	1
+	#else
+		#define	qCompilerAndStdLib_Supports_ConstructorDelegation	0
+	#endif
+#endif
+
+
+
 //NEED DOCS SOMPEPLACE
 #ifndef	qCompilerAndStdLib_Supports_ConstructorDelegation
 	#if		defined (__GNUC__)
