@@ -206,7 +206,7 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 Date	Date::Parse (const wstring& rep, const locale& l)
 {
 	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
-	ios::iostate state = 0;
+	ios::iostate state	=	ios::goodbit;
 	wistringstream iss (rep);
 	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
 	istreambuf_iterator<wchar_t> itend;          // end-of-stream
