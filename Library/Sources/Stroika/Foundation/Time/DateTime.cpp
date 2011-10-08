@@ -105,6 +105,8 @@ namespace	{
 
 
 
+
+
 /*
  ********************************************************************************
  *********************************** DateTime ***********************************
@@ -122,8 +124,8 @@ namespace	{
 const	DateTime	DateTime::kMin	=	DateTime (kMin_, kMinT_);		//	unclear if this should use empty time or midnight?
 const	DateTime	DateTime::kMax	=	DateTime (kMax_, kMaxT_);		//	unclear if this should use end of day time or not?
 
-DateTime::DateTime (time_t unixTime)
-	: fTimezone_ (eUnknown_TZ)
+DateTime::DateTime (time_t unixTime, Timezone tz)
+	: fTimezone_ (tz)
 	, fDate_ ()
 	, fTimeOfDay_ ()
 {
@@ -134,38 +136,46 @@ DateTime::DateTime (time_t unixTime)
 		ll = Int32x32To64 (unixTime, 10000000) + 116444736000000000;
 		ft.dwLowDateTime = (DWORD)ll;
 		ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
-		*this = DateTime (ft);
-	#elif	qPlatform_POSIX
-		time_t	clk = time (0);
-		const tm* now = localtime (&clk);
-		fDate_ = Date (Year (now->tm_year+1900), MonthOfYear (now->tm_mon+1), DayOfMonth (now->tm_mday));
-		fTimeOfDay_ = TimeOfDay (now->tm_sec + (now->tm_min * 60) + (now->tm_hour * 60 * 60));
+		*this = DateTime (ft, tz);
 	#else
+		struct	tm	tmTime;
+		memset (&tmTime, 0, sizeof (tmTime));
+		if (tz == eLocalTime_TZ or tz == eUnknown_TZ) {
+			(void)::localtime_r  (&unixTime, &tmTime);
+		}
+		else {
+			(void)::gmtime_r  (&unixTime, &tmTime);
+		}
+		fDate_ = Date (Year (tmTime.tm_year+1900), MonthOfYear (tmTime.tm_mon+1), DayOfMonth (tmTime.tm_mday));
+		fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
 		Assert (false);
 	#endif
 }
 
-DateTime::DateTime (struct tm tmTime)
-	: fTimezone_ (eUnknown_TZ)
-	, fDate_ ()
-	, fTimeOfDay_ ()
+DateTime::DateTime (struct tm tmTime, Timezone tz)
+	: fTimezone_ (tz)
+	, fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
+	, fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
 {
-	AssertNotImplemented ();	// MUST DO SOON!
 }
 
 #if		qPlatform_Windows
-DateTime::DateTime (const SYSTEMTIME& sysTime)
-	: fTimezone_ (eUnknown_TZ)
+DateTime::DateTime (const SYSTEMTIME& sysTime, Timezone tz)
+	: fTimezone_ (tz)
 	, fDate_ (mkDate_ (sysTime))
 	, fTimeOfDay_ (mkTimeOfDay_ (sysTime))
 {
 }
 
-DateTime::DateTime (const FILETIME& fileTime)
-	: fTimezone_ (eUnknown_TZ)
+DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
+	: fTimezone_ (tz)
 	, fDate_ ()
 	, fTimeOfDay_ ()
 {
+	/*
+	 * Not sure we should call FileTimeToLocalFileTime () ??? _ That maybe forces tz to localtime?
+	 *		-- LGP 2011-10-08
+	 */
 	FILETIME localTime;
 	(void)::memset (&localTime, 0, sizeof (localTime));
 	if (::FileTimeToLocalFileTime (&fileTime, &localTime)) {
@@ -297,9 +307,9 @@ DateTime	DateTime::Now ()
 		SYSTEMTIME	st;
 		memset (&st, 0, sizeof (st));
 		::GetLocalTime (&st);
-		return DateTime (st);
+		return DateTime (st, eLocalTime_TZ);
 	#elif	qPlatform_POSIX
-		return DateTime (time (nullptr));
+		return DateTime (time (nullptr), eUnknown_TZ);
 	#else
 		AssertNotImplemented ();
 		return DateTime ();
@@ -481,37 +491,37 @@ template	<>
 
 template	<>
 	tm	DateTime::As () const
-	{
-		struct tm tm;
-		memset(&tm, 0, sizeof(tm));
-		tm.tm_year = fDate_.GetYear () - 1900;
-		tm.tm_mon = fDate_.GetMonth () - 1;
-		tm.tm_mday = fDate_.GetDayOfMonth ();
-		unsigned int	totalSecondsRemaining	=	fTimeOfDay_.GetAsSecondsCount ();
-		tm.tm_hour = totalSecondsRemaining / (60 * 60);
-		totalSecondsRemaining -= tm.tm_hour * 60 * 60;
-		tm.tm_min = totalSecondsRemaining / 60;
-		totalSecondsRemaining -= tm.tm_min * 60;
-		tm.tm_sec = totalSecondsRemaining;
+		{
+			struct tm tm;
+			memset(&tm, 0, sizeof(tm));
+			tm.tm_year = fDate_.GetYear () - 1900;
+			tm.tm_mon = fDate_.GetMonth () - 1;
+			tm.tm_mday = fDate_.GetDayOfMonth ();
+			unsigned int	totalSecondsRemaining	=	fTimeOfDay_.GetAsSecondsCount ();
+			tm.tm_hour = totalSecondsRemaining / (60 * 60);
+			totalSecondsRemaining -= tm.tm_hour * 60 * 60;
+			tm.tm_min = totalSecondsRemaining / 60;
+			totalSecondsRemaining -= tm.tm_min * 60;
+			tm.tm_sec = totalSecondsRemaining;
 
-AssertNotImplemented ();	//OK - sort of implemented - but needs reivew!!!! -- LGP 2011-10-06
-		return tm;
-	}
+	AssertNotImplemented ();	//OK - sort of implemented - but needs reivew!!!! -- LGP 2011-10-06
+			return tm;
+		}
 
 #if		qPlatform_Windows
 template	<>
 	SYSTEMTIME	DateTime::As () const
-	{
-		// CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
-		SYSTEMTIME	d	=	toSYSTEM_ (fDate_);
-		SYSTEMTIME	t	=	toSysTime_ (fTimeOfDay_);
-		SYSTEMTIME	r	=	d;
-		r.wHour = t.wHour;
-		r.wMinute = t.wMinute;
-		r.wSecond = t.wSecond;
-		r.wMilliseconds = t.wMilliseconds;
-		return r;
-	}
+		{
+			// CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
+			SYSTEMTIME	d	=	toSYSTEM_ (fDate_);
+			SYSTEMTIME	t	=	toSysTime_ (fTimeOfDay_);
+			SYSTEMTIME	r	=	d;
+			r.wHour = t.wHour;
+			r.wMinute = t.wMinute;
+			r.wSecond = t.wSecond;
+			r.wMilliseconds = t.wMilliseconds;
+			return r;
+		}
 #endif
 
 void	DateTime::SetDate (const Date& d)

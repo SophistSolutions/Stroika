@@ -102,13 +102,20 @@ namespace	Stroika {
 					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = eUnknown_TZ);
 
 				public:
-					explicit DateTime (time_t unixTime);
-					explicit DateTime (struct tm tmTime);
+					/*
+					 * UNIX epoch time is inheritently timezone independent. However, the tz argumet tells
+					 * the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
+					 * or unknown it will convert it to a localtime value.
+					 */
+					explicit DateTime (time_t unixTime, Timezone tz = eUnknown_TZ);
+					/*
+					 */
+					explicit DateTime (struct tm tmTime, Timezone tz = eUnknown_TZ);
 
 				#if		qPlatform_Windows
 				public:
-					explicit DateTime (const SYSTEMTIME& sysTime);
-					explicit DateTime (const FILETIME& fileTime);
+					explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = eLocalTime_TZ);
+					explicit DateTime (const FILETIME& fileTime, Timezone tz = eLocalTime_TZ);
 				#endif
 
 				public:
