@@ -160,8 +160,11 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF: {
 			#if		qPlatform_Windows
-				Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - probably none
-																						// added to test 2011-10-07
+				/*
+				 * Windows Parser does better job than POSIX one - for reasons which elude me.
+				 * Automated test has some test cases to help close the gap...
+				 *		-- LGP 2011-10-08
+				 */
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#else
 				return Parse (rep, locale ());

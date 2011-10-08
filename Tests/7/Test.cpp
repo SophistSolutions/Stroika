@@ -109,6 +109,12 @@ namespace	{
 				VerifyTestResult (not (DateTime::Now ().GetDate () < d));
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
+			#if		qPlatform_Windows
+			{
+				wstring	testCase	=	L"6/1/2005";
+				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+			}
+			#endif
 		}
 
 }
