@@ -211,9 +211,11 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 			#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
 			int	nItems	=	0;
 			bool	tzKnown	=	false;
+			bool	tzUTC	=	false;
 			if (rep[rep.length ()-1] == 'Z') {
 				nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%dZ", &year, &month, &day, &hour, &minute, &second);
 				tzKnown = true;
+				tzUTC = true;
 			}
 			else {
 				nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
@@ -323,7 +325,7 @@ DateTime	DateTime::Now ()
 		::GetLocalTime (&st);
 		return DateTime (st, eLocalTime_TZ);
 	#elif	qPlatform_POSIX
-		return DateTime (time (nullptr), eUnknown_TZ);
+		return DateTime (time (nullptr), eLocalTime_TZ);
 	#else
 		AssertNotImplemented ();
 		return DateTime ();
