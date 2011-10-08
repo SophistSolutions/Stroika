@@ -53,7 +53,12 @@ namespace	Stroika {
 					}
 				inline	int	TimeOfDay::Compare (const TimeOfDay& rhs) const
 					{
-						return GetAsSecondsCount () - rhs.GetAsSecondsCount ();
+						if (empty ()) {
+							return rhs.empty ()? 0: -1;
+						}
+						else {
+							return rhs.empty ()? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
+						}
 					}
 				inline	bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs)
 					{

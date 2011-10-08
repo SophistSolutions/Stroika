@@ -48,11 +48,12 @@ namespace	Stroika {
 			 *		NB: this implies NO NOTION of timezone. Its a time relative to midnight of a given day.
 			 *
 			 *		TimeOfDay can also be (it is by default) the specail sentinal value 'empty'. This is useful - with a DateTime object for example,
-			 *	to represent the idea that a time has not been specified. For TimeOfDay comparisons (
+			 *	to represent the idea that a time has not been specified.
 			 *
-			 *		'empty' concept
-			 *			Treat it internally as DISTINCT from any other time. However, when converting it to a number of seconds,
-			 *			treat empty as TimeOfDay::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as TimeOfDay::kMin.
+			 *		'empty' concept:
+			 *			Treat it as DISTINCT from any other time. However, when converting it to a number of seconds,
+			 *			treat empty as TimeOfDay::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN TimeOfDay::kMin.
+			 *			This is a bit like the floating point concept of negative infinity.
 			 */
 			class	TimeOfDay {
 				public:

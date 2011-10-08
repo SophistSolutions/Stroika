@@ -21,11 +21,20 @@ namespace	Stroika {
 			//	class Date
 				inline	Date::JulianRepType	Date::GetJulianRep () const
 					{
-						return (fJulianDateRep_);
+						return (fJulianDateRep_ == kEmptyJulianRep? kMinJulianRep: fJulianDateRep_);
 					}
 				inline	bool	Date::empty () const
 					{
 						return fJulianDateRep_ == kEmptyJulianRep;
+					}
+				inline	int	Date::Compare (const Date& rhs) const
+					{
+						if (empty ()) {
+							return rhs.empty ()? 0: -1;
+						}
+						else {
+							return rhs.empty ()? 1 : (GetJulianRep () - rhs.GetJulianRep ());
+						}
 					}
 
 				inline	int	DayDifference (const Date& lhs, const Date& rhs)
@@ -35,25 +44,26 @@ namespace	Stroika {
 						return lhs.GetJulianRep () - rhs.GetJulianRep ();
 					}
 
+
 				inline	bool operator<= (const Date& lhs, const Date& rhs)
 					{
-						return lhs.GetJulianRep () <= rhs.GetJulianRep ();
+						return lhs.Compare (rhs) <= 0;
 					}
 				inline	bool operator< (const Date& lhs, const Date& rhs)
 					{
-						return lhs.GetJulianRep () < rhs.GetJulianRep ();
+						return lhs.Compare (rhs) < 0;
 					}
 				inline	bool operator> (const Date& lhs, const Date& rhs)
 					{
-						return lhs.GetJulianRep () >rhs.GetJulianRep ();
+						return lhs.Compare (rhs) > 0;
 					}
 				inline	bool operator== (const Date& lhs, const Date& rhs)
 					{
-						return lhs.GetJulianRep () == rhs.GetJulianRep ();
+						return lhs.Compare (rhs) == 0;
 					}
 				inline	bool operator!= (const Date& lhs, const Date& rhs)
 					{
-						return lhs.GetJulianRep () != rhs.GetJulianRep ();
+						return lhs.Compare (rhs) != 0;
 					}
 
 		}

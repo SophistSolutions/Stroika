@@ -93,7 +93,7 @@ namespace	{
 				Date	d;
 				VerifyTestResult (d.empty ());
 				VerifyTestResult (d < DateTime::GetToday ());
-				VerifyTestResult (not (DateTime::GetToday () > d));
+				VerifyTestResult (DateTime::GetToday () > d);
 			}
 			{
 				Date	d	=	Date::kMin;

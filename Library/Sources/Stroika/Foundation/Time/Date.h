@@ -128,6 +128,11 @@ namespace	Stroika {
 			 *
 			 *
 			 *			NB: Date implies NO NOTION of timezone.
+			 *
+			 *		'empty' concept:
+			 *			Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds or days (JulienRep),
+			 *			treat empty as Date::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin.
+			 *			This is a bit like the floating point concept of negative infinity.
 			 */
 			class	Date {
 				public:
@@ -190,11 +195,19 @@ namespace	Stroika {
 					nonvirtual	Date	AddDays (int dayCount);
 
 				public:
+					/*
+					 * Note - in the specail case of 'empty' - this returns Date::kMin.GetJulianRep ()
+					 */
 					nonvirtual	JulianRepType	GetJulianRep () const;
 
 				public:
 					// returns number of days since this point - relative to NOW. Never less than zero
 					nonvirtual	JulianRepType	DaysSince () const;
+
+				public:
+					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+					// this comparison function - see the notes about 'empty' in the class description.
+					nonvirtual	int	Compare (const Date& rhs) const;
 
 				private:
 					static 		JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year);
@@ -215,6 +228,7 @@ namespace	Stroika {
 			bool operator> (const Date& lhs, const Date& rhs);
 			bool operator== (const Date& lhs, const Date& rhs);
 			bool operator!= (const Date& lhs, const Date& rhs);
+
 			int	DayDifference (const Date& lhs, const Date& rhs);
 			int	YearDifference (const Date& lhs, const Date& rhs);
 			float	YearDifferenceF (const Date& lhs, const Date& rhs);
