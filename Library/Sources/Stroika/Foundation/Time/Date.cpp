@@ -169,18 +169,19 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 		}
 		break;
 		case	eXML_PF: {
-			#if		qPlatform_Windows
-				// SHOULD TAKE INTO ACCOUNT TIMEZONE FIELD - IF ANY - AND NOT CURRENT TIMEZONE!!! (LOCALE_USER_DEFAULT IS WRONG) -  LGP 2005-10-31
-				return Parse (rep, LOCALE_USER_DEFAULT);
-			#elif	qPlatform_POSIX
-				struct tm tm;
-				memset (&tm, 0, sizeof(struct tm));
-				// horrible hack - very bad... but hopefully gets us limping along...
-				strptime (Characters::WideStringToNarrowSDKString (rep).c_str (), "%FT%T%z", &tm);
-				return AsDate_ (tm);
-			#else
-				AssertNotImplemented ();
-			#endif
+			/*
+			 * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
+			 */
+			int	year	=	0;
+			int	month	=	0;
+			int	day		=	0;
+			int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%d", &year, &month, &day);
+			if (nItems == 3) {
+				return Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
+			}
+			else {
+				return Date ();	// at some point maybe we should throw for badly-formatted dates? -- LGP 2011-10-08
+			}
 		}
 		break;
 		case	eJavascript_PF: {
