@@ -351,7 +351,7 @@ wstring	DateTime::Format (PrintFormat pf) const
 				wcsftime (buf, NEltsOf (buf), L"%H:%M:%S", &temp);
 
 				wstring	tzBiasString;
-				{
+				if (GetTimezone () != eGMT_TZ) {
 					#if		qPlatform_Windows
 						TIME_ZONE_INFORMATION	tzInfo;
 						memset (&tzInfo, 0, sizeof (tzInfo));
