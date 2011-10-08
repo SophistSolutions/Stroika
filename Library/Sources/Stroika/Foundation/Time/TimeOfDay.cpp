@@ -290,45 +290,29 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
 		//%M		The minute [00,59]; leading zeros are permitted but not required.
 		//%p		Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
 		//%P		Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
+		//%S		The seconds [00,60]; leading zeros are permitted but not required.
+		static	const	char*	kFmtStrs2Try[] = {
+			"%T",
+			"%r",
+			"%H:%M:%S",
+			"%H:%M",
+			"%I%p",
+			"%I%P",
+			"%I%t%p",
+			"%I%t%P",
+			"%I:%M%t%p",
+			"%I:%M%t%P",
+			"%I:%M:%S%t%p",
+			"%I:%M:%S%t%P",
+			"%I:%M",
+			"%I:%M:%S",
+		};
 		if (state & ios::failbit) {
 			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%T", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%r", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%I%p", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%I%P", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%I%t%p", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%I%t%P", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%I:%M%t%p", &when) == nullptr)? ios::failbit : ios::goodbit;
-		}
-		if (state & ios::failbit) {
-			string	tmp	=	WideStringToNarrowSDKString (rep);
-			memset (&when, 0, sizeof (when));
-			state = (strptime (tmp.c_str (), "%I:%M%t%P", &when) == nullptr)? ios::failbit : ios::goodbit;
+			for (const char*const* i = StartOfArray (kFmtStrs2Try); (state & ios::failbit) and (i != EndOfArray (kFmtStrs2Try)); ++i) {
+				memset (&when, 0, sizeof (when));
+				state = (strptime (tmp.c_str (), "%T", &when) == nullptr)? ios::failbit : ios::goodbit;
+			}
 		}
 	#endif
 	if (state & ios::failbit) {
