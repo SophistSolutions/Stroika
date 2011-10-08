@@ -32,7 +32,8 @@ namespace	Stroika {
 				{
 					return fTimeOfDay_;
 				}
-			inline	DateTime::operator Date () const
+			template	<>
+				Date	DateTime::As () const
 				{
 					return fDate_;
 				}

@@ -169,6 +169,7 @@ namespace	Stroika {
 					 *		time_t
 					 *		struct tm
 					 *		SYSTEMTIME			(WINDOWS ONLY)
+					 *		Date
 					 */
 					template	<typename T>
 						T	As () const;
@@ -179,8 +180,10 @@ namespace	Stroika {
 					nonvirtual	TimeOfDay	GetTimeOfDay () const;	// ditto
 					nonvirtual	void		SetDate (const Date& d);
 					nonvirtual	void		SetTimeOfDay (const TimeOfDay& tod);
-				public:
+#if 0
+			public:
 					nonvirtual	operator Date () const;
+#endif
 
 				private:
 					Date		fDate_;
@@ -198,6 +201,8 @@ namespace	Stroika {
 			template	<>
 				SYSTEMTIME	DateTime::As () const;
 			#endif
+			template	<>
+				Date	DateTime::As () const;
 
 
 			bool operator< (const DateTime& lhs, const DateTime& rhs);
