@@ -140,22 +140,22 @@ namespace	{
 		{
 			{
 				DateTime	d	=	Date (Year (2000), eApril, DayOfMonth (20));
-				VerifyTestResult (d.GetUNIXEpochTime () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
+				VerifyTestResult (d.As<time_t> () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
 				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
-				VerifyTestResult (d.GetUNIXEpochTime () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
+				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
 				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
-				VerifyTestResult (d.GetUNIXEpochTime () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
+				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 #if 0
 //this fails - on windows - fix asap
 			{
 				const	time_t	kTEST	=	802234800;
 				DateTime	d	=	DateTime (kTEST);
-				VerifyTestResult (d.GetUNIXEpochTime () == kTEST);	// source - http://www.onlineconversion.com/unix_time.htm
+				VerifyTestResult (d.As<time_t> () == kTEST);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 #endif
 		}

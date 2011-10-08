@@ -5,6 +5,7 @@
 
 #include	<algorithm>
 #include	<ctime>
+#include	<sstream>
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
@@ -144,6 +145,14 @@ DateTime::DateTime (time_t unixTime)
 	#endif
 }
 
+DateTime::DateTime (struct tm tmTime)
+	: fTimezone_ (eUnknown_TZ)
+	, fDate_ ()
+	, fTimeOfDay_ ()
+{
+	AssertNotImplemented ();	// MUST DO SOON!
+}
+
 #if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime)
 	: fTimezone_ (eUnknown_TZ)
@@ -178,11 +187,11 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF: {
 			#if			qPlatform_Windows
+				Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - probably none
+																						// added to test 2011-10-07
 				return Parse (rep, LOCALE_USER_DEFAULT);
-			#elif	qPlatform_POSIX
-					AssertNotImplemented ();
 			#else
-					AssertNotImplemented ();
+				return Parse (rep, locale ());
 			#endif
 			return DateTime ();
 		}
@@ -221,6 +230,25 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 		}
 		break;
 	}
+}
+
+DateTime	DateTime::Parse (const wstring& rep, const locale& l)
+{
+	if (rep.empty ()) {
+		return Date ();
+	}
+	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
+	ios::iostate state	=	ios::goodbit;
+	wistringstream iss (rep);
+	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
+	istreambuf_iterator<wchar_t> itend;          // end-of-stream
+	tm when;
+	memset (&when, 0, sizeof (when));
+	tmget.get_date (itbegin, itend, iss, state, &when);
+	#if		qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+		when.tm_year -= 1900;
+	#endif
+	return DateTime (when);
 }
 
 #if		qPlatform_Windows
@@ -342,6 +370,22 @@ wstring	DateTime::Format (PrintFormat pf) const
 		}
 		break;
 	}
+}
+
+wstring	DateTime::Format (const locale& l) const
+{
+	if (empty ()) {
+		return wstring ();
+	}
+	// http://new.cplusplus.com/reference/std/locale/time_put/put/
+	const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
+	tm when	=	As<struct tm> ();
+	wostringstream oss;
+	// Read docs - not sure how to use this to get the local-appropriate format
+	// %X MAYBE just what we want  - locale DEPENDENT!!!
+	wchar_t pattern[]=L"%x%X";
+	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
+	return oss.str ();
 }
 
 #if		qPlatform_Windows

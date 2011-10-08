@@ -7,6 +7,8 @@
 #include	"../StroikaPreComp.h"
 
 #include	<climits>
+#include	<ctime>
+#include	<locale>
 #include	<string>
 
 #if		qPlatform_Windows
@@ -19,6 +21,8 @@
 #include	"Date.h"
 #include	"TimeOfDay.h"
 #include	"Timezone.h"
+
+
 
 
 /*
@@ -71,10 +75,10 @@ namespace	Stroika {
 			 *
 			 *		There are 3 possabilities for timezone - LOCALTIME, GMT, and UNKNOWN.
 			 *
-			 *		'empty' concept
-			 *			Treat it internally as DISTINCT from any other time. However, when converting it to a number of seconds since midnight or whatever,
-			 *			treat empty as DateTime::kMin. For format routine, return empty string. (this defintion must propagate to DATE and TIMEOFDAY - and must be documetned
-			 *			there as well. AND IMPLEMENTED. Already encoeded in one regression tests (which we now fail).
+			 *		'empty' concept:
+			 *			Treat it as DISTINCT from any other DateTime. However, when converting it to a number of seconds or days (JulienRep),
+			 *			treat empty as DateTime::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
+			 *			This is a bit like the floating point concept of negative infinity.
 			 */
 			class	DateTime {
 				public:
@@ -96,6 +100,7 @@ namespace	Stroika {
 
 				public:
 					explicit DateTime (time_t unixTime);
+					explicit DateTime (struct tm tmTime);
 
 				#if		qPlatform_Windows
 				public:
@@ -109,6 +114,7 @@ namespace	Stroika {
 						eXML_PF,
 					};
 					static	DateTime	Parse (const wstring& rep, PrintFormat pf);
+					static	DateTime	Parse (const wstring& rep, const locale& l);
 				#if		qPlatform_Windows
 					static	DateTime	Parse (const wstring& rep, LCID lcid);
 				#endif
@@ -144,6 +150,7 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;
+					nonvirtual	wstring	Format (const locale& l) const;
 
 					#if		qPlatform_Windows
 					nonvirtual	wstring	Format (LCID lcid) const;
@@ -165,13 +172,6 @@ namespace	Stroika {
 
 
 				public:
-					/*
-					 * 	Returns seconds since midnight 1970 (its independent of timezone)
-<<< OBSOLETE - USE As<time_t> () instead!
-					 */
-nonvirtual	time_t	GetUNIXEpochTime () const;
-
-				public:
 					nonvirtual	Date		GetDate () const;		// careful of timezone issues? (always in current timezone - I guess)
 					nonvirtual	TimeOfDay	GetTimeOfDay () const;	// ditto
 					nonvirtual	void		SetDate (const Date& d);
@@ -184,6 +184,9 @@ nonvirtual	time_t	GetUNIXEpochTime () const;
 					TimeOfDay	fTimeOfDay_;
 					Timezone	fTimezone_;
 			};
+			/*
+			 * 	Returns seconds since midnight 1970 (its independent of timezone). This is UNIX 'Epoch time'.
+			 */
 			template	<>
 				time_t	DateTime::As () const;
 			template	<>
@@ -192,7 +195,6 @@ nonvirtual	time_t	GetUNIXEpochTime () const;
 			template	<>
 				SYSTEMTIME	DateTime::As () const;
 			#endif
-inline time_t	DateTime::GetUNIXEpochTime () const { return As<time_t> (); }
 
 
 			bool operator< (const DateTime& lhs, const DateTime& rhs);
