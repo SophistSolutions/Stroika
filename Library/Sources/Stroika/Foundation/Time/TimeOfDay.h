@@ -57,6 +57,14 @@ namespace	Stroika {
 			 */
 			class	TimeOfDay {
 				public:
+					/*
+					 * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay
+					 *
+					 *		SB constexpr uint32_t	!!
+					 */
+					enum { kMaxSecondsPerDay = 60 * 60 * 24 };
+
+				public:
 					TimeOfDay ();
 
 					// If value out of range - pinned to kMax

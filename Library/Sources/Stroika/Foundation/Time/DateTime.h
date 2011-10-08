@@ -193,6 +193,20 @@ namespace	Stroika {
 					nonvirtual	void		SetDate (const Date& d);
 					nonvirtual	void		SetTimeOfDay (const TimeOfDay& tod);
 
+
+				public:
+					/*
+					 * Add the given number of days to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
+					 * for timezone issues. It doesn't modify this.
+					 */
+					nonvirtual	DateTime	AddDays (int days) const;
+					/*
+					 * Add the given number of seconds to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
+					 * for timezone issues. It doesn't modify this.
+					 */
+					nonvirtual	DateTime	AddSeconds (time_t seconds) const;
+
+
 				public:
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
 					// this comparison function - see the notes about 'empty' in the class description.

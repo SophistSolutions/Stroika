@@ -20,6 +20,19 @@ using	namespace	Stroika::Foundation::Time;
 
 time_t	Time::GetLocaltimeToGMTOffset ()
 {
+	#if		0
+		// WRONG - but COULD use this API - but not sure needed
+		#if		qPlatform_Windows
+			TIME_ZONE_INFORMATION	tzInfo;
+			memset (&tzInfo, 0, sizeof (tzInfo));
+			(void)::GetTimeZoneInformation (&tzInfo);
+			int unsignedBias	=	abs (tzInfo.Bias);
+			int	hrs	=	unsignedBias / 60;
+			int mins = unsignedBias - hrs * 60;
+			tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
+		#endif
+	#endif
+
 	/*
 	 * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
 	 * timezone global var???

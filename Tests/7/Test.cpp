@@ -126,7 +126,8 @@ namespace	{
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ());
 				VerifyTestResult (DateTime::Now () > d);
-				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::eGMT_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
+				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00Z");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 		}
 
@@ -143,7 +144,8 @@ namespace	{
 				VerifyTestResult (d.As<time_t> () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3 p.m.", TimeOfDay::eCurrentLocale_PF));
+				//DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
 				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{

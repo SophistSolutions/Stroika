@@ -217,7 +217,16 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 			int	tzMn	=	0;
 			#pragma	warning (push)
 			#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
-			int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
+			int	nItems	=	0;
+			bool	tzKnown	=	false;
+			if (rep[rep.length ()-1] == 'Z') {
+				nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%dZ", &year, &month, &day, &hour, &minute, &second);
+				tzKnown = true;
+			}
+			else {
+				nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
+				tzKnown = (nItems >= 7);
+			}
 			#pragma warning (pop)
 			Date		d;
 			TimeOfDay	t;
@@ -227,11 +236,18 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 			if (nItems >= 5) {
 				t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
 			}
-			if (nItems >= 8) {
+			Timezone	tz	=	eUnknown_TZ;
+			if (tzKnown) {
+				tz = eGMT_TZ;	// really wrong - should map given time to UTC??? - check HR value ETC
+
 				// CHECK TZ
 				// REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
+				// not sure what todo if READ tz doesn't match localtime? Maybe convert to GMT??
 			}
-			return DateTime (d, t);
+			else {
+				tz = eLocalTime_TZ;
+			}
+			return DateTime (d, t, tz);
 		}
 		break;
 		default: {
@@ -287,8 +303,8 @@ DateTime	DateTime::Parse (const wstring& rep, LCID lcid)
 DateTime	DateTime::AsLocalTime () const
 {
 	if (GetTimezone () == eGMT_TZ) {
-		AssertNotImplemented ();	// must convert....
-		return *this;
+		DateTime	tmp	=	AddSeconds (-GetLocaltimeToGMTOffset ());
+		return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eLocalTime_TZ);
 	}
 	else {
 		// treat BOTH unknown and localetime as localtime
@@ -302,9 +318,8 @@ DateTime	DateTime::AsGMT () const
 		return *this;
 	}
 	else {
-		// treat BOTH unknown and localetime as localtime
-		AssertNotImplemented ();	// must convert....
-		return *this;
+		DateTime	tmp	=	AddSeconds (GetLocaltimeToGMTOffset ());
+		return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eGMT_TZ);
 	}
 }
 
@@ -358,8 +373,20 @@ wstring	DateTime::Format (PrintFormat pf) const
 				wcsftime (buf, NEltsOf (buf), L"%H:%M:%S", &temp);
 
 				wstring	tzBiasString;
-				if (GetTimezone () != eGMT_TZ) {
-					#if		qPlatform_Windows
+				if (GetTimezone () == eGMT_TZ) {
+					tzBiasString = L"Z";
+				}
+				else {
+					#if		1
+						{
+							// TRY TODO PORTABLY...
+							time_t	tzBias		=	GetLocaltimeToGMTOffset ();
+							int minuteBias		=	abs (static_cast<int> (tzBias)) / 60;
+							int	hrs				=	minuteBias / 60;
+							int mins			=	minuteBias - hrs * 60;
+							tzBiasString = ::Format (L"%s%.2d:%.2d", (tzBias < 0? L"-": L"+"), hrs, mins);
+						}
+					#elif	qPlatform_Windows
 						TIME_ZONE_INFORMATION	tzInfo;
 						memset (&tzInfo, 0, sizeof (tzInfo));
 						(void)::GetTimeZoneInformation (&tzInfo);
@@ -377,7 +404,18 @@ wstring	DateTime::Format (PrintFormat pf) const
 				}
 				r += wstring (L"T") + buf + tzBiasString;
 			}
-			Assert (DateTime::Parse (r, eXML_PF) == *this);
+			#if		qDebug
+				{
+					// TODO:
+					//		This probably shouldn't be needed!!! - think through more carefully.
+					//			--LGP 2011-10-07
+					DateTime	parsed	=	DateTime::Parse (r, eXML_PF);
+					if (parsed.GetTimezone () != GetTimezone ()) {
+						parsed = DateTime (parsed.GetDate (), parsed.GetTimeOfDay (), parsed.GetTimezone ());
+					}
+					Assert (parsed == *this);
+				}
+			#endif
 			return r;
 		}
 		break;
@@ -523,6 +561,38 @@ void	DateTime::SetDate (const Date& d)
 void		DateTime::SetTimeOfDay (const TimeOfDay& tod)
 {
 	fTimeOfDay_ = tod;
+}
+
+DateTime	DateTime::AddDays (int days) const
+{
+	Date	d	=	GetDate ();
+	d = d.AddDays (days);
+	return DateTime (d, GetTimeOfDay (), GetTimezone ());
+}
+
+DateTime	DateTime::AddSeconds (time_t seconds) const
+{
+	/* TODO - SHOULD BE MORE CAREFUL ABOUT OVERFLOW */
+	time_t	n	=	GetTimeOfDay ().GetAsSecondsCount ();
+	n += seconds;
+	int	dayDiff	=	0;
+	if (n < 0) {
+		dayDiff = int (- (-n + time_t (TimeOfDay::kMaxSecondsPerDay) - 1) / time_t (TimeOfDay::kMaxSecondsPerDay));
+		Assert (dayDiff < 0);
+	}
+	n -= dayDiff * TimeOfDay::kMaxSecondsPerDay;
+	Assert (n >= 0);
+
+	// Now see if we overflowed
+	if (n > TimeOfDay::kMaxSecondsPerDay) {
+		Assert (dayDiff == 0);
+		dayDiff = int (n / time_t (TimeOfDay::kMaxSecondsPerDay));
+		n -= dayDiff * TimeOfDay::kMaxSecondsPerDay;
+	}
+	Assert (n >= 0);
+
+	Ensure (0 <= n and n < TimeOfDay::kMaxSecondsPerDay);
+	return DateTime (GetDate ().AddDays (dayDiff), TimeOfDay (n), GetTimezone ());
 }
 
 int	DateTime::Compare (const DateTime& rhs) const
