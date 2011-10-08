@@ -357,52 +357,21 @@ wstring	DateTime::Format (PrintFormat pf) const
 		}
 		break;
 		case	eXML_PF: {
-			wstring	r	=	fDate_.Format (Date::eXML_PF);
-			if (not fTimeOfDay_.empty ()) {
-				// be sure using DateWithOptionalTime
-
-				// something like append T22:33:11 - apx...
-				wchar_t	buf[1024];
-				buf[0] = 0;
-				unsigned int	t	=	fTimeOfDay_.GetAsSecondsCount ();
-				struct tm	 temp;
-				memset (&temp, 0, sizeof (temp));
-				temp.tm_hour = t/(60*60);
-				temp.tm_min = (t - temp.tm_hour * 60 * 60) / 60;
-				temp.tm_sec = (t - temp.tm_hour * 60 * 60 - temp.tm_min * 60);
-				wcsftime (buf, NEltsOf (buf), L"%H:%M:%S", &temp);
-
-				wstring	tzBiasString;
+			wstring	r		=	fDate_.Format (Date::eXML_PF);
+			wstring	timeStr	=	fTimeOfDay_.Format (TimeOfDay::eXML_PF);
+			if (not timeStr.empty ()) {
+				r += L"T" + timeStr;
 				if (GetTimezone () == eUTC_TZ) {
-					tzBiasString = L"Z";
+					r += L"Z";
 				}
 				else {
-					#if		1
-						{
-							// TRY TODO PORTABLY...
-							time_t	tzBias		=	GetLocaltimeToGMTOffset ();
-							int minuteBias		=	abs (static_cast<int> (tzBias)) / 60;
-							int	hrs				=	minuteBias / 60;
-							int mins			=	minuteBias - hrs * 60;
-							tzBiasString = ::Format (L"%s%.2d:%.2d", (tzBias < 0? L"-": L"+"), hrs, mins);
-						}
-					#elif	qPlatform_Windows
-						TIME_ZONE_INFORMATION	tzInfo;
-						memset (&tzInfo, 0, sizeof (tzInfo));
-						(void)::GetTimeZoneInformation (&tzInfo);
-						int unsignedBias	=	abs (tzInfo.Bias);
-						int	hrs	=	unsignedBias / 60;
-						int mins = unsignedBias - hrs * 60;
-						tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
-					#elif	qPlatform_POSIX
-						//AssertNotImplemented ();
-						// WRONG - but let things limp along for a little while...
-						//		--:LGP 2011-09-28
-					#else
-						AssertNotImplemented ();
-					#endif
+					// TRY TODO PORTABLY...
+					time_t	tzBias		=	GetLocaltimeToGMTOffset ();
+					int minuteBias		=	abs (static_cast<int> (tzBias)) / 60;
+					int	hrs				=	minuteBias / 60;
+					int mins			=	minuteBias - hrs * 60;
+					r +=  ::Format (L"%s%.2d:%.2d", (tzBias < 0? L"-": L"+"), hrs, mins);
 				}
-				r += wstring (L"T") + buf + tzBiasString;
 			}
 			#if		qDebug
 				{

@@ -229,8 +229,10 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
-				Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - probably none
-																						// added to test 2011-10-07
+				#if		0
+					Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - probably none
+																							// added to test 2011-10-07
+				#endif
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
 				return Parse (rep, locale ());
