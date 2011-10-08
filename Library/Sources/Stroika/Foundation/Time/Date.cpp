@@ -134,9 +134,7 @@ namespace	{
  ************************************** Date ************************************
  ********************************************************************************
  */
-
-//const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));	//year eFirstYear  - January
-const	Date	Date::kMin	=	Date (Date::JulianRepType (2361222));	//year eFirstYear  - January
+const	Date	Date::kMin	=	Date (Date::JulianRepType (Date::kMinJulianRep));
 const	Date	Date::kMax	=	Date (Date::JulianRepType (UINT_MAX-1));
 
 Date::Date ()
@@ -162,6 +160,8 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF: {
 			#if		qPlatform_Windows
+				Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - probably none
+																						// added to test 2011-10-07
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#else
 				return Parse (rep, locale ());
@@ -205,6 +205,9 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 
 Date	Date::Parse (const wstring& rep, const locale& l)
 {
+	if (rep.empty ()) {
+		return Date ();
+	}
 	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
 	ios::iostate state	=	ios::goodbit;
 	wistringstream iss (rep);
@@ -225,21 +228,19 @@ Date	Date::Parse (const wstring& rep, LCID lcid)
 	if (rep.empty ()) {
 		return Date ();
 	}
-	else {
-		DATE		d;
-		(void)::memset (&d, 0, sizeof (d));
-		try {
-			ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
-		}
-		catch (...) {
-			Execution::DoThrow (FormatException ());
-		}
-		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-		SYSTEMTIME	sysTime;
-		memset (&sysTime, 0, sizeof (sysTime));
-		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		return Date (Safe_jday_ (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)));
+	DATE		d;
+	(void)::memset (&d, 0, sizeof (d));
+	try {
+		ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
 	}
+	catch (...) {
+		Execution::DoThrow (FormatException ());
+	}
+	// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+	SYSTEMTIME	sysTime;
+	memset (&sysTime, 0, sizeof (sysTime));
+	Verify (::VariantTimeToSystemTime (d, &sysTime));
+	return Date (Safe_jday_ (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)));
 }
 #endif
 
@@ -299,6 +300,9 @@ wstring	Date::Format (PrintFormat pf) const
 
 wstring	Date::Format (const locale& l) const
 {
+	if (empty ()) {
+		return wstring ();
+	}
 	// http://new.cplusplus.com/reference/std/locale/time_put/put/
 	const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
 	tm when	=	Date2TM_ (*this);
@@ -313,6 +317,9 @@ wstring	Date::Format (const locale& l) const
 #if		qPlatform_Windows
 wstring	Date::Format (LCID lcid) const
 {
+	if (empty ()) {
+		return wstring ();
+	}
 	SYSTEMTIME	st	=	toSYSTEM_ (*this);
 	int	nTChars	=	::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, nullptr, 0);
 	if (nTChars == 0) {
@@ -327,6 +334,9 @@ wstring	Date::Format (LCID lcid) const
 
 wstring	Date::Format (const TString& format, LCID lcid) const
 {
+	if (empty ()) {
+		return wstring ();
+	}
 	SYSTEMTIME	st	=	toSYSTEM_ (*this);
 	int	nTChars	=	::GetDateFormat (lcid, 0, &st, format.c_str (), nullptr, 0);
 	if (nTChars == 0) {
@@ -343,6 +353,9 @@ wstring	Date::Format (const TString& format, LCID lcid) const
 #if		qPlatform_Windows
 wstring	Date::LongFormat (LCID lcid) const
 {
+	if (empty ()) {
+		return wstring ();
+	}
 	SYSTEMTIME	st	=	toSYSTEM_ (*this);
 	int	nTChars	=	::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
 	if (nTChars == 0) {

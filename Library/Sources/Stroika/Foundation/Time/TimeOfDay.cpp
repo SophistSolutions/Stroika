@@ -263,6 +263,9 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 
 TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
 {
+	if (rep.empty ()) {
+		return TimeOfDay ();
+	}
 	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
 	ios::iostate state	=	ios::goodbit;
 	wistringstream iss (rep);
@@ -341,6 +344,9 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 
 wstring	TimeOfDay::Format (const locale& l) const
 {
+	if (empty ()) {
+		return wstring ();
+	}
 	// http://new.cplusplus.com/reference/std/locale/time_put/put/
 	const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
 	tm when;
@@ -355,17 +361,6 @@ wstring	TimeOfDay::Format (const locale& l) const
 	wchar_t pattern[]=L"%X";
 	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
 	return oss.str ();
-}
-
-void	TimeOfDay::ClearSecondsField ()
-{
-	int hour = fTime_/(60*60);
-	int minutes = (fTime_ - hour * 60 * 60) / 60;
-	int secs = fTime_ - hour * 60 * 60 - minutes * 60;
-	Assert (hour >= 0 and hour < 24);
-	Assert (minutes >= 0 and minutes < 60);
-	Assert (secs >= 0 and secs < 60);
-	fTime_ -= secs;
 }
 
 #if		qPlatform_Windows
@@ -385,4 +380,15 @@ wstring	TimeOfDay::Format (LCID lcid) const
 	}
 }
 #endif
+
+void	TimeOfDay::ClearSecondsField ()
+{
+	int hour = fTime_/(60*60);
+	int minutes = (fTime_ - hour * 60 * 60) / 60;
+	int secs = fTime_ - hour * 60 * 60 - minutes * 60;
+	Assert (hour >= 0 and hour < 24);
+	Assert (minutes >= 0 and minutes < 60);
+	Assert (secs >= 0 and secs < 60);
+	fTime_ -= secs;
+}
 
