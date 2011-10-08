@@ -170,6 +170,9 @@ namespace	Stroika {
 					 *		struct tm
 					 *		SYSTEMTIME			(WINDOWS ONLY)
 					 *		Date
+					 *
+					 *	NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
+					 *	logically extends Date with extra (TOD) information.
 					 */
 					template	<typename T>
 						T	As () const;
@@ -180,10 +183,6 @@ namespace	Stroika {
 					nonvirtual	TimeOfDay	GetTimeOfDay () const;	// ditto
 					nonvirtual	void		SetDate (const Date& d);
 					nonvirtual	void		SetTimeOfDay (const TimeOfDay& tod);
-#if 0
-			public:
-					nonvirtual	operator Date () const;
-#endif
 
 				private:
 					Date		fDate_;
