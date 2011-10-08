@@ -339,12 +339,8 @@ wstring	DateTime::Format (PrintFormat pf) const
 		case	eCurrentLocale_PF: {
 			#if		qPlatform_Windows
 				return Format (LOCALE_USER_DEFAULT);
-			#elif	qPlatform_POSIX
-				AssertNotImplemented ();
-				return wstring ();
 			#else
-				AssertNotImplemented ();
-				return wstring ();
+				return Format (locale ());
 			#endif
 		}
 		break;
