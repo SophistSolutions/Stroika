@@ -4,8 +4,9 @@
 #include	"../StroikaPreComp.h"
 
 #include	<algorithm>
-
 #include	<ctime>
+#include	<sstream>
+
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
 #elif	qPlatform_POSIX
@@ -34,8 +35,8 @@ using	namespace	Time;
 
 
 
-namespace	{
 #if		qPlatform_Windows
+namespace	{
 	SYSTEMTIME toSYSTEM_ (const Date& date)
 		{
 			SYSTEMTIME	st;
@@ -49,9 +50,79 @@ namespace	{
 			st.wDay = d;
 			return st;
 		}
+}
 #endif
+
+
+
+namespace	{
+	/*
+	 * Convert Gregorian calendar date to the corresponding Julian day number
+	 * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
+	 * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
+	 * This function not valid before that.
+	 *
+	 * (This code originally from NIHCL)
+	 */
+	Date::JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year)
+		{
+			if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
+				return Date::kEmptyJulianRep;
+			}
+
+			Require (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14))));
+
+			Date::JulianRepType	c;
+			Date::JulianRepType	ya;
+			if (month > 2) {
+				month = static_cast<MonthOfYear> (month - 3);
+			}
+			else {
+				month = static_cast<MonthOfYear> (month + 9);
+				year = static_cast<Year> (year - 1);
+			}
+			c = year / 100;
+			ya = year - 100*c;
+			return (((146097*c)>>2) + ((1461*ya)>>2) + (153*month + 2)/5 + day + 1721119);
+		}
 }
 
+namespace	{
+	Date::JulianRepType	Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+		{
+			// 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
+
+			if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
+				return Date::kEmptyJulianRep;
+			}
+			if (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14)))) {
+				return jday_ (month, day, year);
+			}
+			else {
+				return Date::kEmptyJulianRep;
+			}
+		}
+}
+
+
+namespace	{
+	Date	AsDate_ (const tm& when)
+		{
+			return Date (Safe_jday_ (MonthOfYear (when.tm_mon+1), DayOfMonth (when.tm_mday), Year (when.tm_year+1900)));
+		}
+}
+
+namespace	{
+	tm	Date2TM_ (const Date& d)
+		{
+			struct tm tm;
+			memset(&tm, 0, sizeof(tm));
+			tm.tm_year = d.GetYear () - 1900;
+			tm.tm_mon = d.GetMonth () - 1;
+			tm.tm_mday = d.GetDayOfMonth ();
+			return tm;
+		}
+}
 
 
 
@@ -83,27 +154,6 @@ Date::Date (Year year, MonthOfYear month, DayOfMonth day)
 {
 }
 
-#if		qPlatform_POSIX
-namespace	{
-	// VERY PRIMITIVE UNIX
-	void convert_iso8601 (const char *time_string, struct tm *tm_data)
-		{
-#if 1
-		strptime(time_string, "%FT%T%z", tm_data);
-#else
-			tzset();
-
-			struct tm ctime;
-			memset(&ctime, 0, sizeof(struct tm));
-			strptime(time_string, "%FT%T%z", &ctime);
-
-			long ts = mktime(&ctime) - timezone;
-			localtime_r (&ts, tm_data);
-#endif
-		}
-}
-#endif
-
 Date	Date::Parse (const wstring& rep, PrintFormat pf)
 {
 	if (rep.empty ()) {
@@ -114,7 +164,7 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 			#if		qPlatform_Windows
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#else
-				AssertNotImplemented ();
+				return Parse (rep, locale ());
 			#endif
 		}
 		break;
@@ -124,10 +174,9 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
 				struct tm tm;
-				memset(&tm, 0, sizeof(struct tm));
-		// horrible hack - very bad... but hopefully gets us limping along...
-				string tmp = WideStringToASCII (rep);
-				convert_iso8601 (tmp.c_str (), &tm);
+				memset (&tm, 0, sizeof(struct tm));
+				// horrible hack - very bad... but hopefully gets us limping along...
+				strptime (Characters::WideStringToNarrowSDKString (rep).c_str (), "%FT%T%z", &tm);
 				return Date (Safe_jday_ (MonthOfYear (tm.tm_mon+1), DayOfMonth (tm.tm_mday), Year (tm.tm_year+1900)));
 			#else
 				AssertNotImplemented ();
@@ -152,6 +201,18 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 		}
 		break;
 	}
+}
+
+Date	Date::Parse (const wstring& rep, const locale& l)
+{
+	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
+	ios::iostate state;
+	wistringstream iss (rep);
+	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
+	istreambuf_iterator<wchar_t> itend;          // end-of-stream
+	tm when;
+	tmget.get_time (itbegin, itend, iss, state, &when);
+	return Date (Safe_jday_ (MonthOfYear (when.tm_mon+1), DayOfMonth (when.tm_mday), Year (when.tm_year+1900)));
 }
 
 #if		qPlatform_Windows
@@ -230,6 +291,21 @@ wstring	Date::Format (PrintFormat pf) const
 		}
 		break;
 	}
+}
+
+wstring	Date::Format (const locale& l) const
+{
+	// http://new.cplusplus.com/reference/std/locale/time_put/put/
+	const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
+	tm when	=	Date2TM_ (*this);
+	wostringstream oss;
+	// Read docs - not sure how to use this to get the local-appropriate format
+	// %X MAYBE just what we want  - locale DEPENDENT!!!
+	wchar_t pattern[]=L"%X";
+	//wchar_t pattern[]=L"Now it's: %I:%M%p\n";
+	//wchar_t pattern[]=L"%I:%M%p";
+	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
+	return oss.str ();
 }
 
 #if		qPlatform_Windows
@@ -328,51 +404,6 @@ DayOfMonth	Date::GetDayOfMonth () const
 	Ensure (empty () or 1 <= d and d <= 31);
 	Ensure (0 <= d and d <= 31);
 	return d;
-}
-
-/*
- * Convert Gregorian calendar date to the corresponding Julian day number
- * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
- * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
- * This function not valid before that.
- *
- * (This code originally from NIHCL)
- */
-Date::JulianRepType	Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
-{
-	if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
-		return kEmptyJulianRep;
-	}
-
-	Require (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14))));
-
-	JulianRepType	c;
-	JulianRepType	ya;
-	if (month > 2) {
-		month = static_cast<MonthOfYear> (month - 3);
-	}
-	else {
-		month = static_cast<MonthOfYear> (month + 9);
-		year = static_cast<Year> (year - 1);
-	}
-	c = year / 100;
-	ya = year - 100*c;
-	return (((146097*c)>>2) + ((1461*ya)>>2) + (153*month + 2)/5 + day + 1721119);
-}
-
-Date::JulianRepType	Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
-{
-	// 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
-
-	if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
-		return kEmptyJulianRep;
-	}
-	if (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14)))) {
-		return jday_ (month, day, year);
-	}
-	else {
-		return kEmptyJulianRep;
-	}
 }
 
 /*

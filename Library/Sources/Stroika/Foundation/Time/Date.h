@@ -157,6 +157,7 @@ namespace	Stroika {
 						eJavascript_PF,
 					};
 					static	Date	Parse (const wstring& rep, PrintFormat pf);
+					static	Date	Parse (const wstring& rep, const locale& l);
 				#if		qPlatform_Windows
 					static	Date	Parse (const wstring& rep, LCID lcid);
 				#endif
@@ -183,6 +184,7 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;
+					nonvirtual	wstring	Format (const locale& l) const;
 
 				#if		qPlatform_Windows
 				public:
@@ -208,10 +210,6 @@ namespace	Stroika {
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
 					// this comparison function - see the notes about 'empty' in the class description.
 					nonvirtual	int	Compare (const Date& rhs) const;
-
-				private:
-					static 		JulianRepType	jday_ (MonthOfYear month, DayOfMonth day, Year year);
-					static 		JulianRepType	Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
 				private:
 					JulianRepType	fJulianDateRep_;
