@@ -94,7 +94,7 @@ namespace	Stroika {
 					 */
 					enum Timezone {
 						eLocalTime_TZ,
-						eGMT_TZ,
+						eUTC_TZ,
 						eUnknown_TZ,
 					};
 
@@ -154,11 +154,11 @@ namespace	Stroika {
 
 				public:
 					// Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
-					// conversion is also unknown (but either treat Kind as localtime or GMT)
+					// conversion is also unknown (but either treat Kind as localtime or UTC)
 					nonvirtual	DateTime	AsLocalTime () const;
-					// Creates a new DateTime object known to be in GMT. If this DateTime is unknown, then the
-					// conversion is also unknown (but either treat Kind as localtime or GMT)
-					nonvirtual	DateTime	AsGMT () const;
+					// Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
+					// conversion is also unknown (but either treat Kind as localtime or UTC)
+					nonvirtual	DateTime	AsUTC () const;
 
 				public:
 					nonvirtual	wstring	Format (PrintFormat pf = eCurrentLocale_PF) const;

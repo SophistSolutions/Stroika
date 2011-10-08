@@ -126,7 +126,7 @@ namespace	{
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ());
 				VerifyTestResult (DateTime::Now () > d);
-				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::eGMT_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
+				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::eUTC_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
 				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00Z");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 		}

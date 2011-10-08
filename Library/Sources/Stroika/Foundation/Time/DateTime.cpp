@@ -238,7 +238,7 @@ DateTime	DateTime::Parse (const wstring& rep, PrintFormat pf)
 			}
 			Timezone	tz	=	eUnknown_TZ;
 			if (tzKnown) {
-				tz = eGMT_TZ;	// really wrong - should map given time to UTC??? - check HR value ETC
+				tz = eUTC_TZ;	// really wrong - should map given time to UTC??? - check HR value ETC
 
 				// CHECK TZ
 				// REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
@@ -302,7 +302,7 @@ DateTime	DateTime::Parse (const wstring& rep, LCID lcid)
 
 DateTime	DateTime::AsLocalTime () const
 {
-	if (GetTimezone () == eGMT_TZ) {
+	if (GetTimezone () == eUTC_TZ) {
 		DateTime	tmp	=	AddSeconds (-GetLocaltimeToGMTOffset ());
 		return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eLocalTime_TZ);
 	}
@@ -312,14 +312,14 @@ DateTime	DateTime::AsLocalTime () const
 	}
 }
 
-DateTime	DateTime::AsGMT () const
+DateTime	DateTime::AsUTC () const
 {
-	if (GetTimezone () == eGMT_TZ) {
+	if (GetTimezone () == eUTC_TZ) {
 		return *this;
 	}
 	else {
 		DateTime	tmp	=	AddSeconds (GetLocaltimeToGMTOffset ());
-		return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eGMT_TZ);
+		return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eUTC_TZ);
 	}
 }
 
@@ -373,7 +373,7 @@ wstring	DateTime::Format (PrintFormat pf) const
 				wcsftime (buf, NEltsOf (buf), L"%H:%M:%S", &temp);
 
 				wstring	tzBiasString;
-				if (GetTimezone () == eGMT_TZ) {
+				if (GetTimezone () == eUTC_TZ) {
 					tzBiasString = L"Z";
 				}
 				else {
@@ -592,7 +592,7 @@ DateTime	DateTime::AddSeconds (time_t seconds) const
 	Assert (n >= 0);
 
 	Ensure (0 <= n and n < TimeOfDay::kMaxSecondsPerDay);
-	return DateTime (GetDate ().AddDays (dayDiff), TimeOfDay (n), GetTimezone ());
+	return DateTime (GetDate ().AddDays (dayDiff), TimeOfDay (static_cast<uint32_t> (n)), GetTimezone ());
 }
 
 int	DateTime::Compare (const DateTime& rhs) const
@@ -614,7 +614,7 @@ int	DateTime::Compare (const DateTime& rhs) const
 		return cmp;
 	}
 	else {
-		return AsGMT ().Compare (rhs.AsGMT ());
+		return AsUTC ().Compare (rhs.AsUTC ());
 	}
 }
 
