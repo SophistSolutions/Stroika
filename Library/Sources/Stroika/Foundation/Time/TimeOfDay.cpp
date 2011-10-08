@@ -229,7 +229,8 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
-Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
+				Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - probably none
+																						// added to test 2011-10-07
 				return Parse (rep, LOCALE_USER_DEFAULT);
 			#elif	qPlatform_POSIX
 				return Parse (rep, locale ());
@@ -263,7 +264,7 @@ Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));	// not a RE
 TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
 {
 	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
-	ios::iostate state;
+	ios::iostate state	=	0;
 	wistringstream iss (rep);
 	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
 	istreambuf_iterator<wchar_t> itend;          // end-of-stream
@@ -313,10 +314,10 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
-#if 0
-// %X in strformat() doesnt seem to be using Win32 GetLocale stuff??? For times... -- LGP 2011-10-07
-Assert (Format (LOCALE_USER_DEFAULT) == Format (locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
-#endif
+				#if 0
+				// %X in strformat() doesnt seem to be using Win32 GetLocale stuff??? For times... -- LGP 2011-10-07
+				Assert (Format (LOCALE_USER_DEFAULT) == Format (locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
+				#endif
 				return Format (LOCALE_USER_DEFAULT);
 			#else
 				Format (locale ());
@@ -348,11 +349,10 @@ wstring	TimeOfDay::Format (const locale& l) const
 	when.tm_min = GetMinutes ();
 	when.tm_sec = GetSeconds ();
 	wostringstream oss;
-	// Read docs - not sure how to use this to get the local-appropriate format
-	// %X MAYBE just what we want  - locale DEPENDENT!!!
-	wchar_t pattern[]=L"%X";
 	//wchar_t pattern[]=L"Now it's: %I:%M%p\n";
 	//wchar_t pattern[]=L"%I:%M%p";
+	// %X MAYBE just what we want  - locale DEPENDENT!!!
+	wchar_t pattern[]=L"%X";
 	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
 	return oss.str ();
 }

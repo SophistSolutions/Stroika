@@ -206,13 +206,14 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 Date	Date::Parse (const wstring& rep, const locale& l)
 {
 	const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
-	ios::iostate state;
+	ios::iostate state = 0;
 	wistringstream iss (rep);
 	istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
 	istreambuf_iterator<wchar_t> itend;          // end-of-stream
 	tm when;
-	tmget.get_time (itbegin, itend, iss, state, &when);
-	return Date (Safe_jday_ (MonthOfYear (when.tm_mon+1), DayOfMonth (when.tm_mday), Year (when.tm_year+1900)));
+	memset (&when, 0, sizeof (when));
+	tmget.get_date (itbegin, itend, iss, state, &when);
+	return Date (Safe_jday_ (MonthOfYear (when.tm_mon+1), DayOfMonth (when.tm_mday), Year (when.tm_year)));
 }
 
 #if		qPlatform_Windows
@@ -301,9 +302,7 @@ wstring	Date::Format (const locale& l) const
 	wostringstream oss;
 	// Read docs - not sure how to use this to get the local-appropriate format
 	// %X MAYBE just what we want  - locale DEPENDENT!!!
-	wchar_t pattern[]=L"%X";
-	//wchar_t pattern[]=L"Now it's: %I:%M%p\n";
-	//wchar_t pattern[]=L"%I:%M%p";
+	wchar_t pattern[]=L"%x";
 	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
 	return oss.str ();
 }

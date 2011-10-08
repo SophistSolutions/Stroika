@@ -84,7 +84,7 @@ namespace	{
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
 			}
 			{
-				Date	d	=	Date::Parse (L"1752-09-14", Date::eCurrentLocale_PF);
+				Date	d	=	Date::Parse (L"09/14/1752", locale::classic ());
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d == Date::kMin);
 				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
