@@ -183,6 +183,14 @@ namespace	{
 				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::eUTC_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
 				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00Z");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
+			#if		qPlatform_Windows
+			{
+				const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
+				wstring	testCase	=	L"2010-01-01";
+				//TODO: FIX SO THIS WORKS... (or come up with better test)
+				//VerifyTestResult (DateTime::Parse (testCase, kUS_ENGLISH_LOCALE) == DateTime::Parse (testCase, locale::classic ()));
+			}
+			#endif
 		}
 
 }
