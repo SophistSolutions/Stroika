@@ -20,9 +20,13 @@
 
 /*
  * SHORT TERM - TODAY - TODO:
-
-
-
+ *
+ *		o	needs ability to return like time_t – but as DOUBLE – because can be fractional.
+ *			Needs to be able to represent times in milliseconds.
+ *			Should also interoperate with Time::DiurationInSeconds
+ *
+ *
+ *
  */
 
 
