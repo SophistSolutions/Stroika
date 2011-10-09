@@ -232,6 +232,36 @@ namespace	{
 
 
 
+
+
+
+
+namespace	{
+
+	void	Test_6_Duration_ ()
+		{
+			const	int	kSecondsPerDay		=	TimeOfDay::kMaxSecondsPerDay;
+			{
+				const	Duration	k30Days		=	Duration (L"P30D");
+				VerifyTestResult (k30Days == 30 * kSecondsPerDay);
+			}
+			{
+				const	Duration	k6Months		=	Duration (L"P6M");
+				VerifyTestResult (k6Months == 6 * 30 * kSecondsPerDay);
+			}
+			{
+				const	Duration	kP1Y		=	Duration (L"P1Y");
+				VerifyTestResult (kP1Y == 365 * kSecondsPerDay);
+			}
+			{
+				const	Duration	kP2Y		=	Duration (L"P2Y");
+				VerifyTestResult (kP2Y == 2 * 365 * kSecondsPerDay);
+			}
+		}
+
+}
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -241,6 +271,7 @@ namespace	{
 			Test_3_TestDate_ ();
 			Test_4_TestDateTime_ ();
 			Test_5_DateTimeTimeT_ ();
+			Test_6_Duration_ ();
 		}
 }
 
