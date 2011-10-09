@@ -57,7 +57,7 @@ bool	Duration::empty () const
 
 Duration::operator time_t () const
 {
-	return ParseTime_ (fDurationRep);		// could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+	return static_cast<time_t> (ParseTime_ (fDurationRep));		// could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 Duration::operator wstring () const
@@ -75,9 +75,9 @@ namespace	{
 			}
 			return i;
 		}
-	string::const_iterator	FindFirstNonDigit_ (string::const_iterator i, string::const_iterator end)
+	string::const_iterator	FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
 		{
-			while (i != end and isdigit (*i)) {
+			while (i != end and (isdigit (*i) or *i == '.')) {
 				++i;
 			}
 			return i;
@@ -162,12 +162,12 @@ wstring Duration::PrettyPrint () const
 	return result;
 }
 
-time_t	Duration::ParseTime_ (const string& s)
+double	Duration::ParseTime_ (const string& s)
 {
 	if (s.empty ()) {
 		return 0;
 	}
-	time_t	curVal	=	0;
+	double	curVal	=	0;
 	bool	isNeg	=	false;
 	// compute and throw if bad...
 	string::const_iterator	i	=	SkipWhitespace_ (s.begin (), s.end ());
@@ -189,14 +189,14 @@ time_t	Duration::ParseTime_ (const string& s)
 			continue;
 		}
 		string::const_iterator	firstDigitI	=	i;
-		string::const_iterator	lastDigitI	=	FindFirstNonDigit_ (i, s.end ());
+		string::const_iterator	lastDigitI	=	FindFirstNonDigitOrDot_ (i, s.end ());
 		if (lastDigitI == s.end ()) {
 			Execution::DoThrow (FormatException ());
 		}
 		if (firstDigitI == lastDigitI) {
 			Execution::DoThrow (FormatException ());
 		}
-		int	n	=	atoi (string (firstDigitI, lastDigitI).c_str ());
+		double	n	=	atof (string (firstDigitI, lastDigitI).c_str ());
 		switch (*lastDigitI) {
 			case	'Y':	curVal += n * kSecondsPerYear; break;
 			case	'M':	curVal += n * (timePart? kSecondsPerMinute: kSecondsPerMonth); break;

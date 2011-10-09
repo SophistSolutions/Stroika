@@ -65,7 +65,7 @@ namespace	Stroika {
 					nonvirtual	wstring PrettyPrint () const;
 
 				private:
-					static	time_t	ParseTime_ (const string& s);
+					static	double	ParseTime_ (const string& s);
 					static	string	UnParseTime_ (time_t t);
 
 				private:

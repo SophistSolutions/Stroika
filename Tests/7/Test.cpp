@@ -257,6 +257,10 @@ namespace	{
 				const	Duration	kP2Y		=	Duration (L"P2Y");
 				VerifyTestResult (kP2Y == 2 * 365 * kSecondsPerDay);
 			}
+			{
+				const	Duration	kHalfMinute		=	Duration (L"PT0.5M");
+				VerifyTestResult (kHalfMinute == 30);
+			}
 		}
 
 }
