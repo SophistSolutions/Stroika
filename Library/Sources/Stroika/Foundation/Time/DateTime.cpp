@@ -129,39 +129,15 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 	, fDate_ ()
 	, fTimeOfDay_ ()
 {
-#if 1
 	struct	tm	tmTime;
 	memset (&tmTime, 0, sizeof (tmTime));
-#if	qPlatform_Windows
-	(void)::_gmtime64_s (&tmTime, &unixTime);
-#else
-	(void)::gmtime_r  (&unixTime, &tmTime);
-#endif
+	#if	qPlatform_Windows
+		(void)::_gmtime64_s (&tmTime, &unixTime);
+	#else
+		(void)::gmtime_r  (&unixTime, &tmTime);
+	#endif
 	fDate_ = Date (Year (tmTime.tm_year+1900), MonthOfYear (tmTime.tm_mon+1), DayOfMonth (tmTime.tm_mday));
 	fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
-#else
-	#if		qPlatform_Windows
-		// From http://support.microsoft.com/kb/167296
-		FILETIME	ft;
-		LONGLONG ll;
-		ll = Int32x32To64 (unixTime, 10000000) + 116444736000000000;
-		ft.dwLowDateTime = (DWORD)ll;
-		ft.dwHighDateTime = static_cast<DWORD> (ll >> 32);
-		*this = DateTime (ft, tz);
-	#else
-//MAYBE better to use just gmtime_r () - and ???? closer to what we are doing above? In fact - why not do gmtime_r portably? Instead of that FTIME stuff?
-		struct	tm	tmTime;
-		memset (&tmTime, 0, sizeof (tmTime));
-		if (tz == eLocalTime_TZ or tz == eUnknown_TZ) {
-			(void)::localtime_r  (&unixTime, &tmTime);
-		}
-		else {
-			(void)::gmtime_r  (&unixTime, &tmTime);
-		}
-		fDate_ = Date (Year (tmTime.tm_year+1900), MonthOfYear (tmTime.tm_mon+1), DayOfMonth (tmTime.tm_mday));
-		fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
-	#endif
-#endif
 }
 
 DateTime::DateTime (struct tm tmTime, Timezone tz)
