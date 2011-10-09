@@ -291,6 +291,8 @@ TimeOfDay	TimeOfDay::Parse (const wstring& rep, const locale& l)
 		//%P		Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
 		//%S		The seconds [00,60]; leading zeros are permitted but not required.
 		static	const	char*	kFmtStrs2Try[] = {
+			"%X",
+			"%EX",
 			"%T",
 			"%r",
 			"%H:%M:%S",

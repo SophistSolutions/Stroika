@@ -32,7 +32,9 @@
  *
  *		o	Locale based parsing code seems quite poor. Haven't really evaluated locale-based print code (but I'm not optimistic).
  *			I'm not sure if I have it wrong, or if it just sucks (main issue is Vis Studio integration - doesn't appear to pay attention to 
- *			local settings from regional settings control panel, and doesn't seem at all flexible about what it accepts).
+ *			local settings from regional settings control panel, and doesn't seem at all flexible about what it accepts). But also the %X output
+ *			(again - at least for windows/vis studio) looks terrible - military format - full zero precision - even if not needed?).
+ *			MAYBE try %EX is the locale's alternative time representation.
  *
  */
 
