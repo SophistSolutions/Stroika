@@ -9,7 +9,6 @@
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
-#elif	qPlatform_POSIX
 #endif
 
 #include	"../Characters/Format.h"

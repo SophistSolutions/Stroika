@@ -28,38 +28,32 @@
 /*
  * TODO:
  *		
- *		
- *		o	Need PORTABLE/POSIX IMPLEMENTATION (locale/format/parse)
-		o	Implement new (described below) 'empty' semantics.
-
-
-
-
-
-		o	Do support for enum Timezone { eLocalTimezone, eGMT, eUnkownTimezone }
-			and then do ToLocalTimezone () and DoGMTTimezone () which proiduce new DateTime objects.
-			When comparing - if KIND != - convert BOTH to GMT and compare (interally).
-			STARTED  AsLocalTime - ETC - but INCOMPLETE AND WRONG!!!
-
-			>>> MAYBE TRICKY DOING TZ CONVERSIONS? I know how to find the CURRENT TZ OFFSET. But I THINK thats the WRONG OFFSET to use. I THINK you must use the
-					OFFSET AS OF THE GIVEN DATE (which maybe ambiguous as it could change).
-					o Say you are in DaylightSavingsTime (and are temporarly GMT-4) - and store a date in XML. But then later - after the timezone change - you re-read teh
-					date. The TZ offset changed, and so the apparent localtime offset changed.
-					o THe crux of the issue is that SOMETIMES when you store a date in XML - you don't want to say that its a LOCALETIME time (not be to adjusted for tz)?
-					 Not sure this makes sense - must think through more carefully!
-
-
-		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?
-		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
-<<<SEE COMMENTS IN DATE>>>
-
-
-
+ *
+ *		o	Current logic for TIMEZONE conversion is quetionable. It is based on the CURRNET TZ offset (at the time the code is running).
+ *			But this is generally WRONG. It needs to apply to the value as of the date in question (not so much for timezone purposes but for daylight savings time).
+ *
+ *				>>> MAYBE TRICKY DOING TZ CONVERSIONS? I know how to find the CURRENT TZ OFFSET. But I THINK thats the WRONG OFFSET to use. I THINK you must use the
+ *					OFFSET AS OF THE GIVEN DATE (which maybe ambiguous as it could change).
+ *					o Say you are in DaylightSavingsTime (and are temporarly GMT-4) - and store a date in XML. But then later - after the timezone change - you re-read teh
+ *					date. The TZ offset changed, and so the apparent localtime offset changed.
+ *					o THe crux of the issue is that SOMETIMES when you store a date in XML - you don't want to say that its a LOCALETIME time (not be to adjusted for tz)?
+ *					 Not sure this makes sense - must think through more carefully!
+ *
+ *
+ *		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?
+ *		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
+ *
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
  *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
  *			Maybe where they differ doesn't matter for this class?
  *
+ *		o	Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on bad conversions I think - moistly an issue for
+ *			the locale-based stuff. Now it maybe just silently returns empty date/time/etc. Better to except!
+
+ *		o	Only SetDate (const Date& d);/SetTimeOfDay are non-const methods. Consider making this const and just return a new date. Would matter from
+ *			an API standpoint if the internl rep was BIGGER (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
+ *			SharedByValue<> template. Maybe a boondoggle?
  */
 
 

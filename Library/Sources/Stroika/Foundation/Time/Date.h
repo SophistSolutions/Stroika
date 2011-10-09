@@ -27,6 +27,9 @@
  *			MAYBE its a bug with the VisStudio locale stuff or maybe I'm not using it properly. Not super high priority to 
  *			unravalel - but would be nice to lose (most of) the Windoze-specific code.
  *
+ *		o	Some places I've found on the net claim one date for start of gregorgian calendar and otehrs claim otehr date(s). Really all I care about
+ *			is for what range of dates is my currnet date logic valid, and thats what I'll use. But this needs some digging.
+ *
  *		o	Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
  *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
@@ -35,6 +38,9 @@
  *				+ maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
  *					XML really is its own - nearly identical to iso8601, but see deviations...
  *					Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
+ *
+ *		o	It would be highly desirable to allow this date code to represent lareger/smaller dates (without the julian calendar restriction).
+ *			That maybe a longer term issue.
  *
  */
 
