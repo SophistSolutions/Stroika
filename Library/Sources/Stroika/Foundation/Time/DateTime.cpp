@@ -129,6 +129,17 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 	, fDate_ ()
 	, fTimeOfDay_ ()
 {
+#if 1
+	struct	tm	tmTime;
+	memset (&tmTime, 0, sizeof (tmTime));
+#if	qPlatform_Windows
+	(void)::_gmtime64_s (&tmTime, &unixTime);
+#else
+	(void)::gmtime_r  (&unixTime, &tmTime);
+#endif
+	fDate_ = Date (Year (tmTime.tm_year+1900), MonthOfYear (tmTime.tm_mon+1), DayOfMonth (tmTime.tm_mday));
+	fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
+#else
 	#if		qPlatform_Windows
 		// From http://support.microsoft.com/kb/167296
 		FILETIME	ft;
@@ -150,6 +161,7 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 		fDate_ = Date (Year (tmTime.tm_year+1900), MonthOfYear (tmTime.tm_mon+1), DayOfMonth (tmTime.tm_mday));
 		fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
 	#endif
+#endif
 }
 
 DateTime::DateTime (struct tm tmTime, Timezone tz)
