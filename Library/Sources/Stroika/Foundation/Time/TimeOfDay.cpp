@@ -9,7 +9,6 @@
 
 #if		qPlatform_Windows
 	#include	<atlbase.h>		// For CComBSTR
-#elif	qPlatform_POSIX
 #endif
 
 #include	"../Characters/Format.h"
@@ -67,7 +66,7 @@ namespace	{
 
 #if		qPlatform_Windows
 namespace	{
-	wstring	GenTimeStr4TOD_ (unsigned int hour, unsigned int minutes, unsigned int seconds)
+	wstring	GenTimeStr4TOD_ (LCID lcid, unsigned int hour, unsigned int minutes, unsigned int seconds)
 		{
 // Consider rewriting using Win32 GetTimeFormat () - and just futzing with teh format string for the case
 // of zero minutes/seconds?? That might be more robust in case of changes in adding special tokens for some cultures/etc?
@@ -93,7 +92,7 @@ namespace	{
 
 			// we could keep recomputing this, but why pay the runtime cost? Restart app to get new locale info
 			#if		qPlatform_Windows
-				static	const	wstring	kFormatStr	=	GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT);
+				static	const	wstring	kFormatStr	=	GetLocaleInfo_ (lcid, LOCALE_STIMEFORMAT);
 			#else
 			#endif
 
@@ -209,7 +208,7 @@ namespace	{
  ********************************************************************************
  */
 const	TimeOfDay	TimeOfDay::kMin	=	TimeOfDay (0);
-const	TimeOfDay	TimeOfDay::kMax	=	TimeOfDay (24 * 60 * 60 - 1);
+const	TimeOfDay	TimeOfDay::kMax	=	TimeOfDay (kMaxSecondsPerDay - 1);
 
 TimeOfDay::TimeOfDay ()
   : fTime_ (-1)
@@ -217,7 +216,7 @@ TimeOfDay::TimeOfDay ()
 }
 
 TimeOfDay::TimeOfDay (uint32_t t)
-  : fTime_ (t < 24 * 60 * 60? t: (24 * 60 * 60-1))
+  : fTime_ (t < kMaxSecondsPerDay? t: (kMaxSecondsPerDay - 1))
 {
 }
 
@@ -364,10 +363,6 @@ wstring	TimeOfDay::Format (PrintFormat pf) const
 	switch (pf) {
 		case	eCurrentLocale_PF:	{
 			#if		qPlatform_Windows
-				#if 0
-				// %X in strformat() doesnt seem to be using Win32 GetLocale stuff??? For times... -- LGP 2011-10-07
-				Assert (Format (LOCALE_USER_DEFAULT) == Format (locale ()));	// not a REAL assert, but for debugging - to see what diffs there are - proabbly none
-				#endif
 				return Format (LOCALE_USER_DEFAULT);
 			#else
 				Format (locale ());
@@ -406,7 +401,7 @@ wstring	TimeOfDay::Format (const locale& l) const
 	//wchar_t pattern[]=L"%I:%M%p";
 	// %X MAYBE just what we want  - locale DEPENDENT!!!
 	wchar_t pattern[]=L"%X";
-	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
+	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
 	return oss.str ();
 }
 
@@ -423,7 +418,7 @@ wstring	TimeOfDay::Format (LCID lcid) const
 		Assert (hour >= 0 and hour < 24);
 		Assert (minutes >= 0 and minutes < 60);
 		Assert (secs >= 0 and secs < 60);
-		return GenTimeStr4TOD_ (hour, minutes, secs);
+		return GenTimeStr4TOD_ (lcid, hour, minutes, secs);
 	}
 }
 #endif
