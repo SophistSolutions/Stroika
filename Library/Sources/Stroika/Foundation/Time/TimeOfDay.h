@@ -30,6 +30,10 @@
  *		o	Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
  *			Maybe where they differ doesn't matter for this class?
  *
+ *		o	Locale based parsing code seems quite poor. Haven't really evaluated locale-based print code (but I'm not optimistic).
+ *			I'm not sure if I have it wrong, or if it just sucks (main issue is Vis Studio integration - doesn't appear to pay attention to 
+ *			local settings from regional settings control panel, and doesn't seem at all flexible about what it accepts).
+ *
  */
 
 
@@ -47,7 +51,7 @@ namespace	Stroika {
 			 *	
 			 *		NB: this implies NO NOTION of timezone. Its a time relative to midnight of a given day.
 			 *
-			 *		TimeOfDay can also be (it is by default) the specail sentinal value 'empty'. This is useful - with a DateTime object for example,
+			 *		TimeOfDay can also be (it is by default) the special sentinal value 'empty'. This is useful - with a DateTime object for example,
 			 *	to represent the idea that a time has not been specified.
 			 *
 			 *		'empty' concept:
