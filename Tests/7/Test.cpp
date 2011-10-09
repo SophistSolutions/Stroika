@@ -243,23 +243,23 @@ namespace	{
 			const	int	kSecondsPerDay		=	TimeOfDay::kMaxSecondsPerDay;
 			{
 				const	Duration	k30Days		=	Duration (L"P30D");
-				VerifyTestResult (k30Days == 30 * kSecondsPerDay);
+				VerifyTestResult (k30Days.As<time_t> () == 30 * kSecondsPerDay);
 			}
 			{
 				const	Duration	k6Months		=	Duration (L"P6M");
-				VerifyTestResult (k6Months == 6 * 30 * kSecondsPerDay);
+				VerifyTestResult (k6Months.As<time_t> () == 6 * 30 * kSecondsPerDay);
 			}
 			{
 				const	Duration	kP1Y		=	Duration (L"P1Y");
-				VerifyTestResult (kP1Y == 365 * kSecondsPerDay);
+				VerifyTestResult (kP1Y.As<time_t> () == 365 * kSecondsPerDay);
 			}
 			{
 				const	Duration	kP2Y		=	Duration (L"P2Y");
-				VerifyTestResult (kP2Y == 2 * 365 * kSecondsPerDay);
+				VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
 			}
 			{
 				const	Duration	kHalfMinute		=	Duration (L"PT0.5M");
-				VerifyTestResult (kHalfMinute == 30);
+				VerifyTestResult (kHalfMinute.As<time_t> () == 30);
 			}
 		}
 

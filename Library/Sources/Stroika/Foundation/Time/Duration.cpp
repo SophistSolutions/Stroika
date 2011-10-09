@@ -55,15 +55,23 @@ bool	Duration::empty () const
 	return fDurationRep.empty ();
 }
 
-Duration::operator time_t () const
-{
-	return static_cast<time_t> (ParseTime_ (fDurationRep));		// could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
+template	<>
+	time_t	Duration::As () const
+		{
+			return static_cast<time_t> (ParseTime_ (fDurationRep));		// could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+		}
 
-Duration::operator wstring () const
-{
-	return ASCIIStringToWide (fDurationRep);
-}
+template	<>
+	double	Duration::As () const
+		{
+			return ParseTime_ (fDurationRep);							// could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+		}
+
+template	<>
+	wstring	Duration::As () const
+		{
+			return ASCIIStringToWide (fDurationRep);
+		}
 
 namespace	{
 	string::const_iterator	SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
@@ -93,7 +101,7 @@ namespace	{
 
 wstring Duration::PrettyPrint () const
 {
-	time_t	t			=	static_cast<time_t> (*this);
+	time_t	t			=	As<time_t> ();
 	bool	isNeg		=	(t < 0);
 	time_t	timeLeft	=	t < 0? -t : t;
 	wstring	result;

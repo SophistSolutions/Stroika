@@ -60,8 +60,20 @@ namespace	Stroika {
 				public:
 					nonvirtual	void	clear ();
 					nonvirtual	bool	empty () const;
-					nonvirtual	operator time_t () const;
-					nonvirtual	operator wstring () const;
+//nonvirtual	operator time_t () const;
+//nonvirtual	operator wstring () const;
+
+				public:
+					/*
+					 * Defined for 
+					 *		time_t
+					 *		wstring
+					 *		double
+					 */
+					template	<typename T>
+						T	As () const;
+
+				public:
 					nonvirtual	wstring PrettyPrint () const;
 
 				private:
@@ -71,6 +83,12 @@ namespace	Stroika {
 				private:
 					string	fDurationRep;
 			};
+			template	<>
+				time_t	Duration::As () const;
+			template	<>
+				wstring	Duration::As () const;
+			template	<>
+				double	Duration::As () const;
 
 
 
