@@ -80,6 +80,19 @@ namespace	{
 				VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
 				VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 16 * 60 * 60);
 			}
+
+			{
+				#if		qPlatform_Windows
+					const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
+				#endif
+				TimeOfDay	threePM	=	TimeOfDay::Parse (L"3pm", locale::classic ());
+				#if		qPlatform_Windows
+				VerifyTestResult (threePM.Format (kUS_ENGLISH_LOCALE) == L"3 PM");
+				#endif
+				//VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
+				VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00");	// UGH!!!
+			}
+
 		}
 
 }
