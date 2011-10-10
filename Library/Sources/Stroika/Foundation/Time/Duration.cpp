@@ -41,12 +41,12 @@ Duration::Duration (const wstring& durationStr)
 }
 
 Duration::Duration (int32_t duration)
-	: fDurationRep (UnParseTime_ (duration))
+	: fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
 
 Duration::Duration (int64_t duration)
-	: fDurationRep (UnParseTime_ (duration))
+	: fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
 
@@ -116,7 +116,7 @@ wstring Duration::PrettyPrint () const
 	wstring	result;
 	result.reserve (50);
 	if (timeLeft >= kSecondsPerYear) {
-		time_t	nYears = timeLeft / kSecondsPerYear;
+		unsigned int	nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
 		if (nYears != 0) {
 			if (not result.empty ()) {
 				result += L", ";
@@ -126,7 +126,7 @@ wstring Duration::PrettyPrint () const
 		}
 	}
 	if (timeLeft >= kSecondsPerMonth) {
-		time_t	nMonths = timeLeft / kSecondsPerMonth;
+		unsigned int	nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
 		if (nMonths != 0) {
 			if (not result.empty ()) {
 				result += L", ";
@@ -136,7 +136,7 @@ wstring Duration::PrettyPrint () const
 		}
 	}
 	if (timeLeft >= kSecondsPerDay) {
-		time_t	nDays = timeLeft / kSecondsPerDay;
+		unsigned int	nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
 		if (nDays != 0) {
 			if (not result.empty ()) {
 				result += L", ";
@@ -147,7 +147,7 @@ wstring Duration::PrettyPrint () const
 	}
 	if (timeLeft != 0) {
 		if (timeLeft >= kSecondsPerHour) {
-			time_t	nHours = timeLeft / kSecondsPerHour;
+			unsigned int	nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
 			if (nHours != 0) {
 				if (not result.empty ()) {
 					result += L", ";
@@ -157,7 +157,7 @@ wstring Duration::PrettyPrint () const
 			}
 		}
 		if (timeLeft >= kSecondsPerMinute) {
-			time_t	nMinutes = timeLeft / kSecondsPerMinute;
+			unsigned int	nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
 			if (nMinutes != 0) {
 				if (not result.empty ()) {
 					result += L", ";
@@ -265,21 +265,21 @@ string	Duration::UnParseTime_ (InternalNumericFormatType_ t)
 	string	result	=	"P";
 	result.reserve (50);
 	if (timeLeft >= kSecondsPerYear) {
-		time_t	nYears = timeLeft / kSecondsPerYear;
+		unsigned int	nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
 		if (nYears != 0) {
 			result += Format ("%dY", nYears);
 			timeLeft -= nYears * kSecondsPerYear;
 		}
 	}
 	if (timeLeft >= kSecondsPerMonth) {
-		time_t	nMonths = timeLeft / kSecondsPerMonth;
+		unsigned int	nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
 		if (nMonths != 0) {
 			result += Format ("%dM", nMonths);
 			timeLeft -= nMonths * kSecondsPerMonth;
 		}
 	}
 	if (timeLeft >= kSecondsPerDay) {
-		time_t	nDays = timeLeft / kSecondsPerDay;
+		unsigned int	nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
 		if (nDays != 0) {
 			result += Format ("%dD", nDays);
 			timeLeft -= nDays * kSecondsPerDay;
@@ -288,14 +288,14 @@ string	Duration::UnParseTime_ (InternalNumericFormatType_ t)
 	if (timeLeft != 0) {
 		result += "T";
 		if (timeLeft >= kSecondsPerHour) {
-			time_t	nHours = timeLeft / kSecondsPerHour;
+			unsigned int	nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
 			if (nHours != 0) {
 				result += Format ("%dH", nHours);
 				timeLeft -= nHours * kSecondsPerHour;
 			}
 		}
 		if (timeLeft >= kSecondsPerMinute) {
-			time_t	nMinutes = timeLeft / kSecondsPerMinute;
+			unsigned int	nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
 			if (nMinutes != 0) {
 				result += Format ("%dM", nMinutes);
 				timeLeft -= nMinutes * kSecondsPerMinute;
