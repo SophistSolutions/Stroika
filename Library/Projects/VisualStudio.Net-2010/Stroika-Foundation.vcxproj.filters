@@ -950,5 +950,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
   </ItemGroup>
 </Project>

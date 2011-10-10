@@ -267,6 +267,22 @@ namespace	{
 				VerifyTestResult (kD.As<time_t> () == 0);
 				VerifyTestResult (kD.As<double> () == 0.1);
 			}
+			{
+				const	Duration	kHalfMinute		=	Duration (L"PT0.5M");
+				VerifyTestResult (kHalfMinute.PrettyPrint () == L"30 seconds");
+			}
+			{
+				const	Duration	k3MS		=	Duration (L"PT0.003S");
+				VerifyTestResult (k3MS.PrettyPrint () == L"3 milliseconds");
+			}
+			{
+				const	Duration	kD		=	Duration (L"PT1.003S");
+				VerifyTestResult (kD.PrettyPrint () == L"1 second, 3 milliseconds");
+			}
+			{
+				const	Duration	kD		=	Duration (L"PT0.000045S");
+				VerifyTestResult (kD.PrettyPrint () == L"45 microseconds");
+			}
 		}
 
 }

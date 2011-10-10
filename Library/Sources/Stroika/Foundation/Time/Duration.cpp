@@ -6,6 +6,7 @@
 #include	"../Characters/Format.h"
 #include	"../Debug/Assertions.h"
 #include	"../Linguistics/Words.h"
+#include	"../Math/Common.h"
 
 #include	"Duration.h"
 
@@ -105,9 +106,9 @@ namespace	{
 
 wstring Duration::PrettyPrint () const
 {
-	time_t	t			=	As<time_t> ();
+	InternalNumericFormatType_	t			=	As<double> ();
 	bool	isNeg		=	(t < 0);
-	time_t	timeLeft	=	t < 0? -t : t;
+	InternalNumericFormatType_	timeLeft	=	t < 0? -t : t;
 	wstring	result;
 	result.reserve (50);
 	if (timeLeft >= kSecondsPerYear) {
@@ -161,17 +162,47 @@ wstring Duration::PrettyPrint () const
 				timeLeft -= nMinutes * kSecondsPerMinute;
 			}
 		}
-		if (timeLeft != 0) {
+		if (timeLeft > 0) {
+			if (static_cast<int> (timeLeft) != 0) {
+				if (not result.empty ()) {
+					result += L", ";
+				}
+				result += Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (L"second", static_cast<int> (timeLeft));
+				timeLeft -= static_cast<int> (timeLeft);
+			}
+		}
+		if (timeLeft > 0) {
+			// DO nano, micro, milliseconds here
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", timeLeft) + Linguistics::PluralizeNoun (L"second", static_cast<int> (timeLeft));
+			if (timeLeft < .000001) {
+				result += Format (L"%3d ", static_cast<int> (timeLeft * 1000 * 1000 * 1000)) + Linguistics::PluralizeNoun (L"nanosecond", timeLeft * 1000 * 1000 * 1000);
+			}
+			else if (timeLeft < .001) {
+				result += Format (L"3d ", static_cast<int> (timeLeft * 1000 * 1000)) + Linguistics::PluralizeNoun (L"microsecond", timeLeft * 1000 * 1000);
+			}
+			else  {
+				result += Format (L"%d ", static_cast<int> (timeLeft * 100)) + Linguistics::PluralizeNoun (L"millisecond", timeLeft * 1000);
+			}
 		}
 	}
 	if (isNeg) {
 		result = L"-" + result;
 	}
 	return result;
+}
+
+int	Duration::Compare (const Duration& rhs) const
+{
+	Duration::InternalNumericFormatType_	n	=	As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
+	if (n < 0) {
+		return -1;
+	}
+	if (n > 0) {
+		return 1;
+	}
+	return 0;
 }
 
 Duration::InternalNumericFormatType_	Duration::ParseTime_ (const string& s)

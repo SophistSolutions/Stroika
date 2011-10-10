@@ -77,6 +77,11 @@ namespace	Stroika {
 				public:
 					nonvirtual	wstring PrettyPrint () const;
 
+				public:
+					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+					// this comparison function - see the notes about 'empty' in the class description.
+					nonvirtual	int	Compare (const Duration& rhs) const;
+
 				private:
 					typedef	double	InternalNumericFormatType_;
 					static	InternalNumericFormatType_	ParseTime_ (const string& s);
@@ -92,8 +97,23 @@ namespace	Stroika {
 			template	<>
 				double	Duration::As () const;
 
-
+			bool operator< (const Duration& lhs, const Duration& rhs);
+			bool operator<= (const Duration& lhs, const Duration& rhs);
+			bool operator> (const Duration& lhs, const Duration& rhs);
+			bool operator== (const Duration& lhs, const Duration& rhs);
+			bool operator!= (const Duration& lhs, const Duration& rhs);
 		}
 	}
 }
 #endif	/*_Stroika_Foundation_Time_Duration_h_*/
+
+
+
+
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include	"Duration.inl"

@@ -439,6 +439,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
   </ItemGroup>
