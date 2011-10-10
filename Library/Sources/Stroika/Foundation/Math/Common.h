@@ -8,7 +8,10 @@
 
 #include	<cmath>			// though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
 
-
+/*
+ *	TODO:
+ *		o	This rounding code doesn't work for floating point numbers. That should either be fixed or documented better why.
+ */
 
 
 
@@ -23,7 +26,7 @@ namespace	Stroika {
 
 
              /*
-              * RoundUpTo() - round towards posative infinity.
+              * RoundUpTo() - round towards positive infinity.
 			  * T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
 			  *		(after review of this API/implementation, probably should add short/char with unsigned variants to this list)
               */
