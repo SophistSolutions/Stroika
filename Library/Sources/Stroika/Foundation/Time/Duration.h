@@ -19,11 +19,11 @@
 
 
 /*
- * SHORT TERM - TODAY - TODO:
+ * TODO:
  *
- *		o	needs ability to return like time_t – but as DOUBLE – because can be fractional.
- *			Needs to be able to represent times in milliseconds.
- *			Should also interoperate with Time::DiurationInSeconds
+ *		o	Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
+ *
+ *		o	Add support for long double (and perhaps others?).
  *
  *
  *
