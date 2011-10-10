@@ -106,7 +106,11 @@ namespace	{
 
 wstring Duration::PrettyPrint () const
 {
-	InternalNumericFormatType_	t			=	As<double> ();
+	/*
+	 *	TODO:
+	 *			o	Fix feeble attempt at rounding. We more or less round correctly for seconds, but not other units.
+	 */
+	InternalNumericFormatType_	t			=	As<InternalNumericFormatType_> ();
 	bool	isNeg		=	(t < 0);
 	InternalNumericFormatType_	timeLeft	=	t < 0? -t : t;
 	wstring	result;
@@ -173,17 +177,18 @@ wstring Duration::PrettyPrint () const
 		}
 		if (timeLeft > 0) {
 			// DO nano, micro, milliseconds here
+			uint32_t	nNanoSeconds	=	uint32_t (timeLeft * 1000 * 1000 * 1000 + 0.5);	// round
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			if (timeLeft < .000001) {
-				result += Format (L"%3d ", static_cast<int> (timeLeft * 1000 * 1000 * 1000)) + Linguistics::PluralizeNoun (L"nanosecond", timeLeft * 1000 * 1000 * 1000);
+			if (nNanoSeconds < 1000) {
+				result += Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (L"nanosecond", nNanoSeconds);
 			}
-			else if (timeLeft < .001) {
-				result += Format (L"3d ", static_cast<int> (timeLeft * 1000 * 1000)) + Linguistics::PluralizeNoun (L"microsecond", timeLeft * 1000 * 1000);
+			else if (nNanoSeconds < 1000*1000) {
+				result += Format (L"%d ", nNanoSeconds/1000) + Linguistics::PluralizeNoun (L"microsecond", nNanoSeconds/1000);
 			}
 			else  {
-				result += Format (L"%d ", static_cast<int> (timeLeft * 100)) + Linguistics::PluralizeNoun (L"millisecond", timeLeft * 1000);
+				result += Format (L"%d ", nNanoSeconds/(1000*1000)) + Linguistics::PluralizeNoun (L"millisecond", nNanoSeconds/(1000*1000));
 			}
 		}
 	}
