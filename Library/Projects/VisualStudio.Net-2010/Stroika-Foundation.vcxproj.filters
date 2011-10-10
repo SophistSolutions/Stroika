@@ -857,9 +857,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl">
       <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl">
-      <Filter>Sources\Time</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl">
       <Filter>Sources\Containers</Filter>
     </None>
