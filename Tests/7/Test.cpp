@@ -256,10 +256,16 @@ namespace	{
 			{
 				const	Duration	kP2Y		=	Duration (L"P2Y");
 				VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
+				VerifyTestResult (Duration (2 * 365 * kSecondsPerDay).As<wstring> () == L"P2Y");
 			}
 			{
 				const	Duration	kHalfMinute		=	Duration (L"PT0.5M");
 				VerifyTestResult (kHalfMinute.As<time_t> () == 30);
+			}
+			{
+				const	Duration	kD		=	Duration (L"PT0.1S");
+				VerifyTestResult (kD.As<time_t> () == 0);
+				VerifyTestResult (kD.As<double> () == 0.1);
 			}
 		}
 

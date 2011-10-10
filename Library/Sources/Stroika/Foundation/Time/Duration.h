@@ -51,17 +51,16 @@ namespace	Stroika {
 				public:
 					typedef	Date::FormatException	FormatException;
 				public:
-					// empty string () results in '0' time_t.
 					// Throws (Date::FormatException) if bad format
 					Duration ();
 					explicit Duration (const wstring& durationStr);
-					explicit Duration (time_t duration);
+					explicit Duration (int32_t duration);
+					explicit Duration (int64_t duration);
+					explicit Duration (double duration);
 
 				public:
 					nonvirtual	void	clear ();
 					nonvirtual	bool	empty () const;
-//nonvirtual	operator time_t () const;
-//nonvirtual	operator wstring () const;
 
 				public:
 					/*
@@ -69,6 +68,8 @@ namespace	Stroika {
 					 *		time_t
 					 *		wstring
 					 *		double
+					 *
+					 *	Note - if 'emtpy' - As<> for numeric types returns 0.
 					 */
 					template	<typename T>
 						T	As () const;
@@ -77,8 +78,9 @@ namespace	Stroika {
 					nonvirtual	wstring PrettyPrint () const;
 
 				private:
-					static	double	ParseTime_ (const string& s);
-					static	string	UnParseTime_ (time_t t);
+					typedef	double	InternalNumericFormatType_;
+					static	InternalNumericFormatType_	ParseTime_ (const string& s);
+					static	string						UnParseTime_ (InternalNumericFormatType_ t);
 
 				private:
 					string	fDurationRep;

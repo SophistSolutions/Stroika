@@ -23,7 +23,6 @@ using	namespace	Time;
 
 
 
-
 /*
  ********************************************************************************
  *********************************** Duration ***********************************
@@ -40,7 +39,12 @@ Duration::Duration (const wstring& durationStr)
 	(void)ParseTime_ (fDurationRep);	// call for the side-effect of throw if bad format src string
 }
 
-Duration::Duration (time_t duration)
+Duration::Duration (int32_t duration)
+	: fDurationRep (UnParseTime_ (duration))
+{
+}
+
+Duration::Duration (int64_t duration)
 	: fDurationRep (UnParseTime_ (duration))
 {
 }
@@ -170,12 +174,12 @@ wstring Duration::PrettyPrint () const
 	return result;
 }
 
-double	Duration::ParseTime_ (const string& s)
+Duration::InternalNumericFormatType_	Duration::ParseTime_ (const string& s)
 {
 	if (s.empty ()) {
 		return 0;
 	}
-	double	curVal	=	0;
+	InternalNumericFormatType_	curVal	=	0;
 	bool	isNeg	=	false;
 	// compute and throw if bad...
 	string::const_iterator	i	=	SkipWhitespace_ (s.begin (), s.end ());
@@ -204,7 +208,7 @@ double	Duration::ParseTime_ (const string& s)
 		if (firstDigitI == lastDigitI) {
 			Execution::DoThrow (FormatException ());
 		}
-		double	n	=	atof (string (firstDigitI, lastDigitI).c_str ());
+		InternalNumericFormatType_	n	=	atof (string (firstDigitI, lastDigitI).c_str ());
 		switch (*lastDigitI) {
 			case	'Y':	curVal += n * kSecondsPerYear; break;
 			case	'M':	curVal += n * (timePart? kSecondsPerMinute: kSecondsPerMonth); break;
@@ -218,10 +222,10 @@ double	Duration::ParseTime_ (const string& s)
 	return isNeg ? -curVal : curVal;
 }
 
-string	Duration::UnParseTime_ (time_t t)
+string	Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
-	bool	isNeg		=	(t < 0);
-	time_t	timeLeft	=	t < 0? -t : t;
+	bool						isNeg		=	(t < 0);
+	InternalNumericFormatType_	timeLeft	=	t < 0? -t : t;
 	string	result	=	"P";
 	result.reserve (50);
 	if (timeLeft >= kSecondsPerYear) {
@@ -262,7 +266,7 @@ string	Duration::UnParseTime_ (time_t t)
 			}
 		}
 		if (timeLeft != 0) {
-			result += Format ("%dS", timeLeft);
+			result += Format ("%fS", timeLeft);
 		}
 	}
 	if (isNeg) {
