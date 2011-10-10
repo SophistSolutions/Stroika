@@ -283,6 +283,17 @@ namespace	{
 				const	Duration	kD		=	Duration (L"PT0.000045S");
 				VerifyTestResult (kD.PrettyPrint () == L"45 microseconds");
 			}
+			VerifyTestResult (Duration (L"P30S").As<time_t> () == 30);
+			VerifyTestResult (Duration (L"PT30S").As<time_t> () == 30);
+			VerifyTestResult (Duration (60).As<wstring> () == L"PT1M");
+			VerifyTestResult (Duration (L"-PT1H1S").As<time_t> () == -3601);
+
+			for (time_t i = -45; i < 60 * 3 * 60 + 99; ++i) {
+				VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+			}
+			for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += 263) {
+				VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+			}
 		}
 
 }
