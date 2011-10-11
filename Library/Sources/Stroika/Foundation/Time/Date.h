@@ -15,6 +15,7 @@
 
 #include	"../Characters/TString.h"
 #include	"../Configuration/Common.h"
+#include	"../Execution/StringException.h"
 
 
 
@@ -218,7 +219,9 @@ namespace	Stroika {
 			};
 
 
-			class	Date::FormatException {
+			class	Date::FormatException : public Execution::StringException {
+				public:
+					FormatException ();
 			};
 
 

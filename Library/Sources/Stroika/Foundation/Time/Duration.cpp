@@ -5,6 +5,7 @@
 
 #include	"../Characters/Format.h"
 #include	"../Debug/Assertions.h"
+#include	"../Debug/Trace.h"
 #include	"../Linguistics/Words.h"
 #include	"../Math/Common.h"
 
@@ -18,6 +19,28 @@ using	namespace	Stroika::Foundation::Time;
 using	Debug::TraceContextBumper;
 
 using	namespace	Time;
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************** Duration::FormatException *******************************
+ ********************************************************************************
+ */
+Duration::FormatException::FormatException ()
+	: StringException (L"Invalid Duration Format")
+{
+}
+
+
+
+
 
 
 

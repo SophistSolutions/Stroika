@@ -14,8 +14,8 @@
 #endif
 
 #include	"../Configuration/Common.h"
+#include	"../Execution/StringException.h"
 
-#include	"Date.h"
 
 
 /*
@@ -49,9 +49,7 @@ namespace	Stroika {
 			 */
 			class	Duration {
 				public:
-					typedef	Date::FormatException	FormatException;
-				public:
-					// Throws (Date::FormatException) if bad format
+					// Throws (FormatException) if bad format
 					Duration ();
 					explicit Duration (const wstring& durationStr);
 					explicit Duration (int32_t duration);
@@ -101,6 +99,9 @@ namespace	Stroika {
 					nonvirtual	wstring PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
 				public:
+					class	FormatException;
+
+				public:
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
 					// this comparison function - see the notes about 'empty' in the class description.
 					nonvirtual	int	Compare (const Duration& rhs) const;
@@ -125,6 +126,13 @@ namespace	Stroika {
 			bool operator> (const Duration& lhs, const Duration& rhs);
 			bool operator== (const Duration& lhs, const Duration& rhs);
 			bool operator!= (const Duration& lhs, const Duration& rhs);
+
+
+			class	Duration::FormatException : public Execution::StringException {
+				public:
+					FormatException ();
+			};
+
 		}
 	}
 }

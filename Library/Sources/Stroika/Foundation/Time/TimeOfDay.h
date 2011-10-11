@@ -16,6 +16,7 @@
 
 #include	"../Characters/TString.h"
 #include	"../Configuration/Common.h"
+#include	"../Execution/StringException.h"
 
 
 
@@ -140,7 +141,9 @@ namespace	Stroika {
 			bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs);
 
 
-			class	TimeOfDay::FormatException {
+			class	TimeOfDay::FormatException : public Execution::StringException {
+				public:
+					FormatException ();
 			};
 
 
