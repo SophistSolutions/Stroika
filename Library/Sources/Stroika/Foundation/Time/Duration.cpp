@@ -52,7 +52,7 @@ Duration::FormatException::FormatException ()
  *********************************** Duration ***********************************
  ********************************************************************************
  */
-const	Duration::PrettyPrintInfo	Duration::kDefaultPrettyPrintInfo = {{ L"year", L"years", L"month", L"months", L"day", L"days", L"hour", L"hours", L"minute", L"minutes", L"second", L"seconds", L"ms", L"ms", L"µs", L"µs", L"ns", L"ns" }};
+const	Duration::PrettyPrintInfo	Duration::kDefaultPrettyPrintInfo = {{ L"year", L"years", L"month", L"months", L"day", L"days", L"hour", L"hours", L"minute", L"minutes", L"second", L"seconds", L"ms", L"ms", L"Âµs", L"Âµs", L"ns", L"ns" }};
 
 Duration::Duration ()
 	: fDurationRep ()
