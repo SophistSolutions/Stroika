@@ -281,7 +281,7 @@ namespace	{
 			}
 			{
 				const	Duration	kD		=	Duration (L"PT0.000045S");
-				VerifyTestResult (kD.PrettyPrint () == L"45 µs");
+				VerifyTestResult (kD.PrettyPrint () == L"45 Âµs");
 			}
 			VerifyTestResult (Duration (L"P30S").As<time_t> () == 30);
 			VerifyTestResult (Duration (L"PT30S").As<time_t> () == 30);
