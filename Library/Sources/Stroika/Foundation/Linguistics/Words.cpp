@@ -55,6 +55,15 @@ wstring	Linguistics::PluralizeNoun (const wstring& s, int count)
 	return PluralizeNoun_HLPR (s, count);
 }
 
+string	Linguistics::PluralizeNoun (const string& s, const string& sPlural, int count)
+{
+	return count == 1? s: sPlural;
+}
+
+wstring	Linguistics::PluralizeNoun (const wstring& s, const wstring& sPlural, int count)
+{
+	return count == 1? s: sPlural;
+}
 
 
 

@@ -30,9 +30,13 @@ namespace	Stroika {
 			 *	Implement current-ui-language-specific noun-pluralization logic for the given noun string (assuming the count of that noun
 			 *	is given (english rules - if count != 1 - append s, but we dont wnat that logic to proliferate through the app, so
 			 *	its easier to localize.
+			 *
+			 *	The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero
 			 */
 			string	PluralizeNoun (const string& s, int count = 1000);
 			wstring	PluralizeNoun (const wstring& s, int count = 1000);
+			string	PluralizeNoun (const string& s, const string& sPlural, int count = 1000);
+			wstring	PluralizeNoun (const wstring& s, const wstring& sPlural, int count = 1000);
 
 			wstring	MungeStringSoSingular (const wstring& s);
 			string	MungeStringSoSingular (const string& s);
