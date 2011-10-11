@@ -273,15 +273,15 @@ namespace	{
 			}
 			{
 				const	Duration	k3MS		=	Duration (L"PT0.003S");
-				VerifyTestResult (k3MS.PrettyPrint () == L"3 milliseconds");
+				VerifyTestResult (k3MS.PrettyPrint () == L"3 ms");
 			}
 			{
 				const	Duration	kD		=	Duration (L"PT1.003S");
-				VerifyTestResult (kD.PrettyPrint () == L"1 second, 3 milliseconds");
+				VerifyTestResult (kD.PrettyPrint () == L"1 second, 3 ms");
 			}
 			{
 				const	Duration	kD		=	Duration (L"PT0.000045S");
-				VerifyTestResult (kD.PrettyPrint () == L"45 microseconds");
+				VerifyTestResult (kD.PrettyPrint () == L"45 µs");
 			}
 			VerifyTestResult (Duration (L"P30S").As<time_t> () == 30);
 			VerifyTestResult (Duration (L"PT30S").As<time_t> () == 30);

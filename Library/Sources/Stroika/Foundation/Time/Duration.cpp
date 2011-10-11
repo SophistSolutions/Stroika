@@ -29,6 +29,8 @@ using	namespace	Time;
  *********************************** Duration ***********************************
  ********************************************************************************
  */
+const	Duration::PrettyPrintInfo	Duration::kDefaultPrettyPrintInfo = {{ L"year", L"years", L"month", L"months", L"day", L"days", L"hour", L"hours", L"minute", L"minutes", L"second", L"seconds", L"ms", L"ms", L"µs", L"µs", L"ns", L"ns" }};
+
 Duration::Duration ()
 	: fDurationRep ()
 {
@@ -104,7 +106,7 @@ namespace	{
 	const	time_t	kSecondsPerYear		=	kSecondsPerDay * 365;
 }
 
-wstring Duration::PrettyPrint () const
+wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
 	/*
 	 *	TODO:
@@ -121,7 +123,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nYears) + Linguistics::PluralizeNoun (L"year", static_cast<int> (nYears));
+			result += Format (L"%d ", nYears) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
 			timeLeft -= nYears * kSecondsPerYear;
 		}
 	}
@@ -131,7 +133,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nMonths) + Linguistics::PluralizeNoun (L"month", static_cast<int> (nMonths));
+			result += Format (L"%d ", nMonths) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
 			timeLeft -= nMonths * kSecondsPerMonth;
 		}
 	}
@@ -141,7 +143,7 @@ wstring Duration::PrettyPrint () const
 			if (not result.empty ()) {
 				result += L", ";
 			}
-			result += Format (L"%d ", nDays) + Linguistics::PluralizeNoun (L"day", static_cast<int> (nDays));
+			result += Format (L"%d ", nDays) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
 			timeLeft -= nDays * kSecondsPerDay;
 		}
 	}
@@ -152,7 +154,7 @@ wstring Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", nHours) + Linguistics::PluralizeNoun (L"hour", static_cast<int> (nHours));
+				result += Format (L"%d ", nHours) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
 				timeLeft -= nHours * kSecondsPerHour;
 			}
 		}
@@ -162,7 +164,7 @@ wstring Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", nMinutes) + Linguistics::PluralizeNoun (L"minute", static_cast<int> (nMinutes));
+				result += Format (L"%d ", nMinutes) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
 				timeLeft -= nMinutes * kSecondsPerMinute;
 			}
 		}
@@ -171,7 +173,7 @@ wstring Duration::PrettyPrint () const
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (L"second", static_cast<int> (timeLeft));
+				result += Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, static_cast<int> (timeLeft));
 				timeLeft -= static_cast<int> (timeLeft);
 			}
 		}
@@ -182,13 +184,13 @@ wstring Duration::PrettyPrint () const
 				result += L", ";
 			}
 			if (nNanoSeconds < 1000) {
-				result += Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (L"nanosecond", nNanoSeconds);
+				result += Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
 			}
 			else if (nNanoSeconds < 1000*1000) {
-				result += Format (L"%d ", nNanoSeconds/1000) + Linguistics::PluralizeNoun (L"microsecond", nNanoSeconds/1000);
+				result += Format (L"%d ", nNanoSeconds/1000) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nNanoSeconds/1000);
 			}
 			else  {
-				result += Format (L"%d ", nNanoSeconds/(1000*1000)) + Linguistics::PluralizeNoun (L"millisecond", nNanoSeconds/(1000*1000));
+				result += Format (L"%d ", nNanoSeconds/(1000*1000)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nNanoSeconds/(1000*1000));
 			}
 		}
 	}

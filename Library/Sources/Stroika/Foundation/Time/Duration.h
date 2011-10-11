@@ -75,7 +75,30 @@ namespace	Stroika {
 						T	As () const;
 
 				public:
-					nonvirtual	wstring PrettyPrint () const;
+					struct	PrettyPrintInfo {
+						struct	Labels {
+							wstring	fYear;
+							wstring	fYears;
+							wstring	fMonth;
+							wstring	fMonths;
+							wstring	fDay;
+							wstring	fDays;
+							wstring	fHour;
+							wstring	fHours;
+							wstring	fMinute;
+							wstring	fMinutes;
+							wstring	fSecond;
+							wstring	fSeconds;
+							wstring	fMilliSecond;
+							wstring	fMilliSeconds;
+							wstring	fMicroSecond;
+							wstring	fMicroSeconds;
+							wstring	fNanoSecond;
+							wstring	fNanoSeconds;
+						}	fLabels;
+					};
+					static	const	PrettyPrintInfo	kDefaultPrettyPrintInfo;
+					nonvirtual	wstring PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
 				public:
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
