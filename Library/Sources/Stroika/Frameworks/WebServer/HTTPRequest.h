@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Framework_WebServer_HTTPListener_h_
-#define	_Stroika_Framework_WebServer_HTTPListener_h_	1
+#ifndef	_Stroika_Framework_WebServer_HTTPRequest_h_
+#define	_Stroika_Framework_WebServer_HTTPRequest_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -11,18 +11,14 @@
 
 #include	"../../Foundation/Characters/String.h"
 #include	"../../Foundation/Configuration/Common.h"
+#include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
-#include	"../../Foundation/IO/Network/SocketStream.h"
-#include	"HTTPRequest.h"
-#include	"HTTPResponse.h"
 
 
 
 /*
  * TODO:
- *		Very early stage draft.
- *
- *		(o)	
+ *		(o)		
  */
 
 namespace	Stroika {	
@@ -30,25 +26,19 @@ namespace	Stroika {
 		namespace	WebServer {
 
 			using	namespace	Stroika::Foundation;
-			using	namespace	Stroika::Foundation::IO;
 			using	Characters::String;
+			using	DataExchangeFormat::InternetMediaType;
 
-			using	Stroika::Foundation::IO::Network::Socket;
-			using	Stroika::Foundation::IO::Network::SocketStream;
-
-			class	HTTPConnection {
+			// Maybe associated TextStream, and maybe readline method goes here
+			struct	HTTPRequest {
 				public:
-					HTTPConnection (Socket s);
-					HTTPConnection (SocketStream s);
-
-
-				private:
-					SocketStream	fSocketStream_;
+					HTTPRequest ();
 			};
+
 		}
 	}
 }
-#endif	/*_Stroika_Framework_WebServer_HTTPListener_h_*/
+#endif	/*_Stroika_Framework_WebServer_HTTPRequest_h_*/
 
 
 
@@ -58,4 +48,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"HTTPConnection.inl"
+#include	"HTTPRequest.inl"
