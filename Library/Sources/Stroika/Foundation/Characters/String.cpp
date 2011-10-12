@@ -277,14 +277,12 @@ String::String (_Rep* sharedPart, bool)
 
 String	String::FromUTF8 (const char* from)
 {
-	AssertNotImplemented ();
-	return String ();
+	return UTF8StringToWide (from);
 }
 
 String	String::FromUTF8 (const std::string& from)
 {
-	AssertNotImplemented ();
-	return String ();
+	return UTF8StringToWide (from);
 }
 
 String	String::FromTString (const TChar* from)
@@ -644,14 +642,13 @@ template	<>
 	void	String::AsASCII (string* into) const
 		{
 			RequireNotNull (into);
-			AssertNotImplemented ();
-#if 0
-			size_t	n	=	GetLength ();
-			const Character* cp	=	Peek ();
-			Assert (sizeof (Character) == sizeof (wchar_t));		// going to want to clean this up!!!	--LGP 2011-09-01
-			const wchar_t* wcp	=	(const wchar_t*)cp;
-			into->assign (wcp, wcp + n);
-#endif
+
+			into->clear ();
+			size_t	len	=	GetLength ();
+			into->reserve (len);
+			for (size_t i = 0; i < len; ++i) {
+				into->push_back (operator[] (i).GetAsciiCode ());
+			}
 		}
 
 
