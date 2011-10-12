@@ -235,10 +235,35 @@ namespace	{
 
 
 
+namespace	{
+
+	void	Test_6_DateTimeStructTM_ ()
+		{
+			{
+				struct	tm	x;
+				memset (&x, 0, sizeof (x));
+				x.tm_hour = 3;
+				x.tm_min = 30;
+				x.tm_year = 80;
+				x.tm_mon = 3;
+				x.tm_mday = 15;
+				DateTime	d	=	DateTime (x);
+				struct	tm	x2	=	d.As<struct tm> ();
+				VerifyTestResult (memcmp (&x, &x2, sizeof (x)) == 0);		// works only because of how we initialize struct tm in date code. We probably should have a loser
+																			// check here. We really don't want to promise bit-level equality
+			}
+		}
+
+}
+
+
+
+
+
 
 namespace	{
 
-	void	Test_6_Duration_ ()
+	void	Test_7_Duration_ ()
 		{
 			const	int	kSecondsPerDay		=	TimeOfDay::kMaxSecondsPerDay;
 			{
@@ -308,7 +333,8 @@ namespace	{
 			Test_3_TestDate_ ();
 			Test_4_TestDateTime_ ();
 			Test_5_DateTimeTimeT_ ();
-			Test_6_Duration_ ();
+			Test_6_DateTimeStructTM_ ();
+			Test_7_Duration_ ();
 		}
 }
 

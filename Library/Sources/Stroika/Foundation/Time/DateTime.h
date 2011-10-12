@@ -189,7 +189,7 @@ namespace	Stroika {
 					 *	logically extends Date with extra (TOD) information.
 					 */
 					template	<typename T>
-						T	As () const;
+						nonvirtual	T	As () const;
 
 
 				public:

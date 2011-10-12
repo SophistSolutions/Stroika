@@ -489,9 +489,9 @@ template	<>
 			tm.tm_min = totalSecondsRemaining / 60;
 			totalSecondsRemaining -= tm.tm_min * 60;
 			tm.tm_sec = totalSecondsRemaining;
-			Ensure (0 >= tm.tm_hour and tm.tm_hour <= 23);
-			Ensure (0 >= tm.tm_min and tm.tm_min <= 59);
-			Ensure (0 >= tm.tm_sec and tm.tm_sec <= 59);
+			Ensure (0 <= tm.tm_hour and tm.tm_hour <= 23);
+			Ensure (0 <= tm.tm_min and tm.tm_min <= 59);
+			Ensure (0 <= tm.tm_sec and tm.tm_sec <= 59);
 			return tm;
 		}
 
