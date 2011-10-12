@@ -70,7 +70,7 @@ namespace	Stroika {
 					 *	Note - if 'emtpy' - As<> for numeric types returns 0.
 					 */
 					template	<typename T>
-						T	As () const;
+						nonvirtual	T	As () const;
 
 				public:
 					struct	PrettyPrintInfo {
