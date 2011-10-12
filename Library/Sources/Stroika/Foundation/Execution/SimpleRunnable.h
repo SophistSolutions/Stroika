@@ -9,13 +9,20 @@
 #include	"IRunnable.h"
 
 
+/*
+ * TODO:
+ *		o	Probably want to do variants on this - maybe templated think like STL-style functor...
+ */
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
 
-			// Probably want to do variants on this - maybe templated think like STL-style functor... Maybe move to separate files(s)
+			/*
+			 * SimpleRunnable is an easy way to map a simple object or function (optionally with args) to an IRunnable - the
+			 * basic type used in threading and background processing classes.
+			 */
 			class	SimpleRunnable : public IRunnable {
 				public:
 					SimpleRunnable (void (*fun2CallOnce) ());
