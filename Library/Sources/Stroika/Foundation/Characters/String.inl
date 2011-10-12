@@ -138,6 +138,14 @@ namespace	Stroika {
 						AsUTF8 (&r);
 						return r;
 					}
+			inline	std::string	String::AsUTF8 () const
+				{
+					return AsUTF8<std::string> ();
+				}
+			inline	void		String::AsUTF8 (std::string* into) const
+				{
+					AsUTF8<std::string> (into);
+				}
 			template	<>
 				inline	string	String::AsASCII () const
 					{
@@ -145,7 +153,14 @@ namespace	Stroika {
 						AsASCII (&r);
 						return r;
 					}
-
+			inline	std::string	String::AsASCII () const
+				{
+					return AsASCII<std::string> ();
+				}
+			inline	void		String::AsASCII (std::string* into) const
+				{
+					AsASCII<std::string> (into);
+				}
 			inline	size_t	String::length () const
 				{
 					return GetLength ();

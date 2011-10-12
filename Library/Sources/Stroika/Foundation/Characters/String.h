@@ -304,14 +304,15 @@ namespace	Stroika {
 
 				public:
 					/*
-					 * Convert String losslessly into a standard C++ type (right now just <string> supported)
+					 * Convert String losslessly into a standard C++ type (right now just <string> supported). Note - template param is optional.
 					 */
 					template	<typename	T>
 						nonvirtual	T	AsUTF8 () const;
 					template	<typename	T>
 						nonvirtual	void	AsUTF8 (T* into) const;
+					nonvirtual	std::string	AsUTF8 () const;
+					nonvirtual	void		AsUTF8 (std::string* into) const;
 
-nonvirtual	std::string	AsUTF8 () const;
 				public:
 					/*
 					 */
@@ -320,12 +321,15 @@ nonvirtual	std::string	AsUTF8 () const;
 
 				public:
 					/*
-					 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string MUST be valid ascii characters (asserted)
+					 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string
+					 * MUST be valid ascii characters (asserted)
 					 */
 					template	<typename	T>
 						nonvirtual	T	AsASCII () const;
 					template	<typename	T>
 						nonvirtual	void	AsASCII (T* into) const;
+					nonvirtual	std::string	AsASCII () const;
+					nonvirtual	void		AsASCII (std::string* into) const;
 
 
 				public:
@@ -398,8 +402,6 @@ nonvirtual	std::string	AsUTF8 () const;
 			template	<>
 				string	String::AsASCII () const;
 
-
-inline	std::string	String::AsUTF8 () const	{ return AsUTF8<std::string> (); }
 
 
             class	String::_Rep {
