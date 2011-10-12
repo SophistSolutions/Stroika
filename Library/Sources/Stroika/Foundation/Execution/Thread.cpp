@@ -17,6 +17,7 @@
 #include	"../Containers/VectorUtils.h"
 #include	"../Execution/ErrNoException.h"
 #include	"../Time/Realtime.h"
+#include	"SimpleRunnable.h"
 
 #if		qUseThreads_WindowsNative
 	#include	"Platform/Windows/WaitSupport.h"

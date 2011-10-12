@@ -28,26 +28,6 @@ namespace	Stroika {
 					virtual	void	Run () = 0;
 			};
 
-
-			// Probably want to do variants on this - maybe templated think like STL-style functor... Maybe move to separate files(s)
-			class	SimpleRunnable : public IRunnable {
-				public:
-					SimpleRunnable (void (*fun2CallOnce) (void* arg), void* arg)
-						: fFun2CallOnce (fun2CallOnce)
-						, fArg (arg)
-						{
-						}
-				public:
-					virtual	void	Run () override
-						{
-							(fFun2CallOnce) (fArg);
-						}
-
-			private:
-				void (*fFun2CallOnce) (void* arg);
-				void* fArg;
-			};
-
 		}
 	}
 }
