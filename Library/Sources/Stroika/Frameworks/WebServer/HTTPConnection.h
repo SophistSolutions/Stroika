@@ -45,6 +45,12 @@ namespace	Stroika {
 					void	Close ();
 
 
+				public:
+					//tmphack - not sure if/what we want todo here
+					HTTPRequest&	GetRequest () { return fRequest_; }
+					//tmphack - not sure if/what we want todo here
+					HTTPResponse&	GetResponse () { return fResponse_; }
+
 				private:
 					HTTPRequest		fRequest_;
 					HTTPResponse	fResponse_;
