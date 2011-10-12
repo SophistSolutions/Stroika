@@ -23,9 +23,10 @@
  *
  *		o	Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
  *
- *		o	Add support for long double (and perhaps others?).
+ *		o	Add support for long double (and perhaps others?). And consider using long double for InternalNumericFormatType_;
  *
- *
+ *		o	Consider adding 'precision' property to PrettyPrintInfo. Think about precision support/design of
+ *			boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
  *
  */
 
