@@ -6,6 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	"../Memory/BlockAllocated.h"
+
 #include	"IRunnable.h"
 
 
@@ -31,12 +33,19 @@ namespace	Stroika {
 				public:
 					virtual	void	Run () override;
 
+				public:
+					static	Memory::SharedPtr<IRunnable>	MAKE (void (*fun2CallOnce) ());
+					static	Memory::SharedPtr<IRunnable>	MAKE (void (*fun2CallOnce) (void* arg), void* arg);
+
 				private:
 					static	void	FakeZeroArg_ (void* arg);
 
 				private:
 					void (*fFun2CallOnce) (void* arg);
 					void* fArg;
+
+				public:
+					DECLARE_USE_BLOCK_ALLOCATION(SimpleRunnable);
 			};
 
 		}

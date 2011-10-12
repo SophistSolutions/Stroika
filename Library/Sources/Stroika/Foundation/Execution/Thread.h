@@ -99,6 +99,7 @@ namespace	Stroika {
 					//
 					//
 					// fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
+					explicit Thread (void (*fun2CallOnce) ());
 					explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
 					explicit Thread (const SharedPtr<IRunnable>& runnable);
 

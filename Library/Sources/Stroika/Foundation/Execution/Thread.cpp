@@ -311,8 +311,14 @@ Thread::Thread ()
 {
 }
 
+Thread::Thread (void (*fun2CallOnce) ())
+	: fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce))))
+{
+	Rep_::DoCreate (&fRep_);
+}
+
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-	: fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg)))))
+	: fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce, arg))))
 {
 	Rep_::DoCreate (&fRep_);
 }

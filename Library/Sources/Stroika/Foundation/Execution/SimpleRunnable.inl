@@ -19,11 +19,18 @@ namespace	Stroika {
 				, fArg (reinterpret_cast<void*> (fun2CallOnce))
 				{
 				}
-
 			inline	SimpleRunnable::SimpleRunnable (void (*fun2CallOnce) (void* arg), void* arg)
 				: fFun2CallOnce (fun2CallOnce)
 				, fArg (arg)
 				{
+				}
+			inline	Memory::SharedPtr<IRunnable>	SimpleRunnable::MAKE (void (*fun2CallOnce) ())
+				{
+					return Memory::SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce));
+				}
+			inline	Memory::SharedPtr<IRunnable>	SimpleRunnable::MAKE (void (*fun2CallOnce) (void* arg), void* arg)
+				{
+					return Memory::SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg));
 				}
 
 		}
