@@ -16,6 +16,7 @@
 #include	"../Execution/Exceptions.h"
 #include	"../Memory/SmallStackBuffer.h"
 #include	"../Linguistics/Words.h"
+#include	"Duration.h"
 
 #include	"DateTime.h"
 
@@ -139,13 +140,31 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 	fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
 }
 
-DateTime::DateTime (tm& tmTime, Timezone tz)
+DateTime::DateTime (const tm& tmTime, Timezone tz)
 	: fTimezone_ (tz)
 	, fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
 	, fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
 {
 }
 
+#if		qPlatform_POSIX
+DateTime::DateTime (const timespec& tmTime, Timezone tz)
+	: fTimezone_ (tz)
+	, fDate_ ()
+	, fTimeOfDay_ ()
+{
+	time_t		unixTime	=	tmTime.tv_sec;			// IGNORE tv_nsec because we currently don't support fractional seconds in DateTime
+	struct	tm	tmTimeData;
+	memset (&tmTimeData, 0, sizeof (tmTimeData));
+	#if	qPlatform_Windows
+		(void)::_gmtime64_s (&tmTimeData, &unixTime);
+	#else
+		(void)::gmtime_r  (&unixTime, &tmTimeData);
+	#endif
+	fDate_ = Date (Year (tmTimeData.tm_year+1900), MonthOfYear (tmTimeData.tm_mon+1), DayOfMonth (tmTimeData.tm_mday));
+	fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
+}
+#endif
 #if		qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime, Timezone tz)
 	: fTimezone_ (tz)
@@ -495,6 +514,19 @@ template	<>
 			return tm;
 		}
 
+
+
+#if		qPlatform_POSIX
+template	<>
+	timespec	DateTime::As () const
+		{
+			timespec	tspec;
+			tspec.tv_sec = As<time_t> ();
+			tspec.tv_nsec = 0;					// IGNORE tv_nsec because we currently don't support fractional seconds in DateTime
+			return tspec;
+		}
+#endif
+
 #if		qPlatform_Windows
 template	<>
 	SYSTEMTIME	DateTime::As () const
@@ -553,6 +585,16 @@ DateTime	DateTime::AddSeconds (time_t seconds) const
 	return DateTime (GetDate ().AddDays (dayDiff), TimeOfDay (static_cast<uint32_t> (n)), GetTimezone ());
 }
 
+Duration	DateTime::Difference (const DateTime& rhs) const
+{
+	if (GetTimezone () == rhs.GetTimezone ()) {
+		return Duration (As<time_t> () - rhs.As<time_t> ());
+	}
+	else {
+		return Duration (AsUTC ().As<time_t> () - rhs.AsUTC ().As<time_t> ());
+	}
+}
+
 int	DateTime::Compare (const DateTime& rhs) const
 {
 	if (empty ()) {
@@ -576,34 +618,8 @@ int	DateTime::Compare (const DateTime& rhs) const
 	}
 }
 
-bool Time::operator< (const DateTime& lhs, const DateTime& rhs)
+Duration operator- (const DateTime& lhs, const DateTime& rhs)
 {
-	return lhs.Compare (rhs) < 0;
+	return lhs.Difference (rhs);
 }
-
-bool Time::operator<= (const DateTime& lhs, const DateTime& rhs)
-{
-	return lhs.Compare (rhs) <= 0;
-}
-
-bool Time::operator> (const DateTime& lhs, const DateTime& rhs)
-{
-	return lhs.Compare (rhs) > 0;
-}
-
-bool Time::operator>= (const DateTime& lhs, const DateTime& rhs)
-{
-	return lhs.Compare (rhs) >= 0;
-}
-
-bool Time::operator== (const DateTime& lhs, const DateTime& rhs)
-{
-	return lhs.Compare (rhs) == 0;
-}
-
-bool Time::operator!= (const DateTime& lhs, const DateTime& rhs)
-{
-	return lhs.Compare (rhs) != 0;
-}
-
 

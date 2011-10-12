@@ -57,6 +57,32 @@ namespace	Stroika {
 					return fTimezone_;
 				}
 
+
+
+			inline	bool Time::operator< (const DateTime& lhs, const DateTime& rhs)
+				{
+					return lhs.Compare (rhs) < 0;
+				}
+			inline	bool Time::operator<= (const DateTime& lhs, const DateTime& rhs)
+				{
+					return lhs.Compare (rhs) <= 0;
+				}
+			inline	bool Time::operator> (const DateTime& lhs, const DateTime& rhs)
+				{
+					return lhs.Compare (rhs) > 0;
+				}
+			inline	bool Time::operator>= (const DateTime& lhs, const DateTime& rhs)
+				{
+					return lhs.Compare (rhs) >= 0;
+				}
+			inline	bool Time::operator== (const DateTime& lhs, const DateTime& rhs)
+				{
+					return lhs.Compare (rhs) == 0;
+				}
+			inline	bool Time::operator!= (const DateTime& lhs, const DateTime& rhs)
+				{
+					return lhs.Compare (rhs) != 0;
+				}
 		}
 	}
 }

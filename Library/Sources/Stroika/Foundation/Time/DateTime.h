@@ -65,6 +65,9 @@ namespace	Stroika {
 			using	Characters::TString;
 
 
+			class	Duration;	// forward declare for Differnce ()
+
+
 			/*
 			 *	Description:
 			 *
@@ -110,7 +113,12 @@ namespace	Stroika {
 					explicit DateTime (time_t unixTime, Timezone tz = eUnknown_TZ);
 					/*
 					 */
-					explicit DateTime (tm& tmTime, Timezone tz = eUnknown_TZ);
+					explicit DateTime (const tm& tmTime, Timezone tz = eUnknown_TZ);
+
+				#if		qPlatform_POSIX
+					public:
+						explicit DateTime (const timespec& tmTime, Timezone tz = eUnknown_TZ);
+				#endif
 
 				#if		qPlatform_Windows
 				public:
@@ -182,6 +190,7 @@ namespace	Stroika {
 					 * Defined for 
 					 *		time_t
 					 *		struct tm
+					 *		struct timespec
 					 *		SYSTEMTIME			(WINDOWS ONLY)
 					 *		Date
 					 *
@@ -213,6 +222,10 @@ namespace	Stroika {
 
 
 				public:
+					// Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
+					nonvirtual	Duration	Difference (const DateTime& rhs) const;
+
+				public:
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
 					// this comparison function - see the notes about 'empty' in the class description.
 					//
@@ -232,6 +245,10 @@ namespace	Stroika {
 				time_t	DateTime::As () const;
 			template	<>
 				tm	DateTime::As () const;
+			#if		qPlatform_POSIX
+			template	<>
+				timespec	DateTime::As () const;
+			#endif
 			#if		qPlatform_Windows
 			template	<>
 				SYSTEMTIME	DateTime::As () const;
@@ -247,6 +264,7 @@ namespace	Stroika {
 			bool operator== (const DateTime& lhs, const DateTime& rhs);
 			bool operator!= (const DateTime& lhs, const DateTime& rhs);
 
+			Duration operator- (const DateTime& lhs, const DateTime& rhs);
 
 		}
 	}
