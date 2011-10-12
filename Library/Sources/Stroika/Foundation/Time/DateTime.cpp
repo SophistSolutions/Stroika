@@ -139,7 +139,7 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 	fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
 }
 
-DateTime::DateTime (struct tm tmTime, Timezone tz)
+DateTime::DateTime (tm& tmTime, Timezone tz)
 	: fTimezone_ (tz)
 	, fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
 	, fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)

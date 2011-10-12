@@ -93,6 +93,12 @@ namespace	Stroika {
 					};
 
 				public:
+					/*
+					 * Construct a DateTime record with the given date and time value. Presume that these values apply to the given timezone. This does
+					 * not adjust the value of date/time for the given tz - but just records that this datetime refers to the given timezone.
+					 *
+					 * To change TO a target timezone, use AsUTC () or AsLocalTime ().
+					 */
 					DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = eUnknown_TZ);
 
 				public:
@@ -104,7 +110,7 @@ namespace	Stroika {
 					explicit DateTime (time_t unixTime, Timezone tz = eUnknown_TZ);
 					/*
 					 */
-					explicit DateTime (struct tm tmTime, Timezone tz = eUnknown_TZ);
+					explicit DateTime (tm& tmTime, Timezone tz = eUnknown_TZ);
 
 				#if		qPlatform_Windows
 				public:
