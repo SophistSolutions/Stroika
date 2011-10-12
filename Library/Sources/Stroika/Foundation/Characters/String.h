@@ -311,6 +311,7 @@ namespace	Stroika {
 					template	<typename	T>
 						nonvirtual	void	AsUTF8 (T* into) const;
 
+nonvirtual	std::string	AsUTF8 () const;
 				public:
 					/*
 					 */
@@ -398,6 +399,7 @@ namespace	Stroika {
 				string	String::AsASCII () const;
 
 
+inline	std::string	String::AsUTF8 () const	{ return AsUTF8<std::string> (); }
 
 
             class	String::_Rep {
