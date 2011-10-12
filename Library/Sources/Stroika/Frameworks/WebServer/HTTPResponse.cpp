@@ -24,3 +24,19 @@ using	namespace	Stroika::Frameworks::WebServer;
 
 
 
+
+
+
+
+/*
+ ********************************************************************************
+ ************************ WebServer::HTTPResponse *******************************
+ ********************************************************************************
+ */
+HTTPResponse::HTTPResponse (const InternetMediaType& ct)
+	: fContentType_ (ct)
+	,_fBytes ()
+{
+}
+
+

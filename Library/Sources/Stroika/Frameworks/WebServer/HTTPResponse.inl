@@ -50,15 +50,15 @@ namespace	Stroika {
 				}
 			inline	void	HTTPResponse::clear ()
 				{
-					fBytes.clear ();
+					_fBytes.clear ();
 				}
 			inline	bool	HTTPResponse::empty () const
 				{
-					return fBytes.empty ();
+					return _fBytes.empty ();
 				}
 			inline	const vector<Byte>&	HTTPResponse::GetBytes () const
 				{
-					return fBytes;
+					return _fBytes;
 				}
 
 		}

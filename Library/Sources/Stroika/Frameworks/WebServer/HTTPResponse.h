@@ -61,7 +61,7 @@ namespace	Stroika {
 				private:
 					InternetMediaType	fContentType_;
 				protected:
-					vector<Byte>			fBytes;
+					vector<Byte>		_fBytes;
 			};
 
 		}
