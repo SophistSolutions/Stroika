@@ -415,7 +415,7 @@ wstring	DateTime::Format (const locale& l) const
 	wostringstream oss;
 	// Read docs - not sure how to use this to get the local-appropriate format
 	// %X MAYBE just what we want  - locale DEPENDENT!!!
-	wchar_t pattern[]=L"%x%X";
+	wchar_t pattern[]=L"%x %X";
 	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
 	return oss.str ();
 }
