@@ -52,7 +52,19 @@ Duration::FormatException::FormatException ()
  *********************************** Duration ***********************************
  ********************************************************************************
  */
-const	Duration::PrettyPrintInfo	Duration::kDefaultPrettyPrintInfo = {{ L"year", L"years", L"month", L"months", L"day", L"days", L"hour", L"hours", L"minute", L"minutes", L"second", L"seconds", L"ms", L"ms", L"µs", L"µs", L"ns", L"ns" }};
+const	Duration::PrettyPrintInfo	Duration::kDefaultPrettyPrintInfo = {
+	{
+		L"year", L"years", 
+		L"month", L"months", 
+		L"day", L"days", 
+		L"hour", L"hours", 
+		L"minute", L"minutes", 
+		L"second", L"seconds", 
+		L"ms", L"ms", 
+		L"µs", L"µs", 
+		L"ns", L"ns"
+	}
+};
 
 Duration::Duration ()
 	: fDurationRep ()
@@ -71,6 +83,11 @@ Duration::Duration (int32_t duration)
 }
 
 Duration::Duration (int64_t duration)
+	: fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (double duration)
 	: fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
