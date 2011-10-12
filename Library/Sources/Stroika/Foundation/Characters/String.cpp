@@ -86,6 +86,8 @@ class	String_CharArray::MyRep_ : public String::_Rep {
 
 		virtual		const Character*	Peek () const override;
 
+		virtual	int	Compare (const _Rep& rhs, String::CompareOptions co) const override;
+
 	protected:
 		MyRep_ ();
 		nonvirtual	void	SetStorage (Character* storage, size_t length);
@@ -182,6 +184,7 @@ namespace	{
 				virtual		void	SetLength (size_t newLength) override;
 
 				virtual		const Character*	Peek () const override;
+				virtual	int	Compare (const _Rep& rhs, String::CompareOptions co) const override;
 
 			private:
 				Memory::SharedByValue<_Rep>	fBase;
@@ -651,7 +654,6 @@ template	<>
 #endif
 		}
 
-	
 
 
 
@@ -934,6 +936,44 @@ void	String_CharArray::MyRep_::SetStorage (Character* storage, size_t length)
 size_t	String_CharArray::MyRep_::CalcAllocChars_ (size_t requested)
 {
 	return (requested);
+}
+
+int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions co) const override
+{
+	Require (co == eWithCase_CO or co == eCaseInsensitive_CO);
+    if (this == &rhs) {
+        return (0);
+    }
+	// Need a more efficient implementation - but this should do for starters...
+	switch (co) {
+		case	eWithCase_CO: {
+		    size_t lLen = GetLength ();
+		    size_t rLen = rhs.GetLength ();
+			size_t length	=	min (lLen, rLen);
+			for (size_t i = 0; i < length; i++) {
+				if (fStorage[i] != rhs.GetAt (i)) {
+					return (fStorage[i] - rhs.GetAt (i).GetCharacterCode ());
+				}
+			}
+			return (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+		}
+										
+		case	eCaseInsensitive_CO: 	{
+			// Not sure wcscasecmp even helps because of convert to c-str
+			//return ::wcscasecmp (l.c_str (), r.c_str ());;
+		    size_t lLen = GetLength ();
+		    size_t rLen = rhs.GetLength ();
+			size_t length	=	min (lLen, rLen);
+			for (size_t i = 0; i < length; i++) {
+				Character	lc	=	Character (fStorage[i]).ToLowerCase ();
+				Character	rc	=	rhs.GetAt (i).ToLowerCase ();
+				if (lc.GetCharacterCode () != rc.GetCharacterCode ()) {
+					return (lc.GetCharacterCode () - rc.GetCharacterCode ());
+				}
+			}
+			return (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+		}
+	}
 }
 
 

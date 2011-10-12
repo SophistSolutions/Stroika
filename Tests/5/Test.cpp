@@ -588,6 +588,29 @@ namespace	{
 
 
 
+namespace	{
+	void	Test18_Compare_ ()
+		{
+			const	String	kHELLOWorld	=	String (L"Hello world");
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, String::eWithCase_CO) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), String::eWithCase_CO) == 0);
+
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::eWithCase_CO) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::eCaseInsensitive_CO) == 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", String::eCaseInsensitive_CO) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::eCaseInsensitive_CO) < 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::eCaseInsensitive_CO) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", String::eWithCase_CO) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::eWithCase_CO) > 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::eWithCase_CO) < 0);
+		}
+}
+
+
+
+
+
+
 
 namespace	{
 
@@ -626,6 +649,7 @@ namespace	{
 			Test15_StripAll_ ();
 			Test16_Format_ ();
 			Test17_RegExp_ ();
+			Test18_Compare_ ();
 		}
 }
 

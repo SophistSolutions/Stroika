@@ -327,6 +327,14 @@ namespace	Stroika {
 						nonvirtual	void	AsASCII (T* into) const;
 
 
+				public:
+					enum	CompareOptions {
+						eWithCase_CO,
+						eCaseInsensitive_CO,
+					};
+					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+					nonvirtual	int	Compare (const String& rhs, CompareOptions co) const;
+
 
 				// StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
 				public:
@@ -413,6 +421,8 @@ namespace	Stroika {
                     virtual	void	SetLength (size_t newLength) 	= 0;
 
                     virtual	const Character*	Peek () const 				= 0;
+
+					virtual	int		Compare (const _Rep& rhs, String::CompareOptions co) const	=	0;
 
 				public:
 					/*

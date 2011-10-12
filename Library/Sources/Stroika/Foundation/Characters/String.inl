@@ -171,6 +171,10 @@ namespace	Stroika {
 				{
 					return RIndexOf (c);
 				}
+			inline	int	String::Compare (const String& rhs, CompareOptions co) const
+				{
+					return fRep_->Compare (*rhs.fRep_.GetPointer (), co);
+				}
 
 
 
