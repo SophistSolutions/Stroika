@@ -52,6 +52,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-
 		..\Linux\Makefile-Foundation-Time = ..\Linux\Makefile-Foundation-Time
 		..\Linux\Makefile-Frameworks = ..\Linux\Makefile-Frameworks
 		..\Linux\Makefile-Frameworks-Service = ..\Linux\Makefile-Frameworks-Service
+		..\Linux\Makefile-Frameworks-WebServer = ..\Linux\Makefile-Frameworks-WebServer
 		..\Linux\SharedBuildRules-Default.mk = ..\Linux\SharedBuildRules-Default.mk
 		..\Linux\SharedMakeVariables-Default.mk = ..\Linux\SharedMakeVariables-Default.mk
 	EndProjectSection

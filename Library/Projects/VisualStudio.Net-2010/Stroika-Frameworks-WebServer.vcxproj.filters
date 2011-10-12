@@ -12,6 +12,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.h">
@@ -20,12 +23,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.inl">
       <Filter>Sources</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.inl">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.inl">
       <Filter>Sources</Filter>
     </None>
   </ItemGroup>

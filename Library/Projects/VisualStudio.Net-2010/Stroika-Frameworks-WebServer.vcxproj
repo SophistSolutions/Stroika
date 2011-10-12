@@ -76,14 +76,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

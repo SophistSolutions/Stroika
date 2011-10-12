@@ -27,15 +27,27 @@ using	namespace	Stroika::Frameworks::WebServer;
 
 
 HTTPConnection::HTTPConnection (Socket s)
-	: fSocketStream_ (s)
+//	: fSocketStream_ (s)
+	: fSocket_ (s)
+	, fRequest_ ()
+	, fResponse_ (InternetMediaType ())
 {
 }
-
 
 HTTPConnection::HTTPConnection (SocketStream s)
-	: fSocketStream_ (s)
+	//: fSocketStream_ (s)
+	: fSocket_ (0)
+	, fRequest_ ()
+	, fResponse_ (InternetMediaType ())
 {
+	AssertNotImplemented ();
 }
+
+void	HTTPConnection::Close ()
+{
+	fSocket_.Close ();
+}
+
 
 
 

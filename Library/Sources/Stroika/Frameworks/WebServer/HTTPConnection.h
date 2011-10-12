@@ -41,9 +41,17 @@ namespace	Stroika {
 					HTTPConnection (Socket s);
 					HTTPConnection (SocketStream s);
 
+// not sure we want this
+					void	Close ();
+
 
 				private:
-					SocketStream	fSocketStream_;
+					HTTPRequest		fRequest_;
+					HTTPResponse	fResponse_;
+
+				private:
+					//SocketStream	fSocketStream_;
+					Socket	fSocket_;
 			};
 		}
 	}
