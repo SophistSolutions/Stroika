@@ -16,7 +16,7 @@ namespace	Stroika {
 
 			inline	SimpleRunnable::SimpleRunnable (void (*fun2CallOnce) ())
 				: fFun2CallOnce (FakeZeroArg_)
-				, fArg (fun2CallOnce)
+				, fArg (reinterpret_cast<void*> (fun2CallOnce))
 				{
 				}
 
