@@ -209,12 +209,21 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 			}
 		}
 		if (timeLeft > 0) {
-			if (static_cast<int> (timeLeft) != 0) {
+			int	timeLeftAsInt	=	static_cast<int> (timeLeft);
+			if (timeLeftAsInt != 0) {
+				Assert (timeLeftAsInt > 0);
 				if (not result.empty ()) {
 					result += L", ";
 				}
-				result += Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, static_cast<int> (timeLeft));
-				timeLeft -= static_cast<int> (timeLeft);
+				// Map 3.242 to printing out 3.242, but 0.234 prints out as 234 milliseconds
+				if (fabs (timeLeft - timeLeftAsInt) < 0.001) {
+					result += Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
+					timeLeft -= static_cast<int> (timeLeft);
+				}
+				else {
+					result += Format (L"%.3f ", timeLeft) + prettyPrintInfo.fLabels.fSeconds;
+					timeLeft = 0.0;
+				}
 			}
 		}
 		if (timeLeft > 0) {

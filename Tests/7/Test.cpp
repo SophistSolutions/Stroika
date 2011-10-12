@@ -302,7 +302,7 @@ namespace	{
 			}
 			{
 				const	Duration	kD		=	Duration (L"PT1.003S");
-				VerifyTestResult (kD.PrettyPrint () == L"1 second, 3 ms");
+				VerifyTestResult (kD.PrettyPrint () == L"1.003 seconds");
 			}
 			{
 				const	Duration	kD		=	Duration (L"PT0.000045S");
