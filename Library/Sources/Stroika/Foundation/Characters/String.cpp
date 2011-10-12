@@ -970,6 +970,10 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 			}
 			return (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
 		}
+
+		default:
+			AssertNotReached ();
+			return 0;
 	}
 }
 
