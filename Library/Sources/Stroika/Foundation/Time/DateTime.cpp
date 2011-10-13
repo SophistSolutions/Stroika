@@ -376,7 +376,7 @@ wstring	DateTime::Format (PrintFormat pf) const
 				}
 				else {
 					// TRY TODO PORTABLY...
-					time_t	tzBias		=	GetLocaltimeToGMTOffset ();
+					time_t	tzBias		=	-GetLocaltimeToGMTOffset ();
 					int minuteBias		=	abs (static_cast<int> (tzBias)) / 60;
 					int	hrs				=	minuteBias / 60;
 					int mins			=	minuteBias - hrs * 60;
@@ -492,7 +492,7 @@ template	<>
 			 * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
 			 * DateTime() object.
 			 */
-			result += Time::GetLocaltimeToGMTOffset ();
+			result -= Time::GetLocaltimeToGMTOffset ();
 			return result;
 		}
 

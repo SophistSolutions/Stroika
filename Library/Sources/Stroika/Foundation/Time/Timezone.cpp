@@ -40,7 +40,8 @@ time_t	Time::GetLocaltimeToGMTOffset ()
 	struct tm tm;
 	memset (&tm, 0, sizeof(tm));
 	tm.tm_year = 70;
+	tm.tm_mon = 0;		// Jan
 	tm.tm_mday = 1;
-	time_t	result	=	- mktime (&tm);
+	time_t	result	=	mktime (&tm);
 	return result;
 }
