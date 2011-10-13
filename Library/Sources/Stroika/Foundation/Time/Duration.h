@@ -28,6 +28,12 @@
  *		o	Consider adding 'precision' property to PrettyPrintInfo. Think about precision support/design of
  *			boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
  *
+ *		o	Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
+ *			o	Number of seconds. Anything less than that number is truncated.
+ *			o	So .001 ‘precision’ means show 3.44444 as 3.444 and 60 means show 67 seconds as “one minute”
+ *			o	Maybe add option so can show > or < as in < one minute or > one minute for being passed sentainl values?
+ *
+ *
  */
 
 
@@ -47,6 +53,13 @@ namespace	Stroika {
 			 * As far as I know - XML always uses the later. For now - this implementation only supports the later.
 			 *
 			 *		See also: http://bugzilla/show_bug.cgi?id=468
+			 *
+			 *	This class is roughly equivilent to the .Net Timespan class, and also might be called "time period".
+			 *
+			 *	Note that a Duration maybe negative.
+			 *
+			 *	It is best to logically think of Duration as a number of seconds (at least lossly) – since for comparisons –
+			 *	that’s how things are normalized. #days etc are dumbed down to number of seconds for comparison sakes.
 			 */
 			class	Duration {
 				public:
