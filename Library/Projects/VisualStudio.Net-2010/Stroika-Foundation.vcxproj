@@ -199,6 +199,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp" />
@@ -319,6 +322,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
@@ -418,6 +424,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />

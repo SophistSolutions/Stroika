@@ -1,0 +1,17 @@
+include ../../../../Configuration.mk
+include	../../../../SharedBuildRules.mk
+include	../../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
+
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Exception.o\
+	$(ObjDir)Headers.o\
+	$(ObjDir)Status.o\
+
+all:	$(Objs)
+

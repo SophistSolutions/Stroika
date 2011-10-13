@@ -88,6 +88,9 @@
     <Filter Include="Sources\Streams\iostream">
       <UniqueIdentifier>{4f8744f9-b834-4bc2-be46-013348768bcf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\IO\Network\HTTP">
+      <UniqueIdentifier>{176b919d-a2cd-4146-aa3a-20e9f0e32452}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -305,6 +308,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.cpp">
       <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -681,6 +693,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -961,6 +982,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
   </ItemGroup>
 </Project>
