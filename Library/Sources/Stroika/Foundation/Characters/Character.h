@@ -66,7 +66,7 @@ namespace	Stroika {
 
 
 					template	<typename T>
-						T	As () const;
+						nonvirtual	T	As () const;
 
 				public:
 					nonvirtual	bool	IsAscii () const;
@@ -96,7 +96,7 @@ namespace	Stroika {
 					nonvirtual	Character	ToUpperCase () const;
 
 				private:
-					wchar_t		fCharacterCode;
+					wchar_t		fCharacterCode_;
 			};
 
 			template<>

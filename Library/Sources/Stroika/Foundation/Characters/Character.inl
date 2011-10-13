@@ -19,31 +19,31 @@ namespace	Stroika {
 		namespace	Characters {
 
 			inline	Character::Character ()
-				 : fCharacterCode ('\0')
+				 : fCharacterCode_ ('\0')
 				{
 				}
 			inline	Character::Character (char c)
-				: fCharacterCode (c)
+				: fCharacterCode_ (c)
 				{
 				}
 			inline	Character::Character (char16_t c)
-				: fCharacterCode (c)
+				: fCharacterCode_ (c)
 				{
 				}
 			inline	Character::Character (wchar_t wc)
-				: fCharacterCode (wc)
+				: fCharacterCode_ (wc)
 				{
 					static_assert (qNBytesPerWCharT == sizeof (wchar_t), "wchar_t size must agree with qNBytesPerWCharT setting");
 				}
 			inline	char	Character::GetAsciiCode () const
 				{
 					// ASSERT IS ASCII
-					Require ('0' <= fCharacterCode and fCharacterCode <= 0x8f);	// not sure this is right range...
-					return static_cast<char> (fCharacterCode);
+					Require ('0' <= fCharacterCode_ and fCharacterCode_ <= 0x8f);	// not sure this is right range...
+					return static_cast<char> (fCharacterCode_);
 				}
 			inline	wchar_t	Character::GetCharacterCode () const
 				{
-					return (fCharacterCode);
+					return (fCharacterCode_);
 				}
 			template<>
 				inline	wchar_t	Character::As () const
@@ -52,57 +52,57 @@ namespace	Stroika {
 					}
 			inline	bool	Character::IsAscii () const
 				{
-					return fCharacterCode <= 0x7f;
+					return fCharacterCode_ <= 0x7f;
 				}
 			inline	bool	Character::IsWhitespace () const
 				{
-					return !!iswspace (fCharacterCode);
+					return !!iswspace (fCharacterCode_);
 				}
 			inline	bool	Character::IsDigit () const
 				{
-					return !!iswdigit (fCharacterCode);
+					return !!iswdigit (fCharacterCode_);
 				}
 			inline	bool	Character::IsHexDigit () const
 				{
-					return !!iswxdigit (fCharacterCode);
+					return !!iswxdigit (fCharacterCode_);
 				}
 			inline	bool	Character::IsAlphabetic () const
 				{
-					return !!iswalpha (fCharacterCode);
+					return !!iswalpha (fCharacterCode_);
 				}
 			inline	bool	Character::IsUpperCase () const
 				{
-					return !!iswupper (fCharacterCode);
+					return !!iswupper (fCharacterCode_);
 				}
 			inline	bool	Character::IsLowerCase () const
 				{
-					return !!iswlower (fCharacterCode);
+					return !!iswlower (fCharacterCode_);
 				}
 			inline	bool	Character::IsAlphaNumeric () const
 				{
-					return !!iswalnum (fCharacterCode);
+					return !!iswalnum (fCharacterCode_);
 				}
 			inline	bool	Character::IsPunctuation () const
 				{
-					return !!iswpunct (fCharacterCode);
+					return !!iswpunct (fCharacterCode_);
 				}
 			inline	Character	Character::ToLowerCase () const
 				{
 					// Cannot find good spec on towlower/towupper, so not sure this cehck is necessary
-					if (::iswupper (fCharacterCode)) {
-						return static_cast<wchar_t> (::towlower (fCharacterCode));
+					if (::iswupper (fCharacterCode_)) {
+						return static_cast<wchar_t> (::towlower (fCharacterCode_));
 					}
 					else {
-						return fCharacterCode;
+						return fCharacterCode_;
 					}
 				}
 			inline	Character	Character::ToUpperCase () const
 				{
-					if (::iswlower (fCharacterCode)) {
-						return static_cast<wchar_t> (::towupper(fCharacterCode));
+					if (::iswlower (fCharacterCode_)) {
+						return static_cast<wchar_t> (::towupper(fCharacterCode_));
 					}
 					else {
-						return fCharacterCode;
+						return fCharacterCode_;
 					}
 				}
 
