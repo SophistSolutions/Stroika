@@ -6,6 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<map>
 #include	<string>
 #include	<vector>
 
@@ -33,6 +34,11 @@ namespace	Stroika {
 			struct	HTTPRequest {
 				public:
 					HTTPRequest ();
+
+				public:
+					String				fHTTPVersion;
+					String				fHostRelativeURL;	// includes query-string, but not hostname, not port
+					map<String,String>	fHeaders;
 			};
 
 		}
