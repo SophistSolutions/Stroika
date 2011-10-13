@@ -7,6 +7,8 @@
 #include	<cstring>
 #include	<ctime>
 
+#include	"../Configuration/Common.h"
+
 #include	"Timezone.h"
 
 using	namespace	Stroika;
@@ -33,6 +35,12 @@ time_t	Time::GetLocaltimeToGMTOffset ()
 		#endif
 	#endif
 
+	static	bool	sCalledOnce_ = false;
+	if (not sCalledOnce_) {
+		tzset ();
+		sCalledOnce_ = true;
+	}
+
 	/*
 	 * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
 	 * timezone global var???
@@ -42,6 +50,7 @@ time_t	Time::GetLocaltimeToGMTOffset ()
 	tm.tm_year = 70;
 	tm.tm_mon = 0;		// Jan
 	tm.tm_mday = 1;
+	tm.tm_isdst = daylight;
 	time_t	result	=	mktime (&tm);
 	return result;
 }
