@@ -183,7 +183,26 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
@@ -199,7 +218,26 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
