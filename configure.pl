@@ -99,6 +99,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/IO/FileSystem", "Makefile-Foundation-IO-FileSystem");
 		mkDirWithLinks2("Foundation/IO/Network", "Makefile-Foundation-IO-Network");
 		mkDirWithLinks3("Foundation/IO/Network/Transfer", "Makefile-Foundation-IO-Network-Transfer");
+		mkDirWithLinks3("Foundation/IO/Network/HTTP", "Makefile-Foundation-IO-Network-HTTP");
 		mkDirWithLinks("Foundation/Linguistics", "Makefile-Foundation-Linguistics");
 		mkDirWithLinks("Foundation/Math", "Makefile-Foundation-Math");
 		mkDirWithLinks("Foundation/Memory", "Makefile-Foundation-Memory");
