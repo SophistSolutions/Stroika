@@ -10,6 +10,7 @@ VPATH = $(SrcDir)
 Objs	=	\
 	$(ObjDir)HTTPConnection.o\
 	$(ObjDir)HTTPRequest.o\
+	$(ObjDir)HTTPRequestHandler.o\
 	$(ObjDir)HTTPResponse.o\
 
 all:	$(Objs)

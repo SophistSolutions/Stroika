@@ -41,6 +41,10 @@ namespace	Stroika {
 					HTTPConnection (Socket s);
 					HTTPConnection (SocketStream s);
 
+
+					// Must rethink this organization -but for now - call this once at start of connection to fill in details in
+					// the HTTP Request object
+					void	ReadHeaders ();
 // not sure we want this
 					void	Close ();
 

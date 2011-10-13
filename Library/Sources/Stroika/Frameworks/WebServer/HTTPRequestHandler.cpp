@@ -12,7 +12,7 @@
 #include	"../../Foundation/Execution/Exceptions.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
-#include	"HTTPConnection.h"
+#include	"HTTPRequestHandler.h"
 
 
 using	namespace	Stroika::Foundation;
@@ -28,32 +28,13 @@ using	namespace	Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ************************* WebServer::HTTPConnection ****************************
+ ********************* WebServer::HTTPRequestHandler ****************************
  ********************************************************************************
  */
-HTTPConnection::HTTPConnection (Socket s)
-//	: fSocketStream_ (s)
-	: fSocket_ (s)
-	, fRequest_ ()
-	, fResponse_ (InternetMediaType ())
+HTTPRequestHandler::HTTPRequestHandler ()
 {
 }
 
-HTTPConnection::HTTPConnection (SocketStream s)
-	//: fSocketStream_ (s)
-	: fSocket_ (0)
-	, fRequest_ ()
-	, fResponse_ (InternetMediaType ())
-{
-	AssertNotImplemented ();
-}
-
-void	HTTPConnection::ReadHeaders ()
+HTTPRequestHandler::~HTTPRequestHandler ()
 {
 }
-
-void	HTTPConnection::Close ()
-{
-	fSocket_.Close ();
-}
-
