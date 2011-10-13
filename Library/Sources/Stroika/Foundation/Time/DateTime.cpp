@@ -553,6 +553,11 @@ void		DateTime::SetTimeOfDay (const TimeOfDay& tod)
 	fTimeOfDay_ = tod;
 }
 
+DateTime	DateTime::Add (const Duration& d) const
+{
+	return AddSeconds (d.As<time_t> ());
+}
+
 DateTime	DateTime::AddDays (int days) const
 {
 	Date	d	=	GetDate ();
@@ -618,8 +623,20 @@ int	DateTime::Compare (const DateTime& rhs) const
 	}
 }
 
-Duration operator- (const DateTime& lhs, const DateTime& rhs)
+// Define in .cpp file to avoid #include Duration in DateTime.h
+Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
 {
 	return lhs.Difference (rhs);
 }
 
+// Define in .cpp file to avoid #include Duration in DateTime.h
+DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)
+{
+	return lhs.Add (rhs);
+}
+
+// Define in .cpp file to avoid #include Duration in DateTime.h
+DateTime Time::operator- (const DateTime& lhs, const Duration& rhs)
+{
+	return lhs.Add (-rhs);
+}

@@ -308,10 +308,17 @@ namespace	{
 				const	Duration	kD		=	Duration (L"PT0.000045S");
 				VerifyTestResult (kD.PrettyPrint () == L"45 µs");
 			}
+			{
+				const	Duration	kD		=	Duration (L"PT0.000045S");
+				VerifyTestResult (kD.PrettyPrint () == L"45 µs");
+				VerifyTestResult ((-kD).PrettyPrint () == L"-45 µs");
+				VerifyTestResult ((-kD).As<wstring> () == L"-PT0.000045S");
+			}
 			VerifyTestResult (Duration (L"P30S").As<time_t> () == 30);
 			VerifyTestResult (Duration (L"PT30S").As<time_t> () == 30);
 			VerifyTestResult (Duration (60).As<wstring> () == L"PT1M");
 			VerifyTestResult (Duration (L"-PT1H1S").As<time_t> () == -3601);
+			VerifyTestResult (-Duration (L"-PT1H1S").As<time_t> () == 3601);
 
 			for (time_t i = -45; i < 60 * 3 * 60 + 99; ++i) {
 				VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
@@ -322,6 +329,28 @@ namespace	{
 		}
 
 }
+
+
+
+namespace	{
+
+	void	Test_8_DateTimeWithDuration_ ()
+		{
+			{
+				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
+				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
+				const	Duration	k30Days		=	Duration (L"P30D");
+				DateTime	d2	=	d + k30Days;
+				VerifyTestResult (d2.GetDate ().GetYear () == Year (1995));
+				VerifyTestResult (d2.GetDate ().GetMonth () == eJuly);
+				VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth (4));
+				VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
+			}
+		}
+
+}
+
+
 
 
 namespace	{
@@ -335,6 +364,7 @@ namespace	{
 			Test_5_DateTimeTimeT_ ();
 			Test_6_DateTimeStructTM_ ();
 			Test_7_Duration_ ();
+			Test_8_DateTimeWithDuration_ ();
 		}
 }
 

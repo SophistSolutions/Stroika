@@ -249,6 +249,20 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 	return result;
 }
 
+Duration	Duration::operator- () const
+{
+	wstring	tmp	=	As<wstring> ();
+	if (tmp.empty ()) {
+		return *this;
+	}
+	if (tmp[0] == '-') {
+		return Duration (tmp.substr (1));
+	}
+	else {
+		return Duration (L"-" + tmp);
+	}
+}
+
 int	Duration::Compare (const Duration& rhs) const
 {
 	Duration::InternalNumericFormatType_	n	=	As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();

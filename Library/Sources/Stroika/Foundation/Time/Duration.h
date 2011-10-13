@@ -99,6 +99,11 @@ namespace	Stroika {
 					static	const	PrettyPrintInfo	kDefaultPrettyPrintInfo;
 					nonvirtual	wstring PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
+
+				public:
+					// Unary negation
+					nonvirtual	Duration	operator- () const;
+
 				public:
 					class	FormatException;
 

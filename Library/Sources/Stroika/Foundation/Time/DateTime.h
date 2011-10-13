@@ -210,6 +210,12 @@ namespace	Stroika {
 
 				public:
 					/*
+					 * Add the given amount of time to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
+					 * for timezone issues. It doesn't modify this.
+					 */
+					nonvirtual	DateTime	Add (const Duration& d) const;
+
+					/*
 					 * Add the given number of days to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
 					 * for timezone issues. It doesn't modify this.
 					 */
@@ -264,6 +270,9 @@ namespace	Stroika {
 			bool operator== (const DateTime& lhs, const DateTime& rhs);
 			bool operator!= (const DateTime& lhs, const DateTime& rhs);
 
+			DateTime operator+ (const DateTime& lhs, const Duration& rhs);
+			DateTime operator- (const DateTime& lhs, const Duration& rhs);
+			
 			Duration operator- (const DateTime& lhs, const DateTime& rhs);
 
 		}
