@@ -149,7 +149,10 @@ namespace	Stroika {
 					nonvirtual	bool	empty () const;
 
 				public:
+					// Return the current DateTime (in LocalTime)
 					static	DateTime	Now ();
+					
+					// Return the current Date (in LocalTime - local timezone)
 					static	Date		GetToday ();
 
 				public:

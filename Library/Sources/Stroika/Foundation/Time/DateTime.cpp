@@ -343,7 +343,9 @@ DateTime	DateTime::Now ()
 		::GetLocalTime (&st);
 		return DateTime (st, eLocalTime_TZ);
 	#elif	qPlatform_POSIX
-		return DateTime (time (nullptr), eLocalTime_TZ);
+		// time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
+		// Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
+		return DateTime (time (nullptr), eUTC_TZ).AsLocalTime ();
 	#else
 		AssertNotImplemented ();
 		return DateTime ();
