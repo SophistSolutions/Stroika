@@ -952,7 +952,16 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 					return (fStorage[i] - rhs.GetAt (i).GetCharacterCode ());
 				}
 			}
-			return (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+			ptrdiff_t	t	=	 (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+			if (t < 0) {
+				return -1;
+			}
+			else if (t > 0) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
 		}
 										
 		case	eCaseInsensitive_CO: 	{
@@ -968,7 +977,16 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 					return (lc.GetCharacterCode () - rc.GetCharacterCode ());
 				}
 			}
-			return (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+			ptrdiff_t	t	=	 (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+			if (t < 0) {
+				return -1;
+			}
+			else if (t > 0) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
 		}
 
 		default:
