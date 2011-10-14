@@ -19,6 +19,7 @@ Objs	=	\
 	$(ObjDir)BufferedBinaryOutputStream.o\
 	$(ObjDir)Seekable.o\
 	$(ObjDir)TextInputStream.o\
+	$(ObjDir)TextInputStreamBinaryAdapter.o\
 	$(ObjDir)TextOutputStream.o\
 
 all:	$(Objs)  $(SubDirs)

@@ -318,6 +318,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -704,6 +707,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.h">
       <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.h">
+      <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
