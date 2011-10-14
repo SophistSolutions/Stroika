@@ -36,7 +36,7 @@ size_t	TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* int
 		intoStart[i] = Characters::Character ((char)*(buf.begin () + i));
 		outN++;
 	}
-	Ensure (outN <= (intoEnd - intoStart));
+	Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
 	return outN;
 
 }

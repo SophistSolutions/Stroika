@@ -40,6 +40,8 @@ namespace	Stroika {
 					NAME () = delete;
 				#define	NO_COPY_CONSTRUCTOR(NAME)\
 					NAME (const NAME&) = delete;
+				#define	NO_COPY_CONSTRUCTOR2(NAME,NAMEWITHT)\
+					NAME (const NAMEWITHT&) = delete;
 				#define	NO_ASSIGNMENT_OPERATOR(NAME)\
 					const NAME operator= (const NAME&) = delete;
 			#else
@@ -47,6 +49,8 @@ namespace	Stroika {
 					private:	NAME ();
 				#define	NO_COPY_CONSTRUCTOR(NAME)\
 					private:	NAME (const NAME&);
+				#define	NO_COPY_CONSTRUCTOR2(NAME,NAMEWITHT)\
+					private:	NAME (const NAMEWITHT&);
 				#define	NO_ASSIGNMENT_OPERATOR(NAME)\
 					private:	const NAME operator= (const NAME&);
 			#endif

@@ -31,7 +31,7 @@ namespace	Stroika {
 			template	<typename BASE, typename LOCKTYPE = CriticalSection>
 				class	Lockable : public BASE, public LOCKTYPE {
 					private:
-						NO_COPY_CONSTRUCTOR(Lockable);
+						NO_COPY_CONSTRUCTOR2(Lockable, Lockable<BASE,LOCKTYPE>);
 						NO_ASSIGNMENT_OPERATOR(Lockable);
 					public:
 						Lockable ();
