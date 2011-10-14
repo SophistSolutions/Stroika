@@ -41,6 +41,9 @@ namespace	Stroika {
 					nonvirtual	InternetMediaType	GetContentType () const;
 
 				public:
+					nonvirtual	void	Redirect (const wstring& url);
+
+				public:
 					nonvirtual	void	write (const Byte* start, const Byte* end);
 					nonvirtual	void	write (const wchar_t* e);
 					nonvirtual	void	write (const wchar_t* s, const wchar_t* e);

@@ -39,4 +39,12 @@ HTTPResponse::HTTPResponse (const InternetMediaType& ct)
 {
 }
 
-
+void	HTTPResponse::Redirect (const wstring& url)
+{
+	_fBytes.clear ();
+	writeln (L"HTTP/1.1 301 Moved Permanently\r\n");
+	writeln (L"Server: SPECIFYSERVERFROMHEADERSREDCORD\r\n");
+	writeln (L"Connection: close\r\n");
+	printf (L"Location: %s\r\n", url.c_str ());
+	writeln (L"\r\n");
+}
