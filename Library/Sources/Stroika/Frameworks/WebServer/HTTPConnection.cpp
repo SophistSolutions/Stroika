@@ -6,6 +6,7 @@
 #include	<algorithm>
 #include	<cstdlib>
 
+#include	"../..//Foundation/Characters/Tokenize.h"
 #include	"../../Foundation/Containers/Common.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
@@ -41,6 +42,18 @@ HTTPConnection::HTTPConnection (Socket s)
 
 void	HTTPConnection::ReadHeaders ()
 {
+	while (true) {
+		wstring	line	=	fRequest_.fInputTextStream.ReadLine ();
+		if (line == L"\r\n") {
+			return;	// done
+		}
+		vector<wstring> tokens = Characters::Tokenize<wstring> (line, L" ");
+		if (tokens.size () > 2 ) {
+			fRequest_.fHostRelativeURL = tokens[1];
+		}
+
+		// We SHOULD add subsequent items to the header map!!!
+	}
 }
 
 void	HTTPConnection::Close ()
