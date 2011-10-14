@@ -8,6 +8,7 @@
 
 #include	"Stroika/Foundation/Execution/CriticalSection.h"
 #include	"Stroika/Foundation/Execution/Event.h"
+#include	"Stroika/Foundation/Execution/Lockable.h"
 #include	"Stroika/Foundation/Execution/Thread.h"
 #include	"Stroika/Foundation/Execution/Sleep.h"
 
@@ -18,6 +19,7 @@ using	namespace	Stroika::Foundation;
 
 
 using	Execution::CriticalSection;
+using	Execution::Lockable;
 using	Execution::AutoCriticalSection;
 using	Execution::Thread;
 
@@ -139,6 +141,17 @@ namespace	{
 }
 
 
+namespace	{
+	struct	data_ {};
+	void	RegressionTest4_Lockable_ ()
+		{
+			Lockable<data_>	x;
+			Lockable<data_>	y = data_ ();
+
+			x = data_ ();
+		}
+}
+
 
 
 namespace	{
@@ -148,6 +161,7 @@ namespace	{
 			RegressionTest1_ ();
 			RegressionTest2_ ();
 			RegressionTest3_ ();
+			RegressionTest4_Lockable_ ();
 		}
 }
 
