@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Framework_WebServer_HTTPListener_h_
-#define	_Stroika_Framework_WebServer_HTTPListener_h_	1
+#ifndef	_Stroika_Framework_WebServer_HTTPConnection_h_
+#define	_Stroika_Framework_WebServer_HTTPConnection_h_	1
 
 #include	"../StroikaPreComp.h"
 
@@ -69,7 +69,7 @@ namespace	Stroika {
 		}
 	}
 }
-#endif	/*_Stroika_Framework_WebServer_HTTPListener_h_*/
+#endif	/*_Stroika_Framework_WebServer_HTTPConnection_h_*/
 
 
 
