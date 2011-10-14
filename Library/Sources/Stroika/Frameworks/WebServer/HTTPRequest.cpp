@@ -33,6 +33,7 @@ using	namespace	Stroika::Frameworks::WebServer;
  */
 HTTPRequest::HTTPRequest (Streams::BinaryInputStream& inStream)
 	: fInputStream (inStream)
+	, fInputTextStream (fInputStream)
 	, fHTTPVersion ()
 	, fHostRelativeURL ()
 	, fHeaders ()

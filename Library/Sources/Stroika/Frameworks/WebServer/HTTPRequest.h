@@ -15,7 +15,7 @@
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
 #include	"../../Foundation/Streams/BinaryInputStream.h"
-
+#include	"../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
 
 /*
@@ -37,10 +37,12 @@ namespace	Stroika {
 					HTTPRequest (Streams::BinaryInputStream& inStream);
 
 				public:
-					Streams::BinaryInputStream& fInputStream;
-					String						fHTTPVersion;
-					String						fHostRelativeURL;	// includes query-string, but not hostname, not port
-					map<String,String>			fHeaders;
+					Streams::BinaryInputStream&				fInputStream;
+					Streams::TextInputStreamBinaryAdapter	fInputTextStream;
+
+					String									fHTTPVersion;
+					String									fHostRelativeURL;	// includes query-string, but not hostname, not port
+					map<String,String>						fHeaders;
 			};
 
 		}
