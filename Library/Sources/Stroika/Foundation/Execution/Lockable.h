@@ -33,7 +33,7 @@ namespace	Stroika {
 					private:
 //NOT SURE WHY THIS DOESNT WORK ON GCC
 //						NO_COPY_CONSTRUCTOR2(Lockable, Lockable<BASE,LOCKTYPE>);
-						NO_ASSIGNMENT_OPERATOR(Lockable);
+//						NO_ASSIGNMENT_OPERATOR(Lockable);
 					public:
 						Lockable ();
 						Lockable (const BASE& from);
