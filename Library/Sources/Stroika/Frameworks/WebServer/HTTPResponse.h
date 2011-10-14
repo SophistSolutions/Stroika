@@ -68,11 +68,16 @@ namespace	Stroika {
 				public:
 					nonvirtual	const vector<Byte>&	GetBytes () const;
 
-				private:
-					map<String,String>				fHeaders;
+
+				public:
+					// LEGAL to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
+					nonvirtual	void	AddHeader (String headerName, String value);
+					nonvirtual	void	ClearHeader ();
+					nonvirtual	void	ClearHeader (String headerName);
 
 				private:
 					Streams::BinaryOutputStream&	fOutStream_;
+					map<String,String>				fHeaders_;
 					bool							fAnyWritesDone_;
 					InternetMediaType				fContentType_;
 					vector<Byte>					fBytes_;

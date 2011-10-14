@@ -6,6 +6,7 @@
 #include	<algorithm>
 #include	<cstdlib>
 
+#include	"../../Foundation/Characters/Format.h"
 #include	"../../Foundation/Containers/Common.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
@@ -35,6 +36,7 @@ using	namespace	Stroika::Frameworks::WebServer;
  */
 HTTPResponse::HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
 	: fOutStream_ (outStream)
+	, fHeaders_ ()
 	, fAnyWritesDone_ (false)
 	, fContentType_ (ct)
 	, fBytes_ ()
@@ -46,14 +48,46 @@ void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
 	fContentType_ = contentType;
 }
 
+void	HTTPResponse::AddHeader (String headerName, String value)
+{
+	Require (not fAnyWritesDone_);
+	fHeaders_.insert (map<String,String>::value_type (headerName, value));
+}
+
+void	HTTPResponse::ClearHeader ()
+{
+	fHeaders_.clear ();
+}
+
+void	HTTPResponse::ClearHeader (String headerName)
+{
+	map<String,String>::iterator i = fHeaders_.find (headerName);
+	if (i != fHeaders_.end ()) {
+		fHeaders_.erase (i);
+	}
+}
+
 void	HTTPResponse::Flush ()
 {
+	if (!fAnyWritesDone_) {
+		for (map<String,String>::const_iterator i = fHeaders_.begin (); i != fHeaders_.end (); ++i) {
+			wstring	tmp	=	Characters::Format (L"%s: %s\r\n");
+			string	utf8	=	String (tmp).AsUTF8 ();
+			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+		}
+
+		////TMPHJACK SO REDIRECT BELOW WORKS - REALLY MUST HAVE "HEADLINE" OR "STATUSLINE" fields - and use those to gen that first line of response...
+		if (!fHeaders_.empty ()) {
+			const char	kCRLF[]	=	"\r\n";
+			fOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
+		}
+	}
 	// write BYTES to fOutStream
 	if (not fBytes_.empty ()) {
 		fOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
-		fAnyWritesDone_ = true;
 		fBytes_.clear ();
 	}
+	fAnyWritesDone_ = true;
 }
 
 void	HTTPResponse::Redirect (const wstring& url)
