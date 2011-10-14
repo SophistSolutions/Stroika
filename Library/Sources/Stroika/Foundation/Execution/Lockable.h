@@ -11,9 +11,8 @@
 
 /*
  * TODO:
- *			(o)	We need todo something to support POD types.
- *				This COULD be done using a PRIVATE Lockable_POD, which does what we want and then
- *				template specialization to indirect to the Lockable_POD type.
+ *			(o)	Support for POD-types is incomplete, and requires lots of typing. It would be nice to find a better way.
+ *				Baring that, implement the remaining cases...
  */
 
 

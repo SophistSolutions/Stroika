@@ -145,10 +145,40 @@ namespace	{
 	struct	data_ {};
 	void	RegressionTest4_Lockable_ ()
 		{
-			Lockable<data_>	x;
-			Lockable<data_>	y = data_ ();
-
-			x = data_ ();
+			{
+				Lockable<data_>	x;
+				Lockable<data_>	y = data_ ();
+				x = data_ ();
+			}
+			{
+				Lockable<int>	x;
+				Lockable<int>	y = 3;
+				x = 4;
+			}
+			{
+				// Make 2 concurrent threads, which update a lockable variable
+				struct	FRED {
+					static	void	DoIt (void* ignored)
+						{
+							Lockable<int>*	argP	=	reinterpret_cast<Lockable<int>*> (ignored);
+							for (int i = 0; i < 10; i++) {
+								AutoCriticalSection	critSect (*argP);
+								int	tmp = *argP;
+								Execution::Sleep (.01);
+								//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+								*argP = tmp + 1;
+							}
+						}
+				};
+				Lockable<int>	updaterValue	=	0;
+				Thread	thread1 (&FRED::DoIt, &updaterValue);
+				Thread	thread2 (&FRED::DoIt, &updaterValue);
+				thread1.Start ();
+				thread2.Start ();
+				thread1.WaitForDone ();
+				thread2.WaitForDone ();
+				VerifyTestResult (updaterValue == 2 * 10);
+			}
 		}
 }
 
