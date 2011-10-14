@@ -26,14 +26,14 @@ namespace	Stroika {
 
 
 
-					typedef	unsigned int	HTTPStatus;
-					namespace	HTTPStatusCodes {
-						const	HTTPStatus	kOK					=	200;	
-						const	HTTPStatus	kBadRequest			=	400;	
-						const	HTTPStatus	kUnauthorized		=	401;	
-						const	HTTPStatus	kNotFound			=	404;
-						const	HTTPStatus	kInternalError		=	500;
-						const	HTTPStatus	kServiceUnavailable	=	503;	//	indicates that the server is temporarily unavailable, usually due to high load or maintenance.
+					typedef	unsigned int	Status;
+					namespace	StatusCodes {
+						const	Status	kOK					=	200;	
+						const	Status	kBadRequest			=	400;	
+						const	Status	kUnauthorized		=	401;	
+						const	Status	kNotFound			=	404;
+						const	Status	kInternalError		=	500;
+						const	Status	kServiceUnavailable	=	503;	//	indicates that the server is temporarily unavailable, usually due to high load or maintenance.
 					}
 
 

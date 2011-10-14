@@ -14,6 +14,7 @@
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
+#include	"../../Foundation/IO/Network/HTTP/Status.h"
 #include	"../../Foundation/Streams/BinaryOutputStream.h"
 
 
@@ -32,6 +33,8 @@ namespace	Stroika {
 		namespace	WebServer {
 
 			using	namespace	Stroika::Foundation;
+			using	namespace	Stroika::Foundation::IO::Network::HTTP;
+			
 			using	Characters::String;
 			using	DataExchangeFormat::InternetMediaType;
 
@@ -68,6 +71,9 @@ namespace	Stroika {
 				public:
 					nonvirtual	const vector<Byte>&	GetBytes () const;
 
+
+				public:
+					Status	fStatus;
 
 				public:
 					// LEGAL to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -

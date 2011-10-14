@@ -36,11 +36,13 @@ using	namespace	Stroika::Frameworks::WebServer;
  */
 HTTPResponse::HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
 	: fOutStream_ (outStream)
+	, fStatus (StatusCodes::kOK)
 	, fHeaders_ ()
 	, fAnyWritesDone_ (false)
 	, fContentType_ (ct)
 	, fBytes_ ()
 {
+	AddHeader (L"Server", L"Stroka-Based-Web-Server");
 }
 
 void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
@@ -70,17 +72,25 @@ void	HTTPResponse::ClearHeader (String headerName)
 void	HTTPResponse::Flush ()
 {
 	if (!fAnyWritesDone_) {
+
+		{
+			wstring	statusMsg;
+			switch (fStatus) {
+				case 200: statusMsg = L"OK"; break;
+				case 301: statusMsg = L"Moved Permanently"; break;
+			}
+			wstring	version	=	L"1.1";
+			wstring	tmp	=	Characters::Format (L"HTTP%s %d %s\r\n", version.c_str (), fStatus, statusMsg.c_str ());
+		}
+
 		for (map<String,String>::const_iterator i = fHeaders_.begin (); i != fHeaders_.end (); ++i) {
 			wstring	tmp	=	Characters::Format (L"%s: %s\r\n");
 			string	utf8	=	String (tmp).AsUTF8 ();
 			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
 
-		////TMPHJACK SO REDIRECT BELOW WORKS - REALLY MUST HAVE "HEADLINE" OR "STATUSLINE" fields - and use those to gen that first line of response...
-		if (!fHeaders_.empty ()) {
-			const char	kCRLF[]	=	"\r\n";
-			fOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
-		}
+		const char	kCRLF[]	=	"\r\n";
+		fOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
 	}
 	// write BYTES to fOutStream
 	if (not fBytes_.empty ()) {
@@ -96,10 +106,17 @@ void	HTTPResponse::Redirect (const wstring& url)
 		Execution::DoThrow (Execution::StringException (L"Redirect after data flushed"));
 	}
 	fBytes_.clear ();
+#if 1
+	// PERHAPS should clear some header values???
+	AddHeader (L"Connection", L"close");	// needed for redirect
+	AddHeader (L"Location", url);	// needed for redirect
+	fStatus = 301;
+#else
 	writeln (L"HTTP/1.1 301 Moved Permanently\r\n");
 	writeln (L"Server: SPECIFYSERVERFROMHEADERSREDCORD\r\n");
 	writeln (L"Connection: close\r\n");
 	printf (L"Location: %s\r\n", url.c_str ());
 	writeln (L"\r\n");
+#endif
 	Flush ();
 }

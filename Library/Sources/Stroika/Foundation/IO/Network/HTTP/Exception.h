@@ -32,24 +32,24 @@ namespace	Stroika {
 					// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
 					class	HTTPException : public StringException {
 						public:
-							HTTPException (HTTPStatus status, const wstring& reason, const wstring& body);
+							HTTPException (Status status, const wstring& reason, const wstring& body);
 
 						public:
 							// throw HTTPException () type iff the status indicates a real HTTP exception code (i.e. ignore 2xx values etc)
-							static	void	DoThrowIfError (HTTPStatus status, const wstring& reason = wstring (), const wstring& body = wstring ());
+							static	void	DoThrowIfError (Status status, const wstring& reason = wstring (), const wstring& body = wstring ());
 							static	void	DoThrowIfError (const wstring& status, const wstring& reason = wstring (), const wstring& body = wstring ());
 
-							static	bool	IsHTTPStatusOK (HTTPStatus status);
+							static	bool	IsHTTPStatusOK (Status status);
 
 						public:
-							nonvirtual	HTTPStatus		GetStatus () const;
+							nonvirtual	Status			GetStatus () const;
 							nonvirtual	wstring			GetReason () const;
 							nonvirtual	wstring			GetBody () const;
 
 						private:
-							HTTPStatus	fStatus;
-							wstring		fReason;
-							wstring		fBody;
+							Status	fStatus;
+							wstring	fReason;
+							wstring	fBody;
 					};
 
 

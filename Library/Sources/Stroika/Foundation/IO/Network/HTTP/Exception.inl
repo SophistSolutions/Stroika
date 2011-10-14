@@ -18,7 +18,7 @@ namespace	Stroika {
 
 
 				//	class	HTTPException
-					inline	HTTPStatus	HTTPException::GetStatus () const
+					inline	Status	HTTPException::GetStatus () const
 						{
 							return fStatus;
 						}
@@ -30,7 +30,7 @@ namespace	Stroika {
 						{
 							return fBody;
 						}
-					inline	bool	HTTPException::IsHTTPStatusOK (HTTPStatus status)
+					inline	bool	HTTPException::IsHTTPStatusOK (Status status)
 						{
 							return 200 <= status and status <= 299;
 						}
