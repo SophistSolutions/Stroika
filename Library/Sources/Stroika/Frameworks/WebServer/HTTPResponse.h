@@ -7,6 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	<string>
+#include	<map>
 #include	<vector>
 
 #include	"../../Foundation/Characters/String.h"
@@ -66,6 +67,9 @@ namespace	Stroika {
 // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
 				public:
 					nonvirtual	const vector<Byte>&	GetBytes () const;
+
+				private:
+					map<String,String>				fHeaders;
 
 				private:
 					Streams::BinaryOutputStream&	fOutStream_;
