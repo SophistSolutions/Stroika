@@ -33,18 +33,39 @@ using	namespace	Stroika::Frameworks::WebServer;
  ************************ WebServer::HTTPResponse *******************************
  ********************************************************************************
  */
-HTTPResponse::HTTPResponse (const InternetMediaType& ct)
-	: fContentType_ (ct)
-	,_fBytes ()
+HTTPResponse::HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
+	: fOutStream_ (outStream)
+	, fAnyWritesDone_ (false)
+	, fContentType_ (ct)
+	, fBytes_ ()
 {
+}
+
+void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
+{
+	fContentType_ = contentType;
+}
+
+void	HTTPResponse::Flush ()
+{
+	// write BYTES to fOutStream
+	if (not fBytes_.empty ()) {
+		fOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
+		fAnyWritesDone_ = true;
+		fBytes_.clear ();
+	}
 }
 
 void	HTTPResponse::Redirect (const wstring& url)
 {
-	_fBytes.clear ();
+	if (fAnyWritesDone_) {
+		Execution::DoThrow (Execution::StringException (L"Redirect after data flushed"));
+	}
+	fBytes_.clear ();
 	writeln (L"HTTP/1.1 301 Moved Permanently\r\n");
 	writeln (L"Server: SPECIFYSERVERFROMHEADERSREDCORD\r\n");
 	writeln (L"Connection: close\r\n");
 	printf (L"Location: %s\r\n", url.c_str ());
 	writeln (L"\r\n");
+	Flush ();
 }

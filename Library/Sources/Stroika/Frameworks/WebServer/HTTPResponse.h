@@ -13,6 +13,7 @@
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
+#include	"../../Foundation/Streams/BinaryOutputStream.h"
 
 
 
@@ -33,14 +34,20 @@ namespace	Stroika {
 			using	Characters::String;
 			using	DataExchangeFormat::InternetMediaType;
 
+
+			/*
+			 * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
+			 */
 			struct	HTTPResponse {
 				public:
-					HTTPResponse (const InternetMediaType& ct);
+					HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
 
 				public:
 					nonvirtual	InternetMediaType	GetContentType () const;
+					nonvirtual	void				SetContentType (const InternetMediaType& contentType);
 
 				public:
+					nonvirtual	void	Flush ();
 					nonvirtual	void	Redirect (const wstring& url);
 
 				public:
@@ -56,15 +63,15 @@ namespace	Stroika {
 					virtual		void	clear ();
 					nonvirtual	bool	empty () const;
 
-
 // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
 				public:
 					nonvirtual	const vector<Byte>&	GetBytes () const;
 
 				private:
-					InternetMediaType	fContentType_;
-				protected:
-					vector<Byte>		_fBytes;
+					Streams::BinaryOutputStream&	fOutStream_;
+					bool							fAnyWritesDone_;
+					InternetMediaType				fContentType_;
+					vector<Byte>					fBytes_;
 			};
 
 		}

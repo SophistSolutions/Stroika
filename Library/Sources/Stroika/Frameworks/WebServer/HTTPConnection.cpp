@@ -32,20 +32,11 @@ using	namespace	Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 HTTPConnection::HTTPConnection (Socket s)
-//	: fSocketStream_ (s)
 	: fSocket_ (s)
-	, fRequest_ ()
-	, fResponse_ (InternetMediaType ())
+	, fSocketStream_ (s)
+	, fRequest_ (fSocketStream_)
+	, fResponse_ (fSocketStream_, InternetMediaType ())
 {
-}
-
-HTTPConnection::HTTPConnection (SocketStream s)
-	//: fSocketStream_ (s)
-	: fSocket_ (0)
-	, fRequest_ ()
-	, fResponse_ (InternetMediaType ())
-{
-	AssertNotImplemented ();
 }
 
 void	HTTPConnection::ReadHeaders ()
@@ -54,6 +45,7 @@ void	HTTPConnection::ReadHeaders ()
 
 void	HTTPConnection::Close ()
 {
+	fResponse_.Flush ();
 	fSocket_.Close ();
 }
 

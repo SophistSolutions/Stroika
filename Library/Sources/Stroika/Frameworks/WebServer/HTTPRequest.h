@@ -14,6 +14,7 @@
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
+#include	"../../Foundation/Streams/BinaryInputStream.h"
 
 
 
@@ -33,12 +34,13 @@ namespace	Stroika {
 			// Maybe associated TextStream, and maybe readline method goes here
 			struct	HTTPRequest {
 				public:
-					HTTPRequest ();
+					HTTPRequest (Streams::BinaryInputStream& inStream);
 
 				public:
-					String				fHTTPVersion;
-					String				fHostRelativeURL;	// includes query-string, but not hostname, not port
-					map<String,String>	fHeaders;
+					Streams::BinaryInputStream& fInputStream;
+					String						fHTTPVersion;
+					String						fHostRelativeURL;	// includes query-string, but not hostname, not port
+					map<String,String>			fHeaders;
 			};
 
 		}

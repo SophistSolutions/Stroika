@@ -39,7 +39,6 @@ namespace	Stroika {
 			class	HTTPConnection {
 				public:
 					HTTPConnection (Socket s);
-					HTTPConnection (SocketStream s);
 
 
 					// Must rethink this organization -but for now - call this once at start of connection to fill in details in
@@ -50,12 +49,16 @@ namespace	Stroika {
 
 
 				public:
+					Socket	GetSocket () const		{ return fSocket_; }
 					//tmphack - not sure if/what we want todo here
+					const HTTPRequest&	GetRequest () const { return fRequest_; }
 					HTTPRequest&	GetRequest () { return fRequest_; }
 					//tmphack - not sure if/what we want todo here
 					HTTPResponse&	GetResponse () { return fResponse_; }
+					const HTTPResponse&	GetResponse () const { return fResponse_; }
 
 				private:
+					SocketStream	fSocketStream_;
 					HTTPRequest		fRequest_;
 					HTTPResponse	fResponse_;
 
