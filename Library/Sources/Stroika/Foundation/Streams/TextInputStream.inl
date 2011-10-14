@@ -16,17 +16,24 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Streams {
 
-			inline	TextInputStream::TextInputStream ()
-				{
-				}
+
 			inline	size_t	TextInputStream::Read (Character* intoStart, Character* intoEnd)
 				{
 					RequireNotNull (intoStart);
 					Require ((intoEnd - intoStart) >= 1);
+					if (fPutBackCharValid_) {
+						fPutBackCharValid_ = false;
+						*intoStart = fPutBackCharacter_;
+						return 1;
+					}
 					return _Read (intoStart, intoEnd);
 				}
 			inline	Character	TextInputStream::Read ()
 				{
+					if (fPutBackCharValid_) {
+						fPutBackCharValid_ = false;
+						return fPutBackCharacter_;
+					}
 					Character	c	=	'\0';
 					size_t	n	=	_Read (&c, &c + 1);
 					Assert (n == 0 or n == 1);

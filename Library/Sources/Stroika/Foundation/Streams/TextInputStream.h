@@ -38,6 +38,10 @@ namespace	Stroika {
 			 *
 			 *BECAUSE OF DIFFICULTIES DOING SOME STUFF WE WANT - LIKE READLINE - and probably also characterset stuff - we MAY want to have TEXTINPUTSTREAM REQUIRE seekability>
 			 *PROBABLY NO. BUT A THOUGHT... --LGP 2011-06-22
+			 *
+			 *	TODO:
+			 *		We PROBABL>Y should make it a CONFIG PARAM (or param to ReadLine?) if we expect to find CR, LF, or CRLF. Reason is - on file ending in CR, we COULD block needlessly looking for LF
+			 *		after reading CR...
 			 */
 			class	TextInputStream {
 				protected:
@@ -51,15 +55,25 @@ namespace	Stroika {
 					// Blocking read of a single character. Returns a NUL-character on EOF ('\0')
 					nonvirtual	Character	Read ();
 
+				public:
 					// WANTED todo this - but cannot DO SO - without PEEK/SEEKABILITY!!!! (after you read CR, you must look ahead for LF, but cannot)
 					// We COULD define this API so it somehow worked out (set  aflag saying last read CR so if next Read of char is LF, then successive readlines work, but a bit kludgy)
 					// return result includes trailing CR and or LF, if any
-					//nonvirtual	wstring	ReadLine ();
+					// 
+					// Note - a call to this function will (often) read one more character than needed. That will be transparent, except that the underlying
+					// _Read() method will be asked to read an extra character. The extra character will show up in subsequent other reads
+					//
+					// Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator it encounters as part of the read line.
+					nonvirtual	wstring	ReadLine ();
 
 				protected:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
 					// BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
 					virtual	size_t	_Read (Character* intoStart, Character* intoEnd)			=	0;
+
+				private:
+					bool		fPutBackCharValid_;
+					Character	fPutBackCharacter_;
 			};
 
 		}
