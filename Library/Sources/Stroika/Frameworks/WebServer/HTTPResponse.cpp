@@ -80,11 +80,11 @@ void	HTTPResponse::Flush ()
 				case 301: statusMsg = L"Moved Permanently"; break;
 			}
 			wstring	version	=	L"1.1";
-			wstring	tmp	=	Characters::Format (L"HTTP%s %d %s\r\n", version.c_str (), fStatus, statusMsg.c_str ());
+			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus, statusMsg.c_str ());
 		}
 
 		for (map<String,String>::const_iterator i = fHeaders_.begin (); i != fHeaders_.end (); ++i) {
-			wstring	tmp	=	Characters::Format (L"%s: %s\r\n");
+			wstring	tmp	=	Characters::Format (L"%s: %s\r\n", i->first.As<wstring> ().c_str (), i->second.As<wstring> ().c_str ());
 			string	utf8	=	String (tmp).AsUTF8 ();
 			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
