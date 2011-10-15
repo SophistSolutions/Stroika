@@ -8,6 +8,7 @@
 #include	<ctime>
 
 #include	"../Configuration/Common.h"
+#include	"../Debug/Assertions.h"
 
 #include	"Timezone.h"
 
@@ -18,9 +19,29 @@ using	namespace	Stroika::Foundation::Time;
 
 
 
+bool	Time::IsDaylightSavingsTime ()
+{
+	static	bool	sCalledOnce_ = false;
+	if (not sCalledOnce_) {
+		tzset ();
+		sCalledOnce_ = true;
+	}
+	return daylight;
+}
+
+bool	Time::IsDaylightSavingsTime (const DateTime& d)
+{
+	AssertNotImplemented ();
+	return IsDaylightSavingsTime ();
+}
 
 
-time_t	Time::GetLocaltimeToGMTOffset ()
+
+
+
+
+
+time_t	Time::GetLocaltimeToGMTOffset (bool applyDST)
 {
 	#if		0
 		// WRONG - but COULD use this API - but not sure needed
@@ -50,7 +71,7 @@ time_t	Time::GetLocaltimeToGMTOffset ()
 	tm.tm_year = 70;
 	tm.tm_mon = 0;		// Jan
 	tm.tm_mday = 1;
-	tm.tm_isdst = daylight;
+	tm.tm_isdst = applyDST;
 	time_t	result	=	mktime (&tm);
 	return result;
 }
