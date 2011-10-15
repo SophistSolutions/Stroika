@@ -63,7 +63,7 @@ namespace	Stroika {
 								: fBase (from)
 								{
 								}
-							Lockable (const Lockable<BASE,LOCKTYPE>& from)
+							Lockable_POD (const Lockable_POD<BASE,LOCKTYPE>& from)
 								: fBase (from)			// intentional object slice
 								{
 								}
@@ -72,7 +72,7 @@ namespace	Stroika {
 									fBase = rhs;
 									return *this;
 								}
-							const Lockable_POD& operator= (const Lockable<BASE,LOCKTYPE>& rhs)
+							const Lockable_POD& operator= (const Lockable_POD<BASE,LOCKTYPE>& rhs)
 								{
 									fBase = rhs;		// intentional object slice
 									return *this;
@@ -86,14 +86,34 @@ namespace	Stroika {
 			}
 			//	Specailizations for POD types
 			template	<>
+				class	Lockable<char,CriticalSection> : public Private::Lockable_POD<char,CriticalSection>  {
+					public:
+						typedef	char	T;
+						Lockable<T,CriticalSection> ()																							{}
+						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<T,CriticalSection>& from):			Lockable_POD<T,CriticalSection> (from)	{}
+						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<T,CriticalSection>& rhs)													{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+				};
+			template	<>
+				class	Lockable<unsigned char,CriticalSection> : public Private::Lockable_POD<unsigned char,CriticalSection>  {
+					public:
+						typedef	unsigned char	T;
+						Lockable<T,CriticalSection> ()																							{}
+						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<T,CriticalSection>& from):			Lockable_POD<T,CriticalSection> (from)	{}
+						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<T,CriticalSection>& rhs)													{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+				};
+			template	<>
 				class	Lockable<int,CriticalSection> : public Private::Lockable_POD<int,CriticalSection>  {
 					public:
 						typedef	int	T;
 						Lockable<T,CriticalSection> ()																							{}
 						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
-						Lockable<T,CriticalSection> (const Lockable<int,CriticalSection>& from):		Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<T,CriticalSection>& from):			Lockable_POD<T,CriticalSection> (from)	{}
 						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
-						const Lockable_POD& operator= (const Lockable<int,CriticalSection>& rhs)												{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<T,CriticalSection>& rhs)													{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
 				};
 			template	<>
 				class	Lockable<unsigned int,CriticalSection> : public Private::Lockable_POD<unsigned int,CriticalSection>  {
@@ -101,9 +121,9 @@ namespace	Stroika {
 						typedef	unsigned int	T;
 						Lockable<T,CriticalSection> ()																							{}
 						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
-						Lockable<T,CriticalSection> (const Lockable<int,CriticalSection>& from):		Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<T,CriticalSection>& from):			Lockable_POD<T,CriticalSection> (from)	{}
 						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
-						const Lockable_POD& operator= (const Lockable<int,CriticalSection>& rhs)												{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<T,CriticalSection>& rhs)													{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
 				};
 			template	<>
 				class	Lockable<double,CriticalSection> : public Private::Lockable_POD<double,CriticalSection>  {
@@ -111,9 +131,9 @@ namespace	Stroika {
 						typedef	double	T;
 						Lockable<T,CriticalSection> ()																							{}
 						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
-						Lockable<T,CriticalSection> (const Lockable<int,CriticalSection>& from):		Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<T,CriticalSection>& from):			Lockable_POD<T,CriticalSection> (from)	{}
 						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
-						const Lockable_POD& operator= (const Lockable<int,CriticalSection>& rhs)												{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<T,CriticalSection>& rhs)													{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
 				};
 
 
