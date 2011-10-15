@@ -30,7 +30,20 @@ namespace	Stroika {
 					{
 					}
 			template	<typename BASE, typename LOCKTYPE>
+				inline	Lockable<BASE,LOCKTYPE>::Lockable (const Lockable<BASE,LOCKTYPE>& from)
+					: BASE (from)
+					, LOCKTYPE ()
+					{
+					}
+			template	<typename BASE, typename LOCKTYPE>
 				inline	const Lockable<BASE,LOCKTYPE>& Lockable<BASE,LOCKTYPE>::operator= (const BASE& rhs)
+					{
+						BASE&	THIS_BASE	=	*this;
+						THIS_BASE = rhs;
+						return *this;
+					}
+			template	<typename BASE, typename LOCKTYPE>
+				inline	const Lockable<BASE,LOCKTYPE>& Lockable<BASE,LOCKTYPE>::operator= (const Lockable<BASE,LOCKTYPE>& rhs)
 					{
 						BASE&	THIS_BASE	=	*this;
 						THIS_BASE = rhs;

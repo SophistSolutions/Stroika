@@ -30,15 +30,13 @@ namespace	Stroika {
 			//
 			template	<typename BASE, typename LOCKTYPE = CriticalSection>
 				class	Lockable : public BASE, public LOCKTYPE {
-					private:
-//NOT SURE WHY THIS DOESNT WORK ON GCC
-//						NO_COPY_CONSTRUCTOR2(Lockable, Lockable<BASE,LOCKTYPE>);
-//						NO_ASSIGNMENT_OPERATOR(Lockable);
 					public:
 						Lockable ();
 						Lockable (const BASE& from);
+						Lockable (const Lockable<BASE,LOCKTYPE>& from);
 
 						const Lockable& operator= (const BASE& rhs);
+						const Lockable& operator= (const Lockable<BASE,LOCKTYPE>& rhs);
 				};
 
 
