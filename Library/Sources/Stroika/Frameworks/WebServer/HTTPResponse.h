@@ -51,8 +51,13 @@ namespace	Stroika {
 					nonvirtual	void				SetContentType (const InternetMediaType& contentType);
 
 
-// ADD REPSONSE STATEz? GUESS at states we want...
-public: enum State { eInProgress, eInProgressHeaderGone, eCompleted };
+				public:
+					enum State { 
+						eInProgress,				// A newly constructed Response starts out InProgress
+						eInProgressHeaderState,		// It then transitions to 'header sent' state
+						eCompleted					// and finally to Completed
+					};
+					nonvirtual	State	GetState () const;
 
 				public:
 					/*
@@ -70,6 +75,9 @@ public: enum State { eInProgress, eInProgressHeaderGone, eCompleted };
 					 */
 					nonvirtual	void	End ();
 
+					/*
+					 * Only legal to call if state is eInProgress
+					 */
 					nonvirtual	void	Redirect (const wstring& url);
 
 				public:
@@ -90,11 +98,9 @@ public: enum State { eInProgress, eInProgressHeaderGone, eCompleted };
 					nonvirtual	const vector<Byte>&	GetBytes () const;
 
 				public:
-					nonvirtual	Status	GetStatus () const {return fStatus; }
-					nonvirtual	void	SetStatus (Status newStatus) { fStatus = newStatus; }
+					nonvirtual	Status	GetStatus () const {return fStatus_; }
+					nonvirtual	void	SetStatus (Status newStatus) { fStatus_ = newStatus; }
 
-				private:
-					Status	fStatus;
 
 				public:
 					// LEGAL to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
@@ -103,9 +109,10 @@ public: enum State { eInProgress, eInProgressHeaderGone, eCompleted };
 					nonvirtual	void	ClearHeader (String headerName);
 
 				private:
+					State							fState_;
+					Status							fStatus_;
 					Streams::BinaryOutputStream&	fOutStream_;
 					map<String,String>				fHeaders_;
-					bool							fAnyWritesDone_;
 					InternetMediaType				fContentType_;
 					vector<Byte>					fBytes_;
 			};

@@ -18,6 +18,10 @@ namespace	Stroika {
 
 
 		//	class	HTTPResponse
+			inline	HTTPResponse::State	HTTPResponse::GetState () const
+				{
+					return fState_;
+				}
 			inline	InternetMediaType	HTTPResponse::GetContentType () const
 				{
 					return fContentType_;
