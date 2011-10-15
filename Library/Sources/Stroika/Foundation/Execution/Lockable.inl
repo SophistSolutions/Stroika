@@ -31,14 +31,14 @@ namespace	Stroika {
 					}
 			template	<typename BASE, typename LOCKTYPE>
 				inline	Lockable<BASE,LOCKTYPE>::Lockable (const Lockable<BASE,LOCKTYPE>& from)
-					: BASE (from)
+					: BASE (from)		// intentional object slice
 					, LOCKTYPE ()
 					{
 					}
 			template	<typename BASE, typename LOCKTYPE>
 				inline	const Lockable<BASE,LOCKTYPE>& Lockable<BASE,LOCKTYPE>::operator= (const BASE& rhs)
 					{
-						BASE&	THIS_BASE	=	*this;
+						BASE&	THIS_BASE	=	*this;		// intentional object slice
 						THIS_BASE = rhs;
 						return *this;
 					}
@@ -63,9 +63,18 @@ namespace	Stroika {
 								: fBase (from)
 								{
 								}
+							Lockable (const Lockable<BASE,LOCKTYPE>& from)
+								: fBase (from)			// intentional object slice
+								{
+								}
 							const Lockable_POD& operator= (const BASE& rhs)
 								{
 									fBase = rhs;
+									return *this;
+								}
+							const Lockable_POD& operator= (const Lockable<BASE,LOCKTYPE>& rhs)
+								{
+									fBase = rhs;		// intentional object slice
 									return *this;
 								}
 							operator BASE () const
@@ -80,25 +89,31 @@ namespace	Stroika {
 				class	Lockable<int,CriticalSection> : public Private::Lockable_POD<int,CriticalSection>  {
 					public:
 						typedef	int	T;
-						Lockable<T,CriticalSection> ()															{}
-						Lockable<T,CriticalSection> (T from):			Lockable_POD<T,CriticalSection> (from)	{}
-						const Lockable_POD& operator= (const T& rhs)	{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						Lockable<T,CriticalSection> ()																							{}
+						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<int,CriticalSection>& from):		Lockable_POD<T,CriticalSection> (from)	{}
+						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<int,CriticalSection>& rhs)												{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
 				};
 			template	<>
 				class	Lockable<unsigned int,CriticalSection> : public Private::Lockable_POD<unsigned int,CriticalSection>  {
 					public:
 						typedef	unsigned int	T;
-						Lockable<T,CriticalSection> ()															{}
-						Lockable<T,CriticalSection> (T from):			Lockable_POD<T,CriticalSection> (from)	{}
-						const Lockable_POD& operator= (const T& rhs)	{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						Lockable<T,CriticalSection> ()																							{}
+						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<int,CriticalSection>& from):		Lockable_POD<T,CriticalSection> (from)	{}
+						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<int,CriticalSection>& rhs)												{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
 				};
 			template	<>
 				class	Lockable<double,CriticalSection> : public Private::Lockable_POD<double,CriticalSection>  {
 					public:
 						typedef	double	T;
-						Lockable<T,CriticalSection> ()															{}
-						Lockable<T,CriticalSection> (T from):			Lockable_POD<T,CriticalSection> (from)	{}
-						const Lockable_POD& operator= (const T& rhs)	{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						Lockable<T,CriticalSection> ()																							{}
+						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<int,CriticalSection>& from):		Lockable_POD<T,CriticalSection> (from)	{}
+						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<int,CriticalSection>& rhs)												{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
 				};
 
 
