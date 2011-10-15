@@ -9,6 +9,7 @@
 
 #include	"../Configuration/Common.h"
 #include	"../Debug/Assertions.h"
+#include	"DateTime.h"
 
 #include	"Timezone.h"
 
@@ -31,8 +32,17 @@ bool	Time::IsDaylightSavingsTime ()
 
 bool	Time::IsDaylightSavingsTime (const DateTime& d)
 {
-	AssertNotImplemented ();
-	return IsDaylightSavingsTime ();
+	struct	tm	asTM	=	d.As<struct tm> ();
+	asTM.tm_isdst = -1;	// force calc of correct daylight savings time flag
+	static	bool	sCalledOnce_ = false;
+	if (not sCalledOnce_) {
+		tzset ();
+		sCalledOnce_ = true;
+	}
+	time_t	result	=	mktime (&asTM);
+	// THINK this is true - not totally clear
+
+	return asTM.tm_isdst;
 }
 
 

@@ -13,13 +13,16 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Time {
 
+			class	DateTime;
 
-			// TODO:
-			//		Checks if it is NOW DaylightSavingsTime 
+			/*
+			 * Checks if it is NOW DaylightSavingsTime
+			 */
 			bool	IsDaylightSavingsTime ();
 
-			class	DateTime;
-			// CHecks if the given date is daylight savings time
+			/*
+			 * Checks if the given date is daylight savings time
+			 */
 			bool	IsDaylightSavingsTime (const DateTime& d);
 
 

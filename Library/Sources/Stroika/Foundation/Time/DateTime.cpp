@@ -375,10 +375,7 @@ wstring	DateTime::Format (PrintFormat pf) const
 					r += L"Z";
 				}
 				else {
-					// TRY TODO PORTABLY... - REALLY - this should probably be based on 
-					// if the given data is in daylight savings time
-					bool	useDaylightSavingsTime	=	IsDaylightSavingsTime ();	// WRONG
-					time_t	tzBias		=	-GetLocaltimeToGMTOffset (useDaylightSavingsTime);
+					time_t	tzBias		=	-GetLocaltimeToGMTOffset (IsDaylightSavingsTime (*this));
 					int minuteBias		=	abs (static_cast<int> (tzBias)) / 60;
 					int	hrs				=	minuteBias / 60;
 					int mins			=	minuteBias - hrs * 60;
@@ -512,6 +509,7 @@ template	<>
 			tm.tm_min = totalSecondsRemaining / 60;
 			totalSecondsRemaining -= tm.tm_min * 60;
 			tm.tm_sec = totalSecondsRemaining;
+			tm.tm_isdst = -1;
 			Ensure (0 <= tm.tm_hour and tm.tm_hour <= 23);
 			Ensure (0 <= tm.tm_min and tm.tm_min <= 59);
 			Ensure (0 <= tm.tm_sec and tm.tm_sec <= 59);

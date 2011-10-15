@@ -249,8 +249,11 @@ namespace	{
 				x.tm_mday = 15;
 				DateTime	d	=	DateTime (x);
 				struct	tm	x2	=	d.As<struct tm> ();
-				VerifyTestResult (memcmp (&x, &x2, sizeof (x)) == 0);		// works only because of how we initialize struct tm in date code. We probably should have a loser
-																			// check here. We really don't want to promise bit-level equality
+				VerifyTestResult (x.tm_hour == x2.tm_hour);
+				VerifyTestResult (x.tm_min == x2.tm_min);
+				VerifyTestResult (x.tm_sec == x2.tm_sec);
+				VerifyTestResult (x.tm_year == x2.tm_year);
+				VerifyTestResult (x.tm_mday == x2.tm_mday);
 			}
 		}
 
@@ -353,6 +356,39 @@ namespace	{
 
 
 
+
+
+
+namespace	{
+
+	void	Test_9_TZOffsetAndDaylightSavingsTime_ ()
+		{
+			/*
+			 * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
+			 * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
+			 *
+			 * This test wont always work, but at least for now seems to work on the systems i test on.
+			 */
+			{
+				DateTime	n	=	DateTime (Date (Year (2011), eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()));
+				bool		isDst	=	IsDaylightSavingsTime (n);
+				DateTime	n2	=	n.AddDays (180);
+				VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
+			}
+			{
+				DateTime	n	=	DateTime::Now ();
+				bool		isDst	=	IsDaylightSavingsTime (n);
+				DateTime	n2	=	n.AddDays (60);
+				if (IsDaylightSavingsTime (n) == IsDaylightSavingsTime (n2)) {
+					int breakhere=1;
+				}
+			}
+		}
+
+}
+
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -365,6 +401,7 @@ namespace	{
 			Test_6_DateTimeStructTM_ ();
 			Test_7_Duration_ ();
 			Test_8_DateTimeWithDuration_ ();
+			Test_9_TZOffsetAndDaylightSavingsTime_ ();
 		}
 }
 
