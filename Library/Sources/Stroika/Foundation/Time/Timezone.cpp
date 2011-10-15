@@ -34,11 +34,6 @@ bool	Time::IsDaylightSavingsTime (const DateTime& d)
 {
 	struct	tm	asTM	=	d.As<struct tm> ();
 	asTM.tm_isdst = -1;	// force calc of correct daylight savings time flag
-	static	bool	sCalledOnce_ = false;
-	if (not sCalledOnce_) {
-		tzset ();
-		sCalledOnce_ = true;
-	}
 	// THINK this is true - not totally clear - docs on mktime () don't specify unambiguously that this should work...
 	// So far it seems too however, --LGP 2011-10-15
 	time_t	result	=	mktime (&asTM);
@@ -65,12 +60,6 @@ time_t	Time::GetLocaltimeToGMTOffset (bool applyDST)
 			tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0? L"-": L"+"), hrs, mins);
 		#endif
 	#endif
-
-	static	bool	sCalledOnce_ = false;
-	if (not sCalledOnce_) {
-		tzset ();
-		sCalledOnce_ = true;
-	}
 
 	/*
 	 * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
