@@ -119,6 +119,13 @@ void	HTTPResponse::Flush ()
 	}
 }
 
+void	HTTPResponse::End ()
+{
+	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderState));
+	Flush ();
+	fState_ = eCompleted;
+}
+
 void	HTTPResponse::Redirect (const wstring& url)
 {
 	Require (fState_ == eInProgress);
@@ -129,6 +136,7 @@ void	HTTPResponse::Redirect (const wstring& url)
 	AddHeader (L"Location", url);			// needed for redirect
 	SetStatus (StatusCodes::kMovedPermanently);
 	Flush ();
+	fState_ = eCompleted;
 }
 
 void	HTTPResponse::write (const Byte* s, const Byte* e)

@@ -71,12 +71,12 @@ namespace	Stroika {
 
 					/*
 					 * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
-					 * any aspect of it.
+					 * any aspect of it. The state must be eInProgress or eInProgressHeaderState and it sets the state to eCompleted.
 					 */
 					nonvirtual	void	End ();
 
 					/*
-					 * Only legal to call if state is eInProgress
+					 * Only legal to call if state is eInProgress. It sets the state to eCompleted.
 					 */
 					nonvirtual	void	Redirect (const wstring& url);
 
