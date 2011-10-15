@@ -14,7 +14,7 @@
 
 /*
  * TODO:
- *		(o)		
+ *		(o)		When we have a good C++ 'static string' class - maybe use that here. Maybe ONLY can do once we have compiler constexpr support?
  */
 
 
@@ -24,7 +24,18 @@ namespace	Stroika {
 			namespace	Network {
 				namespace	HTTP {
 
+					// standard HTTP headers one might want to access/retrieve
+					namespace	HeaderName {
 
+						extern	const	wchar_t	kContentType[];
+						extern	const	wchar_t	kContentLength[];
+						extern	const	wchar_t	kServer[];
+						extern	const	wchar_t	kDate[];
+						extern	const	wchar_t	kLastModified[];
+						extern	const	wchar_t	kUserAgent[];
+						extern	const	wchar_t	kSOAPAction[];
+						extern	const	wchar_t	kAcceptEncoding[];
+					}
 
 				}
 			}
