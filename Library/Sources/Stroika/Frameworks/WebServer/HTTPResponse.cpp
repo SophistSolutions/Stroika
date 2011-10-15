@@ -34,6 +34,19 @@ using	namespace	Stroika::Frameworks::WebServer;
  ************************ WebServer::HTTPResponse *******************************
  ********************************************************************************
  */
+namespace	{
+	// Based on looking at a handlful of typical file sizes...5k to 80k, but ave around
+	// 25 and median abit above 32k. Small, not very representative sampling. And the more we use
+	// subscripts (script src=x) this number could shrink.
+	//
+	// MAY want to switch to using SmallStackBuffer<Byte> - but before doing so, do some cleanups of its bugs and make sure
+	// its optimized about how much it copies etc. Its really only tuned for POD-types (OK here but not necessarily good about reallocs).
+	//
+	//		-- LGP 2011-07-06
+	const	size_t	kMinResponseBufferReserve_				=	32 * 1024;
+	const	size_t	kResponseBufferReallocChunkSizeReserve_	=	16 * 1024;
+}
+
 HTTPResponse::HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
 	: fOutStream_ (outStream)
 	, fStatus (StatusCodes::kOK)
@@ -53,6 +66,7 @@ void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
 void	HTTPResponse::AddHeader (String headerName, String value)
 {
 	Require (not fAnyWritesDone_);
+	ClearHeader (headerName);
 	fHeaders_.insert (map<String,String>::value_type (headerName, value));
 }
 
@@ -81,6 +95,8 @@ void	HTTPResponse::Flush ()
 			}
 			wstring	version	=	L"1.1";
 			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus, statusMsg.c_str ());
+			string	utf8	=	String (tmp).AsUTF8 ();
+			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
 
 		for (map<String,String>::const_iterator i = fHeaders_.begin (); i != fHeaders_.end (); ++i) {
@@ -119,4 +135,25 @@ void	HTTPResponse::Redirect (const wstring& url)
 	writeln (L"\r\n");
 #endif
 	Flush ();
+}
+
+void	HTTPResponse::write (const Byte* s, const Byte* e)
+{
+	Require (s <= e);
+	if (s < e) {
+		Containers::ReserveSpeedTweekAddN (fBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
+		fBytes_.insert (fBytes_.end (), s, e);
+	}
+}
+
+void	HTTPResponse::write (const wchar_t* s, const wchar_t* e)
+{
+	Require (s <= e);
+	if (s < e) {
+		wstring tmp = wstring (s,e);
+		string utf8 = String (tmp).AsUTF8 ();
+		if (not utf8.empty ()) {
+			fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (utf8.c_str ()), reinterpret_cast<const Byte*> (utf8.c_str () + utf8.length ()));
+		}
+	}
 }

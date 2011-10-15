@@ -41,6 +41,7 @@ namespace	Stroika {
 					Streams::TextInputStreamBinaryAdapter	fInputTextStream;
 
 					String									fHTTPVersion;
+					String									fMethod;
 					String									fHostRelativeURL;	// includes query-string, but not hostname, not port
 					map<String,String>						fHeaders;
 			};

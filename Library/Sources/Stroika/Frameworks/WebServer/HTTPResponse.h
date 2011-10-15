@@ -50,8 +50,26 @@ namespace	Stroika {
 					nonvirtual	InternetMediaType	GetContentType () const;
 					nonvirtual	void				SetContentType (const InternetMediaType& contentType);
 
+
+// ADD REPSONSE STATEz? GUESS at states we want...
+public: enum State { eInProgress, eInProgressHeaderGone, eCompleted };
+
 				public:
+					/*
+					 * This begins sending the parts of the message which have already been accumulated to the client.
+					 * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
+					 * if we are NOT in automatic-include-Content-Length mode (NYI).
+					 *
+					 * This does NOT End the repsonse, and it CAN be called arbitrarily many times (as long as the response hasn't been ended).
+					 */
 					nonvirtual	void	Flush ();
+
+					/*
+					 * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
+					 * any aspect of it.
+					 */
+					nonvirtual	void	End ();
+
 					nonvirtual	void	Redirect (const wstring& url);
 
 				public:
@@ -71,8 +89,11 @@ namespace	Stroika {
 				public:
 					nonvirtual	const vector<Byte>&	GetBytes () const;
 
-
 				public:
+					nonvirtual	Status	GetStatus () const {return fStatus; }
+					nonvirtual	void	SetStatus (Status newStatus) { fStatus = newStatus; }
+
+				private:
 					Status	fStatus;
 
 				public:

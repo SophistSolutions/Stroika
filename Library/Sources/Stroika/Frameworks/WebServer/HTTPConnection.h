@@ -38,33 +38,27 @@ namespace	Stroika {
 
 			class	HTTPConnection {
 				public:
-					HTTPConnection (Socket s);
-
+					explicit HTTPConnection (Socket s);
 
 					// Must rethink this organization -but for now - call this once at start of connection to fill in details in
 					// the HTTP Request object
-					void	ReadHeaders ();
+					nonvirtual	void	ReadHeaders ();
 // not sure we want this
-					void	Close ();
+					nonvirtual	void	Close ();
 
 
 				public:
-					Socket	GetSocket () const		{ return fSocket_; }
-					//tmphack - not sure if/what we want todo here
-					const HTTPRequest&	GetRequest () const { return fRequest_; }
-					HTTPRequest&	GetRequest () { return fRequest_; }
-					//tmphack - not sure if/what we want todo here
-					HTTPResponse&	GetResponse () { return fResponse_; }
-					const HTTPResponse&	GetResponse () const { return fResponse_; }
+					nonvirtual	Socket				GetSocket () const;
+					nonvirtual	HTTPRequest&		GetRequest ();
+					nonvirtual	const HTTPRequest&	GetRequest () const;
+					nonvirtual	HTTPResponse&		GetResponse ();
+					nonvirtual	const HTTPResponse&	GetResponse () const;
 
 				private:
+					Socket			fSocket_;
 					SocketStream	fSocketStream_;
 					HTTPRequest		fRequest_;
 					HTTPResponse	fResponse_;
-
-				private:
-					//SocketStream	fSocketStream_;
-					Socket	fSocket_;
 			};
 		}
 	}

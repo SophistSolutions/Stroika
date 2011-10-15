@@ -6,7 +6,7 @@
 #include	<algorithm>
 #include	<cstdlib>
 
-#include	"../..//Foundation/Characters/Tokenize.h"
+#include	"../../Foundation/Characters/Tokenize.h"
 #include	"../../Foundation/Containers/Common.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
@@ -42,17 +42,40 @@ HTTPConnection::HTTPConnection (Socket s)
 
 void	HTTPConnection::ReadHeaders ()
 {
+	{
+		// Read METHOD line
+		wstring	line	=	fRequest_.fInputTextStream.ReadLine ();
+		vector<wstring> tokens = Characters::Tokenize<wstring> (line, L" ");
+		if (tokens.size () < 3) {
+			Execution::DoThrow (Execution::StringException (L"Bad METHOD REQUEST HTTP line"));
+		}
+		fRequest_.fMethod = tokens[0];
+		fRequest_.fHostRelativeURL = tokens[1];
+		if (fRequest_.fMethod.empty ()) {
+			// should check if GET/PUT/DELETE etc...
+			Execution::DoThrow (Execution::StringException (L"Bad METHOD in REQUEST HTTP line"));
+		}
+		if (fRequest_.fHostRelativeURL.empty ()) {
+			// should check if GET/PUT/DELETE etc...
+			Execution::DoThrow (Execution::StringException (L"Bad HTTP REQUEST line - missing host-relative URL"));
+		}
+	}
 	while (true) {
 		wstring	line	=	fRequest_.fInputTextStream.ReadLine ();
 		if (line == L"\r\n") {
 			return;	// done
 		}
-		vector<wstring> tokens = Characters::Tokenize<wstring> (line, L" ");
-		if (tokens.size () > 2 ) {
-			fRequest_.fHostRelativeURL = tokens[1];
-		}
 
-		// We SHOULD add subsequent items to the header map!!!
+		// add subsequent items to the header map
+		size_t	i	=	line.find (':');
+		if (i == string::npos) {
+			Execution::DoThrow (Execution::StringException (L"Bad HTTP REQUEST missing colon in headers"));
+		}
+		else {
+			String	hdr		=	String (line.substr (0, i)).Trim ();
+			String	value	=	String (line.substr (i+1)).Trim ();
+			fRequest_.fHeaders.insert (map<String,String>::value_type (hdr, value));
+		}
 	}
 }
 
