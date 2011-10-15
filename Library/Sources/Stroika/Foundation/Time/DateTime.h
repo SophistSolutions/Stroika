@@ -29,16 +29,11 @@
  * TODO:
  *		
  *
- *		o	Current logic for TIMEZONE conversion is quetionable. It is based on the CURRNET TZ offset (at the time the code is running).
- *			But this is generally WRONG. It needs to apply to the value as of the date in question (not so much for timezone purposes but for daylight savings time).
+ *		o	Current logic for TIMEZONE conversion is questionable. When we output to XML, we output the timezone offset of the currnet timezone
+ *			and the daylight savingstime value as of that date. But when we read date - we ignore the offset (assume its localetime).
  *
- *				>>> MAYBE TRICKY DOING TZ CONVERSIONS? I know how to find the CURRENT TZ OFFSET. But I THINK thats the WRONG OFFSET to use. I THINK you must use the
- *					OFFSET AS OF THE GIVEN DATE (which maybe ambiguous as it could change).
- *					o Say you are in DaylightSavingsTime (and are temporarly GMT-4) - and store a date in XML. But then later - after the timezone change - you re-read teh
- *					date. The TZ offset changed, and so the apparent localtime offset changed.
- *					o THe crux of the issue is that SOMETIMES when you store a date in XML - you don't want to say that its a LOCALETIME time (not be to adjusted for tz)?
- *					 Not sure this makes sense - must think through more carefully!
- *
+ *		o	We sometimes store datetime internally as localetime, and sometimes as UTC. Maybe we should alway use UTC? If we use localtime and the
+ *			timezone changes while we are running (timezone or DST) - we could get funky results.
  *
  *		o	Maybe use 		wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);	 or related for formatting dates/time?
  *		o	Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
