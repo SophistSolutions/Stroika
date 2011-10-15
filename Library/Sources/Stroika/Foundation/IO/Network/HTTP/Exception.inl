@@ -17,20 +17,20 @@ namespace	Stroika {
 				namespace	HTTP {
 
 
-				//	class	HTTPException
-					inline	Status	HTTPException::GetStatus () const
+				//	class	Exception
+					inline	Status	Exception::GetStatus () const
 						{
 							return fStatus;
 						}
-					inline	wstring	HTTPException::GetReason () const
+					inline	wstring	Exception::GetReason () const
 						{
 							return fReason;
 						}
-					inline	wstring	HTTPException::GetBody () const
+					inline	wstring	Exception::GetBody () const
 						{
 							return fBody;
 						}
-					inline	bool	HTTPException::IsHTTPStatusOK (Status status)
+					inline	bool	Exception::IsHTTPStatusOK (Status status)
 						{
 							return 200 <= status and status <= 299;
 						}

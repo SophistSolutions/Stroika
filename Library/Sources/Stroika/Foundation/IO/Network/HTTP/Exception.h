@@ -30,12 +30,12 @@ namespace	Stroika {
 					using	Foundation::Execution::StringException;
 
 					// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
-					class	HTTPException : public StringException {
+					class	Exception : public StringException {
 						public:
-							HTTPException (Status status, const wstring& reason, const wstring& body);
+							Exception (Status status, const wstring& reason, const wstring& body);
 
 						public:
-							// throw HTTPException () type iff the status indicates a real HTTP exception code (i.e. ignore 2xx values etc)
+							// throw Exception () type iff the status indicates a real HTTP exception code (i.e. ignore 2xx values etc)
 							static	void	DoThrowIfError (Status status, const wstring& reason = wstring (), const wstring& body = wstring ());
 							static	void	DoThrowIfError (const wstring& status, const wstring& reason = wstring (), const wstring& body = wstring ());
 
