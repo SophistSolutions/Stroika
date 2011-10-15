@@ -47,8 +47,9 @@ namespace	{
 	const	size_t	kResponseBufferReallocChunkSizeReserve_	=	16 * 1024;
 }
 
-HTTPResponse::HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
-	: fOutStream_ (outStream)
+HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
+	: fSocket_ (s)
+	, fOutStream_ (outStream)
 	, fState_ (eInProgress)
 	, fStatus_ (StatusCodes::kOK)
 	, fHeaders_ ()
@@ -130,6 +131,14 @@ void	HTTPResponse::End ()
 	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderState));
 	Flush ();
 	fState_ = eCompleted;
+}
+
+void	HTTPResponse::Kill ()
+{
+	if (fState_ != eCompleted) {
+		fState_ = eCompleted;
+		fSocket_.Close ();
+	}
 }
 
 void	HTTPResponse::Redirect (const wstring& url)

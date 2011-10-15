@@ -14,6 +14,7 @@
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
+#include	"../../Foundation/IO/Network/Socket.h"
 #include	"../../Foundation/IO/Network/HTTP/Status.h"
 #include	"../../Foundation/Streams/BinaryOutputStream.h"
 
@@ -44,7 +45,7 @@ namespace	Stroika {
 			 */
 			struct	HTTPResponse {
 				public:
-					HTTPResponse (Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
+					HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
 
 				public:
 					nonvirtual	InternetMediaType	GetContentType () const;
@@ -74,6 +75,12 @@ namespace	Stroika {
 					 * any aspect of it. The state must be eInProgress or eInProgressHeaderState and it sets the state to eCompleted.
 					 */
 					nonvirtual	void	End ();
+
+					/*
+					 * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
+					 * unsent data, and closing the associated socket.
+					 */
+					nonvirtual	void	Kill ();
 
 					/*
 					 * Only legal to call if state is eInProgress. It sets the state to eCompleted.
@@ -115,6 +122,7 @@ namespace	Stroika {
 					nonvirtual	void	ClearHeader (String headerName);
 
 				private:
+					IO::Network::Socket				fSocket_;
 					State							fState_;
 					Status							fStatus_;
 					Streams::BinaryOutputStream&	fOutStream_;

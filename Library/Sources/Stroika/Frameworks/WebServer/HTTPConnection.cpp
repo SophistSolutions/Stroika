@@ -36,7 +36,7 @@ HTTPConnection::HTTPConnection (Socket s)
 	: fSocket_ (s)
 	, fSocketStream_ (s)
 	, fRequest_ (fSocketStream_)
-	, fResponse_ (fSocketStream_, InternetMediaType ())
+	, fResponse_ (s, fSocketStream_, InternetMediaType ())
 {
 }
 
