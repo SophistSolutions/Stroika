@@ -44,6 +44,19 @@ namespace	Stroika {
 					}
 
 
+			template	<typename FROM_INT_TYPE, typename TO_INT_TYPE>
+				inline	TO_INT_TYPE	CompareResultNormalizeHelper (FROM_INT_TYPE f)
+					{
+						if (f < 0) {
+							return static_cast<TO_INT_TYPE> (-1);
+						}
+						else if (f > 0) {
+							return static_cast<TO_INT_TYPE> (1);
+						}
+						else {
+							return static_cast<TO_INT_TYPE> (0);
+						}
+					}
 
 			template	<typename	CONTAINER>
 				inline	void	ReserveSpeedTweekAdd1 (CONTAINER& c, size_t kMinChunk)

@@ -10,6 +10,7 @@
 #include	<string>
 #include	<regex>
 
+#include	"../Containers/Common.h"
 #include	"../Math/Common.h"
 #include	"TString.h"
 
@@ -935,6 +936,7 @@ size_t	String_CharArray::MyRep_::CalcAllocChars_ (size_t requested)
 	return (requested);
 }
 
+
 int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions co) const override
 {
 	Require (co == eWithCase_CO or co == eCaseInsensitive_CO);
@@ -952,16 +954,7 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 					return (fStorage[i] - rhs.GetAt (i).GetCharacterCode ());
 				}
 			}
-			ptrdiff_t	t	=	 (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
-			if (t < 0) {
-				return -1;
-			}
-			else if (t > 0) {
-				return 1;
-			}
-			else {
-				return 0;
-			}
+			return Containers::CompareResultNormalizeHelper<ptrdiff_t,int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
 		}
 										
 		case	eCaseInsensitive_CO: 	{
@@ -977,16 +970,7 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 					return (lc.GetCharacterCode () - rc.GetCharacterCode ());
 				}
 			}
-			ptrdiff_t	t	=	 (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
-			if (t < 0) {
-				return -1;
-			}
-			else if (t > 0) {
-				return 1;
-			}
-			else {
-				return 0;
-			}
+			return Containers::CompareResultNormalizeHelper<ptrdiff_t,int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
 		}
 
 		default:

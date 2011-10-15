@@ -27,7 +27,7 @@ bool	Time::IsDaylightSavingsTime ()
 		tzset ();
 		sCalledOnce_ = true;
 	}
-	return daylight;
+	return !!daylight;
 }
 
 bool	Time::IsDaylightSavingsTime (const DateTime& d)
@@ -39,10 +39,10 @@ bool	Time::IsDaylightSavingsTime (const DateTime& d)
 		tzset ();
 		sCalledOnce_ = true;
 	}
+	// THINK this is true - not totally clear - docs on mktime () don't specify unambiguously that this should work...
+	// So far it seems too however, --LGP 2011-10-15
 	time_t	result	=	mktime (&asTM);
-	// THINK this is true - not totally clear
-
-	return asTM.tm_isdst;
+	return asTM.tm_isdst >= 1;
 }
 
 
