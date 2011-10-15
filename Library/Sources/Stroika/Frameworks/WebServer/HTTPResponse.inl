@@ -22,6 +22,10 @@ namespace	Stroika {
 				{
 					return fState_;
 				}
+			inline	IO::Network::HTTP::Status	HTTPResponse::GetStatus () const
+				{
+					return fStatus_;
+				}
 			inline	InternetMediaType	HTTPResponse::GetContentType () const
 				{
 					return fContentType_;

@@ -29,7 +29,8 @@ namespace	Stroika {
 					typedef	unsigned int	Status;
 					namespace	StatusCodes {
 						const	Status	kOK					=	200;	
-						const	Status	kMovedPermanently	=	301;	
+						const	Status	kMovedPermanently	=	301;
+						const	Status	kNotModified		=	304;
 						const	Status	kBadRequest			=	400;	
 						const	Status	kUnauthorized		=	401;	
 						const	Status	kNotFound			=	404;

@@ -64,6 +64,12 @@ void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
 	fContentType_ = contentType;
 }
 
+void	HTTPResponse::SetStatus (Status newStatus)
+{
+	Require (fState_ == eInProgress);
+	fStatus_ = newStatus;
+}
+
 void	HTTPResponse::AddHeader (String headerName, String value)
 {
 	Require (fState_ == eInProgress);

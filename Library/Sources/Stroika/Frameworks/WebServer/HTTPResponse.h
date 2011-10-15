@@ -98,8 +98,14 @@ namespace	Stroika {
 					nonvirtual	const vector<Byte>&	GetBytes () const;
 
 				public:
-					nonvirtual	Status	GetStatus () const {return fStatus_; }
-					nonvirtual	void	SetStatus (Status newStatus) { fStatus_ = newStatus; }
+					/*
+					 * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
+					 */
+					nonvirtual	Status	GetStatus () const;
+					/*
+					 * It is only legal to call SetStatus with state == eInProgress
+					 */
+					nonvirtual	void	SetStatus (Status newStatus);
 
 
 				public:
