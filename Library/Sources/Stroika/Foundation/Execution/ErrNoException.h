@@ -55,13 +55,16 @@ namespace	Stroika {
 
 
 
-#if 1
-			template	<typename CALL>
-				int	Handle_ErrNoResultInteruption (CALL call);
-#else
-			template	<typename CALL>
-				auto	Handle_ErrNoResultInteruption (CALL call) -> decltype (CALL);
-#endif
+			#ifndef	qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
+			#define	qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction	0
+			#endif
+			#if		qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
+				template	<typename CALL>
+					auto	Handle_ErrNoResultInteruption (CALL call) -> decltype (call);
+			#else
+				template	<typename CALL>
+					int		Handle_ErrNoResultInteruption (CALL call);
+			#endif
 
 
 			// Just pre-declare DoThrow><> template here so we can specailize
