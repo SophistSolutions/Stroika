@@ -64,13 +64,64 @@ namespace	Stroika {
 
 
 			/*
-			 * Thread Class
+			 * Thread Class:
 			 *
 			 *		Using the smartpointer wrapper Thread around a thread guarnatees its reference counting
 			 *	will work safely - so that even when all external references go away, the fact that the thread
 			 *	is still running will keep the reference count non-zero.
 			 *
+			 *
+			 *	Thread Aborting/Interuption:
+			 *		The Stroika Thread class supports the idea of 'aborting' a thread. In some libraries (e.g. boost) this is
+			 *	called 'interuption'. In others, its called 'cancellation'.
+			 *
+			 *		The basic idea is that a thread goes off on its own, doing stuff, and an external force decides to tell it to stop.
+			 *	Examples of this might be:
+			 *		(1)	A search user interface, which starts searching as the user types. Once the process has recieved a certain
+			 *			number of characters it starts searching, but perhaps before the search is done, another character comes in, so
+			 *			the GUI code will want to Abort the existing search, and start a new one (with the extra character(s)).
+			 *		(2)	A web server - which is serving up content, and it told to shut-down. It must interupt existing in process
+			 *			processes - some maybe handling a read/write sequence, and some perhaps doing a socket listen/accept call.
+			 *
+			 *	When a thread is aborted, it (in that thread) throws
+			 *		class	ThreadAbortException;
+			 *
+			 *	Thread aborting is tricky todo safely and portably. We take a number of approaches:
+			 *		(1)	We maintain a thread-local-storage variable - saying if this thread has been aborted. Sprinkling CheckForThreadAborting
+			 *			throughout your code - will trigger a ThreadAbortException () in that thread context.
+			 *
+			 *		(2)	Async-injection (QueueUserAPC/Widnows)	APC functions get 'suddenly launched' in the context of a given threads when its in
+			 *			an 'alertable state'. This APC function can then throw - essentially ending the sleep/wait/or whatever.
+			 *
+			 *			I'M NOT sur ethis is safe - and we may want to stop doing it. Instead - do more like what I plan todo for signals
+			 *
+			 *		(3)	Signal injection (POSIX) - we send a special (TDB) signal to a particular thread. It sets a 'thread-local variable - aborted' 
+			 *			and when it returns - any (WHICH?) systme calls in progress will return the error
+
+			 *
+			 *
+			 * HANDLE_EINTR_CALLER()
+			 *		The short of it is that you need to catch EINTR and restart the call for these system calls:
+			 *			o read, readv, write, writev, ioctl
+			 *			o open() when dealing with a fifo
+			 *			o wait*
+			 *			o Anything socket based (send*, recv*, connect, accept etc)
+			 *			o flock and lock control with fcntl
+			 *			o mq_ functions which can block
+			 *			o futex
+			 *			o sem_wait (and timed wait)
+			 *			o pause, sigsuspend, sigtimedwait, sigwaitinfo
+			 *			o poll, epoll_wait, select and 'p' versions of the same
+			 *			o msgrcv, msgsnd, semop, semtimedop
+			 *			o close (although, on Linux, EINTR won't happen here)
+			 *			o any sleep functions (careful, you need to handle this are restart with
+ 			 *				different arguments)
+			 *
+			 *	See HandleEINTR
+			 *
 			 */
+
+
 // To make STOP code more safe - and have Stop really throw ThreadAbortException - then associate a PROGRESS object with this REP, and
 // make sure the REP (Run method) takes that guy as arg, and call 'CheckCanceled' periodically - which can do the throw properlly!!!!
 // (actually - above is out of date - but dont delete til I verify - but since I added the 

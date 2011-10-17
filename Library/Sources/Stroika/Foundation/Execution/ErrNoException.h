@@ -54,6 +54,16 @@ namespace	Stroika {
 			void	ThrowErrNoIfNegative (int returnCode);
 
 
+
+#if 1
+			template	<typename CALL>
+				int	Handle_ErrNoResultInteruption (CALL call);
+#else
+			template	<typename CALL>
+				auto	Handle_ErrNoResultInteruption (CALL call) -> decltype (CALL);
+#endif
+
+
 			// Just pre-declare DoThrow><> template here so we can specailize
 			template	<typename T>
 				void	 _NoReturn_	DoThrow (const T& e2Throw);

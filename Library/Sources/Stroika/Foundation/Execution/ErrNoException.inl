@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	"../Execution/Thread.h"
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
@@ -33,6 +35,31 @@ namespace	Stroika {
 					}
 				}
 
+#if 1
+			template	<typename CALL>
+				int	Handle_ErrNoResultInteruption (CALL call)
+					{
+						int	ret;
+						do {
+							ret = call ();
+							Execution::CheckForThreadAborting ();
+						} while (ret < 0 && errno == EINTR);
+						ThrowErrNoIfNegative (ret);
+						return ret;
+					}
+#else
+			template	<typename CALL>
+				auto	Handle_ErrNoResultInteruption (CALL call)  -> decltype (CALL)
+					{
+						auto	ret;
+						do {
+							ret = call ();
+							Execution::CheckForThreadAborting ();
+						} while (ret < 0 && errno == EINTR);
+						ThrowErrNoIfNegative (ret);
+						return ret;
+					}
+#endif
 
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const errno_ErrorException& e2Throw)

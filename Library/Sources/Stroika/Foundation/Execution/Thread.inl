@@ -113,7 +113,7 @@ namespace	Stroika {
 			inline	void	Thread::Rep_::ThrowAbortIfNeeded () const
 				{
 				#if			qUseThreads_WindowsNative
-					Require (::GetCurrentThreadId () == GetID ());
+					Require (GetCurrentThreadID () == GetID ());
 				#endif
 					AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
 					if (fStatus == eAborting) {

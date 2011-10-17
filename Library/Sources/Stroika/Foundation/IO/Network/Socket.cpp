@@ -72,12 +72,13 @@ class	Socket::Rep_ {
 		size_t	Read (Byte* intoStart, Byte* intoEnd) override
 			{
 				// Must do erorr checking and throw exceptions!!!
+				NativeSocket	sd	=	fSD_;
 				#if		qPlatform_Windows
 					AssertNotImplemented ();
 					return 0;
 					//return ::_read (fSD_, intoStart, intoEnd - intoStart);
 				#elif	qPlatform_POSIX
-					return ::read (fSD_, intoStart, intoEnd - intoStart);
+					return Execution::Handle_ErrNoResultInteruption ([&sd, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 				#else
 					AssertNotImplemented ();
 				#endif
@@ -86,11 +87,12 @@ class	Socket::Rep_ {
 		void	Write (const Byte* start, const Byte* end) override
 			{
 				// Must do erorr checking and throw exceptions!!!
+				NativeSocket	sd	=	fSD_;
 				#if		qPlatform_Windows
 					AssertNotImplemented ();
 					//int		n	=	::_write (fSD_, start, end - start);
 				#elif	qPlatform_POSIX
-					int		n	=	::write (fSD_, start, end - start);
+					int		n	=	Execution::Handle_ErrNoResultInteruption ([&sd, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
 				#else
 					AssertNotImplemented ();
 				#endif
@@ -99,7 +101,8 @@ class	Socket::Rep_ {
 	public:
 		void	Listen (unsigned int backlog)
 			{
-				Execution::ThrowErrNoIfNegative (::listen (fSD_, backlog));
+				NativeSocket	sd	=	fSD_;
+				Execution::Handle_ErrNoResultInteruption ([&sd, &backlog] () -> int { return ::listen (sd, backlog); });
 			}
 
 	public:
@@ -125,7 +128,7 @@ AGAIN:
 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
 				if (r < 0) {
 					// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
-					if (errno == EAGAIN or errno == EWOULDBLOCK)
+					if (errno == EAGAIN or errno == EINTR or errno == EWOULDBLOCK)
 					{
 						Execution::Sleep(1.0);
 						Execution::CheckForThreadAborting();
@@ -188,9 +191,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
     hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	string	tmp	=	bindProperties.fHostName.AsUTF8<string> ();	// BAD - SB tstring - or??? not sure what...
-	if (getaddrinfo (tmp.c_str (), nullptr, &hints, &res) < 0) {
-		// throw
-	}
+	Execution::Handle_ErrNoResultInteruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
 
 	sockaddr_in	useAddr;
 	memset (&useAddr, 0, sizeof (useAddr));
@@ -200,7 +201,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 
 	NativeSocket sd;
 #if		qPlatform_POSIX
-	Execution::ThrowErrNoIfNegative (sd = socket (AF_INET, SOCK_STREAM, 0));
+	sd = Execution::Handle_ErrNoResultInteruption (([] () -> int { return socket (AF_INET, SOCK_STREAM, 0); });
 #else
 	sd = 0;
 	AssertNotImplemented ();
@@ -210,7 +211,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 	// Allow socket descriptor to be reuseable
 	{
 		int    on = 1;
-		Execution::ThrowErrNoIfNegative (::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)));
+		Execution::Handle_ErrNoResultInteruption ([&sd, &on] () -> int { return ::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)); });
 	}
 
 #if		qPlatform_POSIX
@@ -222,7 +223,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 	}
 #endif
 
-	Execution::ThrowErrNoIfNegative (::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr)));
+	Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
 	fRep_  = SharedPtr<Rep_> (new Rep_ (sd));
 }

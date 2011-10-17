@@ -290,6 +290,7 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
 	Thread::Rep_*	rep	=	reinterpret_cast<Thread::Rep_*> (lpParameter);
 	Require (rep->fStatus == eAborting || rep->fStatus == eCompleted);
+	Require (GetCurrentThreadID () == rep->GetID ());
 	rep->ThrowAbortIfNeeded ();
 	Require (rep->fStatus == eCompleted);	// normally we don't reach this - but we could if we've already been marked completed somehow
 											// before the abortProc got called/finsihed...
