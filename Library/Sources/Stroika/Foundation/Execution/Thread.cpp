@@ -301,6 +301,14 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 
 
 
+// NOTE - for currnent GCC - seems default to use PTHREADS for threads (at least seems we get this code. Not sure best way to check,
+// bt we need to know probably to send signals....
+#if			0
+#if _GLIBCXX__PTHREADS
+	pthread_t x = (*repSharedPtr)->fThread.native_handle ();
+#endif
+#endif
+
 
 /*
  ********************************************************************************
