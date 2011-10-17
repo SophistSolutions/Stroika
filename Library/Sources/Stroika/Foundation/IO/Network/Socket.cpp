@@ -198,7 +198,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 
 	NativeSocket sd;
 #if		qPlatform_POSIX
-	sd = Execution::Handle_ErrNoResultInteruption (([] () -> int { return socket (AF_INET, SOCK_STREAM, 0); });
+	sd = Execution::Handle_ErrNoResultInteruption ([]() -> int { return socket (AF_INET, SOCK_STREAM, 0); });
 #else
 	sd = 0;
 	AssertNotImplemented ();
