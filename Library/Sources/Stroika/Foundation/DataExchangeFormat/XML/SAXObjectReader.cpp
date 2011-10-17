@@ -333,10 +333,42 @@ void	BuiltinReader<float>::HandleChildStart (SAXObjectReader &r, const String& u
 void	BuiltinReader<float>::HandleTextInside (SAXObjectReader &r, const String& text) override
 {
 	tmpVal_ += text;
-	(*value_) = Characters::String2Float (tmpVal_.As<wstring> ());
+	(*value_) = static_cast<float> (Characters::String2Float (tmpVal_.As<wstring> ()));
 }
 
 void	BuiltinReader<float>::HandleEndTag (SAXObjectReader &r) override
+{
+	r.Pop ();
+}
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** XML::BuiltinReader<double> **************************
+ ********************************************************************************
+ */
+BuiltinReader<double>::BuiltinReader (double* intoVal, const map<String,Memory::VariantValue>& attrs)
+	: value_ (intoVal)
+	, tmpVal_ ()
+{
+	RequireNotNull (intoVal);
+}
+
+void	BuiltinReader<double>::HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+{
+	ThrowUnRecognizedStartElt (uri, localName);
+}
+
+void	BuiltinReader<double>::HandleTextInside (SAXObjectReader &r, const String& text) override
+{
+	tmpVal_ += text;
+	(*value_) = Characters::String2Float (tmpVal_.As<wstring> ());
+}
+
+void	BuiltinReader<double>::HandleEndTag (SAXObjectReader &r) override
 {
 	r.Pop ();
 }

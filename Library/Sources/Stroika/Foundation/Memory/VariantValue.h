@@ -49,6 +49,10 @@ namespace	Stroika {
 			// Simple refcounted copying value objects
 			class	VariantValue {
 				public:
+					// There are several floating point types - float, double, long double (and others?) This selects which we use
+					// to represent a VariantValue internally, but either double or float (maybe more) can be used to access
+					typedef	double	FloatType;
+				public:
 					enum Type {
 						eNull,
 						eBoolean,
@@ -67,6 +71,7 @@ namespace	Stroika {
 					VariantValue (bool val);
 					VariantValue (int val);
 					VariantValue (float val);
+					VariantValue (double val);
 					VariantValue (const Date& val);
 					VariantValue (const DateTime& val);
 					VariantValue (const wstring& val);
@@ -109,6 +114,8 @@ namespace	Stroika {
 				nonvirtual int VariantValue::As () const;
 			template	<>
 				nonvirtual float VariantValue::As () const;
+			template	<>
+				nonvirtual double VariantValue::As () const;
 			template	<>
 				nonvirtual Date VariantValue::As () const;
 			template	<>

@@ -192,18 +192,18 @@ int	Characters::String2Int (const wstring& s)
  ********************************* String2Float *********************************
  ********************************************************************************
  */
-float	Characters::String2Float (const wstring& s)
+double	Characters::String2Float (const wstring& s)
 {
-	static	const	float	kBADVAL	=	static_cast<float> (Math::nan ());
+	static	const	double	kBADVAL	=	static_cast<double> (Math::nan ());
 	return String2Float (s, kBADVAL);
 }
 
-float	Characters::String2Float (const wstring& s, float returnValIfInvalidString)
+double	Characters::String2Float (const wstring& s, double returnValIfInvalidString)
 {
-	float	num	=	returnValIfInvalidString;
+	double	num	=	returnValIfInvalidString;
 	#pragma	warning (push)
 	#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
-	if (::swscanf (s.c_str (), L"%f", &num) == 1) {
+	if (::swscanf (s.c_str (), L"%lf", &num) == 1) {
 		return num;
 	}
 	#pragma warning (pop)
@@ -221,7 +221,7 @@ float	Characters::String2Float (const wstring& s, float returnValIfInvalidString
  ********************************* Float2String *********************************
  ********************************************************************************
  */
-wstring	Characters::Float2String (float f, unsigned int precision)
+wstring	Characters::Float2String (double f, unsigned int precision)
 {
 	if (isnan (f)) {
 		return wstring ();

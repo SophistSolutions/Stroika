@@ -106,9 +106,9 @@ namespace	Stroika {
 			int		HexString2Int (const wstring& s);
 			int		String2Int (const string& s);
 			int		String2Int (const wstring& s);
-			float	String2Float (const wstring& s);	// returns R4LLib::nan () if invalid string
-			float	String2Float (const wstring& s, float returnValIfInvalidString);
-			wstring	Float2String (float f, unsigned int precision = 6);		// map nan to empty string, and use limited precision, and strip trialing .0...
+			double	String2Float (const wstring& s);	// returns R4LLib::nan () if invalid string
+			double	String2Float (const wstring& s, double returnValIfInvalidString);
+			wstring	Float2String (double f, unsigned int precision = 6);		// map nan to empty string, and use limited precision, and strip trialing .0...
 
 		}
 	}

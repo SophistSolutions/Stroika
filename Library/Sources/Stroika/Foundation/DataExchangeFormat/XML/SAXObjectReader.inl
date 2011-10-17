@@ -98,6 +98,18 @@ namespace	Stroika {
 							virtual	void	HandleEndTag (SAXObjectReader &r) override;
 					};
 				template	<>
+					class	BuiltinReader<double> : public SAXObjectReader::ObjectBase {
+						public:
+							BuiltinReader (double* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());
+						private:
+							String	tmpVal_;
+							double*	value_;
+						public:
+							virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override;
+							virtual	void	HandleTextInside (SAXObjectReader &r, const String& text) override;
+							virtual	void	HandleEndTag (SAXObjectReader &r) override;
+					};
+				template	<>
 					class	BuiltinReader<bool> : public SAXObjectReader::ObjectBase {
 						public:
 							BuiltinReader (bool* intoVal, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ());

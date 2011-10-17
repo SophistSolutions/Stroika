@@ -39,7 +39,12 @@ VariantValue::VariantValue (int val)
 }
 
 VariantValue::VariantValue (float val)
-	: fVal (DEBUG_NEW TValRep<float,eFloat> (val))
+	: fVal (DEBUG_NEW TValRep<FloatType,eFloat> (val))
+{
+}
+
+VariantValue::VariantValue (double val)
+	: fVal (DEBUG_NEW TValRep<FloatType,eFloat> (val))
 {
 }
 
@@ -85,7 +90,7 @@ bool	VariantValue::empty () const
 			return false;
 		}
 		case	eFloat: {
-			TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
+			TValRep<FloatType,eFloat>*	v	=	dynamic_cast<TValRep<FloatType,eFloat>*> (fVal.get ());
 			AssertNotNull (v);
 			return isnan (v->fVal) != 0;
 		}
@@ -154,7 +159,7 @@ template	<>
 			}
 			switch (fVal->GetType ()) {
 				case	eFloat: {
-					TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
+					TValRep<FloatType,eFloat>*	v	=	dynamic_cast<TValRep<FloatType,eFloat>*> (fVal.get ());
 					AssertNotNull (v);
 					return static_cast<int> (v->fVal);
 				}
@@ -178,6 +183,12 @@ template	<>
 template	<>
 	float VariantValue::As () const
 		{
+			return static_cast<float> (As<double> ());
+		}
+
+template	<>
+	double VariantValue::As () const
+		{
 			if (fVal.IsNull ()) {
 				return 0.0f;
 			}
@@ -188,7 +199,7 @@ template	<>
 					return static_cast<float> (v->fVal);
 				}
 				case	eFloat: {
-					TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
+					TValRep<FloatType,eFloat>*	v	=	dynamic_cast<TValRep<FloatType,eFloat>*> (fVal.get ());
 					AssertNotNull (v);
 					return v->fVal;
 				}
@@ -296,7 +307,7 @@ template	<>
 					return Characters::Format (L"%d", v->fVal);
 				}
 				case	eFloat: {
-					TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
+					TValRep<FloatType,eFloat>*	v	=	dynamic_cast<TValRep<FloatType,eFloat>*> (fVal.get ());
 					AssertNotNull (v);
 					return Characters::Float2String (v->fVal);
 				}
@@ -400,7 +411,7 @@ wstring	VariantValue::FormatXML () const
 			return v->fVal? L"true": L"false";
 		}
 		case	eFloat: {
-			TValRep<float,eFloat>*	v	=	dynamic_cast<TValRep<float,eFloat>*> (fVal.get ());
+			TValRep<FloatType,eFloat>*	v	=	dynamic_cast<TValRep<FloatType,eFloat>*> (fVal.get ());
 			AssertNotNull (v);
 			return Characters::Float2String (v->fVal);
 		}
@@ -428,7 +439,7 @@ bool	Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
 		case	VariantValue::eNull:		return true;
 		case	VariantValue::eBoolean:		return lhs.As<bool> () == rhs.As<bool> ();
 		case	VariantValue::eInteger:		return lhs.As<int> () == rhs.As<int> ();
-		case	VariantValue::eFloat:		return lhs.As<float> () == rhs.As<float> ();
+		case	VariantValue::eFloat:		return lhs.As<VariantValue::FloatType> () == rhs.As<VariantValue::FloatType> ();
 		case	VariantValue::eDate:		return lhs.As<Date> () == rhs.As<Date> ();
 		case	VariantValue::eDateTime:	return lhs.As<DateTime> () == rhs.As<DateTime> ();
 		case	VariantValue::eString:		return lhs.As<wstring> () == rhs.As<wstring> ();
