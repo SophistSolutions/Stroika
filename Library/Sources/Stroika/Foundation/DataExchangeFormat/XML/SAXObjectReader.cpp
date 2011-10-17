@@ -29,6 +29,7 @@ using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
 wstring	SAXObjectReader::TraceLeader_ () const
 {
 	wstring	l;
+	l.reserve (fStack_.size ());
 	for (size_t i = 0; i < fStack_.size (); ++i) {
 		l += L" ";
 	}
