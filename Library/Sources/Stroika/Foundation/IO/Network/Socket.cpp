@@ -72,13 +72,12 @@ class	Socket::Rep_ {
 		size_t	Read (Byte* intoStart, Byte* intoEnd) override
 			{
 				// Must do erorr checking and throw exceptions!!!
-				NativeSocket	sd	=	fSD_;
 				#if		qPlatform_Windows
 					AssertNotImplemented ();
 					return 0;
 					//return ::_read (fSD_, intoStart, intoEnd - intoStart);
 				#elif	qPlatform_POSIX
-					return Execution::Handle_ErrNoResultInteruption ([&sd, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+					return Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 				#else
 					AssertNotImplemented ();
 				#endif
@@ -87,12 +86,11 @@ class	Socket::Rep_ {
 		void	Write (const Byte* start, const Byte* end) override
 			{
 				// Must do erorr checking and throw exceptions!!!
-				NativeSocket	sd	=	fSD_;
 				#if		qPlatform_Windows
 					AssertNotImplemented ();
 					//int		n	=	::_write (fSD_, start, end - start);
 				#elif	qPlatform_POSIX
-					int		n	=	Execution::Handle_ErrNoResultInteruption ([&sd, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+					int		n	=	Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
 				#else
 					AssertNotImplemented ();
 				#endif
@@ -101,8 +99,7 @@ class	Socket::Rep_ {
 	public:
 		void	Listen (unsigned int backlog)
 			{
-				NativeSocket	sd	=	fSD_;
-				Execution::Handle_ErrNoResultInteruption ([&sd, &backlog] () -> int { return ::listen (sd, backlog); });
+				Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
 			}
 
 	public:
