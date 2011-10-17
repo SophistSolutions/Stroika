@@ -50,12 +50,12 @@ void	HTTPConnection::ReadHeaders ()
 			Execution::DoThrow (Execution::StringException (L"Bad METHOD REQUEST HTTP line"));
 		}
 		fRequest_.fMethod = tokens[0];
-		fRequest_.fHostRelativeURL = tokens[1];
+		fRequest_.fURL = IO::Network::URL::ParseHostRelativeURL (tokens[1]);
 		if (fRequest_.fMethod.empty ()) {
 			// should check if GET/PUT/DELETE etc...
 			Execution::DoThrow (Execution::StringException (L"Bad METHOD in REQUEST HTTP line"));
 		}
-		if (fRequest_.fHostRelativeURL.empty ()) {
+		if (fRequest_.fURL.empty ()) {
 			// should check if GET/PUT/DELETE etc...
 			Execution::DoThrow (Execution::StringException (L"Bad HTTP REQUEST line - missing host-relative URL"));
 		}

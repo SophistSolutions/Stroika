@@ -35,7 +35,7 @@ HTTPRequest::HTTPRequest (Streams::BinaryInputStream& inStream)
 	: fInputStream (inStream)
 	, fInputTextStream (fInputStream)
 	, fHTTPVersion ()
-	, fHostRelativeURL ()
+	, fURL ()
 	, fHeaders ()
 {
 }

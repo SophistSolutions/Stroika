@@ -13,6 +13,7 @@
 #include	"../../Foundation/Characters/String.h"
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
+#include	"../../Foundation/IO/Network/URL.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
 #include	"../../Foundation/Streams/BinaryInputStream.h"
 #include	"../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
@@ -42,7 +43,8 @@ namespace	Stroika {
 
 					String									fHTTPVersion;
 					String									fMethod;
-					String									fHostRelativeURL;	// includes query-string, but not hostname, not port
+					IO::Network::URL						fURL;
+//String									fHostRelativeURL;	// includes query-string, but not hostname, not port
 					map<String,String>						fHeaders;
 			};
 

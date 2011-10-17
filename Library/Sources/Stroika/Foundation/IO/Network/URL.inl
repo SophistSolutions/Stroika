@@ -55,8 +55,8 @@ namespace	Stroika {
 					}
 
 
-			//	class	URLCracker
-				inline	int		URLCracker::GetEffectivePortNumber () const
+			//	class	URL
+				inline	int		URL::GetEffectivePortNumber () const
 					{
 						if (fPort == kDefaultPort) {
 							return GetDefaultPortForProtocol (fProtocol);
@@ -65,11 +65,11 @@ namespace	Stroika {
 							return fPort;
 						}
 					}
-				inline	int		URLCracker::GetPortNumber () const
+				inline	int		URL::GetPortNumber () const
 					{
 						return fPort;
 					}
-				inline	void	URLCracker::SetPortNumber (int portNum)
+				inline	void	URL::SetPortNumber (int portNum)
 					{
 						fPort = portNum;
 					}

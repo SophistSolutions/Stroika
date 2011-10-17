@@ -72,7 +72,7 @@ int		Network::GetDefaultPortForProtocol (const wstring& proto)
 
 /*
  ********************************************************************************
- ********************************** URLCracker **********************************
+ ************************************** URL *************************************
  ********************************************************************************
  */
 #if	qPlatform_Windows
@@ -127,13 +127,13 @@ namespace	{
 	}
 }
 #endif
-URLCracker::URLCracker (const wstring& w):
-	fProtocol (),
-	fHost (),
-	fPort (kDefaultPort),
-	fRelPath (),
-	fQuery (),
-	fFragment ()
+URL::URL (const wstring& w)
+	: fProtocol ()
+	, fHost ()
+	, fPort (kDefaultPort)
+	, fRelPath ()
+	, fQuery ()
+	, fFragment ()
 {
 	if (w.empty ()) {
 		return;
@@ -254,13 +254,42 @@ URLCracker::URLCracker (const wstring& w):
 #endif
 }
 
-bool	URLCracker::IsSecure () const
+URL	URL::ParseHostRelativeURL (const wstring& w)
+{
+	URL	url;
+	{
+		url.fRelPath = w;
+
+		// It should be RELATIVE to that hostname and the slash is the separator character
+		// NB: This is a change as of 2008-09-04 - so be careful in case anyone elsewhere dependend
+		// on the leading slash!
+		//		-- LGP 2008-09-04
+		if (not url.fRelPath.empty () and url.fRelPath[0] == '/') {
+			url.fRelPath = url.fRelPath.substr (1);
+		}
+
+		size_t	startOfFragment	=	url.fRelPath.find ('#');
+		if (startOfFragment != wstring::npos) {
+			url.fFragment = url.fRelPath.substr (startOfFragment + 1);
+			url.fRelPath.erase (startOfFragment);
+		}
+
+		size_t	startOfQuery	=	url.fRelPath.find ('?');
+		if (startOfQuery != wstring::npos) {
+			url.fQuery = url.fRelPath.substr (startOfQuery + 1);
+			url.fRelPath.erase (startOfQuery);
+		}
+	}
+	return url;
+}
+
+bool	URL::IsSecure () const
 {
 	// should be large list of items - and maybe do soemthing to assure case matching handled properly, if needed?
 	return fProtocol==L"https";
 }
 
-wstring	URLCracker::GetURL () const
+wstring	URL::GetURL () const
 {
 	wstring	result;
 	result.reserve (10 + fHost.length () + fRelPath.length () + fQuery.length () + fFragment.length ());
@@ -293,7 +322,7 @@ wstring	URLCracker::GetURL () const
 	return result;
 }
 
-wstring	URLCracker::GetHostRelPathDir () const
+wstring	URL::GetHostRelPathDir () const
 {
 	wstring	result	=	fRelPath;
 	size_t	i	=	result.rfind ('/');
@@ -306,7 +335,23 @@ wstring	URLCracker::GetHostRelPathDir () const
 	return result;
 }
 
-bool	Network::operator== (const URLCracker& lhs, const URLCracker& rhs)
+void	URL::clear ()
+{
+	fProtocol.clear ();
+	fHost.clear ();
+	fRelPath.clear ();
+	fQuery.clear ();
+	fFragment.clear ();
+	fPort = kDefaultPort;
+	Ensure (empty ());
+}
+
+bool	URL::empty () const
+{
+	return fProtocol.empty () and fHost.empty () and fRelPath.empty () and fQuery.empty () and fFragment.empty () and fPort == kDefaultPort;
+}
+
+bool	Network::operator== (const URL& lhs, const URL& rhs)
 {
 	// A simpler way to compare - and probably better - is if they both produce the same URL string, they are the
 	// same URL (since GetURL normalizes output)
