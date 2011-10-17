@@ -58,7 +58,7 @@ namespace	{
 				CheckMatchesExpected_WRITER_ (v1, "3");
 			}
 			{
-				VariantValue	v1 =	4.7f;
+				VariantValue	v1 =	4.7;
 				CheckMatchesExpected_WRITER_ (v1, "4.7");
 			}
 			{
@@ -106,7 +106,7 @@ namespace	{
 				CheckMatchesExpected_READER_ ("3", v1);
 			}
 			{
-				VariantValue	v1 =	4.7f;
+				VariantValue	v1 =	4.7;
 				CheckMatchesExpected_READER_ ("4.7", v1);
 			}
 			{
