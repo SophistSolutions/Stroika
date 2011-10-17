@@ -92,7 +92,7 @@ bool	VariantValue::empty () const
 		case	eFloat: {
 			TValRep<FloatType,eFloat>*	v	=	dynamic_cast<TValRep<FloatType,eFloat>*> (fVal.get ());
 			AssertNotNull (v);
-			return isnan (v->fVal) != 0;
+			return std::isnan (v->fVal) != 0;
 		}
 		case	eDate: {
 			TValRep<Date,eDate>*	v	=	dynamic_cast<TValRep<Date,eDate>*> (fVal.get ());
