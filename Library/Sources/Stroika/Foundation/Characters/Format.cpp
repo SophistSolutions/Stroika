@@ -223,7 +223,7 @@ double	Characters::String2Float (const wstring& s, double returnValIfInvalidStri
  */
 wstring	Characters::Float2String (double f, unsigned int precision)
 {
-	if (isnan (f)) {
+	if (std::isnan (f)) {
 		return wstring ();
 	}
 	stringstream s;
