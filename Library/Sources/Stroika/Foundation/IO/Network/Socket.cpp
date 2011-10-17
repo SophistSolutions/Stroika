@@ -188,7 +188,12 @@ void	Socket::Bind (const BindProperties& bindProperties)
     hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	string	tmp	=	bindProperties.fHostName.AsUTF8<string> ();	// BAD - SB tstring - or??? not sure what...
-	Execution::Handle_ErrNoResultInteruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
+	try {
+		Execution::Handle_ErrNoResultInteruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
+	}
+	catch (...) {
+		// MUST FIX THIS - BROKEN - BUT LEAVE IGNORING ERRORS FOR NOW...
+	}
 
 	sockaddr_in	useAddr;
 	memset (&useAddr, 0, sizeof (useAddr));
