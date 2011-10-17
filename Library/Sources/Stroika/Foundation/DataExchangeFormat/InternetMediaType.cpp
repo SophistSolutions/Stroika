@@ -31,6 +31,8 @@ DataExchangeFormat::Private_::InternetMediaType_INIT::InternetMediaType_INIT ()
 	, kText_XHTML_CT						(L"text/xhtml")
 	, kText_PLAIN_CT						(L"text/plain")
 
+	, kJSON_CT								(L"application/json")
+
 	, kPDF_CT								(L"application/pdf")
 
 	// very unclear what to use, no clear standard!
