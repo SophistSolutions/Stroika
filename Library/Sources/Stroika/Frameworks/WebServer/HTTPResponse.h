@@ -27,6 +27,9 @@
  *
  *		(o)		Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
  *				to right codepage.
+ *
+ *		(o)		Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
+ *				usage.
  */
 
 namespace	Stroika {	
@@ -66,7 +69,8 @@ namespace	Stroika {
 					 * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
 					 * if we are NOT in automatic-include-Content-Length mode (NYI).
 					 *
-					 * This does NOT End the repsonse, and it CAN be called arbitrarily many times (as long as the response hasn't been ended).
+					 * This does NOT End the repsonse, and it CAN be called arbitrarily many times (even after the response has completed - though
+					 * its pointless then).
 					 */
 					nonvirtual	void	Flush ();
 
