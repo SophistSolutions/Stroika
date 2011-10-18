@@ -97,7 +97,16 @@ namespace	Stroika {
 			 *
 			 *		(3)	Signal injection (POSIX) - we send a special (TDB) signal to a particular thread. It sets a 'thread-local variable - aborted' 
 			 *			and when it returns - any (WHICH?) systme calls in progress will return the error
-
+			 *
+			 *
+			 *		<<<<DOCUMENT INTERUPTION POINTS>>>> - CALLED INTERUPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
+			 *		??? They are placed in the code caller can ASSUME a call to CheckForThreadAborting () is called. These include:
+			 *			o	SLEEP()
+			 *			o	ANY WAIT CALLS
+			 *			o	anything that calls Handle_ErrNoResultInteruption ()
+			 *
+			 *
+			 *
 			 *
 			 *
 			 * HANDLE_EINTR_CALLER()

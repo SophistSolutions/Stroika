@@ -60,6 +60,7 @@ namespace	Stroika {
 					HTTPRequest		fRequest_;
 					HTTPResponse	fResponse_;
 			};
+
 		}
 	}
 }
