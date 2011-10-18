@@ -71,7 +71,7 @@ void	HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
 
 void	HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 {
-	Require (fState_ == eExact_CSP);
+	Require (csp == eExact_CSP);
 	Require (fState_ == eInProgress);
 	fContentSizePolicy_ = csp;
 	fContentSize_ = size;
