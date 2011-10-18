@@ -286,7 +286,7 @@ URL	URL::ParseHostRelativeURL (const wstring& w)
 bool	URL::IsSecure () const
 {
 	// should be large list of items - and maybe do soemthing to assure case matching handled properly, if needed?
-	return fProtocol==L"https";
+	return fProtocol == L"https" or fProtocol == L"ftps" or fProtocol == L"ldaps";
 }
 
 wstring	URL::GetURL () const
