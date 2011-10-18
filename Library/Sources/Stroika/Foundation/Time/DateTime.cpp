@@ -581,7 +581,7 @@ DateTime	DateTime::AddSeconds (time_t seconds) const
 	Assert (n >= 0);
 
 	// Now see if we overflowed
-	if (n > TimeOfDay::kMaxSecondsPerDay) {
+	if (n >= TimeOfDay::kMaxSecondsPerDay) {
 		Assert (dayDiff == 0);
 		dayDiff = int (n / time_t (TimeOfDay::kMaxSecondsPerDay));
 		n -= dayDiff * TimeOfDay::kMaxSecondsPerDay;
