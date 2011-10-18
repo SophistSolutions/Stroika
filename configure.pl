@@ -42,6 +42,54 @@ my $COPTIMIZE_FLAGS = "";
 
 
 
+
+sub	ParseCommandLine_
+{
+	for ($i = 0; $i <= $#ARGV; $i++) {
+		my $var = $ARGV[$i];
+		if (lc ($var) eq "-force" or lc ($var) eq "--force") {
+			$forceRecreate = true;
+			print "Forcing recreate...\n";
+		}
+		if (lc ($var) eq "-c-define") {
+			$i++;
+			$var = $ARGV[$i];
+			$useExtraCDefines[@useExtraCDefines] = $var;
+		}
+		if (lc ($var) eq "-make-define") {
+			$i++;
+			$var = $ARGV[$i];
+			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
+		}
+		if ((lc ($var) eq "-target") or (lc ($var) eq "--target")) {
+			$i++;
+			$var = $ARGV[$i];
+			$target = $var;
+		}
+		if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
+			$i++;
+			$var = $ARGV[$i];
+			$platform = $var;
+		}
+		if ((lc ($var) eq "-enable-assertions") or (lc ($var) eq "--enable-assertions")) {
+			$ENABLE_ASSERTIONS = 1;
+		}
+		if ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
+			$ENABLE_ASSERTIONS = 0;
+		}
+		if ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
+			$i++;
+			$var = $ARGV[$i];
+			$COPTIMIZE_FLAGS = $var;
+		}
+	}
+}
+
+
+
+
+
+
 sub mkDirWithLinks
 {
 	local $relPath = $_[0];
@@ -264,23 +312,9 @@ sub WriteStroikaConfigMakeHeader
 	close(OUT);
 }
 
-for ($i = 0; $i <= $#ARGV; $i++) {
-	my $var = $ARGV[$i];
-	if (lc ($var) eq "-force" or lc ($var) eq "--force") {
-		$forceRecreate = true;
-		print "Forcing recreate...\n";
-	}
-	if (lc ($var) eq "-c-define") {
-		$i++;
-		$var = $ARGV[$i];
-		$useExtraCDefines[@useExtraCDefines] = $var;
-	}
-	if (lc ($var) eq "-make-define") {
-		$i++;
-		$var = $ARGV[$i];
-		$useExtraMakeDefines[@useExtraMakeDefines] = $var;
-	}
-}
+
+
+ParseCommandLine_ ();
 
 #print ("OS: $^O\n");
 
