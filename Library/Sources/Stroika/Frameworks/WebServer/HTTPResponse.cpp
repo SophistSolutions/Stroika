@@ -120,7 +120,7 @@ void	HTTPResponse::Flush ()
 	}
 	// write BYTES to fOutStream
 	if (not fBytes_.empty ()) {
-		Assert (not fState_ == eCompleted);	// We PREVENT any writes when completed
+		Assert (fState_ != eCompleted);	// We PREVENT any writes when completed
 		fOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
 		fBytes_.clear ();
 	}
