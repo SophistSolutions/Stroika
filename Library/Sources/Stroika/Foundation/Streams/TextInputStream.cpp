@@ -33,6 +33,10 @@ wstring	TextInputStream::ReadLine ()
 	Character	c;
 	while (true) {
 		Character	c	=	Read ();
+		if (c.GetCharacterCode () == '\0') {
+			return result;
+		}
+		Containers::ReserveSpeedTweekAdd1 (result);
 		result.push_back (c.GetCharacterCode ());
 		if (c == '\n') {
 			return result;
