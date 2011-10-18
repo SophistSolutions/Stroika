@@ -20,13 +20,6 @@ my $platform			=	"Platform_Linux";
 my $target			=	"Debug";
 
 
-#
-# For now KISS - just check if the file doesn't exist, and if so write a default value.
-#
-my $configFileCName		=	"Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
-my $configFileMakeName	=	"$intermediateFiles$platform/$target/Library/Configuration.mk";
-
-
 my $forceRecreate = true;
 
 my $useThirdPartyXerces	=	true;
@@ -85,7 +78,19 @@ sub	ParseCommandLine_
 	}
 }
 
+ParseCommandLine_ ();
 
+
+
+
+
+
+
+#
+# For now KISS - just check if the file doesn't exist, and if so write a default value.
+#
+my $configFileCName		=	"Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
+my $configFileMakeName	=	"$intermediateFiles$platform/$target/Library/Configuration.mk";
 
 
 
@@ -313,8 +318,6 @@ sub WriteStroikaConfigMakeHeader
 }
 
 
-
-ParseCommandLine_ ();
 
 #print ("OS: $^O\n");
 
