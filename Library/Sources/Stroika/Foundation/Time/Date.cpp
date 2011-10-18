@@ -347,7 +347,7 @@ wstring	Date::Format (const locale& l) const
 	// Read docs - not sure how to use this to get the local-appropriate format
 	// %X MAYBE just what we want  - locale DEPENDENT!!!
 	wchar_t pattern[]=L"%x";
-	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), EndOfArray (pattern));
+	tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
 	return oss.str ();
 }
 
