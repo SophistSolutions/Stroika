@@ -81,7 +81,7 @@ namespace	Stroika {
 					 *		wstring
 					 *		double
 					 *
-					 *	Note - if 'emtpy' - As<> for numeric types returns 0.
+					 *	Note - if 'empty' - As<> for numeric types returns 0.
 					 */
 					template	<typename T>
 						nonvirtual	T	As () const;
