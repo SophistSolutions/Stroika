@@ -5,12 +5,14 @@
 
 #include	<algorithm>
 #include	<cstdlib>
+#include	<sstream>
 
 #include	"../../Foundation/Characters/Format.h"
 #include	"../../Foundation/Containers/Common.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
 #include	"../../Foundation/Execution/Exceptions.h"
+#include	"../../Foundation/IO/Network/HTTP/Headers.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 #include	"HTTPResponse.h"
@@ -55,8 +57,24 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
 	, fHeaders_ ()
 	, fContentType_ (ct)
 	, fBytes_ ()
+	, fContentSizePolicy_ (eAutoCompute_CSP)
+	, fContentSize_ (0)
 {
 	AddHeader (L"Server", L"Stroka-Based-Web-Server");
+}
+
+void	HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
+{
+	Require (csp == eAutoCompute_CSP or csp == eNone_CSP);
+	fContentSizePolicy_ = csp;
+}
+
+void	HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
+{
+	Require (fState_ == eExact_CSP);
+	Require (fState_ == eInProgress);
+	fContentSizePolicy_ = csp;
+	fContentSize_ = size;
 }
 
 void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
@@ -93,6 +111,26 @@ void	HTTPResponse::ClearHeader (String headerName)
 	}
 }
 
+map<String,String>	HTTPResponse::GetSpecialHeaders () const
+{
+	return fHeaders_;
+}
+
+map<String,String>	HTTPResponse::GetEffectiveHeaders () const
+{
+	map<String,String>	tmp	=	GetSpecialHeaders ();
+	switch (GetContentSizePolicy ()) {
+		case	eAutoCompute_CSP:
+		case	eExact_CSP: {
+			wostringstream	buf;
+			buf << fContentSize_;
+			tmp.insert (map<String,String>::value_type (IO::Network::HTTP::HeaderName::kContentLength, buf.str ()));
+		}
+		break;
+	}
+	return tmp;
+}
+
 void	HTTPResponse::Flush ()
 {
 	if (fState_ == eInProgress) {
@@ -108,15 +146,18 @@ void	HTTPResponse::Flush ()
 			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
 
-		for (map<String,String>::const_iterator i = fHeaders_.begin (); i != fHeaders_.end (); ++i) {
-			wstring	tmp	=	Characters::Format (L"%s: %s\r\n", i->first.As<wstring> ().c_str (), i->second.As<wstring> ().c_str ());
-			string	utf8	=	String (tmp).AsUTF8 ();
-			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+		{
+			map<String,String>	headers2Write	=	GetEffectiveHeaders ();
+			for (map<String,String>::const_iterator i = headers2Write.begin (); i != headers2Write.end (); ++i) {
+				wstring	tmp	=	Characters::Format (L"%s: %s\r\n", i->first.As<wstring> ().c_str (), i->second.As<wstring> ().c_str ());
+				string	utf8	=	String (tmp).AsUTF8 ();
+				fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+			}
 		}
 
 		const char	kCRLF[]	=	"\r\n";
 		fOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
-		fState_ = eInProgressHeaderState;
+		fState_ = eInProgressHeaderSentState;
 	}
 	// write BYTES to fOutStream
 	if (not fBytes_.empty ()) {
@@ -128,7 +169,7 @@ void	HTTPResponse::Flush ()
 
 void	HTTPResponse::End ()
 {
-	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderState));
+	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
 	Flush ();
 	fState_ = eCompleted;
 }
@@ -156,23 +197,33 @@ void	HTTPResponse::Redirect (const wstring& url)
 
 void	HTTPResponse::write (const Byte* s, const Byte* e)
 {
-	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderState));
+	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
+	Require ((fState_ == eInProgress) or (GetContentSizePolicy () != eAutoCompute_CSP));
 	Require (s <= e);
 	if (s < e) {
 		Containers::ReserveSpeedTweekAddN (fBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
 		fBytes_.insert (fBytes_.end (), s, e);
+		if (GetContentSizePolicy () == eAutoCompute_CSP) {
+			// Because for autocompute - illegal to call flush and then write
+			fContentSize_ = fBytes_.size ();
+		}
 	}
 }
 
 void	HTTPResponse::write (const wchar_t* s, const wchar_t* e)
 {
-	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderState));
+	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
+	Require ((fState_ == eInProgress) or (GetContentSizePolicy () != eAutoCompute_CSP));
 	Require (s <= e);
 	if (s < e) {
 		wstring tmp = wstring (s,e);
 		string utf8 = String (tmp).AsUTF8 ();
 		if (not utf8.empty ()) {
 			fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (utf8.c_str ()), reinterpret_cast<const Byte*> (utf8.c_str () + utf8.length ()));
+			if (GetContentSizePolicy () == eAutoCompute_CSP) {
+				// Because for autocompute - illegal to call flush and then write
+				fContentSize_ = fBytes_.size ();
+			}
 		}
 	}
 }

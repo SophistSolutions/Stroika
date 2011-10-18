@@ -68,6 +68,10 @@ namespace	Stroika {
 				{
 					return fBytes_;
 				}
+			inline	HTTPResponse::ContentSizePolicy	HTTPResponse::GetContentSizePolicy () const
+				{
+					return fContentSizePolicy_;
+				}
 
 		}
 	}

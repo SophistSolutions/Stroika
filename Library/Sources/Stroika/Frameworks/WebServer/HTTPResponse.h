@@ -48,7 +48,7 @@ namespace	Stroika {
 			 */
 			struct	HTTPResponse {
 				public:
-					HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
+					HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
 
 				public:
 					nonvirtual	InternetMediaType	GetContentType () const;
@@ -58,10 +58,26 @@ namespace	Stroika {
 				public:
 					enum State { 
 						eInProgress,				// A newly constructed Response starts out InProgress
-						eInProgressHeaderState,		// It then transitions to 'header sent' state
+						eInProgressHeaderSentState,	// It then transitions to 'header sent' state
 						eCompleted					// and finally to Completed
 					};
 					nonvirtual	State	GetState () const;
+
+				public:
+					enum ContentSizePolicy { 
+						eAutoCompute_CSP,
+						eExact_CSP,	
+						eNone_CSP
+					};
+					nonvirtual	ContentSizePolicy	GetContentSizePolicy () const;
+					/*
+					 * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
+					 * its argument is Exact_CSP.
+					 *
+					 * Also - SetContentSizePolicy () GetState () == eInProgress
+					 */
+					nonvirtual	void				SetContentSizePolicy (ContentSizePolicy csp);
+					nonvirtual	void				SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
 
 				public:
 					/*
@@ -76,7 +92,7 @@ namespace	Stroika {
 
 					/*
 					 * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
-					 * any aspect of it. The state must be eInProgress or eInProgressHeaderState and it sets the state to eCompleted.
+					 * any aspect of it. The state must be eInProgress or eInProgressHeaderSentState and it sets the state to eCompleted.
 					 */
 					nonvirtual	void	End ();
 
@@ -124,6 +140,8 @@ namespace	Stroika {
 					nonvirtual	void	AddHeader (String headerName, String value);
 					nonvirtual	void	ClearHeader ();
 					nonvirtual	void	ClearHeader (String headerName);
+					nonvirtual	map<String,String>	GetSpecialHeaders () const;
+					nonvirtual	map<String,String>	GetEffectiveHeaders () const;
 
 				private:
 					IO::Network::Socket				fSocket_;
@@ -133,6 +151,8 @@ namespace	Stroika {
 					map<String,String>				fHeaders_;
 					InternetMediaType				fContentType_;
 					vector<Byte>					fBytes_;
+					ContentSizePolicy				fContentSizePolicy_;
+					uint64_t						fContentSize_;			// only  maintained for some policies
 			};
 
 		}
