@@ -75,6 +75,11 @@ sub	ParseCommandLine_
 			$var = $ARGV[$i];
 			$COPTIMIZE_FLAGS = $var;
 		}
+		
+		
+		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
+			$forceRecreate = false;
+		}
 	}
 }
 
@@ -82,6 +87,10 @@ ParseCommandLine_ ();
 
 
 
+
+if ($forceRecreate) {
+	print "Forcing recreate...\n";
+}
 
 
 
