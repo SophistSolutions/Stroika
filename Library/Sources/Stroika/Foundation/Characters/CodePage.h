@@ -90,6 +90,13 @@ namespace	Stroika {
 			typedef	int	CodePage;
 
 
+			/*
+			 * TODO:
+			 *		Returns a printable (DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS)
+			 *
+			 */
+			wstring	GetCharsetString (CodePage cp);
+
 
 			/*
 			@METHOD:		GetDefaultSDKCodePage

@@ -65,6 +65,7 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
 	, fStatus_ (StatusCodes::kOK)
 	, fHeaders_ ()
 	, fContentType_ (ct)
+	, fCodePage_ (Characters::kCodePage_UTF8)
 	, fBytes_ ()
 	, fContentSizePolicy_ (eAutoCompute_CSP)
 	, fContentSize_ (0)
@@ -90,6 +91,12 @@ void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
 {
 	Require (fState_ == eInProgress);
 	fContentType_ = contentType;
+}
+
+void	HTTPResponse::SetCodePage (Characters::CodePage codePage)
+{
+	Require (fState_ == eInProgress);
+	fCodePage_ = codePage;
 }
 
 void	HTTPResponse::SetStatus (Status newStatus)
@@ -140,7 +147,13 @@ map<String,String>	HTTPResponse::GetEffectiveHeaders () const
 		break;
 	}
 	if (not fContentType_.empty ()) {
-		tmp.insert (map<String,String>::value_type (IO::Network::HTTP::HeaderName::kContentType, fContentType_.As<wstring> ()));
+		wstring	contentTypeString	=	fContentType_.As<wstring> ();
+		// Don't override already specifed characterset
+		if (fContentType_.IsTextFormat () and contentTypeString.find (';') == wstring::npos) {
+			contentTypeString += L"charset=" + Characters::GetCharsetString (fCodePage_); 
+
+		}
+		tmp.insert (map<String,String>::value_type (IO::Network::HTTP::HeaderName::kContentType, contentTypeString));
 	}
 	return tmp;
 }
@@ -231,9 +244,9 @@ void	HTTPResponse::write (const wchar_t* s, const wchar_t* e)
 	Require (s <= e);
 	if (s < e) {
 		wstring tmp = wstring (s,e);
-		string utf8 = String (tmp).AsUTF8 ();
-		if (not utf8.empty ()) {
-			fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (utf8.c_str ()), reinterpret_cast<const Byte*> (utf8.c_str () + utf8.length ()));
+		string cpStr = Characters::WideStringToNarrow (tmp, fCodePage_);
+		if (not cpStr.empty ()) {
+			fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (cpStr.c_str ()), reinterpret_cast<const Byte*> (cpStr.c_str () + cpStr.length ()));
 			if (GetContentSizePolicy () == eAutoCompute_CSP) {
 				// Because for autocompute - illegal to call flush and then write
 				fContentSize_ = fBytes_.size ();

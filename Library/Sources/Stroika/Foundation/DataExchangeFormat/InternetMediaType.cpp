@@ -71,7 +71,8 @@ bool	InternetMediaType::IsTextFormat () const
 	 *				-- LGP 2011-10-04
 	 */
 	return 
-		IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::Text_CT ())
+		IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::Text_CT ()) or
+		IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::JSON_CT ())
 		;
 }
 

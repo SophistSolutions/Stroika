@@ -30,6 +30,10 @@ namespace	Stroika {
 				{
 					return fContentType_;
 				}
+			inline	Characters::CodePage	HTTPResponse::GetCodePage () const
+				{
+					return fCodePage_;
+				}
 			inline	void	HTTPResponse::write (const wchar_t* e)
 				{
 					RequireNotNull (e);

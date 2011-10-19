@@ -6,6 +6,7 @@
 #include	<algorithm>
 #include	<set>
 
+#include	"../Characters/Format.h"
 #include	"../Configuration/Common.h"
 #include	"../Containers/Common.h"
 #include	"../Execution/Exceptions.h"
@@ -79,6 +80,30 @@ namespace	{
 	inline	char16_t*		SAFE_WIN_WCHART_CAST_ (wchar_t* t)				{ return reinterpret_cast<char16_t*> (t); }
 }
 #endif
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Characters::GetCharsetString **********************
+ ********************************************************************************
+ */
+wstring	Characters::GetCharsetString (CodePage cp)
+{
+	switch (cp) {
+		case		kCodePage_UTF7:	return L"UTF-7";
+		case		kCodePage_UTF8:	return L"UTF-8";
+		default:	return Characters::Format (L"CodePage %d", cp);
+	}
+}
+
+
+
+
 
 
 

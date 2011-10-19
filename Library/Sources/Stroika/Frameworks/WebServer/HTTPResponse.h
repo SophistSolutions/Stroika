@@ -10,6 +10,7 @@
 #include	<map>
 #include	<vector>
 
+#include	"../../Foundation/Characters/CodePage.h"
 #include	"../../Foundation/Characters/String.h"
 #include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
@@ -57,9 +58,25 @@ namespace	Stroika {
 					/*
 					 * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
 					 * with the characterset appended.
+					 *
+					 * SetContentType () requires GetState () == eInProgress
 					 */
 					nonvirtual	InternetMediaType	GetContentType () const;
 					nonvirtual	void				SetContentType (const InternetMediaType& contentType);
+
+				public:
+					/*
+					 * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
+					 * For ContentTypes
+					 *		o	text/*
+					 *		o	application/json
+					 *	and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
+					 *			"text/html; charset=UTF-8"
+					 *
+					 * SetCodePage () requires GetState () == eInProgress
+					 */
+					nonvirtual	Characters::CodePage	GetCodePage () const;
+					nonvirtual	void					SetCodePage (Characters::CodePage codePage);
 
 				public:
 					enum State { 
@@ -80,7 +97,7 @@ namespace	Stroika {
 					 * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
 					 * its argument is Exact_CSP.
 					 *
-					 * Also - SetContentSizePolicy () GetState () == eInProgress
+					 * Also - SetContentSizePolicy () requires GetState () == eInProgress
 					 */
 					nonvirtual	void				SetContentSizePolicy (ContentSizePolicy csp);
 					nonvirtual	void				SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
@@ -168,6 +185,7 @@ namespace	Stroika {
 					Streams::BinaryOutputStream&	fOutStream_;
 					map<String,String>				fHeaders_;
 					InternetMediaType				fContentType_;
+					Characters::CodePage			fCodePage_;
 					vector<Byte>					fBytes_;
 					ContentSizePolicy				fContentSizePolicy_;
 					uint64_t						fContentSize_;			// only  maintained for some policies
