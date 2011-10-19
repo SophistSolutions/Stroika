@@ -47,6 +47,25 @@
 
 
 
+/*
+ * TODO:		PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
+ *
+ *		o	Must pick some SIGNAL# to use
+ *
+ *		o	must define C++ static signal handler
+ *
+ *		o	must install handler when about to call Abort() - no need - I think - to install sooner - bnut maybe a good idea to???
+ *
+ *		o	in signal handler - set threadlocalstorage value (asssert in context of right thread id) - set sAborted.
+ *
+ *		o	use pthread_kill (use native_handle() from threadobj) - to send the signal.
+ *
+ *		o	
+ *
+ *	
+ */
+
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -206,6 +225,15 @@ namespace	Stroika {
 				public:
 					nonvirtual	void	SetThreadPriority (int nPriority = THREAD_PRIORITY_NORMAL);
 			#endif
+
+
+				#if		qPlatform_POSIX
+				public:
+					static	int		GetSignalUsedForThreadAbort ();
+					static	void	SetSignalUsedForThreadAbort (int signalNumber);
+				private:
+					static	int	sSignalUsedForThreadAbort_;
+				#endif
 
 				public:
 					enum Status { 

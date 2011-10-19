@@ -315,6 +315,11 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
  *********************************** Thread *************************************
  ********************************************************************************
  */
+#if		qPlatform_POSIX
+int	bool	sHandlerInstalled_		=	false;
+int	Thread::sSignalUsedForThreadAbort_	=	-1;		// sentinal to indicate handler not installed
+#endif
+
 Thread::Thread ()
 	: fRep_ ()
 {
@@ -343,6 +348,18 @@ void	Thread::SetThreadPriority (int nPriority)
 {
 	RequireNotNull (fRep_);
 	Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
+}
+#endif
+
+#if		qPlatform_POSIX
+void	Thread::SetSignalUsedForThreadAbort (int signalNumber)
+{
+	if (sHandlerInstalled_) {
+		// uninstall old handler
+	}
+	sSignalUsedForThreadAbort_ = signalNumber;
+	// install new handler
+	sHandlerInstalled_ = true;
 }
 #endif
 

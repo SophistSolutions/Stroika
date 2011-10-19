@@ -129,6 +129,12 @@ namespace	Stroika {
 					return fRep_->fThread;
 				}
 		#endif
+		#if		qPlatform_POSIX
+			inline	int		Thread::GetSignalUsedForThreadAbort ()
+				{
+					return sSignalUsedForThreadAbort_;
+				}
+		#endif
 			inline	Thread::IDType	Thread::GetID () const
 				{
 					if (fRep_.IsNull ()) {
