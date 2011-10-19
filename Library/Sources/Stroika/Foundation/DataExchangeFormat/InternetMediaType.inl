@@ -83,6 +83,8 @@ namespace	Stroika {
 					InternetMediaType_INIT ();
 					~InternetMediaType_INIT ();
 
+					const	InternetMediaType	kOctetStream_CT;
+
 					const	InternetMediaType	kImage_CT;
 					const	InternetMediaType	kImage_PNG_CT;
 					const	InternetMediaType	kImage_GIF_CT;
@@ -116,6 +118,8 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	DataExchangeFormat {
 			namespace	PredefinedInternetMediaType {
+
+				inline	const	InternetMediaType&	OctetStream_CT ()						{	return _InternetMediaType_INIT_.Actual ().kOctetStream_CT;	}
 
 				inline	const	InternetMediaType&	Image_CT ()								{	return _InternetMediaType_INIT_.Actual ().kImage_CT;	}
 				inline	const	InternetMediaType&	Image_PNG_CT ()							{	return _InternetMediaType_INIT_.Actual ().kImage_PNG_CT;	}

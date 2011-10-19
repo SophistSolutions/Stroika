@@ -30,6 +30,9 @@
  *
  *		(o)		Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
  *				usage.
+ *
+ *		(o)		eExact_CSP is UNTESTED, and should have CHECKING code - so if a user writes a differnt amount, we detect and assert out.
+ *				But that can be deferered because it probably works fine for the the case where its used properly.
  */
 
 namespace	Stroika {	
@@ -51,9 +54,12 @@ namespace	Stroika {
 					HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
 
 				public:
+					/*
+					 * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
+					 * with the characterset appended.
+					 */
 					nonvirtual	InternetMediaType	GetContentType () const;
 					nonvirtual	void				SetContentType (const InternetMediaType& contentType);
-
 
 				public:
 					enum State { 
@@ -66,7 +72,7 @@ namespace	Stroika {
 				public:
 					enum ContentSizePolicy { 
 						eAutoCompute_CSP,
-						eExact_CSP,	
+						eExact_CSP,
 						eNone_CSP
 					};
 					nonvirtual	ContentSizePolicy	GetContentSizePolicy () const;

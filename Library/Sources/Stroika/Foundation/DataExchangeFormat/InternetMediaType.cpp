@@ -22,7 +22,9 @@ using	namespace	Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchangeFormat::Private_::InternetMediaType_INIT::InternetMediaType_INIT ()
-	: kImage_CT								(L"image")
+	: kOctetStream_CT						(L"application/octet-stream")
+
+	, kImage_CT								(L"image")
 	, kImage_PNG_CT							(L"image/png")
 	, kImage_GIF_CT							(L"image/gif")
 

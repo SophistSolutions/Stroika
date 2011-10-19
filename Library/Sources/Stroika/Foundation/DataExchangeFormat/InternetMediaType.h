@@ -73,6 +73,9 @@ namespace	Stroika {
 				 *	compilers do a decent job.
 				 *		-- LGP 2009-05-29
 				 */
+
+				const	InternetMediaType&	OctetStream_CT ();
+
 				const	InternetMediaType&	Image_CT ();
 				const	InternetMediaType&	Image_PNG_CT ();
 				const	InternetMediaType&	Image_GIF_CT ();

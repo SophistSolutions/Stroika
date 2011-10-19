@@ -11,6 +11,7 @@
 #include	"../../Foundation/Containers/Common.h"
 #include	"../../Foundation/Containers/SetUtils.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
+#include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Debug/Assertions.h"
 #include	"../../Foundation/Execution/Exceptions.h"
 #include	"../../Foundation/IO/Network/HTTP/Headers.h"
@@ -29,7 +30,10 @@ using	namespace	Stroika::Frameworks::WebServer;
 
 
 namespace	{
-	const	set<String>	kDisallowedOtherHeaders_	=	Containers::mkS<String> (IO::Network::HTTP::HeaderName::kContentLength);
+	const	set<String>	kDisallowedOtherHeaders_	=	Containers::mkS<String> (
+																			IO::Network::HTTP::HeaderName::kContentLength,
+																			IO::Network::HTTP::HeaderName::kContentType
+																		);
 }
 
 
@@ -134,6 +138,9 @@ map<String,String>	HTTPResponse::GetEffectiveHeaders () const
 			tmp.insert (map<String,String>::value_type (IO::Network::HTTP::HeaderName::kContentLength, buf.str ()));
 		}
 		break;
+	}
+	if (not fContentType_.empty ()) {
+		tmp.insert (map<String,String>::value_type (IO::Network::HTTP::HeaderName::kContentType, fContentType_.As<wstring> ()));
 	}
 	return tmp;
 }
