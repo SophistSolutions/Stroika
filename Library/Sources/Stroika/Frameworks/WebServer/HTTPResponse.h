@@ -136,11 +136,23 @@ namespace	Stroika {
 
 
 				public:
-					// LEGAL to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
+					// 
+					/*
+					 *	Add the given 'non-special' header to the list of headers to be associated with this reponse.
+					 *	Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
+					 *	that cannot be specified here include:
+					 *		o	IO::Network::HTTP::HeaderName::kContentLength
+					 *
+					 * It is legal to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
+					 */
 					nonvirtual	void	AddHeader (String headerName, String value);
 					nonvirtual	void	ClearHeader ();
 					nonvirtual	void	ClearHeader (String headerName);
 					nonvirtual	map<String,String>	GetSpecialHeaders () const;
+					/*
+					 * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
+					 * Connection: close, Content-Type, etc.
+					 */
 					nonvirtual	map<String,String>	GetEffectiveHeaders () const;
 
 				private:

@@ -9,6 +9,7 @@
 
 #include	"../../Foundation/Characters/Format.h"
 #include	"../../Foundation/Containers/Common.h"
+#include	"../../Foundation/Containers/SetUtils.h"
 #include	"../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"../../Foundation/Debug/Assertions.h"
 #include	"../../Foundation/Execution/Exceptions.h"
@@ -26,6 +27,10 @@ using	namespace	Stroika::Frameworks;
 using	namespace	Stroika::Frameworks::WebServer;
 
 
+
+namespace	{
+	const	set<String>	kDisallowedOtherHeaders_	=	Containers::mkS<String> (IO::Network::HTTP::HeaderName::kContentLength);
+}
 
 
 
@@ -60,7 +65,7 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
 	, fContentSizePolicy_ (eAutoCompute_CSP)
 	, fContentSize_ (0)
 {
-	AddHeader (L"Server", L"Stroka-Based-Web-Server");
+	AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server");
 }
 
 void	HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
@@ -92,6 +97,7 @@ void	HTTPResponse::SetStatus (Status newStatus)
 void	HTTPResponse::AddHeader (String headerName, String value)
 {
 	Require (fState_ == eInProgress);
+	Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
 	ClearHeader (headerName);
 	fHeaders_.insert (map<String,String>::value_type (headerName, value));
 }
@@ -105,6 +111,7 @@ void	HTTPResponse::ClearHeader ()
 void	HTTPResponse::ClearHeader (String headerName)
 {
 	Require (fState_ == eInProgress);
+	Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
 	map<String,String>::iterator i = fHeaders_.find (headerName);
 	if (i != fHeaders_.end ()) {
 		fHeaders_.erase (i);
