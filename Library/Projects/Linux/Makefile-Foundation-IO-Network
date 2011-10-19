@@ -31,7 +31,7 @@ Transfer_OBJS := $(shell cd Transfer; make -s list-objs)
 Transfer_OBJS := $(addprefix "./Transfer/", $(Transfer_OBJS))
 
 list-objs::
-	@echo $(FILE_OBJS) $(Transfer_OBJS)
+	@echo $(HTTP_OBJS) $(Transfer_OBJS)
 
 
 HTTP:
