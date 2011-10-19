@@ -39,14 +39,15 @@ sub	DoHelp_
 	print("Usage:\n");
 	print("	configure.pl OPTIONS where options can be:\n");
 	print("	    --force                      /* forces rebuild of the given configuration */\n");
+	print("	    --default-for-platform       /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
 	print("	    --only-if-unconfigured       /* Opposite of --force - only rebuilds the configfiles if absent */\n");
 	print("	    --platform {PLATFORM}        /* specifies the directory under Builds/Intermediate Files to create */\n");
 	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
 	print("	    --enable-assertions          /* enables assertions for the configuraiton being configured*/\n");
 	print("	    --disable-assertions         /* disables assertions for the configuraiton being configured*/\n");
-	print("	    --cpp-optimize-flag          /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
-	print("	    --c-define                   /* Define C++ / CPP define for the given target */\n");
-	print("	    --make-define                /* Define makefile define for the given target */\n");
+	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
+	print("	    --c-define {ARG}             /* Define C++ / CPP define for the given target */\n");
+	print("	    --make-define {ARG}          /* Define makefile define for the given target */\n");
 
 print(" >>> MUST ADD HAS_FEATURE\n");
 	exit (0);
@@ -94,6 +95,12 @@ sub	ParseCommandLine_
 		}
 		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
 			$forceRecreate = false;
+		}
+		if ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
+			if ("$^O" eq "linux") {
+				$useExtraConfigDefines = "-c-define '#define qTraceToFile 1'";
+				$useExtraCDefines[@useExtraCDefines] = $var;
+			}
 		}
 		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();

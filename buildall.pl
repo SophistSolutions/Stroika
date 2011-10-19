@@ -27,12 +27,8 @@ foreach $i (@ARGV) {
 }
 
 
-my $useExtraConfigDefines	=	"";
-my $useExtraConfigDefines_LINUX	=	"-c-define '#define qTraceToFile 1'";
+my $useExtraConfigDefines	=	"--default-for-platform";
 
-if ("$^O" eq "linux") {
-    $useExtraConfigDefines = $useExtraConfigDefines_LINUX;
-}
 
 
 if ($BLD_TRG eq '') {
