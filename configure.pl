@@ -98,7 +98,7 @@ sub	ParseCommandLine_
 		}
 		if ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
 			if ("$^O" eq "linux") {
-				$useExtraCDefines[@useExtraCDefines] = "-c-define '#define qTraceToFile 1'";
+				$useExtraCDefines[@useExtraCDefines] = "#define qTraceToFile 1";
 			}
 		}
 		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
