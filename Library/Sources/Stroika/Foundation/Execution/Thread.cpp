@@ -316,8 +316,8 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
  ********************************************************************************
  */
 #if		qPlatform_POSIX
-int	bool	sHandlerInstalled_		=	false;
-int	Thread::sSignalUsedForThreadAbort_	=	-1;		// sentinal to indicate handler not installed
+bool	sHandlerInstalled_		=	false;
+int		Thread::sSignalUsedForThreadAbort_	=	-1;		// sentinal to indicate handler not installed
 #endif
 
 Thread::Thread ()
