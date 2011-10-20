@@ -63,7 +63,7 @@ void	BufferedBinaryOutputStream::Abort ()
 
 void	BufferedBinaryOutputStream::Flush ()
 {
-	Require (not fAborted_);
+	Require (not fAborted_ or fBuffer_.empty ());
 	if (not fBuffer_.empty ()) {
 		fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
 		fBuffer_.clear ();
