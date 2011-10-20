@@ -50,8 +50,6 @@
 /*
  * TODO:		PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
- *		o	Must pick some SIGNAL# to use
- *
  *		o	must define C++ static signal handler
  *
  *		o	must install handler when about to call Abort() - no need - I think - to install sooner - bnut maybe a good idea to???

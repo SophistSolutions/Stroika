@@ -299,8 +299,6 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 
 
 
-
-
 // NOTE - for currnent GCC - seems default to use PTHREADS for threads (at least seems we get this code. Not sure best way to check,
 // bt we need to know probably to send signals....
 #if			0
@@ -317,7 +315,7 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
  */
 #if		qPlatform_POSIX
 bool	sHandlerInstalled_		=	false;
-int		Thread::sSignalUsedForThreadAbort_	=	-1;		// sentinal to indicate handler not installed
+int		Thread::sSignalUsedForThreadAbort_	=	SIGUSR1;
 #endif
 
 Thread::Thread ()
