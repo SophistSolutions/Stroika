@@ -60,7 +60,8 @@ namespace	{
 
 HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
 	: fSocket_ (s)
-	, fOutStream_ (outStream)
+	, fUnderlyingOutStream_ (outStream)
+	, fUseOutStream_ (outStream)
 	, fState_ (eInProgress)
 	, fStatus_ (StatusCodes::kOK)
 	, fHeaders_ ()
@@ -171,7 +172,7 @@ void	HTTPResponse::Flush ()
 			wstring	version	=	L"1.1";
 			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.c_str ());
 			string	utf8	=	String (tmp).AsUTF8 ();
-			fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+			fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
 
 		{
@@ -179,18 +180,18 @@ void	HTTPResponse::Flush ()
 			for (map<String,String>::const_iterator i = headers2Write.begin (); i != headers2Write.end (); ++i) {
 				wstring	tmp	=	Characters::Format (L"%s: %s\r\n", i->first.As<wstring> ().c_str (), i->second.As<wstring> ().c_str ());
 				string	utf8	=	String (tmp).AsUTF8 ();
-				fOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+				fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 			}
 		}
 
 		const char	kCRLF[]	=	"\r\n";
-		fOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
+		fUseOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
 		fState_ = eInProgressHeaderSentState;
 	}
 	// write BYTES to fOutStream
 	if (not fBytes_.empty ()) {
 		Assert (fState_ != eCompleted);	// We PREVENT any writes when completed
-		fOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
+		fUseOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
 		fBytes_.clear ();
 	}
 }

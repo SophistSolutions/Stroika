@@ -18,6 +18,8 @@
 #include	"../../Foundation/IO/Network/Socket.h"
 #include	"../../Foundation/IO/Network/HTTP/Status.h"
 #include	"../../Foundation/Streams/BinaryOutputStream.h"
+#include	"../../Foundation/Streams/BufferedBinaryOutputStream.h"
+
 
 
 
@@ -182,16 +184,17 @@ namespace	Stroika {
 					nonvirtual	map<String,String>	GetEffectiveHeaders () const;
 
 				private:
-					IO::Network::Socket				fSocket_;
-					State							fState_;
-					Status							fStatus_;
-					Streams::BinaryOutputStream&	fOutStream_;
-					map<String,String>				fHeaders_;
-					InternetMediaType				fContentType_;
-					Characters::CodePage			fCodePage_;
-					vector<Byte>					fBytes_;
-					ContentSizePolicy				fContentSizePolicy_;
-					uint64_t						fContentSize_;			// only  maintained for some policies
+					IO::Network::Socket						fSocket_;
+					State									fState_;
+					Status									fStatus_;
+					Streams::BinaryOutputStream&			fUnderlyingOutStream_;
+					Streams::BufferedBinaryOutputStream		fUseOutStream_;
+					map<String,String>						fHeaders_;
+					InternetMediaType						fContentType_;
+					Characters::CodePage					fCodePage_;
+					vector<Byte>							fBytes_;
+					ContentSizePolicy						fContentSizePolicy_;
+					uint64_t								fContentSize_;			// only  maintained for some policies
 			};
 
 		}
