@@ -199,7 +199,9 @@ void	HTTPResponse::Flush ()
 		fUseOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
 		fBytes_.clear ();
 	}
-	fUseOutStream_.Flush ();
+	if (fState_ != eCompleted) {
+		fUseOutStream_.Flush ();
+	}
 	Ensure (fBytes_.empty ());
 }
 
