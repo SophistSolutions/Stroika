@@ -6,21 +6,39 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<vector>
+
 #include	"../Configuration/Common.h"
-#include	"../Memory/SharedPtr.h"
 #include	"BinaryOutputStream.h"
+
+
+/*
+ * TODO:
+ *
+ *		o make threadsafe
+ */
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Streams {
 
 			/*
-			 * 
+			 * A BufferedBinaryOutputStream wraps an argument stream (which must have lifetime > this BufferedBinaryOutputStream)
+			 * and will buffer up writes to it.
+			 *
+			 * NOTE - its is REQUIRED to call Flush before destruction if any pending data has not yet been flushed. It is NOT done
+			 * in the BufferedBinaryOutputStream::DTOR - because the underlying stream could have an exceptin writing, and its illegal to propagate
+			 * exceptions through destructors.
 			 */
 			class	BufferedBinaryOutputStream : public BinaryOutputStream {
 				public:
-					BufferedBinaryOutputStream (const Memory::SharedPtr<BinaryOutputStream>& realOut);
+					BufferedBinaryOutputStream (BinaryOutputStream& realOut);
+					~BufferedBinaryOutputStream ();
 				
+				public:
+					nonvirtual	size_t	GetBufferSize () const;
+					nonvirtual	void	SetBufferSize (size_t bufSize);
+
 				public:
 					nonvirtual	void	Flush ();
 
@@ -30,7 +48,8 @@ namespace	Stroika {
 					virtual	void	_Write (const Byte* start, const Byte* end) override;
 
 				private:
-					Memory::SharedPtr<BinaryOutputStream>	fRealOut_;
+					vector<Byte>		fBuffer_;
+					BinaryOutputStream&	fRealOut_;
 			};
 
 		}
