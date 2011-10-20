@@ -200,6 +200,7 @@ void	HTTPResponse::Flush ()
 		fBytes_.clear ();
 	}
 	fUseOutStream_.Flush ();
+	Ensure (fBytes_.empty ());
 }
 
 void	HTTPResponse::End ()
@@ -207,6 +208,8 @@ void	HTTPResponse::End ()
 	Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
 	Flush ();
 	fState_ = eCompleted;
+	Ensure (fState_ == eCompleted);
+	Ensure (fBytes_.empty ());
 }
 
 void	HTTPResponse::Abort ()
@@ -215,7 +218,10 @@ void	HTTPResponse::Abort ()
 		fState_ = eCompleted;
 		fUseOutStream_.Abort ();
 		fSocket_.Close ();
+		fBytes_.clear ();
 	}
+	Ensure (fState_ == eCompleted);
+	Ensure (fBytes_.empty ());
 }
 
 void	HTTPResponse::Redirect (const wstring& url)
