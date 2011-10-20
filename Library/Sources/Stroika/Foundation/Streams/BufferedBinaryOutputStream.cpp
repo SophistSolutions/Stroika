@@ -33,7 +33,7 @@ BufferedBinaryOutputStream::BufferedBinaryOutputStream (BinaryOutputStream& real
 
 BufferedBinaryOutputStream::~BufferedBinaryOutputStream ()
 {
-	Assert (fBuffer_.size ());
+	Assert (fBuffer_.size () == 0);		// require FLUSHED
 }
 
 size_t	BufferedBinaryOutputStream::GetBufferSize () const
