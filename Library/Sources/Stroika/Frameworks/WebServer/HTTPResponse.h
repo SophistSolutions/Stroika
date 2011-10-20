@@ -56,6 +56,9 @@ namespace	Stroika {
 				public:
 					HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
 
+					// Reponse must be completed (OK to Abort ()) before being destroyed
+					~HTTPResponse ();
+
 				public:
 					/*
 					 * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
@@ -128,7 +131,7 @@ namespace	Stroika {
 					 * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
 					 * unsent data, and closing the associated socket.
 					 */
-					nonvirtual	void	Kill ();
+					nonvirtual	void	Abort ();
 
 					/*
 					 * Only legal to call if state is eInProgress. It sets the state to eCompleted.

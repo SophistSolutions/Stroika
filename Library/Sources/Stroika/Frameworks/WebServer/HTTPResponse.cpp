@@ -74,6 +74,11 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
 	AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server");
 }
 
+HTTPResponse::~HTTPResponse ()
+{
+	Require (fState_ == eCompleted);
+}
+
 void	HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
 {
 	Require (csp == eAutoCompute_CSP or csp == eNone_CSP);
@@ -204,10 +209,11 @@ void	HTTPResponse::End ()
 	fState_ = eCompleted;
 }
 
-void	HTTPResponse::Kill ()
+void	HTTPResponse::Abort ()
 {
 	if (fState_ != eCompleted) {
 		fState_ = eCompleted;
+		fUseOutStream_.Abort ();
 		fSocket_.Close ();
 	}
 }

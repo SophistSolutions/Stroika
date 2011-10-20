@@ -27,6 +27,9 @@ namespace	{
 BufferedBinaryOutputStream::BufferedBinaryOutputStream (BinaryOutputStream& realOut)
 	: fBuffer_ ()
 	, fRealOut_ (realOut)
+	#if		qDebug
+	, fAborted_ (false)
+	#endif
 {
 	fBuffer_.reserve (kDefaultBufSize);
 }
@@ -50,8 +53,17 @@ void	BufferedBinaryOutputStream::SetBufferSize (size_t bufSize)
 	fBuffer_.reserve (bufSize);
 }
 
+void	BufferedBinaryOutputStream::Abort ()
+{
+	#if		qDebug
+	fAborted_ = true;	// for debug sake track this
+	#endif
+	fBuffer_.clear ();
+}
+
 void	BufferedBinaryOutputStream::Flush ()
 {
+	Require (not fAborted_);
 	if (fBuffer_.empty ()) {
 		fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
 		fBuffer_.clear ();
@@ -61,6 +73,7 @@ void	BufferedBinaryOutputStream::Flush ()
 void	BufferedBinaryOutputStream::_Write (const Byte* start, const Byte* end) override
 {
 	Require (start < end);	// for BinaryOutputStream - this funciton requires non-empty write
+	Require (not fAborted_);
 	/*
 	 * Minimize the number of writes at the possible cost of extra copying.
 	 *

@@ -40,6 +40,10 @@ namespace	Stroika {
 					nonvirtual	void	SetBufferSize (size_t bufSize);
 
 				public:
+					// Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
+					nonvirtual	void	Abort ();
+
+					//
 					nonvirtual	void	Flush ();
 
 				protected:
@@ -50,6 +54,9 @@ namespace	Stroika {
 				private:
 					vector<Byte>		fBuffer_;
 					BinaryOutputStream&	fRealOut_;
+					#if		qDebug
+					bool				fAborted_;
+					#endif
 			};
 
 		}
