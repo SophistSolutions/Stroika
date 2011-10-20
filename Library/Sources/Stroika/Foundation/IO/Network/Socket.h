@@ -12,8 +12,8 @@
 
 #include	"../../Characters/String.h"
 #include	"../../Configuration/Common.h"
-#include	"../../Streams/BinaryInputStream.h"
-#include	"../../Streams/BinaryOutputStream.h"
+
+
 
 namespace	Stroika {	
 	namespace	Foundation {
