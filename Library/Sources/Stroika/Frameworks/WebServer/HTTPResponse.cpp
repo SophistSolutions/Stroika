@@ -151,7 +151,7 @@ map<String,String>	HTTPResponse::GetEffectiveHeaders () const
 		wstring	contentTypeString	=	fContentType_.As<wstring> ();
 		// Don't override already specifed characterset
 		if (fContentType_.IsTextFormat () and contentTypeString.find (';') == wstring::npos) {
-			contentTypeString += L"charset=" + Characters::GetCharsetString (fCodePage_); 
+			contentTypeString += L"; charset=" + Characters::GetCharsetString (fCodePage_); 
 
 		}
 		tmp.insert (map<String,String>::value_type (IO::Network::HTTP::HeaderName::kContentType, contentTypeString));
