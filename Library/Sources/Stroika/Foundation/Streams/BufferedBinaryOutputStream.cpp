@@ -64,10 +64,11 @@ void	BufferedBinaryOutputStream::Abort ()
 void	BufferedBinaryOutputStream::Flush ()
 {
 	Require (not fAborted_);
-	if (fBuffer_.empty ()) {
+	if (not fBuffer_.empty ()) {
 		fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
 		fBuffer_.clear ();
 	}
+	Ensure (fBuffer_.empty ());
 }
 
 void	BufferedBinaryOutputStream::_Write (const Byte* start, const Byte* end) override
