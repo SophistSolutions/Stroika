@@ -73,7 +73,10 @@ namespace	Stroika {
 					 *	and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
 					 *			"text/html; charset=UTF-8"
 					 *
-					 * SetCodePage () requires GetState () == eInProgress
+					 * SetCodePage () 
+					 *		REQUIRES:
+					 *			GetState () == eInProgress
+					 *			TotalBytesWritten == 0
 					 */
 					nonvirtual	Characters::CodePage	GetCodePage () const;
 					nonvirtual	void					SetCodePage (Characters::CodePage codePage);

@@ -96,6 +96,7 @@ void	HTTPResponse::SetContentType (const InternetMediaType& contentType)
 void	HTTPResponse::SetCodePage (Characters::CodePage codePage)
 {
 	Require (fState_ == eInProgress);
+	Require (fBytes_.empty ());
 	fCodePage_ = codePage;
 }
 
