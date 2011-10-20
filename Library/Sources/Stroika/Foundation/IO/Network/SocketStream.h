@@ -20,6 +20,13 @@ namespace	Stroika {
 				// Platform Socket descriptor - file descriptor on unix (something like this on windoze)
 				typedef	int	SocketDescriptor;
 
+
+				/*
+				 * A SocketStream wraps a a socket as a Binary Stream (input and output) - but note that the two steams are totally
+				 * separate, and and have almost nothing todo with one another. Writes to the output dont appear in the input.
+				 *
+				 * The only real conneciton is that they share a common socket, and if IT is closed, then the whole SocketStream will stop working.
+				 */
 				class	SocketStream : public Streams::BinaryInputStream, public Streams::BinaryOutputStream {
 					public:
 						// Note - socket is CLOSED (filesystem close for now) in DTOR 
