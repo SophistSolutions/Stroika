@@ -233,7 +233,7 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 			incRefCnt->fStatus = eCompleted;
 		}
 		#if		qUseThreads_StdCPlusPlus
-			fThreadDone_.Set ();
+			incRefCnt->fThreadDone_.Set ();
 		#endif
 	}
 	catch (ThreadAbortException&) {
@@ -243,7 +243,7 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 			incRefCnt->fStatus = eCompleted;
 		}
 		#if		qUseThreads_StdCPlusPlus
-			fThreadDone_.Set ();
+			incRefCnt->fThreadDone_.Set ();
 		#endif
 	}
 	catch (...) {
@@ -253,7 +253,7 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 			incRefCnt->fStatus = eCompleted;
 		}
 		#if		qUseThreads_StdCPlusPlus
-			fThreadDone_.Set ();
+			incRefCnt->fThreadDone_.Set ();
 		#endif
 	}
 }
@@ -501,7 +501,7 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 		//tmphack - must check status and if fRep null and timeout...
 		#if		qUseThreads_StdCPlusPlus
 			if (timeout > 0) {
-				fThreadDone_.Wait (timeout);
+				fRep_->fThreadDone_.Wait (timeout);
 			}
 		#endif
 		fRep_->fThread_.join ();
