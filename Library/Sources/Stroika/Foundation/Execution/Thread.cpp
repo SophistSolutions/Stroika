@@ -141,6 +141,9 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 	, fStatusCriticalSection ()
 	, fStatus (eNotYetRunning)
 	, fOK2StartEvent_ ()
+	#if		qUseThreads_StdCPlusPlus
+		, fThreadDone_ ()
+	#endif
 	, fRefCountBumpedEvent_ ()
 	, fRunnable (runnable)
 {
@@ -229,16 +232,29 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
 			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 			incRefCnt->fStatus = eCompleted;
 		}
+		#if		qUseThreads_StdCPlusPlus
+			fThreadDone_.Set ();
+		#endif
 	}
 	catch (ThreadAbortException&) {
 		DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
-		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-		incRefCnt->fStatus = eCompleted;
+		{
+			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
+			incRefCnt->fStatus = eCompleted;
+		}
+		#if		qUseThreads_StdCPlusPlus
+			fThreadDone_.Set ();
+		#endif
 	}
 	catch (...) {
 		DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
-		AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-		incRefCnt->fStatus = eCompleted;
+		{
+			AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
+			incRefCnt->fStatus = eCompleted;
+		}
+		#if		qUseThreads_StdCPlusPlus
+			fThreadDone_.Set ();
+		#endif
 	}
 }
 
@@ -483,6 +499,11 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 	bool	doWait	=	false;
 	#if		qUseThreads_StdCPlusPlus
 		//tmphack - must check status and if fRep null and timeout...
+		#if		qUseThreads_StdCPlusPlus
+			if (timeout > 0) {
+				fThreadDone_.Wait (timeout);
+			}
+		#endif
 		fRep_->fThread_.join ();
 	#elif	qUseThreads_WindowsNative
 		HANDLE	thread	=	nullptr;

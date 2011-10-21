@@ -92,9 +92,16 @@ namespace	Stroika {
 					#elif		qUseThreads_StdCPlusPlus
 						std::unique_lock<std::mutex> lock (fMutex_);
 						while (not fTriggered_) {
-							fConditionVariable_.wait (lock);
+							if (timeout < 0) {
+								fConditionVariable_.wait (lock);
+							}
+							else {
+								if (fConditionVariable_.wait_for (lock, duration<double,seconds> (timeout)) == std::cv_status::timeout) {
+									DoThrow (WaitTimedOutException ());
+								}
+							}
 						}
-						fTriggered_ = false	;	// atuoreset
+						fTriggered_ = false	;	// autoreset
 					#else
 						AssertNotImplemented ();
 					#endif

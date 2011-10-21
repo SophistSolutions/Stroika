@@ -102,6 +102,9 @@ namespace	Stroika {
 					Status					fStatus;
 					Event					fRefCountBumpedEvent_;
 					Event					fOK2StartEvent_;
+				#if		qUseThreads_StdCPlusPlus
+					Event					fThreadDone_;
+				#endif
 					wstring					fThreadName_;
 			};
 
