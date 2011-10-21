@@ -23,7 +23,10 @@
 
 /*
  * TODO:
- *		THINK OUT AND DESCRIBE IN DETAIL HOW WE HANDLE THREADS
+ *		o	THINK OUT AND DESCRIBE IN DETAIL HOW WE HANDLE THREADS
+ *		o	Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow these to be (more or less) interchangable with
+ *			regular SignalHandlerType.
+ *
  */
 
 namespace	Stroika {	
