@@ -17,9 +17,6 @@ using	namespace	Stroika::Foundation::Execution;
 
 
 namespace	{
-	typedef	SignalHandlerRegistry::SignalIDType			SignalIDType;
-	typedef	SignalHandlerRegistry::SignalHandlerType	SignalHandlerType;
-
 	CriticalSection	sCritSection_;
 
 	bool										sInstalled_		=	false;
@@ -55,7 +52,7 @@ namespace	{
  ********************************************************************************
  */
 
-const	SignalHandlerRegistry::SignalHandlerType	SignalHandlerRegistry::kIGNORED	=	SIG_IGN;
+const	SignalHandlerType	SignalHandlerRegistry::kIGNORED	=	SIG_IGN;
 
 SignalHandlerRegistry&	SignalHandlerRegistry::Get ()
 {
@@ -97,9 +94,9 @@ bool	SignalHandlerRegistry::Installed () const
 	return sInstalled_;
 }
 
-set<SignalHandlerRegistry::SignalIDType>	SignalHandlerRegistry::GetHandledSignals () const
+set<SignalIDType>	SignalHandlerRegistry::GetHandledSignals () const
 {
-	set<SignalHandlerRegistry::SignalIDType>	result;
+	set<SignalIDType>	result;
 	{
 		AutoCriticalSection critSec (sCritSection_);
 		for (map<SignalIDType,set<SignalHandlerType>>::const_iterator i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {

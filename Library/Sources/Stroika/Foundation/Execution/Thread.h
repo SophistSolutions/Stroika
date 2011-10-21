@@ -18,6 +18,11 @@
 
 #include	"IRunnable.h"
 
+#if		qPlatform_POSIX
+#include	"Signals.h"
+#endif
+
+
 
 
 /*
@@ -227,8 +232,8 @@ namespace	Stroika {
 
 				#if		qPlatform_POSIX
 				public:
-					static	int		GetSignalUsedForThreadAbort ();
-					static	void	SetSignalUsedForThreadAbort (int signalNumber);
+					static	SignalIDType		GetSignalUsedForThreadAbort ();
+					static	void				SetSignalUsedForThreadAbort (SignalIDType signalNumber);
 				private:
 					static	int	sSignalUsedForThreadAbort_;
 				#endif

@@ -315,7 +315,7 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
  */
 #if		qPlatform_POSIX
 bool	sHandlerInstalled_		=	false;
-int		Thread::sSignalUsedForThreadAbort_	=	SIGUSR1;
+SignalIDType		Thread::sSignalUsedForThreadAbort_	=	SIGUSR2;
 #endif
 
 Thread::Thread ()
@@ -350,7 +350,7 @@ void	Thread::SetThreadPriority (int nPriority)
 #endif
 
 #if		qPlatform_POSIX
-void	Thread::SetSignalUsedForThreadAbort (int signalNumber)
+void	Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 {
 	if (sHandlerInstalled_) {
 		// uninstall old handler

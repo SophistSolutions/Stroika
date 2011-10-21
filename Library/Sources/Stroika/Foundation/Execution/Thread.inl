@@ -130,7 +130,7 @@ namespace	Stroika {
 				}
 		#endif
 		#if		qPlatform_POSIX
-			inline	int		Thread::GetSignalUsedForThreadAbort ()
+			inline	SignalIDType		Thread::GetSignalUsedForThreadAbort ()
 				{
 					return sSignalUsedForThreadAbort_;
 				}

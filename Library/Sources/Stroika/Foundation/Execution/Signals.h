@@ -31,6 +31,9 @@ namespace	Stroika {
 		namespace	Execution {
 
 
+			typedef	int		SignalIDType;
+			typedef	void	(*SignalHandlerType) (SignalIDType);
+
 			/*
 			 *	Description:
 			 *		SignalHandlerRegistry is a singleton object. If used - it itself registers signal handlers for each supported signal.
@@ -45,9 +48,6 @@ namespace	Stroika {
 			 */
 			class	SignalHandlerRegistry {
 				public:
-					typedef	int		SignalIDType;
-					typedef	void	(*SignalHandlerType) (SignalIDType);
-
 					/*
 					 * If this handler is set to the the ONLY handler for a given signal, then that signal handler is effectively ignored.
 					 *
