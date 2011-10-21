@@ -30,7 +30,7 @@ namespace	{
 
 	void	MyHandler_ (int signal)
 		{
-			Debug::TraceContextBumper trcCtx (_T ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
+			Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
 			DbgTrace ("(signal = %d)", signal);
 			set<SignalHandlerType>	handlers;
 			{
@@ -69,7 +69,7 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 
 void	SignalHandlerRegistry::Install ()
 {
-	Debug::TraceContextBumper trcCtx (_T ("SignalHandlerRegistry::Install"));
+	Debug::TraceContextBumper trcCtx (TSTR ("SignalHandlerRegistry::Install"));
 	AutoCriticalSection critSec (sCritSection_);
 	Require (not sInstalled_);
 	sInstalled_ = true;
@@ -85,7 +85,7 @@ void	SignalHandlerRegistry::Install ()
 
 void	SignalHandlerRegistry::Uninstall ()
 {
-	Debug::TraceContextBumper trcCtx (_T ("SignalHandlerRegistry::Uninstall"));
+	Debug::TraceContextBumper trcCtx (TSTR ("SignalHandlerRegistry::Uninstall"));
 	AutoCriticalSection critSec (sCritSection_);
 	Require (sInstalled_);
 	sInstalled_ = false;
@@ -135,7 +135,7 @@ void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandle
 
 void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers)
 {
-	Debug::TraceContextBumper trcCtx (_T ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
+	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
 	DbgTrace ("(signal = %d, ....)", signal);
 	AutoCriticalSection critSec (sCritSection_);
 	map<SignalIDType,set<SignalHandlerType>>::iterator i = sHandlers_.find (signal);
