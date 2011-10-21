@@ -496,7 +496,7 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 		if (doWait) {
 			DWORD	dTimeout	=	timeout < 0.0f? UINT_MAX: (DWORD)(timeout * 1000);
 			if (::WaitForSingleObject (thread, dTimeout) == WAIT_TIMEOUT) {
-				Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
+				DoThrow (WaitTimedOutException ());
 			}
 		}
 	#else
@@ -539,7 +539,7 @@ void	Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout)
 		else {
 			DurationSecondsType	time2Wait	=	timeoutAt - Time::GetTickCount ();
 			if (time2Wait <= 0) {
-				Platform::Windows::Exception::DoThrow (WAIT_TIMEOUT);
+				DoThrow (WaitTimedOutException ());
 			}
 			PumpMessagesAndReturnWhenDoneOrAfterTime (time2Wait);
 		}

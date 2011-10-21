@@ -9,8 +9,9 @@
 #include	"Stroika/Foundation/Execution/CriticalSection.h"
 #include	"Stroika/Foundation/Execution/Event.h"
 #include	"Stroika/Foundation/Execution/Lockable.h"
-#include	"Stroika/Foundation/Execution/Thread.h"
 #include	"Stroika/Foundation/Execution/Sleep.h"
+#include	"Stroika/Foundation/Execution/Thread.h"
+#include	"Stroika/Foundation/Execution/WaitTimedOutException.h"
 
 #include	"../TestHarness/TestHarness.h"
 
@@ -183,6 +184,34 @@ namespace	{
 }
 
 
+namespace	{
+	void	RegressionTest5_Aborting_ ()
+		{
+			struct	FRED {
+				static	void	DoIt ()
+					{
+						while (true) {
+							Execution::CheckForThreadAborting ();
+						}
+					}
+			};
+			Thread	thread (&FRED::DoIt);
+			thread.Start ();
+			try {
+				thread.WaitForDone (1.0);	// should timeout
+				VerifyTestResult (false);
+			}
+			catch (const Execution::WaitTimedOutException& to) {
+				// GOOD
+			}
+			catch (...) {
+				VerifyTestResult (false);
+			}
+			// Now - abort it, and wait
+			thread.AbortAndWaitForDone ();
+		}
+}
+
 
 namespace	{
 
@@ -192,6 +221,7 @@ namespace	{
 			RegressionTest2_ ();
 			RegressionTest3_ ();
 			RegressionTest4_Lockable_ ();
+			RegressionTest5_Aborting_ ();
 		}
 }
 
