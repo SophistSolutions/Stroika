@@ -96,7 +96,7 @@ namespace	Stroika {
 								fConditionVariable_.wait (lock);
 							}
 							else {
-								if (fConditionVariable_.wait_for (lock, duration<double,seconds> (timeout)) == std::cv_status::timeout) {
+								if (fConditionVariable_.wait_for (lock, std::chrono::duration<double,seconds> (timeout)) == std::cv_status::timeout) {
 									DoThrow (WaitTimedOutException ());
 								}
 							}
