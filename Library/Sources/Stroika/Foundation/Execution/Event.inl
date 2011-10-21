@@ -91,12 +91,18 @@ namespace	Stroika {
 						Verify (result == WAIT_OBJECT_0);
 					#elif		qUseThreads_StdCPlusPlus
 						std::unique_lock<std::mutex> lock (fMutex_);
+						bool	forever	=	(timeout < 0);
+						Time::DurationSecondsType	until	=	Time::GetTickCount () + timeout;
 						while (not fTriggered_) {
-							if (timeout < 0) {
+							if (forever) {
 								fConditionVariable_.wait (lock);
 							}
 							else {
-								if (fConditionVariable_.wait_for (lock, std::chrono::duration<double> (timeout)) == std::cv_status::timeout) {
+								Time::DurationSecondsType	remaining	=	Time::GetTickCount () - until;
+								if (remaining < 0) {
+									DoThrow (WaitTimedOutException ());
+								}
+								if (fConditionVariable_.wait_for (lock, std::chrono::duration<double> (remaining)) == std::cv_status::timeout) {
 									DoThrow (WaitTimedOutException ());
 								}
 							}
