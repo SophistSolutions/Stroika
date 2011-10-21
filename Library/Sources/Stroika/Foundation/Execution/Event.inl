@@ -91,7 +91,13 @@ namespace	Stroika {
 						Verify (result == WAIT_OBJECT_0);
 					#elif		qUseThreads_StdCPlusPlus
 						std::unique_lock<std::mutex> lock (fMutex_);
-						bool	forever	=	(timeout < 0);
+						#if 1
+							// SB able to compare with Time::kInfinite - not sure why not working - but this SB OK... At least for now
+							// --LGP 2011-10-21
+							bool	forever	=	(timeout > 24 * 60 * 60 * 365);
+						#else
+							bool	forever	=	(timeout == Time::kInfinite);
+						#endif
 						Time::DurationSecondsType	until	=	Time::GetTickCount () + timeout;
 						while (not fTriggered_) {
 							if (forever) {
