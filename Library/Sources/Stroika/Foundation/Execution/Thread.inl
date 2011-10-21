@@ -82,7 +82,7 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	Thread::IDType				GetID () const;
-					nonvirtual	Thread::NativeHandleType	GetNativeHandle () const;
+					nonvirtual	Thread::NativeHandleType	GetNativeHandle ();
 
 				public:
 					SharedPtr<IRunnable>	fRunnable;
@@ -92,24 +92,24 @@ namespace	Stroika {
 
 				private:
 				#if		qUseThreads_StdCPlusPlus
-					std::thread		fThread;
+					std::thread		fThread_;
 				#elif	qUseThreads_WindowsNative
-					HANDLE			fThread;
+					HANDLE			fThread_;
 				#endif
 
 				private:
 					mutable	CriticalSection	fStatusCriticalSection;
 					Status					fStatus;
-					Event					fRefCountBumpedEvent;
-					Event					fOK2StartEvent;
-					wstring					fThreadName;
+					Event					fRefCountBumpedEvent_;
+					Event					fOK2StartEvent_;
+					wstring					fThreadName_;
 			};
 
 
 		// class	Thread::Rep_
 			inline	void	Thread::Rep_::Start ()
 				{
-					fOK2StartEvent.Set ();
+					fOK2StartEvent_.Set ();
 				}
 			inline	void	Thread::Rep_::ThrowAbortIfNeeded () const
 				{
@@ -127,7 +127,7 @@ namespace	Stroika {
 		#if			qUseThreads_WindowsNative
 			inline	HANDLE	Thread::GetOSThreadHandle () const
 				{
-					return fRep_->fThread;
+					return fRep_->fThread_;
 				}
 		#endif
 		#if		qPlatform_POSIX
@@ -143,10 +143,10 @@ namespace	Stroika {
 					}
 					return fRep_->GetID ();
 				}
-			inline	Thread::NativeHandleType	Thread::GetNativeHandle () const
+			inline	Thread::NativeHandleType	Thread::GetNativeHandle ()
 				{
 					if (fRep_.IsNull ()) {
-						return Thread::GetNativeHandle ();
+						return Thread::NativeHandleType (nullptr);
 					}
 					return fRep_->GetNativeHandle ();
 				}
@@ -168,7 +168,7 @@ namespace	Stroika {
 				}
 			inline	wstring	Thread::GetThreadName () const
 				{
-					return fRep_->fThreadName;
+					return fRep_->fThreadName_;
 				}
 			inline	Thread::Status	Thread::GetStatus () const
 				{

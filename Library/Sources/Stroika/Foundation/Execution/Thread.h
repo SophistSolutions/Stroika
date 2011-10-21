@@ -209,7 +209,7 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	IDType				GetID () const;
-					nonvirtual	NativeHandleType	GetNativeHandle () const;
+					nonvirtual	NativeHandleType	GetNativeHandle ();
 
 				public:
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning
