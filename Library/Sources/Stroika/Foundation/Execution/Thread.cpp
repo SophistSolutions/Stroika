@@ -22,6 +22,9 @@
 #if		qUseThreads_WindowsNative
 	#include	"Platform/Windows/WaitSupport.h"
 #endif
+#if		qPlatform_POSIX
+	#include	"Signals.h"
+#endif
 
 #include	"Thread.h"
 
