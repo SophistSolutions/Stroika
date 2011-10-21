@@ -81,7 +81,8 @@ namespace	Stroika {
 			#endif
 
 				public:
-					nonvirtual	Thread::IDType	GetID () const;
+					nonvirtual	Thread::IDType				GetID () const;
+					nonvirtual	Thread::NativeHandleType	GetNativeHandle () const;
 
 				public:
 					SharedPtr<IRunnable>	fRunnable;
@@ -141,6 +142,13 @@ namespace	Stroika {
 						return Thread::IDType (0);
 					}
 					return fRep_->GetID ();
+				}
+			inline	Thread::NativeHandleType	Thread::GetNativeHandle () const
+				{
+					if (fRep_.IsNull ()) {
+						return Thread::GetNativeHandle ();
+					}
+					return fRep_->GetNativeHandle ();
 				}
 			inline	SharedPtr<IRunnable>	Thread::GetRunnable () const
 				{

@@ -171,6 +171,16 @@ namespace	Stroika {
 					#endif
 
 				public:
+					/*
+					 * Thread::native_handle is the type of the underlying handle to a native thread which can allow for using platform APIs.
+					 */
+					#if		qUseThreads_StdCPlusPlus
+						typedef	thread::native_handle_type 	NativeHandleType;
+					#elif	qUseThreads_WindowsNative
+						typedef	HANDLE						NativeHandleType;
+					#endif
+
+				public:
 					//
 					// No arg- constructor is available for use in applications like thread pools.
 					//
@@ -194,7 +204,8 @@ namespace	Stroika {
 					nonvirtual	SharedPtr<IRunnable>	GetRunnable () const;
 
 				public:
-					nonvirtual	IDType	GetID () const;
+					nonvirtual	IDType				GetID () const;
+					nonvirtual	NativeHandleType	GetNativeHandle () const;
 
 				public:
 					nonvirtual	void	Start ();				// only legal if status is eNotYetRunning

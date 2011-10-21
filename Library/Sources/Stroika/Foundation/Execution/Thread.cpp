@@ -284,6 +284,18 @@ Thread::IDType	Thread::Rep_::GetID () const
 	#endif
 }
 
+Thread::NativeHandleType	Thread::Rep_::GetNativeHandle () const
+{
+	#if		qUseThreads_StdCPlusPlus
+		return fThread.native_handle ();
+	#elif	qUseThreads_WindowsNative
+		return fThread;
+	#else
+		AssertNotImplemented ();
+		return NativeHandleType (nullptr);
+	#endif
+}
+
 #if			qUseThreads_WindowsNative
 void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 {
@@ -306,6 +318,8 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 	pthread_t x = (*repSharedPtr)->fThread.native_handle ();
 #endif
 #endif
+
+
 
 
 /*
