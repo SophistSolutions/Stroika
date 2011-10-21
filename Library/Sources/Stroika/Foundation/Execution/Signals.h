@@ -10,6 +10,7 @@
 #include	<set>
 
 #include	"../Configuration/Common.h"
+#include	"Thread.h"
 
 /*
  * Description:
@@ -127,6 +128,12 @@ namespace	Stroika {
 					 */
 					nonvirtual	void					RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler);
 			};
+
+
+			/*
+			 * Send the given signal to a specific thread (within this process)
+			 */
+			void	SendSignal (Thread::NativeHandleType h, SignalIDType signal);
 
 		}
 	}

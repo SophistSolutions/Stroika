@@ -175,3 +175,20 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
 	s.erase (handler);
 	SetSignalHandlers (signal, s);
 }
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Execution::SendSignal *****************************
+ ********************************************************************************
+ */
+void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
+{
+#if		qPlatform_POSIX
+	Verify (pthread_kill (h, signal));
+#else
+	AssertNotImplemented ();
+#endif
+}

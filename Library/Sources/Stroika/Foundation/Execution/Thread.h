@@ -18,9 +18,6 @@
 
 #include	"IRunnable.h"
 
-#if		qPlatform_POSIX
-#include	"Signals.h"
-#endif
 
 
 
@@ -77,6 +74,13 @@ namespace	Stroika {
 			using	Memory::SharedPtr;
 
 
+			#if		qPlatform_POSIX
+				// real definition in Signals.h - but redeclare here (could have separate file but not sure worth it) to avoid
+				// mutual references
+				typedef	int		SignalIDType;
+			#endif
+
+				
 			/*
 			 * TODO:
 			 *		o	Add a Method (maybe overload of Start) - which takes a new Runnable, so that the thread object can be re-run.
