@@ -22,6 +22,7 @@ Objs	=	\
 	$(ObjDir)ModuleInit.o\
 	$(ObjDir)ProgressMonitor.o\
 	$(ObjDir)SimpleRunnable.o\
+	$(ObjDir)Signals.o\
 	$(ObjDir)Thread.o\
 	$(ObjDir)ThreadPool.o\
 	$(ObjDir)WaitAbandonedException.o\
