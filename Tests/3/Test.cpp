@@ -225,6 +225,13 @@ namespace	{
 					}
 			};
 
+			// Normal usage
+			{
+				Thread	thread (&FRED::DoIt);
+				thread.Start ();
+				thread.WaitForDone ();
+			}
+
 			// OK to never wait
 			{
 				Thread	thread (&FRED::DoIt);
