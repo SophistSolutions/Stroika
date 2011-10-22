@@ -226,18 +226,18 @@ namespace	Stroika {
 
 					// wait until thread is done (use Abort to request termination) - throws if timeout
 					// Note that its legal to call WaitForDone on a thread in any state - including nullptr. Some may just have no effect
-					nonvirtual	void	WaitForDone (Time::DurationSecondsType timeout = -1.0f) const;
+					nonvirtual	void	WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
 					// Note that its legal to call AbortAndWaitForDone on a thread in any state - including nullptr. Some may just have no effect
 					// An example of when this is useful is if you have a thread (performing some operation on behalf of an object - with data pointers to that object)
 					// and must stop the thread (its no longer useful) - but must assure its done before you destroy the rest of the data...)
 					// As for example in FileUtils - DirectoryWatcher...
-					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = -1.0f);	// throws if timeout
+					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);	// throws if timeout
 
 					// Look pumping messages until either time2Pump is exceeded or the thread completes. Its NOT an erorr if the
 					// timeout is exceeded
-					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = -1.0f) const;
-					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = -1.0f) const;	// throws if timeout
+					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
+					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;	// throws if timeout
 
 			#if			qUseThreads_WindowsNative
 				public:
