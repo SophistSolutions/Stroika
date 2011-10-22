@@ -500,16 +500,26 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 		// then its effectively already done.
 		return;
 	}
-
+	if (fRep_->fStatus == eCompleted) {
+		return;
+	}
 	bool	doWait	=	false;
 	#if		qUseThreads_StdCPlusPlus
 		//tmphack - must check status and if fRep null and timeout...
 		#if		qUseThreads_StdCPlusPlus
-			if (timeout > 0) {
-				fRep_->fThreadDone_.Wait (timeout);
-			}
+			//if (timeout > 0) {
+			//	// this will throw on timeout...
+			//	fRep_->fThreadDone_.Wait (timeout);
+			//}
+			
+			// this will throw on timeout...
+			fRep_->fThreadDone_.Wait (timeout);
 		#endif
-		fRep_->fThread_.join ();
+		// If not joinable, presume that means cuz it sdone
+		if (fRep_->fThread_.joinable  ()) {
+			// this will block indefinitely - but if a timeout was specified
+			fRep_->fThread_.join ();
+		}
 	#elif	qUseThreads_WindowsNative
 		HANDLE	thread	=	nullptr;
 		{
