@@ -182,6 +182,7 @@ Thread::Rep_::~Rep_ ()
 {
 	Assert (fStatus != eRunning);
 	#if		qUseThreads_StdCPlusPlus
+		// In case thread ran and terminated without any ever waiting for it.
 		if (fThread_.joinable  ()) {
 			fThread_.join ();
 		}

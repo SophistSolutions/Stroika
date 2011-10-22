@@ -213,6 +213,37 @@ namespace	{
 }
 
 
+
+
+namespace	{
+	void	RegressionTest6_ThreadWaiting_ ()
+		{
+			struct	FRED {
+				static	void	DoIt ()
+					{
+						Execution::Sleep (1.0);
+					}
+			};
+
+			// OK to never wait
+			{
+				Thread	thread (&FRED::DoIt);
+				thread.Start ();
+			}
+
+			// OK to wait and wait
+			{
+				Thread	thread (&FRED::DoIt);
+				thread.Start ();
+				thread.WaitForDone ();
+				thread.WaitForDone (1.0);
+				thread.WaitForDone ();
+				thread.WaitForDone ();
+			}
+		}
+}
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -222,6 +253,7 @@ namespace	{
 			RegressionTest3_ ();
 			RegressionTest4_Lockable_ ();
 			RegressionTest5_Aborting_ ();
+			RegressionTest6_ThreadWaiting_ ();
 		}
 }
 
