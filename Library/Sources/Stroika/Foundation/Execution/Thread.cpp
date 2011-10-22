@@ -181,11 +181,15 @@ void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 Thread::Rep_::~Rep_ ()
 {
 	Assert (fStatus != eRunning);
-#if			qUseThreads_WindowsNative
-	if (fThread_ != INVALID_HANDLE_VALUE) {
-		::CloseHandle (fThread_);
-	}
-#endif
+	#if		qUseThreads_StdCPlusPlus
+		if (fThread_.joinable  ()) {
+			fThread_.join ();
+		}
+	#elif	qUseThreads_WindowsNative
+		if (fThread_ != INVALID_HANDLE_VALUE) {
+			::CloseHandle (fThread_);
+		}
+	#endif
 }
 
 void	Thread::Rep_::Run () override
