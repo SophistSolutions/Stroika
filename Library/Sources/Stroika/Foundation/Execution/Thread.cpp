@@ -505,15 +505,8 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 	}
 	bool	doWait	=	false;
 	#if		qUseThreads_StdCPlusPlus
-		//tmphack - must check status and if fRep null and timeout...
 		#if		qUseThreads_StdCPlusPlus
-			//if (timeout > 0) {
-			//	// this will throw on timeout...
-			//	fRep_->fThreadDone_.Wait (timeout);
-			//}
-			
-			// this will throw on timeout...
-			fRep_->fThreadDone_.Wait (timeout);
+			fRep_->fThreadDone_.Wait (timeout);		// this will throw on timeout...
 		#endif
 		// If not joinable, presume that means cuz it sdone
 		if (fRep_->fThread_.joinable  ()) {
