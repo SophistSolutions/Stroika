@@ -37,15 +37,6 @@ namespace	Stroika {
 			TString	NarrowSDK2TString (const string& s);
 
 
-#if 0
-//BACKWARD COMPAT NAMES - TIL WE FIX HEALTHFRAME -- LGP 2011-09-05
-inline string	WideStringToACP (const wstring& ws) { return WideStringToNarrowSDKString (ws); }
-inline wstring	ACPStringToWide (const string& s) { return NarrowSDKStringToWide (s); }
-inline string	TString2ANSI (const TString& s) { return TString2NarrowSDK (s); }
-inline TString	ANSI2TString (const string& s) { return NarrowSDK2TString (s); }
-#endif
-
-
 			wstring	TString2Wide (const TString& s);
 			TString	Wide2TString (const wstring& s);
 
