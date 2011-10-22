@@ -5,9 +5,11 @@
 
 #include	<iostream>
 
+#include	"Stroika/Foundation/Characters/CodePage.h"
 #include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Debugger.h"
+#include	"Stroika/Foundation/Execution/StringException.h"
 
 #include	"TestHarness.h"
 
@@ -61,6 +63,12 @@ void	TestHarness::PrintPassOrFail (void (*regressionTest) ())
 	try {
 		(*regressionTest) ();
 		cout << "Succeeded" << endl;
+	}
+	catch (Execution::StringException& w) {
+		cerr << "FAILED: REGRESSION TEST EXCEPTION: '" << Characters::WideStringToNarrowSDKString (w.As<wstring> ()) << endl;
+		cout << "Failed" << endl;
+		Debug::DropIntoDebuggerIfPresent ();
+		_exit (EXIT_FAILURE);
 	}
 	catch (...) {
 		cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
