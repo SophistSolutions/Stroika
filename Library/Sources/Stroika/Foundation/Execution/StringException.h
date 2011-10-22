@@ -10,6 +10,10 @@
 
 #include	"../Configuration/Common.h"
 
+/*
+ * TODO:
+ *			Consider if StringException should inherit from std::exception - and map its string value to 'what' char* value?
+ */
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -21,9 +25,7 @@ namespace	Stroika {
 
 					// Only implemented for wstring
 					template	<typename T>
-						T	As () const;
-
-					operator wstring () const;
+						nonvirtual	T	As () const;
 
 				private:
 					wstring	fError;

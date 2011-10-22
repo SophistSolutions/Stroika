@@ -21,10 +21,6 @@ namespace	Stroika {
 					: fError (reasonForError)
 					{
 					}
-				inline	StringException::operator wstring () const
-					{
-						return fError;
-					}
 			template	<>
 				inline	wstring	StringException::As () const
 					{
@@ -35,7 +31,7 @@ namespace	Stroika {
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const StringException& e2Throw)
 					{
-						DbgTrace (L"Throwing StringException: '%s'", static_cast<wstring> (e2Throw).substr (0, 20).c_str ());
+						DbgTrace (L"Throwing StringException: '%s'", e2Throw.As<wstring> ().substr (0, 20).c_str ());
 						throw e2Throw;
 					}
 
