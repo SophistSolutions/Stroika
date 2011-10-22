@@ -36,6 +36,12 @@ namespace	{
 
 			_exit (EXIT_FAILURE);
 		}
+	void	_TerminateHandler_ ()
+		{
+			cerr << "FAILED: _TerminateHandler_ called" << endl;
+			Debug::DropIntoDebuggerIfPresent ();
+			_exit (EXIT_FAILURE);
+		}
 }
 
 
@@ -46,6 +52,7 @@ void	TestHarness::Setup ()
 #if		qDebug
 	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
+	set_terminate (_TerminateHandler_);
 }
 
 
