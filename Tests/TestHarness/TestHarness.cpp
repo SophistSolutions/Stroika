@@ -64,8 +64,14 @@ void	TestHarness::PrintPassOrFail (void (*regressionTest) ())
 		(*regressionTest) ();
 		cout << "Succeeded" << endl;
 	}
-	catch (Execution::StringException& w) {
-		cerr << "FAILED: REGRESSION TEST EXCEPTION: '" << Characters::WideStringToNarrowSDKString (w.As<wstring> ()) << endl;
+	catch (const std::exception& e) {
+		cerr << "FAILED: REGRESSION TEST (std::exception): '" << e.what () << endl;
+		cout << "Failed" << endl;
+		Debug::DropIntoDebuggerIfPresent ();
+		_exit (EXIT_FAILURE);
+	}
+	catch (Execution::StringException Execution::StringException& e) {
+		cerr << "FAILED: REGRESSION TEST (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
 		cout << "Failed" << endl;
 		Debug::DropIntoDebuggerIfPresent ();
 		_exit (EXIT_FAILURE);
