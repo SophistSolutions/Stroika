@@ -94,7 +94,7 @@ namespace	{
 		typedef NTSTATUS (__stdcall *pfnNtQueryInformationThread) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
 	}
 	#endif
-	DWORD MyGetThreadId (HANDLE thread)
+	DWORD	MyGetThreadId_ (HANDLE thread)
 		{
 			#if		(_WIN32_WINNT >= 0x0502)
 				return ::GetThreadId (thread);
@@ -116,6 +116,8 @@ namespace	{
 		}
 }
 #endif
+
+
 
 
 
@@ -301,7 +303,7 @@ Thread::IDType	Thread::Rep_::GetID () const
 	#if		qUseThreads_StdCPlusPlus
 		return fThread_.get_id ();
 	#elif	qUseThreads_WindowsNative
-		return MyGetThreadId (fThread_);
+		return MyGetThreadId_ (fThread_);
 	#else
 		AssertNotImplemented ();
 		return IDType ();
@@ -420,7 +422,7 @@ void	Thread::SetThreadName (const wstring& threadName)
 				{
 					info.dwType = 0x1000;
 					info.szName = useThreadName.c_str ();
-					info.dwThreadID = MyGetThreadId (fRep_->fThread_);
+					info.dwThreadID = MyGetThreadId_ (fRep_->fThread_);
 					info.dwFlags = 0;
 				}
 				IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info));
@@ -452,7 +454,7 @@ void	Thread::Abort ()
 	//		-- LGP 2009-01-14
 
 	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
-	Require (::GetCurrentThreadId () != MyGetThreadId (fRep_->fThread_));
+	Require (::GetCurrentThreadId () != MyGetThreadId_ (fRep_->fThread_));
 #endif
 
 	// first try to send abort exception, and then - if force - get serious!
@@ -473,25 +475,25 @@ void	Thread::Abort_Forced_Unsafe ()
 		return;
 	}
 
-#if			qUseThreads_WindowsNative
-	// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
-	Require (::GetCurrentThreadId () != MyGetThreadId (fRep_->fThread_));
-#endif
+	#if			qUseThreads_WindowsNative
+		// You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
+		Require (::GetCurrentThreadId () != MyGetThreadId_ (fRep_->fThread_));
+	#endif
 
 	Abort ();
 
 	// Wait some reasonable amount of time for the thread to abort
 	IgnoreExceptionsForCall (WaitForDone (5.0f));
 	AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
-#if			qUseThreads_WindowsNative
-	if (fRep_->fStatus != eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
-		// This is VERY bad to do. Put assert here that it never happens...
-		Assert (false);
-		::TerminateThread (fRep_->fThread_, -1);
-	}
-#else
-	AssertNotImplemented ();
-#endif
+	#if			qUseThreads_WindowsNative
+		if (fRep_->fStatus != eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
+			// This is VERY bad to do. Put assert here that it never happens...
+			Assert (false);
+			::TerminateThread (fRep_->fThread_, -1);
+		}
+	#else
+		AssertNotImplemented ();
+	#endif
 }
 
 void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
@@ -538,21 +540,20 @@ void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType
 		// then its effectively already done.
 		return;
 	}
-
-#if			qUseThreads_WindowsNative
-	HANDLE	thread	=	nullptr;
-	{
-		AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
-		if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
-			thread = fRep_->fThread_;
+	#if			qUseThreads_WindowsNative
+		HANDLE	thread	=	nullptr;
+		{
+			AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
+			if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
+				thread = fRep_->fThread_;
+			}
 		}
-	}
-	if (thread != nullptr) {
-		Platform::Windows::WaitAndPumpMessages (nullptr, Containers::mkV<HANDLE> (thread), timeToPump);
-	}
-#else
-	AssertNotImplemented ();
-#endif
+		if (thread != nullptr) {
+			Platform::Windows::WaitAndPumpMessages (nullptr, Containers::mkV<HANDLE> (thread), timeToPump);
+		}
+	#else
+		AssertNotImplemented ();
+	#endif
 }
 
 #if			qUseThreads_WindowsNative
