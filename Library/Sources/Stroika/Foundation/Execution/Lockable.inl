@@ -86,6 +86,16 @@ namespace	Stroika {
 			}
 			//	Specailizations for POD types
 			template	<>
+				class	Lockable<bool,CriticalSection> : public Private::Lockable_POD<bool,CriticalSection>  {
+					public:
+						typedef	bool	T;
+						Lockable<T,CriticalSection> ()																							{}
+						Lockable<T,CriticalSection> (T from):											Lockable_POD<T,CriticalSection> (from)	{}
+						Lockable<T,CriticalSection> (const Lockable<T,CriticalSection>& from):			Lockable_POD<T,CriticalSection> (from)	{}
+						const Lockable_POD& operator= (const T& rhs)																			{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+						const Lockable_POD& operator= (const Lockable<T,CriticalSection>& rhs)													{ return Lockable_POD<T,CriticalSection>::operator= (rhs); }
+				};
+			template	<>
 				class	Lockable<char,CriticalSection> : public Private::Lockable_POD<char,CriticalSection>  {
 					public:
 						typedef	char	T;

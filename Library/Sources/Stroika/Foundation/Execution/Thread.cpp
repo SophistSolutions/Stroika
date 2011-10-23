@@ -16,6 +16,7 @@
 #include	"../Characters/StringUtils.h"
 #include	"../Containers/VectorUtils.h"
 #include	"../Execution/ErrNoException.h"
+#include	"../Execution/Lockable.h"
 #include	"../Time/Realtime.h"
 #include	"SimpleRunnable.h"
 
@@ -332,7 +333,13 @@ Thread::NativeHandleType	Thread::Rep_::GetNativeHandle ()
 	#endif
 }
 
-#if			qUseThreads_WindowsNative
+#if		qPlatform_POSIX
+void	Thread::Rep_::AbortProc_ (SignalIDType signal)
+{
+	TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
+	s_Aborting = true;
+}
+#elif			qUseThreads_WindowsNative
 void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 {
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
@@ -364,7 +371,9 @@ void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
  ********************************************************************************
  */
 #if		qPlatform_POSIX
-bool	sHandlerInstalled_		=	false;
+namespace	{
+	Lockable<bool>	sHandlerInstalled_		=	false;
+}
 SignalIDType		Thread::sSignalUsedForThreadAbort_	=	SIGUSR2;
 #endif
 
@@ -402,12 +411,19 @@ void	Thread::SetThreadPriority (int nPriority)
 #if		qPlatform_POSIX
 void	Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 {
+	Execution::AutoCriticalSection critSec (sHandlerInstalled_);
 	if (sHandlerInstalled_) {
-		// uninstall old handler
+		if (sHandlerInstalled_) {
+			SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), AbortProc_);
+			sHandlerInstalled_ = false;
+		}
 	}
 	sSignalUsedForThreadAbort_ = signalNumber;
 	// install new handler
-	sHandlerInstalled_ = true;
+	if (not sHandlerInstalled_) {
+		SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), AbortProc_);
+		sHandlerInstalled_ = true;
+	}
 }
 #endif
 
@@ -475,6 +491,16 @@ void	Thread::Abort ()
 	if (fRep_->fStatus == eAborting) {
 		// by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
 		fRep_->NotifyOfAbort ();
+		#if		qPlatform_POSIX
+			{
+				Execution::AutoCriticalSection critSec (sHandlerInstalled_);
+				if (not sHandlerInstalled_) {
+					SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), AbortProc_);
+					sHandlerInstalled_ = true;
+				}
+				Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
+			}
+		#endif
 	}
 }
 

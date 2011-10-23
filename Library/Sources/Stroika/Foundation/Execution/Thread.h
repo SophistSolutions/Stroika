@@ -268,7 +268,7 @@ namespace	Stroika {
 					static	SignalIDType		GetSignalUsedForThreadAbort ();
 					static	void				SetSignalUsedForThreadAbort (SignalIDType signalNumber);
 				private:
-					static	int	sSignalUsedForThreadAbort_;
+					static	SignalIDType	sSignalUsedForThreadAbort_;
 				#endif
 
 				public:
