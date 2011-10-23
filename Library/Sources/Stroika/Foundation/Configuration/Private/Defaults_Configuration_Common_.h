@@ -34,7 +34,7 @@
 
 		// Be sure other defined
 		#if		qEndian_Little
-			#define	qEndian_Big		0
+			#define	qEndian_Big			0
 		#elif	qEndian_Big
 			#define	qEndian_Little		0
 		#else
@@ -105,17 +105,34 @@
 		// We COULD easily use an earlier build (was using 0x501 until 2011-02-22) - but use 0x502 because 
 		// MyGetThreadId () can be more efficient using builtin version if we define 0x502 - and no real reason not to...
 		//		-- LGP 2011-02-22
-		#if		!defined (WINVER)
-		#define	WINVER			0x0501
-		#endif
-		#if		!defined (_WIN32_WINNT)
-		#define	_WIN32_WINNT	0x0501
-		#endif
-		#if		!defined (_WIN32_WINDOWS)
-		#define	_WIN32_WINDOWS	0x0501
-		#endif
-		#if		!defined (_WIN32_IE)
-		#define	_WIN32_IE		0x0600
+		//
+		// I THINK above comment is wrong - cuz then we break running on WinXP. Instead - just define 0x0502 as min for 64bit where we need its GetThreadID
+		#if		qPlatform_Win32
+			#if		!defined (WINVER)
+			#define	WINVER			0x0501
+			#endif
+			#if		!defined (_WIN32_WINNT)
+			#define	_WIN32_WINNT	0x0501
+			#endif
+			#if		!defined (_WIN32_WINDOWS)
+			#define	_WIN32_WINDOWS	0x0501
+			#endif
+			#if		!defined (_WIN32_IE)
+			#define	_WIN32_IE		0x0600
+			#endif
+		#elif	qPlatform_Win64
+			#if		!defined (WINVER)
+			#define	WINVER			0x0502
+			#endif
+			#if		!defined (_WIN32_WINNT)
+			#define	_WIN32_WINNT	0x0502
+			#endif
+			#if		!defined (_WIN32_WINDOWS)
+			#define	_WIN32_WINDOWS	0x0502
+			#endif
+			#if		!defined (_WIN32_IE)
+			#define	_WIN32_IE		0x0600
+			#endif
 		#endif
 
 

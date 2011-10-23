@@ -171,7 +171,7 @@ namespace	Stroika {
 					#if		qUseThreads_StdCPlusPlus
 						typedef	thread::id	IDType;
 					#elif	qUseThreads_WindowsNative
-						typedef	int			IDType;
+						typedef	DWORD		IDType;
 					#endif
 
 				public:

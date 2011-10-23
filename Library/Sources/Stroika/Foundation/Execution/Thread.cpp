@@ -94,9 +94,9 @@ namespace	{
 		typedef NTSTATUS (__stdcall *pfnNtQueryInformationThread) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
 	}
 	#endif
-	int MyGetThreadId (HANDLE thread)
+	DWORD MyGetThreadId (HANDLE thread)
 		{
-			#if (_WIN32_WINNT >= 0x0502)
+			#if		(_WIN32_WINNT >= 0x0502)
 				return ::GetThreadId (thread);
 			#else
 				// See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
