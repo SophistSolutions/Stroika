@@ -185,7 +185,18 @@ Thread::Rep_::~Rep_ ()
 	Assert (fStatus != eRunning);
 	#if		qUseThreads_StdCPlusPlus
 		// In case thread ran and terminated without any ever waiting for it.
+		//
+		// NOT SURE IF THIS IS A LEAK OR NOT - BUT IT AVOIDS CRASH 
+		//
+		// TODO: UNDERATNAD IF THIS IS THE RIGHT THING TODO...
+		//		-- LGP 2011-10-23
 		if (fThread_.joinable  ()) {
+			if (this_thread::get_id () == fThread_.get_id ()) {
+				fThread_.detach ();
+			}
+			else {
+				fThread_.join ();
+			}
 			fThread_.join ();
 		}
 	#elif	qUseThreads_WindowsNative
