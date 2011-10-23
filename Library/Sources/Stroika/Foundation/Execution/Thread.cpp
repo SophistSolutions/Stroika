@@ -523,8 +523,7 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 			}
 		}
 		if (doWait) {
-			DWORD	milliseconds	=	(timeout > numeric_limits<DWORD>::max ()/2)? INFINITE: static_cast<DWORD> (timeout * 1000);
-			if (::WaitForSingleObject (thread, milliseconds) == WAIT_TIMEOUT) {
+			if (::WaitForSingleObject (thread, Platform::Windows::Duration2Milliseconds (timeout)) == WAIT_TIMEOUT) {
 				DoThrow (WaitTimedOutException ());
 			}
 		}

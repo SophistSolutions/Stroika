@@ -454,6 +454,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.inl" />

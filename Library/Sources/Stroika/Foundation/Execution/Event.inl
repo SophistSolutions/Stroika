@@ -13,6 +13,10 @@
 #include	"AtomicOperations.h"
 #include	"WaitAbandonedException.h"
 #include	"WaitTimedOutException.h"
+#if		qPlatform_Windows
+#include	"Platform/Windows/WaitSupport.h"
+#endif
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -82,8 +86,7 @@ namespace	Stroika {
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
 						// must be careful about rounding errors in int->DurationSecondsType->int
-						DWORD	milliseconds	=	(timeout > numeric_limits<DWORD>::max ()/2)? INFINITE: static_cast<DWORD> (timeout * 1000);
-						DWORD	result	=	::WaitForSingleObject (fEventHandle, milliseconds);
+						DWORD	result	=	::WaitForSingleObject (fEventHandle, Platform::Windows::Duration2Milliseconds (timeout));
 						switch (result) {
 							case	WAIT_TIMEOUT:	DoThrow (WaitTimedOutException ());
 							case	WAIT_ABANDONED:	DoThrow (WaitAbandonedException ());

@@ -19,6 +19,9 @@ namespace	Stroika {
 		namespace	Execution {
 			namespace	Platform {
 				namespace	Windows {
+
+					DWORD	Duration2Milliseconds (Time::DurationSecondsType nSeconds);
+
 					void	WaitAndPumpMessages (HWND dialog = nullptr, Time::DurationSecondsType forNSecs = 0.1f);
 					void	WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSecondsType forNSecs = 0.1f);
 					void	PumpMessagesWhileInputAvailable (HWND dialog = nullptr, Time::DurationSecondsType atMostNSecs = 0.1f);
@@ -28,6 +31,8 @@ namespace	Stroika {
 	}
 }
 
+#endif	/*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_*/
+
 
 
 /*
@@ -35,5 +40,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
-#endif	/*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_*/
+#include	"WaitSupport.inl"

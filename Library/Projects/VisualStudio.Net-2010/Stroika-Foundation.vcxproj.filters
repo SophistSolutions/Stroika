@@ -1007,5 +1007,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.inl">
       <Filter>Sources\Execution</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
   </ItemGroup>
 </Project>
