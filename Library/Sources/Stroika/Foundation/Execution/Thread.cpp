@@ -561,16 +561,11 @@ void	Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout)
 	DurationSecondsType	timeoutAt	=	Time::GetTickCount () + timeout;
 	// CRUDDY impl - but decent enuf for first draft
 	while (GetStatus () != Thread::eCompleted) {
-		if (timeout < 0.0f) {
-			PumpMessagesAndReturnWhenDoneOrAfterTime ();
+		DurationSecondsType	time2Wait	=	timeoutAt - Time::GetTickCount ();
+		if (time2Wait <= 0) {
+			DoThrow (WaitTimedOutException ());
 		}
-		else {
-			DurationSecondsType	time2Wait	=	timeoutAt - Time::GetTickCount ();
-			if (time2Wait <= 0) {
-				DoThrow (WaitTimedOutException ());
-			}
-			PumpMessagesAndReturnWhenDoneOrAfterTime (time2Wait);
-		}
+		PumpMessagesAndReturnWhenDoneOrAfterTime (time2Wait);
 	}
 }
 #endif

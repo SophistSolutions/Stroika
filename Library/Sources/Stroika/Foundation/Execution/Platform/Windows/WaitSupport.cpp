@@ -47,7 +47,10 @@ void	Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Ti
 	DurationSecondsType	endAt	=	startAt + forNSecs;
 
 	for (DurationSecondsType timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
-		(void)::MsgWaitForMultipleObjectsEx (static_cast<DWORD> (waitOn.size ()), Containers::Start (waitOn), Platform::Windows::Duration2Milliseconds (timeLeft), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
+		DWORD	waitResult	=	::MsgWaitForMultipleObjectsEx (static_cast<DWORD> (waitOn.size ()), Containers::Start (waitOn), Platform::Windows::Duration2Milliseconds (timeLeft), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
+		if (WAIT_OBJECT_0 <= waitResult and waitResult < WAIT_OBJECT_0 + waitOn.size ()) {
+			return;
+		}
 		MSG msg;
 		while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
 			try {

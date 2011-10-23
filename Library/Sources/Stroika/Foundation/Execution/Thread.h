@@ -237,7 +237,9 @@ namespace	Stroika {
 					// Look pumping messages until either time2Pump is exceeded or the thread completes. Its NOT an erorr if the
 					// timeout is exceeded
 					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
-					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;	// throws if timeout
+
+					// throws if timeout
+					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
 			#if			qUseThreads_WindowsNative
 				public:

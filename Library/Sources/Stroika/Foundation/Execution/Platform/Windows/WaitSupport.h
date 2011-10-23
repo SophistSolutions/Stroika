@@ -22,8 +22,16 @@ namespace	Stroika {
 
 					DWORD	Duration2Milliseconds (Time::DurationSecondsType nSeconds);
 
+					/*
+					 * Pump messages and wait the specified amount of time. No exceptions for timeout.
+					 */
 					void	WaitAndPumpMessages (HWND dialog = nullptr, Time::DurationSecondsType forNSecs = 0.1f);
+
+					/*
+					 * Pump messages and wait the specified amount of time. No exceptions for timeout. Return if timeout or if handle signaled.
+					 */
 					void	WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSecondsType forNSecs = 0.1f);
+
 					void	PumpMessagesWhileInputAvailable (HWND dialog = nullptr, Time::DurationSecondsType atMostNSecs = 0.1f);
 				}
 			}
