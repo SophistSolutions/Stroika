@@ -44,6 +44,12 @@ namespace	{
 			Debug::DropIntoDebuggerIfPresent ();
 			_exit (EXIT_FAILURE);
 		}
+	void	_UnexpectedHandler_ ()
+		{
+			cerr << "FAILED: _UnexpectedHandler_ called" << endl;
+			Debug::DropIntoDebuggerIfPresent ();
+			_exit (EXIT_FAILURE);
+		}
 }
 
 
@@ -55,6 +61,7 @@ void	TestHarness::Setup ()
 	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
 	set_terminate (_TerminateHandler_);
+	set_unexpected (_UnexpectedHandler_);
 }
 
 
