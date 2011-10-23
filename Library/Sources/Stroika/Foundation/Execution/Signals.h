@@ -45,8 +45,8 @@ namespace	Stroika {
 			 *		The user can then add in their own 'handlers' for those signals, and they are ALL called - one after the other (TDB how threads
 			 *		work with this).
 			 *
-			 *		When an platform signal-handler is installed (via 'sigaction' for example) - and then later UNINSTALLED (due to Uninstall or
-			 *		changes in GetHandledSignals - this code resets the signal handler to SIG_DFL (not the previous value).
+			 *		When an platform signal-handler is installed (via 'sigaction' for example) - and then later UNINSTALLED (due to
+			 *		changes in GetHandledSignals) - this code resets the signal handler to SIG_DFL (not the previous value).
 			 *
 			 *		This object is thread-safe.
 			 */
@@ -67,26 +67,6 @@ namespace	Stroika {
 					SignalHandlerRegistry ();
 					NO_COPY_CONSTRUCTOR (SignalHandlerRegistry);
 					NO_ASSIGNMENT_OPERATOR (SignalHandlerRegistry);
-
-				public:
-					/*
-					 * Because this mechanism can 'interfere' with other application of the POSIX signal API, use requires you
-					 * explicitly call Install (or uninstall).
-					 *
-					 * This ONLY installs handlers for the signals returned from GetHandledSignals ().
-					 *
-					 * Illegal to call if already Installed ().
-					 */
-					nonvirtual	void	Install ();
-					/*
-					 * See Install (). Illegal to call if not Installed ();
-					 */
-					nonvirtual	void	Uninstall ();
-
-					/*
-					 * Returns true if Installed has been called more times than Uninstall ();
-					 */
-					nonvirtual	bool	Installed () const;
 
 				public:
 					/*

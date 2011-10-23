@@ -20,7 +20,6 @@ using	namespace	Stroika::Foundation::Execution;
 namespace	{
 	CriticalSection	sCritSection_;
 
-	bool										sInstalled_		=	false;
 	map<SignalIDType,set<SignalHandlerType>>	sHandlers_;
 
 	bool	IsSigIgnore_ (const set<SignalHandlerType>& sigSet)
@@ -40,7 +39,9 @@ namespace	{
 				handlers = i->second;
 			}
 			for (set<SignalHandlerType>::const_iterator i = handlers.begin (); i != handlers.end (); ++i) {
-				(*i) (signal);
+				if (*i != SignalHandlerRegistry::kIGNORED) {
+					(*i) (signal);
+				}
 			}
 		}
 }
@@ -65,38 +66,6 @@ SignalHandlerRegistry&	SignalHandlerRegistry::Get ()
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
 {
-}
-
-void	SignalHandlerRegistry::Install ()
-{
-	Debug::TraceContextBumper trcCtx (TSTR ("SignalHandlerRegistry::Install"));
-	AutoCriticalSection critSec (sCritSection_);
-	Require (not sInstalled_);
-	sInstalled_ = true;
-	for (map<SignalIDType,set<SignalHandlerType>>::const_iterator i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
-		if (IsSigIgnore_ (i->second)) {
-			signal (i->first, SIG_IGN);
-		}
-		else {
-			signal (i->first, MyHandler_);
-		}
-	}
-}
-
-void	SignalHandlerRegistry::Uninstall ()
-{
-	Debug::TraceContextBumper trcCtx (TSTR ("SignalHandlerRegistry::Uninstall"));
-	AutoCriticalSection critSec (sCritSection_);
-	Require (sInstalled_);
-	sInstalled_ = false;
-	for (map<SignalIDType,set<SignalHandlerType>>::const_iterator i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
-		signal (i->first, SIG_DFL);
-	}
-}
-
-bool	SignalHandlerRegistry::Installed () const
-{
-	return sInstalled_;
 }
 
 set<SignalIDType>	SignalHandlerRegistry::GetHandledSignals () const
@@ -147,17 +116,15 @@ void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<Si
 	else {
 		i->second = handlers;
 	}
-	if (sInstalled_) {
-		if (handlers.empty ()) {
-			// nothing todo - empty list treated as not in sHandlers_ list
-			::signal (signal, SIG_DFL);
-		}
-		else if (IsSigIgnore_ (handlers)) {
-			::signal (signal, SIG_IGN);
-		}
-		else {
-			::signal (signal, MyHandler_);
-		}
+	if (handlers.empty ()) {
+		// nothing todo - empty list treated as not in sHandlers_ list
+		(void)::signal (signal, SIG_DFL);
+	}
+	else if (IsSigIgnore_ (handlers)) {
+		(void)::signal (signal, SIG_IGN);
+	}
+	else {
+		(void)::signal (signal, MyHandler_);
 	}
 }
 
@@ -179,6 +146,7 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
 
 
 
+
 /*
  ********************************************************************************
  **************************** Execution::SendSignal *****************************
@@ -186,9 +154,9 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
  */
 void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 {
-#if		qPlatform_POSIX
-	Verify (pthread_kill (h, signal));
-#else
-	AssertNotImplemented ();
-#endif
+	#if		qPlatform_POSIX
+		Verify (pthread_kill (h, signal));
+	#else
+		AssertNotImplemented ();
+	#endif
 }
