@@ -197,7 +197,6 @@ Thread::Rep_::~Rep_ ()
 			else {
 				fThread_.join ();
 			}
-			fThread_.join ();
 		}
 	#elif	qUseThreads_WindowsNative
 		if (fThread_ != INVALID_HANDLE_VALUE) {
