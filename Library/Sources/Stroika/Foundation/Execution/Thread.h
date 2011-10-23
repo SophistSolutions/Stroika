@@ -62,6 +62,17 @@
  *
  *		o	
  *
+ *
+ *		o	Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling - calling detatch when a thread is never waited for.
+ *			(GNU/C+++ thread impl only)
+ *
+ *		o	Do a PURE PTHREAD implemenation - not using the C++-wrapper classes. I think they are similar enuoguh and a number of things are only
+ *			possible using native PTHreads. MAYBE refine qUseThreads_StdCPlusPlus into qUseThreads_StdCPlusPlus_PURE and qUseThreads_StdCPlusPlus_PTHREAD
+ *			and what we have now is really the latter)
+ *
+ *		o	
+ *
+ *		
  *	
  */
 
@@ -85,8 +96,9 @@ namespace	Stroika {
 			 * TODO:
 			 *		o	Add a Method (maybe overload of Start) - which takes a new Runnable, so that the thread object can be re-run.
 			 *			This will be needed (or at least highly advantageous) for implementing thread pools.
+			 *			<< turns out NOT necessary for thread pools (already draft impl not using it). Not sure if good idea - so leave this here.
+			 *			MAYBE>>
 			 */
-
 
 
 			/*
@@ -130,8 +142,6 @@ namespace	Stroika {
 			 *			o	SLEEP()
 			 *			o	ANY WAIT CALLS
 			 *			o	anything that calls Handle_ErrNoResultInteruption ()
-			 *
-			 *
 			 *
 			 *
 			 *
@@ -302,8 +312,6 @@ namespace	Stroika {
 
 			template	<unsigned int kEveryNTimes>
 				void	CheckForThreadAborting ();
-
-
 
 
 		}

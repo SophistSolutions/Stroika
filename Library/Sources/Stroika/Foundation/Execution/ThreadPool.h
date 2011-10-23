@@ -17,6 +17,9 @@
  *	TODO:
  *
  *			IMPLEMENT - this is just a rough draft/outline. NOT WORKABLE YET.
+ *
+ *		o NB: to implement the ABORT code - probably need to restart the given ThreadPool thread (Or could add new feature to change aborted flag
+ *			in a thread - but this maybe simpler).
  */
 
 // ADD THREADPOOL (Thread Pool) SUPPORT:
@@ -59,11 +62,13 @@ namespace	Stroika {
 					// This could be tricky to implement if tasks are busy running. Perhaps require no tasks in Queue to run
 					nonvirtual	void			SetPoolSize (unsigned int poolSize);
 
+				public:
 					/*
 					 * Push the given task into the queue.
 					 */
 					nonvirtual	void	AddTask (const TaskType& task);
 
+				public:
 					/*
 					 * It is NOT an error to call this with a task that is not in the Queue (since it would be a race to try to find out if it was
 					 * already executed.
@@ -73,6 +78,7 @@ namespace	Stroika {
 					 */
 					nonvirtual	void	AbortTask (const TaskType& task);
 
+				public:
 					// returns true if queued OR actively running
 					nonvirtual	bool	IsQueued (const TaskType& task);
 					
