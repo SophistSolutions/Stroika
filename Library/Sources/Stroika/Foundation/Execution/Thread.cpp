@@ -298,15 +298,15 @@ void	Thread::Rep_::NotifyOfAbort ()
 	if (GetCurrentThreadID () == GetID ()) {
 		ThrowAbortIfNeeded ();
 	}
-#if		qUseTLSForSAbortingFlag
-	AssertNotNull (fTLSAbortFlag);
-	*fTLSAbortFlag = true;
-#elif	qUseThreads_StdCPlusPlus
-#elif	qUseThreads_WindowsNative
-	if (fStatus == eAborting) {
-		Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
-	}
-#endif
+	#if		qUseTLSForSAbortingFlag
+		AssertNotNull (fTLSAbortFlag);
+		*fTLSAbortFlag = true;
+	#elif	qUseThreads_StdCPlusPlus
+	#elif	qUseThreads_WindowsNative
+		if (fStatus == eAborting) {
+			Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
+		}
+	#endif
 }
 
 Thread::IDType	Thread::Rep_::GetID () const
@@ -414,14 +414,14 @@ void	Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 	Execution::AutoCriticalSection critSec (sHandlerInstalled_);
 	if (sHandlerInstalled_) {
 		if (sHandlerInstalled_) {
-			SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), AbortProc_);
+			SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
 			sHandlerInstalled_ = false;
 		}
 	}
 	sSignalUsedForThreadAbort_ = signalNumber;
 	// install new handler
 	if (not sHandlerInstalled_) {
-		SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), AbortProc_);
+		SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
 		sHandlerInstalled_ = true;
 	}
 }
@@ -495,7 +495,7 @@ void	Thread::Abort ()
 			{
 				Execution::AutoCriticalSection critSec (sHandlerInstalled_);
 				if (not sHandlerInstalled_) {
-					SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), AbortProc_);
+					SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
 					sHandlerInstalled_ = true;
 				}
 				Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
