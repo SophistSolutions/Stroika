@@ -234,12 +234,18 @@ namespace	Stroika {
 					// As for example in FileUtils - DirectoryWatcher...
 					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);	// throws if timeout
 
+			#if		qPlatform_Windows
+				public:
 					// Look pumping messages until either time2Pump is exceeded or the thread completes. Its NOT an erorr if the
 					// timeout is exceeded
 					nonvirtual	void	PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
+			#endif
 
+			#if		qPlatform_Windows
+				public:
 					// throws if timeout
 					nonvirtual	void	WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
+			#endif
 
 			#if			qUseThreads_WindowsNative
 				public:

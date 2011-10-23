@@ -544,6 +544,7 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 	#endif
 }
 
+#if		qPlatform_Windows
 void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
 {
 	if (fRep_.IsNull ()) {
@@ -565,8 +566,9 @@ void	Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType
 		AssertNotImplemented ();
 	#endif
 }
+#endif
 
-#if			qUseThreads_WindowsNative
+#if		qPlatform_Windows
 void	Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
 	DurationSecondsType	timeoutAt	=	Time::GetTickCount () + timeout;
