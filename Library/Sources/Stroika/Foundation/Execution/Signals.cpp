@@ -104,8 +104,8 @@ void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandle
 
 void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers)
 {
-	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
-	DbgTrace ("(signal = %d, ....)", signal);
+	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
+	DbgTrace ("(signal = %d, handlers.size (), ....)", signal, handlers.size ());
 	AutoCriticalSection critSec (sCritSection_);
 	map<SignalIDType,set<SignalHandlerType>>::iterator i = sHandlers_.find (signal);
 	if (i == sHandlers_.end ()) {
@@ -154,6 +154,8 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
  */
 void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 {
+	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
+	DbgTrace ("(signal = %d)", signal);
 	#if		qPlatform_POSIX
 		Verify (pthread_kill (h, signal));
 	#else
