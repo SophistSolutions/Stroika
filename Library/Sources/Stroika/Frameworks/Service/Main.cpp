@@ -95,10 +95,11 @@ String	Main::IRep::GetPIDFileName () const
 void	Main::IRep::SignalHandler (int signum)
 {
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::SignalHandler"));
-	DbgTrace (L"Signal #%d", signum);
+	DbgTrace (L"(signal = %s)", Execution::SignalHandlerRegistry::SignalToName (signum).c_str ());
 	// VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
 	switch (signum) {
 		case	SIGTERM:
+			DbgTrace ("setting fStopping_ to true");
 			fStopping_ = true;
 			break;
 #if		qCompilerAndStdLib_Supports_constexpr
