@@ -95,7 +95,7 @@ String	Main::IRep::GetPIDFileName () const
 void	Main::IRep::SignalHandler (int signum)
 {
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::SignalHandler"));
-	DbgTrace (L"(signal = %s)", Execution::SignalHandlerRegistry::SignalToName (signum).c_str ());
+	DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
 	// VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
 	switch (signum) {
 		case	SIGTERM:
