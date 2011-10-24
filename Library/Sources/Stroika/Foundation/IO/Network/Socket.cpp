@@ -216,6 +216,9 @@ void	Socket::Bind (const BindProperties& bindProperties)
 		Execution::Handle_ErrNoResultInteruption ([&sd, &on] () -> int { return ::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)); });
 	}
 
+
+#if 0
+	// Now that we have signal/interuption - we can use blocking IO - A BIG improvement... but test carefully
 #if		qPlatform_POSIX
 	{
 		// Set socket to be non-blocking.  All of the sockets for the incoming connections will also be non-blocking since
@@ -223,6 +226,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 		int    on = 1;
 		Execution::ThrowErrNoIfNegative (::ioctl (sd, FIONBIO, (char *)&on));
 	}
+#endif
 #endif
 
 	Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
