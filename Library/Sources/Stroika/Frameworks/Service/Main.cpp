@@ -145,8 +145,6 @@ Main::Main (Memory::SharedPtr<IRep> rep)
 	#endif
 }
 
-
-
 #if		qPlatform_POSIX
 void	Main::SetupSignalHanlders_ ()
 {
