@@ -109,6 +109,7 @@ namespace	Stroika {
 					nonvirtual	void					RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler);
 			};
 
+			wstring	SignalToName (SignalIDType signal);
 
 			/*
 			 * Send the given signal to a specific thread (within this process)

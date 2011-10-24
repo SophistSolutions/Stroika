@@ -5,6 +5,7 @@
 
 #include	<map>
 
+#include	"../Characters/Format.h"
 #include	"../Debug/Trace.h"
 #include	"CriticalSection.h"
 
@@ -30,7 +31,7 @@ namespace	{
 	void	MyHandler_ (int signal)
 		{
 			Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
-			DbgTrace ("(signal = %d)", signal);
+			DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 			set<SignalHandlerType>	handlers;
 			{
 				AutoCriticalSection critSec (sCritSection_);
@@ -105,7 +106,7 @@ void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandle
 void	SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers)
 {
 	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
-	DbgTrace ("(signal = %d, handlers.size () = %d, ....)", signal, handlers.size ());
+	DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
 	AutoCriticalSection critSec (sCritSection_);
 	map<SignalIDType,set<SignalHandlerType>>::iterator i = sHandlers_.find (signal);
 	if (i == sHandlers_.end ()) {
@@ -147,6 +148,40 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
 
 
 
+
+
+
+/*
+ ********************************************************************************
+ ************************** Execution::SignalToName *****************************
+ ********************************************************************************
+ */
+wstring	Execution::SignalToName (SignalIDType signal)
+{
+	switch (signal) {
+		case	SIGINT:		return L"SIGINT";
+		case	SIGILL:		return L"SIGILL";
+		case	SIGSEGV:	return L"SIGSEGV";
+		case	SIGABRT:	return L"SIGABRT";
+	#if		defined (SIGUSR1)
+		case	SIGUSR1:	return L"SIGUSR1";
+	#endif
+	#if		defined (SIGUSR2)
+		case	SIGUSR2:	return L"SIGUSR2";
+	#endif
+	#if		defined (SIGHUP)
+		case	SIGHUP:		return L"SIGHUP";
+	#endif
+		case	SIGTERM:	return L"SIGTERM";
+		default:			return Characters::Format (L"Signal# %d", signal);
+	}
+}
+
+
+
+
+
+
 /*
  ********************************************************************************
  **************************** Execution::SendSignal *****************************
@@ -155,7 +190,7 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
 void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 {
 	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
-	DbgTrace ("(signal = %d)", signal);
+	DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 	#if		qPlatform_POSIX
 		Verify (pthread_kill (h, signal) == 0);
 	#else
