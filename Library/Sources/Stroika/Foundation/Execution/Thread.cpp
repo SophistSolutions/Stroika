@@ -541,6 +541,9 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 	if (fRep_->fStatus == eCompleted) {
 		return;
 	}
+	if (timeout < 0) {
+		DoThrow (WaitTimedOutException ());
+	}
 	bool	doWait	=	false;
 	#if		qUseThreads_StdCPlusPlus
 		#if		qUseThreads_StdCPlusPlus
