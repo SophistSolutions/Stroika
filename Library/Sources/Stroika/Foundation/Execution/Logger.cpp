@@ -8,6 +8,7 @@
 #endif
 
 #include	"../Characters/Format.h"
+#include	"../Debug/Trace.h"
 #include	"Process.h"
 
 #include	"Logger.h"
@@ -81,6 +82,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 
 void	Logger::SysLogAppender::Log (Priority logLevel, const String& message) override
 {
+	DbgTrace (L"%s", message.As<wstring> ().c_str ());
 	syslog (logLevel, "%s", message.AsTString ().c_str ());
 }
 #endif
