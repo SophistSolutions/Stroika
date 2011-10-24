@@ -169,19 +169,6 @@ namespace	Stroika {
 				{
 					return fRep_ < rhs.fRep_;
 				}
-			inline	void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
-				{
-					Time::DurationSecondsType	endTime	=	Time::GetTickCount () + timeout;
-					// as abort may need to be resent (since there could be a race and we may need to force wakeup again)
-					Time::DurationSecondsType	timeLeft	=	endTime - Time::GetTickCount ();
-					do {
-						const	Time::DurationSecondsType	kTimeBetweenAborts_		=	1.0f;
-						Abort ();
-						WaitForDone (min (timeLeft, kTimeBetweenAborts_));
-					}
-					while ((timeLeft = endTime - Time::GetTickCount ()) > 0);
-					WaitForDone (timeLeft);
-				}
 			inline	wstring	Thread::GetThreadName () const
 				{
 					return fRep_->fThreadName_;

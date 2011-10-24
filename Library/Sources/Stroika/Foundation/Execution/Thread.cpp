@@ -532,6 +532,30 @@ void	Thread::Abort_Forced_Unsafe ()
 	#endif
 }
 
+void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+{
+	Time::DurationSecondsType	endTime	=	Time::GetTickCount () + timeout;
+	// as abort may need to be resent (since there could be a race and we may need to force wakeup again)
+	while (true) {
+		const	Time::DurationSecondsType	kTimeBetweenAborts_		=	1.0f;
+		Time::DurationSecondsType	timeLeft	=	endTime - Time::GetTickCount ();
+		Abort ();
+		if (timeLeft <= kTimeBetweenAborts_) {
+			WaitForDone (timeLeft);		// throws if we should throw
+			return;
+		}
+		else {
+			// If timeLeft BIG - ignore timeout exception and go through loop again
+			try {
+				WaitForDone (kTimeBetweenAborts_);
+				return;
+			}
+			catch (const WaitTimedOutException&) {
+			}
+		}
+	}
+}
+
 void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 {
 	if (fRep_.IsNull ()) {
