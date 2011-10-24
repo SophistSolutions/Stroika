@@ -6,6 +6,7 @@
 #use strict;
 #use warnings;
 
+require ("Tests/ScriptsLib/TestsList.pl");
 
 
 use constant false => 0;
@@ -221,6 +222,8 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test10 $intermediateFiles/$platform/$target/Test10/Makefile");
 		mkdir "$intermediateFiles/$platform/$target/Test11";
 		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test11 $intermediateFiles/$platform/$target/Test11/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Test12";
+		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test12 $intermediateFiles/$platform/$target/Test12/Makefile");
 	}
 }
 
