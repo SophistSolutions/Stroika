@@ -11,7 +11,6 @@
 #if		qPlatform_POSIX
 	#include	<sys/types.h>
 	#include	<unistd.h>
-	#include	<signal.h>
 	#include	<sys/stat.h>
 	#include	<fcntl.h>
 #endif
@@ -25,6 +24,7 @@
 #include	"../../Foundation/Execution/ErrNoException.h"
 #include	"../../Foundation/Execution/Module.h"
 #include	"../../Foundation/Execution/ThreadAbortException.h"
+#include	"../../Foundation/Execution/Signals.h"
 #include	"../../Foundation/IO/FileSystem/FileUtils.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -145,11 +145,13 @@ Main::Main (Memory::SharedPtr<IRep> rep)
 	#endif
 }
 
+
+
 #if		qPlatform_POSIX
 void	Main::SetupSignalHanlders_ ()
 {
-	signal (SIGTERM, SignalHandler);
-	signal (kSIG_ReReadConfiguration, SignalHandler);
+	Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler);
+	Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler);
 }
 #endif
 
