@@ -16,7 +16,6 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-
 		}
 	}
 }

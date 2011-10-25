@@ -10,6 +10,7 @@
 #include	<vector>
 
 #include	"CriticalSection.h"
+#include	"Event.h"
 #include	"Thread.h"
 
 
@@ -80,15 +81,16 @@ namespace	Stroika {
 
 				public:
 					// returns true if queued OR actively running
-					nonvirtual	bool	IsQueued (const TaskType& task);
+					nonvirtual	bool	IsPresent (const TaskType& task);
 					
-					// returns true if queued OR actively running
+					// returns true actively running
 					nonvirtual	bool	IsRunning (const TaskType& task);
 
 				public:
+					// Includes those QUEUED AND those Running (IsPresent)
 					nonvirtual	vector<TaskType>	GetTasks () const;
 					
-					// This INCLUDES those with properly IsQueued () - those running or ready to run
+					// This INCLUDES those with properly IsPresent () - those running or ready to run
 					nonvirtual	size_t				GetTasksCount () const;
 				
 				public:
@@ -98,9 +100,10 @@ namespace	Stroika {
 					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
 				private:
-					CriticalSection	fCriticalSection_;
-					vector<Thread>	fThreads_;
-					list<TaskType>	fTasks_;			// Use Stroika Queue
+					mutable	CriticalSection	fCriticalSection_;
+					vector<Thread>			fThreads_;
+					list<TaskType>			fTasks_;			// Use Stroika Queue
+					Event					fTasksAdded_;
 			};
 
 		}
