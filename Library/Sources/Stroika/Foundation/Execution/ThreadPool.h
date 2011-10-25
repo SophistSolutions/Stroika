@@ -47,6 +47,10 @@ namespace	Stroika {
 			/*
 			 * The ThreadPool class takes a small fixed number of Thread objects, and lets you use them as if there were many more.
 			 * You submit a task (representable as a copyable IRunnable) - and it gets eventually executed.
+			 *
+			 *
+			 * If as Task in the thread pool raises an exception - this will be IGNORED (except for the special case of ThreadAbortException which
+			 * is used internally to end the threadpool or remove some threads).
 			 */
 			class	ThreadPool {
 				public:
@@ -99,11 +103,21 @@ namespace	Stroika {
 					// throws if timeout
 					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
+
+				private:
+					// Called internally from threadpool tasks - to wait until there is a new task to run.
+					// This will not return UNTIL it has a new task to proceed with (except via exception like ThreadAbortException)
+					nonvirtual	TaskType	WaitForNextTask_ () const;
+
+				private:
+					class	MyRunnable_;
 				private:
 					mutable	CriticalSection	fCriticalSection_;
 					vector<Thread>			fThreads_;
 					list<TaskType>			fTasks_;			// Use Stroika Queue
 					Event					fTasksAdded_;
+				private:
+					friend	class	MyRunnable_;
 			};
 
 		}

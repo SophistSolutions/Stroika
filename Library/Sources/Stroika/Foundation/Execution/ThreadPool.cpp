@@ -12,6 +12,48 @@ using	namespace	Stroika::Foundation::Execution;
 
 
 
+
+class	ThreadPool::MyRunnable_ : public IRunnable {
+	public:
+		MyRunnable_ (ThreadPool& threadPool)
+			: fThreadPool_ (threadPool)
+			, fCurTask_ ()
+			{
+			}
+
+	public:
+		virtual	void	Run () override
+			{
+				// For NOW - allow ThreadAbort to just kill this thread. In the future - we may want to implement some sort of restartability
+
+				// Keep grabbing new tasks, and running them
+				while (true) {
+					// DO WAITEVENT and GRABNEXT task - maybe have private method of 
+					TaskType	t	=	fThreadPool_.WaitForNextTask_ ();
+					try {
+						t->Run ();
+					}
+					catch (const ThreadAbortException&) {
+						throw;	// cancel this thread
+					}
+					catch (...) {
+						// other excpetions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
+					}
+				}
+			}
+
+	private:
+		ThreadPool&				fThreadPool_;
+		ThreadPool::TaskType	fCurTask_;
+
+	public:
+		DECLARE_USE_BLOCK_ALLOCATION(MyRunnable_);
+};
+
+
+
+
+
 ThreadPool::ThreadPool (unsigned int nThreads)
 	: fCriticalSection_ ()
 	, fThreads_ ()
@@ -132,4 +174,15 @@ void	ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
 void	ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
 	AssertNotImplemented ();
+}
+
+ThreadPool::TaskType	ThreadPool::WaitForNextTask_ () const
+{
+	AssertNotImplemented ();
+
+	// ROUGHLY - WAIT on fTasksAdded_
+	//	THEN ENTER CRITICAL SECITON to try and see if fTasks is empoty (it could be since osmeone else could beat us to the punch)
+	// and then if non-empty - return it, else wait again on fTasksAdded_.
+
+	return TaskType();
 }
