@@ -37,6 +37,8 @@ namespace	Stroika {
 			class	HTTPConnection {
 				public:
 					explicit HTTPConnection (Socket s);
+				public:
+					~HTTPConnection ();
 
 				private:
 					NO_DEFAULT_CONSTRUCTOR (HTTPConnection);

@@ -40,6 +40,13 @@ HTTPConnection::HTTPConnection (Socket s)
 {
 }
 
+HTTPConnection::~HTTPConnection ()
+{
+	if (fResponse_.GetState () != HTTPResponse::eCompleted) {
+		IgnoreExceptionsForCall (fResponse_.Abort ());
+	}
+}
+
 void	HTTPConnection::ReadHeaders ()
 {
 	{
