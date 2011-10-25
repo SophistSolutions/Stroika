@@ -15,6 +15,20 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Memory {
 
+
+			/*
+			 * Optional<T> can be used to store an object which may or may not be present. This can be used in place of sentinal values
+			 * (for example if no obvious sentinal value presents itself), and instead of explicitly using pointers and checking for null
+			 * all over.
+			 *
+			 * When dereferencing an empty value, there are three plausible interpretions:
+			 *		(o)		Return the default value T()
+			 *		(o)		throw bad_alloc()
+			 *		(o)		Assertion error
+			 *
+			 * Because the 'default value' isn't always well defined, and because throwing bad_alloc runs the risk of producing surprising expceitons (based on experience),
+			 * we are (at least for now) treating dereferencing an Optional<T> as an Assertion Erorr.
+			 */
 			template	<typename T>
 				class	Optional {
 					public:
@@ -31,12 +45,17 @@ namespace	Stroika {
 						nonvirtual	const T*	get () const;
 			
 					public:
-						nonvirtual	operator T () const;	// throws bad_alloc () if called when empty ()
+						// Require (not empty ())
+						nonvirtual	operator T () const;
 
 					public:
+						// Require (not empty ())
 						nonvirtual	const T* operator-> () const;
+						// Require (not empty ())
 						nonvirtual	T* operator-> ();
+						// Require (not empty ())
 						nonvirtual	const T& operator* () const;
+						// Require (not empty ())
 						nonvirtual	T& operator* ();
 
 					// Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T

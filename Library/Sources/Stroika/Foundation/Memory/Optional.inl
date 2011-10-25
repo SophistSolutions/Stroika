@@ -48,41 +48,31 @@ namespace	Stroika {
 			template	<typename T>
 				inline	const T* Optional<T>::operator-> () const
 					{
-						if (fValue.IsNull ()) {
-							Execution::DoThrow (bad_alloc ());
-						}
+						Require (not empty ())
 						return &fValue.GetRep ();
 					}
 			template	<typename T>
 				inline	T* Optional<T>::operator-> ()
 					{
-						if (fValue.IsNull ()) {
-							Execution::DoThrow (bad_alloc ());
-						}
+						Require (not empty ())
 						return &fValue.GetRep ();
 					}
 			template	<typename T>
 				inline	const T& Optional<T>::operator* () const
 					{
-						if (fValue.IsNull ()) {
-							Execution::DoThrow (bad_alloc ());
-						}
+						Require (not empty ())
 						return fValue.GetRep ();
 					}
 			template	<typename T>
 				inline	T& Optional<T>::operator* ()
 					{
-						if (fValue.IsNull ()) {
-							Execution::DoThrow (bad_alloc ());
-						}
+						Require (not empty ())
 						return fValue.GetRep ();
 					}
 			template	<typename T>
 				inline	Optional<T>::operator T () const
 					{
-						if (fValue.IsNull ()) {
-							Execution::DoThrow (bad_alloc ());
-						}
+						Require (not empty ())
 						return *fValue;
 					}
 			template	<typename T>
