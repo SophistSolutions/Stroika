@@ -338,6 +338,7 @@ void	Thread::Rep_::AbortProc_ (SignalIDType signal)
 {
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
 	s_Aborting = true;
+	Verify (siginterrupt (signal, true) == 0);
 }
 #elif			qUseThreads_WindowsNative
 void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
