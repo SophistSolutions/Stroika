@@ -25,10 +25,14 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
+			//redeclare to avoid having to include Thread code
+			void	CheckForThreadAborting ();
+
 			// class	Sleep
 				inline	void	Sleep (Time::DurationSecondsType seconds2Wait)
 					{
 						Require (seconds2Wait >= 0.0);
+						CheckForThreadAborting ();
 						#if		qPlatform_Windows
 							(void)::SleepEx (static_cast<int> (seconds2Wait * 1000), true);
 						#elif		qPlatform_POSIX
@@ -41,11 +45,13 @@ namespace	Stroika {
 						#else
 							AssertNotImplemented ();
 						#endif
+						CheckForThreadAborting ();
 					}
 				inline	void	Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep)
 					{
 						Require (seconds2Wait >= 0.0);
 						RequireNotNull (remainingInSleep);	// else call the over overload
+						CheckForThreadAborting ();
 						#if		qPlatform_Windows
 							Time::DurationSecondsType	tc	=	GetTickCount ();
 							if (::SleepEx (static_cast<int> (seconds2Wait * 1000), true) == 0) {
@@ -70,6 +76,7 @@ namespace	Stroika {
 						#else
 							AssertNotImplemented ();
 						#endif
+						CheckForThreadAborting ();
 					}
 		}
 	}
