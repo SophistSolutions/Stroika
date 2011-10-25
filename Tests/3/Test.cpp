@@ -201,7 +201,7 @@ namespace	{
 				thread.WaitForDone (1.0);	// should timeout
 				VerifyTestResult (false);
 			}
-			catch (const Execution::WaitTimedOutException& to) {
+			catch (const Execution::WaitTimedOutException&) {
 				// GOOD
 			}
 			catch (...) {
