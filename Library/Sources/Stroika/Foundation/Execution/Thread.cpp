@@ -338,7 +338,11 @@ void	Thread::Rep_::AbortProc_ (SignalIDType signal)
 {
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
 	s_Aborting = true;
-	Verify (siginterrupt (signal, true) == 0);
+	/*
+	 * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
+	 * will return EINTR - which is crucial to our strategy to interupt them!
+	 */
+	Verify (::siginterrupt (signal, true) == 0);
 }
 #elif			qUseThreads_WindowsNative
 void	CALLBACK	Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
@@ -554,6 +558,9 @@ void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 			catch (const WaitTimedOutException&) {
 			}
 		}
+		// this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
+		// a blocking call which needs interuption.
+		DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interupt.");
 	}
 }
 
