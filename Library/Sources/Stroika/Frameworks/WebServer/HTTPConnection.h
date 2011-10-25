@@ -20,8 +20,6 @@
 
 /*
  * TODO:
- *		Very early stage draft.
- *
  *		(o)	
  */
 
@@ -40,6 +38,12 @@ namespace	Stroika {
 				public:
 					explicit HTTPConnection (Socket s);
 
+				private:
+					NO_DEFAULT_CONSTRUCTOR (HTTPConnection);
+					NO_COPY_CONSTRUCTOR (HTTPConnection);
+					NO_ASSIGNMENT_OPERATOR (HTTPConnection);
+
+				public:
 					// Must rethink this organization -but for now - call this once at start of connection to fill in details in
 					// the HTTP Request object
 					nonvirtual	void	ReadHeaders ();

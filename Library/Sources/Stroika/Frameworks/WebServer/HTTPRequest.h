@@ -37,14 +37,19 @@ namespace	Stroika {
 				public:
 					HTTPRequest (Streams::BinaryInputStream& inStream);
 
+				private:
+					NO_DEFAULT_CONSTRUCTOR (HTTPRequest);
+					NO_COPY_CONSTRUCTOR (HTTPRequest);
+					NO_ASSIGNMENT_OPERATOR (HTTPRequest);
+
 				public:
 					Streams::BinaryInputStream&				fInputStream;
 					Streams::TextInputStreamBinaryAdapter	fInputTextStream;
 
+				public:
 					String									fHTTPVersion;
 					String									fMethod;
 					IO::Network::URL						fURL;
-//String									fHostRelativeURL;	// includes query-string, but not hostname, not port
 					map<String,String>						fHeaders;
 			};
 

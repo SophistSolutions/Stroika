@@ -59,6 +59,11 @@ namespace	Stroika {
 					// Reponse must be completed (OK to Abort ()) before being destroyed
 					~HTTPResponse ();
 
+				private:
+					NO_DEFAULT_CONSTRUCTOR (HTTPResponse);
+					NO_COPY_CONSTRUCTOR (HTTPResponse);
+					NO_ASSIGNMENT_OPERATOR (HTTPResponse);
+
 				public:
 					/*
 					 * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
