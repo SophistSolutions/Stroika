@@ -170,6 +170,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
@@ -325,6 +326,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />

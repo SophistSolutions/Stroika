@@ -324,6 +324,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -716,6 +719,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h">
       <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

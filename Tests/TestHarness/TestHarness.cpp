@@ -9,6 +9,7 @@
 #include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Debugger.h"
+#include	"Stroika/Foundation/Debug/Fatal.h"
 #include	"Stroika/Foundation/Execution/StringException.h"
 
 #include	"TestHarness.h"
@@ -38,15 +39,13 @@ namespace	{
 
 			_exit (EXIT_FAILURE);
 		}
-	void	_TerminateHandler_ ()
+	void	_FatalErrorHandler_ (const Characters::TChar* msg)
 		{
-			cerr << "FAILED: _TerminateHandler_ called" << endl;
-			Debug::DropIntoDebuggerIfPresent ();
-			_exit (EXIT_FAILURE);
-		}
-	void	_UnexpectedHandler_ ()
-		{
-			cerr << "FAILED: _UnexpectedHandler_ called" << endl;
+			#if		qTargetPlatformSDKUseswchar_t
+				cerr << "FAILED: " <<  Characters::WideStringToNarrowSDKString (msg) << endl;
+			#else
+				cerr << "FAILED: " <<  msg << endl;
+			#endif
 			Debug::DropIntoDebuggerIfPresent ();
 			_exit (EXIT_FAILURE);
 		}
@@ -60,8 +59,7 @@ void	TestHarness::Setup ()
 #if		qDebug
 	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
-	set_terminate (_TerminateHandler_);
-	set_unexpected (_UnexpectedHandler_);
+	Debug::RegisterDefaultFatalErrorHandlers (_FatalErrorHandler_);
 }
 
 
