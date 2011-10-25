@@ -107,6 +107,25 @@ namespace	Stroika {
 					 * See GetSignalHandlers()
 					 */
 					nonvirtual	void					RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler);
+
+				public:
+					/*
+					 * This signal handler simply prints error to the trace log, and calls 'abort' - which on most operating systems will allow the
+					 * debugger to examine the errant code.
+					 */
+					static	void	DefaultCrashSignalHandler (SignalIDType signal);
+
+					/*
+					 * Install the given signal handler for 
+					 *		o	SIGINT
+					 *		o	SIGILL
+					 *		o	SIGFPE
+					 *		o	SIGSEGV
+					 *		o	SIGTERM
+					 *		o	SIGABRT
+					 * signals, so that errors get neatly logged. A common use is to provide a handler that uses the LogMgr to record the crash.
+					 */
+					nonvirtual	void					AddStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
 			};
 
 			wstring	SignalToName (SignalIDType signal);

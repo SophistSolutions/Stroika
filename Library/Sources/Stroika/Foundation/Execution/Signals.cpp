@@ -144,6 +144,21 @@ void	SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHand
 	SetSignalHandlers (signal, s);
 }
 
+void	SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal)
+{
+	DbgTrace (L"Serious Signal Error trapped: %s ... Aborting", SignalToName (signal).c_str ());
+	abort ();
+}
+
+void	SignalHandlerRegistry::AddStandardCrashHandlerSignals (SignalHandlerType handler, const set<SignalIDType>& excludedSignals)
+{
+	if (excludedSignals.find (SIGINT) == excludedSignals.end ())		 {	AddSignalHandler (SIGINT, handler);			}
+	if (excludedSignals.find (SIGILL) == excludedSignals.end ())		 {	AddSignalHandler (SIGILL, handler);			}
+	if (excludedSignals.find (SIGFPE) == excludedSignals.end ())		 {	AddSignalHandler (SIGFPE, handler);			}
+	if (excludedSignals.find (SIGSEGV) == excludedSignals.end ())		 {	AddSignalHandler (SIGSEGV, handler);		}
+	if (excludedSignals.find (SIGTERM) == excludedSignals.end ())		 {	AddSignalHandler (SIGTERM, handler);		}
+	if (excludedSignals.find (SIGABRT) == excludedSignals.end ())		 {	AddSignalHandler (SIGABRT, handler);		}
+}
 
 
 
