@@ -111,3 +111,25 @@ bool	ThreadPool::IsRunning (const TaskType& task)
 	}
 	return false;
 }
+
+vector<ThreadPool::TaskType>	ThreadPool::GetTasks () const
+{
+	AssertNotImplemented ();
+	return vector<ThreadPool::TaskType> ();
+}
+					
+size_t	ThreadPool::GetTasksCount () const
+{
+	AssertNotImplemented ();
+	return 0;
+}
+
+void	ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
+{
+	AssertNotImplemented ();
+}
+
+void	ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+{
+	AssertNotImplemented ();
+}
