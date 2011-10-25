@@ -18,7 +18,15 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 		MyRunnable_ (ThreadPool& threadPool)
 			: fThreadPool_ (threadPool)
 			, fCurTask_ ()
+			, fCurTaskUpdateCritSection_ ()
 			{
+			}
+
+	public:
+		ThreadPool::TaskType	GetCurrentTask () const
+			{
+				AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
+				return fCurTask_;
 			}
 
 	public:
@@ -28,23 +36,33 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 
 				// Keep grabbing new tasks, and running them
 				while (true) {
-					// DO WAITEVENT and GRABNEXT task - maybe have private method of 
-					TaskType	t	=	fThreadPool_.WaitForNextTask_ ();
+					{
+						AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
+						Assert (fCurTask_.IsNull ());
+						fCurTask_	=	fThreadPool_.WaitForNextTask_ ();			// This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+						Assert (not fCurTask_.IsNull ());
+					}
 					try {
-						t->Run ();
+						fCurTask_->Run ();
+						fCurTask_.clear ();
 					}
 					catch (const ThreadAbortException&) {
+						AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
+						fCurTask_.clear ();
 						throw;	// cancel this thread
 					}
 					catch (...) {
+						AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
+						fCurTask_.clear ();
 						// other excpetions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
 					}
 				}
 			}
 
 	private:
-		ThreadPool&				fThreadPool_;
-		ThreadPool::TaskType	fCurTask_;
+		ThreadPool&					fThreadPool_;
+		mutable CriticalSection		fCurTaskUpdateCritSection_;
+		ThreadPool::TaskType		fCurTask_;
 
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRunnable_);
@@ -54,8 +72,15 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 
 
 
+
+/*
+ ********************************************************************************
+ ********************************* Execution::ThreadPool ************************
+ ********************************************************************************
+ */
 ThreadPool::ThreadPool (unsigned int nThreads)
 	: fCriticalSection_ ()
+	, fAborted_ (false)
 	, fThreads_ ()
 	, fTasks_ ()
 	, fTasksAdded_ ()
@@ -71,10 +96,11 @@ unsigned int	ThreadPool::GetPoolSize () const
 
 void	ThreadPool::SetPoolSize (unsigned int poolSize)
 {
+	Require (not fAborted_);
 	AutoCriticalSection	critSection (fCriticalSection_);
 	fThreads_.reserve (poolSize);
 	while (poolSize > fTasks_.size ()) {
-		fThreads_.push_back (Thread ());	// ADD MY THREADOBJ
+		fThreads_.push_back (mkThread_ ());
 	}
 
 	if (poolSize < fTasks_.size ()) {
@@ -92,6 +118,7 @@ void	ThreadPool::SetPoolSize (unsigned int poolSize)
 
 void	ThreadPool::AddTask (const TaskType& task)
 {
+	Require (not fAborted_);
 	{
 		AutoCriticalSection	critSection (fCriticalSection_);
 		fTasks_.push_back (task);
@@ -101,7 +128,7 @@ void	ThreadPool::AddTask (const TaskType& task)
 	fTasksAdded_.Set ();
 }
 
-void	ThreadPool::AbortTask (const TaskType& task)
+void	ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
 {
 	{
 		// First see if its in the Q
@@ -115,15 +142,32 @@ void	ThreadPool::AbortTask (const TaskType& task)
 	}
 
 	// If we got here - its NOT in the task Q, so maybe its already running.
+	//
+	//
+
+	// TODO:
+	//		We walk the list of existing threads and ask each one if its (indirected - running task) is the given one and abort that task.
+	//		But that requires we can RESTART an ABORTED thread (or that we remove it from the list - maybe thats better). THat COULD be OK
+	//		actually since it involves on API changes and makes sense. The only slight issue is a peformace one but probably for soemthing
+	//		quite rare.
+	//
+	//		Anyhow SB OK for now to just not allow aborting a task which has already started....
+	Thread	thread2Kill;
 	{
-		// TODO:
-		//		We SHOULD walk the list of existing threads and ask each one if its (indirected - running task) is the given one and abort that task.
-		//		But that requires we can RESTART an ABORTED thread (or that we remove it from the list - maybe thats better). THat COULD be OK
-		//		actually since it involves on API changes and makes sense. The only slight issue is a peformace one but probably for soemthing
-		//		quite rare.
-		//
-		//		Anyhow SB OK for now to just not allow aborting a task which has already started....
-		AssertNotImplemented ();
+		AutoCriticalSection	critSection (fCriticalSection_);
+		for (vector<Thread>::iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			SharedPtr<IRunnable>	tr	=	i->GetRunnable ();
+			Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
+			SharedPtr<IRunnable>	ct	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+			if (task == ct) {
+				thread2Kill	=	*i;
+				*i = mkThread_ ();
+				break;
+			}
+		}
+	}
+	if (not thread2Kill.GetStatus () != Thread::eNull) {
+		thread2Kill.AbortAndWaitForDone (timeout);
 	}
 }
 
@@ -139,50 +183,145 @@ bool	ThreadPool::IsPresent (const TaskType& task)
 			}
 		}
 	}
-
 	return IsRunning (task);
-	
-	return false;
 }
 
 bool	ThreadPool::IsRunning (const TaskType& task)
 {
-	// TMPHACK - NOT IMPL PROEPRLY - MUST CHECK THOSE ACTIVELY RUNNING IN THREADS
+	Require (not task.IsNull ());
 	{
-		AssertNotImplemented ();
+		AutoCriticalSection	critSection (fCriticalSection_);
+		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			SharedPtr<IRunnable>	tr	=	i->GetRunnable ();
+			Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
+			SharedPtr<IRunnable>	task	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+			if (task == task) {
+				return true;
+			}
+		}
 	}
 	return false;
 }
 
 vector<ThreadPool::TaskType>	ThreadPool::GetTasks () const
 {
-	AssertNotImplemented ();
-	return vector<ThreadPool::TaskType> ();
+	vector<ThreadPool::TaskType>	result;
+	{
+		AutoCriticalSection	critSection (fCriticalSection_);
+		result.reserve (fTasks_.size () + fThreads_.size ());
+		result.insert (result.begin (), fTasks_.begin (), fTasks_.end ());			// copy pending tasks
+		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			SharedPtr<IRunnable>	tr	=	i->GetRunnable ();
+			Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
+			SharedPtr<IRunnable>	task	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+			if (not task.IsNull ()) {
+				result.push_back (task);
+			}
+		}
+	}
+	return result;
 }
-					
+
+vector<ThreadPool::TaskType>	ThreadPool::GetRunningTasks () const
+{
+	vector<ThreadPool::TaskType>	result;
+	{
+		AutoCriticalSection	critSection (fCriticalSection_);
+		result.reserve (fThreads_.size ());
+		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			SharedPtr<IRunnable>	tr	=	i->GetRunnable ();
+			Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
+			SharedPtr<IRunnable>	task	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+			if (not task.IsNull ()) {
+				result.push_back (task);
+			}
+		}
+	}
+	return result;
+}
+
 size_t	ThreadPool::GetTasksCount () const
 {
-	AssertNotImplemented ();
-	return 0;
+	size_t	count	=	0;
+	{
+		// First see if its in the Q
+		AutoCriticalSection	critSection (fCriticalSection_);
+		count += fTasks_.size ();
+		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			SharedPtr<IRunnable>	tr	=	i->GetRunnable ();
+			Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
+			SharedPtr<IRunnable>	task	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+			if (not task.IsNull ()) {
+				count++;
+			}
+		}
+	}
+	return count;
 }
 
 void	ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
 {
-	AssertNotImplemented ();
+	Require (fAborted_);
+	{
+		Time::DurationSecondsType	endAt	=	timeout + Time::GetTickCount ();
+		AutoCriticalSection	critSection (fCriticalSection_);
+		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			i->WaitForDone (Time::GetTickCount () - timeout);
+		}
+	}
+}
+
+void	ThreadPool::Abort ()
+{
+	fAborted_ = true;
+	{
+		// First see if its in the Q
+		AutoCriticalSection	critSection (fCriticalSection_);
+		fTasks_.clear ();
+		for (vector<Thread>::iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+			i->Abort ();
+		}
+	}
 }
 
 void	ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
-	AssertNotImplemented ();
+	Abort ();
+	WaitForDone (timeout);
 }
 
-ThreadPool::TaskType	ThreadPool::WaitForNextTask_ () const
+// THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
+ThreadPool::TaskType	ThreadPool::WaitForNextTask_ ()
 {
+	if (fAborted_) {
+		Execution::DoThrow (ThreadAbortException ());
+	}
 	AssertNotImplemented ();
 
-	// ROUGHLY - WAIT on fTasksAdded_
-	//	THEN ENTER CRITICAL SECITON to try and see if fTasks is empoty (it could be since osmeone else could beat us to the punch)
-	// and then if non-empty - return it, else wait again on fTasksAdded_.
+/*
+ * TODO:
+ *		o	ANALYZE CAREFULLY NO DEADLOCK OR RACE CONDITIONS WITH THIS APPROACH - MUST THINK THROUGH CAREFULLY.
+ */
 
-	return TaskType();
+	while (true) {
+		{
+			AutoCriticalSection	critSection (fCriticalSection_);
+			if (not fTasks_.empty ()) {
+				TaskType	result	=	fTasks_.front ();
+				fTasks_.pop_front ();
+				DbgTrace ("ThreadPool::WaitForNextTask_ () is starting a new task"); 
+				return result;
+			}
+		}
+
+		fTasksAdded_.Wait ();
+	}
+}
+
+Thread		ThreadPool::mkThread_ ()
+{
+	Thread	t	=	Thread (SharedPtr<IRunnable> (new ThreadPool::MyRunnable_ (*this)));		// ADD MY THREADOBJ
+	t.SetThreadName (L"Thread Pool");
+	t.Start ();
+	return t;
 }
