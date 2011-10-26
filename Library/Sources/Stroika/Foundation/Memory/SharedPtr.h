@@ -243,32 +243,6 @@ namespace	Stroika {
 								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
 							}
 
-#if 0
-				public:
-					#if		!qCompilerAndStdLib_Supports_lambda_default_argument
-						inline	T*	DefaultElementCopier_ (const T& t)
-							{
-								return new T (t);
-							}
-					#endif
-
-					/*
-					 * Assure1Reference () can be called when implementing copy-on-write. A typical use would be to call Assure1Reference () on
-					 * all non-const methods of envelope objects which use SharedPtr<> to share a common read-only copy and only clone it when they need write.
-					 *
-					 * The 'copier' function must make a logical copy (presumably suitable for update) of the given object already pointed to. A generally appropriate
-					 * default implementation is provided.
-					 */
-					#if		qCompilerAndStdLib_Supports_lambda_default_argument
-					nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = [](const T& t) { return new T (t); });
-					#else
-					nonvirtual	void	Assure1Reference (T* (*copier) (const T&) = DefaultElementCopier_);
-					#endif
-
-				private:
-					nonvirtual	void	BreakReferences_ (T* (*copier) (const T&));
-#endif
-
 				protected:
 					T*				fPtr;
 					SharedPtrBase*	fCountHolder;

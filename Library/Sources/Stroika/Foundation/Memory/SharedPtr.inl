@@ -218,37 +218,6 @@ namespace	Stroika {
 							*this = SharedPtr<T> (p);
 						}
 					}
-#if 0
-			template	<typename T>
-				inline	void	SharedPtr<T>::Assure1Reference (T* (*copier) (const T&))
-					{
-						RequireNotNull (copier);
-						if (not IsUnique ()) {
-							BreakReferences_ (copier);
-						}
-					}
-			template <class T>
-				void	SharedPtr<T>::BreakReferences_ (T* (*copier) (const T&))
-					{
-						RequireNotNull (copier);
-						/*
-						 *		For a valid pointer that is reference counted and multiply shared,
-						 *	make a copy of that pointer via our fCloner function, and assign
-						 *	that cloned reference to this.
-						 *
-						 *		Note that by doing so, we remove any references to the current
-						 *	item, and end up with our having the sole reference to the new copy of fPtr.
-						 *
-						 *		Since we will be cloning the given pointer, we assume(assert) that
-						 *	it is non-nullptr.
-						 */
-						RequireNotNull (fPtr);
-
-						Require (CurrentRefCount () > 1);
-						*this = ((*copier) (*fPtr));
-						Ensure (CurrentRefCount () == 1);
-					}
-#endif
 			template	<typename T>
 				/*
 				@METHOD:		SharedPtr<T>::CurrentRefCount

@@ -9,6 +9,11 @@
 #include	"../Memory/SharedPtr.h"
 
 
+/*
+ * TODO:
+ *		o	Redo SharedByValue<> so its possible to have a COPIER as a static member(so no size wasted) OR 
+ *			copier as data member.
+ */
 
 namespace	Stroika {	
 	namespace	Foundation {
