@@ -93,15 +93,12 @@
  *	...
  *
  * TODO:
- *		+	SERIOUSLY CONSIDER relationship between this class and Shared<>
- *
  *		+	CAREFULLY writeup differences between this class and shared_ptr<>
  *			+	I DONT BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
  *				applications. Maybe I'm missing something. Ask around a bit...
  *			+	SEE GETTING RID OF SharedPtrBase/UsesSharedPtrBase ABOVE...
  *
  *
-
 				Then - we COULD get rid of SharedPtr<> altoegher and just not use the weak_ptr stuff if its a bad idea. I'm undecided on that
 				later point. More thought required
 						--	LGP 2011-09-09
