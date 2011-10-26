@@ -847,7 +847,7 @@ namespace	Stroika {
             template	<typename T>	Array<T>::Array (const Array<T>& from) :
                 fLength (0),
                 fSlotsAllocated (0),
-                fItems (Nil)
+                fItems (nullptr)
             {
                 from.Invariant ();
                 SetSlotsAlloced (from.GetSlotsAlloced ());
@@ -955,14 +955,14 @@ namespace	Stroika {
                 if (fSlotsAllocated != slotsAlloced) {
                     if (slotsAlloced == 0) {
                         delete (char*)fItems;
-                        fItems = Nil;
+                        fItems = nullptr;
                     }
                     else {
                         /*
                          * We should consider getting rid of use of realloc since it prohibits
                          * internal pointers. For example, we cannot have an array of patchable_arrays.
                          */
-                        if (fItems == Nil) {
+                        if (fItems == nullptr) {
                             fItems = (ArrayNode<T>*) new char [sizeof (ArrayNode<T>) * slotsAlloced];
                         }
                         else {
@@ -1091,7 +1091,7 @@ namespace	Stroika {
             #if		qDebug
             template	<typename T>	void	Array<T>::Invariant_ () const
             {
-                Assert ((fSlotsAllocated == 0) == (fItems == Nil));		// always free iff slots alloced = 0
+                Assert ((fSlotsAllocated == 0) == (fItems == nullptr));		// always free iff slots alloced = 0
                 Assert (fLength <= fSlotsAllocated);
             }
             #endif
@@ -1132,7 +1132,7 @@ namespace	Stroika {
                  *	date. Instead, so that in local shadow of Invariant() done in Array_Patch<T>
                  *	so only called when WE call Invariant().
                  */
-                for (ArrayIterator_PatchBase<T>* v = fIterators; v != Nil; v = v->fNext) {
+                for (ArrayIterator_PatchBase<T>* v = fIterators; v != nullptr; v = v->fNext) {
                     Assert (v->fData == this);
                 }
             }
@@ -1143,7 +1143,7 @@ namespace	Stroika {
                  *		Only here can we iterate over each iterator and calls its Invariant()
                  *	since now we've completed any needed patching.
                  */
-                for (ArrayIterator_PatchBase<T>* v = fIterators; v != Nil; v = v->fNext) {
+                for (ArrayIterator_PatchBase<T>* v = fIterators; v != nullptr; v = v->fNext) {
                     Assert (v->fData == this);
                     v->Invariant ();
                 }

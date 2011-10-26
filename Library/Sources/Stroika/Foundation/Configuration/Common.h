@@ -20,7 +20,7 @@ namespace	Stroika {
 
 
 //GET RID OF Nil - use nullptr instead -- LGP 2011-08-21
-			#define	Nil		nullptr
+//			#define	Nil		nullptr
 
 			#define	nonvirtual
 
