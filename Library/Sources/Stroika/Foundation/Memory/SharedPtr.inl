@@ -218,10 +218,11 @@ namespace	Stroika {
 							*this = SharedPtr<T> (p);
 						}
 					}
+#if 0
 			template	<typename T>
 				inline	void	SharedPtr<T>::Assure1Reference (T* (*copier) (const T&))
 					{
-						RequireNotNil (copier);
+						RequireNotNull (copier);
 						if (not IsUnique ()) {
 							BreakReferences_ (copier);
 						}
@@ -229,7 +230,7 @@ namespace	Stroika {
 			template <class T>
 				void	SharedPtr<T>::BreakReferences_ (T* (*copier) (const T&))
 					{
-						RequireNotNil (copier);
+						RequireNotNull (copier);
 						/*
 						 *		For a valid pointer that is reference counted and multiply shared,
 						 *	make a copy of that pointer via our fCloner function, and assign
@@ -247,6 +248,7 @@ namespace	Stroika {
 						*this = ((*copier) (*fPtr));
 						Ensure (CurrentRefCount () == 1);
 					}
+#endif
 			template	<typename T>
 				/*
 				@METHOD:		SharedPtr<T>::CurrentRefCount

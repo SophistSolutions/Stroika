@@ -243,6 +243,7 @@ namespace	Stroika {
 								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
 							}
 
+#if 0
 				public:
 					#if		!qCompilerAndStdLib_Supports_lambda_default_argument
 						inline	T*	DefaultElementCopier_ (const T& t)
@@ -266,6 +267,7 @@ namespace	Stroika {
 
 				private:
 					nonvirtual	void	BreakReferences_ (T* (*copier) (const T&));
+#endif
 
 				protected:
 					T*				fPtr;
