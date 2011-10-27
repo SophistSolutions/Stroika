@@ -545,8 +545,8 @@ void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 	// as abort may need to be resent (since there could be a race and we may need to force wakeup again)
 	while (true) {
 		const	Time::DurationSecondsType	kTimeBetweenAborts_		=	1.0f;
-		Time::DurationSecondsType	timeLeft	=	endTime - Time::GetTickCount ();
 		Abort ();
+		Time::DurationSecondsType	timeLeft	=	endTime - Time::GetTickCount ();
 		if (timeLeft <= kTimeBetweenAborts_) {
 			WaitForDone (timeLeft);		// throws if we should throw
 			return;
