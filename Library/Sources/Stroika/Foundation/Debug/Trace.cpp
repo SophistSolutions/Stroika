@@ -314,7 +314,6 @@ template	<typename	CHARTYPE>
 							strcat (buf, buf2);
 						#endif
 						#if		qPlatform_POSIX
-							char buf2[1024];
 							::snprintf  (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ());
 							#if		__STDC_WANT_SECURE_LIB__
 								strcat_s (buf, buf2);
