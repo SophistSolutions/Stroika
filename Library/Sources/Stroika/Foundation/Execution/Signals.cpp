@@ -158,6 +158,15 @@ void	SignalHandlerRegistry::AddStandardCrashHandlerSignals (SignalHandlerType ha
 	if (excludedSignals.find (SIGSEGV) == excludedSignals.end ())		 {	AddSignalHandler (SIGSEGV, handler);		}
 	if (excludedSignals.find (SIGTERM) == excludedSignals.end ())		 {	AddSignalHandler (SIGTERM, handler);		}
 	if (excludedSignals.find (SIGABRT) == excludedSignals.end ())		 {	AddSignalHandler (SIGABRT, handler);		}
+#if		qPlatform_POSIX
+	if (excludedSignals.find (SIGSYS) == excludedSignals.end ())		 {	AddSignalHandler (SIGSYS, handler);			}
+	if (excludedSignals.find (SIGBUS) == excludedSignals.end ())		 {	AddSignalHandler (SIGBUS, handler);			}
+	if (excludedSignals.find (SIGQUIT) == excludedSignals.end ())		 {	AddSignalHandler (SIGQUIT, handler);		}
+	if (excludedSignals.find (SIGPIPE) == excludedSignals.end ())		 {	AddSignalHandler (SIGPIPE, handler);		}
+	if (excludedSignals.find (SIGHUP) == excludedSignals.end ())		 {	AddSignalHandler (SIGHUP, handler);			}
+	if (excludedSignals.find (SIGXCPU) == excludedSignals.end ())		 {	AddSignalHandler (SIGXCPU, handler);		}
+	if (excludedSignals.find (SIGXFSZ) == excludedSignals.end ())		 {	AddSignalHandler (SIGXFSZ, handler);		}
+#endif
 }
 
 
@@ -178,6 +187,12 @@ wstring	Execution::SignalToName (SignalIDType signal)
 		case	SIGILL:		return L"SIGILL";
 		case	SIGSEGV:	return L"SIGSEGV";
 		case	SIGABRT:	return L"SIGABRT";
+	#if		defined (SIGSYS)
+		case	SIGSYS:		return L"SIGSYS";
+	#endif
+	#if		defined (SIGBUS)
+		case	SIGBUS:		return L"SIGBUS";
+	#endif
 	#if		defined (SIGUSR1)
 		case	SIGUSR1:	return L"SIGUSR1";
 	#endif
@@ -188,6 +203,19 @@ wstring	Execution::SignalToName (SignalIDType signal)
 		case	SIGHUP:		return L"SIGHUP";
 	#endif
 		case	SIGTERM:	return L"SIGTERM";
+	#if		defined (SIGPIPE)
+		case	SIGPIPE:	return L"SIGPIPE";
+	#endif
+	#if		defined (SIGQUIT)
+		case	SIGQUIT:	return L"SIGQUIT";
+	#endif
+	#if		defined (SIGXCPU)
+		case	SIGXCPU:	return L"SIGXCPU";
+	#endif
+	#if		defined (SIGXFSZ)
+		case	SIGXFSZ:	return L"SIGXFSZ";
+	#endif
+			
 		default:			return Characters::Format (L"Signal# %d", signal);
 	}
 }

@@ -27,6 +27,10 @@
  *		o	THINK OUT AND DESCRIBE IN DETAIL HOW WE HANDLE THREADS
  *		o	Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow these to be (more or less) interchangable with
  *			regular SignalHandlerType.
+ *		o	Consider adding "ThreadSignalHandler" faciltiy - where we register a set of handlers that ONLY apply when the signal
+ *			is sent to the given (argument with register) thread. If we do this - we will want to write cooperating code with the thread start/end
+ *			stuff so these get cleared out appropriately.
+ *			Consider how this might be useful for stuff like SIGPIPE handling?
  *
  */
 
@@ -90,8 +94,8 @@ namespace	Stroika {
 					 *
 					 * SetSignalHandlers () with NO arguments uninstalls all Stroika signal handlers for this signal.
 					 * SetSignalHandlers () with ONE argument makes Stroika take-over the signal handling - and sets the set of hanlders to be
-					 * exactly the one given.
-					 * SetSignalHandlers () with ONE a set of handlers registers all the givne handlers.
+					 * exactly the one given (effectively removing any others previously added).
+					 * SetSignalHandlers () with ONE a set of handlers registers all the given handlers.
 					 *
 					 * Note - if through ANY combination of set/add/remvoe - you have NO signal handler - this reverts to SIG_DFL, and if you have
 					 * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
@@ -123,6 +127,14 @@ namespace	Stroika {
 					 *		o	SIGSEGV
 					 *		o	SIGTERM
 					 *		o	SIGABRT
+					 *		o	SIGSYS		(POSIX ONLY)
+					 *		o	SIGBUS		(POSIX ONLY)
+					 *		o	SIGQUIT		(POSIX ONLY)
+					 *		o	SIGPIPE		(POSIX ONLY)
+					 *		o	SIGHUP		(POSIX ONLY)
+					 *		o	SIGXCPU		(POSIX ONLY)
+					 *		o	SIGXFSZ		(POSIX ONLY)
+					 *
 					 * signals, so that errors get neatly logged. A common use is to provide a handler that uses the LogMgr to record the crash.
 					 */
 					nonvirtual	void					AddStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
