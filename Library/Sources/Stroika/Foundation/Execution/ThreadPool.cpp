@@ -324,11 +324,6 @@ void	ThreadPool::WaitForNextTask_ (TaskType* result)
 		Execution::DoThrow (ThreadAbortException ());
 	}
 
-/*
- * TODO:
- *		o	ANALYZE CAREFULLY NO DEADLOCK OR RACE CONDITIONS WITH THIS APPROACH - MUST THINK THROUGH CAREFULLY.
- */
-
 	while (true) {
 		{
 			AutoCriticalSection	critSection (fCriticalSection_);
@@ -340,6 +335,7 @@ void	ThreadPool::WaitForNextTask_ (TaskType* result)
 			}
 		}
 
+		// Prevent spinwaiting... This event is SET when any new item arrives
 		fTasksAdded_.Wait ();
 	}
 }

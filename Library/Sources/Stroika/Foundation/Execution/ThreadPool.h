@@ -100,7 +100,6 @@ namespace	Stroika {
 					// throws if timeout
 					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
-
 				private:
 					// Called internally from threadpool tasks - to wait until there is a new task to run.
 					// This will not return UNTIL it has a new task to proceed with (except via exception like ThreadAbortException)
