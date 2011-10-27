@@ -126,7 +126,6 @@ namespace	Stroika {
 					 *		o	SIGFPE
 					 *		o	SIGSEGV
 					 *		o	SIGTERM
-					 *		o	SIGABRT
 					 *		o	SIGSYS		(POSIX ONLY)
 					 *		o	SIGBUS		(POSIX ONLY)
 					 *		o	SIGQUIT		(POSIX ONLY)
@@ -134,8 +133,11 @@ namespace	Stroika {
 					 *		o	SIGHUP		(POSIX ONLY)
 					 *		o	SIGXCPU		(POSIX ONLY)
 					 *		o	SIGXFSZ		(POSIX ONLY)
-					 *
 					 * signals, so that errors get neatly logged. A common use is to provide a handler that uses the LogMgr to record the crash.
+					 *
+					 * NB:  SIGABRT intentionally omitted from this list because it prevents abort() from functioning properly. We COULD 
+					 *		disable SIGABRT upon receipt of that signal (SIG_DFL) but that would be differnt than other signals handled, raise
+					 *		re-entrancy issues etc. Didn't seem owrh while.
 					 */
 					nonvirtual	void					SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
 			};

@@ -157,7 +157,6 @@ void	SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType ha
 	if (excludedSignals.find (SIGFPE) == excludedSignals.end ())		 {	SetSignalHandlers (SIGFPE, handler);		}
 	if (excludedSignals.find (SIGSEGV) == excludedSignals.end ())		 {	SetSignalHandlers (SIGSEGV, handler);		}
 	if (excludedSignals.find (SIGTERM) == excludedSignals.end ())		 {	SetSignalHandlers (SIGTERM, handler);		}
-	if (excludedSignals.find (SIGABRT) == excludedSignals.end ())		 {	SetSignalHandlers (SIGABRT, handler);		}
 #if		qPlatform_POSIX
 	if (excludedSignals.find (SIGSYS) == excludedSignals.end ())		 {	SetSignalHandlers (SIGSYS, handler);		}
 	if (excludedSignals.find (SIGBUS) == excludedSignals.end ())		 {	SetSignalHandlers (SIGBUS, handler);		}
@@ -233,7 +232,12 @@ wstring	Execution::SignalToName (SignalIDType signal)
 void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 {
 	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
-	DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
+	#if		qPlatform_Windows || qPlatform_POSIX
+		DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), reinterpret_cast<unsigned long> (h));
+	#else
+		DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
+	#endif
+
 	#if		qPlatform_POSIX
 		Verify (pthread_kill (h, signal) == 0);
 	#else
