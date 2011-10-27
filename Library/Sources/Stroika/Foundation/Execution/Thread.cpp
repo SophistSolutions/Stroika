@@ -498,10 +498,12 @@ void	Thread::Abort ()
 		fRep_->NotifyOfAbort ();
 		#if		qPlatform_POSIX
 			{
-				Execution::AutoCriticalSection critSec (sHandlerInstalled_);
-				if (not sHandlerInstalled_) {
-					SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
-					sHandlerInstalled_ = true;
+				{
+					Execution::AutoCriticalSection critSec (sHandlerInstalled_);
+					if (not sHandlerInstalled_) {
+						SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
+						sHandlerInstalled_ = true;
+					}
 				}
 				Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
 			}
