@@ -35,6 +35,7 @@ namespace	{
 				functionName = "";
 			}
 			cerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
+			DbgTrace ("FAILED: %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
 			
 			Debug::DropIntoDebuggerIfPresent ();
 
@@ -47,12 +48,14 @@ namespace	{
 			#else
 				cerr << "FAILED: " <<  msg << endl;
 			#endif
+			DbgTrace (TSTR ("FAILED: %s"), msg);
 			Debug::DropIntoDebuggerIfPresent ();
 			_exit (EXIT_FAILURE);
 		}
 	void	_FatalSignalHandler_ (Execution::SignalIDType signal)
 		{
 			cerr << "FAILED: " <<  Characters::WideStringToNarrowSDKString (Execution::SignalToName (signal)) << endl;
+			DbgTrace (L"FAILED: %s", Execution::SignalToName (signal).c_str ());
 			Debug::DropIntoDebuggerIfPresent ();
 			_exit (EXIT_FAILURE);
 		}
@@ -76,22 +79,26 @@ void	TestHarness::PrintPassOrFail (void (*regressionTest) ())
 	try {
 		(*regressionTest) ();
 		cout << "Succeeded" << endl;
+		DbgTrace (L"Succeeded");
 	}
 	catch (const std::exception& e) {
 		cerr << "FAILED: REGRESSION TEST (std::exception): '" << e.what () << endl;
 		cout << "Failed" << endl;
 		Debug::DropIntoDebuggerIfPresent ();
+		DbgTrace ("FAILED: REGRESSION TEST (std::exception): '%s", e.what ());
 		_exit (EXIT_FAILURE);
 	}
 	catch (Execution::StringException& e) {
 		cerr << "FAILED: REGRESSION TEST (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
 		cout << "Failed" << endl;
+		DbgTrace (L"FAILED: REGRESSION TEST (std::exception): '%s", e.As<wstring> ().c_str ());
 		Debug::DropIntoDebuggerIfPresent ();
 		_exit (EXIT_FAILURE);
 	}
 	catch (...) {
 		cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
 		cout << "Failed" << endl;
+		DbgTrace (L"FAILED: REGRESSION TEST EXCEPTION");
 		Debug::DropIntoDebuggerIfPresent ();
 		_exit (EXIT_FAILURE);
 	}
