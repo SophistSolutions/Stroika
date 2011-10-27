@@ -232,8 +232,8 @@ wstring	Execution::SignalToName (SignalIDType signal)
 void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 {
 	Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
-	#if		qPlatform_Windows || qPlatform_POSIX
-		DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), reinterpret_cast<unsigned long> (h));
+	#if		qPlatform_POSIX
+		DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), static_cast<unsigned long> (h));
 	#else
 		DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 	#endif
