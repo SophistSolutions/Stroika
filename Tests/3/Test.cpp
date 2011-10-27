@@ -285,19 +285,55 @@ namespace	{
 }
 
 
+
+namespace	{
+	void	RegressionTest8_ThreadPool_ ()
+		{
+			// Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
+			struct	FRED {
+				static	void	DoIt (void* ignored)
+					{
+						int*	argP	=	reinterpret_cast<int*> (ignored);
+						for (int i = 0; i < 10; i++) {
+							AutoCriticalSection	critSect (sharedCriticalSection_);
+							int	tmp = *argP;
+							Execution::Sleep (.01);
+							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							*argP = tmp + 1;
+						}
+					}
+			};
+
+			for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
+				ThreadPool	p;
+				p.SetPoolSize (threadPoolSize);
+				int	updaterValue	=	0;
+				Memory::SharedPtr<Execution::IRunnable>	task1	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				Memory::SharedPtr<Execution::IRunnable>	task2	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				p.AddTask (task1);
+				p.AddTask (task2);
+				p.WaitForTask (task1);
+				p.WaitForTask (task2);
+				p.AbortAndWaitForDone ();
+				VerifyTestResult (updaterValue == 2 * 10);
+			}
+		}
+}
+
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-#if 0
 			RegressionTest1_ ();
 			RegressionTest2_ ();
 			RegressionTest3_ ();
 			RegressionTest4_Lockable_ ();
 			RegressionTest5_Aborting_ ();
 			RegressionTest6_ThreadWaiting_ ();
-#endif
 			RegressionTest7_SimpleThreadPool_ ();
+			RegressionTest8_ThreadPool_ ();
 		}
 }
 
