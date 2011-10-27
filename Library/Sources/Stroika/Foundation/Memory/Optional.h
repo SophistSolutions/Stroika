@@ -7,8 +7,6 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Configuration/Common.h"
-
-//TEMPORARILY - WE MUST RE-IMPLEMENT NOT USING REFCNTPTR
 #include	"SharedPtr.h"
 
 namespace	Stroika {	
@@ -73,7 +71,7 @@ namespace	Stroika {
 						 * SharedPtr<T> and never return a copy to someone who could, so the value can never change. One changes
 						 * an Optional<T> by creating a whole new value object and assigning it.
 						 */
-						SharedPtr<T>	fValue;
+						SharedPtr<T>	fValue_;
 				};
 		}
 	}
