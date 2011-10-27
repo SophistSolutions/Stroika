@@ -10,6 +10,7 @@
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Debugger.h"
 #include	"Stroika/Foundation/Debug/Fatal.h"
+#include	"Stroika/Foundation/Execution/Signals.h"
 #include	"Stroika/Foundation/Execution/StringException.h"
 
 #include	"TestHarness.h"
@@ -49,6 +50,12 @@ namespace	{
 			Debug::DropIntoDebuggerIfPresent ();
 			_exit (EXIT_FAILURE);
 		}
+	void	_FatalSignalHandler_ (Execution::SignalIDType signal)
+		{
+			cerr << "FAILED: " <<  Characters::WideStringToNarrowSDKString (Execution::SignalToName (signal)) << endl;
+			Debug::DropIntoDebuggerIfPresent ();
+			_exit (EXIT_FAILURE);
+		}
 }
 
 
@@ -60,6 +67,7 @@ void	TestHarness::Setup ()
 	Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
 	Debug::RegisterDefaultFatalErrorHandlers (_FatalErrorHandler_);
+	Execution::SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (_FatalSignalHandler_);
 }
 
 

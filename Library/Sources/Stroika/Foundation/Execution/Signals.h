@@ -137,7 +137,7 @@ namespace	Stroika {
 					 *
 					 * signals, so that errors get neatly logged. A common use is to provide a handler that uses the LogMgr to record the crash.
 					 */
-					nonvirtual	void					AddStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
+					nonvirtual	void					SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
 			};
 
 			wstring	SignalToName (SignalIDType signal);

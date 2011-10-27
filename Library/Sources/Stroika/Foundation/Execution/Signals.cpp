@@ -150,22 +150,22 @@ void	SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal)
 	abort ();
 }
 
-void	SignalHandlerRegistry::AddStandardCrashHandlerSignals (SignalHandlerType handler, const set<SignalIDType>& excludedSignals)
+void	SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const set<SignalIDType>& excludedSignals)
 {
-	if (excludedSignals.find (SIGINT) == excludedSignals.end ())		 {	AddSignalHandler (SIGINT, handler);			}
-	if (excludedSignals.find (SIGILL) == excludedSignals.end ())		 {	AddSignalHandler (SIGILL, handler);			}
-	if (excludedSignals.find (SIGFPE) == excludedSignals.end ())		 {	AddSignalHandler (SIGFPE, handler);			}
-	if (excludedSignals.find (SIGSEGV) == excludedSignals.end ())		 {	AddSignalHandler (SIGSEGV, handler);		}
-	if (excludedSignals.find (SIGTERM) == excludedSignals.end ())		 {	AddSignalHandler (SIGTERM, handler);		}
-	if (excludedSignals.find (SIGABRT) == excludedSignals.end ())		 {	AddSignalHandler (SIGABRT, handler);		}
+	if (excludedSignals.find (SIGINT) == excludedSignals.end ())		 {	SetSignalHandlers (SIGINT, handler);		}
+	if (excludedSignals.find (SIGILL) == excludedSignals.end ())		 {	SetSignalHandlers (SIGILL, handler);		}
+	if (excludedSignals.find (SIGFPE) == excludedSignals.end ())		 {	SetSignalHandlers (SIGFPE, handler);		}
+	if (excludedSignals.find (SIGSEGV) == excludedSignals.end ())		 {	SetSignalHandlers (SIGSEGV, handler);		}
+	if (excludedSignals.find (SIGTERM) == excludedSignals.end ())		 {	SetSignalHandlers (SIGTERM, handler);		}
+	if (excludedSignals.find (SIGABRT) == excludedSignals.end ())		 {	SetSignalHandlers (SIGABRT, handler);		}
 #if		qPlatform_POSIX
-	if (excludedSignals.find (SIGSYS) == excludedSignals.end ())		 {	AddSignalHandler (SIGSYS, handler);			}
-	if (excludedSignals.find (SIGBUS) == excludedSignals.end ())		 {	AddSignalHandler (SIGBUS, handler);			}
-	if (excludedSignals.find (SIGQUIT) == excludedSignals.end ())		 {	AddSignalHandler (SIGQUIT, handler);		}
-	if (excludedSignals.find (SIGPIPE) == excludedSignals.end ())		 {	AddSignalHandler (SIGPIPE, handler);		}
-	if (excludedSignals.find (SIGHUP) == excludedSignals.end ())		 {	AddSignalHandler (SIGHUP, handler);			}
-	if (excludedSignals.find (SIGXCPU) == excludedSignals.end ())		 {	AddSignalHandler (SIGXCPU, handler);		}
-	if (excludedSignals.find (SIGXFSZ) == excludedSignals.end ())		 {	AddSignalHandler (SIGXFSZ, handler);		}
+	if (excludedSignals.find (SIGSYS) == excludedSignals.end ())		 {	SetSignalHandlers (SIGSYS, handler);		}
+	if (excludedSignals.find (SIGBUS) == excludedSignals.end ())		 {	SetSignalHandlers (SIGBUS, handler);		}
+	if (excludedSignals.find (SIGQUIT) == excludedSignals.end ())		 {	SetSignalHandlers (SIGQUIT, handler);		}
+	if (excludedSignals.find (SIGPIPE) == excludedSignals.end ())		 {	SetSignalHandlers (SIGPIPE, handler);		}
+	if (excludedSignals.find (SIGHUP) == excludedSignals.end ())		 {	SetSignalHandlers (SIGHUP, handler);		}
+	if (excludedSignals.find (SIGXCPU) == excludedSignals.end ())		 {	SetSignalHandlers (SIGXCPU, handler);		}
+	if (excludedSignals.find (SIGXFSZ) == excludedSignals.end ())		 {	SetSignalHandlers (SIGXFSZ, handler);		}
 #endif
 }
 
