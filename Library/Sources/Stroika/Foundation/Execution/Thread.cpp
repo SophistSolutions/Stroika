@@ -683,12 +683,18 @@ wstring	Execution::FormatThreadID (Thread::IDType threadID)
 	// it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
 	#if		qUseThreads_StdCPlusPlus
 		Assert (sizeof (threadID) >= sizeof (int));
-		unsigned int	threadIDInt	=	*reinterpret_cast<unsigned int*> (&threadID);
-		if (threadIDInt <= 0xffff) {
-			return Characters::Format (L"0x%04x", threadIDInt);
+		if (sizeof (Thread::IDType) >= sizeof (uint64_t)) {
+			uint64_t	threadIDInt	=	*reinterpret_cast<uint64_t*> (&threadID);
+			return Characters::Format (L"0x%16lx", threadIDInt);
 		}
 		else {
-			return Characters::Format (L"0x%08x", threadIDInt);
+			unsigned int	threadIDInt	=	*reinterpret_cast<unsigned int*> (&threadID);
+			if (threadIDInt <= 0xffff) {
+				return Characters::Format (L"0x%04x", threadIDInt);
+			}
+			else {
+				return Characters::Format (L"0x%08x", threadIDInt);
+			}
 		}
 	#elif	qUseThreads_WindowsNative
 		if (threadID <= 0xffff) {

@@ -299,7 +299,11 @@ template	<typename	CHARTYPE>
 				}
 				string	threadIDStr	=	WideStringToNarrowSDKString (FormatThreadID (threadID));
 				if (sMainThread == threadID) {
-					::snprintf  (buf, NEltsOf (buf), "[-MAIN-][%08.3f]\t", curRelativeTime);
+					#if		qPlatform_Windows
+						::snprintf  (buf, NEltsOf (buf), "[-MAIN-][%08.3f]\t", curRelativeTime);
+					#else
+						::snprintf  (buf, NEltsOf (buf), "[---MAIN---][%08.3f]\t", curRelativeTime);
+					#endif
 					if (sFirstTime) {
 						sFirstTime = false;
 						char buf2[1024];
