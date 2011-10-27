@@ -76,10 +76,13 @@ namespace	Stroika {
 
 				public:
 					// returns true if queued OR actively running
-					nonvirtual	bool	IsPresent (const TaskType& task);
+					nonvirtual	bool	IsPresent (const TaskType& task) const;
 					
 					// returns true actively running
-					nonvirtual	bool	IsRunning (const TaskType& task);
+					nonvirtual	bool	IsRunning (const TaskType& task) const;
+
+					// throws if timeout. Returns when task has completed (or if not in task q)
+					nonvirtual	void	WaitForTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite) const;
 
 				public:
 					// Includes those QUEUED AND those Running (IsPresent)
@@ -101,7 +104,7 @@ namespace	Stroika {
 				private:
 					// Called internally from threadpool tasks - to wait until there is a new task to run.
 					// This will not return UNTIL it has a new task to proceed with (except via exception like ThreadAbortException)
-					nonvirtual	TaskType	WaitForNextTask_ ();
+					nonvirtual	void		WaitForNextTask_ (TaskType* result);
 					nonvirtual	Thread		mkThread_ ();
 
 				private:

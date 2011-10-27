@@ -596,8 +596,12 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 			}
 		}
 		if (doWait) {
-			if (::WaitForSingleObject (thread, Platform::Windows::Duration2Milliseconds (timeout)) == WAIT_TIMEOUT) {
-				DoThrow (WaitTimedOutException ());
+	Again:
+			DWORD	result  = ::WaitForSingleObjectEx (thread, Platform::Windows::Duration2Milliseconds (timeout), true);
+			switch (result) {
+				case	WAIT_TIMEOUT:	DoThrow (WaitTimedOutException ());
+				case	WAIT_ABANDONED:	DoThrow (WaitAbandonedException ());
+				case	WAIT_IO_COMPLETION:	CheckForThreadAborting (); goto Again;	// roughly right to goto again - should decrement timeout- APC other than for abort - we should just keep waiting
 			}
 		}
 	#else

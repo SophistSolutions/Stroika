@@ -10,7 +10,9 @@
 #include	"Stroika/Foundation/Execution/Event.h"
 #include	"Stroika/Foundation/Execution/Lockable.h"
 #include	"Stroika/Foundation/Execution/Sleep.h"
+#include	"Stroika/Foundation/Execution/SimpleRunnable.h"
 #include	"Stroika/Foundation/Execution/Thread.h"
+#include	"Stroika/Foundation/Execution/ThreadPool.h"
 #include	"Stroika/Foundation/Execution/WaitTimedOutException.h"
 
 #include	"../TestHarness/TestHarness.h"
@@ -22,7 +24,9 @@ using	namespace	Stroika::Foundation;
 using	Execution::CriticalSection;
 using	Execution::Lockable;
 using	Execution::AutoCriticalSection;
+using	Execution::SimpleRunnable;
 using	Execution::Thread;
+using	Execution::ThreadPool;
 
 
 
@@ -252,15 +256,48 @@ namespace	{
 
 
 namespace	{
+	void	RegressionTest7_SimpleThreadPool_ ()
+		{
+			{
+				ThreadPool	p;
+				p.SetPoolSize (1);
+				p.Abort ();
+				p.WaitForDone ();
+			}
+			{
+				ThreadPool	p;
+				p.SetPoolSize (1);
+				struct	FRED {
+					static	void	DoIt (void* arg)
+						{
+							int*	p	=	reinterpret_cast<int*> (arg);
+							(*p)++;
+						}
+				};
+				int	intVal	=	3;
+				Memory::SharedPtr<Execution::IRunnable>	task	=	SimpleRunnable::MAKE (FRED::DoIt, &intVal);
+				p.AddTask (task);
+				p.WaitForTask (task);
+				p.AbortAndWaitForDone ();
+				VerifyTestResult (intVal == 4);
+			}
+		}
+}
+
+
+namespace	{
 
 	void	DoRegressionTests_ ()
 		{
+#if 0
 			RegressionTest1_ ();
 			RegressionTest2_ ();
 			RegressionTest3_ ();
 			RegressionTest4_Lockable_ ();
 			RegressionTest5_Aborting_ ();
 			RegressionTest6_ThreadWaiting_ ();
+#endif
+			RegressionTest7_SimpleThreadPool_ ();
 		}
 }
 

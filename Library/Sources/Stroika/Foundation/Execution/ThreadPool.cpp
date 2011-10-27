@@ -3,6 +3,8 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include	"Sleep.h"
+
 #include	"ThreadPool.h"
 
 
@@ -18,6 +20,7 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 		MyRunnable_ (ThreadPool& threadPool)
 			: fThreadPool_ (threadPool)
 			, fCurTask_ ()
+			, fNextTask_ ()
 			, fCurTaskUpdateCritSection_ ()
 			{
 			}
@@ -26,7 +29,10 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 		ThreadPool::TaskType	GetCurrentTask () const
 			{
 				AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
-				return fCurTask_;
+				// THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
+				// Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
+				Assert (fCurTask_.IsNull () or fNextTask_.IsNull ());	// one or both must be null
+				return fCurTask_.IsNull ()? fNextTask_ : fCurTask_;
 			}
 
 	public:
@@ -37,10 +43,14 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 				// Keep grabbing new tasks, and running them
 				while (true) {
 					{
+						fThreadPool_.WaitForNextTask_ (&fNextTask_);			// This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
 						AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
+						Assert (not fNextTask_.IsNull ());
 						Assert (fCurTask_.IsNull ());
-						fCurTask_	=	fThreadPool_.WaitForNextTask_ ();			// This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+						fCurTask_ = fNextTask_;
+						fNextTask_.clear ();
 						Assert (not fCurTask_.IsNull ());
+						Assert (fNextTask_.IsNull ());
 					}
 					try {
 						fCurTask_->Run ();
@@ -63,6 +73,7 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 		ThreadPool&					fThreadPool_;
 		mutable CriticalSection		fCurTaskUpdateCritSection_;
 		ThreadPool::TaskType		fCurTask_;
+		ThreadPool::TaskType		fNextTask_;
 
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRunnable_);
@@ -99,11 +110,11 @@ void	ThreadPool::SetPoolSize (unsigned int poolSize)
 	Require (not fAborted_);
 	AutoCriticalSection	critSection (fCriticalSection_);
 	fThreads_.reserve (poolSize);
-	while (poolSize > fTasks_.size ()) {
+	while (poolSize > fThreads_.size ()) {
 		fThreads_.push_back (mkThread_ ());
 	}
 
-	if (poolSize < fTasks_.size ()) {
+	if (poolSize < fThreads_.size ()) {
 		AssertNotImplemented ();
 
 		// MUST STOP THREADS and WAIT FOR THEM TO BE DONE (OR STORE THEM SOMEPLACE ELSE - NO - I THINK MUST ABORTANDWAIT().  Unsure.
@@ -171,14 +182,13 @@ void	ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
 	}
 }
 
-bool	ThreadPool::IsPresent (const TaskType& task)
+bool	ThreadPool::IsPresent (const TaskType& task) const
 {
 	{
 		// First see if its in the Q
 		AutoCriticalSection	critSection (fCriticalSection_);
-		for (list<TaskType>::iterator i = fTasks_.begin (); i != fTasks_.end (); ++i) {
+		for (list<TaskType>::const_iterator i = fTasks_.begin (); i != fTasks_.end (); ++i) {
 			if (*i == task) {
-				fTasks_.erase (i);
 				return true;
 			}
 		}
@@ -186,7 +196,7 @@ bool	ThreadPool::IsPresent (const TaskType& task)
 	return IsRunning (task);
 }
 
-bool	ThreadPool::IsRunning (const TaskType& task)
+bool	ThreadPool::IsRunning (const TaskType& task) const
 {
 	Require (not task.IsNull ());
 	{
@@ -194,13 +204,29 @@ bool	ThreadPool::IsRunning (const TaskType& task)
 		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
 			SharedPtr<IRunnable>	tr	=	i->GetRunnable ();
 			Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-			SharedPtr<IRunnable>	task	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
-			if (task == task) {
+			SharedPtr<IRunnable>	rTask	=	dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+			if (task == rTask) {
 				return true;
 			}
 		}
 	}
 	return false;
+}
+
+void	ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
+{
+	// Inefficient / VERY SLOPPY impl
+	Time::DurationSecondsType	endAt	=	timeout + Time::GetTickCount ();
+	while (true) {
+		if (not IsPresent (task)) {
+			return;
+		}
+		Time::DurationSecondsType	remaining	=	timeout - Time::GetTickCount ();
+		if (remaining <= 0.0) {
+			DoThrow (WaitTimedOutException ());
+		}
+		Execution::Sleep (min (remaining, 1.0));
+	}
 }
 
 vector<ThreadPool::TaskType>	ThreadPool::GetTasks () const
@@ -266,7 +292,7 @@ void	ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
 		Time::DurationSecondsType	endAt	=	timeout + Time::GetTickCount ();
 		AutoCriticalSection	critSection (fCriticalSection_);
 		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-			i->WaitForDone (Time::GetTickCount () - timeout);
+			i->WaitForDone (timeout - Time::GetTickCount ());
 		}
 	}
 }
@@ -291,12 +317,12 @@ void	ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
-ThreadPool::TaskType	ThreadPool::WaitForNextTask_ ()
+void	ThreadPool::WaitForNextTask_ (TaskType* result)
 {
+	RequireNotNull (result);
 	if (fAborted_) {
 		Execution::DoThrow (ThreadAbortException ());
 	}
-	AssertNotImplemented ();
 
 /*
  * TODO:
@@ -307,10 +333,10 @@ ThreadPool::TaskType	ThreadPool::WaitForNextTask_ ()
 		{
 			AutoCriticalSection	critSection (fCriticalSection_);
 			if (not fTasks_.empty ()) {
-				TaskType	result	=	fTasks_.front ();
+				*result	=	fTasks_.front ();
 				fTasks_.pop_front ();
 				DbgTrace ("ThreadPool::WaitForNextTask_ () is starting a new task"); 
-				return result;
+				return;
 			}
 		}
 

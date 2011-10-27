@@ -23,6 +23,8 @@ namespace	Stroika {
 		namespace	Execution {
 
 
+			//redeclare to avoid having to include Thread code
+			void	CheckForThreadAborting ();
 
 		// class	Event
 			inline	Event::Event ()
@@ -83,13 +85,16 @@ namespace	Stroika {
 				}
 			inline	void	Event::Wait (Time::DurationSecondsType timeout)
 				{
+					CheckForThreadAborting ();
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
 						// must be careful about rounding errors in int->DurationSecondsType->int
-						DWORD	result	=	::WaitForSingleObject (fEventHandle, Platform::Windows::Duration2Milliseconds (timeout));
+					Again:
+						DWORD	result	=	::WaitForSingleObjectEx (fEventHandle, Platform::Windows::Duration2Milliseconds (timeout), true);
 						switch (result) {
 							case	WAIT_TIMEOUT:	DoThrow (WaitTimedOutException ());
 							case	WAIT_ABANDONED:	DoThrow (WaitAbandonedException ());
+							case	WAIT_IO_COMPLETION:	CheckForThreadAborting (); goto Again;	// roughly right to goto again - should decrement timeout- APC other than for abort - we should just keep waiting
 						}
 						Verify (result == WAIT_OBJECT_0);
 					#elif		qUseThreads_StdCPlusPlus
