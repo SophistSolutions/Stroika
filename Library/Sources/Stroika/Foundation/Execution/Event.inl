@@ -56,7 +56,7 @@ namespace	Stroika {
 						#endif
 					#endif
 				}
-			inline	void	Event::Reset () throw ()
+			inline	void	Event::Reset ()
 				{
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
@@ -69,7 +69,7 @@ namespace	Stroika {
 						AssertNotImplemented ();
 					#endif
 				}
-			inline	void	Event::Set () throw ()
+			inline	void	Event::Set ()
 				{
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);

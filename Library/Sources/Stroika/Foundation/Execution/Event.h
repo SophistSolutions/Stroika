@@ -49,10 +49,10 @@ namespace	Stroika {
 
 				public:
 					// Set the event to the non-signaled state
-					nonvirtual	void	Reset () throw ();
+					nonvirtual	void	Reset ();
 
 					// Set the event to the signaled state
-					nonvirtual	void	Set () throw ();
+					nonvirtual	void	Set ();
 
 					// Simple wait. Can use operator HANDLE() to do fancier waits
 					nonvirtual	void	Wait (Time::DurationSecondsType timeout = Time::kInfinite);
