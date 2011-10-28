@@ -107,6 +107,7 @@ unsigned int	ThreadPool::GetPoolSize () const
 
 void	ThreadPool::SetPoolSize (unsigned int poolSize)
 {
+	Debug::TraceContextBumper ctx (TSTR ("ThreadPool::SetPoolSize"));
 	Require (not fAborted_);
 	AutoCriticalSection	critSection (fCriticalSection_);
 	fThreads_.reserve (poolSize);
@@ -129,6 +130,7 @@ void	ThreadPool::SetPoolSize (unsigned int poolSize)
 
 void	ThreadPool::AddTask (const TaskType& task)
 {
+	//Debug::TraceContextBumper ctx (TSTR ("ThreadPool::AddTask"));
 	Require (not fAborted_);
 	{
 		AutoCriticalSection	critSection (fCriticalSection_);
@@ -141,6 +143,7 @@ void	ThreadPool::AddTask (const TaskType& task)
 
 void	ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
 {
+	Debug::TraceContextBumper ctx (TSTR ("ThreadPool::AbortTask"));
 	{
 		// First see if its in the Q
 		AutoCriticalSection	critSection (fCriticalSection_);
@@ -215,6 +218,7 @@ bool	ThreadPool::IsRunning (const TaskType& task) const
 
 void	ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
 {
+	Debug::TraceContextBumper ctx (TSTR ("ThreadPool::WaitForTask"));
 	// Inefficient / VERY SLOPPY impl
 	Time::DurationSecondsType	endAt	=	timeout + Time::GetTickCount ();
 	while (true) {
@@ -287,18 +291,20 @@ size_t	ThreadPool::GetTasksCount () const
 
 void	ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
 {
+	Debug::TraceContextBumper ctx (TSTR ("ThreadPool::WaitForDone"));
 	Require (fAborted_);
 	{
 		Time::DurationSecondsType	endAt	=	timeout + Time::GetTickCount ();
 		AutoCriticalSection	critSection (fCriticalSection_);
 		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-			i->WaitForDone (timeout - Time::GetTickCount ());
+			i->WaitForDone (endAt - Time::GetTickCount ());
 		}
 	}
 }
 
 void	ThreadPool::Abort ()
 {
+	Debug::TraceContextBumper ctx (TSTR ("ThreadPool::Abort"));
 	fAborted_ = true;
 	{
 		// First see if its in the Q
@@ -336,7 +342,9 @@ void	ThreadPool::WaitForNextTask_ (TaskType* result)
 		}
 
 		// Prevent spinwaiting... This event is SET when any new item arrives
+		//DbgTrace ("ThreadPool::WaitForNextTask_ () - about to wait for added tasks"); 
 		fTasksAdded_.Wait ();
+		//DbgTrace ("ThreadPool::WaitForNextTask_ () - completed wait for added tasks"); 
 	}
 }
 
