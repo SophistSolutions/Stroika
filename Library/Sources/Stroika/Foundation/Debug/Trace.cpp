@@ -277,8 +277,9 @@ Emitter::TraceLastBufferedWriteTokenType	Emitter::EmitTraceMessage (size_t buffe
 
 namespace	{
 	// Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
-	static	bool			sFirstTime	=	true;
-	static	Thread::IDType	sMainThread;
+	static	bool			sFirstTime_	=	true;
+	static	Thread::IDType	sMainThread_;
+	static	string			sThreadPrintDashAdornment_;
 }
 
 template	<typename	CHARTYPE>
@@ -294,18 +295,19 @@ template	<typename	CHARTYPE>
 			{
 				char	buf[1024];
 				Thread::IDType	threadID	=	Execution::GetCurrentThreadID ();
-				if (sFirstTime) {
-					sMainThread = threadID;
+				if (sFirstTime_) {
+					sMainThread_ = threadID;
+					size_t threadPrintWidth = FormatThreadID (threadID).length () - 4;
+					sThreadPrintDashAdornment_.reserve (threadPrintWidth/2);
+					for (size_t i = 0; i < threadPrintWidth/2; ++i) {
+						sThreadPrintDashAdornment_.append ("-");
+					}
 				}
 				string	threadIDStr	=	WideStringToNarrowSDKString (FormatThreadID (threadID));
-				if (sMainThread == threadID) {
-					#if		qPlatform_Windows
-						::snprintf  (buf, NEltsOf (buf), "[-MAIN-][%08.3f]\t", curRelativeTime);
-					#else
-						::snprintf  (buf, NEltsOf (buf), "[---MAIN---][%08.3f]\t", curRelativeTime);
-					#endif
-					if (sFirstTime) {
-						sFirstTime = false;
+				if (sMainThread_ == threadID) {
+					::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_.c_str (), sThreadPrintDashAdornment_.c_str (), curRelativeTime);
+					if (sFirstTime_) {
+						sFirstTime_ = false;
 						char buf2[1024];
 						::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ());
 						#if		__STDC_WANT_SECURE_LIB__
