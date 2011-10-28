@@ -36,26 +36,18 @@ void	Event::Wait (Time::DurationSecondsType timeout)
 		Verify (result == WAIT_OBJECT_0);
 	#elif		qUseThreads_StdCPlusPlus
 		std::unique_lock<std::mutex> lock (fMutex_);
-		#if 1
-			// SB able to compare with Time::kInfinite - not sure why not working - but this SB OK... At least for now
-			// --LGP 2011-10-21
-			bool	forever	=	(timeout > 24 * 60 * 60 * 365);
-		#else
-			bool	forever	=	(timeout == Time::kInfinite);
-		#endif
 		Time::DurationSecondsType	until	=	Time::GetTickCount () + timeout;
+		Assert (until >= timeout);	// so no funny overflow issues...
 		while (not fTriggered_) {
-			if (forever) {
-				fConditionVariable_.wait (lock);
+			CheckForThreadAborting ();
+			Time::DurationSecondsType	remaining	=	until - Time::GetTickCount ();
+			if (remaining < 0) {
+				DoThrow (WaitTimedOutException ());
 			}
-			else {
-				Time::DurationSecondsType	remaining	=	until - Time::GetTickCount ();
-				if (remaining < 0) {
-					DoThrow (WaitTimedOutException ());
-				}
-				if (fConditionVariable_.wait_for (lock, std::chrono::duration<double> (remaining)) == std::cv_status::timeout) {
-					DoThrow (WaitTimedOutException ());
-				}
+//tmphack til I figure out this lock/waiting stuff - 
+remaining = min (remaining, 5);
+			if (fConditionVariable_.wait_for (lock, std::chrono::duration<double> (remaining)) == std::cv_status::timeout) {
+//				DoThrow (WaitTimedOutException ());
 			}
 		}
 		fTriggered_ = false	;	// autoreset
