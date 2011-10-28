@@ -685,7 +685,7 @@ wstring	Execution::FormatThreadID (Thread::IDType threadID)
 		Assert (sizeof (threadID) >= sizeof (int));
 		if (sizeof (Thread::IDType) >= sizeof (uint64_t)) {
 			uint64_t	threadIDInt	=	*reinterpret_cast<uint64_t*> (&threadID);
-			return Characters::Format (L"0x%16lx", threadIDInt);
+			return Characters::Format (L"0x%016lx", threadIDInt);
 		}
 		else {
 			unsigned int	threadIDInt	=	*reinterpret_cast<unsigned int*> (&threadID);
