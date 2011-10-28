@@ -247,13 +247,7 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 			if (doRun) {
 				incRefCnt->Run ();
 			}
-			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
-			{
-				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-				incRefCnt->fStatus = eCompleted;
-			}
-			#if		qUseThreads_StdCPlusPlus
-
+#if		qUseThreads_StdCPlusPlus
 {
 sigset_t mySet;
 sigemptyset( & mySet );
@@ -261,6 +255,13 @@ sigemptyset( & mySet );
 ( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 }
+#endif
+			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+			{
+				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
+				incRefCnt->fStatus = eCompleted;
+			}
+			#if		qUseThreads_StdCPlusPlus
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
@@ -280,6 +281,11 @@ s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done 
 				incRefCnt->fStatus = eCompleted;
 			}
 			#if		qUseThreads_StdCPlusPlus
+				incRefCnt->fThreadDone_.Set ();
+			#endif
+		}
+		catch (...) {
+#if		qUseThreads_StdCPlusPlus
 {
 sigset_t mySet;
 sigemptyset( & mySet );
@@ -287,23 +293,13 @@ sigemptyset( & mySet );
 ( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 }
-				incRefCnt->fThreadDone_.Set ();
-			#endif
-		}
-		catch (...) {
+#endif
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
 				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 				incRefCnt->fStatus = eCompleted;
 			}
 			#if		qUseThreads_StdCPlusPlus
-{
-sigset_t mySet;
-sigemptyset( & mySet );
-( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
-s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
-}
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
