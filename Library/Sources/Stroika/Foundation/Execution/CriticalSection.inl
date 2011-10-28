@@ -18,7 +18,7 @@ namespace	Stroika {
 
 			
 		//	class	CriticalSection
-			inline	CriticalSection::CriticalSection () throw ()
+			inline	CriticalSection::CriticalSection ()
 				{
 				#if qUseThreads_WindowsNative
 					memset (&fCritSec, 0, sizeof(CRITICAL_SECTION));

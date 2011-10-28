@@ -26,7 +26,7 @@ namespace	Stroika {
 					NO_ASSIGNMENT_OPERATOR(CriticalSection);
 
 				public:
-					CriticalSection () throw ();
+					CriticalSection ();
 					~CriticalSection ();
 
 				public:
