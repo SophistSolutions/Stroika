@@ -255,16 +255,25 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 			#if		qUseThreads_StdCPlusPlus
 
 {
-sigset_t my_set;
-sigemptyset( & my_set );
-( void ) sigaddset( & new_set, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & my_set, NULL);
-s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag!
+sigset_t mySet;
+sigemptyset( & mySet );
+( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 }
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
 		catch (const ThreadAbortException&) {
+#if		qUseThreads_StdCPlusPlus
+{
+sigset_t mySet;
+sigemptyset( & mySet );
+( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
+}
+#endif
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
 				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
@@ -272,11 +281,11 @@ s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag
 			}
 			#if		qUseThreads_StdCPlusPlus
 {
-sigset_t my_set;
-sigemptyset( & my_set );
-( void ) sigaddset( & new_set, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & my_set, NULL);
-s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag!
+sigset_t mySet;
+sigemptyset( & mySet );
+( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 }
 				incRefCnt->fThreadDone_.Set ();
 			#endif
@@ -289,19 +298,25 @@ s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag
 			}
 			#if		qUseThreads_StdCPlusPlus
 {
-sigset_t my_set;
-sigemptyset( & my_set );
-( void ) sigaddset( & new_set, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & my_set, NULL);
-s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag!
+sigset_t mySet;
+sigemptyset( & mySet );
+( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 }
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
 	}
+	catch (const ThreadAbortException&) {
+DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught ThreadAbortException - see sigsetmask stuff above - somehow still not working");
+	}
 	catch (...) {
-		DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
-		AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
+DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
+		
+//SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
+// TI THINK ISSUE IS 
+AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
 	}
 }
 
