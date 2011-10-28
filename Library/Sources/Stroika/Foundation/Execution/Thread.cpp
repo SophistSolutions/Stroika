@@ -253,6 +253,14 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 				incRefCnt->fStatus = eCompleted;
 			}
 			#if		qUseThreads_StdCPlusPlus
+
+{
+sigset_t my_set;
+sigemptyset( & my_set );
+( void ) sigaddset( & new_set, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & my_set, NULL);
+s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag!
+}
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
@@ -263,6 +271,13 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 				incRefCnt->fStatus = eCompleted;
 			}
 			#if		qUseThreads_StdCPlusPlus
+{
+sigset_t my_set;
+sigemptyset( & my_set );
+( void ) sigaddset( & new_set, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & my_set, NULL);
+s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag!
+}
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
@@ -273,15 +288,20 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 				incRefCnt->fStatus = eCompleted;
 			}
 			#if		qUseThreads_StdCPlusPlus
+{
+sigset_t my_set;
+sigemptyset( & my_set );
+( void ) sigaddset( & new_set, GetSignalUsedForThreadAbort () );
+( void ) pthread_sigmask( SIG_BLOCK,  & my_set, NULL);
+s_Aborting = false;	else .Set() below will THROW EXCPETION and not set done flag!
+}
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
 	}
 	catch (...) {
 		DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
-		
-//SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
-		//AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
+		AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
 	}
 }
 
