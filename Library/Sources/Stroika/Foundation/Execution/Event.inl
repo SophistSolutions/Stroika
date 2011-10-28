@@ -58,6 +58,7 @@ namespace	Stroika {
 				}
 			inline	void	Event::Reset ()
 				{
+					//Debug::TraceContextBumper ctx (TSTR ("Event::Reset"));
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
 						Verify (::ResetEvent (fEventHandle));
@@ -71,6 +72,7 @@ namespace	Stroika {
 				}
 			inline	void	Event::Set ()
 				{
+					//Debug::TraceContextBumper ctx (TSTR ("Event::Set"));
 					#if			qPlatform_Windows
 						AssertNotNull (fEventHandle);
 						Verify (::SetEvent (fEventHandle));
