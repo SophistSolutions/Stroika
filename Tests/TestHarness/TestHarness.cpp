@@ -88,7 +88,7 @@ void	TestHarness::PrintPassOrFail (void (*regressionTest) ())
 		DbgTrace ("FAILED: REGRESSION TEST (std::exception): '%s", e.what ());
 		_exit (EXIT_FAILURE);
 	}
-	catch (Execution::StringException& e) {
+	catch (const Execution::StringException& e) {
 		cerr << "FAILED: REGRESSION TEST (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
 		cout << "Failed" << endl;
 		DbgTrace (L"FAILED: REGRESSION TEST (std::exception): '%s", e.As<wstring> ().c_str ());

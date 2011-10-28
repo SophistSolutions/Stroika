@@ -256,7 +256,7 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 				incRefCnt->fThreadDone_.Set ();
 			#endif
 		}
-		catch (ThreadAbortException&) {
+		catch (const ThreadAbortException&) {
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
 				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
