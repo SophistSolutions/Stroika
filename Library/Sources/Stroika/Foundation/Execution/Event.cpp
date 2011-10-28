@@ -10,6 +10,13 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Execution;
 
 
+/*
+ * TODO:
+ *			o	POSIX/C++ code below on wiat is a HORRIBLE KLUGE. Unclear if it was a red-herring or 
+ *				osmething like that needed. Review once threading stuff stable.
+ *					-- LGP 2011-10-27
+ */
+
 
 
 /*
