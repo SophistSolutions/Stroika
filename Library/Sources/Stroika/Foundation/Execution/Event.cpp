@@ -45,7 +45,9 @@ void	Event::Wait (Time::DurationSecondsType timeout)
 				DoThrow (WaitTimedOutException ());
 			}
 //tmphack til I figure out this lock/waiting stuff - 
-remaining = min (remaining, 5);
+if (remaining > 5) {
+	remaining = 5;
+}
 			if (fConditionVariable_.wait_for (lock, std::chrono::duration<double> (remaining)) == std::cv_status::timeout) {
 //				DoThrow (WaitTimedOutException ());
 			}
