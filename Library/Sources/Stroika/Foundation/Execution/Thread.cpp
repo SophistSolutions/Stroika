@@ -578,6 +578,7 @@ void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 {
 	Debug::TraceContextBumper ctx (TSTR ("Thread::WaitForDone"));
+	//DbgTrace ("(timeout = %.2f)", timeout);
 	if (fRep_.IsNull ()) {
 		// then its effectively already done.
 		return;
