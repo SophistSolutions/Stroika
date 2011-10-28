@@ -279,7 +279,9 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 	}
 	catch (...) {
 		DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
-		AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
+		
+//SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
+		//AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
 	}
 }
 
@@ -575,6 +577,7 @@ void	Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 
 void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 {
+	Debug::TraceContextBumper ctx (TSTR ("Thread::WaitForDone"));
 	if (fRep_.IsNull ()) {
 		// then its effectively already done.
 		return;
@@ -587,9 +590,7 @@ void	Thread::WaitForDone (Time::DurationSecondsType timeout) const
 	}
 	bool	doWait	=	false;
 	#if		qUseThreads_StdCPlusPlus
-		#if		qUseThreads_StdCPlusPlus
-			fRep_->fThreadDone_.Wait (timeout);		// this will throw on timeout...
-		#endif
+		fRep_->fThreadDone_.Wait (timeout);		// this will throw on timeout...
 		// If not joinable, presume that means cuz it sdone
 		if (fRep_->fThread_.joinable  ()) {
 			// this will block indefinitely - but if a timeout was specified
