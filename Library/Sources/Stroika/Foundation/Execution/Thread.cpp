@@ -211,7 +211,7 @@ void	Thread::Rep_::Run () override
 	fRunnable->Run ();
 }
 
-void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ()
+void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 {
 	RequireNotNull (thisThreadRep);
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::ThreadMain_"));

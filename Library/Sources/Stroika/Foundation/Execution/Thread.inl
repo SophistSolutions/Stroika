@@ -70,7 +70,7 @@ namespace	Stroika {
 					nonvirtual	void	ThrowAbortIfNeeded () const;
 
 				private:
-					static	void	ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) throw ();
+					static	void	ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept;
 
 			#if			qUseThreads_WindowsNative
 				private:

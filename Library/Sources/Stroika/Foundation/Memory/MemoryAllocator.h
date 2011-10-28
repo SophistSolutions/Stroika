@@ -104,7 +104,7 @@ namespace	Stroika {
 						nonvirtual	void	destroy (pointer p);
 					
 					public:
-						nonvirtual	size_t	max_size() const throw ();
+						nonvirtual	size_t	max_size() const noexcept;
 					
 					public:
 						nonvirtual	bool	operator== (const STLAllocator<T,BASE_ALLOCATOR>& rhs) const;

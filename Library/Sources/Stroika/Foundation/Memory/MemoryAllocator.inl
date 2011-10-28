@@ -83,7 +83,7 @@ namespace	Stroika {
 						p->~T ();
 					}
 			template <typename T, typename BASE_ALLOCATOR>
-				inline	size_t	STLAllocator<T,BASE_ALLOCATOR>::max_size () const throw ()
+				inline	size_t	STLAllocator<T,BASE_ALLOCATOR>::max_size () const noexcept
 					{
 						return numeric_limits<size_type>::max () / sizeof (T);
 					}

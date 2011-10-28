@@ -98,6 +98,33 @@
 	#endif
 
 
+
+	/*
+	@CONFIGVAR:		qCompilerAndStdLib_Supports_noexcept
+	@DESCRIPTION:	<p>Defined true if the compiler supports noexcept</p>
+	*/
+	#ifndef	qCompilerAndStdLib_Supports_noexcept
+		#if		defined (__GNUC__)
+			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
+				#define	qCompilerAndStdLib_Supports_noexcept	1
+			#else
+				#define	qCompilerAndStdLib_Supports_noexcept	0
+			#endif
+		#elif	defined (_MSC_VER) && _MSC_VER <= 1600
+			#define	qCompilerAndStdLib_Supports_noexcept	0
+		#else
+			// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+			#define	qCompilerAndStdLib_Supports_noexcept	1
+		#endif
+	#endif
+
+	// SHOULD GO ELSEWHERE -- LGP 2011-10-27
+	#if		!qCompilerAndStdLib_Supports_noexcept
+		#define	noexcept	throw  ()
+	#endif
+
+
+
 	#ifndef	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate
 		#if		defined (__GNUC__)
 			#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ == 5))
