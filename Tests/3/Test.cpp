@@ -332,11 +332,8 @@ namespace	{
 			RegressionTest4_Lockable_ ();
 			RegressionTest5_Aborting_ ();
 			RegressionTest6_ThreadWaiting_ ();
-#if qPlatform_Windows
-//tmphack disable test on posix til we have it working!
 			RegressionTest7_SimpleThreadPool_ ();
 			RegressionTest8_ThreadPool_ ();
-#endif
 		}
 }
 
