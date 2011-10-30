@@ -247,14 +247,9 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 			if (doRun) {
 				incRefCnt->Run ();
 			}
-#if		qUseThreads_StdCPlusPlus
-{
-sigset_t mySet;
-sigemptyset( & mySet );
-( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+#if		qUseThreads_StdCPlusPlus && qPlatform_POSIX
+ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
-}
 #endif
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
@@ -266,14 +261,9 @@ s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done 
 			#endif
 		}
 		catch (const ThreadAbortException&) {
-#if		qUseThreads_StdCPlusPlus
-{
-sigset_t mySet;
-sigemptyset( & mySet );
-( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+#if		qUseThreads_StdCPlusPlus && qPlatform_POSIX
+ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
-}
 #endif
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
@@ -285,14 +275,9 @@ s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done 
 			#endif
 		}
 		catch (...) {
-#if		qUseThreads_StdCPlusPlus
-{
-sigset_t mySet;
-sigemptyset( & mySet );
-( void ) sigaddset( & mySet, GetSignalUsedForThreadAbort () );
-( void ) pthread_sigmask( SIG_BLOCK,  & mySet, NULL);
+#if		qUseThreads_StdCPlusPlus && qPlatform_POSIX
+ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
-}
 #endif
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
