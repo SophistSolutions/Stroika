@@ -64,7 +64,7 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 					catch (...) {
 						AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
 						fCurTask_.clear ();
-						// other excpetions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
+						// other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
 					}
 				}
 			}
