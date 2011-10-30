@@ -269,7 +269,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType sig
 
 ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
 {
-	//DbgTrace (L"ScopedBlockCurrentThreadSignal restoriing signals for %s", SignalToName (signal).c_str ());
+	//DbgTrace (L"ScopedBlockCurrentThreadSignal restoriing signals for %s", SignalToName (fSignal_).c_str ());
 	Verify (pthread_sigmask (SIG_SETMASK,  &fRestoreMask_, nullptr) == 0);
 }
 #endif
