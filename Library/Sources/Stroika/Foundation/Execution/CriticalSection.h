@@ -35,7 +35,7 @@ namespace	Stroika {
 
 				public:
 					template	<typename T>
-						T	As ();
+						nonvirtual	T	As ();
 
 				#if		qUseThreads_StdCPlusPlus
 				private:
