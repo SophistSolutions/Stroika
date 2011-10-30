@@ -287,6 +287,9 @@ s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done 
 	}
 	catch (const ThreadAbortException&) {
 DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught ThreadAbortException - see sigsetmask stuff above - somehow still not working");
+//SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
+// TI THINK ISSUE IS 
+AssertNotReached ();	// This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
 	}
 	catch (...) {
 DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
