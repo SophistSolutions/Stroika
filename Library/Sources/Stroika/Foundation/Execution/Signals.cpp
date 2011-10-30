@@ -259,6 +259,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType sig
 	: fSignal_ (signal)
 	, fRestoreMask_ ()
 {
+	//DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
 	sigset_t	mySet;
 	sigemptyset (&mySet);
 	(void)::sigaddset (&mySet, signal);
@@ -268,6 +269,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType sig
 
 ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
 {
+	//DbgTrace (L"ScopedBlockCurrentThreadSignal restoriing signals for %s", SignalToName (signal).c_str ());
 	Verify (pthread_sigmask (SIG_SETMASK,  &fRestoreMask_, nullptr) == 0);
 }
 #endif
