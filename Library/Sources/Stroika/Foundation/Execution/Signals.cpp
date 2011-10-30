@@ -244,3 +244,30 @@ void	Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 		AssertNotImplemented ();
 	#endif
 }
+
+
+
+
+
+#if		qPlatform_POSIX
+/*
+ ********************************************************************************
+ ************* Execution::ScopedBlockCurrentThreadSignal ************************
+ ********************************************************************************
+ */
+ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType signal)
+	: fSignal_ (signal)
+	, fRestoreMask_ ()
+{
+	sigset_t	mySet;
+	sigemptyset (&mySet);
+	(void)::sigaddset (&mySet, signal);
+	sigemptyset (&fRestoreMask_);			// Unclear if this emptyset call is needed?
+	Verify (pthread_sigmask (SIG_BLOCK,  &mySet, &fRestoreMask_) == 0);
+}
+
+ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
+{
+	Verify (pthread_sigmask (SIG_SETMASK,  &fRestoreMask_, nullptr) == 0);
+}
+#endif

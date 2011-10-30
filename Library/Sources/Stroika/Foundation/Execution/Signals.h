@@ -149,6 +149,25 @@ namespace	Stroika {
 			 */
 			void	SendSignal (Thread::NativeHandleType h, SignalIDType signal);
 
+
+			#if		qPlatform_POSIX
+			/*
+			 * For the lifetime of this object - save the initial signal block state for the given signal, and then block the given signal.
+			 */
+			class	ScopedBlockCurrentThreadSignal {
+				public:
+					ScopedBlockCurrentThreadSignal (SignalIDType signal);
+					~ScopedBlockCurrentThreadSignal ();
+				private:
+					NO_DEFAULT_CONSTRUCTOR (ScopedBlockCurrentThreadSignal);
+					NO_COPY_CONSTRUCTOR (ScopedBlockCurrentThreadSignal);
+					NO_ASSIGNMENT_OPERATOR (ScopedBlockCurrentThreadSignal);
+
+				private:
+					SignalIDType	fSignal_;
+					sigset_t		fRestoreMask_;
+			};
+			#endif
 		}
 	}
 }
