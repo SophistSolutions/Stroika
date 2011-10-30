@@ -230,11 +230,16 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 			incRefCnt->fTLSAbortFlag = &s_Aborting;
 		#endif
 
-		incRefCnt->fRefCountBumpedEvent_.Set ();
-
-		incRefCnt->fOK2StartEvent_.Wait ();	// we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
-											// we really want to start this thread.
 		try {
+			// We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
+			// baring an external process sending us a bogus signal)
+			//
+			// Note that BOTH the fRefCountBumpedEvent_ and the fOK2StartEvent_ wait MUST come inside the try/catch for 
+			incRefCnt->fRefCountBumpedEvent_.Set ();
+
+			incRefCnt->fOK2StartEvent_.Wait ();	// we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
+												// we really want to start this thread.
+
 			DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			bool	doRun	=	false;
 			{
