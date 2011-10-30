@@ -247,10 +247,6 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 			if (doRun) {
 				incRefCnt->Run ();
 			}
-#if		qUseThreads_StdCPlusPlus && qPlatform_POSIX
-ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
-#endif
 			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
 				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
@@ -265,7 +261,7 @@ s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done 
 ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 #endif
-			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
 				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 				incRefCnt->fStatus = eCompleted;
@@ -279,7 +275,7 @@ s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done 
 ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 s_Aborting = false;		//	else .Set() below will THROW EXCPETION and not set done flag!
 #endif
-			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+			DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 			{
 				AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
 				incRefCnt->fStatus = eCompleted;
