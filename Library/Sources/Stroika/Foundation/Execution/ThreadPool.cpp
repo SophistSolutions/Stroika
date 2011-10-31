@@ -86,7 +86,7 @@ class	ThreadPool::MyRunnable_ : public IRunnable {
 
 /*
  ********************************************************************************
- ********************************* Execution::ThreadPool ************************
+ ****************************** Execution::ThreadPool ***************************
  ********************************************************************************
  */
 ThreadPool::ThreadPool (unsigned int nThreads)
@@ -125,7 +125,6 @@ void	ThreadPool::SetPoolSize (unsigned int poolSize)
 		//		(1)	HOIRRIBLE - NOW
 		fThreads_.resize (poolSize);	// remove some off the end. OK if they are running?
 	}
-	
 }
 
 void	ThreadPool::AddTask (const TaskType& task)
