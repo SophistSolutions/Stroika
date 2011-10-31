@@ -51,7 +51,7 @@ namespace	Stroika {
 							timespec	ts;
 							ts.tv_sec = static_cast<time_t> (seconds2Wait);
 							ts.tv_nsec = static_cast<long> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
-							Assert (0 >= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
+							Assert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
 							timespec	nextTS;
 							(void)::nanosleep (&ts, &nextTS);
 							*remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
