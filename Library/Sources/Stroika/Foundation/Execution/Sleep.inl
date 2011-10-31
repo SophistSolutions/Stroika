@@ -53,8 +53,12 @@ namespace	Stroika {
 							ts.tv_nsec = static_cast<long> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
 							Assert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
 							timespec	nextTS;
-							(void)::nanosleep (&ts, &nextTS);
-							*remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
+							if (::nanosleep (&ts, &nextTS) == 0) {
+								*remainingInSleep = 0;
+							}
+							else {
+								*remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
+							}
 						#else
 							AssertNotImplemented ();
 						#endif
