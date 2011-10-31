@@ -63,9 +63,10 @@ namespace	Stroika {
 						AssertNotNull (fEventHandle);
 						Verify (::ResetEvent (fEventHandle));
 					#elif		qUseThreads_StdCPlusPlus
-						fMutex_.lock ();
-						fTriggered_ = false;
-						fMutex_.unlock ();
+						{
+							std::lock_guard<std::mutex>	lockGaurd (fMutex_);
+							fTriggered_ = false;
+						}
 					#else
 						AssertNotImplemented ();
 					#endif
@@ -77,10 +78,11 @@ namespace	Stroika {
 						AssertNotNull (fEventHandle);
 						Verify (::SetEvent (fEventHandle));
 					#elif		qUseThreads_StdCPlusPlus
-						fMutex_.lock ();
-						fTriggered_ = true;
-						fConditionVariable_.notify_all ();
-						fMutex_.unlock ();
+						{
+							std::lock_guard<std::mutex>	lockGaurd (fMutex_);
+							fTriggered_ = true;
+							fConditionVariable_.notify_all ();
+						}
 					#else
 						AssertNotImplemented ();
 					#endif

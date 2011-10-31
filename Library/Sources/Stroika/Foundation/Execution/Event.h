@@ -20,6 +20,12 @@
 #include	"Exceptions.h"
 
 
+
+/*
+ * TODO:
+ *		o	Consider if there is a need for timed mutexes.
+ *
+ */
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
@@ -60,7 +66,6 @@ namespace	Stroika {
 				#if			qPlatform_Windows
 				public:
 					operator HANDLE () const;
-
 				private:
 					HANDLE	fEventHandle;
 				#endif
