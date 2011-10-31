@@ -21,19 +21,34 @@ namespace	{
 		}
 	void (*sFatalErrorHandler_) (const TChar* msg)		=	nullptr;		// our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
 
-	void	_DefaultTerminateHandler_ ()
+	void	TerminateHandler_ ()
 		{
 			(sFatalErrorHandler_) (TSTR ("std::terminate () called"));
 		}
-	void	_DefaultUnexpectedHandler_ ()
+	void	UnexpectedHandler_ ()
 		{
 			(sFatalErrorHandler_) (TSTR ("std::unexpected () called"));
 		}
+	#if		qPlatform_Windows
+	void	PurecallHandler_ ()
+		{
+			(sFatalErrorHandler_) (TSTR ("purecall_handler_ () called"));
+		}
+	#endif
 }
+
+
+
+
+
 
 void	Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const TChar* msg))
 {
 	sFatalErrorHandler_ = (fatalErrorHandler == nullptr)? _DefaultFatalErorrHandler_ : fatalErrorHandler;
-	set_terminate (_DefaultTerminateHandler_);
-	set_unexpected (_DefaultUnexpectedHandler_);
+	set_terminate (TerminateHandler_);
+	set_unexpected (UnexpectedHandler_);
+	#if		qPlatform_Windows
+		// Not C++ standard - just msvc error call
+		(void)_set_purecall_handler (PurecallHandler_);
+	#endif
 }

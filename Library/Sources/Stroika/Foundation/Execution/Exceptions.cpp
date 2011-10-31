@@ -177,28 +177,3 @@ void	Execution::RegisterDefaultHandler_invalid_parameter ()
 
 
 
-
-
-#if		qPlatform_Windows
-/*
- ********************************************************************************
- ********** Execution::RegisterDefaultHandler_pure_function_call ***************
- ********************************************************************************
- */
-	namespace	{
-		void	purecall_handler_ ()
-			{
-				TraceContextBumper	trcCtx (TSTR ("purecall_handler_"));
-				Assert (false);
-				throw Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER);	// not sure better # / exception to throw?
-			}
-	}
-void	Execution::RegisterDefaultHandler_pure_function_call ()
-{
-	(void)_set_purecall_handler (purecall_handler_);
-}
-#endif
-
-
-
-
