@@ -14,14 +14,11 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-			// MAIN reason to use this - is it sets the 'alertable' flag on the sleep, so the QueueUserAPC () stuff works!
-			// which allows Thread::Abort () to work properly...
-			// -- LGP 2009-04-28
-
 			/*
 			 * The portable Sleep() function - will wait the given amount of time - blocking the running thread.
 			 * It CAN be interupted. If interupted, one overload will return the amount of time remaining, allowing
-			 * easy re-sleeping.
+			 * easy re-sleeping. The other overload (/1) - will check for aborting, but otherwise keep sleeping
+			 * through interupts until the time has elapsed.
 			 *
 			 * Causes for interuption are platform specific. Some platform specific notes:
 			 *

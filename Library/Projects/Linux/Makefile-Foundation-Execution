@@ -23,6 +23,7 @@ Objs	=	\
 	$(ObjDir)ProgressMonitor.o\
 	$(ObjDir)SimpleRunnable.o\
 	$(ObjDir)Signals.o\
+	$(ObjDir)Sleep.o\
 	$(ObjDir)Thread.o\
 	$(ObjDir)ThreadPool.o\
 	$(ObjDir)WaitAbandonedException.o\
