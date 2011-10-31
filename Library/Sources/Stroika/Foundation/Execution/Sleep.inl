@@ -47,10 +47,10 @@ namespace	Stroika {
 								*remainingInSleep = remaining;
 							}
 						#elif		qPlatform_POSIX
-							timespec	ts;
-							ts.tv_sec = int (seconds2Wait);
 							const	long	kNanoSecondsPerSecond	=	1000L * 1000L * 1000L;
-							ts.tv_nsec = static_cast<time_t> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
+							timespec	ts;
+							ts.tv_sec = static_cast<time_t> (seconds2Wait);
+							ts.tv_nsec = static_cast<long> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
 							Assert (0 >= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
 							timespec	nextTS;
 							(void)::nanosleep (&ts, &nextTS);
