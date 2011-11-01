@@ -203,6 +203,8 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles/$platform/$target/Tools/Frameworks/";
 		mkdir "$intermediateFiles/$platform/$target/Tools/Frameworks/WebServer";
 		mkdir "$intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/HTMLViewCompier";
+		system ("ln -s ../../../../../Tools/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Tools/Frameworks/Makefile");
+		system ("ln -s ../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/Makefile");
 		system ("ln -s ../../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/HTMLViewCompier/Makefile");
 
 		mkdir "$intermediateFiles/$platform/$target/Test1";

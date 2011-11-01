@@ -1,0 +1,26 @@
+include	../../../Library/Configuration.mk
+include	../../../Library/SharedBuildRules.mk
+include	../../../Library/SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Tools/Sources/Stroika/Frameworks/WebServer/
+
+
+VPATH		=	$(SrcDir) $(StroikaLibDir)
+
+SubDirs=				\
+	HTMLViewCompiler	\
+
+
+
+
+all:	$(SubDirs)
+	@for i in $(SubDirs);\
+	do\
+	    (cd $$i; make -s all)\
+	done
+
+
+Build:	all
+
+
