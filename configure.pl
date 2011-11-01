@@ -32,6 +32,7 @@ my @useExtraMakeDefines;
 my $ENABLE_ASSERTIONS = 1;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
+my $STATIC_LINK_GCCRUNTIME = 1;
 
 
 
@@ -337,8 +338,9 @@ sub WriteStroikaConfigMakeHeader
 	
 	
 	print (OUT "\n");
-	print (OUT "ENABLE_ASSERTIONS=	$ENABLE_ASSERTIONS\n");
-	print (OUT "INCLUDE_SYMBOLS=		$INCLUDE_SYMBOLS\n");
+	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");
+	print (OUT "ENABLE_ASSERTIONS=		$ENABLE_ASSERTIONS\n");
+	print (OUT "INCLUDE_SYMBOLS=			$INCLUDE_SYMBOLS\n");
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "# Can be blank, or -O2, etc..\n");

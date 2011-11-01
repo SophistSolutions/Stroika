@@ -70,3 +70,14 @@ endif
 ifeq ($(INCLUDE_SYMBOLS), 1)
 	CFLAGS += -g
 endif
+
+
+
+ifndef StroikaLinkerArgs
+	StroikaLinkerArgs	= 
+endif
+if STATIC_LINK_GCCRUNTIME
+	StroikaLinkerArgs	+=  -static-libgcc  -static-libstdc++
+else
+	StroikaLinkerArgs	+=  -shared-libgcc  -shared-libstdc++
+endif
