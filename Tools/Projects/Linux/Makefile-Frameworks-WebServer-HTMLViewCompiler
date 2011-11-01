@@ -1,8 +1,8 @@
-include ../../Configuration.mk
-include	../../SharedBuildRules.mk
-include	../../SharedMakeVariables.mk
+include	../../../../Library/Configuration.mk
+include	../../../../Library/SharedBuildRules.mk
+include	../../../../Library/SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot		=	../../../../../../
+RelPathToStroikaDevRoot		=	../../../../../../../
 SrcDir						=       $(RelPathToStroikaDevRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/
 
 VPATH = $(SrcDir)
