@@ -300,7 +300,7 @@ class	CompilerApp {
 
 
 #if		defined (__TCHAR_DEFINED)
-int		_tmain (int argc, _TCHAR* argv[])
+int		_tmain (int argc, const _TCHAR* argv[])
 #else
 int		main (int argc, const char* argv[])
 #endif
