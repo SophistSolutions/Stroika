@@ -76,7 +76,7 @@ endif
 ifndef StroikaLinkerArgs
 	StroikaLinkerArgs	= 
 endif
-if STATIC_LINK_GCCRUNTIME
+ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
 	StroikaLinkerArgs	+=  -static-libgcc  -static-libstdc++
 else
 	StroikaLinkerArgs	+=  -shared-libgcc  -shared-libstdc++
