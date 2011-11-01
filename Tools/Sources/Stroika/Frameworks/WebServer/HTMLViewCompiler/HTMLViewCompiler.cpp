@@ -54,7 +54,7 @@ class	CompilerApp {
 		CompilerApp ():
 			fInputFile (),
 			fOutputFile (),
-			fFormGeneratorName (_T ("Form_Generator"))
+			fFormGeneratorName (TSTR ("Form_Generator"))
 			{
 			}
 
@@ -63,7 +63,7 @@ class	CompilerApp {
 			}
 
 	public:
-		nonvirtual	void	Run (int argc, _TCHAR* argv[])
+		nonvirtual	void	Run (int argc, TChar* argv[])
 			{
 				if (ParseArgs_ (argc, argv)) {
 					fstream	in;
@@ -91,16 +91,16 @@ class	CompilerApp {
 			}
 
 	private:
-		nonvirtual	bool	ParseArgs_ (int argc, _TCHAR* argv[])
+		nonvirtual	bool	ParseArgs_ (int argc, TChar* argv[])
 			{
 				int	fileCount	=	0;
 				bool	gettingName = false;
 				for (int i = 1; i < argc; ++i) {
-					const _TCHAR*	argi	=	argv[i];
+					const TChar*	argi	=	argv[i];
 					if (argi != NULL) {
 						if (argi[0] == '-' or argi[0] == '/') {
 							size_t	optCharIdx	=	1;
-							_TCHAR	optChar		=	argi[optCharIdx];
+							TChar	optChar		=	argi[optCharIdx];
 							if (optChar == '-' and argi[0] == '-') {
 								optCharIdx++;
 								optChar = argi[optCharIdx];
