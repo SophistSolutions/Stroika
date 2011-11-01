@@ -7,6 +7,7 @@
 #include	<iostream>
 
 #include	"Stroika/Foundation/Characters/TString.h"
+#include	"Stroika/Foundation/Characters/StringUtils.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Execution/StringException.h"
 #include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
@@ -63,7 +64,7 @@ class	CompilerApp {
 			}
 
 	public:
-		nonvirtual	void	Run (int argc, TChar* argv[])
+		nonvirtual	void	Run (int argc, const TChar* argv[])
 			{
 				if (ParseArgs_ (argc, argv)) {
 					fstream	in;
@@ -91,7 +92,7 @@ class	CompilerApp {
 			}
 
 	private:
-		nonvirtual	bool	ParseArgs_ (int argc, TChar* argv[])
+		nonvirtual	bool	ParseArgs_ (int argc, const TChar* argv[])
 			{
 				int	fileCount	=	0;
 				bool	gettingName = false;
@@ -254,7 +255,7 @@ class	CompilerApp {
 						}
 						else {
 							char	buf[1024];
-							(void)::_snprintf (buf, NEltsOf (buf), "\" L\"\\x%x\" L\"", *i);
+							(void)::snprintf (buf, NEltsOf (buf), "\" L\"\\x%x\" L\"", *i);
 							out << buf;
 						}
 					}
