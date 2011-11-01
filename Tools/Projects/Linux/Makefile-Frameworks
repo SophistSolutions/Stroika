@@ -17,7 +17,7 @@ SubDirs=				\
 all:	$(SubDirs)
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make -s all)\
+	    (cd $$i && make -s all)\
 	done
 
 
