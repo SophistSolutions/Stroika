@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 #include	"Stroika/Frameworks/StroikaPreComp.h"
 
@@ -26,6 +26,7 @@ const	wchar_t	kMagicWriteChar	=	'=';	// if first char after open tag - treat as 
 
 
 namespace	{
+	// TODO:		REDO USING STROIKA TEXTSTREAM CODE
 	wstring	ReadTextStream_ (istream& in)
 		{
 			streamoff	start	=	in.tellg ();
@@ -45,6 +46,8 @@ namespace	{
 			return MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
 		}
 }
+
+
 
 class	CompilerApp {
 	public:

@@ -5,7 +5,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-print ("Building library...\n");
+print ("Building tools...\n");
 
 my $useBld = lc ($BLD_TRG);
 if ("$^O" eq "linux") {
@@ -13,12 +13,10 @@ if ("$^O" eq "linux") {
 		$useBld = "all";
 	}
 	if ($useBld eq "rebuild") {
-	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make clobber");
-	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make clobber");
+		system ("cd ../IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/; make clobber");
 		$useBld = "all";
 	}
-    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make $useBld");
-    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make $useBld");
+    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/; make $useBld");
 }
 else {
     system ("cd Projects/VisualStudio.Net-2010; perl buildall.pl $useBld");

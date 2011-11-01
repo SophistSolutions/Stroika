@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-print ("Checking Library...\n");
+print ("Checking Tests...\n");
 if ("$^O" eq "linux") {
 	system ("cd Projects/Linux; perl checkall.pl");
 }

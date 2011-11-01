@@ -3,14 +3,11 @@ include	../../SharedBuildRules.mk
 include	../../SharedMakeVariables.mk
 
 RelPathToStroikaDevRoot		=	../../../../../../
-SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/WebServer/
+SrcDir						=       $(RelPathToStroikaDevRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/
 
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)HTTPConnection.o\
-	$(ObjDir)HTTPRequest.o\
-	$(ObjDir)HTTPRequestHandler.o\
-	$(ObjDir)HTTPResponse.o\
+	$(ObjDir)HTMLViewCompiler.o\
 
 all:	$(Objs)

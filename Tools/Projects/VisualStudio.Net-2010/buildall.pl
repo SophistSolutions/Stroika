@@ -5,7 +5,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-require "SetupBuildCommonVars.pl";
+require "../../../Library/Projects/VisualStudio.Net-2010/SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 
@@ -49,27 +49,9 @@ my @kConfigurations = (
 					);
 
 
-print("Building Stroika-Foundation...\n");
+print("Building StroikaTools-Frameworks-WebServer-HTMLViewCompiler...\n");
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Foundation.vcxproj /p:$curConfig /target:$useBld");
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:$curConfig /target:$useBld");
 }
 
-
-print("Building Stroika-Frameworks...\n");
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$useBld");
-}
