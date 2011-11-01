@@ -20,12 +20,6 @@
 
 /*
  * TODO:
- *		Very early stage draft.
- *
- *		(o)	First priority is getting this working on UNIX.
- *
- *		(o)	Though UNIX/Windows are differnt - empahize similaries for how the both work.
- *
  *		(o)	For UNIX
  *
  *			(o)	Store in file system file with current PID.
@@ -34,9 +28,7 @@
  *
  *			(o)	Must have generic signal handler registered (at least for TERMINATE/STOP/CONTINUE, SIGNIT (re-read conf))
  *
- *			(o)	
- *
- *		(o)	Later do Windoze implementation - supproting the richer set of control mechanism.
+ *		(o)	Windoze implementation - supproting the richer set of control mechanism.
  */
 
 namespace	Stroika {	
