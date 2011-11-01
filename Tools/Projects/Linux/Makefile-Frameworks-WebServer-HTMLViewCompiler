@@ -7,7 +7,16 @@ SrcDir						=       $(RelPathToStroikaDevRoot)Tools/Sources/Stroika/Frameworks/W
 
 VPATH = $(SrcDir)
 
+TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/HTMLViewCompiler
+
+
 Objs	=	\
 	$(ObjDir)HTMLViewCompiler.o\
 
-all:	$(Objs)
+all:	$(TARGETEXE)
+
+
+$(TARGETEXE):	$(Objs)
+	$(Linker) -o $(TARGETEXE) $(Objs) $(StroikaLibsWithSupportLibs)
+
+
