@@ -127,7 +127,7 @@
  *	SPR#1190 - changed name for (TextImager/Led_Tablet_)::HilightARectangle to HilightArea
  *	
  *	Revision 2.115  2002/11/04 01:03:25  lewis
- *	fix syntax error (typename) whcih made gcc barf
+ *	fix syntax error (typename) which made gcc barf
  *	
  *	Revision 2.114  2002/11/01 18:34:49  lewis
  *	change calls to LPtoDP, GetWindowOrgEx and GetViewportOrgEx from using m_hDC to using m_hAttribDC as
@@ -174,7 +174,7 @@
  *	operator< since that really doesn't make much sense for a color
  *	
  *	Revision 2.102  2002/10/08 15:49:16  lewis
- *	when constructing a Led_Region whcih is empty (but not 0,0,0,0) Win32 creates a 0,0,0,0 region.
+ *	when constructing a Led_Region which is empty (but not 0,0,0,0) Win32 creates a 0,0,0,0 region.
  *	Treat this as OK in Led_Region CTOR (ie dont assert out)
  *	
  *	Revision 2.101  2002/09/18 04:00:46  lewis
@@ -229,7 +229,7 @@
  *	Revision 2.86  2001/09/12 14:53:29  lewis
  *	SPR#0987- Added conditional UseSecondaryHilight support (macos&win32 only so far). Redo
  *	Led_Region support for MacOS so now more like with PC (no operator conversion to macregion
- *	and auto constructs OSRegion except when called with region arg - in whcih case we dont OWN
+ *	and auto constructs OSRegion except when called with region arg - in which case we dont OWN
  *	region and dont delete it on DTOR
  *	
  *	Revision 2.85  2001/09/11 22:29:14  lewis

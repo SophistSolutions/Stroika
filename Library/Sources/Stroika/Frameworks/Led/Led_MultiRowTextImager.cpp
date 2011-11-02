@@ -188,7 +188,7 @@
  *	Revision 2.84  2001/09/12 14:53:31  lewis
  *	SPR#0987- Added conditional UseSecondaryHilight support (macos&win32 only so far). Redo
  *	Led_Region support for MacOS so now more like with PC (no operator conversion to macregion
- *	and auto constructs OSRegion except when called with region arg - in whcih case we dont
+ *	and auto constructs OSRegion except when called with region arg - in which case we dont
  *	OWN region and dont delete it on DTOR
  *	
  *	Revision 2.83  2001/08/29 23:39:13  lewis

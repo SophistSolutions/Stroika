@@ -206,7 +206,7 @@
 /*
  *	Code to test how FriBidi does compared with UNISCRIBE for laying out Arabic text. for plain English text
  *	these are the same. But - even simple Arabic files seem to produce different results between FriBidi and
- *	UNISCRIBE. For example - an Arabic string whcih ends in a period - with FriBidi - it all ends up as one
+ *	UNISCRIBE. For example - an Arabic string which ends in a period - with FriBidi - it all ends up as one
  *	LTR run. But - with UNISCRIBE - you get two runs - and the period comes out on the right.
  */
 #ifndef	qTestUNISCRIBEResultsEqualFriBidi

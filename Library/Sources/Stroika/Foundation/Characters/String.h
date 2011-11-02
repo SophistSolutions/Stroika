@@ -87,7 +87,7 @@
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
 	(2)	Implement the UTF8 functions
 	(3)	Fix / Re-impemlement the SharedByValue() code to not store a POINTER to clone function. Best option is to use FUNCTOR
-		whcih is stored in SharedByValue object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use
+		which is stored in SharedByValue object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use
 		some kind of overload so there is a no-cost way todo the most common case of a static (per type) Clone function.
 	(4)	Migrate most of the StringUtils stuff here like:
 			> Contains- with CI optin

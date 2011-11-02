@@ -27,7 +27,7 @@ namespace	Stroika {
 					TString	GetMyDocuments (bool createIfNotPresent = true);
 
 					/*
-					 * Return directory whcih contains top-level application data - which should be persistent. Store long-term applicaiton
+					 * Return directory which contains top-level application data - which should be persistent. Store long-term applicaiton
 					 * data (which is not user specific) such as databases etc here.
 					 */
 					TString	GetApplicationData (bool createIfNotPresent = true);

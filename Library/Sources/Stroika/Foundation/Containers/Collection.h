@@ -140,7 +140,7 @@ namespace	Stroika {
 
 					public:
 						/*
-						 * This function returns an iterator whcih can be used to walk over the items in teh given collection.
+						 * This function returns an iterator which can be used to walk over the items in teh given collection.
 						 */
 						nonvirtual	typename Iterator<T>	MakeIterator () const;
 
