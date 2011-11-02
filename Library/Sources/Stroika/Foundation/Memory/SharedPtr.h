@@ -216,17 +216,57 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	bool		IsNull () const;
+					/*
+					@METHOD:		SharedPtr<T>::GetRep
+					@DESCRIPTION:	<p>Requires that the pointer is non-nullptr.</p>
+					*/
 					nonvirtual	T&			GetRep () const;
 
 				public:
+					/*
+					@METHOD:		SharedPtr<T>::operator->
+					@DESCRIPTION:	<p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
+					*/
 					nonvirtual	T* operator-> () const;
+					/*
+					@METHOD:		SharedPtr<T>::operator*
+					@DESCRIPTION:	<p></p>
+					*/
 					nonvirtual	T& operator* () const;
+					/*
+					@METHOD:		SharedPtr<T>::operator T*
+					@DESCRIPTION:	<p>Note - this CAN return nullptr</p>
+					*/
 					nonvirtual	operator T* () const;
 
 				public:
+					/*
+					@METHOD:		SharedPtr<T>::get
+					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
+								asserts about it being non-null.</p>
+					*/
 					nonvirtual	T*		get () const;
+					/*
+					@METHOD:		SharedPtr<T>::release
+					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
+								pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
+								<br>
+								NO - Changed API to NOT return old pointer, since COULD have been destroyed, and leads to buggy coding.
+								If you want the pointer before release, explicitly call get () first!!!
+								</p>
+					*/
 					nonvirtual	void	release ();
+					/*
+					@METHOD:		SharedPtr<T>::clear
+					@DESCRIPTION:	<p>Synonymn for SharedPtr<T>::release ()
+								</p>
+					*/
 					nonvirtual	void	clear ();
+					/*
+					@METHOD:		SharedPtr<T>::reset
+					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
+								pre-existing pointer value. Unreference any previous value. Note - if there were more than one references to the underlying object, its not destroyed.</p>
+					*/
 					nonvirtual	void	reset (T* p = nullptr);
 
 				public:
@@ -249,6 +289,11 @@ namespace	Stroika {
 					nonvirtual	bool	IsUnique () const;
 					// Alias for IsUnique()
 					nonvirtual	bool	unique () const;
+					/*
+					@METHOD:		SharedPtr<T>::CurrentRefCount
+					@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
+					so not its awlays available (it has no cost to keep available).</p>
+					*/
 					nonvirtual	size_t	CurrentRefCount () const;
 
 				public:

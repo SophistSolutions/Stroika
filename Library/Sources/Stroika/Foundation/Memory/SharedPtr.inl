@@ -134,84 +134,44 @@ namespace	Stroika {
 						return fPtr == nullptr;
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::GetRep
-				@DESCRIPTION:	<p>Asserts that the pointer is non-nullptr.</p>
-				*/
 				inline	T&	SharedPtr<T>::GetRep () const
 					{
-						AssertNotNull (fPtr);
+						RequireNotNull (fPtr);
 						AssertNotNull (fCountHolder);
 						Assert (fCountHolder->fCount_DONT_ACCESS >= 1);
 						return *fPtr;
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::operator->
-				@DESCRIPTION:	<p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
-				*/
 				inline	T* SharedPtr<T>::operator-> () const
 					{
 						return &GetRep ();
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::operator*
-				@DESCRIPTION:	<p></p>
-				*/
 				inline	T& SharedPtr<T>::operator* () const
 					{
 						return GetRep ();
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::operator->
-				@DESCRIPTION:	<p>Note - this CAN return nullptr</p>
-				*/
 				inline	SharedPtr<T>::operator T* () const
 					{
 						return fPtr;
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::get
-				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
-							asserts about it being non-null.</p>
-				*/
 				inline	T*	SharedPtr<T>::get () const
 					{
 						return (fPtr);
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::release
-				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
-							pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
-							<br>
-							NO - Changed API to NOT return old pointer, since COULD have been destroyed, and leads to buggy coding.
-							If you want the pointer before release, explicitly call get () first!!!
-							</p>
-				*/
 				inline	void	SharedPtr<T>::release ()
 					{
 						*this = SharedPtr<T> (nullptr);
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::clear
-				@DESCRIPTION:	<p>Synonymn for SharedPtr<T>::release ()
-							</p>
-				*/
 				inline	void	SharedPtr<T>::clear ()
 					{
 						release ();
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::reset
-				@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
-							pre-existing pointer value. Unreference any previous value. Note - if there were more than one references to the underlying object, its not destroyed.</p>
-				*/
 				inline	void	SharedPtr<T>::reset (T* p)
 					{
 						if (fPtr != p) {
@@ -219,11 +179,6 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T>
-				/*
-				@METHOD:		SharedPtr<T>::CurrentRefCount
-				@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
-				so not its awlays avaialble (it has no cost to keep available).</p>
-				*/
 				inline	size_t	SharedPtr<T>::CurrentRefCount () const
 					{
 						return fCountHolder==nullptr? 0: fCountHolder->fCount_DONT_ACCESS;
