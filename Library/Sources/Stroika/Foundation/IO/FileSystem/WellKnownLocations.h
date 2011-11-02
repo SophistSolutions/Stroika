@@ -9,6 +9,11 @@
 #include	"../../Characters/TString.h"
 
 
+/*
+ * Note - most of the LINUX/POSIX pathnames come from
+ *		http://www.pathname.com/fhs/pub/fhs-2.3.html
+ */
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	IO {
