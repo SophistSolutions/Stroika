@@ -215,7 +215,7 @@ Date	Date::Parse (const wstring& rep, PrintFormat pf)
 			int	day		=	0;
 			#pragma	warning (push)
 			#pragma	warning (4 : 4996)		// MSVC SILLY WARNING ABOUT USING swscanf_s
-			int	nItems	=	::swscanf (rep.c_str (), L"%d-%d-%d", &month, &day, &year);
+			int	nItems	=	::swscanf (rep.c_str (), L"%d/%d/%d", &month, &day, &year);
 			#pragma	warning (pop)
 			Date	result;
 			if (nItems == 3) {

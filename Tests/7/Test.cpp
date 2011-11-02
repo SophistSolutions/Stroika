@@ -156,6 +156,9 @@ namespace	{
 				//VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
 			}
 			#endif
+			{
+				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF) == Date (Year (2001), Time::eNovember, DayOfMonth (1)));
+			}
 		}
 
 }
