@@ -3,6 +3,11 @@
 	@$(CPlusPlus) $(CFLAGS) $< -o $@
 
 
+.swsp.i:
+	@echo "Compiling $<"
+	@$(HTMLViewCompiler) $< $@
+
+
 .DEFAULT_GOAL := all
 
 

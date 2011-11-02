@@ -81,3 +81,9 @@ ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
 else
 	StroikaLinkerArgs	+=  -shared-libgcc  -shared-libstdc++
 endif
+
+
+
+ifndef HTMLViewCompiler
+	HTMLViewCompiler	=	"$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Debug/HTMLViewCompiler"
+endif
