@@ -158,6 +158,7 @@ namespace	{
 			#endif
 			{
 				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF) == Date (Year (2001), Time::eNovember, DayOfMonth (1)));
+				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF).Format (Date::eJavascript_PF) == L"11/01/2001");
 			}
 		}
 
