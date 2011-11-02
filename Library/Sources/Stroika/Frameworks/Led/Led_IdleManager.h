@@ -1,10 +1,8 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
 #ifndef	__IdleManager_h__
 #define	__IdleManager_h__	1
-
-/*
- * $Header: /home/lewis/share/RFLWork_CVSRoot/DevRoot/ThirdPartyLibs/Led/LedSrc/Headers/Led_IdleManager.h,v 1.3 2009-05-31 15:31:33 Lewis Exp $
- */
 
 /*
 @MODULE:	IdleManager
@@ -15,48 +13,6 @@
  */
 
 
-/*
- * Changes:
- *	$Log: Led_IdleManager.h,v $
- *	Revision 1.3  2009-05-31 15:31:33  Lewis
- *	*
- *	*********************     HealthFrameWorks Server 1.0      **************************
- *	*
- *
- *	Revision 1.2  2006/10/25 00:34:39  lewis
- *	*
- *	**************************         HealthFrame 2.1         **************************
- *	*
- *	
- *	Revision 1.1  2006/08/31 19:39:34  lewis
- *	copied from latest (3.1b2x) Led code - but renamed to Led_ file names and fixed MINOR issues to get to compile with HF/Newer Visual Studio
- *	
- *	Revision 2.6  2004/02/10 03:05:51  lewis
- *	SPR#1634: Added EnterIdler class to get notified on OnEnterIdle messages. Also - added IdleManager::NonIdleContext class to notify idle-manager of non-idle (eg executing a command) contexts (lots of these usages).
- *	
- *	Revision 2.5  2003/11/05 01:46:19  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.4  2003/03/28 12:58:34  lewis
- *	SPR#1388: destruction order of IdleManager and OSIdleManagerImpls is arbitrary - since done by static
- *	file scope DTORs. Could work around this other ways (with .h file with ref count based DTOR - as old
- *	days of iostream hack) - but easier to just make IdleManager::SetIdleManagerOSImpl static method and
- *	careful not to recreate IdleManager if setting impl property to NULL
- *	
- *	Revision 2.3  2003/03/24 14:32:48  lewis
- *	Added qBCCStaticVCLDTORLibBug BCC bug workaround
- *	
- *	Revision 2.2  2003/03/21 14:57:23  lewis
- *	SPR#1368 - IdleManager had small memory leak
- *	
- *	Revision 2.1  2003/03/20 15:46:44  lewis
- *	SPR#1360- add new Idler and IdleManager classes
- *	
- *	
- *	
- *
- *
- */
 #include	<map>
 #include	<vector>
 

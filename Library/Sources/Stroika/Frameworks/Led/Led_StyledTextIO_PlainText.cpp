@@ -1,76 +1,7 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
-
 /*
- * $Header: /cygdrive/k/CVSRoot/Led/Sources/StyledTextIO_PlainText.cpp,v 2.17 2003/03/21 17:30:47 lewis Exp $
- *
- * Changes:
- *	$Log: StyledTextIO_PlainText.cpp,v $
- *	Revision 2.17  2003/03/21 17:30:47  lewis
- *	patch last fix so compiles on MacOS/Linux and non-UNICODE Win32 config
- *	
- *	Revision 2.16  2003/03/21 16:44:30  lewis
- *	SPR#1371 - fix code in StyledTextIOReader_PlainText::Read and StyledTextIOReader_STYLText::Read
- *	to read a bit at a time and NOT assume you can seek to MAXINT and the say current_offset ()
- *	to find out how big the file is. Also - fixed a bug in StyledTextIOReader::BufferedIndirectSrcStream::read
- *	to seek before read() on target indirect srcStream
- *	
- *	Revision 2.15  2003/02/28 19:11:31  lewis
- *	SPR#1316- CRTDBG_MAP_ALLOC/CRTDBG_MAP_ALLOC_NEW Win32/MSVC debug mem leak support
- *	
- *	Revision 2.14  2003/02/24 21:57:00  lewis
- *	SPR#1306- use CodePageConverter in a few places instead of direct WideCharToMultibyte etc
- *	calls so MacOS can compile for UNICODE
- *	
- *	Revision 2.13  2002/05/06 21:33:54  lewis
- *	<=============================== Led 3.0.1 Released ==============================>
- *	
- *	Revision 2.12  2001/11/27 00:30:00  lewis
- *	<=============== Led 3.0 Released ===============>
- *	
- *	Revision 2.11  2001/09/20 00:39:28  lewis
- *	SPR#1041 - call cpc.SetHandleBOM () in plain-text reader class for codepage conversion
- *	
- *	Revision 2.10  2001/09/12 17:23:26  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.9  2001/09/09 23:15:04  lewis
- *	SPR#0698- fix StyledTextIOReader_PlainText to use new codepage guessing/mapping
- *	support (small part of 698 - rest defered)
- *	
- *	Revision 2.8  2001/09/05 23:44:22  lewis
- *	Added GetSinkStream ().EndOfBuffer () calls as part of fix for SPR#1014
- *	
- *	Revision 2.7  2001/08/29 23:36:35  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.6  2001/08/28 18:43:42  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.5  2000/06/23 21:44:38  lewis
- *	SPR#0807 Handle reading in wide_char UNICODE
- *	
- *	Revision 2.4  2000/04/16 14:39:39  lewis
- *	trivial tweeks to get compiling on Mac
- *	
- *	Revision 2.3  2000/04/14 22:40:27  lewis
- *	SPR#0740- namespace support
- *	
- *	Revision 2.2  2000/04/12 05:54:52  lewis
- *	fix StyledTextIO_PlainText_Writer - to convert to ANSI (maybe this
- *	should be optional - but to be consistent with reader - and how this
- *	is generlly used - we must do that!
- *	
- *	Revision 2.1  1999/12/18 03:56:48  lewis
- *	0662- break up StyledTextIO module into many _parts
- *	
- *
- *	<========== CODE MOVED HERE FROM StyledTextIO.cpp ==========>
- *
- *
- *
- *
- *
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
+
 #if		qIncludePrefixFile
 	#include	"stdafx.h"
 #endif

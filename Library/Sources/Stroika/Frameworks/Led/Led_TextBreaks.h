@@ -1,10 +1,8 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
 #ifndef	__TextBreaks_h__
 #define	__TextBreaks_h__	1
-
-/*
- * $Header: /home/lewis/share/RFLWork_CVSRoot/DevRoot/ThirdPartyLibs/Led/LedSrc/Headers/Led_TextBreaks.h,v 1.3 2009-05-31 15:31:34 Lewis Exp $
- */
 
 /*
 @MODULE:	TextBreaks
@@ -17,75 +15,7 @@
  */
 
 /*
- *
- * Changes:
- *	$Log: Led_TextBreaks.h,v $
- *	Revision 1.3  2009-05-31 15:31:34  Lewis
- *	*
- *	*********************     HealthFrameWorks Server 1.0      **************************
- *	*
- *
- *	Revision 1.2  2006/10/25 00:34:40  lewis
- *	*
- *	**************************         HealthFrame 2.1         **************************
- *	*
- *	
- *	Revision 1.1  2006/08/31 19:39:35  lewis
- *	copied from latest (3.1b2x) Led code - but renamed to Led_ file names and fixed MINOR issues to get to compile with HF/Newer Visual Studio
- *	
- *	Revision 2.13  2003/11/26 17:56:32  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.12  2003/11/25 22:59:25  lewis
- *	SPR#1563: Renamed TextBreaks_OLD to TextBreaks_Basic, and added TextBreaks_Basic_TextEditor
- *	and TextBreaks_Basic_WP. These different subclasses have slightly different word-break rules,
- *	appropraite for their use. Default to WP case (mostly for backward compat). Further cleanup
- *	word-break code and add more special cases appropriate to both WP and texteditor subclasses
- *	
- *	Revision 2.11  2003/11/25 21:56:42  lewis
- *	SPR#1563: first make CharToCharacterClass stuff  into methods of TextBreaks_OLD, and merge the two methods
- *	(related) into one common virtual method (so can be more easily overridden). Then fixed the existing (default)
- *	code so it does a better job handling apostrophes (single quotes) by default. Added primitive regression
- *	test mechanism for this code.
- *	
- *	Revision 2.10  2002/05/06 21:33:38  lewis
- *	<=============================== Led 3.0.1 Released ==============================>
- *	
- *	Revision 2.9  2001/11/27 00:29:46  lewis
- *	<=============== Led 3.0 Released ===============>
- *	
- *	Revision 2.8  2001/10/20 13:38:57  lewis
- *	tons of DocComment changes
- *	
- *	Revision 2.7  2001/10/17 20:42:54  lewis
- *	Massive changes - cleaning up doccomments (mostly adding <p>/</p> as appropriate
- *	
- *	Revision 2.6  2001/08/29 23:01:45  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.5  2001/08/28 18:43:31  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.4  2000/11/10 16:07:48  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.3  2000/06/17 05:08:27  lewis
- *	SPR#0793- Lose qUseSystemWordBreakRoutine define - and replace it with
- *	new TextBreaks_System class.
- *	
- *	Revision 2.2  2000/06/15 22:28:44  lewis
- *	SPR#0778- Made TextStore own a smart pointer to a TextBreak object - and by
- *	default create one with the old algorithms.
- *	
- *	Revision 2.1  2000/06/15 20:02:03  lewis
- *	SPR#0778- Broke out old word/line break code from TextStore - in preparation for
- *	making it virtual/generic - and doing different algorithms (UNICODE)Headers/TextBreaks.h
- *	
- *
- *
- *	<========== CODE MOVED HERE FROM TextStore.h ==========>
- *
- *
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 
 #include	"Led_Support.h"

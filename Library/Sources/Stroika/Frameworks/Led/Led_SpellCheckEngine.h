@@ -1,68 +1,13 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
 #ifndef	__SpellCheckEngine_h__
 #define	__SpellCheckEngine_h__	1
-
-/*
- * $Header: /home/lewis/share/RFLWork_CVSRoot/DevRoot/ThirdPartyLibs/Led/LedSrc/Headers/Led_SpellCheckEngine.h,v 1.3 2009-05-31 15:31:34 Lewis Exp $
- */
 
 /*
 @MODULE:	SpellCheckEngine
 @DESCRIPTION:	<p></p>
 
- */
-
-
-/*
- * Changes:
- *	$Log: Led_SpellCheckEngine.h,v $
- *	Revision 1.3  2009-05-31 15:31:34  Lewis
- *	*
- *	*********************     HealthFrameWorks Server 1.0      **************************
- *	*
- *
- *	Revision 1.2  2006/10/25 00:34:40  lewis
- *	*
- *	**************************         HealthFrame 2.1         **************************
- *	*
- *	
- *	Revision 1.1  2006/08/31 19:39:34  lewis
- *	copied from latest (3.1b2x) Led code - but renamed to Led_ file names and fixed MINOR issues to get to compile with HF/Newer Visual Studio
- *	
- *	Revision 2.9  2003/12/17 20:57:46  lewis
- *	changed SpellCheckEngine::GetTextBreaksUsed() (returning Led_RefCntPtr<>) to PeekAtTextBreaksUsed () returning TextBreaks*. Reason is we don't want to have to return a long-lived object. Interferes with COM stuff (be returning object part of COM object - and that could go away. Could add ref from that - but... not worth it here)
- *	
- *	Revision 2.8  2003/12/17 01:16:38  lewis
- *	DOCCOMMENTS
- *	
- *	Revision 2.7  2003/12/11 19:18:22  lewis
- *	SPR#1593: add SpellCheckEngine::GetTextBreaksUsed () method so I can utilize the right TextBreaks
- *	routine from the spellcheck loop. Then use that in MyCallback::GetNextMisspelling () so that we
- *	backup to the start of each word when beginning a chunk spellchecking, and more importantly -
- *	fix the code to actaully check successive chunks of no misspellings found in the first one
- *	
- *	Revision 2.6  2003/12/10 22:45:30  lewis
- *	SPR#1558: SpellCheckEngine_Basic::LookupWord_() updated to handle hyphenized words - and various
- *	related docs updated
- *	
- *	Revision 2.5  2003/12/09 20:49:18  lewis
- *	SPR#1585: added UD support (add word to UD, new SpellCheckEngine_Basic_Simple, major revision
- *	to SpellCheckEngine_Basic::EditableDictionary, etc)
- *	
- *	Revision 2.4  2003/06/25 16:36:58  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.3  2003/06/12 15:17:47  lewis
- *	doccomment
- *	
- *	Revision 2.2  2003/05/29 16:31:17  lewis
- *	SPR#1512: get better SpellCheckEngine_Basic regression test working and cleanup docs etc.
- *	
- *	Revision 2.1  2002/09/09 03:08:03  lewis
- *	SPR#1093- first draft of SpellCheckEngine/SpellCheckEngine_Basic
- *	
- *
- *
  */
 
 #include	"Led_Support.h"

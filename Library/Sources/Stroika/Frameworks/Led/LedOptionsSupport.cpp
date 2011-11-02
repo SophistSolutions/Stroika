@@ -1,45 +1,5 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
-
 /*
- * $Header: /home/lewis/share/RFLWork_CVSRoot/DevRoot/ThirdPartyLibs/Led/LedSrc/Sources/LedOptionsSupport.cpp,v 1.3 2009-05-31 15:31:35 Lewis Exp $
- *
- * Changes:
- *	$Log: LedOptionsSupport.cpp,v $
- *	Revision 1.3  2009-05-31 15:31:35  Lewis
- *	*
- *	*********************     HealthFrameWorks Server 1.0      **************************
- *	*
- *
- *	Revision 1.2  2006/10/25 00:34:41  lewis
- *	*
- *	**************************         HealthFrame 2.1         **************************
- *	*
- *	
- *	Revision 1.1  2006/08/31 19:39:35  lewis
- *	copied from latest (3.1b2x) Led code - but renamed to Led_ file names and fixed MINOR issues to get to compile with HF/Newer Visual Studio
- *	
- *	Revision 2.6  2003/12/31 03:36:18  lewis
- *	SPR#1602: major improvements. Added lots of overloaded set/get methods, including arrays of elts. Added method to compute new key with a path - construcing elts along the way. Support UNICODE/non-UNICODE strings much better
- *	
- *	Revision 2.5  2002/05/06 21:33:44  lewis
- *	<=============================== Led 3.0.1 Released ==============================>
- *	
- *	Revision 2.4  2001/11/27 00:29:50  lewis
- *	<=============== Led 3.0 Released ===============>
- *	
- *	Revision 2.3  2001/08/28 18:43:34  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.2  2001/07/31 15:14:36  lewis
- *	use &* trick in front of iterator to get underlying array address (needed for MSVC70B2 STL -
- *	but should work for any STL)
- *	
- *	Revision 2.1  2001/04/12 18:57:19  lewis
- *	*** empty log message ***
- *	
- *	
- *
- *
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 #if		qIncludePrefixFile
 	#include	"stdafx.h"

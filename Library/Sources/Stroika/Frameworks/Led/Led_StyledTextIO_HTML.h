@@ -1,10 +1,8 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
 #ifndef	__StyledTextIO_HTML_h__
 #define	__StyledTextIO_HTML_h__	1
-
-/*
- * $Header: /home/lewis/share/RFLWork_CVSRoot/DevRoot/ThirdPartyLibs/Led/LedSrc/Headers/Led_StyledTextIO_HTML.h,v 1.3 2009-05-31 15:31:34 Lewis Exp $
- */
 
 
 /*
@@ -13,107 +11,6 @@
 		<p>Subclasses of @'StyledTextIOReader' and @'StyledTextIOWriter' are where the knowledge of particular file formats resides.
 	For example, the knowledge of how to read HTML is in @'StyledTextIOReader_HTML' and the knowledge of how to write HTML is in
 	@'StyledTextIOWriter_HTML'.</p>
- */
-
-/*
- * Changes:
- *	$Log: Led_StyledTextIO_HTML.h,v $
- *	Revision 1.3  2009-05-31 15:31:34  Lewis
- *	*
- *	*********************     HealthFrameWorks Server 1.0      **************************
- *	*
- *
- *	Revision 1.2  2006/10/25 00:34:40  lewis
- *	*
- *	**************************         HealthFrame 2.1         **************************
- *	*
- *	
- *	Revision 1.1  2006/08/31 19:39:35  lewis
- *	copied from latest (3.1b2x) Led code - but renamed to Led_ file names and fixed MINOR issues to get to compile with HF/Newer Visual Studio
- *	
- *	Revision 2.22  2003/05/27 23:10:07  lewis
- *	SPR#1506: improved fLastCharSpace handling. SPR#1505: fixed ParseHTMLTagArgOut code (now much better). SPR#1504: big change to use <span style=> to replace <font> tag usage (both reader and writer, but left in old <font> tag reader code for back compat). SPR#0574: added beginnings of CSS support.
- *	
- *	Revision 2.21  2003/05/23 16:41:51  lewis
- *	SPR#1141: got preliminary table reading/writing working for HTML. Doesn't yet support any attributes to tags - but gets the right number of cells and thier contents decently written
- *	
- *	Revision 2.20  2002/05/06 21:33:35  lewis
- *	<=============================== Led 3.0.1 Released ==============================>
- *	
- *	Revision 2.19  2001/11/27 00:29:45  lewis
- *	<=============== Led 3.0 Released ===============>
- *	
- *	Revision 2.18  2001/10/17 20:42:53  lewis
- *	Massive changes - cleaning up doccomments (mostly adding <p>/</p> as appropriate
- *	
- *	Revision 2.17  2001/08/29 23:00:19  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.16  2001/08/28 18:43:30  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.15  2001/07/16 20:07:55  lewis
- *	SPR#0954- support UL/LI lists in reading/writing HTML (using new partial list support in Led)
- *	
- *	Revision 2.14  2001/05/29 20:21:41  lewis
- *	SPR#0941- fixup some more corner cases on new HTML font writing code. Bad optimization
- *	on stripping out open font tags before a close paragraph. Now fixed
- *	
- *	Revision 2.13  2001/05/09 19:33:41  lewis
- *	SPR#0910- MANY big changes to HTML writer - maintaining a stack of tags. Point its to get
- *	right nesting semantics required for XML. Also - bugs with the current HTML reader require
- *	those nesting semantics anyhow. Also - fixed color names to be lowercase. And - fixed to write
- *	out some colors by name (same as ones we recognize on reading).
- *	
- *	Revision 2.12  2001/02/05 22:28:51  lewis
- *	as part of SPR#0853- ALSO fix <br> / softline break support
- *	
- *	Revision 2.11  2001/02/05 17:18:42  lewis
- *	SPR#0853. Original request was to support align=center/etc in <p> tags. I DID fix this. But
- *	also had to substantially rewrite the emitting of NLs and the reading of <p> codes. Now these
- *	work much better - I believe (more true to the HTML spec). AND they support justification.
- *	
- *	Revision 2.10  2001/01/20 01:14:29  lewis
- *	cleanups. SPR#0852- fixup so works a bit better on Non-UNICODE mac
- *	
- *	Revision 2.9  2001/01/19 22:44:21  lewis
- *	SPR#0852- improve UNICODE HTML support. Handle entity refs properly - both named and numeric.
- *	Still must test/fixup a bit on mac maybe?
- *	
- *	Revision 2.8  2001/01/03 14:58:08  Lewis
- *	make sure forward delcalre of typedef is public - even if methods taht use it arent' - cuz Borland
- *	compiler seems to check typedefs name accessibility. Not a real serious problem - nor clearly a borland bug.
- *	
- *	Revision 2.7  2000/08/29 15:10:42  lewis
- *	SPR#0819- support HTML writer writing out AHREF= tags for StandardURLStyleMarker classes
- *	
- *	Revision 2.6  2000/08/29 13:35:38  lewis
- *	SPR#0819- handle reading '<a href=foo>bar</a>' properly - creating a URL object with that
- *	'bar' text as the enclosed text.
- *	
- *	Revision 2.5  2000/04/15 14:32:35  lewis
- *	small changes to get qLedUsesNamespaces (SPR#0740) working on Mac
- *	
- *	Revision 2.4  2000/04/14 22:40:22  lewis
- *	SPR#0740- namespace support
- *	
- *	Revision 2.3  2000/02/02 17:14:03  lewis
- *	SPR#0707- add (primitive) HTML <DIV align=> support
- *	
- *	Revision 2.2  1999/12/18 15:38:48  lewis
- *	added support for <SUB><SUP>(SPR#0663), and wrap fontname in quotes
- *	
- *	Revision 2.1  1999/12/18 03:56:46  lewis
- *	0662- break up StyledTextIO module into many _parts
- *	
- *
- *
- *	<========== CODE MOVED HERE FROM StyledTextIO.cpp ==========>
- *
- *
- *
- *
- *
  */
 
 #include	"Led_StyledTextIO.h"

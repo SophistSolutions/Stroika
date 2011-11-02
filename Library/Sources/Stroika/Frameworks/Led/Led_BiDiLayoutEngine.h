@@ -1,10 +1,8 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
 #ifndef	__BiDiLayout_h__
 #define	__BiDiLayout_h__	1
-
-/*
- * $Header: /home/lewis/share/RFLWork_CVSRoot/DevRoot/ThirdPartyLibs/Led/LedSrc/Headers/Led_BiDiLayoutEngine.h,v 1.3 2009-05-31 15:31:33 Lewis Exp $
- */
 
 /*
 @MODULE:	BiDiLayout
@@ -13,102 +11,6 @@
 			editing algorithm.
 			</p>
 
- */
-
-
-/*
- * Changes:
- *	$Log: Led_BiDiLayoutEngine.h,v $
- *	Revision 1.3  2009-05-31 15:31:33  Lewis
- *	*
- *	*********************     HealthFrameWorks Server 1.0      **************************
- *	*
- *
- *	Revision 1.2  2006/10/25 00:34:39  lewis
- *	*
- *	**************************         HealthFrame 2.1         **************************
- *	*
- *	
- *	Revision 1.1  2006/08/31 19:39:34  lewis
- *	copied from latest (3.1b2x) Led code - but renamed to Led_ file names and fixed MINOR issues to get to compile with HF/Newer Visual Studio
- *	
- *	Revision 2.21  2003/12/12 19:13:59  lewis
- *	SPR#1596: overlaod TextLayoutBlock_Copy::BlockRep::operator delete () cuz we allocate using new[].
- *	
- *	Revision 2.20  2003/11/27 20:10:28  lewis
- *	added op!= for ScriptRunElts
- *	
- *	Revision 2.19  2003/11/03 20:02:57  lewis
- *	SPR#1551: Lose unused qMapR2VPosForTL stuff. Add new efficeint storage/copying TextLayoutBlock_Copy class (performance). Add 'initialDirection' CTOR argument so you can specify (optionally) the base direction to use for a given line layout (when its externally specified, like on successive rows of a paragraph)
- *	
- *	Revision 2.18  2003/01/12 23:15:56  lewis
- *	change so qUseFriBidi defaults to OFF and if on it takes precedence over qTryToUseUNISCRIBEForTextRuns
- *	
- *	Revision 2.17  2003/01/10 17:48:11  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.16  2003/01/10 15:22:25  lewis
- *	as part of SPR#1226 - added prelim MapRealOffsetToVirtual/MapVirtualOffsetToReal methods, and
- *	qDebugHack_UpperCaseCharsTratedAsRTL support
- *	
- *	Revision 2.15  2003/01/08 04:38:24  lewis
- *	SPR#1218- qTryToUseUNISCRIBEForTextRuns defaults to OFF and qUseFriBidi defaults OFF if
- *	qTryToUseUNISCRIBEForTextRuns is TRUE
- *	
- *	Revision 2.14  2003/01/02 22:35:18  lewis
- *	disable qTryToUseUNISCRIBEForTextRuns - since it works SO badly
- *	
- *	Revision 2.13  2003/01/02 15:11:25  lewis
- *	SPR#1218- restructure code so can sue qTryToUseUNISCRIBEForTextRuns or other means to breakup text
- *	
- *	Revision 2.12  2002/12/13 18:39:51  lewis
- *	SPR#1204 - added TextLayoutBlock::GetCharacterDirection () API
- *	
- *	Revision 2.11  2002/12/12 16:49:53  lewis
- *	BIDI work- Added CopyOutRealText/CopyOutVirtualText (maybe replace the peek methods with this?). Added
- *	qDebugHack_ReverseDirections define so I can test with ENGLISH text (like abc) and see it reversed.
- *	Debugging hack only
- *	
- *	Revision 2.10  2002/12/04 19:38:31  lewis
- *	SPR#1194- fix buffer sizes for fribidi calls - to avoid crash. Also - added qMapR2VPosForTL to only conidiotnally
- *	make that available. Get rid of fVirtaulLength/fRealLength distinction - make API assume these are always the same
- *	
- *	Revision 2.9  2002/12/03 15:48:54  lewis
- *	SPR#1191- use new TextDirection enum defined in LedGDI.h. Get rid of ScriptRunElement::fLength.
- *	Add direction arg to Led_Tablet_::TabbedTextOut () and use that to call (WIN32)Led_Tablet_::SetTextAlign().
- *	Hopefully this fixes display on Win9x of Arabic text
- *	
- *	Revision 2.8  2002/12/02 00:50:04  lewis
- *	SPR#1183 BIDI code - added TextLayoutBlock::LessThanVirtualStart and cleanup a few warnings
- *	
- *	Revision 2.7  2002/11/28 20:54:45  lewis
- *	work on BIDI code (SPR#1183) - Add GetRealText/GetVirtualText no-arg routines. Plus, lots of fixups to the scriptRun code
- *	
- *	Revision 2.6  2002/11/28 03:46:09  lewis
- *	added fRealText to the TextLayoutBlock_VirtualSubset class so it could copy the source text by value
- *	and have a buffer of the right size and contiguous
- *	
- *	Revision 2.5  2002/11/28 02:30:59  lewis
- *	A couple simple name changes (GetVirtualText->PeekAtVirtualText and TextLayoutBlock_Subset to TextLayoutBlock_VirtualSubset
- *	
- *	Revision 2.4  2002/11/28 02:16:13  lewis
- *	tons of changes/improvements/cleanups. Temporarily get rid of MapReal/VirtualOffsetToEachOther routines since unused right now,
- *	and I'm not sure I'll need them. Wait and see. Added/fixed GetScriptRuns code to keep track of MUCH more more information.
- *	THIS is the basic information I will really use/need.
- *	
- *	Revision 2.3  2002/11/27 15:10:56  lewis
- *	add GetVirtualText{Length} method and fix code for PeekAt in SubTextLayoutBlock code (end correctly
- *	
- *	Revision 2.2  2002/11/26 22:45:42  lewis
- *	looked into using IBM's ICU package for bidi layout - but it was to big and intrusive to be worth the effort right now.
- *	Also - added GetScriptRuns () support to API and a few other small improvements
- *	
- *	Revision 2.1  2002/11/25 23:38:25  lewis
- *	SPR#1183- checked in very prelim version of BidiLayoutEngine
- *	
- *	
- *
- *
  */
 
 #include	"Led_GDI.h"
