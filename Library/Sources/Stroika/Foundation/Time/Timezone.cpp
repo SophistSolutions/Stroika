@@ -24,10 +24,16 @@ bool	Time::IsDaylightSavingsTime ()
 {
 	static	bool	sCalledOnce_ = false;
 	if (not sCalledOnce_) {
+		#pragma	warning (push)
+		#pragma	warning (4 : 4996)		// MSVC warns tzset() unsafe, but I think the way I use it will be safe
 		tzset ();
+		#pragma	warning (pop)
 		sCalledOnce_ = true;
 	}
+	#pragma	warning (push)
+	#pragma	warning (4 : 4996)		// Not great use - but SB OK - I think - at least for now -- LGP 2011-11-02
 	return !!daylight;
+	#pragma	warning (pop)
 }
 
 bool	Time::IsDaylightSavingsTime (const DateTime& d)
