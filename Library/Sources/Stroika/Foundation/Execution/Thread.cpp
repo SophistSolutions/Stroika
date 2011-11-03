@@ -157,6 +157,11 @@ void	Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
 	TraceContextBumper ctx (TSTR ("Thread::Rep_::DoCreate"));
 	RequireNotNull (repSharedPtr);
 	RequireNotNull (*repSharedPtr);
+
+	#if		qUseThreads_StdCPlusPlus && qPlatform_POSIX
+		ScopedBlockCurrentThreadSignal	blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
+	#endif
+
 	#if		qUseThreads_StdCPlusPlus
 		(*repSharedPtr)->fThread_ = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
 	#elif	qUseThreads_WindowsNative
