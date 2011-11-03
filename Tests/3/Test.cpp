@@ -321,6 +321,33 @@ namespace	{
 }
 
 
+namespace	{
+	void	RegressionTest9_ThreadsAbortingEarly_ ()
+		{
+			// I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
+			// between the create of thread and Abort
+			struct	FRED {
+				static	void	DoItInnerThread ()
+					{
+						Execution::Sleep (1.0);
+					}
+				static	void	DoOuterThread ()
+					{
+						while (true) {
+							Thread t (DoItInnerThread);
+							Execution::Sleep (1);
+							t.Start ();
+						}
+					}
+			};
+			Thread	thread (&FRED::DoOuterThread);
+			thread.Start ();
+			Execution::Sleep (5);
+			thread.AbortAndWaitForDone ();
+		}
+}
+
+
 
 namespace	{
 
@@ -334,6 +361,7 @@ namespace	{
 			RegressionTest6_ThreadWaiting_ ();
 			RegressionTest7_SimpleThreadPool_ ();
 			RegressionTest8_ThreadPool_ ();
+			RegressionTest9_ThreadsAbortingEarly_ ();
 		}
 }
 
