@@ -91,6 +91,9 @@
     <Filter Include="Sources\IO\Network\HTTP">
       <UniqueIdentifier>{176b919d-a2cd-4146-aa3a-20e9f0e32452}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Execution\Platform\POSIX">
+      <UniqueIdentifier>{e3cb51f2-90a4-4e1e-b12c-4626c86fe91e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -329,6 +332,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp">
       <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -725,6 +734,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h">
       <Filter>Sources\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

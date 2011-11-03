@@ -184,6 +184,26 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
@@ -214,6 +234,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
@@ -343,6 +364,26 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.h" />
@@ -357,6 +398,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />

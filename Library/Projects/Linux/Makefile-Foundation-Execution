@@ -5,6 +5,12 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Execution/
 
+.PHONY:				PLATFORM_POSIX
+
+SubDirs	=	\
+	PLATFORM_POSIX \
+
+
 VPATH = $(SrcDir)
 
 Objs	=	\
@@ -26,8 +32,20 @@ Objs	=	\
 	$(ObjDir)Sleep.o\
 	$(ObjDir)Thread.o\
 	$(ObjDir)ThreadPool.o\
+	$(ObjDir)Users.o\
 	$(ObjDir)WaitAbandonedException.o\
 	$(ObjDir)WaitTimedOutException.o\
 
-all:	$(Objs)
+all:	$(Objs)  $(SubDirs)
 
+
+
+PLATFORMPOSIX_OBJS := $(addprefix "./PLATFORM_POSIX/", $(shell cd Platform/POSIX; make -s list-objs))
+
+
+list-objs::
+	@echo $(PLATFORMPOSIX_OBJS) 
+
+
+PLATFORM_POSIX:
+	(cd Platform/POSIX; make -s)
