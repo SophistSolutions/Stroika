@@ -28,7 +28,7 @@ uid_t	Platform::POSIX::UserName2UID (const String& name)
     if (bufsize == -1) {          /* Value was indeterminate */
         bufsize = 16384;        /* Should be more than enough */
 	}
-	Memory::SmallStackBuffer<Byte>	buf (bufsize);
+	Memory::SmallStackBuffer<char>	buf (bufsize);
 
 	struct passwd pwd;
 	memset (&pwd, 0, sizeof (pwd));
@@ -56,7 +56,7 @@ String	Platform::POSIX::uid_t2UserName (uid_t uid)
     if (bufsize == -1) {          /* Value was indeterminate */
         bufsize = 16384;        /* Should be more than enough */
 	}
-	Memory::SmallStackBuffer<Byte>	buf (bufsize);
+	Memory::SmallStackBuffer<char>	buf (bufsize);
 
 	struct passwd pwd;
 	memset (&pwd, 0, sizeof (pwd));
