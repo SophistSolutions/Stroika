@@ -19,9 +19,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -129,9 +129,9 @@ TextStore*	TempMarker::PeekAtTextStore () const
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

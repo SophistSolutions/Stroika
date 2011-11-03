@@ -43,9 +43,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -1094,9 +1094,9 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 		}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

@@ -19,9 +19,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -239,9 +239,9 @@ void	IdleManager::IdleManagerOSImpl::CallSpendTime ()
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

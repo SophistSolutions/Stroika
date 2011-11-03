@@ -19,9 +19,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 enum	{
@@ -812,9 +812,9 @@ class	CharacterProperties {
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__LedCodePage_h__*/

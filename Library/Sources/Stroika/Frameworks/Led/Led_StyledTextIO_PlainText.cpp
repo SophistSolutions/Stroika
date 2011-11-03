@@ -21,9 +21,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -159,9 +159,9 @@ void	StyledTextIOWriter_PlainText::Write ()
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

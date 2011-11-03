@@ -19,9 +19,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -559,9 +559,9 @@ class	StandardStyledTextInteractor::EmptySelStyleTextRep : public InteractiveRep
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

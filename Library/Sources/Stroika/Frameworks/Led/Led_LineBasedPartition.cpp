@@ -16,9 +16,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -168,9 +168,9 @@ void	LineBasedPartition::Invariant_ () const
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

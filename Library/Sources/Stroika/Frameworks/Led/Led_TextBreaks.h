@@ -23,9 +23,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -249,9 +249,9 @@ typedef	TextBreaks_Basic_WP	TextBreaks_DefaultImpl;
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__TextBreaks_h__*/

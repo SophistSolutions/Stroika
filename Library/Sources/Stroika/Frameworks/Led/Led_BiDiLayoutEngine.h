@@ -19,9 +19,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -349,9 +349,9 @@ class	TextLayoutBlock_VirtualSubset : public TextLayoutBlock {
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

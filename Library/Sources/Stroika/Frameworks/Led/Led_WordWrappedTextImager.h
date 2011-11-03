@@ -18,9 +18,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -215,9 +215,9 @@ template	<typename TEXTSTORE, typename	IMAGER = WordWrappedTextImager>
 		}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 #endif	/*__WordWrappedTextImager_h__*/
 

@@ -48,15 +48,16 @@
  */
 
 
-#include	"LedSupport.h"
+#include	"Led_Support.h"
 
 
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
+
 
 
 /*
@@ -204,10 +205,9 @@ class	OptionsFileHelper {
 #endif
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
-
 
 #endif	/*____Led_OptionsSupport_h__*/
 

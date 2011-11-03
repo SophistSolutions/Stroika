@@ -92,9 +92,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -809,9 +809,9 @@ template	<typename	MARKER>
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__Marker_h__*/

@@ -28,9 +28,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -7984,9 +7984,9 @@ void	EmptySelectionParagraphSavedTextRep::InsertSelf (TextInteractor* interactor
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

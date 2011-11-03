@@ -21,9 +21,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -877,9 +877,9 @@ bool	InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertAt, 
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

@@ -17,9 +17,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 class	TextInteractor;
@@ -482,9 +482,10 @@ class	InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand
 		{
 		}
 
-#if		qLedUsesNamespaces
+
+		}
+	}
 }
-#endif
 
 
 #endif	/*__Command_h_*/

@@ -28,9 +28,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -2566,9 +2566,9 @@ string	StyledTextIOWriter_HTML::MapOutputTextFromTString (const Led_tString& tex
 }
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

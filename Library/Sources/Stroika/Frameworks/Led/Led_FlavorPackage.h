@@ -21,9 +21,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -293,9 +293,9 @@ class	ReadWriteMemBufferPackage : public ReaderFlavorPackage, public WriterFlavo
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__FlavorPackage_h__*/

@@ -39,9 +39,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -586,9 +586,9 @@ void	ReadWriteMemBufferPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

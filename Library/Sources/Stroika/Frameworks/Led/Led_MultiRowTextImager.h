@@ -19,9 +19,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -856,9 +856,9 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 				);
 		}
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 #endif	/*__MultiRowTextImager_h__*/
 

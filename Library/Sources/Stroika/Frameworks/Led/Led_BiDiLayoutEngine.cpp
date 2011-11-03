@@ -47,9 +47,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -1708,9 +1708,7 @@ InitialUNISCRIBEDir	myGetInitialUNISCRIBEDir (wchar_t c)
 
 
 
-#if		qLedUsesNamespaces
-}
-#endif
+}}}
 
 
 

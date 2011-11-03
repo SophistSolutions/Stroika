@@ -24,9 +24,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 #if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -2096,9 +2096,9 @@ Led_FontMetrics	TextImager::GetFontMetricsAt (
 }
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

@@ -22,9 +22,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -524,9 +524,9 @@ size_t	WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

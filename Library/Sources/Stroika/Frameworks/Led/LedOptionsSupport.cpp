@@ -10,9 +10,10 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
+
 
 /*
  ********************************************************************************
@@ -301,9 +302,9 @@ void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<ws
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

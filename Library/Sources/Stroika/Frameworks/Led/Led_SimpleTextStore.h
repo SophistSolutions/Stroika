@@ -18,9 +18,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -85,9 +85,9 @@ class	SimpleTextStore : public TextStore {
 		}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

@@ -33,9 +33,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -1072,9 +1072,9 @@ template	<typename	T>
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__TextStore_h__*/

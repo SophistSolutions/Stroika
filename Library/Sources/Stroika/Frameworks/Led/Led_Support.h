@@ -54,13 +54,11 @@
 
 
 
-#if		qNamespaceSupport
 	using	namespace	std;
-#endif
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -395,13 +393,7 @@ typedef	unsigned char Byte;
 	or <code>wstring</code> - depending on whether we are using UNICODE or not. It is a <code>basic_string</code>
 	templated on @'Led_tChar'.</p>
 */
-	#if		defined (__cplusplus)
-		#if		qNamespaceSupport
-			typedef		std::basic_string<Led_tChar>	Led_tString;
-		#else
-			typedef		basic_string<Led_tChar>			Led_tString;
-		#endif
-	#endif
+typedef		std::basic_string<Led_tChar>	Led_tString;
 
 
 
@@ -1718,9 +1710,9 @@ string	MakeSophistsAppNameVersionURL (const string& relURL, const string& appNam
 
 
 #if		qBasicString_C_STR_BROKEN_forWCHAR_T
-	#if		qLedUsesNamespaces
+		}
 	}
-	#endif
+}
 	// Sadly this is NEEDED for GCC 3.? on RH 7.3 but is NOT needed for GCC 3.2 or later on RH8. Not sure how to
 	// tell from compile time flags which is which?
 	template <>
@@ -1729,21 +1721,21 @@ string	MakeSophistsAppNameVersionURL (const string& relURL, const string& appNam
 				terminate ();
 				return data ();
 			}
-	#if		qLedUsesNamespaces
-	namespace	Led {
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 	#endif
-#endif
 
 
 #if		qMacOS
-	#if		qLedUsesNamespaces
+		}
 	}
-	#endif
+}
 	#include	<Sound.h>
-	#if		qLedUsesNamespaces
-	namespace	Led {
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 	#endif
-#endif
 
 
 
@@ -3218,9 +3210,9 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 
@@ -3228,8 +3220,6 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 	#if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
 		#pragma	warning (pop)
 	#endif
-
-
 
 #endif	/*__LedSupport_h__*/
 

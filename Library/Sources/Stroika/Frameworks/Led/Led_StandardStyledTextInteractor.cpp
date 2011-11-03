@@ -28,9 +28,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -651,11 +651,7 @@ void	StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleE
 	if (testSentinal != kEmbeddingSentinalChar) {
 		Led_ThrowBadFormatDataException ();
 	}
-	#if		qLedUsesNamespaces
-		Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase);
-	#else
-		::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase);
-	#endif
+		Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase);
 }
 
 void	StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
@@ -1354,9 +1350,9 @@ void	EmptySelStyleTextRep::InsertSelf (TextInteractor* interactor, size_t at, si
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

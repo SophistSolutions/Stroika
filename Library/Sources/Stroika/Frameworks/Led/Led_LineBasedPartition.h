@@ -15,9 +15,9 @@
 #include	"Led_PartitioningTextImager.h"
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 /*
 @CLASS:			LineBasedPartition
@@ -62,9 +62,9 @@ class	LineBasedPartition : public Partition {
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__LineBasedPartition_h__*/

@@ -16,9 +16,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -85,9 +85,9 @@ void	WordWrappedTextInteractor::SetTopRowInWindowByMarkerPosition (size_t marker
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

@@ -27,9 +27,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 typedef	char	Led_PrivateEmbeddingTag[10];
@@ -839,9 +839,9 @@ void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textSt
 			return fLength;
 		}
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 #endif	/*__StyledTextEmbeddedObjects_h__*/
 

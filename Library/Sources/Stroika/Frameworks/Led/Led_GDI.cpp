@@ -87,9 +87,9 @@ static	const wchar_t	kHiInArabic[]	=	L"\xfe7d\xfe8d\xfe91\xfea3\xfead\xfedb";	//
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -4134,9 +4134,9 @@ static	bool	Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* s
 #endif
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

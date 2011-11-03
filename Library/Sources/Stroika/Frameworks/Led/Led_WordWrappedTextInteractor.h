@@ -18,9 +18,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -91,9 +91,9 @@ class	WordWrappedTextInteractor : public InteractorImagerMixinHelper<WordWrapped
 		}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 #if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
 	#pragma	warning (pop)

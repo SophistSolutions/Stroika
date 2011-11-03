@@ -1193,14 +1193,6 @@
 			#define	qTroubleOverloadingXofXRefCTORWithTemplatedMemberCTOR						1
 		#endif
 
-		// There is some - but its buggy. Try again later - LGP 2001-01-19
-		#ifndef	qNamespaceSupport
-			#if		qUseGCC295
-				#define	qNamespaceSupport								1
-			#else
-				#define	qNamespaceSupport								0
-			#endif
-		#endif
 
 		#ifndef	qKeywordsForAndOrNotBroken
 			#if		qUseGCC295
@@ -1499,17 +1491,6 @@
 
 
 
-
-/*
- *	Can we use namespaces? Does the compiler support them? Default TRUE (except if not in C++ compiler).
- */
-#ifndef	qNamespaceSupport
-	#if		defined (__cplusplus)
-		#define	qNamespaceSupport					1
-	#else
-		#define	qNamespaceSupport					0
-	#endif
-#endif
 
 
 
@@ -2015,24 +1996,13 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-/*
-@CONFIGVAR:		qLedUsesNamespaces
-@DESCRIPTION:	<p>If defined true then define all Led code in the namespace 'Led'.</p>
-		<p>This can prevent Led's names from conflicting with the names of variables, and functions
-	etc in other libraries you maybe integrating with. It allows Led to use shorter, more
-	common names, without worries of creating such conflicts (not really taken advantage
-	of as of Led 3.0d6, 2000/04/14, howevever).</p>
-		<p>Default is TRUE iff @'qNamespaceSupport'</p>
- */
-#ifndef	qLedUsesNamespaces
-	#define	qLedUsesNamespaces					qNamespaceSupport
-#endif
-
-
-
-#if		qLedUsesNamespaces
-namespace	Led	{}			// Be sure namespace is defined for later use.
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
+		}
+	}
+}
+// Be sure namespace is defined for later use.
 
 
 

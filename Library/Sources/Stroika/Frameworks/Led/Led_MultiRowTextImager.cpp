@@ -25,9 +25,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -1633,9 +1633,9 @@ void	MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateIn
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

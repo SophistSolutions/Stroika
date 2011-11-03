@@ -20,9 +20,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -546,9 +546,9 @@ class	ColoredUniformHidableTextMarkerOwner : public UniformHidableTextMarkerOwne
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

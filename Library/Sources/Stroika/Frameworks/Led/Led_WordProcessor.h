@@ -30,9 +30,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -2106,13 +2106,13 @@ template	<typename	BASECLASS>	class	WordProcessorHScrollbarHelper :
  ********************************************************************************
  */
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 #include	<cstdio>	// for sprintf() call
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 	#if		qTemplateGeneratedMixinsSometimesCorrupted
 	inline	void	InteractorInteractorMixinHelper<StandardStyledTextInteractor,WordWrappedTextInteractor>::HookLosingTextStore ()
@@ -3227,9 +3227,9 @@ namespace	Led {
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #if		qSilenceAnnoyingCompilerWarnings && __MWERKS__

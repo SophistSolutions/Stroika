@@ -22,9 +22,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 	inline	bool	IsASCIIAlpha (int c)
@@ -917,9 +917,9 @@ void	TextStore::Invariant_ () const
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

@@ -16,9 +16,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -218,9 +218,9 @@ template	<typename	INTERACTOR1, typename INTERACTOR2>	class	InteractorInteractor
 #endif
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

@@ -26,9 +26,9 @@
 #endif
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -709,9 +709,9 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 			}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

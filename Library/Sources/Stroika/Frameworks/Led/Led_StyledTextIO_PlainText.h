@@ -13,9 +13,9 @@
 #include	"Led_StyledTextIO.h"
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -62,9 +62,9 @@ class	StyledTextIOWriter_PlainText : public StyledTextIOWriter {
  ********************************************************************************
  */
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 #endif	/*__StyledTextIO_PlainText_h__*/

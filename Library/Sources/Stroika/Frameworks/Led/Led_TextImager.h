@@ -23,9 +23,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -1605,9 +1605,9 @@ template	<typename TEXTSTORE, typename	IMAGER>
 			}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

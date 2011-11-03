@@ -24,9 +24,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -864,9 +864,9 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 	#endif
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

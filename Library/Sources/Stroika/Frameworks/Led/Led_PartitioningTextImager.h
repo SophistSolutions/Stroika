@@ -25,9 +25,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -599,9 +599,9 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 #endif	/*__PartitioningTextImager_h__*/
 

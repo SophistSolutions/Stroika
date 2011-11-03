@@ -27,9 +27,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -786,9 +786,9 @@ void	TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t len
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 // For gnuemacs:

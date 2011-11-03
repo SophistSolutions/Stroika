@@ -17,9 +17,9 @@
 
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 /*
@@ -377,9 +377,9 @@ class	StyledTextIOWriter_HTML::WriterContext {
 		}
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

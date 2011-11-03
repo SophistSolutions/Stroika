@@ -41,9 +41,9 @@
 #endif
 
 
-#if		qLedUsesNamespaces
-namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -3576,18 +3576,13 @@ void	Led_CenterWindowInParent (HWND w);
 #endif
 
 
-	#if		qLedUsesNamespaces
+		}
 	}
+}
 	namespace std {
-	#endif
 	template<>
-		#if		qLedUsesNamespaces
-		struct less<Led::Led_Color> : public binary_function<Led::Led_Color, Led::Led_Color, bool> {
-			bool operator()(const Led::Led_Color& _Left, const Led::Led_Color& _Right) const
-		#else
-		struct less<Led_Color> : public binary_function<Led_Color, Led_Color, bool> {
-			bool operator()(const Led_Color& _Left, const Led_Color& _Right) const
-		#endif
+		struct less<Stroika::Frameworks::Led::Led_Color> : public binary_function<Stroika::Frameworks::Led::Led_Color, Stroika::Frameworks::Led::Led_Color, bool> {
+			bool operator()(const Stroika::Frameworks::Led::Led_Color& _Left, const Stroika::Frameworks::Led::Led_Color& _Right) const
 				{
 					if (_Left.GetRed () < _Right.GetRed ()) {
 						return true;
@@ -3603,10 +3598,10 @@ void	Led_CenterWindowInParent (HWND w);
 					return false;
 				}
 			};
-	#if		qLedUsesNamespaces
 	}
-	namespace	Led {
-	#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -5257,9 +5252,9 @@ void	Led_CenterWindowInParent (HWND w);
 #endif
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 

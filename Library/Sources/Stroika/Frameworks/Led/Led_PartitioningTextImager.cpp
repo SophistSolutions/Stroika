@@ -15,9 +15,9 @@
 
 
 
-#if		qLedUsesNamespaces
-	namespace	Led {
-#endif
+namespace	Stroika {	
+	namespace	Frameworks {
+		namespace	Led {
 
 
 
@@ -946,9 +946,9 @@ void	PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) throw ()
 
 
 
-#if		qLedUsesNamespaces
+		}
+	}
 }
-#endif
 
 
 
