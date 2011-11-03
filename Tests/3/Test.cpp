@@ -237,7 +237,7 @@ namespace	{
 			}
 
 			// OK to never wait
-			{
+			for (int i = 0; i < 100; ++i) {
 				Thread	thread (&FRED::DoIt);
 				thread.Start ();
 			}
@@ -329,13 +329,13 @@ namespace	{
 			struct	FRED {
 				static	void	DoItInnerThread ()
 					{
-						Execution::Sleep (1.0);
+						Execution::Sleep (.1);
 					}
 				static	void	DoOuterThread ()
 					{
 						while (true) {
 							Thread t (DoItInnerThread);
-							Execution::Sleep (1);
+							Execution::Sleep (.2);
 							t.Start ();
 						}
 					}
