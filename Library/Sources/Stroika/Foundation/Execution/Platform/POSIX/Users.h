@@ -4,7 +4,7 @@
 #ifndef	_Stroika_Foundation_Execution_Platform_POSIX_Users_h_
 #define	_Stroika_Foundation_Execution_Platform_POSIX_Users_h_	1
 
-#include	"../StroikaPreComp.h"
+#include	"../../../StroikaPreComp.h"
 
 #if		!qPlatform_POSIX
 #error	"ONLY INCLUDE FOR POSIX"
@@ -12,10 +12,10 @@
 
 #include	<pwd.h>
 
-#include	"../Configuration/Common.h"
-#include	"../Characters/String.h"
+#include	"../../../Configuration/Common.h"
+#include	"../../../Characters/String.h"
 
-#include	"Exceptions.h"
+#include	"../../Exceptions.h"
 
 
 namespace	Stroika {	
