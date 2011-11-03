@@ -17,7 +17,7 @@ namespace	Stroika {
 	namespace	Frameworks {
 		namespace	Service {
 
-		//	class	Servie::Main::IRep
+		//	class	Service::Main::IRep
 			inline	void	Main::IRep::_CheckAndAbortThread () const
 				{
 					Execution::CheckForThreadAborting ();
@@ -33,6 +33,22 @@ namespace	Stroika {
 				{
 					fMustReReadConfig = false;
 				}
+
+
+		//	class	Service::Main
+			inline	void	Main::Start (Time::DurationSecondsType timeout)
+				{
+					_Start (timeout);
+				}
+			inline	void	Main::Stop (Time::DurationSecondsType timeout)
+				{
+					_Stop (timeout);
+				}
+			inline	void	Main::Restart (Time::DurationSecondsType timeout)
+				{
+					_Restart (timeout);
+				}
+
 
 		}
 

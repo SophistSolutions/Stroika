@@ -167,27 +167,62 @@ namespace	Stroika {
 					 *	RunAsService () will not return - until the service has terminated. It runs the service 'MainLoop'.
 					 */
 					virtual	void				RunAsService ();
+
+				public:
 					/*
 					 */
-					virtual	void				Start ();
+					nonvirtual	void			Start (Time::DurationSecondsType timeout = Time::kInfinite);
+				protected:
+					virtual	void				_Start (Time::DurationSecondsType timeout);
+
+				public:
 					/*
 					 */
-					virtual	void				Stop ();
+					nonvirtual	void			Stop (Time::DurationSecondsType timeout = Time::kInfinite);
+				protected:
+					virtual		void			_Stop (Time::DurationSecondsType timeout);
+
+				public:
 					/*
 					 */
 					virtual	void				Kill ();
+
+				public:
 					/*
 					 */
-					virtual	void				Restart ();
+					nonvirtual	void			Restart (Time::DurationSecondsType timeout = Time::kInfinite);
+				protected:
+					virtual	void				_Restart (Time::DurationSecondsType timeout);
+
+				public:
 					/*
 					 */
 					virtual	void				ReReadConfiguration ();
+
+				public:
 					/*
 					 */
 					virtual	void				Pause ();
+
+				public:
 					/*
 					 */
 					virtual	void				Continue ();
+
+				protected:
+					// Call to check if the service appears to be NOT RUNNING, but have some remnants of a previous run that
+					// need to be cleaned up via _CleanupDeadService ()
+					virtual		bool			_IsServiceFailed ();
+
+				protected:
+					// Called internally when - for example - asked to start and we find there are already lock files etc from
+					// a previous run of the service, but its actually dead
+					virtual		void			_CleanupDeadService ();
+
+				protected:
+					// Checks if the service process is actually running - not just if it is supposed to be. This can be used to
+					// wait for a service to startup, or to shut down
+					virtual		bool	_IsServiceActuallyRunning ();
 
 				public:
 					/*

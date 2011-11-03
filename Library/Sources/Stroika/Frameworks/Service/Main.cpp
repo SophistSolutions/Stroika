@@ -25,6 +25,8 @@
 #include	"../../Foundation/Execution/Module.h"
 #include	"../../Foundation/Execution/ThreadAbortException.h"
 #include	"../../Foundation/Execution/Signals.h"
+#include	"../../Foundation/Execution/Sleep.h"
+#include	"../../Foundation/Execution/WaitTimedOutException.h"
 #include	"../../Foundation/IO/FileSystem/FileUtils.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -235,53 +237,78 @@ void	Main::RunAsService ()
 	}
 }
 
-void	Main::Start ()
+void	Main::_Start (Time::DurationSecondsType timeout)
 {
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
+	DbgTrace ("(timeout = %f)", timeout);
+
+	Time::DurationSecondsType timeoutAt	=	Time::GetTickCount () + timeout;
+
 	// Check not already runnig, (someday) and then for and exec the 
 
-#if		qPlatform_POSIX
-	// REALLY should use GETSTATE - and return state based on if PID file exsits...
-	if (GetServicePID ()  != 0) {
-		Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
+	if (_IsServiceFailed ()) {
+		_CleanupDeadService ();
 	}
-#endif
-	Characters::TString	thisEXEPath	=	Execution::GetEXEPath ();
-#if		qPlatform_POSIX
-	pid_t	pid	=	fork ();
-	Execution::ThrowErrNoIfNegative (pid);
-	if (pid == 0) {
-		/*
-		 * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
-		 *
-		 * Possibly should close more descriptors?
-		 */
-		for (int i = 0; i < 3; ++i) {
-			::close (i);
-		}
-		int id = open ("/dev/null", O_RDWR);
-		dup2 (id, 0);
-		dup2 (id, 1);
-		dup2 (id, 2);
 
-		int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
-		exit (-1);
+	#if		qPlatform_POSIX
+		// REALLY should use GETSTATE - and return state based on if PID file exsits...
+		if (GetServicePID ()  != 0) {
+			Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
+		}
+	#endif
+
+	Characters::TString	thisEXEPath	=	Execution::GetEXEPath ();
+	#if		qPlatform_POSIX
+		pid_t	pid	=	fork ();
+		Execution::ThrowErrNoIfNegative (pid);
+		if (pid == 0) {
+			/*
+			 * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
+			 *
+			 * Possibly should close more descriptors?
+			 */
+			for (int i = 0; i < 3; ++i) {
+				::close (i);
+			}
+			int id = open ("/dev/null", O_RDWR);
+			dup2 (id, 0);
+			dup2 (id, 1);
+			dup2 (id, 2);
+
+			int	r	=	execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
+			exit (-1);
+		}
+		else {
+			// parent - in this case - no reason to wait - our work is done... Future versions might wait to
+			// see if the 'pidfile' got created....
+			//		--LGP 2011-09-23
+		}
+	#endif
+
+	while (not _IsServiceActuallyRunning ()) {
+		Execution::Sleep (0.5);
+		if (Time::GetTickCount () > timeoutAt) {
+			Execution::DoThrow (Execution::WaitTimedOutException ());
+		}
 	}
-	else {
-		// parent - in this case - no reason to wait - our work is done... Future versions might wait to
-		// see if the 'pidfile' got created....
-		//		--LGP 2011-09-23
-	}
-#endif
 }
 
-void	Main::Stop ()
+void	Main::_Stop (Time::DurationSecondsType timeout)
 {
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Stop"));
+	DbgTrace ("(timeout = %f)", timeout);
+	
+	Time::DurationSecondsType timeoutAt	=	Time::GetTickCount () + timeout;
 	// Send signal to server to stop
 #if		qPlatform_POSIX
 	Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGTERM));
 #endif
+	while (_IsServiceActuallyRunning ()) {
+		Execution::Sleep (0.5);
+		if (Time::GetTickCount () > timeoutAt) {
+			Execution::DoThrow (Execution::WaitTimedOutException ());
+		}
+	}
 }
 
 void	Main::Kill ()
@@ -296,15 +323,51 @@ void	Main::Kill ()
 #endif
 }
 
-void	Main::Restart ()
+void	Main::_Restart (Time::DurationSecondsType timeout)
 {
 	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
-	IgnoreExceptionsForCall (Stop ());
+	DbgTrace ("(timeout = %f)", timeout);
+
+	Time::DurationSecondsType endAt	=	Time::GetTickCount () + timeout;
+	IgnoreExceptionsForCall (Stop (timeout));
 #if		qPlatform_POSIX
 	// REALY should WAIT for server to stop and only do this it fails - 
 	unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
-	Start ();
+	Start (endAt - Time::GetTickCount ());
+}
+
+bool	Main::_IsServiceFailed ()
+{
+	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
+	#if		qPlatform_POSIX
+	pid_t	servicePID	=	GetServicePID ();
+	if (servicePID > 0) {
+		return not _IsServiceActuallyRunning ();
+	}
+	#endif
+	return false;
+}
+
+void	Main::_CleanupDeadService ()
+{
+	Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
+#if		qPlatform_POSIX
+	// REALY should WAIT for server to stop and only do this it fails - 
+	unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
+#endif
+}
+
+bool	Main::_IsServiceActuallyRunning ()
+{
+	#if		qPlatform_POSIX
+	pid_t	servicePID	=	GetServicePID ();
+	if (servicePID > 0) {
+		int result	=	::kill (servicePID, 0);
+		return result == 0;
+	}
+	#endif
+	return false;
 }
 
 void	Main::ReReadConfiguration ()
