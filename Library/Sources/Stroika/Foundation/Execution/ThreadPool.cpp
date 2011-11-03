@@ -102,7 +102,7 @@ ThreadPool::ThreadPool (unsigned int nThreads)
 unsigned int	ThreadPool::GetPoolSize () const
 {
 	AutoCriticalSection	critSection (fCriticalSection_);
-	return fThreads_.size ();
+	return static_cast<unsigned int> (fThreads_.size ());
 }
 
 void	ThreadPool::SetPoolSize (unsigned int poolSize)
