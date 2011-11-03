@@ -242,6 +242,17 @@ void	Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept
 			// Note that BOTH the fRefCountBumpedEvent_ and the fOK2StartEvent_ wait MUST come inside the try/catch for 
 			incRefCnt->fRefCountBumpedEvent_.Set ();
 
+			#if		qUseThreads_StdCPlusPlus && qPlatform_POSIX
+				{
+					// we inherit blocked abort signal given how we are created in DoCreate() - so unblock it - and acept aborts after we've marked
+					// reference count as set.
+					sigset_t	mySet;
+					sigemptyset (&mySet);
+					(void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
+					Verify (pthread_sigmask (SIG_UNBLOCK,  &mySet, nullptr) == 0);
+				}
+			#endif
+
 			incRefCnt->fOK2StartEvent_.Wait ();	// we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
 												// we really want to start this thread.
 
