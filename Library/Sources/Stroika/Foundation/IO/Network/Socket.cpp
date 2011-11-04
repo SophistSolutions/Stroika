@@ -246,24 +246,14 @@ void	Socket::Bind (const BindProperties& bindProperties)
 #endif
 
 
-	// Allow socket descriptor to be reuseable
 	{
+		// Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
+		// reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
+		// there is an active listening socket bound to the address. When the listening socket is bound
+		// to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address. 
 		int    on = 1;
 		Execution::Handle_ErrNoResultInteruption ([&sd, &on] () -> int { return ::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)); });
 	}
-
-
-#if 0
-	// Now that we have signal/interuption - we can use blocking IO - A BIG improvement... but test carefully
-#if		qPlatform_POSIX
-	{
-		// Set socket to be non-blocking.  All of the sockets for the incoming connections will also be non-blocking since
-		// they will inherit that state from the listening socket
-		int    on = 1;
-		Execution::ThrowErrNoIfNegative (::ioctl (sd, FIONBIO, (char *)&on));
-	}
-#endif
-#endif
 
 	Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
