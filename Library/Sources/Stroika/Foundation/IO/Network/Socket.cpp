@@ -51,6 +51,8 @@ namespace	{
 			public:
 				NativeSocket	fSD_;
 			public:
+				DECLARE_USE_BLOCK_ALLOCATION(Rep_);
+			public:
 				Rep_ (NativeSocket sd)
 					: fSD_ (sd)
 					{
