@@ -1571,7 +1571,7 @@ void	MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, vo
 		fTextImager.SetTopRowInWindow_ (RowReference (newTopLine, useFirstRow? 0: fTextImager.GetPartitionElementCacheInfo (newTopLine).GetLastRow ()));
 	}
 	AssertNotNull (fTextImager.fTopLinePartitionMarkerInWindow);	// can't delete last one...
-	Led_AssertMember (fTextImager.fTopLinePartitionMarkerInWindow, MultiRowPartitionMarker);
+	AssertMember (fTextImager.fTopLinePartitionMarkerInWindow, MultiRowPartitionMarker);
 	fTextImager.InvalidateTotalRowsInWindow ();
 #endif
 }

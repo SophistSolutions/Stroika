@@ -95,7 +95,7 @@ void			SimpleTextStoreMarkerHook::GetStartEnd (size_t* start, size_t* end)  cons
 		{
 			AssertNotNull (marker);
 			AssertNotNull ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook);
-			Led_AssertMember ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook, SimpleTextStoreMarkerHook);
+			AssertMember ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook, SimpleTextStoreMarkerHook);
 			return (SimpleTextStoreMarkerHook*)marker->fTextStoreHook;
 		}
 

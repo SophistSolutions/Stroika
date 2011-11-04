@@ -417,7 +417,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 	inline	Partition&	Partition::PartitionMarker::GetOwner () const
 		{
 			EnsureNotNull (inherited::GetOwner ());
-			Led_EnsureMember (inherited::GetOwner (), Partition);
+			EnsureMember (inherited::GetOwner (), Partition);
 			return *(dynamic_cast<Partition*> (inherited::GetOwner ()));
 		}
 	inline	Partition::PartitionMarker*	Partition::PartitionMarker::GetPrevious () const

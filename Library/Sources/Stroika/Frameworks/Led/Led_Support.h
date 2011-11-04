@@ -125,23 +125,6 @@ namespace	Stroika {
 
 
 
-/*
-@METHOD:		Led_AssertMember
-@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-*/
-#define	Led_AssertMember(p,c)	Assert (dynamic_cast<c*>(p) != NULL)
-/*
-@METHOD:		Led_RequireMember
-@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-*/
-#define	Led_RequireMember(p,c)	Require (dynamic_cast<c*>(p) != NULL)
-/*
-@METHOD:		Led_EnsureMember
-@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-*/
-#define	Led_EnsureMember(p,c)	Ensure (dynamic_cast<c*>(p) != NULL)
-
-
 
 
 

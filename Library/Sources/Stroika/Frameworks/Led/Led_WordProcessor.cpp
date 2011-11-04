@@ -5655,7 +5655,7 @@ void	Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*run
 											Led_Coordinate /*useBaseLine*/, Led_Distance* pixelsDrawn
 										)
 {
-	Led_RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
+	RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
 	Assert (from + 1 == to);
 	RequireNotNull (text.PeekAtVirtualText ());
 	Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
@@ -5724,7 +5724,7 @@ void	Table::MeasureSegmentWidth (const StyledTextImager* imager, const RunElemen
 												Led_Distance* distanceResults
 											) const
 {
-	Led_RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
+	RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
 	Assert (from + 1 == to);
 	RequireNotNull (text);
 	Led_Arg_Unused (from);
@@ -5736,7 +5736,7 @@ void	Table::MeasureSegmentWidth (const StyledTextImager* imager, const RunElemen
 
 Led_Distance	Table::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
+	RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
 	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);

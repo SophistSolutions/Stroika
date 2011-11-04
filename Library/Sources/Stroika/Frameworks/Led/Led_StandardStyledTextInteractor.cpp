@@ -328,7 +328,7 @@ bool	StandardStyledTextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsi
 
 		if (embeddingList.size () == 1) {
 			SimpleEmbeddedObjectStyleMarker*	embedding	=	embeddingList[0];
-			Led_AssertMember (embedding, SimpleEmbeddedObjectStyleMarker);
+			AssertMember (embedding, SimpleEmbeddedObjectStyleMarker);
 			switch (clickCount) {
 				case	1: {
 					if (not extendSelection) {
@@ -384,7 +384,7 @@ void	StandardStyledTextInteractor::WhileSimpleMouseTracking (Led_Point newMouseP
 		vector<SimpleEmbeddedObjectStyleMarker*>	embeddingList	=	CollectAllEmbeddingMarkersInRange (clickedOnChar, clickedOnChar + 1);
 		if (embeddingList.size () == 1) {
 			SimpleEmbeddedObjectStyleMarker*	embedding	=	embeddingList[0];
-			Led_AssertMember (embedding, SimpleEmbeddedObjectStyleMarker);
+			AssertMember (embedding, SimpleEmbeddedObjectStyleMarker);
 			return;
 		}
 	}

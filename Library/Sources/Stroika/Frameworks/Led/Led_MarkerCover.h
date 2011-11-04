@@ -516,7 +516,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 				// iterate through markers, and create an ordered list of the MARKERs which overlap our change
 				for (typename MarkerVector::const_iterator mi = miStart; mi != miEnd; mi++) {
 					MARKER*	m	=	*mi;
-					Led_AssertMember (m, MARKER);
+					AssertMember (m, MARKER);
 
 					// Be sure prev marker lines up with next in list...
 					Assert (prevNonEmptyMarker != NULL or mi == miStart);	// if mi > miStart, we must have had at least ONE non-empty marker!
@@ -596,7 +596,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 					 *	and so needed to merge together all those blocks.
 					 */
 					if (changedAnythingHERE and prevNonEmptyMarker != NULL and prevNonEmptyMarker != m) {
-						Led_AssertMember (prevNonEmptyMarker, MARKER);
+						AssertMember (prevNonEmptyMarker, MARKER);
 						if (prevNonEmptyMarker->GetInfo () == m->GetInfo ()) {
 							// simply zero out the size of 'm', and put that size into
 							// prevMarker. Zero'd out markers will automagically be deleted
@@ -844,7 +844,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 				size_t	lastEnd	=	0;
 				for (typename MarkerVector::const_iterator i = markers.begin (); i != markers.end (); i++) {
 					MARKER*	m	=	*i;
-					Led_AssertMember (m, MARKER);
+					AssertMember (m, MARKER);
 					Assert (m->GetLength () > 0);	// we should eliminate all zero-length markers...
 					if (i == markers.begin ()) {
 						Assert (m->GetStart () == 0);
@@ -856,7 +856,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 					Assert (m->GetStart () == lastEnd);
 					if (i != markers.begin ()) {
 						MARKER*	prevMarker	=	*(i-1);
-						Led_AssertMember (prevMarker, MARKER);
+						AssertMember (prevMarker, MARKER);
 						Assert (prevMarker->GetInfo () != m->GetInfo ());	// otherwise they should have been merged together
 					}
 					lastEnd = m->GetEnd ();
