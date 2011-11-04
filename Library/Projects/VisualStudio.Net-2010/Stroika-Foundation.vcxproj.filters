@@ -94,6 +94,9 @@
     <Filter Include="Sources\Execution\Platform\POSIX">
       <UniqueIdentifier>{e3cb51f2-90a4-4e1e-b12c-4626c86fe91e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Cryptography\SSL">
+      <UniqueIdentifier>{e5bc13d3-660a-4be2-95df-297eba6a4330}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -338,6 +341,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -740,6 +752,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

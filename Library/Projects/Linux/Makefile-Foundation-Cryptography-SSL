@@ -1,0 +1,17 @@
+include ../../../Configuration.mk
+include	../../../SharedMakeVariables.mk
+include	../../../SharedBuildRules.mk
+
+
+RelPathToStroikaDevRoot		=	../../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/SSL/
+
+VPATH = $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)ClientContext.o\
+	$(ObjDir)ServerContext.o\
+	$(ObjDir)SSLSocket.o\
+
+all:	$(Objs)
+

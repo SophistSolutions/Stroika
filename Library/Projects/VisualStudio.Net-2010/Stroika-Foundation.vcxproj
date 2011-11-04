@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.cpp" />
@@ -336,6 +339,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.h" />
