@@ -121,13 +121,13 @@ class	Socket::Rep_ {
 
 AGAIN:
 				socklen_t	sz	=	sizeof (peer);
-				NativeSocket	r = accept (fSD_, &peer, &sz);
+				NativeSocket	r = ::accept (fSD_, &peer, &sz);
 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
 				if (r < 0) {
 					// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
-					if (errno == EAGAIN or errno == EINTR or errno == EWOULDBLOCK)
+					if (errno == EAGAIN or errno == EINTR/* or errno == EWOULDBLOCK*/)
 					{
-						Execution::Sleep(1.0);
+						// DONT THINK SLEEP NEEDED ANYMORE - NOR WEOUDBLCOKExecution::Sleep(1.0);
 						Execution::CheckForThreadAborting();
 						goto AGAIN;
 					}
