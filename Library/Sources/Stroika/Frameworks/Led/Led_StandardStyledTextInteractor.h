@@ -4,6 +4,8 @@
 #ifndef	__StandardStyledTextInteractor_h__
 #define	__StandardStyledTextInteractor_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	StandardStyledTextInteractor
 @DESCRIPTION:

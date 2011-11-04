@@ -4,6 +4,7 @@
 #ifndef	__StyledTextIO_HTML_h__
 #define	__StyledTextIO_HTML_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:	StyledTextIO_HTML

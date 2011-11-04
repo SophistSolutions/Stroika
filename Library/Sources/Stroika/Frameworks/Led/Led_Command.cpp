@@ -1,9 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include	"../../Foundation/StroikaPreComp.h"
 
 #include	"Led_IdleManager.h"
 #include	"Led_TextInteractor.h"

@@ -4,6 +4,8 @@
 #ifndef	__MarkerCover_h__
 #define	__MarkerCover_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	MarkerCover
 @DESCRIPTION:

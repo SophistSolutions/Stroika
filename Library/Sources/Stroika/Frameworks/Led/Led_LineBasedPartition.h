@@ -4,6 +4,8 @@
 #ifndef	__LineBasedPartition_h__
 #define	__LineBasedPartition_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	LineBasedPartition
 @DESCRIPTION:

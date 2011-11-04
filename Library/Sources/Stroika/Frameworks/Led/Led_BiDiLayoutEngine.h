@@ -4,6 +4,8 @@
 #ifndef	__BiDiLayout_h__
 #define	__BiDiLayout_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	BiDiLayout
 @DESCRIPTION:	<p>Code to break up a string to be displayed - which might contain right-to-left text mixed

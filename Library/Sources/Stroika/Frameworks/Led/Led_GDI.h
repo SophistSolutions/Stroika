@@ -4,6 +4,8 @@
 #ifndef	____Led_GDI_h___
 #define	____Led_GDI_h___	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	LedGDI
 @DESCRIPTION:

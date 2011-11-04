@@ -4,6 +4,8 @@
 #ifndef	__LedSupport_h__
 #define	__LedSupport_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	LedSupport
 @DESCRIPTION:

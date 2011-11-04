@@ -4,6 +4,8 @@
 #ifndef	__TextImager_h__
 #define	__TextImager_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	TextImager
 @DESCRIPTION:

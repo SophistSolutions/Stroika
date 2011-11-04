@@ -4,6 +4,8 @@
 #ifndef	__TextBreaks_h__
 #define	__TextBreaks_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	TextBreaks
 @DESCRIPTION:

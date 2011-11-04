@@ -4,6 +4,8 @@
 #ifndef	__StandardStyledTextImager_h__
 #define	__StandardStyledTextImager_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	StandardStyledTextImager
 @DESCRIPTION:	<p>@'StandardStyledTextImager' is not intended to be a general and flexible

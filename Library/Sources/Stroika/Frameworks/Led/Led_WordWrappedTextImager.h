@@ -4,6 +4,8 @@
 #ifndef	__WordWrappedTextImager_h__
 #define	__WordWrappedTextImager_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	WordWrappedTextImager
 @DESCRIPTION:

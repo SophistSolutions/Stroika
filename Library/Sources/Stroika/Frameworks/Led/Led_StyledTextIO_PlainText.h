@@ -4,6 +4,8 @@
 #ifndef	__StyledTextIO_PlainText_h__
 #define	__StyledTextIO_PlainText_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	StyledTextIO_PlainText
 @DESCRIPTION:

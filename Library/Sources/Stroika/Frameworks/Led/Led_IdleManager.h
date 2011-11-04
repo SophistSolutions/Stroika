@@ -4,6 +4,8 @@
 #ifndef	__IdleManager_h__
 #define	__IdleManager_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	IdleManager
 @DESCRIPTION:	<p>Note that this implemenation is for SYNCRONOUS, and not THREADED idle time

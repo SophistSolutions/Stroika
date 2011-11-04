@@ -1,9 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include	"../../Foundation/StroikaPreComp.h"
 
 #include	<algorithm>
 
@@ -606,9 +604,9 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 		{
 			InitialUNISCRIBEDir	dir	=	eNeutralChar;
 			if (initialDirection == NULL) {
-				size_t	maxToCheck	=	min (fTextLength, 100);	// don't bother checking more than 100 characters, as this CAN be slow
-																// in degenerate cases (see SPR#1295). Not such a big deal to get this right
-																// in those crazy cases.
+				size_t	maxToCheck	=	min (fTextLength, size_t (100));	// don't bother checking more than 100 characters, as this CAN be slow
+																			// in degenerate cases (see SPR#1295). Not such a big deal to get this right
+																			// in those crazy cases.
 				for (size_t i = 0; i < maxToCheck; ++i) {
 					dir = myGetInitialUNISCRIBEDir (fRealText[i]);
 					if (dir != eNeutralChar) {

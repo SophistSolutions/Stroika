@@ -4,6 +4,8 @@
 #ifndef	__FlavorPackage_h__
 #define	__FlavorPackage_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	FlavorPackage
 @DESCRIPTION:

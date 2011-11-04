@@ -4,6 +4,8 @@
 #ifndef	__StyledTextImager_h__
 #define	__StyledTextImager_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	StyledTextImager
 @DESCRIPTION:

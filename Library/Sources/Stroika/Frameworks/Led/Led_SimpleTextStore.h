@@ -4,6 +4,8 @@
 #ifndef	__SimpleTextStore_h__
 #define	__SimpleTextStore_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	SimpleTextStore
 @DESCRIPTION:

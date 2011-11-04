@@ -33,9 +33,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_Marker.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_MarkerCover.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_MultiRowTextImager.cpp">
       <Filter>Source</Filter>
     </ClCompile>

@@ -4,6 +4,8 @@
 #ifndef	__WordProcessor_h__
 #define	__WordProcessor_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	WordProcessor
 @DESCRIPTION:

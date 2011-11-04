@@ -4,6 +4,8 @@
 #ifndef	__Marker_h__
 #define	__Marker_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 
 /*
 @MODULE:	Marker

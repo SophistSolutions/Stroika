@@ -4,6 +4,8 @@
 #ifndef	__SpellCheckEngine_h__
 #define	__SpellCheckEngine_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	SpellCheckEngine
 @DESCRIPTION:	<p></p>

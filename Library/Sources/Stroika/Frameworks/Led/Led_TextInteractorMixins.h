@@ -4,6 +4,8 @@
 #ifndef	__TextInteractorMixins_h__
 #define	__TextInteractorMixins_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	TextInteractorMixins
 @DESCRIPTION:

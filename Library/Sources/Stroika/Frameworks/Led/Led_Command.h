@@ -4,6 +4,8 @@
 #ifndef	__Command_h_
 #define	__Command_h_	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	Command
 @DESCRIPTION:

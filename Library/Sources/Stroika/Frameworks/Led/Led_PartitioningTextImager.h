@@ -4,6 +4,8 @@
 #ifndef	__PartitioningTextImager_h__
 #define	__PartitioningTextImager_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 
 /*
 @MODULE:	PartitioningTextImager

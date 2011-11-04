@@ -4,6 +4,8 @@
 #ifndef	__LedCodePage_h__
 #define	__LedCodePage_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 
 /*
 @MODULE:	CodePage

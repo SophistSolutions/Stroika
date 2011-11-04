@@ -4,6 +4,8 @@
 #ifndef	__WordWrappedTextInteractor_h__
 #define	__WordWrappedTextInteractor_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	WordWrappedTextInteractor
 @DESCRIPTION:

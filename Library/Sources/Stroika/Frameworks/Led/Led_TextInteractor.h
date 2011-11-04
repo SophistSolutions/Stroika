@@ -4,6 +4,8 @@
 #ifndef	__TextInteractor_h__
 #define	__TextInteractor_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	TextInteractor
 @DESCRIPTION:

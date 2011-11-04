@@ -1,9 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include	"../../Foundation/StroikaPreComp.h"
 
 #if		qMacOS
 	#include	<TextEdit.h>		// for Apple TE scrap format and TEContinuous etc compatability

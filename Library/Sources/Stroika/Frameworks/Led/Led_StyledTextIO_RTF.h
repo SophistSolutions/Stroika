@@ -4,6 +4,8 @@
 #ifndef	__StyledTextIO_RTF_h__
 #define	__StyledTextIO_RTF_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	StyledTextIO_RTF
 @DESCRIPTION:

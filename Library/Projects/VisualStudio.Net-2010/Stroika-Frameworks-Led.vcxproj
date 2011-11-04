@@ -85,7 +85,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_IdleManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_LineBasedPartition.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_Marker.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_MarkerCover.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_MultiRowTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_PartitioningTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Led_SimpleTextStore.cpp" />

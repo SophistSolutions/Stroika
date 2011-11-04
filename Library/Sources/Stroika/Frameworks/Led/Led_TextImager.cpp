@@ -1,9 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include	"../../Foundation/StroikaPreComp.h"
 
 #if		qMacOS
 	#include	<Script.h>
@@ -547,7 +545,7 @@ Led_FontSpecification	TextImager::GetStaticDefaultFont (BYTE charSet)
 	Led_FontSpecification	fooo;
 	FontSelectionInfo		selectedFont (charSet);
 	Led_WindowDC			screenDC (NULL);
-	#if		STRICT
+	#if		defined (STRICT)
 		::EnumFontFamilies (screenDC.m_hDC, NULL, EnumFontCallback, long (&selectedFont));
 	#else
 		::EnumFontFamilies (screenDC.m_hDC, NULL, reinterpret_cast<FONTENUMPROC> (EnumFontCallback), long (&selectedFont));

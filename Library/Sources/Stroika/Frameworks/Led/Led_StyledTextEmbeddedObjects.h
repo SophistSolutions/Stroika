@@ -4,6 +4,8 @@
 #ifndef	__StyledTextEmbeddedObjects_h__
 #define	__StyledTextEmbeddedObjects_h__	1
 
+#include	"../../Foundation/StroikaPreComp.h"
+
 /*
 @MODULE:	StyledTextEmbeddedObjects
 @DESCRIPTION:
