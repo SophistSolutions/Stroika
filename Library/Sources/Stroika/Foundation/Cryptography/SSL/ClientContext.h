@@ -10,6 +10,7 @@
 #include	<vector>
 
 #include	"../../Configuration/Common.h"
+#include	"Common.h"
 
 
 namespace	Stroika {	

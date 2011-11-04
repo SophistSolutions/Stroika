@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-
 		..\Linux\Makefile-Foundation-Configuration = ..\Linux\Makefile-Foundation-Configuration
 		..\Linux\Makefile-Foundation-Containers = ..\Linux\Makefile-Foundation-Containers
 		..\Linux\Makefile-Foundation-Cryptography = ..\Linux\Makefile-Foundation-Cryptography
+		..\Linux\Makefile-Foundation-Cryptography-SSL = ..\Linux\Makefile-Foundation-Cryptography-SSL
 		..\Linux\Makefile-Foundation-Database = ..\Linux\Makefile-Foundation-Database
 		..\Linux\Makefile-Foundation-DataExchangeFormat = ..\Linux\Makefile-Foundation-DataExchangeFormat
 		..\Linux\Makefile-Foundation-DataExchangeFormat-JSON = ..\Linux\Makefile-Foundation-DataExchangeFormat-JSON

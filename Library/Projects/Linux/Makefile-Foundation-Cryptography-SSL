@@ -10,6 +10,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)ClientContext.o\
+	$(ObjDir)Common.o\
 	$(ObjDir)ServerContext.o\
 	$(ObjDir)SSLSocket.o\
 

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Cryptography_SSL_ServerContext_h_
-#define	_Stroika_Foundation_Cryptography_SSL_ServerContext_h_	1
+#ifndef	_Stroika_Foundation_Cryptography_SSL_Common_h_
+#define	_Stroika_Foundation_Cryptography_SSL_Common_h_	1
 
 #include	"../../StroikaPreComp.h"
 
@@ -10,7 +10,6 @@
 #include	<vector>
 
 #include	"../../Configuration/Common.h"
-#include	"Common.h"
 
 
 namespace	Stroika {	
@@ -19,15 +18,13 @@ namespace	Stroika {
 			namespace	SSL {
 
 
-				// Certs, policies, options etc - for a client trying to open an SSL conneciton
-				class	ServerContext {
-				};
+				// common defines - like if we are using OPENSSL
 
 			}
 		}
 	}
 }
-#endif	/*_Stroika_Foundation_Cryptography_SSL_ServerContext_h_*/
+#endif	/*_Stroika_Foundation_Cryptography_SSL_Common_h_*/
 
 
 

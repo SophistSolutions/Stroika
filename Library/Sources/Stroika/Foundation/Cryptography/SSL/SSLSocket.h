@@ -9,7 +9,10 @@
 #include	<string>
 #include	<vector>
 
-#include	"../../Configuration/Common.h"
+#include	"../../IO/Network/Socket.h"
+#include	"Common.h"
+#include	"ClientContext.h"
+#include	"ServerContext.h"
 
 
 namespace	Stroika {	
@@ -21,6 +24,7 @@ namespace	Stroika {
 				// wrapper calss - real work is in protected REP subclasses from Socket Rep...
 				class	SSLSocket {
 				};
+
 			}
 		}
 	}
