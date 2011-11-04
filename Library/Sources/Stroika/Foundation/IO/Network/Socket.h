@@ -33,8 +33,8 @@ namespace	Stroika {
 
 
 				class	Socket {
-					private:
-						class	Rep_;
+					protected:
+						class	_Rep;
 					public:
 						// Note - socket is CLOSED (filesystem close for now) in DTOR 
 						// TODO:
@@ -73,8 +73,23 @@ namespace	Stroika {
 					public:
 						nonvirtual	void	Close ();
 
+					public:
+						nonvirtual	NativeSocket	GetNativeSocket () const;
+
 					private:
-						Memory::SharedPtr<Rep_>	fRep_;
+						Memory::SharedPtr<_Rep>	fRep_;
+				};
+
+
+				class	Socket::_Rep {
+					public:
+						virtual ~_Rep ();
+						virtual	void	Close () = 0;
+						virtual	size_t	Read (Byte* intoStart, Byte* intoEnd) = 0;
+						virtual	void	Write (const Byte* start, const Byte* end) = 0;
+						virtual	void	Listen (unsigned int backlog) = 0;
+						virtual	Socket	Accept () = 0;
+						virtual	NativeSocket	GetNativeSocket () const = 0;
 				};
 
 			}

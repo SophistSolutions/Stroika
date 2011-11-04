@@ -39,110 +39,141 @@ namespace	{
 	#endif
 }
 
-class	Socket::Rep_ {
-	public:
-		NativeSocket	fSD_;
-	public:
-		Rep_ (NativeSocket sd)
-			: fSD_ (sd)
-			{
-			}
-		~Rep_ ()
-			{
-				if (fSD_ != kINVALID_NATIVE_HANDLE) {
-					Close ();
-				}
-			}
 
-	public:
-		void	Close ()
-			{
-				if (fSD_ != kINVALID_NATIVE_HANDLE) {
-					#if		qPlatform_Windows
-						::closesocket (fSD_);
-					#elif	qPlatform_POSIX
-						::close (fSD_);
-					#else
-						AssertNotImplemented ();
-					#endif
-					fSD_ = kINVALID_NATIVE_HANDLE;
-				}
-			}
-	public:
-		size_t	Read (Byte* intoStart, Byte* intoEnd) override
-			{
-				// Must do erorr checking and throw exceptions!!!
-				#if		qPlatform_Windows
-					AssertNotImplemented ();
-					return 0;
-					//return ::_read (fSD_, intoStart, intoEnd - intoStart);
-				#elif	qPlatform_POSIX
-					return Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
-				#else
-					AssertNotImplemented ();
-				#endif
-			}
-	public:
-		void	Write (const Byte* start, const Byte* end) override
-			{
-				// Must do erorr checking and throw exceptions!!!
-				#if		qPlatform_Windows
-					AssertNotImplemented ();
-					//int		n	=	::_write (fSD_, start, end - start);
-				#elif	qPlatform_POSIX
-					int		n	=	Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
-				#else
-					AssertNotImplemented ();
-				#endif
-			}
 
-	public:
-		void	Listen (unsigned int backlog)
-			{
-				Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
-			}
 
-	public:
-		Socket	Accept ()
-			{
-				// HACK - not right.... - Need to find a way to get interupted when abort is called
-				#if		qPlatform_POSIX && 0
-				fd_set	fs;
-				FD_ZERO (&fs);
-				FD_SET (fSD_, &fs);
-				timeval	timeout;
-				memset (&timeout, 0, sizeof (timeout));
-				timeout.tv_sec  = 5;
-				int	maxSD	=	fSD_;
-				#endif
-				
-				sockaddr	peer;
-				memset (&peer, 0, sizeof (peer));
 
-AGAIN:
-				socklen_t	sz	=	sizeof (peer);
-				NativeSocket	r = ::accept (fSD_, &peer, &sz);
-// must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
-				if (r < 0) {
-					// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
-					if (errno == EAGAIN or errno == EINTR/* or errno == EWOULDBLOCK*/)
+
+namespace	{
+
+	struct	REALSOCKET_ : public Socket {
+		class	Rep_ : public Socket::_Rep {
+			public:
+				NativeSocket	fSD_;
+			public:
+				Rep_ (NativeSocket sd)
+					: fSD_ (sd)
 					{
-						// DONT THINK SLEEP NEEDED ANYMORE - NOR WEOUDBLCOKExecution::Sleep(1.0);
-						Execution::CheckForThreadAborting();
-						goto AGAIN;
 					}
-				}
-				#if		qPlatform_Windows
-					AssertNotImplemented ();
-				#elif	qPlatform_POSIX
-					Execution::ThrowErrNoIfNegative (r);
-				#endif
-				return Socket (r);
-			}
+				~Rep_ ()
+					{
+						if (fSD_ != kINVALID_NATIVE_HANDLE) {
+							Close ();
+						}
+					}
+				virtual	void	Close () override
+					{
+						if (fSD_ != kINVALID_NATIVE_HANDLE) {
+							#if		qPlatform_Windows
+								::closesocket (fSD_);
+							#elif	qPlatform_POSIX
+								::close (fSD_);
+							#else
+								AssertNotImplemented ();
+							#endif
+							fSD_ = kINVALID_NATIVE_HANDLE;
+						}
+					}
+				virtual	size_t	Read (Byte* intoStart, Byte* intoEnd) override
+					{
+						// Must do erorr checking and throw exceptions!!!
+						#if		qPlatform_Windows
+							AssertNotImplemented ();
+							return 0;
+							//return ::_read (fSD_, intoStart, intoEnd - intoStart);
+						#elif	qPlatform_POSIX
+							return Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+						#else
+							AssertNotImplemented ();
+						#endif
+					}
+				virtual	void	Write (const Byte* start, const Byte* end) override
+					{
+						// Must do erorr checking and throw exceptions!!!
+						#if		qPlatform_Windows
+							AssertNotImplemented ();
+							//int		n	=	::_write (fSD_, start, end - start);
+						#elif	qPlatform_POSIX
+							int		n	=	Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+						#else
+							AssertNotImplemented ();
+						#endif
+					}
+				virtual	void	Listen (unsigned int backlog) override
+					{
+						Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
+					}
+				virtual	Socket	Accept () override
+					{
+						// HACK - not right.... - Need to find a way to get interupted when abort is called
+						#if		qPlatform_POSIX && 0
+						fd_set	fs;
+						FD_ZERO (&fs);
+						FD_SET (fSD_, &fs);
+						timeval	timeout;
+						memset (&timeout, 0, sizeof (timeout));
+						timeout.tv_sec  = 5;
+						int	maxSD	=	fSD_;
+						#endif
+				
+						sockaddr	peer;
+						memset (&peer, 0, sizeof (peer));
 
-};
+		AGAIN:
+						socklen_t	sz	=	sizeof (peer);
+						NativeSocket	r = ::accept (fSD_, &peer, &sz);
+		// must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
+						if (r < 0) {
+							// HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
+							if (errno == EAGAIN or errno == EINTR/* or errno == EWOULDBLOCK*/)
+							{
+								// DONT THINK SLEEP NEEDED ANYMORE - NOR WEOUDBLCOKExecution::Sleep(1.0);
+								Execution::CheckForThreadAborting();
+								goto AGAIN;
+							}
+						}
+						#if		qPlatform_Windows
+							AssertNotImplemented ();
+						#elif	qPlatform_POSIX
+							Execution::ThrowErrNoIfNegative (r);
+						#endif
+						return Socket (r);
+					}
+				virtual	NativeSocket	GetNativeSocket () const override
+					{
+						return fSD_;
+					}
+		};
+	};
+}
 
 
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** Network::Socket::_Rep ***************************
+ ********************************************************************************
+ */
+
+Socket::_Rep::~_Rep ()
+{
+}
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************************ Network::Socket ***************************
+ ********************************************************************************
+ */
 const	String	Socket::BindProperties::kANYHOST;
 
 
@@ -158,7 +189,7 @@ Socket::Socket (const Socket& s)
 }
 
 Socket::Socket (NativeSocket sd)
-	: fRep_ (SharedPtr<Rep_> (new Rep_ (sd)))
+	: fRep_ (SharedPtr<_Rep> (new REALSOCKET_::Rep_ (sd)))
 {
 }
 
@@ -177,7 +208,7 @@ const Socket& Socket::operator= (const Socket& s)
 void	Socket::Bind (const BindProperties& bindProperties)
 {
 	// Should this throw if already has something bound - already non-null!???
-	if (not fRep_.IsNull () and fRep_->fSD_ != kINVALID_NATIVE_HANDLE) {
+	if (not fRep_.IsNull () and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE) {
 		throw Execution::StringException (L"Cannot bind an already bound socket");
 	}
 
@@ -231,7 +262,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 
 	Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
-	fRep_  = SharedPtr<Rep_> (new Rep_ (sd));
+	fRep_  = SharedPtr<_Rep> (new REALSOCKET_::Rep_ (sd));
 }
 
 void	Socket::Listen (unsigned int backlog)
