@@ -177,6 +177,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Configuration", "Makefile-Foundation-Configuration");
 		mkDirWithLinks("Foundation/Containers", "Makefile-Foundation-Containers");
 		mkDirWithLinks("Foundation/Cryptography", "Makefile-Foundation-Cryptography");
+		mkDirWithLinks2("Foundation/Cryptography/SSL", "Makefile-Foundation-Cryptography-SSL");
 		mkDirWithLinks("Foundation/Database", "Makefile-Foundation-Database");
 		mkDirWithLinks("Foundation/DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
 		mkDirWithLinks2("Foundation/DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
