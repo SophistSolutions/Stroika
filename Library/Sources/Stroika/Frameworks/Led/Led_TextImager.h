@@ -1071,13 +1071,13 @@ template	<typename TEXTSTORE, typename	IMAGER>
 			}
 		inline	Led_TWIPS	TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
 			{
-				return Led_TWIPS ((i+1)*fTWIPSPerTabStop);
+				return Led_TWIPS (static_cast<long> ((i+1)*fTWIPSPerTabStop));
 			}
 		inline	Led_TWIPS	TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const
 			{
 				Led_Assert (fTWIPSPerTabStop > 0);
 				size_t	idx	=	afterPos/fTWIPSPerTabStop;
-				Led_TWIPS	result	=	Led_TWIPS ((idx+1)*fTWIPSPerTabStop);
+				Led_TWIPS	result	=	Led_TWIPS (static_cast<long> ((idx+1)*fTWIPSPerTabStop));
 				Led_Ensure (result % fTWIPSPerTabStop == 0);
 				Led_Ensure (result > afterPos);
 				return result;
@@ -1136,7 +1136,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 					r += fTabStops [j];
 				}
 				if (smallI <= i) {
-					r = 	Led_TWIPS ((r/fDefaultTabWidth+(i-smallI+1))*fDefaultTabWidth);
+					r = 	Led_TWIPS (static_cast<long> ((r/fDefaultTabWidth+(i-smallI+1))*fDefaultTabWidth));
 				}
 				return r;
 			}
