@@ -194,7 +194,7 @@ class	MyIWriteMemoizedUniscribeDirFunction {
 		MyIWriteMemoizedUniscribeDirFunction ()
 			{
 				for (wchar_t c = 0; c < 0xffff; ++c) {
-					Led_Assert (GetInitialUNISCRIBEDir (c) == myGetInitialUNISCRIBEDir (c));
+					Assert (GetInitialUNISCRIBEDir (c) == myGetInitialUNISCRIBEDir (c));
 				}
 			}
 }	aMyIWriteMemoizedUniscribeDirFunction;
@@ -228,7 +228,7 @@ namespace {
 		~UniscribeDLL ()
 			{
 				if (fDLL != NULL) {
-					Led_Verify (::FreeLibrary (fDLL));
+					Verify (::FreeLibrary (fDLL));
 				}
 			}
 
@@ -292,7 +292,7 @@ TextDirection	TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) con
 			return (*i).fDirection;
 		}
 	}
-	Led_Assert (false); return eLeftToRight;
+	Assert (false); return eLeftToRight;
 }
 
 /*
@@ -301,7 +301,7 @@ TextDirection	TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) con
 */
 size_t	TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const
 {
-	Led_Assert (false);	//NYI
+	Assert (false);	//NYI
 	return 0;
 }
 
@@ -311,25 +311,25 @@ size_t	TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const
 */
 size_t	TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const
 {
-	Led_Require (i < GetTextLength ());
+	Require (i < GetTextLength ());
 	vector<ScriptRunElt>	runs		=	GetScriptRuns ();
 	for (vector<ScriptRunElt>::const_iterator runIt = runs.begin (); runIt != runs.end (); ++runIt) {
 		const ScriptRunElt&	se	=	*runIt;
 		if (se.fVirtualStart <= i and i < se.fVirtualEnd) {
 			if (se.fDirection == eLeftToRight) {
 				size_t	result	=	(i - se.fVirtualStart) + se.fRealStart;
-				Led_Ensure (result < GetTextLength ());
+				Ensure (result < GetTextLength ());
 				return (result);
 			}
 			else {
 				size_t	segLen	=	se.fRealEnd - se.fRealStart;
 				size_t	result	=	(segLen - (i - se.fVirtualStart)) - 1 + se.fRealStart;
-				Led_Ensure (result < GetTextLength ());
+				Ensure (result < GetTextLength ());
 				return (result);
 			}
 		}
 	}
-	Led_Assert (false);	// BAD INDEX
+	Assert (false);	// BAD INDEX
 	return 0;
 }
 
@@ -351,12 +351,12 @@ void	TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_
 
 void	TextLayoutBlock::PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	PeekAtRealText_ (startText, endText);
 	*startText += scriptRunElt.fRealStart;
 	size_t	len	=	scriptRunElt.fRealEnd - scriptRunElt.fRealStart;
-	Led_Assert (*endText - *startText >= static_cast<ptrdiff_t> (len));		// make sure we are SHRINKING the text and not making it point past its end
+	Assert (*endText - *startText >= static_cast<ptrdiff_t> (len));		// make sure we are SHRINKING the text and not making it point past its end
 	*endText = *startText + len;
 }
 
@@ -378,12 +378,12 @@ Led_tString	TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) cons
 
 void	TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	PeekAtVirtualText_ (startText, endText);
 	*startText += scriptRunElt.fVirtualStart;
 	size_t	len	=	scriptRunElt.fVirtualEnd - scriptRunElt.fVirtualStart;
-	Led_Assert (*endText - *startText >= static_cast<ptrdiff_t> (len));		// make sure we are SHRINKING the text and not making it point past its end
+	Assert (*endText - *startText >= static_cast<ptrdiff_t> (len));		// make sure we are SHRINKING the text and not making it point past its end
 	*endText = *startText + len;
 }
 
@@ -413,11 +413,11 @@ void	TextLayoutBlock::Invariant_ () const
 	// Make sure each scriptrun elt is non-empty
 	{
 		for (vector<ScriptRunElt>::const_iterator j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
-			Led_Assert ((*j).fRealStart < len);
-			Led_Assert ((*j).fRealEnd <= len);
-			Led_Assert ((*j).fVirtualStart < len);
-			Led_Assert ((*j).fVirtualEnd <= len);
-			Led_Assert ((*j).fRealStart < (*j).fRealEnd);	// no empty elements
+			Assert ((*j).fRealStart < len);
+			Assert ((*j).fRealEnd <= len);
+			Assert ((*j).fVirtualStart < len);
+			Assert ((*j).fVirtualEnd <= len);
+			Assert ((*j).fRealStart < (*j).fRealEnd);	// no empty elements
 		}
 	}
 
@@ -435,21 +435,21 @@ void	TextLayoutBlock::Invariant_ () const
 			size_t	nVirtualFound	=	0;
 			for (vector<ScriptRunElt>::const_iterator j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
 				if ((*j).fRealStart <= i and i < (*j).fRealEnd) {
-					Led_Assert (not foundReal);
+					Assert (not foundReal);
 					foundReal = true;
 				}
-				Led_Assert ((*j).fVirtualStart < (*j).fVirtualEnd);	// no empty elements
+				Assert ((*j).fVirtualStart < (*j).fVirtualEnd);	// no empty elements
 				if ((*j).fVirtualStart <= i and i < (*j).fVirtualEnd) {
-					Led_Assert (not foundVirtual);
+					Assert (not foundVirtual);
 					foundVirtual = true;
 				}
 				nRealFound += (*j).fRealEnd - (*j).fRealStart;
 				nVirtualFound += (*j).fVirtualEnd - (*j).fVirtualStart;
 			}
-			Led_Assert (foundReal);
-			Led_Assert (foundVirtual);
-			Led_Assert (nRealFound == len);
-			Led_Assert (nVirtualFound == len);
+			Assert (foundReal);
+			Assert (foundVirtual);
+			Assert (nRealFound == len);
+			Assert (nVirtualFound == len);
 		}
 	}
 }
@@ -544,13 +544,13 @@ void	TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
 		Construct_FriBidi (initialDirection);
 		{
 			for (size_t i = 0; i < fTextLength; ++i) {
-				Led_Assert (savedVirtualText[i] == fVirtualText[i]);
+				Assert (savedVirtualText[i] == fVirtualText[i]);
 			}
 		}
 		{
-			Led_Assert (savedScriptRuns.size () == fScriptRuns.size ());
+			Assert (savedScriptRuns.size () == fScriptRuns.size ());
 			for (size_t i = 0; i < savedScriptRuns.size (); ++i) {
-				Led_Assert (savedScriptRuns[i] == fScriptRuns[i]);
+				Assert (savedScriptRuns[i] == fScriptRuns[i]);
 			}
 		}
 	#else
@@ -621,8 +621,8 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 				scriptState.uBidiLevel = 1;
 			}
 		}
-		Led_Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength+1, &scriptControl, &scriptState, scriptItems, &nScriptItems) == S_OK);
-		Led_Assert (nScriptItems >= 1);
+		Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength+1, &scriptControl, &scriptState, scriptItems, &nScriptItems) == S_OK);
+		Assert (nScriptItems >= 1);
 
 		Led_SmallStackBuffer<BYTE>	bidiLevels (nScriptItems);
 		for (size_t i = 0; i < static_cast<size_t> (nScriptItems); ++i) {
@@ -632,7 +632,7 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 		Led_SmallStackBuffer<int>	visualToLogical (nScriptItems);
 		Led_SmallStackBuffer<int>	logicalToVisual (nScriptItems);
 
-		Led_Verify (sUniscribeDLL.ScriptLayout (nScriptItems, bidiLevels, visualToLogical, logicalToVisual) == S_OK);
+		Verify (sUniscribeDLL.ScriptLayout (nScriptItems, bidiLevels, visualToLogical, logicalToVisual) == S_OK);
 
 		/*
 		 *	Create an array (indexed by virtual segment number) of that segments display start. The first obviously
@@ -642,7 +642,7 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 		 */
 		Led_SmallStackBuffer<size_t>	visualSegStarts (nScriptItems);
 		{
-			Led_Assert (nScriptItems > 0);
+			Assert (nScriptItems > 0);
 			visualSegStarts[0] = 0;
 			for (size_t visIndex = 1; visIndex < static_cast<size_t> (nScriptItems); ++visIndex) {
 				size_t  prevLogIdx		=	visualToLogical[visIndex-1];
@@ -670,26 +670,26 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 				#if		qDebug
 					{
 						for (size_t j = 0; j < static_cast<size_t> (nScriptItems); ++j) {
-							Led_Assert (logicalToVisual[visualToLogical[i]] == i);
+							Assert (logicalToVisual[visualToLogical[i]] == i);
 						}
 					}
 					size_t	referenceVirtualStart	=	0;
 					{
 						referenceVirtualStart = 0;
 						for (int visIndex = logicalToVisual[i] - 1; visIndex >= 0; --visIndex) {
-							Led_Assert (visIndex < nScriptItems);
+							Assert (visIndex < nScriptItems);
 							size_t  itsLogIdx       =       visualToLogical[visIndex];
 							referenceVirtualStart += (scriptItems[itsLogIdx+1].iCharPos - scriptItems[itsLogIdx].iCharPos);
 						}
 					}
-					Led_Assert (referenceVirtualStart == visualSegStarts[logicalToVisual[i]]);
+					Assert (referenceVirtualStart == visualSegStarts[logicalToVisual[i]]);
 				#endif
 
 				// Now precompute visual segment starts arrays and just use logicalToVisual to find the appropriate
 				// visual segment (SPR#1566) - speed tweek - to precompute array, and just use here -- LGP 2003-11-30.
 				s.fVirtualStart = visualSegStarts[logicalToVisual[i]];
 				s.fVirtualEnd = s.fVirtualStart + (s.fRealEnd - s.fRealStart);
-				Led_Assert (s.fVirtualEnd - s.fVirtualStart == s.fRealEnd - s.fRealStart);
+				Assert (s.fVirtualEnd - s.fVirtualStart == s.fRealEnd - s.fRealStart);
 
 				// Check that each run element satisfies these contraints:
 				//		o	Same direction
@@ -762,7 +762,7 @@ void	TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirec
 		#error "Not implemented - only support FriBidi for UNICODE version of Led right now"
 	#endif
 
-	Led_Assert (fTextLength <= FRIBIDI_MAX_STRING_LENGTH);
+	Assert (fTextLength <= FRIBIDI_MAX_STRING_LENGTH);
 
 	FriBidiCharType							baseDir	=	FRIBIDI_TYPE_ON;	// http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/ docs indicate FRIBIDI_TYPE_N is a good default value - 2002-11-27
 																			// but fribidi_types.h header says FRIBIDI_TYPE_N is obsolete name - use FRIBIDI_TYPE_ON instead
@@ -781,7 +781,7 @@ void	TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirec
 								posLtoVList, NULL,
 								bidiLevels
 							);
-	Led_Assert (result);
+	Assert (result);
 
 
 	{
@@ -862,16 +862,16 @@ void	TextLayoutBlock_Basic::Construct_Default ()
 
 void	TextLayoutBlock_Basic::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	*startText = fRealText;
 	*endText = fRealText + fTextLength;
 }
 
 void	TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	*startText = fVirtualText;
 	*endText = fVirtualText + fTextLength;
 }
@@ -940,16 +940,16 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock_Copy& from):
 
 void	TextLayoutBlock_Copy::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	*startText = fRep->fRealText;
 	*endText = fRep->fRealText + fRep->fTextLength;
 }
 
 void	TextLayoutBlock_Copy::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	*startText = fRep->fVirtualText;
 	*endText = fRep->fVirtualText + fRep->fTextLength;
 }
@@ -1031,20 +1031,20 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
 
 void	TextLayoutBlock_VirtualSubset::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	*startText = fRealText;
 	*endText = *startText + (fEnd - fStart);
 }
 
 void	TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
-	Led_RequireNotNil (startText);
-	Led_RequireNotNil (endText);
+	RequireNotNull (startText);
+	RequireNotNull (endText);
 	fSubsetOf.PeekAtVirtualText_ (startText, endText);
 	*startText += fStart;
-	Led_Assert (fStart <= fEnd);
-	Led_Assert (*endText - *startText >= static_cast<int> (fEnd-fStart));	// make sure orig string >= shortened string
+	Assert (fStart <= fEnd);
+	Assert (*endText - *startText >= static_cast<int> (fEnd-fStart));	// make sure orig string >= shortened string
 	*endText = *startText + (fEnd - fStart);
 }
 

@@ -1237,19 +1237,19 @@ template	<typename TEXTSTORE, typename	IMAGER>
 			fMap (),
 			fRanges ()
 			{
-				Led_Assert (sThe == NULL);
+				Assert (sThe == NULL);
 				sThe = this;
 			}
 	template	<typename	TARGET_COMMAND_NUMBER>
 		CommandNumberMapping<TARGET_COMMAND_NUMBER>::~CommandNumberMapping ()
 			{
-				Led_Assert (sThe == this);
+				Assert (sThe == this);
 				sThe = NULL;
 			}
 	template	<typename	TARGET_COMMAND_NUMBER>
 		inline	CommandNumberMapping<TARGET_COMMAND_NUMBER>&	CommandNumberMapping<TARGET_COMMAND_NUMBER>::Get ()
 			{
-				Led_AssertNotNil (sThe);		//	Applications using Led_MFC must instantiate a subclass of MFC_CommandNumberMapping
+				AssertNotNull (sThe);		//	Applications using Led_MFC must instantiate a subclass of MFC_CommandNumberMapping
 												//	BEFORE any access to this class
 				return *sThe;
 			}
@@ -1261,7 +1261,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	template	<typename	TARGET_COMMAND_NUMBER>
 		inline	void	CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd)
 			{
-				Led_Require ((externalRangeEnd-externalRangeStart) == (internalRangeEnd-internalRangeStart));	// ranges same length.
+				Require ((externalRangeEnd-externalRangeStart) == (internalRangeEnd-internalRangeStart));	// ranges same length.
 
 				RangeElt	re;
 				re.fExternalCmds.first = externalRangeStart;
@@ -1280,7 +1280,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 						if (re.fExternalCmds.first <= externalCommandNumber and externalCommandNumber <= re.fExternalCmds.second) {
 							size_t							offset	=	externalCommandNumber - re.fExternalCmds.first;
 							TextInteractor::CommandNumber	cmdNum	=	re.fInternalCmds.first + offset;
-							Led_Assert (cmdNum <= re.fInternalCmds.second);
+							Assert (cmdNum <= re.fInternalCmds.second);
 							return cmdNum;
 						}
 					}
@@ -1303,7 +1303,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 					if (re.fInternalCmds.first <= cmdNum and cmdNum <= re.fInternalCmds.second) {
 						size_t					offset	=	cmdNum - re.fInternalCmds.first;
 						TARGET_COMMAND_NUMBER	tarCmd	=	re.fExternalCmds.first + offset;
-						Led_Assert (tarCmd <= re.fExternalCmds.second);
+						Assert (tarCmd <= re.fExternalCmds.second);
 						return tarCmd;
 					}
 				}
@@ -1341,7 +1341,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 		}
 	inline	void	SimpleCommandUpdater::SetText (const Led_SDK_Char* text)
 		{
-			Led_RequireNotNil (text);
+			RequireNotNull (text);
 			fText = text;
 		}
 
@@ -1363,7 +1363,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 				/*
 				 *	If the original mode was already set - make sure our new mode agrees.
 				 */
-				Led_Assert (ti.GetInteractiveUpdateMode () == newMode);
+				Assert (ti.GetInteractiveUpdateMode () == newMode);
 			}
 		}
 	inline	TextInteractor::InteractiveModeUpdater::~InteractiveModeUpdater ()
@@ -1499,7 +1499,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	*/
 	inline	TextInteractor::UpdateMode	TextInteractor::GetDefaultUpdateMode () const
 		{
-			Led_Ensure (fDefaultUpdateMode != eDefaultUpdate);
+			Ensure (fDefaultUpdateMode != eDefaultUpdate);
 			return fDefaultUpdateMode;
 		}
 	/*

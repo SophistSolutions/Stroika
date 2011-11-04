@@ -643,7 +643,7 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 			MarkerSink (),
 			fMarkers (markers)
 		{
-			Led_RequireNotNil (fMarkers);
+			RequireNotNull (fMarkers);
 		}
 
 
@@ -675,11 +675,11 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 	*/
 	inline	void	TextStore::AddMarkerOwner (MarkerOwner* owner)
 		{
-			Led_RequireNotNil (owner);
+			RequireNotNull (owner);
 			#if		!qVirtualBaseMixinCallDuringCTORBug
-				Led_Require (owner->PeekAtTextStore () == this);
+				Require (owner->PeekAtTextStore () == this);
 			#endif
-			Led_Require (std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
+			Require (std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
 //			fMarkerOwners.push_back (owner);
 			PUSH_BACK (fMarkerOwners, owner);
 		}
@@ -690,12 +690,12 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 	*/
 	inline	void	TextStore::RemoveMarkerOwner (MarkerOwner* owner)
 		{
-			Led_RequireNotNil (owner);
+			RequireNotNull (owner);
 			#if		!qVirtualBaseMixinCallDuringCTORBug
-			Led_Require (owner->PeekAtTextStore () == this);
+			Require (owner->PeekAtTextStore () == this);
 			#endif
 			vector<MarkerOwner*>::iterator	i	=	std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner);
-			Led_Assert (i != fMarkerOwners.end ());
+			Assert (i != fMarkerOwners.end ());
 			fMarkerOwners.erase (i);
 		}
 	/*
@@ -747,8 +747,8 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 	*/
 	inline	vector<Marker*>	TextStore::CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner) const
 		{
-			Led_Require (from <= to);
-			Led_Require (to <= GetEnd () + 1);
+			Require (from <= to);
+			Require (to <= GetEnd () + 1);
 			vector<Marker*>		list;
 			VectorMarkerSink	vml (&list);
 			CollectAllMarkersInRangeInto (from, to, owner, vml);
@@ -756,28 +756,28 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 		}
 	inline	void	TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
 		{
-			Led_Require (from <= to);
-			Led_Require (to <= GetEnd () + 1);
+			Require (from <= to);
+			Require (to <= GetEnd () + 1);
 			CollectAllMarkersInRangeInto ((from>0)? (from-1): from, min (to + 1, GetEnd ()+1), owner, output);
 		}
 	inline	void	TextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
 		{
-			Led_RequireNotNil (markerList);
+			RequireNotNull (markerList);
 			markerList->clear ();
 			VectorMarkerSink	vml (markerList);
 			CollectAllMarkersInRangeInto (from, to, owner, vml);
 		}
 	inline	vector<Marker*>	TextStore::CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner) const
 		{
-			Led_Require (from <= to);
-			Led_Require (to <= GetEnd () + 1);
+			Require (from <= to);
+			Require (to <= GetEnd () + 1);
 			return CollectAllMarkersInRange ((from>0)? (from-1): from, min (to + 1, GetEnd ()+1), owner);
 		}
 	inline	void	TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
 		{
-			Led_Require (from <= to);
-			Led_Require (to <= GetEnd () + 1);
-			Led_RequireNotNil (markerList);
+			Require (from <= to);
+			Require (to <= GetEnd () + 1);
+			RequireNotNull (markerList);
 			VectorMarkerSink	vml (markerList);
 			CollectAllMarkersInRangeInto ((from>0)? (from-1): from, min (to + 1, GetEnd ()+1), owner, vml);
 		}
@@ -837,7 +837,7 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 				CopyOut (afterPos, 1, &thisChar);
 				size_t	result	=	Led_IsLeadByte (thisChar)? (afterPos+2): (afterPos+1);
 			#endif
-			Led_Ensure (result <= GetEnd ());
+			Ensure (result <= GetEnd ());
 			return (result);
 		}
 	/*
@@ -878,13 +878,13 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 			 	 *	We know that line (not row) breaks are a good syncronization point to look back and scan to make
 				 *	sure all the double-byte characters are correct - because an NL is NOT a valid second byte.
 				 */
-				Led_Assert (not Led_IsValidSecondByte ('\n'));
+				Assert (not Led_IsValidSecondByte ('\n'));
 				size_t	startOfFromLine	=	GetStartOfLineContainingPosition (charPos);
-				Led_Assert (startOfFromLine <= charPos);
+				Assert (startOfFromLine <= charPos);
 				size_t	len				=	charPos-startOfFromLine;
 				Led_SmallStackBuffer<Led_tChar>	buf (len);
 				CopyOut (startOfFromLine, len, buf);
-				Led_Assert (Led_IsValidMultiByteString (buf, len));	// This check that the whole line from the beginning to the charPos point
+				Assert (Led_IsValidMultiByteString (buf, len));	// This check that the whole line from the beginning to the charPos point
 																	// is valid makes sure that the from position doesn't split a double-byte
 																	// character.
 			#endif
@@ -892,22 +892,22 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 #endif
 	inline	bool	TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to)
 		{
-			Led_Require (mStart <= mEnd);
-			Led_Require (from <= to);
+			Require (mStart <= mEnd);
+			Require (from <= to);
 
 			if ((from <= mEnd) and (mStart <= to)) {
 				// Maybe overlap - handle nuanced cases of zero-sized overlaps
 				size_t	overlapSize;
 				if (to >= mEnd) {
-					Led_Assert (mEnd >= from);
+					Assert (mEnd >= from);
 					overlapSize = min (mEnd - from, mEnd - mStart);
 				}
 				else {
-					Led_Assert (to >= mStart);
+					Assert (to >= mStart);
 					overlapSize = min (to - from, to - mStart);
 				}
-				Led_Assert (overlapSize <= (to-from));
-				Led_Assert (overlapSize <= (mEnd-mStart));
+				Assert (overlapSize <= (to-from));
+				Assert (overlapSize <= (mEnd-mStart));
 
 				if (overlapSize == 0) {
 					/*
@@ -954,12 +954,12 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 	*/
 	inline	bool	TextStore::Overlap (const Marker& m, size_t from, size_t to)
 		{
-			Led_Require (from <= to);
+			Require (from <= to);
 
 			size_t	start;
 			size_t	end;
 			m.GetRange (&start, &end);
-			Led_Assert (start <= end);
+			Assert (start <= end);
 
 			#if		qDebug
 // Note - the old algorithm DOESNT give the same answers as the new one. Otherwise - we wouldn't bother with a new algorithm.
@@ -979,31 +979,31 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 				// Maybe overlap - handle nuanced cases of zero-sized overlaps
 				size_t	overlapSize;
 				if (to >= end) {
-					Led_Assert (end >= from);
+					Assert (end >= from);
 					overlapSize = min (end - from, end - start);
 				}
 				else {
-					Led_Assert (to >= start);
+					Assert (to >= start);
 					overlapSize = min (to - from, to - start);
 				}
-				Led_Assert (overlapSize <= (to-from));
-				Led_Assert (overlapSize <= (end-start));
+				Assert (overlapSize <= (to-from));
+				Assert (overlapSize <= (end-start));
 
 				if (overlapSize == 0) {
 					/*
 					 *	The ONLY case where we want to allow for a zero-overlap to imply a legit overlap is when the marker itself
 					 *	is zero-sized (cuz otherwise - it would never get found).
 					 */
-				//	Led_Ensure (oldAlgorithmAnswer == (end == start));
+				//	Ensure (oldAlgorithmAnswer == (end == start));
 					return end == start;
 				}
 				else {
-					Led_Ensure (oldAlgorithmAnswer == true);
+					Ensure (oldAlgorithmAnswer == true);
 					return true;
 				}
 			}
 			else {
-				Led_Ensure (oldAlgorithmAnswer == false);
+				Ensure (oldAlgorithmAnswer == false);
 				return false;
 			}
 		}
@@ -1023,10 +1023,10 @@ template	<typename	T>
 template	<typename	T>
 	void	MarkerOfATypeMarkerSink<T>::Append (Marker* m)
 		{
-			Led_RequireNotNil (m);
+			RequireNotNull (m);
 			T*	tMarker	=	dynamic_cast<T*>(m);
 			if (tMarker != NULL) {
-				Led_Assert (fResult == NULL);	// we require at most one marker be added to us
+				Assert (fResult == NULL);	// we require at most one marker be added to us
 				fResult = tMarker;
 			}
 		}
@@ -1043,7 +1043,7 @@ template	<typename	T>
 template	<typename	T>
 	void	MarkersOfATypeMarkerSink2Vector<T>::Append (Marker* m)
 		{
-			Led_RequireNotNil (m);
+			RequireNotNull (m);
 			T*	tMarker	=	dynamic_cast<T*>(m);
 			if (tMarker != NULL) {
 				//fResult.push_back (tMarker);
@@ -1062,7 +1062,7 @@ template	<typename	T>
 template	<typename	T>
 	void	MarkersOfATypeMarkerSink2SmallStackBuffer<T>::Append (Marker* m)
 		{
-			Led_RequireNotNil (m);
+			RequireNotNull (m);
 			T*	tMarker	=	dynamic_cast<T*>(m);
 			if (tMarker != NULL) {
 				fResult.push_back (tMarker);

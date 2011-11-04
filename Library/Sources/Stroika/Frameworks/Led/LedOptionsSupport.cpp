@@ -38,7 +38,7 @@ OptionsFileHelper::OptionsFileHelper (HKEY hkey):
 OptionsFileHelper::~OptionsFileHelper ()
 {
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		::RegCloseKey (fKey);
 	#endif
@@ -85,10 +85,10 @@ HKEY	OptionsFileHelper::OpenWithCreateAlongPath (HKEY parentKey, const Led_SDK_S
 */
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, string* value)
 {
-	Led_RequireNotNil (prefName);
-	Led_RequireNotNil (value);
+	RequireNotNull (prefName);
+	RequireNotNull (value);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		string	strValue;
 		DWORD	dwType;
@@ -115,10 +115,10 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, string* value)
 
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, wstring* value)
 {
-	Led_RequireNotNil (prefName);
-	Led_RequireNotNil (value);
+	RequireNotNull (prefName);
+	RequireNotNull (value);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		wstring	strValue;
 		DWORD	dwType;
@@ -153,8 +153,8 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, wstring* value
 
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, bool* value)
 {
-	Led_RequireNotNil (prefName);
-	Led_RequireNotNil (value);
+	RequireNotNull (prefName);
+	RequireNotNull (value);
 	int	tmp		=	0;
 	if (LookupPref (prefName, &tmp)) {
 		*value = tmp;
@@ -165,10 +165,10 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, bool* value)
 
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, int* value)
 {
-	Led_RequireNotNil (prefName);
-	Led_RequireNotNil (value);
+	RequireNotNull (prefName);
+	RequireNotNull (value);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		DWORD	dwValue;
 		DWORD	dwType;
@@ -186,10 +186,10 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, int* value)
 
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<Byte>* value)
 {
-	Led_RequireNotNil (prefName);
-	Led_RequireNotNil (value);
+	RequireNotNull (prefName);
+	RequireNotNull (value);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		DWORD	dwType	=	0;
 		DWORD	dwCount =	0;
@@ -210,7 +210,7 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<Byte>* 
 
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<string>* value)
 {
-	Led_RequireNotNil (value);
+	RequireNotNull (value);
 	value->clear ();
 	string	tmp;
 	while (LookupPref (Format (Led_SDK_TCHAROF ("%s_%d"), prefName, value->size ()).c_str (), &tmp)) {
@@ -221,7 +221,7 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<string>
 
 bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<wstring>* value)
 {
-	Led_RequireNotNil (value);
+	RequireNotNull (value);
 	value->clear ();
 	wstring	tmp;
 	while (LookupPref (Format (Led_SDK_TCHAROF ("%s_%d"), prefName, value->size ()).c_str (), &tmp)) {
@@ -232,9 +232,9 @@ bool	OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<wstring
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string& value)
 {
-	Led_RequireNotNil (prefName);
+	RequireNotNull (prefName);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		(void)::RegSetValueExA (fKey, Led_SDKString2ANSI (prefName).c_str (), NULL, REG_SZ, (LPBYTE)value.c_str (), (value.length ()+1)*sizeof(TCHAR));
 	#endif
@@ -242,9 +242,9 @@ void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string& v
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const wstring& value)
 {
-	Led_RequireNotNil (prefName);
+	RequireNotNull (prefName);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		if (::RegSetValueExW (fKey, Led_SDKString2Wide (prefName).c_str (), NULL, REG_SZ, reinterpret_cast<const Byte*> (value.c_str ()), (value.length ()+1)*sizeof(wchar_t)) != ERROR_SUCCESS) {
 			// failure to write a UNICODE string could be because the OS doesn't support it - so try writing it as ANSI
@@ -256,15 +256,15 @@ void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const wstring& 
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, bool value)
 {
-	Led_RequireNotNil (prefName);
+	RequireNotNull (prefName);
 	StorePref (prefName, static_cast<int> (value));
 }
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, int value)
 {
-	Led_RequireNotNil (prefName);
+	RequireNotNull (prefName);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		DWORD	dwValue	=	value;
 		(void)::RegSetValueEx (fKey, prefName, NULL, REG_DWORD, (LPBYTE)&dwValue, sizeof (dwValue));
@@ -273,10 +273,10 @@ void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, int value)
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, const Byte* data)
 {
-	Led_RequireNotNil (prefName);
-	Led_RequireNotNil (data);
+	RequireNotNull (prefName);
+	RequireNotNull (data);
 	#if		qMacOS
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#elif	qWindows
 		(void)::RegSetValueEx (fKey, prefName, NULL, REG_BINARY, (LPBYTE)data, nBytes);
 	#endif
@@ -284,7 +284,7 @@ void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, 
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<string>& value)
 {
-	Led_RequireNotNil (prefName);
+	RequireNotNull (prefName);
 	for (vector<string>::const_iterator i = value.begin (); i != value.end (); ++i) {
 		StorePref (Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i-value.begin ()).c_str (), *i);
 	}
@@ -292,7 +292,7 @@ void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<st
 
 void	OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<wstring>& value)
 {
-	Led_RequireNotNil (prefName);
+	RequireNotNull (prefName);
 	for (vector<wstring>::const_iterator i = value.begin (); i != value.end (); ++i) {
 		StorePref (Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i-value.begin ()).c_str (), *i);
 	}

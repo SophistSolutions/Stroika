@@ -104,7 +104,7 @@ namespace	Stroika {
 	inline	bool	LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
 		{
 			size_t	bytesToCompare	=	offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Led_SDK_Char);
-			Led_Require (bytesToCompare <= sizeof (LOGFONT));	// else we were passed bogus LogFont (and we should validate them before here!)
+			Require (bytesToCompare <= sizeof (LOGFONT));	// else we were passed bogus LogFont (and we should validate them before here!)
 			return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
 		}
 	inline	bool	LogFontsEqual (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
@@ -179,10 +179,10 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
 					lf.lfHeight = 1;
 				}
 			}
-			Led_Verify (imager->fCachedFont->CreateFontIndirect (&lf));
+			Verify (imager->fCachedFont->CreateFontIndirect (&lf));
 			imager->fCachedFontSpec = fontSpec;
 		}
-		Led_AssertNotNil (imager->fCachedFont);
+		AssertNotNull (imager->fCachedFont);
 
 		// See CDC::SelectObject for the logic..., but we do better than thiers and restore
 		// right object to right DC!!!! - LGP 950525
@@ -263,8 +263,8 @@ TextImager::TextImager ():
 
 TextImager::~TextImager ()
 {
-	Led_Require (fTextStore == NULL);
-	Led_Require (fHiliteMarker == NULL);
+	Require (fTextStore == NULL);
+	Require (fHiliteMarker == NULL);
 	for (Led_Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
 		delete *i;
 		*i = NULL;
@@ -307,9 +307,9 @@ void	TextImager::HookLosingTextStore ()
 void	TextImager::HookLosingTextStore_ ()
 {
 	// BE MORE CAREFUL HERE - NO NEED TO DELETE HILIGHT MARKER - JUST REMOVE AND RE_ADD!!!
-	Led_AssertNotNil (fTextStore);
+	AssertNotNull (fTextStore);
 	if (fHiliteMarker != NULL) {
-		Led_Assert (fWeAllocedHiliteMarker);	// otherwise setter better have unset!!!
+		Assert (fWeAllocedHiliteMarker);	// otherwise setter better have unset!!!
 		GetTextStore ().RemoveMarker (fHiliteMarker);
 		delete fHiliteMarker;
 		fHiliteMarker = NULL;
@@ -324,7 +324,7 @@ void	TextImager::HookGainedNewTextStore ()
 
 void	TextImager::HookGainedNewTextStore_ ()
 {
-	Led_AssertNotNil (fTextStore);
+	AssertNotNull (fTextStore);
 	if (fHiliteMarker == NULL) {
 		fTextStore->AddMarkerOwner (this);
 		SetHilightMarker (NULL);			// forces creation of default one...
@@ -448,13 +448,13 @@ void	TextImager::SetDefaultFont_ (const Led_IncrementalFontSpecification& defaul
 	static	int	FAR	PASCAL	EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /*lpntm*/, DWORD fontType, LPARAM arg)
 		{
 			// Score each font choice, and pick the 'best' one. Pick randomly if several are 'best'.
-			Led_RequireNotNil (lplf);
+			RequireNotNull (lplf);
 			FontSelectionInfo&	result	=	*(FontSelectionInfo*)arg;
 
 			static	LOGFONT	theANSILogFont;
 			if (theANSILogFont.lfFaceName[0] == '\0') {
 				HFONT	xxx	=	HFONT (::GetStockObject (ANSI_VAR_FONT));
-				Led_Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
+				Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
 			}
 
 			FontSelectionInfo	potentialResult	=	result;
@@ -558,7 +558,7 @@ Led_FontSpecification	TextImager::GetStaticDefaultFont (BYTE charSet)
 		static	LOGFONT	theANSILogFont;
 		if (theANSILogFont.lfFaceName[0] == '\0') {
 			HFONT	xxx	=	HFONT (::GetStockObject (ANSI_VAR_FONT));
-			Led_Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
+			Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
 		}
 		fooo.SetPointSize (min (max (Led_FontSpecification (theANSILogFont).GetPointSize (), static_cast<unsigned short> (8)), static_cast<unsigned short> (14)));
 	}
@@ -644,7 +644,7 @@ void	TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
 		Led_Rect		andTryRRR				=	GetCharWindowLocation (andTryToShowMarkerPos);
 		Led_Coordinate	whereAtInGlobalCoords	=	windowRect.left - andTryRRR.left;
 		if (andTryRRR.left < windowRect.left) {
-			Led_Assert (hsp >= whereAtInGlobalCoords);
+			Assert (hsp >= whereAtInGlobalCoords);
 			hsp	-=	whereAtInGlobalCoords;
 		}
 		else if (andTryRRR.right > windowRect.right) {
@@ -653,8 +653,8 @@ void	TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
 			hsp = Led_Min (hsp, maxHScrollPos);
 		}
 	}
-	Led_Assert (hsp >= 0);
-	Led_Assert (hsp <= maxHScrollPos);
+	Assert (hsp >= 0);
+	Assert (hsp <= maxHScrollPos);
 
 	{
 		// Make sure the 'markerPos' is shown. Do this second - in case there is a conflict between 'markerPos' and 'andTryToShowMarkerPos'
@@ -667,7 +667,7 @@ void	TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
 
 		Led_Coordinate	whereAtInGlobalCoords	=	windowRect.GetLeft () - rrr.GetLeft ();
 		if (rrr.GetLeft () < windowRect.GetLeft ()) {
-			Led_Assert (hsp >= whereAtInGlobalCoords);
+			Assert (hsp >= whereAtInGlobalCoords);
 			hsp	-=	whereAtInGlobalCoords;
 		}
 		else if (rrr.GetRight () > windowRect.GetRight ()) {
@@ -677,8 +677,8 @@ void	TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
 		}
 	}
 
-	Led_Assert (hsp >= 0);
-	Led_Assert (hsp <= maxHScrollPos);
+	Assert (hsp >= 0);
+	Assert (hsp <= maxHScrollPos);
 	SetHScrollPos (hsp);
 }
 
@@ -750,8 +750,8 @@ void	TextImager::TabletChangedMetrics ()
 
 void	TextImager::SetSelection (size_t start, size_t end)
 {
-	Led_Assert (start >= 0);
-	Led_Assert (end <= GetEnd ());		// char 1 between positions 1..2
+	Assert (start >= 0);
+	Assert (end <= GetEnd ());		// char 1 between positions 1..2
 #if		qMultiByteCharacters
 	Assert_CharPosDoesNotSplitCharacter (start);
 	Assert_CharPosDoesNotSplitCharacter (end);
@@ -773,7 +773,7 @@ void	TextImager::SetSelection (size_t start, size_t end)
 
 size_t	TextImager::GetSelectionStart () const
 {
-	Led_RequireNotNil (PeekAtTextStore ());	// Must specify TextStore before calling this, or any routine that calls it.
+	RequireNotNull (PeekAtTextStore ());	// Must specify TextStore before calling this, or any routine that calls it.
 #if		qMultiByteCharacters
 	Assert_CharPosDoesNotSplitCharacter (fHiliteMarker->GetStart ());
 #endif
@@ -782,7 +782,7 @@ size_t	TextImager::GetSelectionStart () const
 
 size_t	TextImager::GetSelectionEnd () const
 {
-	Led_RequireNotNil (PeekAtTextStore ());	// Must specify TextStore before calling this, or any routine that calls it.
+	RequireNotNull (PeekAtTextStore ());	// Must specify TextStore before calling this, or any routine that calls it.
 #if		qMultiByteCharacters
 	Assert_CharPosDoesNotSplitCharacter (fHiliteMarker->GetEnd ());
 #endif
@@ -791,9 +791,9 @@ size_t	TextImager::GetSelectionEnd () const
 
 void	TextImager::GetSelection (size_t* start, size_t* end) const
 {
-	Led_RequireNotNil (PeekAtTextStore ());	// Must specify TextStore before calling this, or any routine that calls it.
-	Led_AssertNotNil (start);
-	Led_AssertNotNil (end);
+	RequireNotNull (PeekAtTextStore ());	// Must specify TextStore before calling this, or any routine that calls it.
+	AssertNotNull (start);
+	AssertNotNull (end);
 	fHiliteMarker->GetRange (start, end);
 #if		qMultiByteCharacters
 	Assert_CharPosDoesNotSplitCharacter (*start);
@@ -803,9 +803,9 @@ void	TextImager::GetSelection (size_t* start, size_t* end) const
 
 void	TextImager::SetSelection_ (size_t start, size_t end)
 {
-	Led_Require (start >= 0);
-	Led_Require (end <= GetEnd ());
-	Led_Require (start <= end);
+	Require (start >= 0);
+	Require (end <= GetEnd ());
+	Require (start <= end);
 	GetTextStore ().SetMarkerRange (fHiliteMarker, start, end);
 }
 
@@ -825,7 +825,7 @@ void	TextImager::SetHilightMarker (HilightMarker* newHilightMarker)
 	if (fHiliteMarker == NULL) {
 		fHiliteMarker = new HilightMarker ();
 	}
-	Led_AssertNotNil (fHiliteMarker);
+	AssertNotNull (fHiliteMarker);
 	GetTextStore ().AddMarker (fHiliteMarker, start, end-start, this);
 }
 
@@ -898,14 +898,14 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 					else {
 						// try to maintain the same horizontal position across lines
 						size_t	positionInLine	=	fromPos - GetTextStore ().GetStartOfLine (fromLine);	// ZERO RELATIVE
-						Led_Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
+						Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
 						positionInLine = Led_Min (positionInLine, GetTextStore ().GetLineLength (newLine));		// don't go past end of new line...
 						#if		qMultiByteCharacters
 							// Don't split a mbyte character
 							Led_SmallStackBuffer<Led_tChar>	buf (positionInLine);
 							CopyOut (GetTextStore ().GetStartOfLine (newLine), positionInLine, buf);
 							if (Led_FindPrevOrEqualCharBoundary (buf, buf + positionInLine) != buf+positionInLine) {
-								Led_Assert (positionInLine > 0);
+								Assert (positionInLine > 0);
 								positionInLine--;
 							}
 						#endif
@@ -915,16 +915,16 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 				break;
 
 				case	eCursorByWindow: {
-					Led_Assert (false);	// nyi
+					Assert (false);	// nyi
 				}
 				break;
 
 				case	eCursorByBuffer: {
-					Led_Assert (false);	// makes no sense - use toStart...
+					Assert (false);	// makes no sense - use toStart...
 				}
 				break;
 
-				default:	Led_Assert (false);
+				default:	Assert (false);
 			}
 		}
 		break;
@@ -958,7 +958,7 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 				case	eCursorByLine: {
 					size_t	fromLine	=	GetTextStore ().GetLineContainingPosition (fromPos);
 					size_t	newLine		=	(fromLine == GetTextStore ().GetLineCount ()-1)? fromLine: (fromLine+1);
-					Led_Assert (newLine <= GetTextStore ().GetLineCount ()-1);
+					Assert (newLine <= GetTextStore ().GetLineCount ()-1);
 					if (newLine == fromLine) {
 						// no change
 						return (fromPos);
@@ -966,7 +966,7 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 					else {
 						// try to maintain the same horizontal position across rows
 						size_t	positionInLine	=	fromPos - GetTextStore ().GetStartOfLine (fromLine);	// ZERO RELATIVE
-						Led_Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
+						Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
 						positionInLine = Led_Min (positionInLine, GetTextStore ().GetLineLength (newLine));			// don't go past end of new line...
 						return (GetTextStore ().GetStartOfLine (newLine) + positionInLine);
 					}
@@ -974,16 +974,16 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 				break;
 
 				case	eCursorByWindow: {
-					Led_Assert (false);	// nyi
+					Assert (false);	// nyi
 				}
 				break;
 
 				case	eCursorByBuffer: {
-					Led_Assert (false);	// makes no sense - use eCursorToEnd...
+					Assert (false);	// makes no sense - use eCursorToEnd...
 				}
 				break;
 
-				default:	Led_Assert (false);
+				default:	Assert (false);
 			}
 		}
 		break;
@@ -991,7 +991,7 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 		case	eCursorToStart: {
 			switch (movementUnit) {
 				case	eCursorByChar: {
-					Led_Assert (false);		// to start of character - does this make sense???
+					Assert (false);		// to start of character - does this make sense???
 				}
 				break;
 
@@ -1025,7 +1025,7 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 				}
 				break;
 
-				default:	Led_Assert (false);
+				default:	Assert (false);
 			}
 		}
 		break;
@@ -1033,7 +1033,7 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 		case	eCursorToEnd: {
 			switch (movementUnit) {
 				case	eCursorByChar: {
-					Led_Assert (false);		// to start of character - does this make sense???
+					Assert (false);		// to start of character - does this make sense???
 				}
 				break;
 
@@ -1067,14 +1067,14 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 				}
 				break;
 
-				default:	Led_Assert (false);
+				default:	Assert (false);
 			}
 		}
 		break;
 
-		default:	Led_Assert (false);
+		default:	Assert (false);
 	}
-	Led_Assert (false);		// not reached...
+	Assert (false);		// not reached...
 	return (fromPos);
 }
 
@@ -1121,7 +1121,7 @@ Led_Rect	TextImager::GetTextBoundingRect (size_t fromMarkerPos, size_t toMarkerP
 */
 Led_Rect	TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const
 {
-	Led_Require (fromMarkerPos <= toMarkerPos);
+	Require (fromMarkerPos <= toMarkerPos);
 
 	Led_Rect	windowRect	=	GetWindowRect ();
 	Led_Rect	r1			=	GetCharWindowLocation (fromMarkerPos);
@@ -1218,7 +1218,7 @@ Led_Rect	TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toM
 	boundingRect.left = max (boundingRect.left, windowRect.left);
 	boundingRect.right = min (boundingRect.right, windowRect.right);
 
-	Led_Ensure (boundingRect.right >= boundingRect.left);
+	Ensure (boundingRect.right >= boundingRect.left);
 	return (boundingRect);
 }
 
@@ -1238,7 +1238,7 @@ Led_Rect	TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toM
 */
 Led_Rect	TextImager::GetIntraRowTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const
 {
-	Led_Require (fromMarkerPos <= toMarkerPos);	// and they must be within the same row!!! Assert later...
+	Require (fromMarkerPos <= toMarkerPos);	// and they must be within the same row!!! Assert later...
 
 	Led_Rect	windowRect	=	GetWindowRect ();
 
@@ -1268,7 +1268,7 @@ Led_Rect	TextImager::GetIntraRowTextWindowBoundingRect (size_t fromMarkerPos, si
 		boundingRect.right = r1.GetRight ();
 		boundingRect.left = (fromMarkerPos == toMarkerPos)? boundingRect.right: r2.GetLeft ();
 	}
-	Led_Ensure (boundingRect.right >= boundingRect.left);		// If this is triggered, its probably cuz your from/to crossed
+	Ensure (boundingRect.right >= boundingRect.left);		// If this is triggered, its probably cuz your from/to crossed
 																// a directional segment boundary?
 	return (boundingRect);
 }
@@ -1285,7 +1285,7 @@ Led_Rect	TextImager::GetIntraRowTextWindowBoundingRect (size_t fromMarkerPos, si
 */
 vector<Led_Rect>	TextImager::GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const
 {
-	Led_Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// passed in for performance reasons - so not computed multiple times
+	Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// passed in for performance reasons - so not computed multiple times
 
 	vector<Led_Rect>	result;
 
@@ -1313,8 +1313,8 @@ vector<Led_Rect>	TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
 			size_t				hRunEnd		=	min (se.fRealEnd + rowStart, hilightEnd);
 			if (hRunStart < hRunEnd) {
 				Led_Rect	hilightRect	=	GetIntraRowTextWindowBoundingRect (hRunStart, hRunEnd);
-				Led_Assert (hilightRect.GetWidth () >= 0);
-				Led_Assert (hilightRect.GetHeight () >= 0);
+				Assert (hilightRect.GetWidth () >= 0);
+				Assert (hilightRect.GetHeight () >= 0);
 				if (not hilightRect.IsEmpty ()) {			// don't add empty rectangles
 					result.push_back (hilightRect);
 				}
@@ -1331,8 +1331,8 @@ vector<Led_Rect>	TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
 			Led_Rect	hilightRect	=	GetCharWindowLocation (realOffsetOfVirtualRowStart);
 			hilightRect.right = hilightRect.left;
 			hilightRect.left = min (GetWindowRect ().GetLeft (), hilightRect.left);
-			Led_Assert (hilightRect.GetWidth () >= 0);
-			Led_Assert (hilightRect.GetHeight () >= 0);
+			Assert (hilightRect.GetWidth () >= 0);
+			Assert (hilightRect.GetHeight () >= 0);
 			if (not hilightRect.IsEmpty ()) {			// don't add empty rectangles
 				result.push_back (hilightRect);
 			}
@@ -1346,8 +1346,8 @@ vector<Led_Rect>	TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
 			Led_Rect	hilightRect	=	GetCharWindowLocation (realOffsetOfVirtualRowEnd);
 			hilightRect.left = hilightRect.GetRight ();
 			hilightRect.right = max (hilightRect.right, GetWindowRect ().GetRight ());
-			Led_Assert (hilightRect.GetWidth () >= 0);
-			Led_Assert (hilightRect.GetHeight () >= 0);
+			Assert (hilightRect.GetWidth () >= 0);
+			Assert (hilightRect.GetHeight () >= 0);
 			if (not hilightRect.IsEmpty ()) {			// don't add empty rectangles
 				result.push_back (hilightRect);
 			}
@@ -1358,13 +1358,13 @@ vector<Led_Rect>	TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
 		{
 			// Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
 			for (vector<Led_Rect>::const_iterator orit = result.begin (); orit != result.end (); ++orit) {
-				Led_Ensure ((*orit).GetWidth () > 0);
-				Led_Ensure ((*orit).GetHeight () > 0);
+				Ensure ((*orit).GetWidth () > 0);
+				Ensure ((*orit).GetHeight () > 0);
 				for (vector<Led_Rect>::const_iterator irit = orit+1; irit != result.end (); ++irit) {
 					Led_Rect	hr	=	*irit;
-					Led_Ensure (hr.GetWidth () > 0);
-					Led_Ensure (hr.GetHeight () > 0);
-					Led_Ensure (not Intersect (hr, *orit));
+					Ensure (hr.GetWidth () > 0);
+					Ensure (hr.GetHeight () > 0);
+					Ensure (not Intersect (hr, *orit));
 				}
 			}
 		}
@@ -1399,7 +1399,7 @@ TextLayoutBlock_Copy	TextImager::GetTextLayoutBlock (size_t rowStart, size_t row
 */
 vector<Led_Rect>	TextImager::GetSelectionWindowRects (size_t from, size_t to) const
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 
 	vector<Led_Rect>	result;
 
@@ -1409,17 +1409,17 @@ vector<Led_Rect>	TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 	if (from >= to) {
 		return result;
 	}
-	Led_Assert (from < to);
+	Assert (from < to);
 
 	size_t		topRow		=	GetRowContainingPosition (from);	  
 	size_t		bottomRow	=	GetRowContainingPosition (to);
-	Led_Assert (topRow <= bottomRow);
+	Assert (topRow <= bottomRow);
 
 	// If to is at the start of a row (remember - we wanted the to select char UP-TO that
 	// MARKER POS) then we've gone one row too far
 	if (GetStartOfRow (bottomRow) == to) {
 		// then use end of previous row
-		Led_Assert (topRow < bottomRow);
+		Assert (topRow < bottomRow);
 		bottomRow--;
 	}
 
@@ -1446,8 +1446,8 @@ vector<Led_Rect>	TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 		Led_Coordinate		newMaxBottom		=	lastRowBottom;
 		for (vector<Led_Rect>::const_iterator i = hilightRects.begin (); i != hilightRects.end (); ++i) {
 			Led_Rect	hilightRect	=	*i;
-			Led_Require (hilightRect.GetWidth () >= 0);
-			Led_Assert (hilightRect.GetHeight () > 0);
+			Require (hilightRect.GetWidth () >= 0);
+			Assert (hilightRect.GetHeight () > 0);
 			if (not hilightRect.IsEmpty ()) {
 				result.push_back (hilightRect);
 			}
@@ -1478,13 +1478,13 @@ vector<Led_Rect>	TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 		{
 			// Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
 			for (vector<Led_Rect>::const_iterator orit = result.begin (); orit != result.end (); ++orit) {
-				Led_Ensure ((*orit).GetWidth () > 0);
-				Led_Ensure ((*orit).GetHeight () > 0);
+				Ensure ((*orit).GetWidth () > 0);
+				Ensure ((*orit).GetHeight () > 0);
 				for (vector<Led_Rect>::const_iterator irit = orit+1; irit != result.end (); ++irit) {
 					Led_Rect	hr	=	*irit;
-					Led_Ensure (hr.GetWidth () > 0);
-					Led_Ensure (hr.GetHeight () > 0);
-					Led_Ensure (not Intersect (hr, *orit));
+					Ensure (hr.GetWidth () > 0);
+					Ensure (hr.GetHeight () > 0);
+					Ensure (not Intersect (hr, *orit));
 				}
 			}
 		}
@@ -1503,7 +1503,7 @@ vector<Led_Rect>	TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 */
 void	TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const
 {
-	Led_RequireNotNil (r);
+	RequireNotNull (r);
 	vector<Led_Rect>	selRects	=	GetSelectionWindowRects (from, to);
 	for (vector<Led_Rect>::const_iterator i = selRects.begin (); i != selRects.end (); ++i) {
 		AddRectangleToRegion (*i, r);
@@ -1529,7 +1529,7 @@ void	TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to
 */
 void	TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
 {
-	Led_RequireNotNil (tablet);
+	RequireNotNull (tablet);
 	// Don't erase when printing - at least by default. Tends to screw up most print drivers.
 	if (not printing) {
 		tablet->EraseBackground_SolidHelper (subsetToDraw, GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor));
@@ -1547,7 +1547,7 @@ void	TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDra
 */
 void	TextImager::HilightARectangle (Led_Tablet tablet, Led_Rect hiliteRect)
 {
-	Led_RequireNotNil (tablet);
+	RequireNotNull (tablet);
 	HilightArea (tablet, hiliteRect);
 }
 #endif
@@ -1561,7 +1561,7 @@ void	TextImager::HilightARectangle (Led_Tablet tablet, Led_Rect hiliteRect)
 */
 void	TextImager::HilightArea (Led_Tablet tablet, Led_Rect hiliteArea)
 {
-	Led_RequireNotNil (tablet);
+	RequireNotNull (tablet);
 	tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
 }
 
@@ -1574,7 +1574,7 @@ void	TextImager::HilightArea (Led_Tablet tablet, Led_Rect hiliteArea)
 */
 void	TextImager::HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea)
 {
-	Led_RequireNotNil (tablet);
+	RequireNotNull (tablet);
 	tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
 }
 
@@ -1593,8 +1593,8 @@ void	TextImager::DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, con
 									const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing
 								)
 {
-	Led_RequireNotNil (tablet);
-	Led_Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// passed in for performance reasons - so not computed multiple times
+	RequireNotNull (tablet);
+	Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// passed in for performance reasons - so not computed multiple times
 
 	/*
 	 *	Could CONSIDER doing something like:
@@ -1629,7 +1629,7 @@ void	TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowR
 									const TextLayoutBlock& text, size_t rowStart, size_t rowEnd
 								)
 {
-	Led_RequireNotNil (tablet);
+	RequireNotNull (tablet);
 
 	#if		qDebug && 0
 // try to get this code enabled again - even here!!! LGP 2002-12-02
@@ -1637,9 +1637,9 @@ void	TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowR
 			size_t			startOfRow		=	GetStartOfRow (row);
 			size_t			endOfRow		=	GetEndOfRow (row);
 			size_t			realEndOfRow	=	GetRealEndOfRow (row);
-			Led_Assert (startOfRow == start);
-			Led_Assert (endOfRow <= end);
-			Led_Assert (end <= realEndOfRow);
+			Assert (startOfRow == start);
+			Assert (endOfRow <= end);
+			Assert (end <= realEndOfRow);
 		}
 	#endif
 
@@ -1677,7 +1677,7 @@ void	TextImager::DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRe
 									const TextLayoutBlock& text, size_t rowStart, size_t rowEnd
 								)
 {
-	Led_Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// passed in for performance reasons - so not computed multiple times
+	Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// passed in for performance reasons - so not computed multiple times
 	Led_Arg_Unused (currentRowRect);
 
 	if (GetSelectionShown ()) {
@@ -1692,7 +1692,7 @@ void	TextImager::DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRe
 						Led_Rect	y	=	currentRowRect;
 						x.left = y.left;
 						x.right = y.right;
-						Led_Assert (Intersect (x, y) or x.IsEmpty ());
+						Assert (Intersect (x, y) or x.IsEmpty ());
 					}
 				}
 			#endif
@@ -1713,7 +1713,7 @@ void	TextImager::DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tab
 	// This code not been checked/tested since I rewrote the erasing code etc.. Maybe wrong - probably wrong? No matter, anybody
 	// ever using interline space would probably OVERRIDE this anyhow..
 	// LGP 960516
-	Led_AssertNotNil (tablet);
+	AssertNotNull (tablet);
 	if (interlineSpace != 0) {
 		Led_Rect	fillRect	=	GetWindowRect ();
 		fillRect.top = vPosOfTopOfInterlineSpace;
@@ -1844,7 +1844,7 @@ size_t	TextImager::RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyT
 		}
 	}
 	size_t	newLen	=	outPtr - copyText;
-	Led_Assert (newLen <= nTChars);
+	Assert (newLen <= nTChars);
 	return newLen;
 }
 
@@ -1862,7 +1862,7 @@ void	TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Le
 	const Led_tChar*	end			=	srcText + nTChars;
 	for (const Led_tChar* cur = srcText; cur < end; cur = Led_NextChar (cur)) {
 		size_t			i					=	cur-srcText;
-		Led_Assert (i < nTChars);
+		Assert (i < nTChars);
 		if (*cur == charToRemove) {
 			Led_Distance	thisSoftBreakWidth	=	i==0? distanceResults[0]: (distanceResults[i]-distanceResults[i-1]);
 			cumSubtract = thisSoftBreakWidth;
@@ -1907,8 +1907,8 @@ void	TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 									Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 								) const
 {
-	Led_RequireNotNil (tablet);
-	Led_Assert (from <= to);
+	RequireNotNull (tablet);
+	Assert (from <= to);
 
 	/*
 	 *	In the presence of multiple markers, you might VERY plaisbly OVERRIDE this method and
@@ -1932,12 +1932,12 @@ void	TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 	FontCacheInfoUpdater	fontCacheUpdater (this, tablet, fontSpec);
 
 	Led_Distance	ascent				=	fCachedFontInfo.GetAscent ();
-	Led_Assert (useBaseLine >= drawInto.top);
+	Assert (useBaseLine >= drawInto.top);
 
 
-	//Led_Assert (useBaseLine <= drawInto.bottom);		Now allowed... LGP 2000-06-12 - see SPR#0760 - and using EXACT-height of a small height, and use a large font
+	//Assert (useBaseLine <= drawInto.bottom);		Now allowed... LGP 2000-06-12 - see SPR#0760 - and using EXACT-height of a small height, and use a large font
 	Led_Coordinate	drawCharTop			=	useBaseLine - ascent;			// our PortableGDI_TabbedTextOut() assumes draw in topLeft
-	//Led_Require (drawCharTop >= drawInto.top);		// Same deal as for useBaseLine - LGP 2000-06-12
+	//Require (drawCharTop >= drawInto.top);		// Same deal as for useBaseLine - LGP 2000-06-12
 
 	if (fontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript) {
 		// See SPR#1523- was 'drawCharTop -= fCachedFontInfo.GetAscent ()'
@@ -1953,7 +1953,7 @@ void	TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 
 	typedef	TextLayoutBlock::ScriptRunElt	ScriptRunElt;
 	vector<ScriptRunElt> runs	=	text.GetScriptRuns ();
-	Led_Assert (not runs.empty () or (length == 0));
+	Assert (not runs.empty () or (length == 0));
 	if (runs.size () > 1) {
 		// sort by virtual start
 		sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
@@ -1984,7 +1984,7 @@ void	TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 			mappedDisplayBuf.GrowToSize (drawTextLen);
 			ReplaceMappedDisplayCharacters (drawText, mappedDisplayBuf, drawTextLen);
 			size_t	newLength	=	RemoveMappedDisplayCharacters (mappedDisplayBuf, drawTextLen);
-			Led_Assert (newLength <= drawTextLen);
+			Assert (newLength <= drawTextLen);
 			drawText = mappedDisplayBuf;
 			drawTextLen = newLength;
 		}
@@ -2020,15 +2020,15 @@ void		TextImager::MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, s
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Require (to > from);
+	Require (to > from);
 
 	Tablet_Acquirer	tablet (this);
 
 	size_t			length	=	to-from;
-	Led_Assert (length > 0);
+	Assert (length > 0);
 
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (text, length));
+		Assert (Led_IsValidMultiByteString (text, length));
 		Assert_CharPosDoesNotSplitCharacter (from);
 		Assert_CharPosDoesNotSplitCharacter (to);
 	#endif
@@ -2054,7 +2054,7 @@ Led_Distance	TextImager::MeasureSegmentHeight (size_t from, size_t to) const
 Led_Distance	TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
 	Tablet_Acquirer	tablet (this);
-	Led_AssertNotNil (static_cast<Led_Tablet> (tablet));
+	AssertNotNull (static_cast<Led_Tablet> (tablet));
 	FontCacheInfoUpdater	fontCacheUpdater (this, tablet, fontSpec);
 	return (fCachedFontInfo.GetLineHeight ());
 }
@@ -2067,7 +2067,7 @@ Led_Distance	TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
 Led_Distance	TextImager::MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
 	Tablet_Acquirer	tablet (this);
-	Led_AssertNotNil (static_cast<Led_Tablet> (tablet));
+	AssertNotNull (static_cast<Led_Tablet> (tablet));
 	FontCacheInfoUpdater	fontCacheUpdater (this, tablet, fontSpec);
 	return (fCachedFontInfo.GetAscent ());
 }
@@ -2081,7 +2081,7 @@ Led_FontMetrics	TextImager::GetFontMetricsAt (
 											) const
 {
 	Tablet_Acquirer	tablet (this);
-	Led_AssertNotNil (static_cast<Led_Tablet> (tablet));
+	AssertNotNull (static_cast<Led_Tablet> (tablet));
 
 	#if		qMultiByteCharacters
 		Assert_CharPosDoesNotSplitCharacter (charAfterPos);

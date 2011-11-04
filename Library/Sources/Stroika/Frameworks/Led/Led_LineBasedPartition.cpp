@@ -65,7 +65,7 @@ void	LineBasedPartition::FinalConstruct ()
 */
 void	LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) throw ()
 {
-	Led_RequireNotNil (pm);
+	RequireNotNull (pm);
 
 	if (updateInfo.fTextModified) {
 		/*
@@ -100,7 +100,7 @@ void	LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo
 */
 void	LineBasedPartition::CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) throw ()
 {
-	Led_Require (updateInfo.fTextModified);	//so there is something in the fTextInserted area
+	Require (updateInfo.fTextModified);	//so there is something in the fTextInserted area
 	if (updateInfo.fTextInserted[i-updateInfo.fReplaceFrom-1] == '\n') {
 		Split (pm, i);
 	}
@@ -144,7 +144,7 @@ void	LineBasedPartition::Invariant_ () const
 {
 	inherited::Invariant_ ();
 	for (PartitionMarker* cur = GetFirstPartitionMarker (); cur != NULL; cur = cur->GetNext ()) {
-		Led_AssertNotNil (cur);
+		AssertNotNull (cur);
 		size_t	start	=	cur->GetStart ();
 		size_t	end		=	cur->GetEnd ();
 		size_t	len		=	end-start;
@@ -155,10 +155,10 @@ void	LineBasedPartition::Invariant_ () const
 		Led_SmallStackBuffer<Led_tChar>	buf (len);
 		CopyOut (start, len, buf);
 		for (size_t i = 1; i < len; i++) {
-			Led_Assert (buf[i-1] != '\n');
+			Assert (buf[i-1] != '\n');
 		}
 		if (cur->GetNext () != NULL) {		// All but the last partition must be NL terminated...
-			Led_Assert (buf[len-1] == '\n');
+			Assert (buf[len-1] == '\n');
 		}
 	}
 }

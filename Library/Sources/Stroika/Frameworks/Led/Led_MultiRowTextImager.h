@@ -457,8 +457,8 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 		}
 	inline	MultiRowTextImager::RowReference	MultiRowTextImager::GetTopRowReferenceInWindow () const
 		{
-			Led_RequireNotNil (PeekAtTextStore ());	//	Must associate textstore before we can ask for row-references
-			Led_EnsureNotNil (fTopLinePartitionMarkerInWindow);
+			RequireNotNull (PeekAtTextStore ());	//	Must associate textstore before we can ask for row-references
+			EnsureNotNull (fTopLinePartitionMarkerInWindow);
 			const_cast<MultiRowTextImager*>(this)->ReValidateSubRowInTopLineInWindow ();
 			return (RowReference (fTopLinePartitionMarkerInWindow, fSubRowInTopLineInWindow));
 		}
@@ -467,8 +467,8 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 			if (fTotalRowsInWindow == 0) {	// cached value invalid
 				fTotalRowsInWindow = ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ());
 			}
-			Led_Assert (fTotalRowsInWindow >= 1);	// always have at least one row...
-			Led_Assert (fTotalRowsInWindow == ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ()));
+			Assert (fTotalRowsInWindow >= 1);	// always have at least one row...
+			Assert (fTotalRowsInWindow == ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ()));
 			return (fTotalRowsInWindow);
 		}
 
@@ -509,12 +509,12 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	Led_Distance	MultiRowTextImager::PartitionElementCacheInfo::GetInterLineSpace () const
 		{
-			Led_Assert (fRep->fInterlineSpace != Led_Distance (-1));
+			Assert (fRep->fInterlineSpace != Led_Distance (-1));
 			return (fRep->fInterlineSpace);
 		}
 	inline	void	MultiRowTextImager::PartitionElementCacheInfo::SetInterLineSpace (Led_Distance interlineSpace)
 		{
-			Led_Assert (interlineSpace != Led_Distance (-1));
+			Assert (interlineSpace != Led_Distance (-1));
 			fRep->fInterlineSpace = interlineSpace;
 		}
 
@@ -535,7 +535,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	size_t	MultiRowTextImager::PartitionElementCacheInfo::GetRowCount () const
 		{
-			Led_Assert (fRep->fRowCountCache >= 1);	// even for empty lines we have 1 row (by definition)
+			Assert (fRep->fRowCountCache >= 1);	// even for empty lines we have 1 row (by definition)
 			return (fRep->fRowCountCache);
 		}
 	/*
@@ -565,7 +565,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	Led_Distance	MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowHeight (size_t i) const
 		{
-			Led_Assert (i < fRep->fRowCountCache);	// MFC Hint - when this assert fails, look closely at your
+			Assert (i < fRep->fRowCountCache);	// MFC Hint - when this assert fails, look closely at your
 													// stack-trace - often its cuz some other assert failed in the context
 													// of a FillCache, and so the cache info isn't completely filled in
 													// yet...
@@ -577,7 +577,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 				const RowHeight_*	theArray	=	reinterpret_cast<const RowHeight_*> (&fRep->fRowHeightArray);
 				return (theArray[i]);
 			}
-			Led_AssertNotNil (fRep->fRowHeightArray);
+			AssertNotNull (fRep->fRowHeightArray);
 			return (fRep->fRowHeightArray[i]);
 		}
 	/*
@@ -586,9 +586,9 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	void			MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight (size_t i, Led_Distance rowHeight)
 		{
-			Led_Assert (i < fRep->fRowCountCache);
-			Led_Assert (sizeof (RowHeight_) > 1 or rowHeight <= 0xff);		// be sure value fits..
-			Led_Assert (sizeof (RowHeight_) > 2 or rowHeight <= 0xffff);	// be sure value fits.
+			Assert (i < fRep->fRowCountCache);
+			Assert (sizeof (RowHeight_) > 1 or rowHeight <= 0xff);		// be sure value fits..
+			Assert (sizeof (RowHeight_) > 2 or rowHeight <= 0xffff);	// be sure value fits.
 			/*
 			 *	A bit of trickery. --- XPLAIN
 			 */
@@ -598,7 +598,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 				theArray[i] = RowHeight_ (rowHeight);
 			}
 			else {
-				Led_AssertNotNil (fRep->fRowHeightArray);
+				AssertNotNull (fRep->fRowHeightArray);
 				fRep->fRowHeightArray[i] = RowHeight_ (rowHeight);
 			}
 		}
@@ -609,7 +609,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	size_t			MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowStart (size_t i) const
 		{
-			Led_Assert (i < fRep->fRowCountCache);
+			Assert (i < fRep->fRowCountCache);
 
 			if (i == 0) {
 				return (0);
@@ -618,13 +618,13 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 				/*
 				 *	A bit of trickery. --- XPLAIN
 				 */
-				Led_Assert (i >= 1);
+				Assert (i >= 1);
 				if (fRep->fRowCountCache <= kPackRowStartCount + 1) {
 					// Then we use the pointer to the array as the actual array
 					const RowStart_*	theArray	=	reinterpret_cast<const RowStart_*> (&fRep->fRowStartArray);
 					return (theArray[i-1]);
 				}
-				Led_AssertNotNil (fRep->fRowStartArray);
+				AssertNotNull (fRep->fRowStartArray);
 				return (fRep->fRowStartArray[i-1]);
 			}
 		}
@@ -635,25 +635,25 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	void			MultiRowTextImager::PartitionElementCacheInfo::SetRowStart (size_t i, size_t rowStart)
 		{
-			Led_Assert (i < fRep->fRowCountCache);
+			Assert (i < fRep->fRowCountCache);
 			
 			if (i == 0) {
-				Led_Assert (rowStart == 0);
+				Assert (rowStart == 0);
 			}
 			else {
 				/*
 				 *	A bit of trickery. --- XPLAIN
 				 */
-				Led_Assert (i >= 1);
-				Led_Assert (sizeof (RowStart_) > 1 or rowStart <= 0xff);	// be sure value fits..
-				Led_Assert (sizeof (RowStart_) > 2 or rowStart <= 0xffff);	// be sure value fits.
+				Assert (i >= 1);
+				Assert (sizeof (RowStart_) > 1 or rowStart <= 0xff);	// be sure value fits..
+				Assert (sizeof (RowStart_) > 2 or rowStart <= 0xffff);	// be sure value fits.
 				if (fRep->fRowCountCache <= kPackRowStartCount + 1) {
 					// Then we use the pointer to the array as the actual array
 					RowStart_*	theArray	=	reinterpret_cast<RowStart_*> (&fRep->fRowStartArray);
 					theArray[i-1] = RowStart_ (rowStart);
 				}
 				else {
-					Led_AssertNotNil (fRep->fRowStartArray);
+					AssertNotNull (fRep->fRowStartArray);
 					fRep->fRowStartArray[i-1] = RowStart_ (rowStart);
 				}
 			}
@@ -669,8 +669,8 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	inline	size_t		MultiRowTextImager::PartitionElementCacheInfo::LineRelativePositionInWhichRow (size_t charPos) const
 		{
 			//	ZERO based charPos - ie zero is just before first byte in first row
-			//	Led_Require (charPos >= 0);	// yes I know this is a degenerate test - just for doc purposes...
-			//	Led_Assert (charPos < OURLENGTH);
+			//	Require (charPos >= 0);	// yes I know this is a degenerate test - just for doc purposes...
+			//	Assert (charPos < OURLENGTH);
 			for (size_t row = fRep->fRowCountCache; row >= 1; row--) {
 				if (charPos >= PeekAtRowStart (row-1)) {
 					return (row-1);
@@ -680,7 +680,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 				#pragma push
 				#pragma warn -8008
 			#endif
-			Led_Assert (false);	return (0);	// if we get here - must have been before our line...
+			Assert (false);	return (0);	// if we get here - must have been before our line...
 			#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 				#pragma pop
 			#endif
@@ -726,7 +726,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	bool	MultiRowTextImager::GetNextRowReference (RowReference* adjustMeInPlace) const
 		{
-			Led_RequireNotNil (adjustMeInPlace);
+			RequireNotNull (adjustMeInPlace);
 			PartitionMarker*			cur		=	adjustMeInPlace->GetPartitionMarker ();
 			size_t						subRow	=	adjustMeInPlace->GetSubRow ();
 			PartitionElementCacheInfo	pmCacheInfo	=	GetPartitionElementCacheInfo (cur);
@@ -755,7 +755,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	bool	MultiRowTextImager::GetPreviousRowReference (RowReference* adjustMeInPlace) const
 		{
-			Led_AssertNotNil (adjustMeInPlace);
+			AssertNotNull (adjustMeInPlace);
 			PartitionMarker*	cur		=	adjustMeInPlace->GetPartitionMarker ();
 			size_t				subRow	=	adjustMeInPlace->GetSubRow ();
 			if (subRow > 0) {
@@ -786,7 +786,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	inline	MultiRowTextImager::RowReference	MultiRowTextImager::GetIthRowReferenceFromHere (RowReference fromHere, long ith) const
 		{
 			bool	result	=	GetIthRowReferenceFromHere (&fromHere, ith);
-			Led_Assert (result);
+			Assert (result);
 			return (fromHere);
 		}
 	/*
@@ -799,7 +799,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 		{
 			RowReference	fromHere (GetFirstPartitionMarker (), 0);
 			bool	result	=	GetIthRowReferenceFromHere (&fromHere, ith);
-			Led_Assert (result);
+			Assert (result);
 			return (fromHere);
 		}
 	/*
@@ -818,7 +818,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	inline	MultiRowTextImager::RowReference	MultiRowTextImager::GetLastRowReferenceInWindow () const
 		{
 			RowReference	row	=	GetTopRowReferenceInWindow ();
-			Led_Assert (GetTotalRowsInWindow_ () >= 1);
+			Assert (GetTotalRowsInWindow_ () >= 1);
 			(void)GetIthRowReferenceFromHere (&row, GetTotalRowsInWindow_ () - 1);
 			return (row);
 		}
@@ -826,7 +826,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 		{
 			fTopLinePartitionMarkerInWindow = row.GetPartitionMarker ();
 			fSubRowInTopLineInWindow = row.GetSubRow ();
-			Led_AssertNotNil (fTopLinePartitionMarkerInWindow);
+			AssertNotNull (fTopLinePartitionMarkerInWindow);
 			InvalidateTotalRowsInWindow ();
 		}
 	/*
@@ -835,7 +835,7 @@ class	MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
 	*/
 	inline	Led_Distance	MultiRowTextImager::GetRowHeight (RowReference row) const
 		{
-			Led_AssertNotNil (row.GetPartitionMarker ());
+			AssertNotNull (row.GetPartitionMarker ());
 			return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());
 		}
 

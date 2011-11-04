@@ -90,9 +90,9 @@ void	FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
 {
 	size_t	start	=	from;
 	size_t	end		=	to;
-	Led_Require (start >= 0);
-	Led_Require (end <= GetTextStore ().GetEnd ());
-	Led_Require (start <= end);
+	Require (start >= 0);
+	Require (end <= GetTextStore ().GetEnd ());
+	Require (start <= end);
 	size_t	length	=	end - start;
 	#if		qMacOS || qXWindows
 		Led_SmallStackBuffer<Led_tChar> buf (length);
@@ -203,7 +203,7 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& fla
 
 		size_t	start	=	from;
 		size_t	end		=	to;
-		Led_Require (start <= end);
+		Require (start <= end);
 
 		nTChars = Led_NormalizeTextToNL (buffp, nTChars, buffp, nTChars);
 		GetTextStore ().Replace (start, end, buffp, nTChars);
@@ -236,7 +236,7 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
 				Led_ThrowIfNull (hdrop);
 				(void)::memcpy (hdrop, fileSpecBuffer, fileSpecBufferLength);
 				size_t	nChars	=	::DragQueryFile (hdrop, 0, NULL, 0);
-				Led_Verify (::DragQueryFile (hdrop, 0, realFileName, nChars+1) == nChars);
+				Verify (::DragQueryFile (hdrop, 0, realFileName, nChars+1) == nChars);
 				::GlobalFree (hdrop);
 			}
 			Led_ClipFormat	suggestedClipFormat	=	kBadClipFormat;	// no guess - examine text later
@@ -366,7 +366,7 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
 		Led_SmallStackBuffer<Led_tChar>	fileData2 (outCharCnt);
 		cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
 		size_t	charsRead = outCharCnt;
-		Led_Assert (charsRead <= nRawBytes);
+		Assert (charsRead <= nRawBytes);
 	#else
 		Led_SmallStackBuffer<Led_tChar>	fileData2 (nRawBytes);
 		memcpy (fileData2, (char*)rawBytes, nRawBytes);
@@ -438,7 +438,7 @@ size_t	ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
 		else {
 			size_t	copyNBytes	=	Led_Min (bufSize, i->second.size ());
 			(void)::memcpy (buf, &*(i->second.begin ()), copyNBytes);
-			Led_Ensure (copyNBytes <= bufSize);
+			Ensure (copyNBytes <= bufSize);
 			return copyNBytes;
 		}
 	#else
@@ -446,7 +446,7 @@ size_t	ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
 		if (clip.GoodClip ()) {
 			size_t	copyNBytes	=	Led_Min (bufSize, clip.GetDataLength ());
 			(void)::memcpy (buf, clip.GetData (), copyNBytes);
-			Led_Ensure (copyNBytes <= bufSize);
+			Ensure (copyNBytes <= bufSize);
 			return copyNBytes;
 		}
 		else {
@@ -553,7 +553,7 @@ size_t	ReadWriteMemBufferPackage::GetFlavorSize (Led_ClipFormat clipFormat) cons
 			return fPackages[i].fData.size ();
 		}
 	}
-	Led_Assert (false); return 0;
+	Assert (false); return 0;
 }
 
 size_t	ReadWriteMemBufferPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
@@ -563,11 +563,11 @@ size_t	ReadWriteMemBufferPackage::ReadFlavorData (Led_ClipFormat clipFormat, siz
 			size_t	copyNBytes	=	Led_Min (bufSize, fPackages[i].fData.size ());
 			// Note - this kookie &* stuff is to work around bugs in some STLs - that don't let you convert an iterator to a pointer.- SPR#0847
 			memcpy (buf, &*fPackages[i].fData.begin (), copyNBytes);
-			Led_Ensure (copyNBytes <= bufSize);
+			Ensure (copyNBytes <= bufSize);
 			return copyNBytes;
 		}
 	}
-	Led_Assert (false); return 0;
+	Assert (false); return 0;
 }
 
 void	ReadWriteMemBufferPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)

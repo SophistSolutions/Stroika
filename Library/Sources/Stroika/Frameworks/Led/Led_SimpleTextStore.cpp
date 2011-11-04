@@ -58,7 +58,7 @@ MarkerOwner*	SimpleTextStoreMarkerHook::GetOwner () const
 
 size_t		SimpleTextStoreMarkerHook::GetStart () const
 {
-	Led_Assert (fStart < 0x8000000);		// a really big number - we don't have enough memory to trigger
+	Assert (fStart < 0x8000000);		// a really big number - we don't have enough memory to trigger
 											// this - only point is to test of accidental cast of negnum to
 											// size_t.
 	return fStart;
@@ -66,23 +66,23 @@ size_t		SimpleTextStoreMarkerHook::GetStart () const
 
 size_t			SimpleTextStoreMarkerHook::GetEnd () const
 {
-	Led_Assert (fStart < 0x8000000);	// See GetStart/GetEnd
-	Led_Assert (fLength < 0x8000000);	// See GetStart/GetEnd
+	Assert (fStart < 0x8000000);	// See GetStart/GetEnd
+	Assert (fLength < 0x8000000);	// See GetStart/GetEnd
 	return fStart + fLength;
 }
 
 size_t			SimpleTextStoreMarkerHook::GetLength () const
 {
-	Led_Assert (fLength < 0x8000000);	// See GetStart
+	Assert (fLength < 0x8000000);	// See GetStart
 	return fLength;
 }
 
 void			SimpleTextStoreMarkerHook::GetStartEnd (size_t* start, size_t* end)  const
 {
-	Led_Assert (fStart < 0x8000000);	// See GetStart
-	Led_Assert (fLength < 0x8000000);	//     ''
-	Led_RequireNotNil (start);
-	Led_RequireNotNil (end);
+	Assert (fStart < 0x8000000);	// See GetStart
+	Assert (fLength < 0x8000000);	//     ''
+	RequireNotNull (start);
+	RequireNotNull (end);
 	*start = fStart;
 	*end = fStart + fLength;
 }
@@ -93,8 +93,8 @@ void			SimpleTextStoreMarkerHook::GetStartEnd (size_t* start, size_t* end)  cons
 	#endif
 	static	inline	SimpleTextStoreMarkerHook*	OurStuff (const Marker* marker)
 		{
-			Led_AssertNotNil (marker);
-			Led_AssertNotNil ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook);
+			AssertNotNull (marker);
+			AssertNotNull ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook);
 			Led_AssertMember ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook, SimpleTextStoreMarkerHook);
 			return (SimpleTextStoreMarkerHook*)marker->fTextStoreHook;
 		}
@@ -116,18 +116,18 @@ SimpleTextStore::SimpleTextStore ():
 	fMarkers ()
 {
 	fBuffer = new Led_tChar[0];
-	Led_AssertNotNil (fBuffer);
+	AssertNotNull (fBuffer);
 }
 
 SimpleTextStore::~SimpleTextStore ()
 {
-	Led_Require (GetMarkerOwners ().size () == 1);	// Really this should properly be checked in the TextStore::DTOR - and it is.
+	Require (GetMarkerOwners ().size () == 1);	// Really this should properly be checked in the TextStore::DTOR - and it is.
 													// But if this test fails, other tests within THIS DTOR will likely also fail. And
 													// those can be confusing. This diagnostic should clearly indicate to users that they've
 													// forgotten to remove some MarkerOwners - like Views or MarkerCovers, or ParagraphDatabases,
 													// etc.
 
-	Led_Require (fMarkers.size () == 0);		// All must have been removed by caller, otherwise its a user bug.
+	Require (fMarkers.size () == 0);		// All must have been removed by caller, otherwise its a user bug.
 	delete[] fBuffer;
 }
 
@@ -144,17 +144,17 @@ void	SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) con
 {
 	// Note that it IS NOT an error to call CopyOut for multibyte characters and split them. This is one of the few
 	// API routines where that is so...
-	Led_RequireNotNil (buffer);
-	Led_Require (from >= 0);
-	Led_Require (from + count <= GetEnd ());	// Be sure all Led_tChars requested fall in range
+	RequireNotNull (buffer);
+	Require (from >= 0);
+	Require (from + count <= GetEnd ());	// Be sure all Led_tChars requested fall in range
 	(void)::memcpy (buffer, &fBuffer[from], count * sizeof (Led_tChar));
 }
 
 void	SimpleTextStore::ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)
 {
-	Led_Assert (from <= to);
+	Assert (from <= to);
 #if		qMultiByteCharacters
-	Led_Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
+	Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
 
 	Assert_CharPosDoesNotSplitCharacter (from);
 	Assert_CharPosDoesNotSplitCharacter (to);
@@ -210,15 +210,15 @@ void	SimpleTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany, size_
 
 void	SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
 {
-	Led_Assert (after >= 0);
-	Led_Assert (howMany + after <= fLength);
+	Assert (after >= 0);
+	Assert (howMany + after <= fLength);
 	Invariant ();
 
-	Led_Assert (fLength >= howMany);
+	Assert (fLength >= howMany);
 	size_t	newBufSize		=	fLength - howMany;
 	size_t	howManyToMove	=	fLength - (after + howMany);
-	Led_Assert (howManyToMove <= fLength);
-	Led_Assert (howManyToMove + after <= fLength);
+	Assert (howManyToMove <= fLength);
+	Assert (howManyToMove + after <= fLength);
 	(void)::memmove (&fBuffer[after], &fBuffer[after+howMany], howManyToMove * sizeof (Led_tChar));
 	fLength -= howMany;
 
@@ -231,11 +231,11 @@ void	SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
 		if (after < start) {
 			size_t	newStart	=	start;
 			if (howMany + after <= start) {
-				Led_Assert (start >= howMany);
+				Assert (start >= howMany);
 				OurStuff (mi)->fStart = start - howMany;
 			}
 			else {
-				Led_Assert (howMany > (start-after));
+				Assert (howMany > (start-after));
 				size_t	deleteNCharsOffFront = howMany - (start-after);
 				size_t	moveFront = howMany - deleteNCharsOffFront;
 				OurStuff (mi)->fStart = start - moveFront;
@@ -253,7 +253,7 @@ void	SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
 			else {
 				newEnd -= howMany;
 			}
-			Led_Assert (newEnd >= start);
+			Assert (newEnd >= start);
 			size_t	newLen	=	newEnd - start;
 			OurStuff (mi)->fLength = newLen;
 		}
@@ -263,19 +263,19 @@ void	SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
 
 void	SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner)
 {
-	Led_RequireNotNil (marker);
-	Led_RequireNotNil (owner);
+	RequireNotNull (marker);
+	RequireNotNull (owner);
 	#if		!qVirtualBaseMixinCallDuringCTORBug
-	Led_Require (owner->PeekAtTextStore () == this);
+	Require (owner->PeekAtTextStore () == this);
 	#endif
-	Led_Require (owner == this or IndexOf (GetMarkerOwners (), owner) != kBadIndex);	// new Led 2.3 requirement - not strictly required internally yet - but it will be - LGP 980416
-	Led_Require (IndexOf (fMarkers, marker) == kBadIndex);	// better not be there!
-	Led_Require (lhs < 0x80000000);				// not real test, just sanity check
-	Led_Require (length < 0x80000000);			// not real test, just sanity check
+	Require (owner == this or IndexOf (GetMarkerOwners (), owner) != kBadIndex);	// new Led 2.3 requirement - not strictly required internally yet - but it will be - LGP 980416
+	Require (IndexOf (fMarkers, marker) == kBadIndex);	// better not be there!
+	Require (lhs < 0x80000000);				// not real test, just sanity check
+	Require (length < 0x80000000);			// not real test, just sanity check
 	Invariant ();
-	Led_Assert (marker->fTextStoreHook == NULL);
+	Assert (marker->fTextStoreHook == NULL);
 	marker->fTextStoreHook = new SimpleTextStoreMarkerHook ();
-	Led_Assert (marker->GetOwner () == NULL);
+	Assert (marker->GetOwner () == NULL);
 	OurStuff (marker)->fOwner = owner;
 	OurStuff (marker)->fStart = lhs;
 	OurStuff (marker)->fLength = length;
@@ -302,15 +302,15 @@ void	SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, Mark
 
 void	SimpleTextStore::RemoveMarkers (Marker*const markerArray[], size_t markerCount)
 {
-	Led_Assert (markerCount == 0 or markerArray != NULL);
+	Assert (markerCount == 0 or markerArray != NULL);
 	for (size_t i = 0; i < markerCount; i++) {
 		Marker*	marker	=	markerArray [i];
 		if (marker->fTextStoreHook != NULL) {
-			Led_AssertNotNil (marker->GetOwner ());
+			AssertNotNull (marker->GetOwner ());
 			Invariant ();
 #if 1
 			vector<Marker*>::iterator   index   =   std::find (fMarkers.begin (), fMarkers.end (), marker);
-			Led_Assert (index != fMarkers.end ());
+			Assert (index != fMarkers.end ());
 			fMarkers.erase (index);
 #else
 			size_t	index	=	IndexOf (fMarkers, marker);
@@ -327,17 +327,17 @@ void	SimpleTextStore::RemoveMarkers (Marker*const markerArray[], size_t markerCo
 
 void	SimpleTextStore::PreRemoveMarker (Marker* marker)
 {
-	Led_RequireNotNil (marker);
-	Led_Require (not OurStuff (marker)->fIsPreRemoved);
+	RequireNotNull (marker);
+	Require (not OurStuff (marker)->fIsPreRemoved);
 	OurStuff (marker)->fIsPreRemoved = true;
 }
 
 void	SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) throw ()
 {
-	Led_Assert (start >= 0);
-	Led_Assert (end >= 0);
-	Led_Assert (start <= end);
-	Led_AssertNotNil (marker);
+	Assert (start >= 0);
+	Assert (end >= 0);
+	Assert (start <= end);
+	AssertNotNull (marker);
 
 	// changing the start may force a re-ordering...
 	if (marker->GetStart () == start) {
@@ -353,10 +353,10 @@ void	SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) 
 
 void	SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
 {
-	Led_RequireNotNil (owner);	// though it can be TextStore::kAnyMarkerOwner.
+	RequireNotNull (owner);	// though it can be TextStore::kAnyMarkerOwner.
 	for (vector<Marker*>::const_iterator i = fMarkers.begin (); i != fMarkers.end (); i++) {
 		Marker*	m	=	*i;
-		Led_AssertNotNil (m);
+		AssertNotNull (m);
 		if (Overlap (*m, from, to)) {
 			if (owner == kAnyMarkerOwner or owner == m->GetOwner ()) {
 				if (not OurStuff (m)->fIsPreRemoved) {
@@ -373,15 +373,15 @@ void	SimpleTextStore::Invariant_ () const
 	TextStore::Invariant_ ();
 	for (size_t i = 0; i < fMarkers.size (); i++) {
 		Marker*	mi	=	fMarkers[i];
-		Led_AssertNotNil (mi);
-		Led_Assert (IndexOf (fMarkers, mi) == i);	// be sure same marker doesn't appear multiply in the
+		AssertNotNull (mi);
+		Assert (IndexOf (fMarkers, mi) == i);	// be sure same marker doesn't appear multiply in the
 													// list!!!
 		size_t	start	=	mi->GetStart ();
 		size_t	len		=	mi->GetLength ();
 		size_t	end		=	start + len;
-		Led_Assert (start >= 0);
-		Led_Assert (start <= end);
-		Led_Assert (end <= GetEnd () + 1);	// allowed 1 past last valid markerpos
+		Assert (start >= 0);
+		Assert (start <= end);
+		Assert (end <= GetEnd () + 1);	// allowed 1 past last valid markerpos
 	}
 }
 #endif

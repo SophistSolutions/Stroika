@@ -668,8 +668,8 @@ void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textSt
 // class EmbeddedObjectCreatorRegistry::Assoc
 	inline	Led_ClipFormat	EmbeddedObjectCreatorRegistry::Assoc::GetIthFormat (size_t i) const
 		{
-			Led_Assert (fFormatTagCount >= 1);
-			Led_Require (i < fFormatTagCount);
+			Assert (fFormatTagCount >= 1);
+			Require (i < fFormatTagCount);
 			return (fFormatTagCount == 1)? fFormatTag: fFormatTags[i];
 		}
 
@@ -766,7 +766,7 @@ void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textSt
 // class StandardMacPictureStyleMarker
 	inline	StandardMacPictureStyleMarker::PictureHandle	StandardMacPictureStyleMarker::GetPictureHandle () const
 		{
-			Led_EnsureNotNil (fPictureHandle);
+			EnsureNotNull (fPictureHandle);
 			return fPictureHandle;
 		}
 	inline	size_t	StandardMacPictureStyleMarker::GetPictureByteSize () const
@@ -784,7 +784,7 @@ void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textSt
 // class StandardDIBStyleMarker
 	inline	const Led_DIB*	StandardDIBStyleMarker::GetDIBData () const	
 		{
-			Led_EnsureNotNil (fDIBData);
+			EnsureNotNull (fDIBData);
 			return (fDIBData);
 		}
 
@@ -795,7 +795,7 @@ void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textSt
 // class StandardMacPictureWithURLStyleMarker
 	inline	StandardMacPictureStyleMarker::PictureHandle	StandardMacPictureWithURLStyleMarker::GetPictureHandle () const
 		{
-			Led_EnsureNotNil (fPictureHandle);
+			EnsureNotNull (fPictureHandle);
 			return fPictureHandle;
 		}
 	inline	size_t	StandardMacPictureWithURLStyleMarker::GetPictureByteSize () const
@@ -814,7 +814,7 @@ void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textSt
 // class StandardDIBWithURLStyleMarker
 	inline	const Led_DIB*	StandardDIBWithURLStyleMarker::GetDIBData () const	
 		{
-			Led_EnsureNotNil (fDIBData);
+			EnsureNotNull (fDIBData);
 			return (fDIBData);
 		}
 

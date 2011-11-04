@@ -188,14 +188,14 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 					}
 				}
 				catch (...) {
-					Led_Assert (false);	// NYI - must come up with some safe way to delete all these markers
+					Assert (false);	// NYI - must come up with some safe way to delete all these markers
 										// without using any memory! - maybe do the above in small pieces?
 										// One cell at a time? That would be painfully slow, but if we only did
 										// it on caught excpetions, that might be OK...
 										// LGP 960427
 					// not right, but til we fix this, eat the exception... LGP 960427
 				}
-				Led_Assert (CollectAllInRange_OrSurroundings (0, fTextStore.GetLength () + 1).size () == 0);
+				Assert (CollectAllInRange_OrSurroundings (0, fTextStore.GetLength () + 1).size () == 0);
 				fTextStore.RemoveMarkerOwner (this);
 			}
 	template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
@@ -260,12 +260,12 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 				Invariant ();
 				MarkerOfATypeMarkerSink<MARKER>	result;
 				fTextStore.CollectAllMarkersInRangeInto (charAfterPos, charAfterPos+1, this, result);
-				Led_AssertNotNil (result.fResult);
+				AssertNotNull (result.fResult);
 				#if		qDebug
 					{
 						MarkerVector	markers	=	CollectAllInRange (charAfterPos, charAfterPos+1);
-						Led_Assert (markers.size () == 1);
-						Led_Assert (result.fResult == markers[0]);
+						Assert (markers.size () == 1);
+						Assert (result.fResult == markers[0]);
 					}
 				#endif
 				return result.fResult->GetInfo ();
@@ -288,7 +288,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 				}
 				MarkerVector	markers	=	CollectAllInRange (charAfterPos, charAfterPos+nTCharsFollowing);
 				sort (markers.begin (), markers.end (), LessThan<MARKER> ());
-				Led_Ensure (markers.size () >= 1);
+				Ensure (markers.size () >= 1);
 				return markers;
 			}
 	template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
@@ -318,7 +318,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 						result.push_back (pair<MARKERINFO,size_t> ((*i)->GetInfo (), (*i)->GetLength ()));
 					}
 				}
-				Led_Ensure (result.size () >= 1);
+				Ensure (result.size () >= 1);
 				return result;
 			}
 	template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
@@ -429,9 +429,9 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 							/*
 							*	Assure region we are updating is contained within the 'total' update region.
 							*/
-							Led_Assert (totalStart <= from);
-							Led_Assert (from <= to);
-							Led_Assert (to <= totalEnd);
+							Assert (totalStart <= from);
+							Assert (from <= to);
+							Assert (to <= totalEnd);
 
 							SetInfoInnerLoop (from, to, (*i).first, allMarkersUpdateInfo, &updater);
 							curPos += (*i).second;
@@ -497,18 +497,18 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 					#if		qDebug
 						{
 							MarkerVector		tmp	=	CollectAllNonEmptyInRange (from-1, from);
-							Led_Assert (tmp.size () == 1);
-							Led_Assert (tmp[0] == markers[0]);
+							Assert (tmp.size () == 1);
+							Assert (tmp[0] == markers[0]);
 						}
 					#endif
 					prevNonEmptyMarker = markers[0];
 					if (prevNonEmptyMarker->GetEnd () > from) {		// else it would be the FIRST in our marker list!
-						Led_Assert (markers[0] == prevNonEmptyMarker);
+						Assert (markers[0] == prevNonEmptyMarker);
 						prevNonEmptyMarker = NULL;
 					}
 					else {
 						miStart++;
-						Led_Assert (miStart != miEnd);
+						Assert (miStart != miEnd);
 					}
 				}
 
@@ -519,8 +519,8 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 					Led_AssertMember (m, MARKER);
 
 					// Be sure prev marker lines up with next in list...
-					Led_Assert (prevNonEmptyMarker != NULL or mi == miStart);	// if mi > miStart, we must have had at least ONE non-empty marker!
-					Led_Assert (mi == miStart or (prevNonEmptyMarker->GetEnd () == m->GetStart ()));
+					Assert (prevNonEmptyMarker != NULL or mi == miStart);	// if mi > miStart, we must have had at least ONE non-empty marker!
+					Assert (mi == miStart or (prevNonEmptyMarker->GetEnd () == m->GetStart ()));
 
 					// First see if we need make any change at all
 					MARKERINFO	fsp	=	m->GetInfo ();
@@ -545,7 +545,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 							MARKER*	newMarker	=	new MARKER (fsp);
 							fTextStore.AddMarker (newMarker, from, ourNewLen, this);
 							
-							Led_Assert (m->GetLength () != 0);
+							Assert (m->GetLength () != 0);
 							prevNonEmptyMarker = m;	// update prevNonEmptyMarker
 							m = newMarker;			// be sure m points to LAST marker of results for this range
 
@@ -554,7 +554,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 							if (lenLeftToFixup != 0) {
 								MARKER*	newMarker	=	new MARKER (origFSP);
 								fTextStore.AddMarker (newMarker, from + ourNewLen, lenLeftToFixup, this);
-								Led_Assert (m->GetLength () != 0);
+								Assert (m->GetLength () != 0);
 								prevNonEmptyMarker = m;	// update prevNonEmptyMarker
 								m = newMarker;			// be sure m points to LAST marker of results for this range
 							}
@@ -565,15 +565,15 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 							size_t	itsOldStart	=	m->GetStart ();
 							fTextStore.SetMarkerStart (m, to);
 							size_t	newMarkerLen	=	to-itsOldStart;
-							Led_Assert (newMarkerLen > 0);
+							Assert (newMarkerLen > 0);
 							fTextStore.AddMarker (newMarker, itsOldStart, newMarkerLen, this);
-							Led_Assert (newMarker->GetLength () != 0);
+							Assert (newMarker->GetLength () != 0);
 
 							m = newMarker;		// so we attempt to merge 'm' (really newMarker) onto end of prevNonEmptyMarker
 						}
 						else {
-							Led_Assert (m->GetStart () >= from);
-							Led_Assert (m->GetEnd () <= to);
+							Assert (m->GetStart () >= from);
+							Assert (m->GetEnd () <= to);
 							m->SetInfo (fsp);
 							// NB: we don't need to update 'm' cuz no markers created
 							// and we didn't change prev either!
@@ -601,7 +601,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 							// simply zero out the size of 'm', and put that size into
 							// prevMarker. Zero'd out markers will automagically be deleted
 							// in the DidUpdate () call below...
-							Led_Assert (prevNonEmptyMarker->GetEnd () == m->GetStart ());
+							Assert (prevNonEmptyMarker->GetEnd () == m->GetStart ());
 							fTextStore.SetMarkerEnd (prevNonEmptyMarker, m->GetEnd ());
 							fTextStore.SetMarkerEnd (m, m->GetStart ());		// note we zero out by setting END to start - rather than
 																				// the other way cuz of the special case where 'm' is the
@@ -636,8 +636,8 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 		*/
 		void	MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to)
 			{
-				Led_Require (from <= to);
-				Led_Require (to <= fTextStore.GetEnd () + 1);
+				Require (from <= to);
+				Require (to <= fTextStore.GetEnd () + 1);
 				MarkerVector	markers	=	CollectAllInRange_OrSurroundings (from, to);
 				sort (markers.begin (), markers.end (), LessThan<MARKER> ());
 				NoteCoverRangeDirtied (from, to, markers);
@@ -645,8 +645,8 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 	template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 		void	MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers)
 			{
-				Led_Require (from <= to);
-				Led_Require (to <= fTextStore.GetEnd () + 1);
+				Require (from <= to);
+				Require (to <= fTextStore.GetEnd () + 1);
 				Led_Arg_Unused (from);
 				Led_Arg_Unused (to);
 				CullZerod (rangeAndSurroundingsMarkers);
@@ -656,7 +656,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 		void	MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::AboutToUpdateText (const UpdateInfo& updateInfo)
 			{
 				fNeedExtraUpdateCheck = false;	// If we set true before this call - must be because an 'AboutToUpdate' was aborted.
-				Led_Assert (fMarkersToBeDeleted.IsEmpty ());
+				Assert (fMarkersToBeDeleted.IsEmpty ());
 				Invariant ();
 				inherited::AboutToUpdateText (updateInfo);
 				if (updateInfo.fTextModified) {
@@ -718,19 +718,19 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 			{
 				// Gather all style markers and sumarize them for the region which overlaps my change
 				MarkerVector		markers	=	CollectAllNonEmptyInRange_OrSurroundings (around, around);
-				Led_Assert (markers.size () != 0);
+				Assert (markers.size () != 0);
 
 				if (markers.size () > 1) {
-					Led_Assert (markers.size () == 2);	// since two character range, can be at most two style markers!
+					Assert (markers.size () == 2);	// since two character range, can be at most two style markers!
 					MARKER*	m1 = markers[0];
 					MARKER*	m2 = markers[1];
-					Led_Assert (m1->GetLength () != 0);
-					Led_Assert (m2->GetLength () != 0);
+					Assert (m1->GetLength () != 0);
+					Assert (m2->GetLength () != 0);
 					if (m1->GetInfo () == m2->GetInfo ()) {
 						// We then must merge one out. Doesn't matter which. Arbitrarily chose to keep rightmost one
 						MARKER*	deleteMe = (m1->GetStart () < m2->GetStart ())? m1: m2;
 						MARKER*	keepMe = (deleteMe == m1)? m2: m1;
-						Led_Assert (keepMe->GetStart () == deleteMe->GetEnd ());
+						Assert (keepMe->GetStart () == deleteMe->GetEnd ());
 						fTextStore.SetMarkerStart (keepMe, deleteMe->GetStart ());
 						fTextStore.SetMarkerLength (deleteMe, 0);	// so won't be refered to again once accumulated for deletion
 						fMarkersToBeDeleted.AccumulateMarkerForDeletion (deleteMe);
@@ -768,16 +768,16 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 							}
 						}
 
-						Led_Assert (m1->GetLength () != 0);
-						Led_Assert (m2->GetLength () != 0);
+						Assert (m1->GetLength () != 0);
+						Assert (m2->GetLength () != 0);
 						if (m1->GetInfo () == m2->GetInfo ()) {
 							// We then must merge one out. Doesn't matter which. Arbitrarily chose to keep rightmost one
 							// (though the choice is arbitrary - it is assumed above - eariler on in this routine - when we
 							// handle zero-length markers).
-							Led_Assert (m1->GetStart () < m2->GetStart ());
+							Assert (m1->GetStart () < m2->GetStart ());
 							MARKER*	deleteMe	=	m1;
 							MARKER*	keepMe = m2;
-							Led_Assert (keepMe->GetStart () == deleteMe->GetEnd ());
+							Assert (keepMe->GetStart () == deleteMe->GetEnd ());
 							fTextStore.SetMarkerStart (keepMe, deleteMe->GetStart ());
 							fTextStore.SetMarkerLength (deleteMe, 0);	// so won't be refered to again once accumulated for deletion
 							fMarkersToBeDeleted.AccumulateMarkerForDeletion (deleteMe);
@@ -818,7 +818,7 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 				 *	If some 'GetInfo' routine is called - AFTER our AboutToUpdate () call but before our EarlyDidUpdate call, then
 				 *	the text hasn't truely been updated - so we cannot yet do our checks (and nor do we need to).
 				 */
-				Led_Assert (fNeedExtraUpdateCheck);
+				Assert (fNeedExtraUpdateCheck);
 				if (fEarlyDidUpdateCalled) {
 					const_cast<MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>*> (this)->NoteCoverRangeDirtied (fNeedExtraUpdateCheck_UpdateInfo.fReplaceFrom, fNeedExtraUpdateCheck_UpdateInfo.GetResultingRHS ());
 					fMarkersToBeDeleted.FinalizeMarkerDeletions ();
@@ -840,28 +840,28 @@ template	<typename	MARKER, typename	MARKERINFO, typename	INCREMENTALMARKERINFO>
 				sort (markers.begin (), markers.end (), LessThan<MARKER> ());
 
 				// Walk through - and see we have a cover, and non-overlapping...
-				Led_Assert (markers.size () > 0);
+				Assert (markers.size () > 0);
 				size_t	lastEnd	=	0;
 				for (typename MarkerVector::const_iterator i = markers.begin (); i != markers.end (); i++) {
 					MARKER*	m	=	*i;
 					Led_AssertMember (m, MARKER);
-					Led_Assert (m->GetLength () > 0);	// we should eliminate all zero-length markers...
+					Assert (m->GetLength () > 0);	// we should eliminate all zero-length markers...
 					if (i == markers.begin ()) {
-						Led_Assert (m->GetStart () == 0);
+						Assert (m->GetStart () == 0);
 					}
 					if (i == markers.end ()-1) {
-						Led_Assert (m->GetStart () == lastEnd);
-						Led_Assert (m->GetEnd () == fTextStore.GetLength () + 1);
+						Assert (m->GetStart () == lastEnd);
+						Assert (m->GetEnd () == fTextStore.GetLength () + 1);
 					}
-					Led_Assert (m->GetStart () == lastEnd);
+					Assert (m->GetStart () == lastEnd);
 					if (i != markers.begin ()) {
 						MARKER*	prevMarker	=	*(i-1);
 						Led_AssertMember (prevMarker, MARKER);
-						Led_Assert (prevMarker->GetInfo () != m->GetInfo ());	// otherwise they should have been merged together
+						Assert (prevMarker->GetInfo () != m->GetInfo ());	// otherwise they should have been merged together
 					}
 					lastEnd = m->GetEnd ();
 				}
-				Led_Assert (lastEnd == fTextStore.GetLength () + 1);
+				Assert (lastEnd == fTextStore.GetLength () + 1);
 			}
 	#endif
 

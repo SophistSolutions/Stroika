@@ -407,7 +407,7 @@ class	CharacterProperties {
 				// Need some sort of TMPHACK answer for UNIX - eventually do better ;-) Maybe using locale calls?
 				return kCodePage_ANSI;
 			#else
-				Led_Assert (false);		// probably shouldn't come up??
+				Assert (false);		// probably shouldn't come up??
 				return kCodePage_ANSI;	// for now - an OK answer
 			#endif
 		}
@@ -435,98 +435,98 @@ class	CharacterProperties {
 			// in the registry around HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Charset\
 			//	-- LGP 2002-11-29
 			#ifdef	CP_ACP
-				Led_Assert (CP_ACP == 0);
+				Assert (CP_ACP == 0);
 			#else
 				const	unsigned char	CP_ACP				=	0;
 			#endif
 
 			#ifdef	ANSI_CHARSET
-				Led_Assert (ANSI_CHARSET == 0);
+				Assert (ANSI_CHARSET == 0);
 			#else
 				const	unsigned char	ANSI_CHARSET		=	0;
 			#endif
 			#ifdef	DEFAULT_CHARSET
-				Led_Assert (DEFAULT_CHARSET == 1);
+				Assert (DEFAULT_CHARSET == 1);
 			#else
 				const	unsigned char	DEFAULT_CHARSET		=	1;
 			#endif
 			#ifdef	MAC_CHARSET
-				Led_Assert (MAC_CHARSET == 77);
+				Assert (MAC_CHARSET == 77);
 			#else
 				const	unsigned char	MAC_CHARSET			=	77;
 			#endif
 			#ifdef	SHIFTJIS_CHARSET
-				Led_Assert (SHIFTJIS_CHARSET == 128);
+				Assert (SHIFTJIS_CHARSET == 128);
 			#else
 				const	unsigned char	SHIFTJIS_CHARSET	=	128;
 			#endif
 			#ifdef	HANGEUL_CHARSET
-				Led_Assert (HANGEUL_CHARSET == 129);
+				Assert (HANGEUL_CHARSET == 129);
 			#else
 				const	unsigned char	HANGEUL_CHARSET		=	129;
 			#endif
 			#ifdef	JOHAB_CHARSET
-				Led_Assert (JOHAB_CHARSET == 130);
+				Assert (JOHAB_CHARSET == 130);
 			#else
 				const	unsigned char	JOHAB_CHARSET		=	130;
 			#endif
 			#ifdef	GB2312_CHARSET
-				Led_Assert (GB2312_CHARSET == 134);
+				Assert (GB2312_CHARSET == 134);
 			#else
 				const	unsigned char	GB2312_CHARSET		=	134;
 			#endif
 			#ifdef	CHINESEBIG5_CHARSET
-				Led_Assert (CHINESEBIG5_CHARSET == 136);
+				Assert (CHINESEBIG5_CHARSET == 136);
 			#else
 				const	unsigned char	CHINESEBIG5_CHARSET	=	136;
 			#endif
 			#ifdef	GREEK_CHARSET
-				Led_Assert (GREEK_CHARSET == 161);
+				Assert (GREEK_CHARSET == 161);
 			#else
 				const	unsigned char	GREEK_CHARSET		=	161;
 			#endif
 			#ifdef	TURKISH_CHARSET
-				Led_Assert (TURKISH_CHARSET == 162);
+				Assert (TURKISH_CHARSET == 162);
 			#else
 				const	unsigned char	TURKISH_CHARSET		=	162;
 			#endif
 			#ifdef	VIETNAMESE_CHARSET
-				Led_Assert (VIETNAMESE_CHARSET == 163);
+				Assert (VIETNAMESE_CHARSET == 163);
 			#else
 				const	unsigned char	VIETNAMESE_CHARSET	=	163;
 			#endif
 			#ifdef	HEBREW_CHARSET
-				Led_Assert (HEBREW_CHARSET == 177);
+				Assert (HEBREW_CHARSET == 177);
 			#else
 				const	unsigned char	HEBREW_CHARSET		=	177;
 			#endif
 			#ifdef	ARABIC_CHARSET
-				Led_Assert (ARABIC_CHARSET == 178);
+				Assert (ARABIC_CHARSET == 178);
 			#else
 				const	unsigned char	ARABIC_CHARSET		=	178;
 			#endif
 			#ifdef	BALTIC_CHARSET
-				Led_Assert (BALTIC_CHARSET == 186);
+				Assert (BALTIC_CHARSET == 186);
 			#else
 				const	unsigned char	BALTIC_CHARSET		=	186;
 			#endif
 			#ifdef	RUSSIAN_CHARSET
-				Led_Assert (RUSSIAN_CHARSET == 204);
+				Assert (RUSSIAN_CHARSET == 204);
 			#else
 				const	unsigned char	RUSSIAN_CHARSET		=	204;
 			#endif
 			#ifdef	THAI_CHARSET
-				Led_Assert (THAI_CHARSET == 222);
+				Assert (THAI_CHARSET == 222);
 			#else
 				const	unsigned char	THAI_CHARSET		=	222;
 			#endif
 			#ifdef	EASTEUROPE_CHARSET
-				Led_Assert (EASTEUROPE_CHARSET == 238);
+				Assert (EASTEUROPE_CHARSET == 238);
 			#else
 				const	unsigned char	EASTEUROPE_CHARSET	=	238;
 			#endif
 			#ifdef	OEM_CHARSET
-				Led_Assert (OEM_CHARSET == 255);
+				Assert (OEM_CHARSET == 255);
 			#else
 				const	unsigned char	OEM_CHARSET			=	255;
 			#endif
@@ -620,7 +620,7 @@ class	CharacterProperties {
 			fHandleBOM (true),
 			fCodePage (codePage)
 			{
-				Led_Require (h == eHandleBOM);
+				Require (h == eHandleBOM);
 				Led_Arg_Unused (h);
 			}
 	/*

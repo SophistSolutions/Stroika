@@ -112,8 +112,8 @@ void	EmbeddedObjectCreatorRegistry::AddStandardTypes ()
 
 bool	EmbeddedObjectCreatorRegistry::Lookup (const char* embeddingTag, Assoc* result) const
 {
-	Led_RequireNotNil (embeddingTag);
-	Led_RequireNotNil (result);
+	RequireNotNull (embeddingTag);
+	RequireNotNull (result);
 	const vector<EmbeddedObjectCreatorRegistry::Assoc>&	types	=	GetAssocList ();
 	for (size_t i = 0; i < types.size (); i++) {
 		EmbeddedObjectCreatorRegistry::Assoc	assoc	=	types[i];
@@ -153,14 +153,14 @@ int	SimpleEmbeddedObjectStyleMarker::GetPriority () const
 Led_Distance	SimpleEmbeddedObjectStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
 {
 	// Baseline for embeddings should be very bottom of the embedding (less the bottom margin)
-	Led_Require (from + 1 == to);
+	Require (from + 1 == to);
 	return (MeasureSegmentHeight (imager, runElement, from, to) - 1*kDefaultEmbeddingMargin.v);
 }
 
 void	SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw ()
 {
-	Led_RequireNotNil (GetOwner ());
-	Led_RequireNotNil (GetOwner ()->PeekAtTextStore ());
+	RequireNotNull (GetOwner ());
+	RequireNotNull (GetOwner ()->PeekAtTextStore ());
 	size_t	newLength	=	GetLength ();
 	if (newLength == 0) {
 		GetOwner ()->PeekAtTextStore ()->RemoveMarker (this);
@@ -170,7 +170,7 @@ void	SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateIn
 		inherited::DidUpdateText (updateInfo);
 	}
 	else {
-		Led_Assert (GetEnd () > 0);	// cuz otherwise we couldn't have a non-zero length!
+		Assert (GetEnd () > 0);	// cuz otherwise we couldn't have a non-zero length!
 		GetOwner ()->PeekAtTextStore ()->SetMarkerStart (this, GetEnd ()-1);
 		inherited::DidUpdateText (updateInfo);
 	}
@@ -223,7 +223,7 @@ Led_SDK_String	SimpleEmbeddedObjectStyleMarker::GetCmdText (PrivateCmdNumber cmd
 {
 	switch (cmd) {
 		case	eOpenCmdNum:	return GetCommandNames ().fOpenCommandName;
-		default:				Led_Assert (false); return Led_SDK_String ();
+		default:				Assert (false); return Led_SDK_String ();
 	}
 }
 
@@ -239,7 +239,7 @@ void	SimpleEmbeddedObjectStyleMarker::DoCommand (PrivateCmdNumber cmd)
 {
 	switch (cmd) {
 		case	eOpenCmdNum:	HandleOpen (); break;
-		default:				Led_Assert (false); break;
+		default:				Assert (false); break;
 	}
 }
 
@@ -284,9 +284,9 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 	,fPictureSize (0)
 	#endif
 {
-	Led_RequireNotNil (pictData);
+	RequireNotNull (pictData);
 	#if		qWindows
-		Led_RequireNotNil (sUnsupportedFormatPict);
+		RequireNotNull (sUnsupportedFormatPict);
 	#endif
 	#if		qMacOS
 		fPictureHandle = (PictureHandle)Led_DoNewHandle (picSize);
@@ -301,7 +301,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 
 StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
 {
-	Led_AssertNotNil (fPictureHandle);
+	AssertNotNull (fPictureHandle);
 	#if		qMacOS
 		::DisposeHandle (Handle (fPictureHandle));
 	#else
@@ -311,7 +311,7 @@ StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
 
 SimpleEmbeddedObjectStyleMarker*	StandardMacPictureStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
 {
-	Led_Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
+	Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
 	Led_Arg_Unused (embeddingTag);
 	return (new StandardMacPictureStyleMarker ((Led_Picture*)data, len));
 }
@@ -329,8 +329,8 @@ void	StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager,
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_Assert (from + 1 == to);
-	Led_Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+	Assert (from + 1 == to);
+	Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_Arg_Unused (text);
@@ -346,12 +346,12 @@ void	StandardMacPictureStyleMarker::MeasureSegmentWidth (const StyledTextImager*
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Assert (from + 1 == to);
-	Led_RequireNotNil (text);
+	Assert (from + 1 == to);
+	RequireNotNull (text);
 	/*
 	 *	Though we generally require that:
 	 *
-	 *		Led_Require (text[0] == kEmbeddingSentinalChar);
+	 *		Require (text[0] == kEmbeddingSentinalChar);
 	 *
 	 *	we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
 	 *	in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
@@ -368,7 +368,7 @@ void	StandardMacPictureStyleMarker::MeasureSegmentWidth (const StyledTextImager*
 
 Led_Distance	StandardMacPictureStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_Assert (from + 1 == to);
+	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_StackBasedHandleLocker	locker ((Led_StackBasedHandleLocker::GenericHandle) GetPictureHandle ());
@@ -428,21 +428,21 @@ StandardDIBStyleMarker::StandardDIBStyleMarker (const Led_DIB* pictData):
 	fDIBData (NULL)
 {
 	#if		qMacOS
-		Led_RequireNotNil (sUnsupportedFormatPict);	// see class declaration for descriptio
+		RequireNotNull (sUnsupportedFormatPict);	// see class declaration for descriptio
 	#endif
-	Led_RequireNotNil (pictData);
+	RequireNotNull (pictData);
 	fDIBData = Led_CloneDIB (pictData);
 }
 
 StandardDIBStyleMarker::~StandardDIBStyleMarker ()
 {
-	Led_AssertNotNil (fDIBData);
+	AssertNotNull (fDIBData);
 	delete fDIBData;
 }
 
 SimpleEmbeddedObjectStyleMarker*	StandardDIBStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
 {
-	Led_Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
+	Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
 	Led_Arg_Unused (embeddingTag);
 	if (len < 40) {
 		// This is less than we need to peek and see size of DIB...
@@ -479,8 +479,8 @@ void	StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_Assert (from + 1 == to);
-	Led_Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+	Assert (from + 1 == to);
+	Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_Arg_Unused (text);
@@ -495,12 +495,12 @@ void	StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imag
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Assert (from + 1 == to);
-	Led_RequireNotNil (text);
+	Assert (from + 1 == to);
+	RequireNotNull (text);
 	/*
 	 *	Though we generally require that:
 	 *
-	 *		Led_Require (text[0] == kEmbeddingSentinalChar);
+	 *		Require (text[0] == kEmbeddingSentinalChar);
 	 *
 	 *	we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
 	 *	in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
@@ -516,7 +516,7 @@ void	StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imag
 
 Led_Distance	StandardDIBStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_Assert (from + 1 == to);
+	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	return (Led_GetDIBImageSize (GetDIBData ()).v + 2*kDefaultEmbeddingMargin.v);
@@ -583,7 +583,7 @@ StandardURLStyleMarker::StandardURLStyleMarker (const Led_URLD& urlData):
 {
 	#if		!qURLStyleMarkerNewDisplayMode
 		#if		qMacOS || qWindows
-			Led_RequireNotNil (sURLPict);	// If this is ever triggered, see class declaration where we delcare this field
+			RequireNotNull (sURLPict);	// If this is ever triggered, see class declaration where we delcare this field
 		#endif
 	#endif
 }
@@ -594,7 +594,7 @@ StandardURLStyleMarker::~StandardURLStyleMarker ()
 
 SimpleEmbeddedObjectStyleMarker*	StandardURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
 {
-	Led_Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
+	Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
 	Led_Arg_Unused (embeddingTag);
 	return (new StandardURLStyleMarker (Led_URLD (data, len)));
 }
@@ -622,7 +622,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardURLStyleMarker::mk (ReaderFlavorPackage
 		}
 	#endif
 	Led_ThrowBadFormatDataException ();
-	Led_Assert (false); return NULL;
+	Assert (false); return NULL;
 }
 
 void	StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
@@ -630,7 +630,7 @@ void	StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_RequireNotNil (imager);
+	RequireNotNull (imager);
 
 	#if		qURLStyleMarkerNewDisplayMode
 		Led_Arg_Unused (to);
@@ -650,8 +650,8 @@ void	StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 		ourBoundsRect.right = ourBoundsRect.left + width + 2*kDefaultEmbeddingMargin.h;
 		Led_Coordinate	embedBottom	=	useBaseLine;
 		Led_Coordinate	embedTop	=	embedBottom - height;
-		Led_Assert (embedTop >= drawInto.top);
-		Led_Assert (embedBottom <= drawInto.bottom);
+		Assert (embedTop >= drawInto.top);
+		Assert (embedBottom <= drawInto.bottom);
 		Led_Rect	innerBoundsRect = Led_Rect (Led_Point (embedTop, ourBoundsRects.left + kDefaultEmbeddingMargin.h), Led_Size (height, width));
 
 		Led_Color	foreColor	=	imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
@@ -683,7 +683,7 @@ void	StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 		 *	And be sure to erase everything in the draw rect!
 		 */
 		#if		qMacOS || qWindows
-			Led_AssertNotNil (sURLPict);
+			AssertNotNull (sURLPict);
 		#endif
 		#if		qMacOS
 			Rect	rr	=	AsQDRect (innerBoundsRect);
@@ -727,7 +727,7 @@ void	StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 				LOGFONT	lf;
 				memset (&lf, 0, sizeof lf);
 				_tcscpy (lf.lfFaceName, _T ("System"));
-				Led_Verify (font1.CreateFontIndirect (&lf));
+				Verify (font1.CreateFontIndirect (&lf));
 			}
 			Led_Win_Obj_Selector	font1Selector (tablet, font1);
 			if (nameStrLen != 0) {
@@ -739,7 +739,7 @@ void	StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 				LOGFONT	lf;
 				memset (&lf, 0, sizeof lf);
 				_tcscpy (lf.lfFaceName, _T ("Arial"));
-				Led_Verify (font2.CreateFontIndirect (&lf));
+				Verify (font2.CreateFontIndirect (&lf));
 				lf.lfHeight = -8;
 			}
 			Led_Win_Obj_Selector	font2Selector (tablet, font2);
@@ -758,12 +758,12 @@ void	StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Assert (from + 1 == to);
-	Led_RequireNotNil (text);
+	Assert (from + 1 == to);
+	RequireNotNull (text);
 	/*
 	 *	Though we generally require that:
 	 *
-	 *		Led_Require (text[0] == kEmbeddingSentinalChar);
+	 *		Require (text[0] == kEmbeddingSentinalChar);
 	 *
 	 *	we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
 	 *	in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
@@ -837,7 +837,7 @@ void	StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 				LOGFONT	lf;
 				memset (&lf, 0, sizeof lf);
 				_tcscpy (lf.lfFaceName, _T ("System"));
-				Led_Verify (font1.CreateFontIndirect (&lf));
+				Verify (font1.CreateFontIndirect (&lf));
 			}
 			Led_Win_Obj_Selector	font1Selector (tablet, font1);
 			Led_Distance			string1Width	=	name==NULL? 0: dc->GetTextExtent (Led_ANSI2SDKString (name).c_str (), nameStrLen).cx;
@@ -847,7 +847,7 @@ void	StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 				LOGFONT	lf;
 				memset (&lf, 0, sizeof lf);
 				_tcscpy (lf.lfFaceName, _T ("Arial"));
-				Led_Verify (font2.CreateFontIndirect (&lf));
+				Verify (font2.CreateFontIndirect (&lf));
 				lf.lfHeight = -8;
 			}
 			Led_Win_Obj_Selector	font2Selector (tablet, font2);
@@ -860,7 +860,7 @@ void	StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 
 Led_Distance	StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
 {
-	Led_Assert (from + 1 == to);
+	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 
@@ -1014,7 +1014,7 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 	#endif
 	fURLData (urlData)
 {
-	Led_RequireNotNil (pictData);
+	RequireNotNull (pictData);
 	#if		qMacOS
 		fPictureHandle = (StandardMacPictureStyleMarker::PictureHandle)Led_DoNewHandle (picSize);
 	#elif	qWindows
@@ -1030,7 +1030,7 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 
 StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker ()
 {
-	Led_AssertNotNil (fPictureHandle);
+	AssertNotNull (fPictureHandle);
 	#if		qMacOS
 		::DisposeHandle (Handle (fPictureHandle));
 	#elif	qWindows
@@ -1040,7 +1040,7 @@ StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker ()
 
 SimpleEmbeddedObjectStyleMarker*	StandardMacPictureWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
 {
-	Led_Require (memcmp (embeddingTag, kOld1EmbeddingTag, sizeof (kOld1EmbeddingTag)) == 0 or memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
+	Require (memcmp (embeddingTag, kOld1EmbeddingTag, sizeof (kOld1EmbeddingTag)) == 0 or memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
 
 	if (memcmp (embeddingTag, kOld1EmbeddingTag, sizeof (kOld1EmbeddingTag)) == 0) {
 		Led_Picture*	picBuf	=	(Led_Picture*)data;
@@ -1051,7 +1051,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardMacPictureWithURLStyleMarker::mk (const
 		}
 		const char* url	=	((char*)data) + picSize;
 		size_t		urlSize	=	len - picSize;
-		Led_Assert (urlSize > 0);	// cuz of above throw-test above...
+		Assert (urlSize > 0);	// cuz of above throw-test above...
 
 		return new StandardMacPictureWithURLStyleMarker (picBuf, Led_ByteSwapFromMac (picBuf->picSize), Led_URLD (url, urlSize));
 	}
@@ -1070,7 +1070,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardMacPictureWithURLStyleMarker::mk (const
 		}
 		const char* url	=	((char*)picBuf) + picSize;
 		size_t		urlSize	=	len - 4 - picSize;
-		Led_Assert (urlSize > 0);	// cuz of above throw-test above...
+		Assert (urlSize > 0);	// cuz of above throw-test above...
 
 		return new StandardMacPictureWithURLStyleMarker (picBuf, picSize, Led_URLD (url, urlSize));
 	}
@@ -1094,8 +1094,8 @@ void	StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* 
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_Assert (from + 1 == to);
-	Led_Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+	Assert (from + 1 == to);
+	Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_Arg_Unused (text);
@@ -1111,12 +1111,12 @@ void	StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledText
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Assert (from + 1 == to);
-	Led_RequireNotNil (text);
+	Assert (from + 1 == to);
+	RequireNotNull (text);
 	/*
 	 *	Though we generally require that:
 	 *
-	 *		Led_Require (text[0] == kEmbeddingSentinalChar);
+	 *		Require (text[0] == kEmbeddingSentinalChar);
 	 *
 	 *	we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
 	 *	in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
@@ -1133,7 +1133,7 @@ void	StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledText
 
 Led_Distance	StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_Assert (from + 1 == to);
+	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_StackBasedHandleLocker	locker ((Led_StackBasedHandleLocker::GenericHandle) GetPictureHandle ());
@@ -1145,7 +1145,7 @@ void	StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink)
 	{
 		uint32_t	picSize	=	GetPictureByteSize ();
 		Led_ULONGToBuf (picSize, &picSize);
-		Led_Assert (sizeof (picSize) == 4);
+		Assert (sizeof (picSize) == 4);
 		sink.write (&picSize, sizeof (picSize));
 	}
 	Led_StackBasedHandleLocker	locker ((Led_StackBasedHandleLocker::GenericHandle) GetPictureHandle ());
@@ -1226,21 +1226,21 @@ StandardDIBWithURLStyleMarker::StandardDIBWithURLStyleMarker (const Led_DIB* dib
 	fURLData (urlData)
 {
 	#if		qMacOS
-		Led_RequireNotNil (StandardDIBStyleMarker::sUnsupportedFormatPict);	// see class declaration for descriptio
+		RequireNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);	// see class declaration for descriptio
 	#endif
-	Led_RequireNotNil (dibData);
+	RequireNotNull (dibData);
 	fDIBData = Led_CloneDIB (dibData);
 }
 
 StandardDIBWithURLStyleMarker::~StandardDIBWithURLStyleMarker ()
 {
-	Led_AssertNotNil (fDIBData);
+	AssertNotNull (fDIBData);
 	delete fDIBData;
 }
 
 SimpleEmbeddedObjectStyleMarker*	StandardDIBWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
 {
-	Led_Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
+	Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
 	Led_Arg_Unused (embeddingTag);
 
 	if (len < 4 + 40) {
@@ -1262,7 +1262,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardDIBWithURLStyleMarker::mk (const char* 
 	}
 	const char* url	=	((char*)picBuf) + picSize;
 	size_t		urlSize	=	len - 4 - picSize;
-	Led_Assert (urlSize > 0);	// cuz of above throw-test above...
+	Assert (urlSize > 0);	// cuz of above throw-test above...
 
 	return new StandardDIBWithURLStyleMarker (picBuf, Led_URLD (url, urlSize));
 }
@@ -1304,8 +1304,8 @@ void	StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager,
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_Assert (from + 1 == to);
-	Led_Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+	Assert (from + 1 == to);
+	Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_Arg_Unused (text);
@@ -1320,12 +1320,12 @@ void	StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager*
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Assert (from + 1 == to);
-	Led_RequireNotNil (text);
+	Assert (from + 1 == to);
+	RequireNotNull (text);
 	/*
 	 *	Though we generally require that:
 	 *
-	 *		Led_Require (text[0] == kEmbeddingSentinalChar);
+	 *		Require (text[0] == kEmbeddingSentinalChar);
 	 *
 	 *	we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
 	 *	in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
@@ -1341,7 +1341,7 @@ void	StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager*
 
 Led_Distance	StandardDIBWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_Assert (from + 1 == to);
+	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	return (Led_GetDIBImageSize (GetDIBData ()).v + 2*kDefaultEmbeddingMargin.v);
@@ -1353,7 +1353,7 @@ void	StandardDIBWithURLStyleMarker::Write (SinkStream& sink)
 	{
 		uint32_t	dibSize	=	Led_GetDIBImageByteCount (dib);
 		Led_ULONGToBuf (dibSize, &dibSize);
-		Led_Assert (sizeof (dibSize) == 4);
+		Assert (sizeof (dibSize) == 4);
 		sink.write (&dibSize, sizeof (dibSize));
 	}
 	sink.write (dib, Led_GetDIBImageByteCount (dib));
@@ -1438,7 +1438,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
 {
 	memcpy (fEmbeddingTag, embeddingTag, sizeof (fEmbeddingTag));
 	#if		qMacOS || qWindows
-		Led_RequireNotNil (sUnknownPict);	// If this is ever triggered, see class declaration where we delcare this field
+		RequireNotNull (sUnknownPict);	// If this is ever triggered, see class declaration where we delcare this field
 	#endif
 	fData = new char [nBytes];
 	memcpy (fData, unknownTypeData, nBytes);
@@ -1490,11 +1490,11 @@ Led_TWIPS_Point	StandardUnknownTypeStyleMarker::CalcDefaultShownSize ()
 Led_TWIPS_Point	StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 {
 	#if		qMacOS
-		Led_RequireNotNil (sUnknownPict);
+		RequireNotNull (sUnknownPict);
 		Led_StackBasedHandleLocker	locker ((Led_StackBasedHandleLocker::GenericHandle) sUnknownPict);
 		Led_Size	pixelSize	=	 Led_GetMacPictSize (sUnknownPict);
 	#elif	qWindows
-		Led_RequireNotNil (sUnknownPict);
+		RequireNotNull (sUnknownPict);
 		Led_Size	pixelSize	=	 Led_GetDIBImageSize (sUnknownPict);
 	#elif	qXWindows
 		Led_Size	pixelSize	=	Led_Size (10,10);	//  X-TMP-HACK-LGP2000-06-13
@@ -1508,8 +1508,8 @@ void	StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_Assert (from + 1 == to);
-	Led_Require (text.PeekAtVirtualText () [0] == kEmbeddingSentinalChar);
+	Assert (from + 1 == to);
+	Require (text.PeekAtVirtualText () [0] == kEmbeddingSentinalChar);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 	Led_Arg_Unused (text);
@@ -1539,12 +1539,12 @@ void	StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager
 														Led_Distance* distanceResults
 													) const
 {
-	Led_Assert (from + 1 == to);
-	Led_RequireNotNil (text);
+	Assert (from + 1 == to);
+	RequireNotNull (text);
 	/*
 	 *	Though we generally require that:
 	 *
-	 *		Led_Require (text[0] == kEmbeddingSentinalChar);
+	 *		Require (text[0] == kEmbeddingSentinalChar);
 	 *
 	 *	we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
 	 *	in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
@@ -1566,7 +1566,7 @@ void	StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager
 
 Led_Distance	StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_Assert (from + 1 == to);
+	Assert (from + 1 == to);
 	Led_Arg_Unused (from);
 	Led_Arg_Unused (to);
 
@@ -1606,8 +1606,8 @@ const char*	StandardUnknownTypeStyleMarker::GetTag () const
  */
 void	InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding)
 {
-	Led_RequireNotNil (embedding);
-	Led_RequireNotNil (ownerForEmbedding);
+	RequireNotNull (embedding);
+	RequireNotNull (ownerForEmbedding);
 	TextStore::SimpleUpdater	updater (textStore, insertAt, insertAt + 1);
 	textStore.AddMarker (embedding, insertAt, 1, ownerForEmbedding);
 }
@@ -1621,8 +1621,8 @@ void	InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedd
  */
 void	AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding)
 {
-	Led_RequireNotNil (embedding);
-	Led_RequireNotNil (ownerForEmbedding);
+	RequireNotNull (embedding);
+	RequireNotNull (ownerForEmbedding);
 	textStore.Replace (insertAt, insertAt, &kEmbeddingSentinalChar, 1);
 	InsertEmbeddingForExistingSentinal (embedding, textStore, insertAt, ownerForEmbedding);
 }
@@ -1645,7 +1645,7 @@ static	void	MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 										const Led_Size& margin
 									) throw ()
 {
-	Led_RequireNotNil (pictureHandle);
+	RequireNotNull (pictureHandle);
 
 	Led_StackBasedHandleLocker	locker ((Led_StackBasedHandleLocker::GenericHandle)pictureHandle);
 
@@ -1661,8 +1661,8 @@ static	void	MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 	ourBoundsRect.SetRight (ourBoundsRect.GetLeft () + pictSize.h + 2*margin.h);
 	Led_Coordinate	embedBottom	=	useBaseLine;
 	Led_Coordinate	embedTop	=	embedBottom - pictSize.v;
-	Led_Assert (embedTop >= drawInto.top);
-	Led_Assert (embedBottom <= drawInto.bottom);
+	Assert (embedTop >= drawInto.top);
+	Assert (embedBottom <= drawInto.bottom);
 	Led_Rect	innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), pictSize);
 
 
@@ -1717,7 +1717,7 @@ static	void	MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 			// treat all excpetions the same. In principle, could draw different picst for memory and
 			// unsupported format exceptions...
 			const Led_DIB*			dib	=	StandardMacPictureStyleMarker::sUnsupportedFormatPict;
-			Led_AssertNotNil (dib);
+			AssertNotNull (dib);
 			Led_Size				dibImageSize	=	Led_GetDIBImageSize (dib);
 	//		const BITMAPINFOHEADER&	hdr			=	dib->bmiHeader;
 			const void*				lpBits		=	Led_GetDIBBitsPointer (dib);
@@ -1739,8 +1739,8 @@ static	void	DIBDrawSegment (const Led_DIB* dib,
 								const Led_Size& margin
 							) throw ()
 {
-	Led_RequireNotNil (dib);
-	Led_RequireNotNil (tablet);
+	RequireNotNull (dib);
+	RequireNotNull (tablet);
 	Led_Arg_Unused (foreColor);
 	Led_Arg_Unused (backColor);
 
@@ -1756,8 +1756,8 @@ static	void	DIBDrawSegment (const Led_DIB* dib,
 	ourBoundsRect.right = ourBoundsRect.left + dibImageSize.h + 2*margin.h;
 	Led_Coordinate	embedBottom	=	useBaseLine;
 	Led_Coordinate	embedTop	=	embedBottom - dibImageSize.v;
-	Led_Assert (embedTop >= drawInto.GetTop ());
-	Led_Assert (embedBottom <= drawInto.GetBottom ());
+	Assert (embedTop >= drawInto.GetTop ());
+	Assert (embedBottom <= drawInto.GetBottom ());
 	Led_Rect	innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), dibImageSize);
 
 	if (pixelsDrawn != NULL) {
@@ -1797,7 +1797,7 @@ static	void	DIBDrawSegment (const Led_DIB* dib,
 		catch (...) {
 			// treat all excpetions the same. In principle, could draw different picst for memory and
 			// unsupported format exceptions...
-			Led_AssertNotNil (StandardDIBStyleMarker::sUnsupportedFormatPict);
+			AssertNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);
 			::DrawPicture (StandardDIBStyleMarker::sUnsupportedFormatPict, &rr);
 		}
 	#elif	qWindows
@@ -1811,7 +1811,7 @@ static	void	DIBDrawSegment (const Led_DIB* dib,
 #if		qMacOS
 static	PixMap**	MakePixMapFromDIB (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
+	RequireNotNull (dib);
 
 	Led_Size	dibImageSize	=	Led_GetDIBImageSize (dib);
 
@@ -1849,7 +1849,7 @@ static	PixMap**	MakePixMapFromDIB (const Led_DIB* dib)
 	}
 	size_t			dstRowBytes		=	((((dstBitCount * dibImageSize.h) + 15) >> 4) << 1);
 	unsigned char*	newImageData	=	new unsigned char [dstRowBytes*dibImageSize.v];
-	Led_AssertNotNil (newImageData);
+	AssertNotNull (newImageData);
 
 	PixMap**	result	=	::NewPixMap ();
 	if (result == NULL) {
@@ -1883,7 +1883,7 @@ static	PixMap**	MakePixMapFromDIB (const Led_DIB* dib)
 		break;
 
 		default: {
-			Led_Assert (false);	// not supported - should have punted above!
+			Assert (false);	// not supported - should have punted above!
 		}
 		break;
 	}
@@ -1896,7 +1896,7 @@ static	PixMap**	MakePixMapFromDIB (const Led_DIB* dib)
 		if (nColors == 0) {
 			nColors	=	1 << bitCount;
 		}
-		Led_Assert (nColors <= (1 << bitCount));
+		Assert (nColors <= (1 << bitCount));
 
 		CTabHandle	newCLUT	=	(CTabHandle)::NewHandle (sizeof (ColorTable) + (nColors-1)*sizeof (ColorSpec));
 		if (newCLUT == NULL) {

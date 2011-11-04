@@ -359,8 +359,8 @@ template	<typename	MARKER>
 	struct	LessThan : public binary_function <MARKER*, MARKER*,bool> {
 		bool	operator () (const MARKER* lhs, const MARKER* rhs)
 			{
-				Led_RequireNotNil (lhs);
-				Led_RequireNotNil (rhs);
+				RequireNotNull (lhs);
+				RequireNotNull (rhs);
 				int	diff	=	int (lhs->GetStart ()) - int (rhs->GetStart ());
 				if (diff == 0) {
 					return (lhs->GetEnd () < rhs->GetEnd ());
@@ -455,7 +455,7 @@ template	<typename	MARKER>
 	inline	TextStore&	MarkerOwner::GetTextStore () const
 		{
 			TextStore*	ts	=	PeekAtTextStore ();
-			Led_EnsureNotNil (ts);
+			EnsureNotNull (ts);
 			return *ts;
 		}
 	/*
@@ -525,7 +525,7 @@ template	<typename	MARKER>
 	*/
 	inline	size_t	Marker::GetStart () const
 		{
-			Led_AssertNotNil (fTextStoreHook);
+			AssertNotNull (fTextStoreHook);
 			return (fTextStoreHook->GetStart ());
 		}
 	/*
@@ -536,7 +536,7 @@ template	<typename	MARKER>
 	*/
 	inline	size_t	Marker::GetEnd () const
 		{
-			Led_AssertNotNil (fTextStoreHook);
+			AssertNotNull (fTextStoreHook);
 			return (fTextStoreHook->GetEnd ());
 		}
 	/*
@@ -546,7 +546,7 @@ template	<typename	MARKER>
 	*/
 	inline	size_t	Marker::GetLength () const
 		{
-			Led_AssertNotNil (fTextStoreHook);
+			AssertNotNull (fTextStoreHook);
 			return (fTextStoreHook->GetLength ());
 		}
 	/*
@@ -567,9 +567,9 @@ template	<typename	MARKER>
 	*/
 	inline	void	Marker::GetRange (size_t* start, size_t* end) const
 		{
-			Led_RequireNotNil (start);
-			Led_RequireNotNil (end);
-			Led_RequireNotNil (fTextStoreHook);
+			RequireNotNull (start);
+			RequireNotNull (end);
+			RequireNotNull (fTextStoreHook);
 			fTextStoreHook->GetStartEnd (start, end);
 		}
 
@@ -630,7 +630,7 @@ template	<typename	MARKER>
 	template	<typename	MARKER>
 		inline	MarkerMortuary<MARKER>::~MarkerMortuary ()
 			{
-				Led_Assert (fMarkersToBeDeleted.size () == 0);		// these better be deleted by now!
+				Assert (fMarkersToBeDeleted.size () == 0);		// these better be deleted by now!
 			}
 	template	<typename	MARKER>
 		/*
@@ -649,15 +649,15 @@ template	<typename	MARKER>
 		*/
 		inline	void	MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m)
 			{
-				Led_RequireNotNil (m);
-				Led_Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
+				RequireNotNull (m);
+				Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
 				#if		qDebug
 					if (fMarkersToBeDeleted.size () != 0) {
-						Led_RequireNotNil (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ());
-						Led_RequireNotNil (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore ());
-						Led_RequireNotNil (static_cast<Marker*> (m)->GetOwner ());
-						Led_RequireNotNil (static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
-						Led_Require (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore () == static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
+						RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ());
+						RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore ());
+						RequireNotNull (static_cast<Marker*> (m)->GetOwner ());
+						RequireNotNull (static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
+						Require (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore () == static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
 					}
 				#endif
 
@@ -675,7 +675,7 @@ template	<typename	MARKER>
 		*/
 		void	MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m)
 			{
-				Led_RequireNotNil (m);
+				RequireNotNull (m);
 				if (IndexOf (fMarkersToBeDeleted, m) == kBadIndex) {
 					AccumulateMarkerForDeletion (m);
 				}
@@ -690,7 +690,7 @@ template	<typename	MARKER>
 			{
 				if (fMarkersToBeDeleted.size () != 0) {
 					MarkerOwner*	owner		=	static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
-					Led_AssertNotNil (owner);
+					AssertNotNull (owner);
 					TextStore&		textStore	=	owner->GetTextStore ();
 
 					// NB: No exceptions can happen in any of this - all these deletes allocate no memory (LGP 950415)
@@ -739,7 +739,7 @@ template	<typename	MARKER>
 		}
 	inline	bool	Contains (size_t containedMarkerStart, size_t containedMarkerEnd, const Marker& containerMarker)
 		{
-			Led_Assert (containedMarkerStart <= containedMarkerEnd);
+			Assert (containedMarkerStart <= containedMarkerEnd);
 			size_t	containerStart;
 			size_t	containerEnd;
 			containerMarker.GetRange (&containerStart, &containerEnd);

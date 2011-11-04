@@ -58,7 +58,7 @@ HidableTextMarkerOwner::HidableTextMarkerOwner (TextStore& textStore):
 
 HidableTextMarkerOwner::~HidableTextMarkerOwner ()
 {
-	Led_Require (fMarkersToBeDeleted.IsEmpty ());
+	Require (fMarkersToBeDeleted.IsEmpty ());
 	try {
 		MarkerList	markers	=	CollectAllInRange (0, fTextStore.GetLength () + 1);
 		if (not markers.empty ()) {
@@ -75,7 +75,7 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
 		fTextStore.RemoveMarkerOwner (this);
 	}
 	catch (...) {
-		Led_Assert (false);	// someday - handle exceptions here better - should cause no harm but memory leak (frequently - but sometimes worse),
+		Assert (false);	// someday - handle exceptions here better - should cause no harm but memory leak (frequently - but sometimes worse),
 							// and should be exceedingly rare - LGP 2000/03/30
 	}
 }
@@ -151,7 +151,7 @@ void	HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
 */
 void	HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 	Invariant ();
 
 	if (from == to) {
@@ -190,7 +190,7 @@ void	HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 		// iterate through markers, and eliminate all but one of them. The last one - if it exists - we'll enlarge.
 		for (MarkerList::const_iterator i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
 			if (prevNonEmptyMarker == NULL) {
-				Led_Assert (i == hidableTextMarkersInRange.begin ());	// must have been first marker...
+				Assert (i == hidableTextMarkersInRange.begin ());	// must have been first marker...
 				prevNonEmptyMarker = *i;
 				if (from < prevNonEmptyMarker->GetStart ()) {
 					if (prevNonEmptyMarker->IsShown ()) {
@@ -198,7 +198,7 @@ void	HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 					}
 					else {
 						// cannot combine hidden and shown markers, so must create a new one
-						Led_Assert (prevNonEmptyMarker->GetStart () > from);
+						Assert (prevNonEmptyMarker->GetStart () > from);
 						GetTextStore ().AddMarker (MakeHidableTextMarker (), from, prevNonEmptyMarker->GetStart ()-from, this);
 					}
 				}
@@ -218,7 +218,7 @@ void	HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 				}
 				else {
 					// cannot combine hidden and shown markers, so must create a new one
-					Led_Assert (to > prevNonEmptyMarker->GetEnd ());
+					Assert (to > prevNonEmptyMarker->GetEnd ());
 					GetTextStore ().AddMarker (MakeHidableTextMarker (), prevNonEmptyMarker->GetEnd (), to - prevNonEmptyMarker->GetEnd (), this);
 				}
 			}
@@ -236,7 +236,7 @@ void	HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 */
 void	HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 	Invariant ();
 
 	if (from == to) {
@@ -317,7 +317,7 @@ DiscontiguousRun<bool>	HidableTextMarkerOwner::GetHidableRegions (size_t from, s
 		{
 			mStart = max (mStart, relStartFrom);		// ignore if marker goes back further than our start
 			mEnd = min (mEnd, to);						// ignore if end past requested end
-			Led_Assert (mStart < mEnd);
+			Assert (mStart < mEnd);
 			result.push_back (DiscontiguousRunElement<bool> (mStart-relStartFrom, mEnd-mStart, (*i)->IsShown ()));
 			relStartFrom = mEnd;
 		}
@@ -388,8 +388,8 @@ void	HidableTextMarkerOwner::SetExternalizer (const Led_RefCntPtr<FlavorPackageE
 */
 void	HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
 {
-	Led_RequireNotNil (m);
-	Led_Require (m->fShown);
+	RequireNotNull (m);
+	Require (m->fShown);
 
 	size_t	start	=	0;
 	size_t	end		=	0;
@@ -404,8 +404,8 @@ void	HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
 */
 void	HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
 {
-	Led_RequireNotNil (m);
-	Led_Require (not m->fShown);
+	RequireNotNull (m);
+	Require (not m->fShown);
 
 	{
 		size_t	start	=	0;
@@ -454,7 +454,7 @@ TextStore*	HidableTextMarkerOwner::PeekAtTextStore () const
 void	HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
 	Invariant ();
-	Led_Assert (fMarkersToBeDeleted.IsEmpty ());
+	Assert (fMarkersToBeDeleted.IsEmpty ());
 	inherited::AboutToUpdateText (updateInfo);
 }
 
@@ -503,11 +503,11 @@ void	HidableTextMarkerOwner::Invariant_ () const
 	size_t	lastEnd	=	0;
 	for (size_t i = 0; i < markers.size (); i++) {
 		HidableTextMarker*	m	=	markers[i];
-		Led_Assert (m->GetLength () > 0);
-		Led_Assert (m->GetStart () >= lastEnd);
+		Assert (m->GetLength () > 0);
+		Assert (m->GetStart () >= lastEnd);
 		lastEnd = m->GetEnd ();
 	}
-	Led_Assert (lastEnd <= fTextStore.GetLength () + 1);
+	Assert (lastEnd <= fTextStore.GetLength () + 1);
 }
 #endif
 
@@ -546,7 +546,7 @@ void	UniformHidableTextMarkerOwner::ShowAll ()
 
 void	UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 
 	//Not so great implemenation - could look at particular objects created - and make sure THEY have the hidden bit set...
 	inherited::MakeRegionHidable (from, to);
@@ -622,7 +622,7 @@ void	ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
 	MarkerList	markers	=	CollectAllInRange_OrSurroundings (0, GetTextStore ().GetEnd () + 1);
 	for (MarkerList::const_iterator i = markers.begin (); i != markers.end (); ++i) {
 		LightUnderlineHidableTextMarker*	m	=	dynamic_cast<LightUnderlineHidableTextMarker*> (*i);
-		Led_AssertNotNil (m);
+		AssertNotNull (m);
 		if (fColored) {
 			m->fFontSpecification.SetTextColor (fColor);
 		}

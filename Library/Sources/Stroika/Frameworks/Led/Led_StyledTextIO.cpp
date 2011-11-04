@@ -339,8 +339,8 @@ Led_TWIPS	StyledTextIOWriter::SrcStream::GetFirstIndent () const
 */
 void	StyledTextIOWriter::SrcStream::GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const
 {
-	Led_RequireNotNil (lhs);
-	Led_RequireNotNil (rhs);
+	RequireNotNull (lhs);
+	RequireNotNull (rhs);
 	*lhs = Led_TWIPS (0);
 	*rhs = Led_TWIPS (6 * 1440);	// Not sure what I should return here??? maybe special case and not write anything to output file if returns zero? LGP-990221
 }
@@ -378,8 +378,8 @@ Led_LineSpacing		StyledTextIOWriter::SrcStream::GetLineSpacing () const
 */
 void		StyledTextIOWriter::SrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const
 {
-	Led_RequireNotNil (listStyle);
-	Led_RequireNotNil (indentLevel);
+	RequireNotNull (listStyle);
+	RequireNotNull (indentLevel);
 	*listStyle = eListStyle_None;
 	*indentLevel = 0;
 }
@@ -441,7 +441,7 @@ size_t	StyledTextIOSrcStream_Memory::current_offset () const
 
 void	StyledTextIOSrcStream_Memory::seek_to (size_t to)
 {
-	Led_Require (to >= 0);
+	Require (to >= 0);
 	to = min (to, fBytesInBuffer);
 //	fBytesLeft = fBytesInBuffer - to;
 	fCurPtr = ((char*)fData) + to;
@@ -449,7 +449,7 @@ void	StyledTextIOSrcStream_Memory::seek_to (size_t to)
 
 size_t	StyledTextIOSrcStream_Memory::read (void* buffer, size_t bytes)
 {
-	Led_RequireNotNil (buffer);
+	RequireNotNull (buffer);
 
 #if 1
 	char*	curBytePtr	=	(char*)fCurPtr;
@@ -470,7 +470,7 @@ size_t	StyledTextIOSrcStream_Memory::read (void* buffer, size_t bytes)
 
 size_t	StyledTextIOSrcStream_Memory::read1 (char* c)
 {
-	Led_RequireNotNil (c);
+	RequireNotNull (c);
 	char*	curBytePtr	=	(char*)fCurPtr;
 	if (curBytePtr != fDataEnd) {
 		*c = *curBytePtr;
@@ -531,7 +531,7 @@ size_t	StyledTextIOSrcStream_FileDescriptor::current_offset () const
 
 void	StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
 {
-	Led_Require (to >= 0);
+	Require (to >= 0);
 
 	size_t	targetSeekPos	=	(to);
 	if (targetSeekPos > fBufferWindowEnd) {
@@ -550,7 +550,7 @@ void	StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
 			Led_ThrowOSErr (::GetEOF (fFileDescriptor, &logEOF));
 			targetSeekPos = Led_Min (logEOF, targetSeekPos);
 		#else
-			Led_Assert (false);	// NYI
+			Assert (false);	// NYI
 		#endif
 	}
 	fCurSeekPos = targetSeekPos;
@@ -558,7 +558,7 @@ void	StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
 
 size_t	StyledTextIOSrcStream_FileDescriptor::read (void* buffer, size_t bytes)
 {
-	Led_RequireNotNil (buffer);
+	RequireNotNull (buffer);
 
 	if (bytes == 0) {
 		return 0;	// get out early in this case so I can assert bytesToCopyNow!=0 below... assert making progress
@@ -570,10 +570,10 @@ size_t	StyledTextIOSrcStream_FileDescriptor::read (void* buffer, size_t bytes)
 	size_t	bytesCopiedSoFar	=	0;
 NotherRead:
 	if (fCurSeekPos >= fBufferWindowStart and fCurSeekPos < fBufferWindowEnd) {
-		Led_Assert (bytes > bytesCopiedSoFar);
+		Assert (bytes > bytesCopiedSoFar);
 		size_t	bytesToCopyNow	=	Led_Min ((bytes-bytesCopiedSoFar), (fBufferWindowEnd - fCurSeekPos));
-		Led_Assert (bytesToCopyNow > 0);
-		Led_Assert (bytesToCopyNow <= bytes);
+		Assert (bytesToCopyNow > 0);
+		Assert (bytesToCopyNow <= bytes);
 		memcpy (&((char*)buffer)[bytesCopiedSoFar], &fInputBuffer[fCurSeekPos-fBufferWindowStart], bytesToCopyNow);
 		bytesCopiedSoFar += bytesToCopyNow;
 		fCurSeekPos += bytesToCopyNow;
@@ -582,7 +582,7 @@ NotherRead:
 	size_t	bytesLeftToCopy	=	bytes - bytesCopiedSoFar;
 	if (bytesLeftToCopy > 0) {
 		// If there is enuf room in buffer, read in an fill the window
-		Led_Assert (bytesLeftToCopy <= bytes);
+		Assert (bytesLeftToCopy <= bytes);
 		if (bytesLeftToCopy < fInputBufferSize) {
 			ReadInWindow (fCurSeekPos);
 			if (fCurSeekPos < fBufferWindowEnd) {
@@ -606,7 +606,7 @@ NotherRead:
 				fCurSeekPos += count;
 			}
 		#else
-			Led_Assert (false);	// NYI
+			Assert (false);	// NYI
 		#endif
 	}
 
@@ -628,8 +628,8 @@ void	StyledTextIOSrcStream_FileDescriptor::SetBufferSize (size_t bufSize)
 
 void	StyledTextIOSrcStream_FileDescriptor::ReadInWindow (size_t startAt)
 {
-	Led_RequireNotNil (fInputBuffer);
-	Led_Require (fInputBufferSize > 0);
+	RequireNotNull (fInputBuffer);
+	Require (fInputBufferSize > 0);
 	#if		qMacOS
 		Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, startAt));
 		long	count	=	fInputBufferSize;
@@ -639,7 +639,7 @@ void	StyledTextIOSrcStream_FileDescriptor::ReadInWindow (size_t startAt)
 		fBufferWindowStart = startAt;
 		fBufferWindowEnd = startAt + count;
 	#else
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#endif
 }
 
@@ -683,7 +683,7 @@ size_t	StyledTextIOWriterSinkStream_Memory::current_offset () const
 
 void	StyledTextIOWriterSinkStream_Memory::seek_to (size_t to)
 {
-	Led_Require (to >= 0);
+	Require (to >= 0);
 	to = Led_Min (to, fBytesUsed);
 	fCurPtr = fData + to;
 }
@@ -696,9 +696,9 @@ void	StyledTextIOWriterSinkStream_Memory::write (const void* buffer, size_t byte
 														// things will still work - but will be less memory efficient.
 	const	size_t	kChunkSize			=	16*1024;	// alloc in this size chunks - at least...
 
-	Led_RequireNotNil (buffer);
+	RequireNotNull (buffer);
 
-	Led_Assert (fBytesUsed <= fBytesAllocated);
+	Assert (fBytesUsed <= fBytesAllocated);
 
 	/*
 	 *	Now, re-alloc the pointer if we need even more space...
@@ -710,8 +710,8 @@ void	StyledTextIOWriterSinkStream_Memory::write (const void* buffer, size_t byte
 		 *	factor (so N*log N entries copied).
 		 */
 		size_t	newSize	=	((static_cast<size_t> ((fBytesAllocated + bytes)*1.5) + kChunkSize - 1 + kMemBlockOverhead)/kChunkSize) * kChunkSize - kMemBlockOverhead;	// round to next larger chunksize
-		Led_Assert (newSize > fBytesAllocated);
-		Led_Assert (newSize >= fBytesAllocated + bytes);
+		Assert (newSize > fBytesAllocated);
+		Assert (newSize >= fBytesAllocated + bytes);
 		char*	buf = new char [newSize];
 		if (fData != NULL) {
 			::memcpy (buf, fData, fBytesUsed);
@@ -787,7 +787,7 @@ size_t	StyledTextIOWriterSinkStream_FileDescriptor::current_offset () const
 
 void	StyledTextIOWriterSinkStream_FileDescriptor::seek_to (size_t to)
 {
-	Led_Require (to >= 0);
+	Require (to >= 0);
 	fCurSeekPos = to;
 }
 
@@ -809,11 +809,11 @@ void	StyledTextIOWriterSinkStream_FileDescriptor::write (const void* buffer, siz
 			fCurSeekPos += count;
 			fFurthestDiskWriteAt = fCurSeekPos;
 		#else
-			Led_Assert (false);	// NYI
+			Assert (false);	// NYI
 		#endif
 	}
 	else {
-		Led_Assert (fCurSeekPos >= fFurthestDiskWriteAt);	// Can only do buffering (easily) in this case
+		Assert (fCurSeekPos >= fFurthestDiskWriteAt);	// Can only do buffering (easily) in this case
 															// (otherwise we might need to do some reads off disk)
 
 		/*
@@ -834,10 +834,10 @@ void	StyledTextIOWriterSinkStream_FileDescriptor::write (const void* buffer, siz
 			// and memcpy() into the buffer at the start. Unclear which is best, so do whats
 			// simplest.
 			Flush ();
-			Led_Assert (fBufferWindowStart == fBufferWindowEnd);
+			Assert (fBufferWindowStart == fBufferWindowEnd);
 			fBufferWindowStart = fCurSeekPos;
 			fBufferWindowEnd = fCurSeekPos + fOutputBufferSize;
-			Led_Assert (fCurSeekPos >= fBufferWindowStart and fCurSeekPos+bytes < fBufferWindowEnd);
+			Assert (fCurSeekPos >= fBufferWindowStart and fCurSeekPos+bytes < fBufferWindowEnd);
 			memcpy (fOutputBuffer, buffer, bytes);
 			fCurSeekPos += bytes;
 		}
@@ -862,15 +862,15 @@ void	StyledTextIOWriterSinkStream_FileDescriptor::SetBufferSize (size_t bufSize)
 void	StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
 {
 	if (fBufferWindowStart != fBufferWindowEnd) {
-		Led_Assert (fOutputBufferSize != 0);
+		Assert (fOutputBufferSize != 0);
 		size_t	bytesInWindow	=	fBufferWindowEnd - fBufferWindowStart;
-		Led_Assert (fOutputBufferSize >= bytesInWindow);
+		Assert (fOutputBufferSize >= bytesInWindow);
 		#if		qMacOS
 			Led_ThrowOSErr ( ::SetFPos (fFileDescriptor, fsFromStart, fBufferWindowStart));
 			long	count	=	bytesInWindow;
 			Led_ThrowOSErr (::FSWrite (fFileDescriptor, &count, fOutputBuffer));
 		#elif	qWindows
-			Led_Assert (false);
+			Assert (false);
 		#endif
 		fFurthestDiskWriteAt = fBufferWindowEnd;
 		fBufferWindowStart = 0;	// mark as no window now
@@ -884,7 +884,7 @@ void	StyledTextIOWriterSinkStream_FileDescriptor::UpdateEOF ()
 	#if		qMacOS
 		Led_ThrowOSErr (::SetEOF (fFileDescriptor, fCurSeekPos));
 	#else
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#endif
 }
 
@@ -908,7 +908,7 @@ string	StyledTextIOReader::GrabString (size_t from, size_t to)
 	if (effectiveTo == size_t (-1)) {
 		effectiveTo = onEntrySeekPos;
 	}
-	Led_Require (from <= effectiveTo);
+	Require (from <= effectiveTo);
 
 	size_t	strLen	=	effectiveTo-from;
 	Led_SmallStackBuffer<char>	buf (strLen+1);
@@ -944,7 +944,7 @@ void	StyledTextIOWriter::write (char c)
 
 void	StyledTextIOWriter::write (const char* str)
 {
-	Led_RequireNotNil (str);
+	RequireNotNull (str);
 	GetSinkStream ().write (str, strlen (str));
 }
 

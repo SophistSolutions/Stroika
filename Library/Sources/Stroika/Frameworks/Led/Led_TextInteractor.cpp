@@ -61,7 +61,7 @@ namespace {
 					fTextLength (regionEnd-regionStart)
 				{
 					#if		!qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
-						Led_RequireNotNil (interactor);
+						RequireNotNull (interactor);
 					#endif
 					interactor->GetExternalizer ()->ExternalizeBestFlavor (fSavedText, regionStart, regionEnd);
 				}
@@ -72,7 +72,7 @@ namespace {
 			virtual		void	InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
 				{
 					#if		!qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
-						Led_RequireNotNil (interactor);
+						RequireNotNull (interactor);
 					#endif
 					interactor->GetInternalizer ()->InternalizeBestFlavor (fSavedText, at, at + nBytesToOverwrite);
 				}
@@ -307,18 +307,18 @@ void	TextInteractor::DialogSupport::DisplayFindDialog (Led_tString* /*findText*/
 		*caseSensative = findDialog.fCaseSensativeSearch;
 		*pressOK = findDialog.fPressedOK;
 	*/
-	Led_Assert (false);	// to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
+	Assert (false);	// to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
 }
 
 TextInteractor::DialogSupport::ReplaceButtonPressed	TextInteractor::DialogSupport::DisplayReplaceDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, Led_tString* /*replaceText*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/)
 {
-	Led_Assert (false);	// to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
+	Assert (false);	// to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
 	return eReplaceButton_Cancel;
 }
 
 void	TextInteractor::DialogSupport::DisplaySpellCheckDialog (SpellCheckDialogCallback& /*callback*/)
 {
-	Led_Assert (false);	// to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
+	Assert (false);	// to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
 }
 
 
@@ -534,9 +534,9 @@ TextInteractor::TextInteractor ():
 
 TextInteractor::~TextInteractor ()
 {
-	Led_Assert (fCommandHandler == NULL);	// must be set to NULL before we are destroyed...
+	Assert (fCommandHandler == NULL);	// must be set to NULL before we are destroyed...
 											// just sanity check - no real reason...
-	Led_Assert (fSpellCheckEngine == NULL);	// DITTO
+	Assert (fSpellCheckEngine == NULL);	// DITTO
 }
 
 TextInteractor::CommandNames	TextInteractor::MakeDefaultCommandNames ()
@@ -566,7 +566,7 @@ TextInteractor::CommandNames	TextInteractor::MakeDefaultCommandNames ()
 */
 bool	TextInteractor::OnUpdateCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	switch (enabler->GetCmdID ()) {
 		case	kSelectAll_CmdID:			{	enabler->SetEnabled (true);					return true;	}
 		case	kCut_CmdID:					{	OnUpdateCutCopyClearCommand (enabler);		return true;	}
@@ -619,7 +619,7 @@ bool	TextInteractor::OnPerformCommand (CommandNumber commandNumber)
 
 void	TextInteractor::OnUpdateCutCopyClearCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	size_t	start;
 	size_t	end;
 	static_cast<TextImager*> (this)->GetSelection (&start, &end);
@@ -628,14 +628,14 @@ void	TextInteractor::OnUpdateCutCopyClearCommand (CommandUpdater* enabler)
 
 void	TextInteractor::OnUpdatePasteCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	//tmphack
 	enabler->SetEnabled (true);
 }
 
 void	TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	if (GetCommandHandler () == NULL) {
 		enabler->SetEnabled (false);
 	}
@@ -657,7 +657,7 @@ void	TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
 
 void	TextInteractor::OnUpdateSelectTextCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	enabler->SetEnabled (true);
 }
 
@@ -675,14 +675,14 @@ void	TextInteractor::OnPerformSelectTextCommand (CommandNumber commandNumber)
 			bool	wordReal	=	false;
 			GetTextStore ().FindWordBreaks (oldSelStart, &wordStart, &wordEnd, &wordReal);
 			if (wordReal) {
-				Led_Assert (wordStart <= oldSelStart);
+				Assert (wordStart <= oldSelStart);
 				newSelStart	=	wordStart;
 			}
 			else {
 				// See if we were just after a word
 				GetTextStore ().FindWordBreaks (FindPreviousCharacter (oldSelStart), &wordStart, &wordEnd, &wordReal);
 				if (wordReal) {
-					Led_Assert (wordStart <= oldSelStart);
+					Assert (wordStart <= oldSelStart);
 					newSelStart	=	wordStart;
 				}
 			}
@@ -821,7 +821,7 @@ void	TextInteractor::OnDoReplaceAllInSelectionCommand (const SearchParameters& s
 	size_t	startAt	=	GetSelectionStart ();
 	TempMarker	selectionRegion (GetTextStore (), startAt, GetSelectionEnd ());
 	while (true) {
-		Led_Assert (startAt <= selectionRegion.GetEnd ());
+		Assert (startAt <= selectionRegion.GetEnd ());
 		size_t	whereTo	=	GetTextStore ().Find (searchFor, startAt, selectionRegion.GetEnd ());
 		if (whereTo == kBadIndex) {
 			break;
@@ -876,7 +876,7 @@ void	TextInteractor::OnEnterFindString ()
 
 void	TextInteractor::OnUpdateFindCommands (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	if (enabler->GetCmdID () == kFind_CmdID) {
 		enabler->SetEnabled (true);
 	}
@@ -944,7 +944,7 @@ void	TextInteractor::OnSpellCheckCommand ()
 
 void	TextInteractor::OnUpdateSpellCheckCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	enabler->SetEnabled (GetSpellCheckEngine () != NULL);
 }
 
@@ -977,8 +977,8 @@ void	TextInteractor::SetDefaultUpdateMode (UpdateMode defaultUpdateMode)
 */
 bool	TextInteractor::LooksLikeSmartPastableText (const Led_tChar* text, size_t /*nTextTChars*/, SmartCNPInfo* smartCNPInfo) const
 {
-	Led_RequireNotNil (text);
-	Led_RequireNotNil (smartCNPInfo);
+	RequireNotNull (text);
+	RequireNotNull (smartCNPInfo);
 	Led_Arg_Unused (text);
 	if (GetSmartCutAndPasteMode ()) {
 		size_t	selStart	=	GetSelectionStart ();
@@ -1030,9 +1030,9 @@ void	TextInteractor::OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t 
 {
 	size_t	selEnd	=	GetSelectionEnd ();
 
-	Led_Require (0 <= selStart);
-	Led_Require (selStart <= selEnd);
-	Led_Require (selEnd <= GetTextStore ().GetEnd ());
+	Require (0 <= selStart);
+	Require (selStart <= selEnd);
+	Require (selEnd <= GetTextStore ().GetEnd ());
 
 	if (GetSmartCutAndPasteMode ()) {
 		if (selEnd > 0 and selEnd < GetTextStore ().GetEnd ()) {
@@ -1084,11 +1084,11 @@ void	TextInteractor::OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t 
 */
 void	TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (size_t* selStart, size_t* selEnd)
 {
-	Led_RequireNotNil (selStart);
-	Led_RequireNotNil (selEnd);
-	Led_Require (0 <= *selStart);
-	Led_Require (*selStart <= *selEnd);
-	Led_Require (*selEnd <= GetTextStore ().GetEnd ());
+	RequireNotNull (selStart);
+	RequireNotNull (selEnd);
+	Require (0 <= *selStart);
+	Require (*selStart <= *selEnd);
+	Require (*selEnd <= GetTextStore ().GetEnd ());
 
 	if (GetSmartCutAndPasteMode ()) {
 		size_t	realStart		=	*selStart;
@@ -1153,7 +1153,7 @@ void	TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (si
 					CopyOut (FindPreviousCharacter (newStart), 1, &charBeforeStart);
 				}
 				if (IsSmartSpace (c)) {
-					Led_Assert (newEnd < FindNextCharacter (newEnd));	// Assert not looping!
+					Assert (newEnd < FindNextCharacter (newEnd));	// Assert not looping!
 					newEnd = FindNextCharacter (newEnd);
 					if (newEnd < GetEnd ()) {
 						// As a result of this change - don't put two chars together that should be separated by whitespace
@@ -1196,7 +1196,7 @@ void	TextInteractor::SetSelectionShown (bool shown, UpdateMode updateMode)
 */
 void	TextInteractor::SetSelection (size_t start, size_t end)
 {
-	Led_Assert (end <= GetEnd ());
+	Assert (end <= GetEnd ());
 #if		qMultiByteCharacters
 	Assert_CharPosDoesNotSplitCharacter (start);
 	Assert_CharPosDoesNotSplitCharacter (end);
@@ -1248,12 +1248,12 @@ void	TextInteractor::SetSelection (size_t start, size_t end)
 			size_t	rhsOuter	=	Led_Max (oldSelectionEnd, GetSelectionEnd ());		// right of ALL 4
 			size_t	lhsInner	=	Led_Max (oldSelectionStart, GetSelectionStart ());	// the two inner ones - lhsInner could be >=< rhsInner
 			size_t	rhsInner	=	Led_Min (oldSelectionEnd, GetSelectionEnd ());
-			Led_Assert (lhsOuter <= rhsOuter);	// See!- left of ALL 4
-			Led_Assert (lhsOuter <= lhsInner);
-			Led_Assert (lhsOuter <= rhsInner);
-			Led_Assert (lhsOuter <= rhsOuter);	// See!- right of ALL 4
-			Led_Assert (lhsInner <= rhsOuter);
-			Led_Assert (rhsInner <= rhsOuter);
+			Assert (lhsOuter <= rhsOuter);	// See!- left of ALL 4
+			Assert (lhsOuter <= lhsInner);
+			Assert (lhsOuter <= rhsInner);
+			Assert (lhsOuter <= rhsOuter);	// See!- right of ALL 4
+			Assert (lhsInner <= rhsOuter);
+			Assert (rhsInner <= rhsOuter);
 			/*
 			 * SPR#0973 - added in the FindPrev/FindNext calls to expand the region we update slightly. Reason is cuz
 			 * with new hilight display code - expanding the selection slightly at the end can affect the other end by
@@ -1389,7 +1389,7 @@ void	TextInteractor::HookGainedNewTextStore_ ()
 */
 bool	TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor)
 {
-	Led_RequireNotNil (dragAnchor);
+	RequireNotNull (dragAnchor);
 	switch (clickCount) {
 		case	1: {
 			size_t	newPos			=	GetCharAtClickLocation (clickedAt);
@@ -1567,9 +1567,9 @@ void	TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
 */
 void	TextInteractor::WhileTrackingConstrainSelection (size_t* selStart, size_t* selEnd)
 {
-	Led_RequireNotNil (selStart);
-	Led_RequireNotNil (selEnd);
-	Led_Require (GetCurClickCount () > 0);
+	RequireNotNull (selStart);
+	RequireNotNull (selEnd);
+	Require (GetCurClickCount () > 0);
 	switch (GetCurClickCount ()) {
 		case	1:	{
 			// No constraints on a single click
@@ -1595,8 +1595,8 @@ void	TextInteractor::WhileTrackingConstrainSelection (size_t* selStart, size_t* 
 */
 void	TextInteractor::WhileTrackingConstrainSelection_ForWholeWords (size_t* selStart, size_t* selEnd)
 {
-	Led_RequireNotNil (selStart);
-	Led_RequireNotNil (selEnd);
+	RequireNotNull (selStart);
+	RequireNotNull (selEnd);
 
 	size_t	wordStart	=	0;
 	size_t	wordEnd		=	0;
@@ -1626,9 +1626,9 @@ void	TextInteractor::WhileTrackingConstrainSelection_ForWholeWords (size_t* selS
 */
 void	TextInteractor::WhileTrackingConstrainSelection_ForWholeRows (size_t* selStart, size_t* selEnd)
 {
-	Led_RequireNotNil (selStart);
-	Led_RequireNotNil (selEnd);
-	Led_Require (*selStart <= *selEnd);
+	RequireNotNull (selStart);
+	RequireNotNull (selEnd);
+	Require (*selStart <= *selEnd);
 
 	size_t	origSelStart	=	*selStart;
 	size_t	origSelEnd		=	*selEnd;
@@ -1670,8 +1670,8 @@ size_t	TextInteractor::GetCharAtClickLocation (const Led_Point& where) const
 		endOfClickedRow = clickedOnChar;
 	}
 
-	Led_Assert (GetStartOfRowContainingPosition (clickedOnChar) <= clickedOnChar);
-	Led_Assert (clickedOnChar <= endOfClickedRow);
+	Assert (GetStartOfRowContainingPosition (clickedOnChar) <= clickedOnChar);
+	Assert (clickedOnChar <= endOfClickedRow);
 
 	if (clickedOnChar < endOfClickedRow) {		// Don't wrap cuz click past end - LGP 950424
 		Led_Rect	charRect			=	GetCharWindowLocation (clickedOnChar);
@@ -1899,17 +1899,17 @@ void	TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
 void	TextInteractor::Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode)
 {
 	if (from != to or withWhatCharCount != 0) {
-		Led_Assert (fDoingUpdateModeReplaceOn == NULL);
+		Assert (fDoingUpdateModeReplaceOn == NULL);
 		fDoingUpdateModeReplaceOn = this;
 		try {
 			PreReplaceInfo preReplaceInfo;
 			PreReplace (from, to, withWhatCharCount, updateMode, &preReplaceInfo);
 			GetTextStore ().Replace (from, to, withWhat, withWhatCharCount);
 			PostReplace (preReplaceInfo);
-			Led_Assert (fDoingUpdateModeReplaceOn == this);
+			Assert (fDoingUpdateModeReplaceOn == this);
 		}
 		catch (...) {
-			Led_Assert (fDoingUpdateModeReplaceOn == this);
+			Assert (fDoingUpdateModeReplaceOn == this);
 			fDoingUpdateModeReplaceOn = NULL;
 			throw;
 		}
@@ -1943,7 +1943,7 @@ void	TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw ()
 
 void	TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo)
 {
-	Led_RequireNotNil (preReplaceInfo);
+	RequireNotNull (preReplaceInfo);
 
 	if (preReplaceInfo->fTextInteractor != NULL) {// used as flag to indicate cleaned up state (marker removed)
 		AbortReplace (*preReplaceInfo);
@@ -1997,7 +1997,7 @@ void	TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCoun
 		}
 
 
-		Led_Assert (updateMode != eNoUpdate);
+		Assert (updateMode != eNoUpdate);
 		/*
 		 *	Grab a range that includes totally all the rows between the start selection and the end.
 		 *
@@ -2013,9 +2013,9 @@ void	TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCoun
 		size_t	startPositionOfRowAfterReplaceEnds		= GetEndOfRowContainingPosition (to);
 		if (startPositionOfRowAfterReplaceEnds < GetTextStore ().GetEnd ()) {
 			startPositionOfRowAfterReplaceEnds = GetStartOfRowContainingPosition (FindNextCharacter (startPositionOfRowAfterReplaceEnds));
-			Led_Assert (GetEndOfRowContainingPosition (to) <= startPositionOfRowAfterReplaceEnds);
+			Assert (GetEndOfRowContainingPosition (to) <= startPositionOfRowAfterReplaceEnds);
 		}
-		Led_Assert (startPositionOfRowWhereReplaceBegins <= startPositionOfRowAfterReplaceEnds);
+		Assert (startPositionOfRowWhereReplaceBegins <= startPositionOfRowAfterReplaceEnds);
 
 		preReplaceInfo->fBoundingUpdateHeight	=	GetTextWindowBoundingRect (startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds).GetHeight ();
 
@@ -2030,7 +2030,7 @@ void	TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCoun
 			if (expandedFromMarkerPos == startPositionOfRowWhereReplaceBegins and expandedToMarkerPos == startPositionOfRowAfterReplaceEnds) {
 				// Speed tweek. Avoid expensive call to GetTextWindowBoundingRect () - and use old value...
 				preReplaceInfo->fStableTypingRegionHeight	=	preReplaceInfo->fBoundingUpdateHeight;
-				Led_Assert (preReplaceInfo->fStableTypingRegionHeight == GetTextWindowBoundingRect (expandedFromMarkerPos, expandedToMarkerPos).GetHeight ());
+				Assert (preReplaceInfo->fStableTypingRegionHeight == GetTextWindowBoundingRect (expandedFromMarkerPos, expandedToMarkerPos).GetHeight ());
 			}
 			else {
 				preReplaceInfo->fStableTypingRegionHeight	=	GetTextWindowBoundingRect (expandedFromMarkerPos, expandedToMarkerPos).GetHeight ();
@@ -2066,7 +2066,7 @@ void	TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo)
 		// Subtract one from end cuz we added one earlier so chars appended would grow marker...
 		size_t	startPositionOfRowWhereReplaceBegins	= preReplaceInfo.fBoundingUpdateMarker.GetStart ();
 		size_t	startPositionOfRowAfterReplaceEnds		= preReplaceInfo.fBoundingUpdateMarker.GetEnd ()-1;
-		Led_Assert (startPositionOfRowWhereReplaceBegins <= startPositionOfRowAfterReplaceEnds);
+		Assert (startPositionOfRowWhereReplaceBegins <= startPositionOfRowAfterReplaceEnds);
 
 		size_t	stableTypingRegionStart		=	0;
 		size_t	stableTypingRegionEnd		=	0;
@@ -2093,7 +2093,7 @@ void	TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo)
 			if (expandedFromMarkerPos != startPositionOfRowWhereReplaceBegins or expandedToMarkerPos != startPositionOfRowAfterReplaceEnds) {
 				revisedRect	=	GetTextWindowBoundingRect (startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds);
 			}
-			Led_Assert (revisedRect == GetTextWindowBoundingRect (startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds));
+			Assert (revisedRect == GetTextWindowBoundingRect (startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds));
 
 			if (preReplaceInfo.fBoundingUpdateHeight != revisedRect.GetHeight ()) {
 				updateRect	=	Led_Rect (updateRect.top, windowRect.left, windowRect.bottom-updateRect.top, windowRect.GetWidth ());
@@ -2106,7 +2106,7 @@ void	TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo)
 			if (expandedFromMarkerPos != stableTypingRegionStart or expandedToMarkerPos != stableTypingRegionEnd) {
 				revisedRect	=	GetTextWindowBoundingRect (stableTypingRegionStart, stableTypingRegionEnd);
 			}
-			Led_Assert (revisedRect == GetTextWindowBoundingRect (stableTypingRegionStart, stableTypingRegionEnd));
+			Assert (revisedRect == GetTextWindowBoundingRect (stableTypingRegionStart, stableTypingRegionEnd));
 			if (preReplaceInfo.fStableTypingRegionHeight != revisedRect.GetHeight ()) {
 				updateRect	=	Led_Rect (updateRect.top, windowRect.left, windowRect.bottom-updateRect.top, windowRect.GetWidth ());
 			}
@@ -2131,8 +2131,8 @@ void	TextInteractor::ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
 										size_t* expandedFrom, size_t* expandedTo
 									)
 {
-	Led_RequireNotNil (expandedFrom);
-	Led_RequireNotNil (expandedTo);
+	RequireNotNull (expandedFrom);
+	RequireNotNull (expandedTo);
 
 	// Edits in a row practically never change the word-break from the previous line, but they CAN - in
 	// principle - (eg. in the second row there is a very long word, and you insert a space near the
@@ -2164,7 +2164,7 @@ void	TextInteractor::ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
 		size_t	nowStartOfNextRow		= expandedToMarkerPos;
 		if (nowStartOfNextRow < GetTextStore ().GetEnd ()) {
 			nowStartOfNextRow = GetStartOfRowContainingPosition (FindNextCharacter (nowStartOfNextRow));
-			Led_Assert (expandedToMarkerPos <= nowStartOfNextRow);
+			Assert (expandedToMarkerPos <= nowStartOfNextRow);
 		}
 
 		if (nowStartOfNextRow != startPositionOfRowAfterReplaceEnds) {
@@ -2276,11 +2276,11 @@ bool	TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCh
 */
 void	TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
 {
-	Led_Require (regionStart <= regionEnd);
-	Led_Require (selStart <= selEnd);
-	Led_RequireNotNil (beforeRep);
-	Led_Require ((*beforeRep) == NULL);
-	Led_RequireNotNil (fCommandHandler);
+	Require (regionStart <= regionEnd);
+	Require (selStart <= selEnd);
+	RequireNotNull (beforeRep);
+	Require ((*beforeRep) == NULL);
+	RequireNotNull (fCommandHandler);
 
 	try {
 		(*beforeRep) = InteractiveUndoHelperMakeTextRep (regionStart, regionEnd, selStart, selEnd);
@@ -2291,7 +2291,7 @@ void	TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedT
 		// And commit any existing commands to make it more likely real code
 		// succeeds, and cuz we don't want any funny undo behavior where some
 		// commands in sequence might get skipped.
-		Led_AssertNotNil (fCommandHandler);
+		AssertNotNull (fCommandHandler);
 		fCommandHandler->Commit ();
 	}
 }
@@ -2309,9 +2309,9 @@ void	TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedT
 */
 void	TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName)
 {
-	Led_RequireNotNil (beforeRep);
-	Led_RequireNotNil (*beforeRep);			// This shouldn't be called if there was a problem creating beforeRep (exception)
-	Led_RequireNotNil (fCommandHandler);
+	RequireNotNull (beforeRep);
+	RequireNotNull (*beforeRep);			// This shouldn't be called if there was a problem creating beforeRep (exception)
+	RequireNotNull (fCommandHandler);
 	SavedTextRep*	afterRep	=	NULL;
 	try {
 		afterRep = InteractiveUndoHelperMakeTextRep (startOfInsert, endOfInsert, GetSelectionStart (), GetSelectionEnd ());
@@ -2333,9 +2333,9 @@ void	TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::Saved
 */
 void	TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName)
 {
-	Led_RequireNotNil (beforeRep);
-	Led_RequireNotNil (*beforeRep);			// This shouldn't be called if there was a problem creating beforeRep (exception)
-	Led_RequireNotNil (fCommandHandler);
+	RequireNotNull (beforeRep);
+	RequireNotNull (*beforeRep);			// This shouldn't be called if there was a problem creating beforeRep (exception)
+	RequireNotNull (fCommandHandler);
 	if (endOfInsert - startOfInsert == 1) {
 		Led_tChar	c;
 		CopyOut (startOfInsert, 1, &c);
@@ -2347,7 +2347,7 @@ void	TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveRepla
 		// at least create a plain-text guy if we cannot update current one...
 		SavedTextRep* afterRep = new InteractiveReplaceCommand::PlainTextRep (GetSelectionStart (), GetSelectionEnd (), &c, 1);
 		PostInteractiveUndoPostHelper (beforeRep, &afterRep, startOfInsert, cmdName);
-		Led_Assert (afterRep == NULL);	// cleared out by PostInteractiveUndoPostHelper ()
+		Assert (afterRep == NULL);	// cleared out by PostInteractiveUndoPostHelper ()
 		return;
 	}
 
@@ -2367,9 +2367,9 @@ void	TextInteractor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::S
 													size_t startOfInsert, const Led_SDK_String& cmdName
 												)
 {
-	Led_RequireNotNil (beforeRep);
-	Led_RequireNotNil (afterRep);
-	Led_RequireNotNil (fCommandHandler);
+	RequireNotNull (beforeRep);
+	RequireNotNull (afterRep);
+	RequireNotNull (fCommandHandler);
 	try {
 		if (*beforeRep != NULL and *afterRep != NULL) {
 			// We declare temporaries here, and be careful to set things to NULL at each stage to prevent double
@@ -2426,7 +2426,7 @@ void	TextInteractor::OnRedoCommand ()
 
 void	TextInteractor::Refresh (size_t from, size_t to, UpdateMode updateMode) const
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 	updateMode = RealUpdateMode (updateMode);
 	if ((updateMode != eNoUpdate) and (from != to)) {
 		if (updateMode == eDelayedUpdate and IsWholeWindowInvalid ()) {
@@ -2444,7 +2444,7 @@ void	TextInteractor::Refresh (size_t from, size_t to, UpdateMode updateMode) con
 
 void	TextInteractor::Refresh (const Marker* range, UpdateMode updateMode) const
 {
-	Led_RequireNotNil (range);
+	RequireNotNull (range);
 	updateMode = RealUpdateMode (updateMode);
 	if (updateMode != eNoUpdate) {
 		if (updateMode == eDelayedUpdate and IsWholeWindowInvalid ()) {
@@ -2466,7 +2466,7 @@ void	TextInteractor::DoSingleCharCursorEdit (CursorMovementDirection direction, 
 
 	size_t	oldStartSel		=	GetSelectionStart ();
 	size_t	oldEndSel		=	GetSelectionEnd ();
-	Led_Assert (GetSelectionEnd () <= GetLength () + 1);
+	Assert (GetSelectionEnd () <= GetLength () + 1);
 
 	size_t	newStartSel		=	oldStartSel;
 	size_t	newEndSel		=	oldEndSel;
@@ -2539,7 +2539,7 @@ SkipNavigation:
 		newStartSel = newEndSel;
 		newEndSel = tmp;
 	}
-	Led_Assert (newStartSel <= newEndSel);
+	Assert (newStartSel <= newEndSel);
 
 	/*
 	 *	Now that we know the new and old selection region, we can perform the action
@@ -2551,7 +2551,7 @@ SkipNavigation:
 				 *	In this case, then the computations above for the NEW selection
 				 *	can be considered valid.
 				 */
-				Led_Assert (newEndSel >= newStartSel);
+				Assert (newEndSel >= newStartSel);
 				size_t	howMany	=	newEndSel - newStartSel;
 				if (howMany >= 1) {		// might be zero if we were backed up against the start of the buffer.
 					bool	oldCutAndPaste	=	GetSmartCutAndPasteMode ();
@@ -2585,9 +2585,9 @@ SkipNavigation:
 				 *	ignore whatever computation was done above for where to put
 				 *	the new selection - it goes right to the old startSel.
 				 */
-				Led_Assert (oldEndSel >= oldStartSel);
-				Led_Assert (oldStartSel == GetSelectionStart ());
-				Led_Assert (oldEndSel == GetSelectionEnd ());
+				Assert (oldEndSel >= oldStartSel);
+				Assert (oldStartSel == GetSelectionStart ());
+				Assert (oldEndSel == GetSelectionEnd ());
 				OnClearCommand ();
 				// After the above deletion, we already end up the the selection adjustment being handled for us (and more correctly
 				// than we can easily due to smart cut and paste). So just grab the current (already correct) selection, to prevent
@@ -2607,7 +2607,7 @@ SkipNavigation:
 		}
 		break;
 
-		default:	Led_Assert (false);	// bad direction argument
+		default:	Assert (false);	// bad direction argument
 	}
 
 	/*
@@ -2646,7 +2646,7 @@ void	TextInteractor::OnCopyCommand ()
 {
 	size_t	start	=	GetSelectionStart ();
 	size_t	end		=	GetSelectionEnd ();
-	Led_Assert (start <= end);
+	Assert (start <= end);
 	if (start < end) {
 		BreakInGroupedCommands ();
 
@@ -2791,7 +2791,7 @@ void	TextInteractor::OnPasteCommand_PasteBestFlavor ()
 	bool			doSmartCNP	=	PasteLooksLikeSmartCNP (&smartCNPInfo);
 	size_t	savedSelStart	=	GetSelectionStart ();	// save cuz InternalizeBestFlavor () will tend to adjust selStart
 	InternalizeBestFlavor (clipData);
-	Led_Assert (savedSelStart <= GetSelectionStart ());	//	InternalizeBestFlavor can only adjust it FORWARD - not backward...
+	Assert (savedSelStart <= GetSelectionStart ());	//	InternalizeBestFlavor can only adjust it FORWARD - not backward...
 	if (doSmartCNP) {
 		OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (savedSelStart, smartCNPInfo);
 	}
@@ -2809,7 +2809,7 @@ void	TextInteractor::OnPasteCommand_PasteFlavor_Specific (Led_ClipFormat format)
 	bool							doSmartCNP		=	PasteLooksLikeSmartCNP (&smartCNPInfo);
 	size_t							savedSelStart	=	GetSelectionStart ();	// save cuz InternalizeBestFlavor () will tend to adjust selStart
 	InternalizeFlavor_Specific (clipData, format);
-	Led_Assert (savedSelStart <= GetSelectionStart ());	//	InternalizeBestFlavor can only adjust it FORWARD - not backward...
+	Assert (savedSelStart <= GetSelectionStart ());	//	InternalizeBestFlavor can only adjust it FORWARD - not backward...
 	if (doSmartCNP) {
 		OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (savedSelStart, smartCNPInfo);
 	}
@@ -2822,7 +2822,7 @@ void	TextInteractor::OnPasteCommand_PasteFlavor_Specific (Led_ClipFormat format)
  */
 bool	TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
 {
-	Led_RequireNotNil (scnpInfo);
+	RequireNotNull (scnpInfo);
 	ReaderClipboardFlavorPackage	clipData;
 	bool							doSmartCNP	=	GetSmartCutAndPasteMode () and clipData.GetFlavorAvailable_TEXT ();
 	if (doSmartCNP) {
@@ -3219,7 +3219,7 @@ Led_Rect	TextInteractor::CalculateCaretRect () const
 		}
 		caretRect.SetRight (caretRect.GetLeft () + kCaretWidth);
 
-		Led_Ensure (not caretRect.IsEmpty ());
+		Ensure (not caretRect.IsEmpty ());
 		return (caretRect);	
 	}
 	else {
@@ -3255,7 +3255,7 @@ void	TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
 		}
 	#endif
 
-	Led_Assert (GetSelectionEnd () <= GetLength () + 1);
+	Assert (GetSelectionEnd () <= GetLength () + 1);
 
 	if (GetSupressTypedControlCharacters ()) {
 		bool	controlChar	=	CharacterProperties::IsCntrl (theChar);

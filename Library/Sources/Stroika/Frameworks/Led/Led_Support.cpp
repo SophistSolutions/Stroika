@@ -246,8 +246,8 @@ void	Led_BeepNotify ()
 		{
 			struct	timeval		tv;
 			memset (&tv, 0, sizeof (tv));
-			Led_Verify (::gettimeofday (&tv, NULL) == 0);
-			Led_Assert (tv.tv_usec < 1000000);
+			Verify (::gettimeofday (&tv, NULL) == 0);
+			Assert (tv.tv_usec < 1000000);
 			double	t	=	static_cast<double> (tv.tv_sec) + (tv.tv_usec / 1000000.0);
 			return t;
 		}
@@ -344,38 +344,6 @@ float	Led_GetDoubleClickTime ()
 
 
 
-#if		qDebug
-static	void	(*sLedAssertFailedCallback) (const char* fileName, int lineNum)		=	NULL;
-
-void	(*Led_GetAssertionHandler ()) (const char* fileName, int lineNum)
-{
-	return sLedAssertFailedCallback;
-}
-
-void	Led_SetAssertionHandler (void (*assertionHandler) (const char* fileName, int lineNum))
-{
-	sLedAssertFailedCallback = assertionHandler;
-}
-
-void	_Led_Debug_Trap_ (const char* fileName, int lineNum)
-{
-	if (sLedAssertFailedCallback == NULL) {
-		#if		qMacOS
-			Debugger ();
-		#elif	qWindows
-			DebugBreak ();
-		#else
-			abort ();
-		#endif
-	}
-	else {
-		(sLedAssertFailedCallback) (fileName, lineNum);
-	}
-}
-#endif
-
-
-
 
 
 /*
@@ -468,7 +436,7 @@ void	EmitTraceMessage (const Led_SDK_Char* format, ...)
 		::OutputDebugString (msgBuf);
 	#else
 		// SB pretty easy - but no need right now... LGP 2002-12-19
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#endif
 	va_end (argsList);
 }
@@ -493,7 +461,7 @@ void	Led_ThrowOutOfMemoryException ()
 	else {
 		(sLedOutOfMemoryExceptionCallback) ();
 	}
-	Led_Assert (false);	// should never get here!
+	Assert (false);	// should never get here!
 }
 
 void	(*Led_Get_OutOfMemoryException_Handler ()) ()
@@ -513,8 +481,8 @@ void	Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ())
 #if		!qNoSTRNICMP
 int	Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 {
-	Led_RequireNotNil (l);
-	Led_RequireNotNil (r);
+	RequireNotNull (l);
+	RequireNotNull (r);
 	#if		qSingleByteCharacters
 		return ::strnicmp (l, r, n);
 	#elif	qMultiByteCharacters
@@ -526,8 +494,8 @@ int	Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 
 int	Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 {
-	Led_RequireNotNil (l);
-	Led_RequireNotNil (r);
+	RequireNotNull (l);
+	RequireNotNull (r);
 	#if		qSingleByteCharacters
 		return ::stricmp (l, r);
 	#elif	qMultiByteCharacters
@@ -557,7 +525,7 @@ void	Led_ThrowBadFormatDataException ()
 	else {
 		(sLedBadFormatDataExceptionCallback) ();
 	}
-	Led_Assert (false);	// should never get here!
+	Assert (false);	// should never get here!
 }
 
 void	(*Led_Get_BadFormatDataException_Handler ()) ()
@@ -590,7 +558,7 @@ void	Led_ThrowOSErr (OSErr err)
 		else {
 			(sLedThrowOSErrExceptionCallback) (err);
 		}
-		Led_Assert (false);	// should never get here!
+		Assert (false);	// should never get here!
 	}
 }
 
@@ -640,8 +608,8 @@ void	Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (O
 #if		qNoSTRNICMP
 int	Led_tStrniCmp (const Led_tChar* lhs, const Led_tChar* rhs, size_t n)
 {
-	Led_RequireNotNil (lhs);
-	Led_RequireNotNil (rhs);
+	RequireNotNull (lhs);
+	RequireNotNull (rhs);
 	#if		qSingleByteCharacters || qWideCharacters
 		if (n) {
 			int f;
@@ -668,14 +636,14 @@ int	Led_tStrniCmp (const Led_tChar* lhs, const Led_tChar* rhs, size_t n)
 		}
 		return (0);		
 	#else
-		Led_Assert (false);		//NYI
+		Assert (false);		//NYI
 	#endif	
 }
 
 int	Led_tStriCmp (const Led_tChar* lhs, const Led_tChar* rhs)
 {
-	Led_RequireNotNil (lhs);
-	Led_RequireNotNil (rhs);
+	RequireNotNull (lhs);
+	RequireNotNull (rhs);
 	#if		qSingleByteCharacters || qWideCharacters
 		int f;
 		int l;
@@ -699,7 +667,7 @@ int	Led_tStriCmp (const Led_tChar* lhs, const Led_tChar* rhs)
 		while (f && (f == l) );
 		return (f - l);
 	#else
-		Led_Assert (false);		//NYI
+		Assert (false);		//NYI
 	#endif	
 }
 #endif
@@ -729,18 +697,18 @@ size_t	Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar*
 		*outPtr++ = c;
 	}
 	size_t	nBytes	=	outPtr - outBuf;
-	Led_Assert (nBytes <= outBufSize);
+	Assert (nBytes <= outBufSize);
 	Led_Arg_Unused (outBufSize);
 	return (nBytes);
 }
 
 size_t	Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
 {
-	Led_Require (srcText != outBuf);	// though we support this for the others - its too hard
+	Require (srcText != outBuf);	// though we support this for the others - its too hard
 										// in this case for the PC...
 	Led_tChar*	outPtr	=	outBuf;
 	for (size_t i = 1; i <= srcTextBytes; i++) {
-		Led_Assert (outPtr < outBuf+outBufSize);
+		Assert (outPtr < outBuf+outBufSize);
 		#if		qMacOS
 			Led_tChar	c	 = (srcText[i-1] == '\n')? '\r': srcText[i-1];
 		#elif	qWindows
@@ -754,7 +722,7 @@ size_t	Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar*
 		*outPtr++ = c;
 	}
 	size_t	nBytes	=	outPtr - outBuf;
-	Led_Assert (nBytes <= outBufSize);
+	Assert (nBytes <= outBufSize);
 	Led_Arg_Unused (outBufSize);
 	return (nBytes);
 }
@@ -766,7 +734,7 @@ size_t	Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led
 	// NB: We DO Support the case where srcText == outBuf!!!!
 	Led_tChar*	outPtr	=	outBuf;
 	for (size_t i = 0; i < srcTextBytes; i++) {
-		Led_Assert (outPtr < outBuf+outBufSize);
+		Assert (outPtr < outBuf+outBufSize);
 		Led_tChar	c	=	srcText[i];
 		if (c == '\r') {
 			// peek at next character - and if we have a CRLF sequence - then advance pointer
@@ -779,7 +747,7 @@ size_t	Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led
 		*outPtr++ = c;
 	}
 	size_t	nBytes	=	outPtr - outBuf;
-	Led_Assert (nBytes <= outBufSize);
+	Assert (nBytes <= outBufSize);
 	Led_Arg_Unused (outBufSize);
 	return (nBytes);
 }
@@ -810,7 +778,7 @@ size_t	Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tChar ch
 #if		qMultiByteCharacters
 bool	Led_IsValidMultiByteString (const Led_tChar* start, size_t len)
 {
-	Led_AssertNotNil (start);
+	AssertNotNull (start);
 	const	Led_tChar*	end	=	&start[len];
 	const Led_tChar* cur = start;
 	for (; cur < end; cur = Led_NextChar (cur)) {
@@ -860,7 +828,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
 			if (status != noTypeErr) {
 				fOSClipHandle			=	Led_DoNewHandle (byteCount);
 				Led_ThrowIfNull (fOSClipHandle);
-				Led_Assert (::GetHandleSize (fOSClipHandle) == byteCount);
+				Assert (::GetHandleSize (fOSClipHandle) == byteCount);
 				::HLock (fOSClipHandle);
 				fLockedData = *fOSClipHandle;
 				Led_ThrowIfOSStatus (::GetScrapFlavorData (scrap, clipType, &byteCount, fLockedData));	
@@ -875,7 +843,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
 				fOSClipHandle = NULL;
 				return;
 			}
-			Led_Assert (::GetHandleSize (fOSClipHandle) == result);
+			Assert (::GetHandleSize (fOSClipHandle) == result);
 			::HLock (fOSClipHandle);
 			fLockedData = *fOSClipHandle;
 		#endif
@@ -907,7 +875,7 @@ VariantArrayPacker::VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts):
 	fSafeArrayVariant (v),
 	fPtr (NULL)
 {
-	Led_RequireNotNil (v);
+	RequireNotNull (v);
 	// assumes passed in variant is CONSTRUCTED (initied) - but not necesarily having the right type
 	::VariantClear (fSafeArrayVariant);
 	fSafeArrayVariant->parray = ::SafeArrayCreateVector (vt, 0, static_cast<ULONG> (nElts));
@@ -918,8 +886,8 @@ VariantArrayPacker::VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts):
 
 VariantArrayPacker::~VariantArrayPacker ()
 {
-	Led_AssertNotNil (fSafeArrayVariant);
-	Led_AssertNotNil (fSafeArrayVariant->parray);
+	AssertNotNull (fSafeArrayVariant);
+	AssertNotNull (fSafeArrayVariant->parray);
 	::SafeArrayUnaccessData (fSafeArrayVariant->parray);
 }
 
@@ -955,7 +923,7 @@ VariantArrayUnpacker::VariantArrayUnpacker (const VARIANT& v):
 
 VariantArrayUnpacker::~VariantArrayUnpacker ()
 {
-	Led_AssertNotNil (fSafeArray);
+	AssertNotNull (fSafeArray);
 	::SafeArrayUnaccessData (fSafeArray);
 }
 
@@ -966,7 +934,7 @@ const void*		VariantArrayUnpacker::PeekAtData () const
 
 VARTYPE		VariantArrayUnpacker::GetArrayElementType () const
 {
-	Led_AssertNotNil (fSafeArray);
+	AssertNotNull (fSafeArray);
 	VARTYPE	vt	=	VT_EMPTY;
 	Led_ThrowIfErrorHRESULT (::SafeArrayGetVartype (fSafeArray, &vt));
 	return vt;
@@ -974,7 +942,7 @@ VARTYPE		VariantArrayUnpacker::GetArrayElementType () const
 
 size_t		VariantArrayUnpacker::GetLength () const
 {
-	Led_AssertNotNil (fSafeArray);
+	AssertNotNull (fSafeArray);
 	long	lb	=	0;
 	long	ub	=	0;
 	Led_ThrowIfErrorHRESULT (::SafeArrayGetLBound (fSafeArray, 1, &lb));
@@ -1135,7 +1103,7 @@ void	DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char*
 					if (tmpStr != NULL)			{	::SysFreeString (tmpStr);		tmpStr = NULL;	}
 					if (SUCCEEDED (obj->QueryInterface (iid, reinterpret_cast<void**> (&test)))) {
 						// dump that obj interface
-						Led_Assert (iKey == NULL);
+						Assert (iKey == NULL);
 						if (::RegOpenKeyExA (interfaceKey, subKey, 0, KEY_READ, &iKey) != ERROR_SUCCESS) {
 							throw GetLastError ();
 						}
@@ -1210,15 +1178,15 @@ void	DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const 
 		char	nameBuf[1024];
 		(void)::sprintf (nameBuf, "obj#%d", i);
 		char	levelPrefixBuf[1024];
-		Led_Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf)/2);	// assert MUCH less
+		Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf)/2);	// assert MUCH less
 		strcpy (levelPrefixBuf, levelPrefix);
 		strcat (levelPrefixBuf, "\t");
 		DumpSupportedInterfaces (nextObj, nameBuf, levelPrefixBuf);
-		Led_AssertNotNil (nextObj);
+		AssertNotNull (nextObj);
 		nextObj->Release ();
 		nextObj = NULL;
 	}
-	Led_Assert (nextObj == NULL);
+	Assert (nextObj == NULL);
 }
 #endif
 
@@ -1234,8 +1202,8 @@ void	DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const 
 Led_URLD::Led_URLD (const char* url, const char* title):
 	fData ()
 {
-	Led_RequireNotNil (url);
-	Led_RequireNotNil (title);
+	RequireNotNull (url);
+	RequireNotNull (title);
 	size_t	urlLen		=	::strlen (url);
 	size_t	titleLen	=	::strlen (title);
 	
@@ -1287,7 +1255,7 @@ size_t	Led_URLD::GetTitleLength () const
 	size_t	len	=	fData.size ();
 	for (size_t i = 0; i < len; i++) {
 		if (fData[i] == '\r') {
-			Led_Assert (len >= (i+1+1));	// cuz must be NUL-term & skip \r
+			Assert (len >= (i+1+1));	// cuz must be NUL-term & skip \r
 			return len-(i+1+1);				// ditto
 		}
 	}
@@ -1391,7 +1359,7 @@ string	Led_URLManager::FileSpecToURL (const FSSpec& fsp)
 	short	len	=	0;
 	Handle	h	=	NULL;
 	Led_ThrowOSErr (FSpGetFullPath (&fsp, &len, &h));
-	Led_AssertNotNil (h);
+	AssertNotNull (h);
 	const	char	kFilePrefix[]	=	"file:///";
 	size_t			kFilePrefixLen	=	::strlen (kFilePrefix);
 	char*	result	=	new char [kFilePrefixLen + len + 1];
@@ -1417,11 +1385,11 @@ string	Led_URLManager::FileSpecToURL (const FSSpec& fsp)
 		else {
 			rr.append ("%");
 			unsigned char	x	=	(((unsigned char)c) >> 4);
-			Led_Assert (x <= 0xf);
+			Assert (x <= 0xf);
 			x = (x>9)? (x - 10 + 'A'): (x + '0');
 			rr.append ((char*)&x, 1);
 			x	=	((unsigned char)(c & 0xf));
-			Led_Assert (x <= 0xf);
+			Assert (x <= 0xf);
 			x = (x>9)? (x - 10 + 'A'): (x + '0');
 			rr.append ((char*)&x, 1);
 		}
@@ -1431,7 +1399,7 @@ string	Led_URLManager::FileSpecToURL (const FSSpec& fsp)
 #elif	qWindows
 string	Led_URLManager::FileSpecToURL (const string& path)
 {
-	Led_Assert (false);	// nyi (not needed anywhere right now)
+	Assert (false);	// nyi (not needed anywhere right now)
 	return "";
 }
 #endif
@@ -1554,7 +1522,7 @@ void	Led_URLManager::Open_SpyglassDDE (const string& url)
 	 *	Netscape, ironicly) - LGP 960502
 	 */
 	
-	Led_Require (sDDEMLInstance != 0);	//	Must call Led_URLManager::InitDDEHandler ()
+	Require (sDDEMLInstance != 0);	//	Must call Led_URLManager::InitDDEHandler ()
 										// (maybe we should throw? put up alert? LGP 960502)
 
 
@@ -1718,7 +1686,7 @@ pascal	OSErr	Led_URLManager::FSpGetFullPath (const FSSpec* spec, short* fullPath
 void	Led_URLManager::InitDDEHandler ()
 {
 	//	Initialize DDEML
-	Led_Require (sDDEMLInstance == 0);	// only call once
+	Require (sDDEMLInstance == 0);	// only call once
 
 	// callback not normally called, but seems to sometimes be called under error conditions, and we get crashes 
 	// if no callback present (ie if I pass NULL to DDEInitialize()) - not when I call DDEInitialize(), but much
@@ -1764,7 +1732,7 @@ HDDEDATA CALLBACK	Led_URLManager::SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/
 #if		qUseSpyglassDDESDIToOpenURLs
 const char*	Led_URLManager::SkipToNextArgument (const char* pFormat)
 {
-	Led_RequireNotNil (pFormat);
+	RequireNotNull (pFormat);
 	if (*pFormat == '\0')	{
 		return (pFormat);
 	}
@@ -1783,7 +1751,7 @@ const char*	Led_URLManager::SkipToNextArgument (const char* pFormat)
 #if		qUseSpyglassDDESDIToOpenURLs
 HSZ	Led_URLManager::ClientArguments (const char* pFormat, ...)
 {
-	Led_RequireNotNil (pFormat);
+	RequireNotNull (pFormat);
 
 	//	Always pass in pointer values.
 	//	This way, a NULL, can be interpreted as an optional, missing parameter.
@@ -1844,7 +1812,7 @@ HSZ	Led_URLManager::ClientArguments (const char* pFormat, ...)
 		}
 		else	{
 			//	Unhandled format, just get out of loop.
-			Led_Assert (false);
+			Assert (false);
 			break;
 		}
 
@@ -2137,7 +2105,7 @@ void	Led_URLManager::ServerReturned (HDDEDATA hArgs, const char *pFormat, ...)
  */
 string	MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs)
 {
-	Led_Require (relURL.length () > 0 and relURL[0] == '/');
+	Require (relURL.length () > 0 and relURL[0] == '/');
 	char	fullVersionBuf[1024];
 	(void)::sprintf (fullVersionBuf, "%d", qLed_FullVersion);
 	string	fullURL	=	"http://www.sophists.com" + relURL +

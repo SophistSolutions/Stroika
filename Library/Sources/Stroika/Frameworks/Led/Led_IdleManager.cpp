@@ -92,15 +92,15 @@ float			IdleManager::kNeverCallIdler	=	100.0f;
 
 void	IdleManager::AddIdler (Idler* idler)
 {
-	Led_RequireNotNil (idler);
-	Led_Require (fIdlers.find (idler) == fIdlers.end ());
+	RequireNotNull (idler);
+	Require (fIdlers.find (idler) == fIdlers.end ());
 	IdlerInfo	idlerInfo;
 	fIdlers.insert (map<Idler*, IdlerInfo>::value_type (idler, idlerInfo));
 }
 
 void	IdleManager::RemoveIdler (Idler* idler)
 {
-	Led_RequireNotNil (idler);
+	RequireNotNull (idler);
 	map<Idler*, IdlerInfo>::iterator i	=	fIdlers.find (idler);
 	#if		qBCCStaticVCLDTORLibBug
 		{
@@ -109,44 +109,44 @@ void	IdleManager::RemoveIdler (Idler* idler)
 			}
   		}
 	#endif
-	Led_Require (i != fIdlers.end ());
-	Led_Assert (i->first == idler);
+	Require (i != fIdlers.end ());
+	Assert (i->first == idler);
 	fIdlers.erase (i);
 }
 
 void	IdleManager::AddEnterIdler (EnterIdler* enterIdler)
 {
-	Led_RequireNotNil (enterIdler);
-	Led_Require (std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler) == fEnterIdlers.end ());
+	RequireNotNull (enterIdler);
+	Require (std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler) == fEnterIdlers.end ());
 	fEnterIdlers.push_back (enterIdler);
 	UpdateIdleMgrImplState ();
 }
 
 void	IdleManager::RemoveEnterIdler (EnterIdler* enterIdler)
 {
-	Led_RequireNotNil (enterIdler);
+	RequireNotNull (enterIdler);
 	vector<EnterIdler*>::iterator i	=	std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler);
-	Led_Require (i != fEnterIdlers.end ());
-	Led_Assert (*i == enterIdler);
+	Require (i != fEnterIdlers.end ());
+	Assert (*i == enterIdler);
 	fEnterIdlers.erase (i);
 	UpdateIdleMgrImplState ();
 }
 
 float	IdleManager::GetIdlerFrequncy (Idler* idler)
 {
-	Led_RequireNotNil (idler);
+	RequireNotNull (idler);
 	map<Idler*, IdlerInfo>::iterator i	=	fIdlers.find (idler);
-	Led_Require (i != fIdlers.end ());
-	Led_Assert (i->first == idler);
+	Require (i != fIdlers.end ());
+	Assert (i->first == idler);
 	return i->second.fIdlerFrequency;
 }
 
 void	IdleManager::SetIdlerFrequncy (Idler* idler, float idlerFrequency)
 {
-	Led_RequireNotNil (idler);
+	RequireNotNull (idler);
 	map<Idler*, IdlerInfo>::iterator i	=	fIdlers.find (idler);
-	Led_Require (i != fIdlers.end ());
-	Led_Assert (i->first == idler);
+	Require (i != fIdlers.end ());
+	Assert (i->first == idler);
 	if (i->second.fIdlerFrequency != idlerFrequency) {
 		i->second.fIdlerFrequency = idlerFrequency;
 		UpdateIdleMgrImplState ();
@@ -197,7 +197,7 @@ void	IdleManager::CallEnterIdle ()
 {
 	for (vector<EnterIdler*>::iterator i = fEnterIdlers.begin (); i != fEnterIdlers.end (); ++i) {
 		EnterIdler*	enterIdler	=	*i;
-		Led_AssertNotNil (enterIdler);
+		AssertNotNull (enterIdler);
 		enterIdler->OnEnterIdle ();
 	}
 }

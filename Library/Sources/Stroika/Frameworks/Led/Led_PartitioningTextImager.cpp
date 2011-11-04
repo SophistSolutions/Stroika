@@ -59,7 +59,7 @@ Partition::~Partition ()
 {
 	// This was commented out as of 20000119 - not sure why... If it causes trouble maybe
 	// OK to just force empty here/now. But understand if so/why...
-	Led_Assert (fMarkersToBeDeleted.IsEmpty ());		// these better be deleted by now!
+	Assert (fMarkersToBeDeleted.IsEmpty ());		// these better be deleted by now!
 
 	/*
 	 *		We could simply loop and remove all markers with RemoveMarker().
@@ -90,7 +90,7 @@ Partition::~Partition ()
 		}
 	}
 	fTextStore.RemoveMarkerOwner (this);
-	Led_Ensure (fPartitionMarkerCount == 0);
+	Ensure (fPartitionMarkerCount == 0);
 }
 
 /*
@@ -104,18 +104,18 @@ Partition::~Partition ()
 void	Partition::FinalConstruct ()
 {
 	#if		qDebug
-		Led_Require (not fFinalConstructCalled);
+		Require (not fFinalConstructCalled);
 		fFinalConstructCalled = true;
 	#endif
-	Led_Assert (fPartitionMarkerCount == 0);
-	Led_Assert (fPartitionMarkerFirst == NULL);
+	Assert (fPartitionMarkerCount == 0);
+	Assert (fPartitionMarkerFirst == NULL);
 	PartitionMarker*	pm	=	MakeNewPartitionMarker (NULL);
 	#if		qDebug
 		fPartitionMarkerCount++;
 	#endif
 	fTextStore.AddMarker (pm, 0, fTextStore.GetLength ()+1, this);	// include ALL text
-	Led_Assert (fPartitionMarkerFirst == pm);
-	Led_Assert (fPartitionMarkerLast == pm);
+	Assert (fPartitionMarkerFirst == pm);
+	Assert (fPartitionMarkerLast == pm);
 }
 
 TextStore*	Partition::PeekAtTextStore () const
@@ -131,8 +131,8 @@ TextStore*	Partition::PeekAtTextStore () const
 */
 PartitionMarker*		Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const
 {
-	Led_Require (fFinalConstructCalled);
-	Led_Require (charPosition <= GetEnd () + 1);	// cuz last PM contains bogus char past end of buffer
+	Require (fFinalConstructCalled);
+	Require (charPosition <= GetEnd () + 1);	// cuz last PM contains bogus char past end of buffer
 
 	/*
 	 *	Based on cached value, either search forwards from there or back.
@@ -141,7 +141,7 @@ PartitionMarker*		Partition::GetPartitionMarkerContainingPosition (size_t charPo
 	if (pm == NULL) {
 		pm = fPartitionMarkerFirst;		// could be first time, or could have deleted cached value
 	}
-	Led_AssertNotNil (pm);
+	AssertNotNull (pm);
 
 	if (charPosition < 10) {
 		pm = fPartitionMarkerFirst;
@@ -156,7 +156,7 @@ PartitionMarker*		Partition::GetPartitionMarkerContainingPosition (size_t charPo
 			if (pm != fPartitionMarkerFirst and pm != fPartitionMarkerLast) {
 				fFindContainingPMCache = pm;
 			}
-			Led_EnsureNotNil (pm);
+			EnsureNotNull (pm);
 			return (pm);
 		}
 	}
@@ -164,7 +164,7 @@ PartitionMarker*		Partition::GetPartitionMarkerContainingPosition (size_t charPo
 		#pragma push
 		#pragma warn -8008
 	#endif
-		Led_Assert (false);		return (NULL);
+		Assert (false);		return (NULL);
 	#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 		#pragma pop
 	#endif
@@ -177,7 +177,7 @@ PartitionMarker*		Partition::GetPartitionMarkerContainingPosition (size_t charPo
 */
 PartitionMarker*	Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe)
 {
-	Led_Require (fFinalConstructCalled);
+	Require (fFinalConstructCalled);
 	return (new PartitionMarker (*this, insertAfterMe));
 }
 
@@ -192,10 +192,10 @@ PartitionMarker*	Partition::MakeNewPartitionMarker (PartitionMarker* insertAfter
 */
 void	Partition::Split (PartitionMarker* pm, size_t at)
 {
-	Led_Require (fFinalConstructCalled);
-	Led_RequireNotNil (pm);
-	Led_Require (pm->GetStart () < at);
-	Led_Require (pm->GetEnd () > at);
+	Require (fFinalConstructCalled);
+	RequireNotNull (pm);
+	Require (pm->GetStart () < at);
+	Require (pm->GetEnd () > at);
 #if		qMultiByteCharacters
 	Assert_CharPosDoesNotSplitCharacter (at);
 #endif
@@ -206,12 +206,12 @@ void	Partition::Split (PartitionMarker* pm, size_t at)
 	size_t	start	=	0;
 	size_t	end		=	0;
 	pm->GetRange (&start, &end);
-	Led_Assert (at >= start and at <= end);
+	Assert (at >= start and at <= end);
 
 	// try to cleanup as best as we can if we fail in the middle of adding a new PM.
 	PartitionMarker*	newPM	=	MakeNewPartitionMarker (pm);
-	Led_Assert (pm->GetNext () == newPM);
-	Led_Assert (newPM->GetPrevious () == pm);
+	Assert (pm->GetNext () == newPM);
+	Assert (newPM->GetPrevious () == pm);
 
 	// NB: we set marker range before adding new marker for no good reason, except that
 	// for quirky reasons I don't understand, reading in files is MUCH faster that
@@ -226,7 +226,7 @@ void	Partition::Split (PartitionMarker* pm, size_t at)
 		// the only item above that can throw is the AddMarker () call. So at this point, all we need todo
 		// is remove newPM from our linked list, and then delete it. Of course, our Partition elements won't be
 		// quite right. But with no memory, this is the best we can do. At least we still have a partition!
-		Led_AssertNotNil (newPM);
+		AssertNotNull (newPM);
 		if (pm == NULL) {
 			fPartitionMarkerFirst = newPM->fNext;
 		}
@@ -235,7 +235,7 @@ void	Partition::Split (PartitionMarker* pm, size_t at)
 		}
 		// Now patch pm's old and new successor (before and after newPM breifly was it)
 		if (newPM->fNext != NULL) {
-			Led_Assert (newPM->fNext->fPrevious == newPM);	// but thats getting deleted...
+			Assert (newPM->fNext->fPrevious == newPM);	// but thats getting deleted...
 			newPM->fNext->fPrevious = pm;
 		}
 		if (newPM == fPartitionMarkerLast) {
@@ -267,8 +267,8 @@ void	Partition::Split (PartitionMarker* pm, size_t at)
 */
 void	Partition::Coalece (PartitionMarker* pm)
 {
-	Led_Require (fFinalConstructCalled);
-	Led_AssertNotNil (pm);
+	Require (fFinalConstructCalled);
+	AssertNotNull (pm);
 	vector<void*>	watcherInfos;
 	DoAboutToCoaleceCalls (pm, &watcherInfos);
 	if (pm->fNext != NULL) {		// We don't do anything to coalesce the last item - nothing to coalesce with!
@@ -278,23 +278,23 @@ void	Partition::Coalece (PartitionMarker* pm)
 		size_t	lengthToAdd	=	end-start;
 
 		PartitionMarker*	successor	=	pm->fNext;
-		Led_AssertNotNil (successor);
+		AssertNotNull (successor);
 		successor->GetRange (&start, &end);
-		Led_Assert (start >= lengthToAdd);
+		Assert (start >= lengthToAdd);
 		fTextStore.SetMarkerStart (successor, start - lengthToAdd);
 
-		Led_Assert (successor->fPrevious == pm);
+		Assert (successor->fPrevious == pm);
 		successor->fPrevious = pm->fPrevious;
-		Led_Assert ((pm->fPrevious == NULL) or (pm->fPrevious->fNext == pm));
+		Assert ((pm->fPrevious == NULL) or (pm->fPrevious->fNext == pm));
 		if (pm->fPrevious == NULL) {
-			Led_Assert (fPartitionMarkerFirst == pm);
+			Assert (fPartitionMarkerFirst == pm);
 			fPartitionMarkerFirst = pm->fNext;
 		}
 		else {
 			pm->fPrevious->fNext = pm->fNext;
 		}
 		if (pm->fNext == NULL) {
-			Led_Assert (fPartitionMarkerLast == pm);
+			Assert (fPartitionMarkerLast == pm);
 			fPartitionMarkerLast = pm->fPrevious;
 		}
 		#if		qDebug
@@ -312,9 +312,9 @@ void	Partition::Coalece (PartitionMarker* pm)
 */
 void	Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
 {
-	Led_Require (fFinalConstructCalled);
-	Led_AssertNotNil (m);
-	Led_Assert (&m->GetOwner () == this);
+	Require (fFinalConstructCalled);
+	AssertNotNull (m);
+	Assert (&m->GetOwner () == this);
 	fMarkersToBeDeleted.AccumulateMarkerForDeletion (m);
 	if (fFindContainingPMCache == m) {
 		fFindContainingPMCache = NULL;
@@ -323,8 +323,8 @@ void	Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
 
 void	Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
-	Led_Require (fFinalConstructCalled);
-	Led_Assert (fMarkersToBeDeleted.IsEmpty ());		// would be bad to do a replace with any of these not
+	Require (fFinalConstructCalled);
+	Assert (fMarkersToBeDeleted.IsEmpty ());		// would be bad to do a replace with any of these not
 														// yet finalized since they would then appear in the
 														// CollectAllMarkersInRange() and get DidUpdate calls!
 	Invariant ();
@@ -333,7 +333,7 @@ void	Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
 
 void	Partition::DidUpdateText (const UpdateInfo& updateInfo) throw ()
 {
-	Led_Require (fFinalConstructCalled);
+	Require (fFinalConstructCalled);
 	fMarkersToBeDeleted.FinalizeMarkerDeletions ();
 	inherited::DidUpdateText (updateInfo);
 	Invariant ();
@@ -342,20 +342,20 @@ void	Partition::DidUpdateText (const UpdateInfo& updateInfo) throw ()
 #if		qDebug
 void	Partition::Invariant_ () const
 {
-	Led_Require (fFinalConstructCalled);
+	Require (fFinalConstructCalled);
 	size_t	lastCharDrawn	=	0;
-	Led_Assert (fPartitionMarkerCount != 0);
+	Assert (fPartitionMarkerCount != 0);
 	size_t	realPMCount	=	0;
 	for (PartitionMarker* cur = fPartitionMarkerFirst; cur != NULL; cur = cur->fNext) {
 		PartitionMarker*	pm	=	cur;
-		Led_AssertNotNil (pm);
-		Led_Assert (&pm->GetOwner () == this);
+		AssertNotNull (pm);
+		Assert (&pm->GetOwner () == this);
 		size_t	start	=	pm->GetStart ();
 		size_t	end		=	pm->GetEnd ();
 		size_t	len		=	end-start;
 
-		Led_Assert (start == lastCharDrawn);
-		Led_Assert (end <= GetEnd () + 1);	// +1 for extra bogus space so we always get autoexpanded
+		Assert (start == lastCharDrawn);
+		Assert (end <= GetEnd () + 1);	// +1 for extra bogus space so we always get autoexpanded
 
 		lastCharDrawn = end;
 
@@ -363,11 +363,11 @@ void	Partition::Invariant_ () const
 			len--;	// Last partition extends past end of text
 		}
 		realPMCount++;
-		Led_Assert (realPMCount <= fPartitionMarkerCount);
-		Led_Assert (static_cast<bool> (fPartitionMarkerLast == cur) == static_cast<bool> (cur->fNext == NULL));
+		Assert (realPMCount <= fPartitionMarkerCount);
+		Assert (static_cast<bool> (fPartitionMarkerLast == cur) == static_cast<bool> (cur->fNext == NULL));
 	}
-	Led_Assert (realPMCount == fPartitionMarkerCount);
-	Led_Assert (lastCharDrawn == GetEnd () + 1);
+	Assert (realPMCount == fPartitionMarkerCount);
+	Assert (lastCharDrawn == GetEnd () + 1);
 }
 #endif
 
@@ -394,7 +394,7 @@ PartitioningTextImager::PartitioningTextImager ():
 
 PartitioningTextImager::~PartitioningTextImager ()
 {
-	Led_Require (fPartition.IsNull ());
+	Require (fPartition.IsNull ());
 }
 
 /*
@@ -497,7 +497,7 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) co
 
 	#if		qCacheTextMeasurementsForPM
 		size_t	value			=	CalcSegmentSize_CACHING (from, to);
-		Led_Assert (value == referenceValue);
+		Assert (value == referenceValue);
 		return value;
 	#else
 		return referenceValue;
@@ -513,7 +513,7 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) co
 */
 Led_Distance	PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 
 	if (from == to) {
 		return 0;
@@ -521,13 +521,13 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
 	else {
 		size_t	startOfRow	=	GetStartOfRowContainingPosition (from);
 		size_t	rowEnd		=	GetEndOfRowContainingPosition (startOfRow);
-		Led_Require (startOfRow <= from);		//	WE REQUIRE from/to be contained within a single row!!!
-		Led_Require (to <= rowEnd);				//	''
+		Require (startOfRow <= from);		//	WE REQUIRE from/to be contained within a single row!!!
+		Require (to <= rowEnd);				//	''
 		size_t	rowLen		=	rowEnd - startOfRow;
 		Led_SmallStackBuffer<Led_Distance>	distanceVector (rowLen);
 		CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector);
-		Led_Assert (to > startOfRow);															// but from could be == startOfRow, so must be careful of that...
-		Led_Assert (to-startOfRow-1 < (GetEndOfRowContainingPosition (startOfRow)-startOfRow));	// now buffer overflows!
+		Assert (to > startOfRow);															// but from could be == startOfRow, so must be careful of that...
+		Assert (to-startOfRow-1 < (GetEndOfRowContainingPosition (startOfRow)-startOfRow));	// now buffer overflows!
 		Led_Distance	result	=	distanceVector[to-startOfRow-1];
 		if (from != startOfRow) {
 			result -= distanceVector[from-startOfRow-1];
@@ -545,16 +545,16 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
 */
 Led_Distance	PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const
 {
-	Led_Require (from <= to);
+	Require (from <= to);
 
 	if (from == to) {
 		return 0;
 	}
 	PartitionMarker*	pm	=	GetPartitionMarkerContainingPosition (from);
-	Led_Require (pm->GetEnd () == to or pm == GetPartitionMarkerContainingPosition (to));	// since must be in same row, must be in same PM.
+	Require (pm->GetEnd () == to or pm == GetPartitionMarkerContainingPosition (to));	// since must be in same row, must be in same PM.
 
 	size_t	startOfRow	=	GetStartOfRowContainingPosition (from);
-	Led_Require (GetEndOfRowContainingPosition (startOfRow) >= to);		//	WE REQUIRE from/to be contained within a single row!!!
+	Require (GetEndOfRowContainingPosition (startOfRow) >= to);		//	WE REQUIRE from/to be contained within a single row!!!
 
 	const MeasureTextCache::CacheElt*	ce	=	fMeasureTextCache->LookupPM (pm, startOfRow);
 	if (ce == NULL) {
@@ -564,13 +564,13 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
 		updateCE->fMeasurementsCache.GrowToSize (rowLen);
 		CalcSegmentSize_FillIn (startOfRow, rowEnd, updateCE->fMeasurementsCache);
 		ce = fMeasureTextCache->CompleteCacheUpdate (updateCE, pm, startOfRow);
-		Led_Assert (ce == fMeasureTextCache->LookupPM (pm, startOfRow));
+		Assert (ce == fMeasureTextCache->LookupPM (pm, startOfRow));
 	}
-	Led_AssertNotNil (ce);
+	AssertNotNull (ce);
 	const	Led_Distance*	measurementsCache	=	ce->fMeasurementsCache;
 
-	Led_Assert (to > startOfRow);															// but from could be == startOfRow, so must be careful of that...
-	Led_Assert (to-startOfRow-1 < (GetEndOfRowContainingPosition (startOfRow)-startOfRow));	// now buffer overflows!
+	Assert (to > startOfRow);															// but from could be == startOfRow, so must be careful of that...
+	Assert (to-startOfRow-1 < (GetEndOfRowContainingPosition (startOfRow)-startOfRow));	// now buffer overflows!
 	Led_Distance	result	=	measurementsCache[to-startOfRow-1];
 	if (from != startOfRow) {
 		result -= measurementsCache[from-startOfRow-1];
@@ -587,10 +587,10 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
 */
 void	PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const
 {
-	Led_Require (rowStart == GetStartOfRowContainingPosition (rowStart));	// must already be a rowstart
-	Led_Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// ""
-	Led_RequireNotNil (distanceVector);
-	Led_Require (rowStart <= rowEnd);
+	Require (rowStart == GetStartOfRowContainingPosition (rowStart));	// must already be a rowstart
+	Require (rowEnd == GetEndOfRowContainingPosition (rowStart));		// ""
+	RequireNotNull (distanceVector);
+	Require (rowStart <= rowEnd);
 
 	// we must re-snag the text to get the width/tab alignment of the initial segment (for reset tabstops)- a bit more complicated ...
 	size_t	len	=	rowEnd-rowStart;
@@ -608,9 +608,9 @@ void	PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t row
 */
 void	PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const
 {
-	Led_Require (charLoc <= GetEnd ());
-	Led_RequireNotNil (lhs);
-	Led_RequireNotNil (rhs);
+	Require (charLoc <= GetEnd ());
+	RequireNotNull (lhs);
+	RequireNotNull (rhs);
 
 	/*
 	 *	Note that this algoritm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
@@ -628,7 +628,7 @@ void	PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
 	 *	Walk through the runs in VIRTUAL order (screen left to right). Find the run whose charLoc is inside
 	 *	the "REAL" run span. Stop measuring there.
 	 */
-	Led_Assert (not runs.empty () or (rowLen == 0));
+	Assert (not runs.empty () or (rowLen == 0));
 	if (runs.size () > 1) {
 		// sort by virtual start
 		sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
@@ -644,7 +644,7 @@ void	PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
 			) {
 			size_t	absoluteSegStart	=	rowStart + se.fRealStart;
 			size_t	subSegLen			=	rowRelCharLoc-se.fRealStart;
-			Led_Assert (subSegLen <= runLength);
+			Assert (subSegLen <= runLength);
 			
 			size_t	nextPosition	=	FindNextCharacter (charLoc);
 			bool	emptyChar		=	(nextPosition == charLoc);
@@ -680,7 +680,7 @@ void	PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
 			spannedSoFar += CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
 		}
 	}
-	Led_Ensure (*lhs <= *rhs);	// can be equal for case like 'RemoveMappedDisplayCharacters'
+	Ensure (*lhs <= *rhs);	// can be equal for case like 'RemoveMappedDisplayCharacters'
 }
 
 /*
@@ -689,7 +689,7 @@ void	PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
 */
 size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const
 {
-	Led_Require (rowStart == GetStartOfRowContainingPosition (rowStart));
+	Require (rowStart == GetStartOfRowContainingPosition (rowStart));
 
 	/*
 	 *	Note that this algoritm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
@@ -706,7 +706,7 @@ size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
 	 *	Walk through the runs in VIRTUAL order (screen left to right). Find the run whose hOffset is inside
 	 *	Then find the character which hOffset resides in (within that run).
 	 */
-	Led_Assert (not runs.empty () or (rowLen == 0));
+	Assert (not runs.empty () or (rowLen == 0));
 	if (runs.size () > 1) {
 		// sort by virtual start
 		sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
@@ -762,7 +762,7 @@ size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
 		spannedSoFar += thisSpanWidth;
 	}
 
-	Led_Assert (hOffset > 0 or runs.size () == 0);
+	Assert (hOffset > 0 or runs.size () == 0);
 	if (lastRunDir == eLeftToRight) {
 		//LedDebugTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-LTR)", hOffset, rowEnd);
 		return rowEnd;
@@ -790,7 +790,7 @@ size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
 */
 size_t	PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const
 {
-	Led_RequireNotNil (charLocations);
+	RequireNotNull (charLocations);
 	size_t			lastTabIndex	=	0;
 	Led_Coordinate	tabAdjust		=	0;
 	Led_Distance	widthAtStart	=	(startSoFar==0?0:charLocations[startSoFar-1]);
@@ -810,7 +810,7 @@ void	PartitioningTextImager::Invariant_ () const
 {
 	if (not fPartition.IsNull ()) {
 		fPartition->Invariant ();
-		Led_Assert (fPartition->PeekAtTextStore () == PeekAtTextStore ());
+		Assert (fPartition->PeekAtTextStore () == PeekAtTextStore ());
 	}
 }
 #endif
@@ -829,7 +829,7 @@ PartitioningTextImager::MeasureTextCache::MeasureTextCache (const PartitionPtr& 
 	fPartition (partition),
 	fCache (1)
 {
-	Led_Assert (not partition.IsNull ());
+	Assert (not partition.IsNull ());
 	fPartition->AddPartitionWatcher (this);
 	TextStore&	ts	=	partition->GetTextStore ();
 	ts.AddMarkerOwner (this);
@@ -844,7 +844,7 @@ PartitioningTextImager::MeasureTextCache::~MeasureTextCache ()
 
 const PartitioningTextImager::MeasureTextCache::CacheElt*	PartitioningTextImager::MeasureTextCache::CompleteCacheUpdate (CacheElt* cacheElt, PartitionMarker* pm, size_t rowStart) const
 {
-	Led_RequireNotNil (cacheElt);
+	RequireNotNull (cacheElt);
 	cacheElt->fValidFor.fPM = pm;
 	cacheElt->fValidFor.fRowStartingAt = rowStart;
 	return cacheElt;
@@ -867,8 +867,8 @@ void	PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const
 
 void	PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()
 {
-	Led_RequireNotNil (infoRecord);
-	Led_RequireNotNil (pm);
+	RequireNotNull (infoRecord);
+	RequireNotNull (pm);
 	*infoRecord = pm;
 }
 

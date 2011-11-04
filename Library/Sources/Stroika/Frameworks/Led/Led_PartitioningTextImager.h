@@ -395,11 +395,11 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 					owner.fPartitionMarkerFirst = this;
 				}
 				else {
-					Led_Assert (insertAfterMe->fNext == fNext);		// I just updated MY next to be what HIS next used to be
+					Assert (insertAfterMe->fNext == fNext);		// I just updated MY next to be what HIS next used to be
 					insertAfterMe->fNext = this;				// Now HIS next should be me since I'm AFTER him
 					PartitionMarker*	following	=	fNext;
 					if (following != NULL) {
-						Led_Assert (following->fPrevious == insertAfterMe);	// thats who he USED to point to
+						Assert (following->fPrevious == insertAfterMe);	// thats who he USED to point to
 						following->fPrevious = this;
 					}
 				}
@@ -416,7 +416,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 	*/
 	inline	Partition&	Partition::PartitionMarker::GetOwner () const
 		{
-			Led_EnsureNotNil (inherited::GetOwner ());
+			EnsureNotNull (inherited::GetOwner ());
 			Led_EnsureMember (inherited::GetOwner (), Partition);
 			return *(dynamic_cast<Partition*> (inherited::GetOwner ()));
 		}
@@ -457,12 +457,12 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		}
 	inline	Partition::PartitionMarker*	Partition::GetFirstPartitionMarker () const
 		{
-			Led_RequireNotNil (fPartitionMarkerFirst);
+			RequireNotNull (fPartitionMarkerFirst);
 			return fPartitionMarkerFirst;
 		}
 	inline	Partition::PartitionMarker*	Partition::GetLastPartitionMarker () const
 		{
-			Led_RequireNotNil (fPartitionMarkerLast);
+			RequireNotNull (fPartitionMarkerLast);
 			return fPartitionMarkerLast;
 		}
 	/*
@@ -482,7 +482,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 	inline	void	Partition::RemovePartitionWatcher (PartitionWatcher* watcher)
 		{
 			vector<PartitionWatcher*>::iterator	it	=	find (fPartitionWatchers.begin (), fPartitionWatchers.end (), watcher);
-			Led_Assert (it != fPartitionWatchers.end ());	// Be forgiving about not finding in list, in light of exception handling - but give warning...
+			Assert (it != fPartitionWatchers.end ());	// Be forgiving about not finding in list, in light of exception handling - but give warning...
 			if (it != fPartitionWatchers.end ()) {
 				fPartitionWatchers.erase (it);
 			}
@@ -497,7 +497,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		}
 	inline	void	Partition::DoDidSplitCalls (const vector<void*>& infos) const throw ()
 		{
-			Led_Assert (infos.size () == fPartitionWatchers.size ());
+			Assert (infos.size () == fPartitionWatchers.size ());
 			vector<void*>::const_iterator infoIt = infos.begin ();
 			for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
 				(*it)->DidSplit (*infoIt);
@@ -514,7 +514,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		}
 	inline	void	Partition::DoDidCoaleceCalls (const vector<void*>& infos) const throw ()
 		{
-			Led_Assert (infos.size () == fPartitionWatchers.size ());
+			Assert (infos.size () == fPartitionWatchers.size ());
 			vector<void*>::const_iterator infoIt = infos.begin ();
 			for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
 				(*it)->DidCoalece (*infoIt);
@@ -532,7 +532,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		}
 	inline	Partition::PartitionMarker*	PartitioningTextImager::GetFirstPartitionMarker () const
 		{
-			Led_Require (not fPartition.IsNull ());		// perhaps you've forgotten to call SpecifyTextStore or SetPartition ()?
+			Require (not fPartition.IsNull ());		// perhaps you've forgotten to call SpecifyTextStore or SetPartition ()?
 			return fPartition->GetFirstPartitionMarker ();
 		}
 	/*
@@ -579,12 +579,12 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		}
 	inline	const PartitioningTextImager::MeasureTextCache::CacheElt*	PartitioningTextImager::MeasureTextCache::LookupPM (PartitionMarker* pm, size_t rowStart) const
 		{
-			Led_RequireNotNil (pm);
+			RequireNotNull (pm);
 			return fCache.LookupElement (CacheElt::COMPARE_ITEM (pm, rowStart));
 		}
 	inline	PartitioningTextImager::MeasureTextCache::CacheElt*	PartitioningTextImager::MeasureTextCache::PrepareCacheUpdate (PartitionMarker* pm) const
 		{
-			Led_RequireNotNil (pm);
+			RequireNotNull (pm);
 			Led_Arg_Unused (pm);
 			return fCache.AddNew ();
 		}

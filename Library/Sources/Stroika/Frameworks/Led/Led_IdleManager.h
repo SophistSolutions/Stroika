@@ -211,7 +211,7 @@ class	IdleManager::Cleanup {
 		}
 	inline	IdleManager::NonIdleContext::~NonIdleContext ()
 		{
-			Led_Assert (IdleManager::Get ().fNonIdleContextCount > 0);
+			Assert (IdleManager::Get ().fNonIdleContextCount > 0);
 			IdleManager::Get ().fNonIdleContextCount --;
 		}
 

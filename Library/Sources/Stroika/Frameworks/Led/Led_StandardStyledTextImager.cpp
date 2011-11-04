@@ -43,7 +43,7 @@ void	StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const Run
 											const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 										)
 {
-	Led_RequireNotNil (imager);
+	RequireNotNull (imager);
 	imager->DrawSegment_ (tablet, fFontSpecification, from, to, text, drawInto, useBaseLine, pixelsDrawn);
 }
 
@@ -52,19 +52,19 @@ void	StandardStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, c
 														Led_Distance* distanceResults
 													) const
 {
-	Led_RequireNotNil (imager);
+	RequireNotNull (imager);
 	imager->MeasureSegmentWidth_ (fFontSpecification, from, to, text, distanceResults);
 }
 
 Led_Distance	StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_RequireNotNil (imager);
+	RequireNotNull (imager);
 	return (imager->MeasureSegmentHeight_ (fFontSpecification, from, to));
 }
 
 Led_Distance	StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
-	Led_RequireNotNil (imager);
+	RequireNotNull (imager);
 	return (imager->MeasureSegmentBaseLine_ (fFontSpecification, from, to));
 }
 
@@ -151,7 +151,7 @@ void	StandardStyledTextImager::HookStyleDatabaseChanged ()
 Led_FontMetrics	StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
 {
 	Tablet_Acquirer	tablet (this);
-	Led_AssertNotNil (static_cast<Led_Tablet> (tablet));
+	AssertNotNull (static_cast<Led_Tablet> (tablet));
 
 	#if		qMultiByteCharacters
 		Assert_CharPosDoesNotSplitCharacter (charAfterPos);
@@ -168,7 +168,7 @@ Led_FontMetrics	StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos)
 Led_FontSpecification	StandardStyledTextImager::GetDefaultSelectionFont () const
 {
 	vector<InfoSummaryRecord>	summaryInfo	=	GetStyleInfo (GetSelectionEnd (), 0);
-	Led_Assert (summaryInfo.size () == 1);
+	Assert (summaryInfo.size () == 1);
 	return summaryInfo[0];
 }
 
@@ -288,10 +288,10 @@ Led_IncrementalFontSpecification	StandardStyledTextImager::GetContinuousStyleInf
 #if		qMacOS
 bool	StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle)
 {
-	//	Led_Require ((*mode & doColor) == 0);	// NB: we currently don't support 	doColor,  doAll	, addSize
+	//	Require ((*mode & doColor) == 0);	// NB: we currently don't support 	doColor,  doAll	, addSize
 	// Just silently ingore doColor for now since done from TCL - and we just return NO for that style...
-	Led_Require ((*mode & addSize) == 0);
-	Led_RequireNotNil (theStyle);
+	Require ((*mode & addSize) == 0);
+	RequireNotNull (theStyle);
 
 	unsigned int	resultMode = *mode;
 	Led_IncrementalFontSpecification	resultSpec	=	GetContinuousStyleInfo (from, nTChars);
@@ -414,7 +414,7 @@ vector<StandardStyledTextImager::InfoSummaryRecord>	StyleDatabaseRep::GetStyleIn
 	size_t						nStandardStyleMarkers	=	standardStyleMarkers.size ();
 	for (size_t i = 0; i < nStandardStyleMarkers; i++) {
 		StandardStyleMarker*	marker	=	standardStyleMarkers[i];
-		Led_AssertNotNil (marker);
+		AssertNotNull (marker);
 		size_t	markerStart;
 		size_t	markerEnd;
 		marker->GetRange (&markerStart, &markerEnd);
@@ -423,20 +423,20 @@ vector<StandardStyledTextImager::InfoSummaryRecord>	StyleDatabaseRep::GetStyleIn
 		// markers - for the INTERNAL markers, use their whole length
 		size_t	length	=	markerEnd-markerStart;
 		if (i == 0) {
-			Led_Assert (charAfterPos >= markerStart);
-			Led_Assert (charAfterPos - markerStart < length);
+			Assert (charAfterPos >= markerStart);
+			Assert (charAfterPos - markerStart < length);
 			length -= (charAfterPos - markerStart);
 		}
 		if (i == nStandardStyleMarkers-1) {
-			Led_Assert (length >= nTCharsFollowing - tCharsSoFar);	// must be preserving, or shortening...
+			Assert (length >= nTCharsFollowing - tCharsSoFar);	// must be preserving, or shortening...
 			length = nTCharsFollowing - tCharsSoFar;
 		}
-		Led_Assert (length > 0 or nTCharsFollowing == 0);
-		Led_Assert (length <= nTCharsFollowing);
+		Assert (length > 0 or nTCharsFollowing == 0);
+		Assert (length <= nTCharsFollowing);
 		result.push_back (InfoSummaryRecord (marker->fFontSpecification, length));
 		tCharsSoFar += length;
 	}
-	Led_Assert (tCharsSoFar == nTCharsFollowing);
+	Assert (tCharsSoFar == nTCharsFollowing);
 	return result;
 }
 
@@ -457,7 +457,7 @@ void	StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
 	for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; i++) {
 		InfoSummaryRecord	isr	=	styleInfos[i];
 		size_t	length	=	isr.fLength;
-		Led_Assert (nTCharsFollowing >= lengthUsedSoFar);
+		Assert (nTCharsFollowing >= lengthUsedSoFar);
 		length = Led_Min (nTCharsFollowing-lengthUsedSoFar, length);
 		SetStyleInfo (setAt, length, Led_IncrementalFontSpecification (isr));
 		setAt += length;

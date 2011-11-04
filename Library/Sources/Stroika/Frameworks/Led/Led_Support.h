@@ -5,6 +5,7 @@
 #define	__LedSupport_h__	1
 
 #include	"../../Foundation/StroikaPreComp.h"
+#include	"../../Foundation/Debug/Assertions.h"
 
 /*
 @MODULE:	LedSupport
@@ -87,7 +88,7 @@ namespace	Stroika {
 #if		qSTLTemplatesErroniouslyRequireOpLessCuzOfOverExpanding
 	#define	STLOpLessDeclare_BWA(T)\
 		public:\
-			friend bool operator< (T,T)  {Led_Assert (false); return false; /*notreached*/}
+			friend bool operator< (T,T)  {Assert (false); return false; /*notreached*/}
 #else
 	#define	STLOpLessDeclare_BWA(T)
 #endif
@@ -97,7 +98,7 @@ namespace	Stroika {
 #if		qSTLTemplatesErroniouslyRequireOpEqualsCuzOfOverExpanding
 	#define	STLOpEqualDeclare_BWA(T)\
 		public:\
-			friend bool operator== (T,T)  {Led_Assert (false); return false; /*notreached*/}
+			friend bool operator== (T,T)  {Assert (false); return false; /*notreached*/}
 #else
 	#define	STLOpEqualDeclare_BWA(T)
 #endif
@@ -109,7 +110,7 @@ namespace	Stroika {
 #if		qSTLTemplatesErroniouslyRequireDefCTORCuzOfOverExpanding
 	#define	STLDefCTORDeclare_BWA(T)\
 		public:\
-			T() {Led_Assert (false);/*notreached*/}
+			T() {Assert (false);/*notreached*/}
 #else
 	#define	STLDefCTORDeclare_BWA(T)
 #endif
@@ -123,151 +124,25 @@ namespace	Stroika {
 
 
 
-#if		qDebug
-	/*
-	@METHOD:		Led_GetAssertionHandler
-	@DESCRIPTION:	<p>Led makes very heavy use of assertions (to some extent inspired and patterend after
-		Bertrand Meyers Eiffel assertion mechanism). Assertions are logical statements about function parameters,
-		results, object states, etc, which are guaranteed (required) to be held true. These logical assertions
-		serve two important functions: they <em>document</em> the requirements on input parameters for a function,
-		and the promises made on function return. And they perform this documentation task <em>in such a way
-		that the compiler can generate special code (conditionally) to verify that the assertions hold true</em>.</p>
-			<p>This latter point about conditional compilation is important. If the macro preprocessor
-		symbol <code>qDebug</code> is true (non-zero), then this assertion cheching is enabled. If the symbol
-		is false (zero), then the checking is disabled. <b>Of course the promises must always hold true!</b> But
-		since the checking can significantly slow the code, it is best to only build with assertions on in certain
-		circumstances (like while developing, and for much of QA/testing); but for released products it shouldbe
-		disabled so the editor operates at maximum speed.</p>
-			<p>Led's assertion mechanism is not only present to help debug Led itself. After all, that would
-		have little value to a user of the Led class library. It is also very helpful to a programmer using
-		the class library. This is because nearly all the parameters passed to Led functions are immediately
-		checked for validity, so mistakes are trapped as early as possible. If you pass bad values to a Led
-		function, you will very likely get a debugger trap at almost exactly the point in your calling code
-		where the error occured. This can make debugging code written using Led much easier.</p>
-			<p>Led provides four familes of 'assertion' macro functions. The are named 
-				<code><em>Assert</em></code>,
-				<code><em>Require</em></code>,
-				<code><em>Ensure</em></code>, and
-				<code><em>Verify</em></code>.
-			</p>
-			<p>The familily you will most often be interested in is <code><em>Require</em></code>s.
-		This is because these are used to check parameters validity on entry to a function. So typically
-		when you see a <em>Require</em> fail, you will find that it is the calling function which is passing
-		invalid arguments to the function which triggered the requirement failure. The other reason <em>Requires</em>
-		will be of particular interest to programmers using Led is because checking the <em>Require</em> declarations
-		at the beggining of a function is often very telling about the details of what sort of parameters the function expects.
-			</p>
-			<p>Probably the next most common sort of assertion you will see is <em>Ensures</em>. These state <em>promises</em>
-		about the return values of a function. These should very rarely be triggered (if they are , they almost always
-		indicate a bug in the function that triggered the Ensure failure). But the reason they are still of interest
-		to programmers using Led is because they document what can be assumed about return values from a particular function.
-			</p>
-			<p>Plain <em>Assertions</em> are for assertions which don't fall into any of the above categories,
-		but are still useful checks to be performed. When an assertion is triggered, it is almost always diagnostic
-		of a bug in the code which triggered the assertion (or corrupted data structures). (asside: Assertions
-		logically mean the same thing as Ensures, except that Ensures only check return values).</p>
-			</p>
-			<p><em>Verify</em>s are inspired by the MFC VERIFY() macro, and the particular idiosyncracies
-		of the Win32 SDK, though they can be used cross-platform. Many of the Win32 SDK routines return non-zero
-		on success, and zero on failure. Most sample Win32 code you look at simply ignores these results. For
-		paranoia sake (which was very helpful in the old moldy win32s days) I wrap most Win32 SDK calls in a
-		<em><code>Led_Verify</code></em> wrapper. This - when debugging is enabled - checks the return value,
-		and asserts if there is a problem. <b>Very Important: Unlike the other flavors of Assertions, Verify
-		always evaluates its argument!</b>.
-			</p>
-			<p>This last point is worth repeating, as it is the only source of bugs I've ever seen introduced
-		from the use of assertions (and I've seen the mistake more than once). <b>All flavors of assertions
-		(except Verify) do NOT evaluate their arguments if <code>qDebug</code> is off</b>. This means you <b>cannot</b>
-		count on the arguments to assertions having any side-effects. Use <em>Led_Verify</em> instead of the other
-		assertion flavors if you want to only check for compliance if <em><code>qDebug</code></em> is true, but want
-		the side-effect to happen regardless.</p>
-			<p>Now when assertions are triggered, just what happens? Here I think there is only one
-		sensible answer. And that is that the program drops into the debugger. And what happens after that
-		is undefined. This is Led's default behavior.</p>
-			<p>But there are others who hold the view that triggered assertions should
-		generate exceptions. This isn't an appropraite forum for explanations of why this is generally
-		a bad idea. Instead, I simply provide the flexability to allow those who want todo this
-		that ability. There are <code>Led_SetAssertionHandler</code> and <code>Led_GetAssertionHandler</code>
-		functions which allow the programmer to specify an alternate assertion handling scheme. The
-		only assumption Led mkaes about this scheme is that the assertion handling funciton not return
-		(so itmust either exit the program, or longjump/throw). Led makes no gaurantee that attempts
-		to throw out past an assertion will succeed.</p>
-	*/
-	void	(*Led_GetAssertionHandler ()) (const char* fileName, int lineNum);
-	/*
-	@METHOD:		Led_SetAssertionHandler
-	@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-	*/
-	void	Led_SetAssertionHandler (void (*assertionHandler) (const char* fileName, int lineNum));
-	
-	void	_Led_Debug_Trap_ (const char* fileName, int lineNum);	// don't call directly - implementation detail...
-	/*
-	@METHOD:		Led_Assert
-	@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-	*/
-	#define	Led_Assert(c)			{if (!(c)) { _Led_Debug_Trap_ (__FILE__, __LINE__); }}
-	/*
-	@METHOD:		Led_Require
-	@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-	*/
-	#define	Led_Require(c)			{if (!(c)) { _Led_Debug_Trap_ (__FILE__, __LINE__); }}
-	/*
-	@METHOD:		Led_Ensure
-	@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-	*/
-	#define	Led_Ensure(c)			{if (!(c)) { _Led_Debug_Trap_ (__FILE__, __LINE__); }}
-#else
-	#define	Led_Assert(c)
-	#define	Led_Require(c)
-	#define	Led_Ensure(c)
-#endif
 
 /*
 @METHOD:		Led_AssertMember
 @DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
 */
-#define	Led_AssertMember(p,c)	Led_Assert (dynamic_cast<c*>(p) != NULL)
+#define	Led_AssertMember(p,c)	Assert (dynamic_cast<c*>(p) != NULL)
 /*
 @METHOD:		Led_RequireMember
 @DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
 */
-#define	Led_RequireMember(p,c)	Led_Require (dynamic_cast<c*>(p) != NULL)
+#define	Led_RequireMember(p,c)	Require (dynamic_cast<c*>(p) != NULL)
 /*
 @METHOD:		Led_EnsureMember
 @DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
 */
-#define	Led_EnsureMember(p,c)	Led_Ensure (dynamic_cast<c*>(p) != NULL)
-
-/*
-@METHOD:		Led_AssertNotNil
-@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-*/
-#define	Led_AssertNotNil(p)		Led_Assert (p!=NULL)
-/*
-@METHOD:		Led_RequireNotNil
-@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-*/
-#define	Led_RequireNotNil(p)	Led_Require (p!=NULL)
-/*
-@METHOD:		Led_EnsureNotNil
-@DESCRIPTION:	<p>See @'Led_GetAssertionHandler'</p>
-*/
-#define	Led_EnsureNotNil(p)		Led_Ensure (p!=NULL)
+#define	Led_EnsureMember(p,c)	Ensure (dynamic_cast<c*>(p) != NULL)
 
 
-/*
-@METHOD:		Led_Verify
-@DESCRIPTION:	<p>Led_Verify () is an assertion like Led_Assert, except its argument is ALWAYS EVALUATED, even if
-	debug is OFF. This is useful for cases where you just want todo an assertion about the result
-	of a function, but don't want to keep the result in a temporary just to look at it for this
-	one assertion test...</p>
-		<p>See @'Led_GetAssertionHandler'</p>
-*/
-#if		qDebug
-	#define	Led_Verify(c)		Led_Assert (c)
-#else
-	#define	Led_Verify(c)		(c)
-#endif
+
 
 
 
@@ -894,7 +769,7 @@ template	<typename	T>	class	Led_RefCntPtr {
 			fCount (from.fCount)
 			{
 				if (fPtr != NULL) {
-					Led_RequireNotNil (fCount);
+					RequireNotNull (fCount);
 					(*fCount)++;
 				}
 			}
@@ -1046,7 +921,7 @@ template <class VECTOR>
 		{
 			size_t	vSize	=	v.size ();
 			size_t	vCap	=	v.capacity ();
-			Led_Assert (vSize <= vCap);
+			Assert (vSize <= vCap);
 			if (vSize == vCap) {
 				size_t	newCap	=	vSize * 2;
 				newCap = max (newCap, size_t (4));
@@ -1216,13 +1091,13 @@ template	<typename	ELEMENT>
 				CacheElement*	fCur;
 				CacheIterator& operator++ ()
 					{
-						Led_RequireNotNil (fCur);
+						RequireNotNull (fCur);
 						fCur = fCur->fNext;
 						return *this;
 					}
 				ELEMENT& operator* ()
 					{
-						Led_RequireNotNil (fCur);
+						RequireNotNull (fCur);
 						return fCur->fElement;
 					}
 				bool operator== (CacheIterator rhs)
@@ -1743,7 +1618,7 @@ namespace	Stroika {
 
 	inline	size_t	Led_tStrlen (const Led_tChar* s)
 		{
-			Led_RequireNotNil (s);
+			RequireNotNull (s);
 			#if		qSingleByteCharacters
 				return ::strlen (s);
 			#elif	qMultiByteCharacters
@@ -1756,8 +1631,8 @@ namespace	Stroika {
 
 	inline	int	Led_tStrCmp (const Led_tChar* l, const Led_tChar* r)
 		{
-			Led_RequireNotNil (l);
-			Led_RequireNotNil (r);
+			RequireNotNull (l);
+			RequireNotNull (r);
 			#if		qSingleByteCharacters
 				return ::strcmp (l, r);
 			#elif	qMultiByteCharacters
@@ -1770,8 +1645,8 @@ namespace	Stroika {
 	
 	inline	int	Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 		{
-			Led_RequireNotNil (l);
-			Led_RequireNotNil (r);
+			RequireNotNull (l);
+			RequireNotNull (r);
 			#if		qSingleByteCharacters
 				return ::strncmp (l, r, n);
 			#elif	qMultiByteCharacters
@@ -1785,7 +1660,7 @@ namespace	Stroika {
 
 	inline	const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c)
 		{
-			Led_RequireNotNil (s);
+			RequireNotNull (s);
 			#if		qWideCharacters
 				return ::wcschr (s, c);
 			#else
@@ -2060,10 +1935,10 @@ namespace	Stroika {
 				#pragma warn -8008
 				#pragma warn -8066
 			#endif
-			Led_Require (nElements > (Led_NEltsOf (fBuffer)));
+			Require (nElements > (Led_NEltsOf (fBuffer)));
 			// if we were using buffer, then assume whole thing, and if we malloced, save
 			// size in unused buffer
-			Led_Assert (sizeof (fBuffer) >= sizeof (size_t));	// one customer changes the size of the buffer to 1, and wondered why it crashed...
+			Assert (sizeof (fBuffer) >= sizeof (size_t));	// one customer changes the size of the buffer to 1, and wondered why it crashed...
 			size_t	oldEltCount	=	(fPointer == fBuffer)?
 										Led_NEltsOf (fBuffer):
 										*(size_t*)&fBuffer;
@@ -2161,18 +2036,18 @@ namespace	Stroika {
 	#if		qCompilerBuggyOverloadingConstOperators
 	template	<typename	T>	inline	Led_SmallStackBuffer<T>::operator T* () const
 		{
-			Led_AssertNotNil (fPointer);
+			AssertNotNull (fPointer);
 			return (const_cast<T*> (fPointer));
 		}
 	#else
 	template	<typename	T>	inline	Led_SmallStackBuffer<T>::operator T* ()
 		{
-			Led_AssertNotNil (fPointer);
+			AssertNotNull (fPointer);
 			return (fPointer);
 		}
 	template	<typename	T>	inline	Led_SmallStackBuffer<T>::operator const T* () const
 		{
-			Led_AssertNotNil (fPointer);
+			AssertNotNull (fPointer);
 			return (fPointer);
 		}
 	#endif
@@ -2197,7 +2072,7 @@ namespace	Stroika {
 			fCount (from.fCount)
 			{
 				if (fPtr != NULL) {
-					Led_RequireNotNil (fCount);
+					RequireNotNull (fCount);
 					(*fCount)++;
 				}
 			}
@@ -2206,8 +2081,8 @@ namespace	Stroika {
 			{
 				if (rhs.fPtr != fPtr) {
 					if (fPtr != NULL) {
-						Led_AssertNotNil (fCount);
-						Led_Assert (*fCount > 0);
+						AssertNotNull (fCount);
+						Assert (*fCount > 0);
 						(*fCount)--;
 						if (*fCount == 0) {
 							Led_BlockAllocated<size_t>::operator delete (fCount);
@@ -2219,8 +2094,8 @@ namespace	Stroika {
 					fPtr = rhs.fPtr;
 					fCount = rhs.fCount;
 					if (fPtr != NULL) {
-						Led_AssertNotNil (fCount);
-						Led_Assert (*fCount > 0);
+						AssertNotNull (fCount);
+						Assert (*fCount > 0);
 						(*fCount)++;
 					}
 				}
@@ -2230,8 +2105,8 @@ namespace	Stroika {
 		inline	Led_RefCntPtr<T>::~Led_RefCntPtr ()
 			{
 				if (fPtr != NULL) {
-					Led_AssertNotNil (fCount);
-					Led_Assert (*fCount > 0);
+					AssertNotNull (fCount);
+					Assert (*fCount > 0);
 					(*fCount)--;
 					if (*fCount == 0) {
 						Led_BlockAllocated<size_t>::operator delete (fCount);
@@ -2251,9 +2126,9 @@ namespace	Stroika {
 		*/
 		inline	const T&	Led_RefCntPtr<T>::GetRep () const
 			{
-				Led_AssertNotNil (fPtr);
-				Led_AssertNotNil (fCount);
-				Led_Assert (*fCount >= 1);
+				AssertNotNull (fPtr);
+				AssertNotNull (fCount);
+				Assert (*fCount >= 1);
 				return *fPtr;
 			}
 	template	<typename T>
@@ -2263,9 +2138,9 @@ namespace	Stroika {
 		*/
 		inline	T&		Led_RefCntPtr<T>::GetRep ()
 			{
-				Led_AssertNotNil (fPtr);
-				Led_AssertNotNil (fCount);
-				Led_Assert (*fCount >= 1);
+				AssertNotNull (fPtr);
+				AssertNotNull (fCount);
+				Assert (*fCount >= 1);
 				return *fPtr;
 			}
 	template	<typename T>
@@ -2355,7 +2230,7 @@ namespace	Stroika {
 	// in the genclassed .cc file....
 	inline	void**	Led_Block_Alloced_GetMem_Util (const size_t kSize)
 		{
-			Led_Assert (kSize >= sizeof (void*));	//	cuz we overwrite first sizeof(void*) for link
+			Assert (kSize >= sizeof (void*));	//	cuz we overwrite first sizeof(void*) for link
 
 			/*
 			 * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
@@ -2582,8 +2457,8 @@ namespace	Stroika {
 			#pragma warn -8008
                         #pragma warn -8066
 		#endif
-			Led_Assert (sizeof (T) >= sizeof (void*));	//	cuz we overwrite first sizeof(void*) for link
-			Led_Assert (n == sizeof (T));
+			Assert (sizeof (T) >= sizeof (void*));	//	cuz we overwrite first sizeof(void*) for link
+			Assert (n == sizeof (T));
 			Led_Arg_Unused (n);							// n only used for debuggging, avoid compiler warning
 		#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 			#pragma pop
@@ -2766,7 +2641,7 @@ template	<typename ARRAY_CONTAINER, class	T>
 	inline	Led_StackBasedHandleLocker::Led_StackBasedHandleLocker (GenericHandle h):
 		fHandle (h)
 			{
-				Led_RequireNotNil (h);
+				RequireNotNull (h);
 				#if		qMacOS
 					fOldState = ::HGetState (h);
 					::HLock (h);
@@ -2820,7 +2695,7 @@ template	<typename ARRAY_CONTAINER, class	T>
 	template	<typename	ELEMENT>
 		void	LRUCache<ELEMENT>::SetMaxCacheSize (size_t maxCacheSize)
 			{
-				Led_Require (maxCacheSize >= 1);
+				Require (maxCacheSize >= 1);
 				if (maxCacheSize != fCachedElts_BUF.size ()) {
 					fCachedElts_BUF.resize (maxCacheSize);
 					// Initially link LRU together.
@@ -2837,17 +2712,17 @@ template	<typename ARRAY_CONTAINER, class	T>
 	template	<typename	ELEMENT>
 		inline	void	LRUCache<ELEMENT>::ShuffleToHead (CacheElement* b)
 			{
-				Led_AssertNotNil (b);
+				AssertNotNull (b);
 				if (b == fCachedElts_First) {
-					Led_Assert (b->fPrev == NULL);
+					Assert (b->fPrev == NULL);
 					return;	// already at head
 				}
 				CacheElement*	prev	=	b->fPrev;
-				Led_AssertNotNil (prev);					// don't call this if already at head
+				AssertNotNull (prev);					// don't call this if already at head
 				// patch following and preceeding blocks to point to each other
 				prev->fNext = b->fNext;
 				if (b->fNext == NULL) {
-					Led_Assert (b == fCachedElts_fLast);
+					Assert (b == fCachedElts_fLast);
 					fCachedElts_fLast = b->fPrev;
 				}
 				else {
@@ -2856,14 +2731,14 @@ template	<typename ARRAY_CONTAINER, class	T>
 
 				// Now patch us into the head of the list
 				CacheElement*	oldFirst	=	fCachedElts_First;
-				Led_AssertNotNil (oldFirst);
+				AssertNotNull (oldFirst);
 				b->fNext = oldFirst;
 				oldFirst->fPrev = b;
 				b->fPrev = NULL;
 				fCachedElts_First = b;
 
-				Led_Ensure (fCachedElts_fLast != NULL and fCachedElts_fLast->fNext == NULL);
-				Led_Ensure (fCachedElts_First != NULL and fCachedElts_First == b and fCachedElts_First->fPrev == NULL and fCachedElts_First->fNext != NULL);
+				Ensure (fCachedElts_fLast != NULL and fCachedElts_fLast->fNext == NULL);
+				Ensure (fCachedElts_First != NULL and fCachedElts_First == b and fCachedElts_First->fPrev == NULL and fCachedElts_First->fNext != NULL);
 			}
 	template	<typename	ELEMENT>
 		inline	void	LRUCache<ELEMENT>::ClearCache ()
@@ -2932,7 +2807,7 @@ template	<typename ARRAY_CONTAINER, class	T>
 #endif
 	inline	Led_tChar*		Led_NextChar (Led_tChar* fromHere)	
 		{
-			Led_AssertNotNil (fromHere);
+			AssertNotNull (fromHere);
 			#if		qSingleByteCharacters || qWideCharacters
 				return (fromHere + 1);		// address arithmatic does the magic for wide characters
 			#elif	qMultiByteCharacters
@@ -2941,7 +2816,7 @@ template	<typename ARRAY_CONTAINER, class	T>
 		}
 	inline	const Led_tChar*	Led_NextChar (const Led_tChar* fromHere)
 		{
-			Led_AssertNotNil (fromHere);
+			AssertNotNull (fromHere);
 			#if		qSingleByteCharacters || qWideCharacters
 				return (fromHere + 1);		// address arithmatic does the magic for wide characters
 			#elif	qMultiByteCharacters
@@ -2981,9 +2856,9 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 	 */
 	inline	const Led_tChar*	Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere)
 		{
-			Led_AssertNotNil (startOfString);
-			Led_AssertNotNil (fromHere);
-			Led_Assert (startOfString < fromHere);	// Must be room for previous character to exist!
+			AssertNotNull (startOfString);
+			AssertNotNull (fromHere);
+			Assert (startOfString < fromHere);	// Must be room for previous character to exist!
 			#if		qSingleByteCharacters || qWideCharacters
 				Led_Arg_Unused (startOfString);
 				return (fromHere - 1);		// address arithmatic does the magic for wide characters
@@ -3001,7 +2876,7 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 				 *	a lot like lead-bytes - so this happens a lot.
 				 */
 				if (Led_IsLeadByte (*(fromHere-1))) {
-					Led_Assert (fromHere-startOfString >= 2);		// else split character...
+					Assert (fromHere-startOfString >= 2);		// else split character...
 					return (fromHere - 2);
 				}
 				if (fromHere == startOfString + 1) {
@@ -3018,7 +2893,7 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 						break;
 					} 
 				}
-				Led_Assert (cur < fromHere);
+				Assert (cur < fromHere);
 				// Now we are pointing AT LEAST one mbyte char back from 'fromHere' so scan forward as we used
 				// to to find the previous character...
 				for (; cur < fromHere; ) {
@@ -3026,10 +2901,10 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 					if (next == fromHere) {
 						return (cur);
 					}
-					Led_Assert (next < fromHere);	// if we've gone past - then fromHere must have split a mbyte char!
+					Assert (next < fromHere);	// if we've gone past - then fromHere must have split a mbyte char!
 					cur = next;
 				}
-				Led_Assert (false); return (0);		// previous character must exist!!!
+				Assert (false); return (0);		// previous character must exist!!!
 			#endif
 		}
 	inline	Led_tChar*			Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere)
@@ -3062,8 +2937,8 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 			// assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
 
 			// require input is valid decimal digit
-			Led_Require (digitChar >= '0');
-			Led_Require (digitChar <= '9');
+			Require (digitChar >= '0');
+			Require (digitChar <= '9');
 			return (digitChar-'0');
 		}
 	inline	char		Led_NumberToDigitChar (unsigned digitValue)
@@ -3071,7 +2946,7 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 			// assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
 
 			// require input is valid decimal digit value
-			Led_Require (digitValue <= 9);
+			Require (digitValue <= 9);
 			return (digitValue+'0');
 		}
 
@@ -3118,7 +2993,7 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 	                }
 					closestStart = cur;
 				}
-				Led_Assert ((closestStart == guessedEnd) or (closestStart == guessedEnd - 1));
+				Assert ((closestStart == guessedEnd) or (closestStart == guessedEnd - 1));
 				return closestStart;
 			}
 		inline	Led_tChar*			Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd)
@@ -3195,12 +3070,12 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 		}
 	inline	void*	Led_ClipboardObjectAcquire::GetData () const
 		{
-			Led_Assert (GoodClip ());
+			Assert (GoodClip ());
 			return (fLockedData);
 		}
 	inline	size_t	Led_ClipboardObjectAcquire::GetDataLength () const
 		{
-			Led_Assert (GoodClip ());
+			Assert (GoodClip ());
 			#if		qMacOS
 				return (::GetHandleSize (fOSClipHandle));
 			#elif	qWindows

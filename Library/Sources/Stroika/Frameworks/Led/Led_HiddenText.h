@@ -403,7 +403,7 @@ class	ColoredUniformHidableTextMarkerOwner : public UniformHidableTextMarkerOwne
 		{
 			MarkerOwner*	mo	=	inherited::GetOwner ();
 			HidableTextMarkerOwner*	hmo	=	dynamic_cast<HidableTextMarkerOwner*> (mo);
-			Led_EnsureNotNil (hmo);
+			EnsureNotNull (hmo);
 			return *hmo;
 		}
 	inline	void	HidableTextMarkerOwner::HidableTextMarker::Hide ()
@@ -411,14 +411,14 @@ class	ColoredUniformHidableTextMarkerOwner : public UniformHidableTextMarkerOwne
 			if (fShown) {
 				GetOwner ().CollapseMarker (this);
 			}
-			Led_Ensure (not fShown);
+			Ensure (not fShown);
 		}
 	inline	void	HidableTextMarkerOwner::HidableTextMarker::Show ()
 		{
 			if (not fShown) {
 				GetOwner ().ReifyMarker (this);
 			}
-			Led_Ensure (fShown);
+			Ensure (fShown);
 		}
 	inline	bool	HidableTextMarkerOwner::HidableTextMarker::IsShown () const
 		{

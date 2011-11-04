@@ -74,7 +74,7 @@ static	bool	SJIS_IsLeadByte (unsigned char c)
 	}
 static	bool	SJIS_IsBOLChar (const char* mbChar)
 	{
-		Led_AssertNotNil (mbChar);
+		AssertNotNull (mbChar);
 		unsigned char byte0 = (unsigned char)mbChar[0];
 		unsigned char byte1 = (unsigned char)mbChar[1];
 		// Based on code from LEC - jwrap.c
@@ -112,7 +112,7 @@ static	bool	SJIS_IsBOLChar (const char* mbChar)
 	}
 static	bool	SJIS_IsEOLChar (const char* mbChar)
 	{
-		Led_AssertNotNil (mbChar);
+		AssertNotNull (mbChar);
 	 	unsigned char byte0 = (unsigned char)mbChar[0];
 	 	unsigned char byte1 = (unsigned char)mbChar[1];
 		// Based on code from LEC - jwrap.c
@@ -155,7 +155,7 @@ static	bool	SJIS_IsEOLChar (const char* mbChar)
 			int	adjust		=	(c2 < 159? 1: 0);
 			int	rowOffset	=	(c1 < 160? 112: 176);
 			int	result		=	((c1 - rowOffset) << 1) - adjust - 32;
-			Led_Assert (result >= 0);
+			Assert (result >= 0);
 			return (result);
 		}
 	inline	bool	IsJapaneseBOLChar (wchar_t c)
@@ -163,7 +163,7 @@ static	bool	SJIS_IsEOLChar (const char* mbChar)
 			char	mbyteChars[2];
 			size_t	nBytesInThisChar	=	2;
 			CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
-			Led_Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
+			Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
 			if (nBytesInThisChar == 0) {
 				return 0;	// if No SJIS code page, not much we can do!
 			}
@@ -174,7 +174,7 @@ static	bool	SJIS_IsEOLChar (const char* mbChar)
 			char	mbyteChars[2];
 			size_t	nBytesInThisChar	=	2;
 			CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
-			Led_Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
+			Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
 			if (nBytesInThisChar == 0) {
 				return 0;	// if No SJIS code page, not much we can do!
 			}
@@ -185,7 +185,7 @@ static	bool	SJIS_IsEOLChar (const char* mbChar)
 			char	mbyteChars[2];
 			size_t	nBytesInThisChar	=	2;
 			CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
-			Led_Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
+			Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
 			if (nBytesInThisChar == 0) {
 				return 0;	// if No SJIS code page, not much we can do!
 			}
@@ -233,15 +233,15 @@ void	TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t leng
 											size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
 									) const
 {
-	Led_AssertNotNil (startOfText);
-	Led_AssertNotNil (wordStartResult);
-	Led_AssertNotNil (wordEndResult);
-	Led_AssertNotNil (wordReal);
-	Led_Assert (textOffsetToStartLookingForWord <= lengthOfText);
+	AssertNotNull (startOfText);
+	AssertNotNull (wordStartResult);
+	AssertNotNull (wordEndResult);
+	AssertNotNull (wordReal);
+	Assert (textOffsetToStartLookingForWord <= lengthOfText);
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (startOfText, lengthOfText));
-		Led_Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));
-		Led_Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));
+		Assert (Led_IsValidMultiByteString (startOfText, lengthOfText));
+		Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));
+		Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));
 	#endif
 
 	if (textOffsetToStartLookingForWord == lengthOfText) {
@@ -257,7 +257,7 @@ void	TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t leng
 	 *	space or not (treat all other word-classes as the same for this purpose).
 	 *	Except that there is a special sentinal class which always breaks anything.
 	 */
-	Led_Assert (textOffsetToStartLookingForWord < lengthOfText);	// cuz we checked at start - and returned if equal
+	Assert (textOffsetToStartLookingForWord < lengthOfText);	// cuz we checked at start - and returned if equal
 
 	CharacterClasses	charClass = CharToCharacterClass (startOfText, lengthOfText, &startOfText[textOffsetToStartLookingForWord]);
 
@@ -311,8 +311,8 @@ void	TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t leng
 	}
 	*wordReal = not (charClass == eSpaceClass) and (*wordStartResult != *wordEndResult);
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (startOfText, *wordStartResult));
-		Led_Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));
+		Assert (Led_IsValidMultiByteString (startOfText, *wordStartResult));
+		Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));
 	#endif
 }
 
@@ -320,10 +320,10 @@ void	TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 											size_t* wordEndResult, bool* wordReal
 									) const
 {
-	Led_AssertNotNil (startOfText);
-	Led_AssertNotNil (wordEndResult);
-	Led_AssertNotNil (wordReal);
-	Led_Assert (textOffsetToStartLookingForWord <= lengthOfText);		// Cannot look at characters
+	AssertNotNull (startOfText);
+	AssertNotNull (wordEndResult);
+	AssertNotNull (wordReal);
+	Assert (textOffsetToStartLookingForWord <= lengthOfText);		// Cannot look at characters
 
 	if (textOffsetToStartLookingForWord == lengthOfText) {
 		*wordEndResult = textOffsetToStartLookingForWord;
@@ -332,9 +332,9 @@ void	TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 	}
 
 	#if		qMultiByteCharacters
-		Led_Assert (textOffsetToStartLookingForWord <= lengthOfText);
-		Led_Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));														// initial segment valid
-		Led_Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));		// second segment valid
+		Assert (textOffsetToStartLookingForWord <= lengthOfText);
+		Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));														// initial segment valid
+		Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));		// second segment valid
 	#endif
 
 
@@ -352,7 +352,7 @@ void	TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 	// Scan forward - while character of the same class
 	if (startCharClass == eSentinalClass) {
 		*wordEndResult = textOffsetToStartLookingForWord+1;
-		Led_Assert (not isspace (thisChar));	// else we need to cleanup the wordReal logic below...
+		Assert (not isspace (thisChar));	// else we need to cleanup the wordReal logic below...
 	}
 	else {
 		#if		qWideCharacters
@@ -406,10 +406,10 @@ void	TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 		*wordEndResult = cur-startOfText;
 	}
 	*wordReal = (not (IsASCIISpace (thisChar))) and (textOffsetToStartLookingForWord != *wordEndResult);
-	Led_Assert (*wordEndResult <= lengthOfText);		// LGP added 950208 - in response to Alecs email message of same date - not
+	Assert (*wordEndResult <= lengthOfText);		// LGP added 950208 - in response to Alecs email message of same date - not
 														// sure this assert is right, but might help debugging later...
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));	// be sure 
+		Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));	// be sure 
 	#endif
 }
 
@@ -488,12 +488,12 @@ void	TextBreaks_Basic::RegressionTest ()
 		bool				wordReal		=	0;
 
 		FindWordBreaks (kTest, Led_tStrlen (kTest), 1, &wordStartResult, &wordEndResult, &wordReal);
-		Led_Assert (wordEndResult == 4);
-		Led_Assert (wordReal == true);
+		Assert (wordEndResult == 4);
+		Assert (wordReal == true);
 
 		FindWordBreaks (kTest, Led_tStrlen (kTest), 4, &wordStartResult, &wordEndResult, &wordReal);
-		Led_Assert (wordEndResult == 5);
-		Led_Assert (wordReal == false);
+		Assert (wordEndResult == 5);
+		Assert (wordReal == false);
 	}
 }
 #endif
@@ -597,12 +597,12 @@ void	TextBreaks_Basic_WP::RegressionTest ()
 		bool				wordReal		=	0;
 
 		FindWordBreaks (kTest, Led_tStrlen (kTest), 1, &wordStartResult, &wordEndResult, &wordReal);
-		Led_Assert (wordEndResult == 4);
-		Led_Assert (wordReal == true);
+		Assert (wordEndResult == 4);
+		Assert (wordReal == true);
 
 		FindWordBreaks (kTest, Led_tStrlen (kTest), 4, &wordStartResult, &wordEndResult, &wordReal);
-		Led_Assert (wordEndResult == 5);
-		Led_Assert (wordReal == false);
+		Assert (wordEndResult == 5);
+		Assert (wordReal == false);
 	}
 
 	{
@@ -612,8 +612,8 @@ void	TextBreaks_Basic_WP::RegressionTest ()
 		bool				wordReal		=	0;
 
 		FindWordBreaks (kTest, Led_tStrlen (kTest), 25, &wordStartResult, &wordEndResult, &wordReal);
-		Led_Assert (wordEndResult == 31);
-		Led_Assert (wordReal == true);
+		Assert (wordEndResult == 31);
+		Assert (wordReal == true);
 	}
 }
 #endif
@@ -662,8 +662,8 @@ void	TextBreaks_Basic_TextEditor::RegressionTest ()
 		bool				wordReal		=	0;
 
 		FindWordBreaks (kTest, Led_tStrlen (kTest), 25, &wordStartResult, &wordEndResult, &wordReal);
-		Led_Assert (wordEndResult == 29);
-		Led_Assert (wordReal == true);
+		Assert (wordEndResult == 29);
+		Assert (wordReal == true);
 	}
 }
 #endif
@@ -683,15 +683,15 @@ void	TextBreaks_System::FindWordBreaks (const Led_tChar* startOfText, size_t len
 											size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
 									) const
 {
-	Led_AssertNotNil (startOfText);
-	Led_AssertNotNil (wordStartResult);
-	Led_AssertNotNil (wordEndResult);
-	Led_AssertNotNil (wordReal);
-	Led_Assert (textOffsetToStartLookingForWord <= lengthOfText);
+	AssertNotNull (startOfText);
+	AssertNotNull (wordStartResult);
+	AssertNotNull (wordEndResult);
+	AssertNotNull (wordReal);
+	Assert (textOffsetToStartLookingForWord <= lengthOfText);
 #if		qMultiByteCharacters
-	Led_Assert (Led_IsValidMultiByteString (startOfText, lengthOfText));
-	Led_Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));
-	Led_Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));
+	Assert (Led_IsValidMultiByteString (startOfText, lengthOfText));
+	Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));
+	Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));
 #endif
 
 	if (textOffsetToStartLookingForWord == lengthOfText) {
@@ -724,8 +724,8 @@ void	TextBreaks_System::FindWordBreaks (const Led_tChar* startOfText, size_t len
 	short	theType	=	::CharacterType ((Ptr)&startOfText[*wordStartResult], 0, smSystemScript) & (smcTypeMask | smcClassMask);
 	*wordReal = (*wordStartResult != *wordEndResult) and not (theType == (smCharPunct | smPunctBlank));
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (startOfText, *wordStartResult));
-		Led_Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));
+		Assert (Led_IsValidMultiByteString (startOfText, *wordStartResult));
+		Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));
 	#endif
 }
 
@@ -733,10 +733,10 @@ void	TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t len
 											size_t* wordEndResult, bool* wordReal
 									) const
 {
-	Led_AssertNotNil (startOfText);
-	Led_AssertNotNil (wordEndResult);
-	Led_AssertNotNil (wordReal);
-	Led_Assert (textOffsetToStartLookingForWord <= lengthOfText);		// Cannot look at characters
+	AssertNotNull (startOfText);
+	AssertNotNull (wordEndResult);
+	AssertNotNull (wordReal);
+	Assert (textOffsetToStartLookingForWord <= lengthOfText);		// Cannot look at characters
 
 	if (textOffsetToStartLookingForWord == lengthOfText) {
 		*wordEndResult = textOffsetToStartLookingForWord;
@@ -745,9 +745,9 @@ void	TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t len
 	}
 
 #if		qMultiByteCharacters
-	Led_Assert (textOffsetToStartLookingForWord <= lengthOfText);
-	Led_Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));														// initial segment valid
-	Led_Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));		// second segment valid
+	Assert (textOffsetToStartLookingForWord <= lengthOfText);
+	Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));														// initial segment valid
+	Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText-textOffsetToStartLookingForWord));		// second segment valid
 #endif
 
 	/*
@@ -772,10 +772,10 @@ void	TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t len
 	 */
 	short	theType	=	::CharacterType ((Ptr)&startOfText[results[0].offFirst], 0, smSystemScript) & (smcTypeMask | smcClassMask);
 	*wordReal = (results[0].offFirst != *wordEndResult) and not (theType == (smCharPunct | smPunctBlank));
-	Led_Assert (*wordEndResult <= lengthOfText);		// LGP added 950208 - in response to Alecs email message of same date - not
+	Assert (*wordEndResult <= lengthOfText);		// LGP added 950208 - in response to Alecs email message of same date - not
 													// sure this assert is right, but might help debugging later...
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));	// be sure 
+		Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));	// be sure 
 	#endif
 }
 #endif

@@ -219,7 +219,7 @@ class	Led_TabStopList {
 				GrafPtr	t	=	NULL;
 				::GetPort (&t);
 			#endif
-			Led_EnsureNotNil (t);
+			EnsureNotNull (t);
 			return t;
 		}
 
@@ -244,7 +244,7 @@ class	Led_FontObject {
 			}
 		nonvirtual	int	GetObject (int nCount, LPVOID lpObject) const
 			{
-				Led_Assert (m_hObject != NULL);
+				Assert (m_hObject != NULL);
 				return ::GetObject(m_hObject, nCount, lpObject);
 			}
 		nonvirtual	BOOL DeleteObject ()
@@ -261,7 +261,7 @@ class	Led_FontObject {
 			}
 		nonvirtual	BOOL Attach (HFONT hObject)
 			{
-				Led_Assert (m_hObject == NULL);      // only attach once, detach on destroy
+				Assert (m_hObject == NULL);      // only attach once, detach on destroy
 				if (hObject == NULL)
 					return FALSE;
 				m_hObject = hObject;
@@ -292,7 +292,7 @@ class	Led_Brush {
 			}
 		nonvirtual	BOOL Attach (HBRUSH hObject)
 			{
-				Led_Assert (m_hObject == NULL);      // only attach once, detach on destroy
+				Assert (m_hObject == NULL);      // only attach once, detach on destroy
 				if (hObject == NULL)
 					return FALSE;
 				m_hObject = hObject;
@@ -547,19 +547,19 @@ class	Led_Region  {
 				}
 			int CombineRgn(Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode)
 				{
-					Led_Require (pRgn1 != NULL); 
-					Led_Require (pRgn2 != NULL); 
-					Led_Require (fRgn != NULL); 
+					Require (pRgn1 != NULL); 
+					Require (pRgn2 != NULL); 
+					Require (fRgn != NULL); 
 					return ::CombineRgn (fRgn, pRgn1->fRgn, pRgn2->fRgn, nCombineMode); 
 				}
 			BOOL	PtInRegion (int x, int y) const
 				{
-					Led_Require (fRgn != NULL);
+					Require (fRgn != NULL);
 					return ::PtInRegion (fRgn, x, y);
 				}
 			BOOL PtInRegion(POINT point) const
 				{
-					Led_Require (fRgn != NULL);
+					Require (fRgn != NULL);
 					return ::PtInRegion (fRgn, point.x, point.y);
 				}
 		private:
@@ -694,7 +694,7 @@ class	Led_Pen {
 			}
 		nonvirtual	BOOL Attach (HPEN hObject)
 			{
-				Led_Assert (m_hObject == NULL);      // only attach once, detach on destroy
+				Assert (m_hObject == NULL);      // only attach once, detach on destroy
 				if (hObject == NULL)
 					return FALSE;
 				m_hObject = hObject;
@@ -833,19 +833,19 @@ class	Led_LineSpacing {
 			fRule (rule),
 			fArg (0)
 			{
-				Led_Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
+				Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
 			}
 		Led_LineSpacing (Rule rule, Led_TWIPS twips):
 			fRule (rule),
 			fArg (twips)
 			{
-				Led_Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
+				Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
 			}
 		Led_LineSpacing (Rule rule, unsigned lineCount):
 			fRule (rule),
 			fArg (lineCount)
 			{
-				Led_Require (rule == eExactLinesSpacing);
+				Require (rule == eExactLinesSpacing);
 				switch (lineCount) {
 					case	20:		fRule = eSingleSpace;	break;
 					case	30:		fRule = eOnePointFiveSpace;	break;
@@ -1640,7 +1640,7 @@ class	Led_WindowDC : public Led_Tablet_ {
 		Led_WindowDC (HWND hWnd):
 			m_hWnd (hWnd)
 			{
-				Led_Require (m_hWnd == NULL or ::IsWindow (m_hWnd));
+				Require (m_hWnd == NULL or ::IsWindow (m_hWnd));
 				if (!Attach (::GetWindowDC (m_hWnd))) {
 					Led_ThrowOutOfMemoryException ();
 				}
@@ -1648,7 +1648,7 @@ class	Led_WindowDC : public Led_Tablet_ {
 
 			~Led_WindowDC ()
 				{
-					Led_AssertNotNil (m_hDC);
+					AssertNotNull (m_hDC);
 					::ReleaseDC (m_hWnd, Detach ());
 				}
 	private:
@@ -2168,7 +2168,7 @@ void	Led_CenterWindowInParent (HWND w);
 		*/
 		inline	typename	Rect_Base<POINT_TYPE,SIZE_TYPE>::DistanceType	Rect_Base<POINT_TYPE,SIZE_TYPE>::GetHeight () const
 			{
-				Led_Ensure (bottom >= top);
+				Ensure (bottom >= top);
 				return (bottom-top);
 			}
 	template	<typename POINT_TYPE, typename SIZE_TYPE>
@@ -2178,7 +2178,7 @@ void	Led_CenterWindowInParent (HWND w);
 		*/
 		inline	typename	Rect_Base<POINT_TYPE,SIZE_TYPE>::DistanceType	Rect_Base<POINT_TYPE,SIZE_TYPE>::GetWidth () const
 			{
-				Led_Ensure (right >= left);
+				Ensure (right >= left);
 				return (right-left);
 			}
 	template	<typename POINT_TYPE, typename SIZE_TYPE>
@@ -2332,7 +2332,7 @@ void	Led_CenterWindowInParent (HWND w);
 			}
 		inline	auto_gdi_ptr::~auto_gdi_ptr ()
 			{
-				Led_Verify (::DeleteObject (fGDIObj));
+				Verify (::DeleteObject (fGDIObj));
 			}
 	#endif
 
@@ -2359,15 +2359,15 @@ void	Led_CenterWindowInParent (HWND w);
 				:fRgn (::CreateRectRgn (r.GetLeft (), r.GetTop (), r.GetRight (), r.GetBottom ()))
 			#endif
 			{
-				Led_Require (r.GetHeight () >= 0);
-				Led_Require (r.GetWidth () >= 0);
+				Require (r.GetHeight () >= 0);
+				Require (r.GetWidth () >= 0);
 				#if		qMacOS || qWindows
 					Led_ThrowIfNull (fRgn);
 				#endif
 				#if		qMacOS
 					::SetRectRgn (fRgn, (short)r.left, (short)r.top, (short)r.right, (short)r.bottom);
 				#endif
-				Led_Assert (GetBoundingRect () == r or (GetBoundingRect ().IsEmpty () and r.IsEmpty ()));
+				Assert (GetBoundingRect () == r or (GetBoundingRect ().IsEmpty () and r.IsEmpty ()));
 			}
 		inline	Led_Region::Led_Region (const Led_Region& from)
 			#if		qMacOS
@@ -2383,7 +2383,7 @@ void	Led_CenterWindowInParent (HWND w);
 				#if		qMacOS
 					::CopyRgn (from.GetOSRep (), fRgn);
 				#elif	qWindows
-					Led_Verify (::CombineRgn (fRgn, from, from, RGN_COPY) != ERROR);
+					Verify (::CombineRgn (fRgn, from, from, RGN_COPY) != ERROR);
 				#endif
 			}
 		inline	const Led_Region& Led_Region::operator= (const Led_Region& rhs)
@@ -2396,7 +2396,7 @@ void	Led_CenterWindowInParent (HWND w);
 					fRgn = ::NewRgn ();
 					::CopyRgn (rhs.GetOSRep (), fRgn);
 				#elif	qWindows
-					Led_Verify (::CombineRgn (fRgn, rhs, rhs, RGN_COPY) != ERROR);
+					Verify (::CombineRgn (fRgn, rhs, rhs, RGN_COPY) != ERROR);
 				#endif
 				#if		qMacOS || qWindows
 					Led_ThrowIfNull (fRgn);
@@ -2418,15 +2418,15 @@ void	Led_CenterWindowInParent (HWND w);
 		inline	bool	Led_Region::IsEmpty () const
 			{
 				#if		qMacOS || qWindows
-					Led_AssertNotNil (fRgn);
+					AssertNotNull (fRgn);
 				#endif
-				Led_Assert (false);	//NYI - not used yet - so don't worry about this right now... LGP 2002-12-03
+				Assert (false);	//NYI - not used yet - so don't worry about this right now... LGP 2002-12-03
 				return false;
 			}
 		inline	Led_Rect	Led_Region::GetBoundingRect () const
 			{
 				#if		qMacOS || qWindows
-					Led_AssertNotNil (fRgn);
+					AssertNotNull (fRgn);
 				#endif
 				#if		qMacOS
 					#if		TARGET_CARBON
@@ -2438,17 +2438,17 @@ void	Led_CenterWindowInParent (HWND w);
 				#elif	qWindows
 					RECT	r;
 					int		tmp	=	::GetRgnBox (fRgn, &r);
-					Led_Verify (tmp != 0);
+					Verify (tmp != 0);
 					#if		qDebug
 						{
 							if (tmp == 0) {
-								Led_Assert (AsLedRect (r) == Led_Rect (0, 0, 0, 0));
+								Assert (AsLedRect (r) == Led_Rect (0, 0, 0, 0));
 							}
 						}
 					#endif
 					return AsLedRect (r);
 				#else
-					Led_Assert (false);
+					Assert (false);
 					return Led_Rect (0, 0, 0, 0);
 				#endif
 			}
@@ -2458,7 +2458,7 @@ void	Led_CenterWindowInParent (HWND w);
 				#if		qMacOS
 					::SectRgn (lhs.GetOSRep (), rhs.GetOSRep (), result.GetOSRep ());
 				#elif	qWindows
-					Led_Verify (::CombineRgn (result, lhs, rhs, RGN_AND) != ERROR);
+					Verify (::CombineRgn (result, lhs, rhs, RGN_AND) != ERROR);
 				#endif
 				return result;
 			}
@@ -2468,7 +2468,7 @@ void	Led_CenterWindowInParent (HWND w);
 				#if		qMacOS
 					::UnionRgn (lhs.GetOSRep (), rhs.GetOSRep (), result.GetOSRep ());
 				#elif	qWindows
-					Led_Verify (::CombineRgn (result, lhs, rhs, RGN_OR) != ERROR);
+					Verify (::CombineRgn (result, lhs, rhs, RGN_OR) != ERROR);
 				#endif
 				return result;
 			}
@@ -2485,7 +2485,7 @@ void	Led_CenterWindowInParent (HWND w);
 		}
 	inline	Led_Distance	Led_TabStopList::ComputeTabStopAfterPosition (Led_Tablet tablet, Led_Distance afterPos) const
 		{
-			Led_RequireNotNil (tablet);
+			RequireNotNull (tablet);
 			return tablet->CvtFromTWIPSH (ComputeTabStopAfterPosition (tablet->CvtToTWIPSH (afterPos)));
 		}
 
@@ -2519,7 +2519,7 @@ void	Led_CenterWindowInParent (HWND w);
 	inline	Led_Size	Led_Bitmap::GetImageSize () const
 		{
 			// only valid if m_hObject != NULL
-			Led_RequireNotNil (m_hObject);
+			RequireNotNull (m_hObject);
 			return fImageSize;
 		}
 #endif
@@ -2550,14 +2550,14 @@ void	Led_CenterWindowInParent (HWND w);
 					fLogPixelsV = GetDeviceCaps (LOGPIXELSY);
 				}
 				POINT	vpOrg;
-				Led_Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
+				Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
 				POINT	wOrg;
-				Led_Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
+				Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
 				POINT	x	=	vpOrg;
 				x.y += ::MulDiv (from, fLogPixelsV, 1440);
-				Led_Verify (::DPtoLP (m_hAttribDC, &x, 1));
+				Verify (::DPtoLP (m_hAttribDC, &x, 1));
 				x.y -= wOrg.y;
-				Led_Assert (x.x == wOrg.x);
+				Assert (x.x == wOrg.x);
 				return x.y;
 			#else
 				//TMPHACK - look at tablet resolution?
@@ -2577,14 +2577,14 @@ void	Led_CenterWindowInParent (HWND w);
 					fLogPixelsH = GetDeviceCaps (LOGPIXELSX);
 				}
 				POINT	vpOrg;
-				Led_Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
+				Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
 				POINT	wOrg;
-				Led_Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
+				Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
 				POINT	x	=	vpOrg;
 				x.x += ::MulDiv (from, fLogPixelsH, 1440);
-				Led_Verify (::DPtoLP (m_hAttribDC, &x, 1));
+				Verify (::DPtoLP (m_hAttribDC, &x, 1));
 				x.x -= wOrg.x;
-				Led_Assert (x.y == wOrg.y);
+				Assert (x.y == wOrg.y);
 				return x.x;
 			#else
 				//TMPHACK - look at tablet resolution?
@@ -2604,14 +2604,14 @@ void	Led_CenterWindowInParent (HWND w);
 					fLogPixelsV = GetDeviceCaps (LOGPIXELSY);
 				}
 				POINT	vpOrg;
-				Led_Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
+				Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
 				POINT	wOrg;
-				Led_Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
+				Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
 				POINT	x	=	wOrg;
 				x.y += from;
-				Led_Verify (::LPtoDP (m_hAttribDC, &x, 1));
+				Verify (::LPtoDP (m_hAttribDC, &x, 1));
 				x.y -= vpOrg.y;
-				Led_Assert (x.x == wOrg.x);
+				Assert (x.x == wOrg.x);
 				return Led_TWIPS (::MulDiv (x.y, 1440, fLogPixelsV));
 			#else
 				return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
@@ -2630,14 +2630,14 @@ void	Led_CenterWindowInParent (HWND w);
 					fLogPixelsH = GetDeviceCaps (LOGPIXELSX);
 				}
 				POINT	vpOrg;
-				Led_Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
+				Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
 				POINT	wOrg;
-				Led_Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
+				Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
 				POINT	x	=	wOrg;
 				x.x += from;
-				Led_Verify (::LPtoDP (m_hAttribDC, &x, 1));
+				Verify (::LPtoDP (m_hAttribDC, &x, 1));
 				x.x -= vpOrg.x;
-				Led_Assert (x.y == vpOrg.y);
+				Assert (x.y == vpOrg.y);
 				return Led_TWIPS (::MulDiv (x.x, 1440, fLogPixelsH));
 			#else
 				return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
@@ -2652,13 +2652,13 @@ void	Led_CenterWindowInParent (HWND w);
 #elif	qWindows
 		inline	BOOL Led_Tablet_::BitBlt(int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop)
 			{ 
-				Led_AssertNotNil (m_hDC); 
+				AssertNotNull (m_hDC); 
 				return ::BitBlt(m_hDC, x, y, nWidth, nHeight, pSrcDC->m_hDC, xSrc, ySrc, dwRop);
 			}
 		inline	BOOL Led_Tablet_::CreateCompatibleDC (Led_Tablet_* pDC)
 			{
-				Led_Assert (m_hDC == NULL);      // only attach once, detach on destroy
-				Led_Assert (m_hAttribDC == NULL);    // only attach to an empty DC
+				Assert (m_hDC == NULL);      // only attach once, detach on destroy
+				Assert (m_hAttribDC == NULL);    // only attach to an empty DC
 
 				m_hDC = ::CreateCompatibleDC (pDC == NULL? NULL: pDC->m_hDC);
 				if (m_hDC == NULL)
@@ -2670,7 +2670,7 @@ void	Led_CenterWindowInParent (HWND w);
 			}
 		inline	COLORREF Led_Tablet_::SetTextColor (COLORREF crColor)
 			{
-				Led_Assert(m_hDC != NULL);
+				Assert(m_hDC != NULL);
 				COLORREF crRetVal = CLR_INVALID;
 
 				if (m_hDC != m_hAttribDC)
@@ -2681,7 +2681,7 @@ void	Led_CenterWindowInParent (HWND w);
 			}
 		inline	COLORREF Led_Tablet_::SetBkColor(COLORREF crColor)
 			{
-				Led_Assert(m_hDC != NULL);
+				Assert(m_hDC != NULL);
 				COLORREF crRetVal = CLR_INVALID;
 
 				if (m_hDC != m_hAttribDC)
@@ -2692,7 +2692,7 @@ void	Led_CenterWindowInParent (HWND w);
 			}
 		inline	HWND Led_Tablet_::GetWindow() const
 			{
-				Led_Assert (m_hDC != NULL);
+				Assert (m_hDC != NULL);
 				return ::WindowFromDC (m_hDC);
 			}
 		inline	BOOL Led_Tablet_::IsPrinting() const
@@ -2701,26 +2701,26 @@ void	Led_CenterWindowInParent (HWND w);
 			}
 		inline	BOOL Led_Tablet_::RoundRect(int x1, int y1, int x2, int y2, int x3, int y3)
 			{
-				Led_Assert(m_hDC != NULL); 
+				Assert(m_hDC != NULL); 
 				return ::RoundRect(m_hDC, x1, y1, x2, y2, x3, y3);
 			}
 		inline	BOOL Led_Tablet_::TextOut(int x, int y, LPCTSTR lpszString, int nCount)
 			{
-				Led_Assert(m_hDC != NULL);
+				Assert(m_hDC != NULL);
 				return ::TextOut(m_hDC, x, y, lpszString, nCount); 
 			}
 #if 0
 		inline	SIZE	Led_Tablet_::GetTextExtent (LPCTSTR lpszString, int nCount) const
 			{
-				Led_Assert(m_hAttribDC != NULL);
+				Assert(m_hAttribDC != NULL);
 				SIZE size;
-				Led_Verify (::GetTextExtentPoint32 (m_hAttribDC, lpszString, nCount, &size));
+				Verify (::GetTextExtentPoint32 (m_hAttribDC, lpszString, nCount, &size));
 				return size;
 			}
 #endif
 		inline	int Led_Tablet_::SetBkMode(int nBkMode)
 			{
-				Led_Assert (m_hDC != NULL);
+				Assert (m_hDC != NULL);
 				int nRetVal = 0;
 
 				if (m_hDC != m_hAttribDC)
@@ -2731,7 +2731,7 @@ void	Led_CenterWindowInParent (HWND w);
 			}
 		inline	unsigned int Led_Tablet_::SetTextAlign (unsigned int nTextAlign)
 			{
-				Led_Assert (m_hDC != NULL);
+				Assert (m_hDC != NULL);
 				unsigned int nRetVal = 0;
 
 				if (m_hDC != m_hAttribDC)
@@ -2743,70 +2743,70 @@ void	Led_CenterWindowInParent (HWND w);
 
 		inline	SIZE Led_Tablet_::GetWindowExt() const
 			{
-				Led_Assert(m_hAttribDC != NULL);
+				Assert(m_hAttribDC != NULL);
 				SIZE size;
-				Led_Verify(::GetWindowExtEx(m_hAttribDC, &size));
+				Verify(::GetWindowExtEx(m_hAttribDC, &size));
 				return size;
 			}
 		inline	SIZE Led_Tablet_::GetViewportExt() const
 			{
-				Led_Assert(m_hAttribDC != NULL);
+				Assert(m_hAttribDC != NULL);
 				SIZE size;
-				Led_Verify (::GetViewportExtEx(m_hAttribDC, &size));
+				Verify (::GetViewportExtEx(m_hAttribDC, &size));
 				return size;
 			}
 		inline	BOOL Led_Tablet_::Rectangle(int x1, int y1, int x2, int y2)
 			{ 
-				 Led_Assert(m_hDC != NULL); 
+				 Assert(m_hDC != NULL); 
 				return ::Rectangle(m_hDC, x1, y1, x2, y2);
 			}
 		inline	BOOL Led_Tablet_::Rectangle(const RECT& r)
 			{ 
-				Led_Assert(m_hDC != NULL); 
+				Assert(m_hDC != NULL); 
 				return ::Rectangle (m_hDC, r.left, r.top, r.right, r.bottom);
 			}
 		inline	BOOL Led_Tablet_::Rectangle(LPCRECT lpRect)
 			{ 
-				Led_Assert(m_hDC != NULL); 
+				Assert(m_hDC != NULL); 
 				return ::Rectangle (m_hDC, lpRect->left, lpRect->top, lpRect->right, lpRect->bottom);
 			}
 		inline	BOOL Led_Tablet_::GetTextMetrics(LPTEXTMETRIC lpMetrics) const
 			{ 
-				Led_Assert(m_hAttribDC != NULL);
+				Assert(m_hAttribDC != NULL);
 				return ::GetTextMetrics(m_hAttribDC, lpMetrics);
 			}
 		inline	HBITMAP	Led_Tablet_::SelectObject (HBITMAP hBitmap)
 			{
-				Led_Assert (m_hDC != NULL);
+				Assert (m_hDC != NULL);
 				return (HBITMAP)::SelectObject (m_hDC, hBitmap);
 			}
 	#if		defined (STRICT)
 		inline	HFONT	Led_Tablet_::SelectObject (HFONT hFont)
 			{
-				Led_Assert (m_hDC != NULL);
+				Assert (m_hDC != NULL);
 				return (HFONT)::SelectObject (m_hDC, hFont);
 			}
 	#endif
 		inline	POINT Led_Tablet_::SetWindowOrg(int x, int y)
 			{
-				Led_Assert (m_hDC != NULL);
+				Assert (m_hDC != NULL);
 				POINT point;
 
 				if (m_hDC != m_hAttribDC)
-					Led_Verify (::SetWindowOrgEx(m_hDC, x, y, &point));
+					Verify (::SetWindowOrgEx(m_hDC, x, y, &point));
 				if (m_hAttribDC != NULL)
-					Led_Verify (::SetWindowOrgEx(m_hAttribDC, x, y, &point));
+					Verify (::SetWindowOrgEx(m_hAttribDC, x, y, &point));
 				return point;
 			}
 		inline	int	Led_Tablet_::GetDeviceCaps (int nIndex) const
 			{
-				Led_Assert (m_hAttribDC != NULL);
+				Assert (m_hAttribDC != NULL);
 				return ::GetDeviceCaps(m_hAttribDC, nIndex);
 			}
 		inline	BOOL Led_Tablet_::Attach (HDC hDC, Led_Tablet_::OwnDCControl ownsDC)
 			{
-				Led_Assert(m_hDC == NULL);      // only attach once, detach on destroy
-				Led_Assert(m_hAttribDC == NULL);    // only attach to an empty DC
+				Assert(m_hDC == NULL);      // only attach once, detach on destroy
+				Assert(m_hAttribDC == NULL);    // only attach to an empty DC
 
 				if (hDC == NULL)
 					return FALSE;
@@ -2829,8 +2829,8 @@ void	Led_CenterWindowInParent (HWND w);
 			#if		qMacOS
 				::MoveTo (to.h, to.v);
 			#elif	qWindows
-				Led_Assert(m_hDC != NULL);
-				Led_Verify (::MoveToEx (m_hDC, to.h, to.v, NULL));
+				Assert(m_hDC != NULL);
+				Verify (::MoveToEx (m_hDC, to.h, to.v, NULL));
 			#elif	qXWindows
 				fCurDrawLineLoc = to;
 			#endif
@@ -2840,8 +2840,8 @@ void	Led_CenterWindowInParent (HWND w);
 			#if		qMacOS
 				::LineTo (to.h, to.v);
 			#elif	qWindows
-				Led_Assert(m_hDC != NULL);
-				Led_Verify (::LineTo (m_hDC, to.h, to.v));
+				Assert(m_hDC != NULL);
+				Verify (::LineTo (m_hDC, to.h, to.v));
 			#elif	qXWindows
 				::XDrawLine (fDisplay, fDrawable, fGC, fCurDrawLineLoc.h, fCurDrawLineLoc.v, to.h, to.v);
 				fCurDrawLineLoc = to;
@@ -2855,7 +2855,7 @@ void	Led_CenterWindowInParent (HWND w);
 				::GetClip (result.GetOSRep ());
 			#elif	qWindows
 				int r =  ::GetClipRgn (*this, result);
-				Led_Assert (r == 0 or r == 1 or r == -1);
+				Assert (r == 0 or r == 1 or r == -1);
 				if (r == 0) {
 					#if		!qInternalErrorWithStaticRegionDeclaredInFunction
 						static
@@ -2864,26 +2864,26 @@ void	Led_CenterWindowInParent (HWND w);
 					result = kWideOpened;
 				}
 			#else
-				Led_Assert (false);		// NYI
+				Assert (false);		// NYI
 			#endif
 			return result;
 		}
 	inline	bool	Led_Tablet_::GetClip (Led_Region* r) const
 		{
-			Led_RequireNotNil (r);
+			RequireNotNull (r);
 			#if		qMacOS
 				const_cast<Led_Tablet_*> (this)->SetPort ();
 				::GetClip (r->GetOSRep ());
 				return true;
 			#elif	qWindows
 				int res =  ::GetClipRgn (*this, *r);
-				Led_Assert (res == 0 or res == 1 or res == -1);
+				Assert (res == 0 or res == 1 or res == -1);
 				if (res == 0) {
 					return false;
 				}
 				return true;
 			#else
-				Led_Assert (false);		// NYI
+				Assert (false);		// NYI
 				return false;
 			#endif
 		}
@@ -2894,13 +2894,13 @@ void	Led_CenterWindowInParent (HWND w);
 				static	Led_Region	kWideOpened	=	Led_Region (Led_Rect (-10000, -10000, 20000, 20000));
 				::SetClip (kWideOpened.GetOSRep ());
 			#elif	qWindows
-				Led_Verify (::SelectClipRgn (*this, NULL) != ERROR);
+				Verify (::SelectClipRgn (*this, NULL) != ERROR);
 			#elif	qXWindows
 				static	Led_Rect	kWideOpened	=	Led_Rect (-10000, -10000, 20000, 20000);
 				XRectangle xrectangle	=	AsXRect (kWideOpened);
 				::XSetClipRectangles (fDisplay, fGC, 0, 0, &xrectangle, 1, Unsorted);
 			#else
-				Led_Assert (false);		// NYI
+				Assert (false);		// NYI
 			#endif
 		}
 	inline	void	Led_Tablet_::SetClip (const Led_Rect& clipTo)
@@ -2909,13 +2909,13 @@ void	Led_CenterWindowInParent (HWND w);
 				SetPort ();
 				::SetClip (Led_Region (clipTo).GetOSRep ());
 			#elif	qWindows
-				Led_Verify (::SelectClipRgn (*this, Led_Region (clipTo)) != ERROR);
-				Led_Ensure (GetClip ().GetBoundingRect () == clipTo);
+				Verify (::SelectClipRgn (*this, Led_Region (clipTo)) != ERROR);
+				Ensure (GetClip ().GetBoundingRect () == clipTo);
 			#elif	qXWindows
 				XRectangle xrectangle	=	AsXRect (clipTo);
 				::XSetClipRectangles (fDisplay, fGC, 0, 0, &xrectangle, 1, Unsorted);
 			#else
-				Led_Assert (false);		// NYI
+				Assert (false);		// NYI
 			#endif
 		}
 	inline	void	Led_Tablet_::SetClip (const Led_Region& clipTo)
@@ -2924,9 +2924,9 @@ void	Led_CenterWindowInParent (HWND w);
 				SetPort ();
 				::SetClip (clipTo.GetOSRep ());
 			#elif	qWindows
-				Led_Verify (::SelectClipRgn (*this, clipTo) != ERROR);
+				Verify (::SelectClipRgn (*this, clipTo) != ERROR);
 			#else
-				Led_Assert (false);		// NYI
+				Assert (false);		// NYI
 			#endif
 		}
 
@@ -3034,38 +3034,38 @@ void	Led_CenterWindowInParent (HWND w);
 			#endif
 			if (rhs.GetTop () >= lhs.GetBottom ()) {
 				#if		qMacOS
-					Led_Assert (not gdiResult);
+					Assert (not gdiResult);
 				#endif
 				return (false);
 			}
 			else if (rhs.GetBottom () <= lhs.GetTop ()) {
 				#if		qMacOS
-					Led_Assert (not gdiResult);
+					Assert (not gdiResult);
 				#endif
 				return (false);
 			}
 			else if (rhs.GetLeft () >= lhs.GetRight ()) {
 				#if		qMacOS
-					Led_Assert (not gdiResult);
+					Assert (not gdiResult);
 				#endif
 				return (false);
 			}
 			else if (rhs.GetRight () <= lhs.GetLeft ()) {
 				#if		qMacOS
-					Led_Assert (not gdiResult);
+					Assert (not gdiResult);
 				#endif
 				return (false);
 			}
 
 			if (rhs.GetHeight () == 0 or rhs.GetWidth () == 0 or lhs.GetHeight () == 0 or lhs.GetWidth () == 0) {
 				#if		qMacOS
-					Led_Assert (not gdiResult);
+					Assert (not gdiResult);
 				#endif
 				return false;
 			}
 
 			#if		qMacOS
-				Led_Assert (gdiResult);
+				Assert (gdiResult);
 			#endif
 			return (true);
 		}
@@ -3184,7 +3184,7 @@ void	Led_CenterWindowInParent (HWND w);
 				return EnsureRectInRect (r, AsLedRect (rWorkArea));
 			#else
 				Led_Arg_Unused (r);
-				Led_Assert (false); // NYI -
+				Assert (false); // NYI -
 				return Led_Rect (0,0,0,0);
 			#endif
 		}
@@ -3429,8 +3429,8 @@ void	Led_CenterWindowInParent (HWND w);
 	inline	Led_Distance	Led_FontMetrics::GetHeight () const
 		{
 			#if		qWindows
-				Led_Assert (fPlatformSpecific.tmHeight >= 0);
-				Led_Assert (GetAscent () + GetDescent () == Led_Distance (fPlatformSpecific.tmHeight));
+				Assert (fPlatformSpecific.tmHeight >= 0);
+				Assert (GetAscent () + GetDescent () == Led_Distance (fPlatformSpecific.tmHeight));
 			#endif
 			return (GetAscent () + GetDescent ());
 		}
@@ -3898,7 +3898,7 @@ namespace	Stroika {
 						// LGP 960222
 						Led_WindowDC	screenDC (NULL);
 						Led_FontObject	font;
-						Led_Verify (font.CreateFontIndirect (&fFontInfo));
+						Verify (font.CreateFontIndirect (&fFontInfo));
 						HFONT	oldFont	=	screenDC.SelectObject (font);
 						TEXTMETRIC	tms;
 						screenDC.GetTextMetrics (&tms);
@@ -3966,7 +3966,7 @@ namespace	Stroika {
 			}
 		inline	void	Led_FontSpecification::GetOSRep (LOGFONT* logFont) const
 			{
-				Led_RequireNotNil (logFont);
+				RequireNotNull (logFont);
 				*logFont = fFontInfo;
 			}
 		inline	void	Led_FontSpecification::SetOSRep (LOGFONT logFont)
@@ -4121,7 +4121,7 @@ namespace	Stroika {
 	// FontName info
 	inline	Led_FontSpecification::FontNameSpecifier	Led_IncrementalFontSpecification::GetFontNameSpecifier () const
 		{
-			Led_Require (fFontSpecifierValid);
+			Require (fFontSpecifierValid);
 			return inherited::GetFontNameSpecifier ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetFontNameSpecifier_Valid () const
@@ -4154,17 +4154,17 @@ namespace	Stroika {
 	// Style info
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Plain () const
 		{
-			Led_Require (fStyleValid_Bold);
-			Led_Require (fStyleValid_Italic);
-			Led_Require (fStyleValid_Underline);
-			Led_Require (fStyleValid_SubOrSuperScript);
+			Require (fStyleValid_Bold);
+			Require (fStyleValid_Italic);
+			Require (fStyleValid_Underline);
+			Require (fStyleValid_SubOrSuperScript);
 			#if		qMacOS
-				Led_Require (fStyleValid_Outline);
-				Led_Require (fStyleValid_Shadow);
-				Led_Require (fStyleValid_Condensed);
-				Led_Require (fStyleValid_Extended);
+				Require (fStyleValid_Outline);
+				Require (fStyleValid_Shadow);
+				Require (fStyleValid_Condensed);
+				Require (fStyleValid_Extended);
 			#elif	qWindows
-				Led_Require (fStyleValid_Strikeout);
+				Require (fStyleValid_Strikeout);
 			#endif
 			return inherited::GetStyle_Plain ();
 		}
@@ -4213,7 +4213,7 @@ namespace	Stroika {
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Bold () const
 		{
-			Led_Require (fStyleValid_Bold);
+			Require (fStyleValid_Bold);
 			return inherited::GetStyle_Bold ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Bold_Valid () const
@@ -4237,7 +4237,7 @@ namespace	Stroika {
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Italic () const
 		{
-			Led_Require (fStyleValid_Italic);
+			Require (fStyleValid_Italic);
 			return inherited::GetStyle_Italic ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Italic_Valid () const
@@ -4261,7 +4261,7 @@ namespace	Stroika {
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Underline () const
 		{
-			Led_Require (fStyleValid_Underline);
+			Require (fStyleValid_Underline);
 			return inherited::GetStyle_Underline ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_Underline_Valid () const
@@ -4285,7 +4285,7 @@ namespace	Stroika {
 		}
 	inline	Led_FontSpecification::SubOrSuperScript	Led_IncrementalFontSpecification::GetStyle_SubOrSuperScript () const
 		{
-			Led_Require (fStyleValid_SubOrSuperScript);
+			Require (fStyleValid_SubOrSuperScript);
 			return inherited::GetStyle_SubOrSuperScript ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetStyle_SubOrSuperScript_Valid () const
@@ -4310,7 +4310,7 @@ namespace	Stroika {
 	#if		qMacOS
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Outline () const
 			{
-				Led_Require (fStyleValid_Outline);
+				Require (fStyleValid_Outline);
 				return (inherited::GetStyle_Outline ());
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Outline_Valid () const
@@ -4328,7 +4328,7 @@ namespace	Stroika {
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Shadow () const
 			{
-				Led_Require (fStyleValid_Shadow);
+				Require (fStyleValid_Shadow);
 				return (inherited::GetStyle_Shadow ());
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Shadow_Valid () const
@@ -4346,7 +4346,7 @@ namespace	Stroika {
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Condensed () const
 			{
-				Led_Require (fStyleValid_Condensed);
+				Require (fStyleValid_Condensed);
 				return (inherited::GetStyle_Condensed ());
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Condensed_Valid () const
@@ -4364,7 +4364,7 @@ namespace	Stroika {
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Extended () const
 			{
-				Led_Require (fStyleValid_Extended);
+				Require (fStyleValid_Extended);
 				return (inherited::GetStyle_Extended ());
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Extended_Valid () const
@@ -4383,7 +4383,7 @@ namespace	Stroika {
 	#elif	qWindows
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Strikeout () const
 			{
-				Led_Require (fStyleValid_Strikeout);
+				Require (fStyleValid_Strikeout);
 				return (inherited::GetStyle_Strikeout ());
 			}
 		inline	bool	Led_IncrementalFontSpecification::GetStyle_Strikeout_Valid () const
@@ -4409,8 +4409,8 @@ namespace	Stroika {
 	// FontSize info
 	inline	unsigned short	Led_IncrementalFontSpecification::GetPointSize () const
 		{
-			Led_Require (fFontSizeValid);
-			Led_Require (not fFontSizeIncrementValid);
+			Require (fFontSizeValid);
+			Require (not fFontSizeIncrementValid);
 			return inherited::GetPointSize ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetPointSize_Valid () const
@@ -4445,8 +4445,8 @@ namespace	Stroika {
 	#endif
 	inline	short	Led_IncrementalFontSpecification::GetPointSizeIncrement () const
 		{
-			Led_Require (not fFontSizeValid);
-			Led_Require (fFontSizeIncrementValid);
+			Require (not fFontSizeValid);
+			Require (fFontSizeIncrementValid);
 			return (short)inherited::GetPointSize ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetPointSizeIncrement_Valid () const
@@ -4473,7 +4473,7 @@ namespace	Stroika {
 	// FontFaceColor info
 	inline	Led_Color	Led_IncrementalFontSpecification::GetTextColor () const
 		{
-			Led_Require (fTextColorValid);
+			Require (fTextColorValid);
 			return inherited::GetTextColor ();
 		}
 	inline	bool	Led_IncrementalFontSpecification::GetTextColor_Valid () const
@@ -4492,13 +4492,13 @@ namespace	Stroika {
 	#if		qMacOS
 		inline	void	Led_IncrementalFontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
 			{
-				Led_Require (fFontSpecifierValid and
+				Require (fFontSpecifierValid and
 							 fStyleValid_Bold and
 							 fStyleValid_Italic and
 							 fStyleValid_Underline and
 							 fFontSizeValid
 							);
-				Led_Require (fStyleValid_Outline and
+				Require (fStyleValid_Outline and
 							 fStyleValid_Shadow and
 							 fStyleValid_Condensed and
 							 fStyleValid_Extended
@@ -4522,25 +4522,25 @@ namespace	Stroika {
 	#elif	qWindows
 		inline	LOGFONT	Led_IncrementalFontSpecification::GetOSRep () const
 			{
-				Led_Require (fFontSpecifierValid and
+				Require (fFontSpecifierValid and
 							 fStyleValid_Bold and
 							 fStyleValid_Italic and
 							 fStyleValid_Underline and
 							 fFontSizeValid
 							);
-				Led_Require (fStyleValid_Strikeout);
+				Require (fStyleValid_Strikeout);
 				return inherited::GetOSRep ();
 			}
 		inline	void	Led_IncrementalFontSpecification::GetOSRep (LOGFONT* logFont) const
 			{
-				Led_RequireNotNil (logFont);
-				Led_Require (fFontSpecifierValid and
+				RequireNotNull (logFont);
+				Require (fFontSpecifierValid and
 							 fStyleValid_Bold and
 							 fStyleValid_Italic and
 							 fStyleValid_Underline and
 							 fFontSizeValid
 							);
-				Led_Require (fStyleValid_Strikeout);
+				Require (fStyleValid_Strikeout);
 				inherited::GetOSRep (logFont);
 			}
 		inline	void	Led_IncrementalFontSpecification::SetOSRep (LOGFONT logFont)
@@ -4941,7 +4941,7 @@ namespace	Stroika {
 		fHasOldClip (false),
  		fOldClip ()
 		{
-			Led_RequireNotNil (tablet);
+			RequireNotNull (tablet);
 			#if		qWindows
 				if (::GetDeviceCaps (fTablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
 					return;
@@ -4954,10 +4954,10 @@ namespace	Stroika {
 		fHasOldClip (false),
  		fOldClip ()
 		{
-			Led_RequireNotNil (tablet);
+			RequireNotNull (tablet);
 			fHasOldClip = tablet->GetClip (&fOldClip);
 			#if		qMacOS
-				Led_Assert (fHasOldClip);
+				Assert (fHasOldClip);
 				tablet->SetClip (fOldClip * clipFurtherTo);
 			#elif	qWindows
 				/*
@@ -4967,7 +4967,7 @@ namespace	Stroika {
 				if (::GetDeviceCaps (tablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
 					return;
 				}
-				Led_Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
+				Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
 			#endif
 		}
 	inline	Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet, const Led_Region& clipFurtherTo):
@@ -4975,20 +4975,20 @@ namespace	Stroika {
 		fHasOldClip (false),
  		fOldClip ()
 		{
-			Led_RequireNotNil (tablet);
+			RequireNotNull (tablet);
 			fHasOldClip = tablet->GetClip (&fOldClip);
 			#if		qMacOS
-				Led_Assert (fHasOldClip);
+				Assert (fHasOldClip);
 				tablet->SetClip (fOldClip * clipFurtherTo);
 			#elif	qWindows
-				Led_Assert (false);	// NYI - see SPR#????
+				Assert (false);	// NYI - see SPR#????
 			#else
-				Led_Assert (false);	// NYI
+				Assert (false);	// NYI
 			#endif
 		}
 	inline	Led_Tablet_::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
 		{
-			Led_AssertNotNil (fTablet);
+			AssertNotNull (fTablet);
 			#if		qWindows
 				if (::GetDeviceCaps (fTablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
 					return;
@@ -5051,8 +5051,8 @@ namespace	Stroika {
 		fRestoreObject (NULL),
 		fRestoreAttribObject (NULL)
 		{
-			Led_AssertNotNil (tablet);
-			Led_AssertNotNil (objToSelect);
+			AssertNotNull (tablet);
+			AssertNotNull (objToSelect);
 			// See CDC::SelectObject for the logic..., but we do better than thiers and restore
 			// right object to right DC!!!! - LGP 950525
 			if (tablet->m_hDC != tablet->m_hAttribDC) {
@@ -5072,7 +5072,7 @@ namespace	Stroika {
 		#endif
 		{
 			#if		qDebug
-				Led_Assert (Led_GetCurrentGDIPort () == *tablet);
+				Assert (Led_GetCurrentGDIPort () == *tablet);
 			#endif
 			GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
 			::PenMode (pen.fPenStyle);
@@ -5088,10 +5088,10 @@ namespace	Stroika {
 			#if		qWindows
 				//NB: These restore objects CAN be NULL, if no font (or whatever) selected into DC before we do... (aside from error cases)
 				if (fRestoreObject != NULL) {
-					Led_Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
+					Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
 				}
 				if (fRestoreAttribObject != NULL) {
-					Led_Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
+					Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
 				}
 			#elif	qMacOS
 				GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
@@ -5134,7 +5134,7 @@ namespace	Stroika {
 
 	inline	short	Led_GetMacPictTop (const Led_Picture* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			#if		qMacOS
 				return picture->picFrame.top;
 			#elif	qWindows
@@ -5143,7 +5143,7 @@ namespace	Stroika {
 		}
 	inline	short	Led_GetMacPictLeft (const Led_Picture* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			#if		qMacOS
 				return picture->picFrame.left;
 			#elif	qWindows
@@ -5152,7 +5152,7 @@ namespace	Stroika {
 		}
 	inline	short	Led_GetMacPictBottom (const Led_Picture* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			#if		qMacOS
 				return picture->picFrame.bottom;
 			#elif	qWindows
@@ -5161,7 +5161,7 @@ namespace	Stroika {
 		}
 	inline	short	Led_GetMacPictRight (const Led_Picture* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			#if		qMacOS
 				return picture->picFrame.right;
 			#elif	qWindows
@@ -5183,32 +5183,32 @@ namespace	Stroika {
 	#if		qMacOS
 	inline	short	Led_GetMacPictTop (const Led_Picture*const* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			return Led_GetMacPictTop (*picture);
 		}
 	inline	short	Led_GetMacPictLeft (const Led_Picture*const* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			return Led_GetMacPictLeft (*picture);
 		}
 	inline	short	Led_GetMacPictBottom (const Led_Picture*const* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			return Led_GetMacPictBottom (*picture);
 		}
 	inline	short	Led_GetMacPictRight (const Led_Picture*const* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			return Led_GetMacPictRight (*picture);
 		}
 	inline	short	Led_GetMacPictWidth (const Led_Picture*const* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			return Led_GetMacPictWidth (*picture);
 		}
 	inline	short	Led_GetMacPictHeight (const Led_Picture*const* picture)
 		{
-			Led_RequireNotNil (picture);
+			RequireNotNull (picture);
 			return Led_GetMacPictHeight (*picture);
 		}
 	inline	Led_Size	Led_GetMacPictSize (const Led_Picture*const* picture)
@@ -5227,7 +5227,7 @@ namespace	Stroika {
 			if (sThe == NULL) {
 				new Led_IME ();
 			}
-			Led_AssertNotNil (sThe);
+			AssertNotNull (sThe);
 			return (*sThe);
 		}
 	inline	void	Led_IME::Enable ()

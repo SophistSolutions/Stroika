@@ -243,7 +243,7 @@ class	RTFIO {
 			ControlWordAtomName (const char* c);
 			operator char* ()				{ return fName; }
 			operator const char* () const	{ return fName; }
-			char& operator[] (size_t i)		{ Led_Require (i <= eMaxControlAtomNameLen); return fName[i]; }
+			char& operator[] (size_t i)		{ Require (i <= eMaxControlAtomNameLen); return fName[i]; }
 			char	fName[eMaxControlAtomNameLen+1];
 		};
 	private:
@@ -1172,10 +1172,10 @@ class	StyledTextIOWriter_RTF::WriterContext {
 		}
 	inline	void	RTFInfo::GetStaticDefaultMargins (Led_TWIPS* t, Led_TWIPS* l, Led_TWIPS* b, Led_TWIPS* r)
 		{
-			Led_RequireNotNil (t);
-			Led_RequireNotNil (l);
-			Led_RequireNotNil (b);
-			Led_RequireNotNil (r);
+			RequireNotNull (t);
+			RequireNotNull (l);
+			RequireNotNull (b);
+			RequireNotNull (r);
 			*t = Led_TWIPS (1440);
 			*l = Led_TWIPS (1800);
 			*b = Led_TWIPS (1440);
@@ -1194,7 +1194,7 @@ class	StyledTextIOWriter_RTF::WriterContext {
 	inline	Led_TWIPS	RTFInfo::GetEffectiveDrawingWidth () const
 		{
 			Led_TWIPS	subtract	=	Led_TWIPS (fDefaultMarginLeft + fDefaultMarginRight);
-			Led_Ensure (fDefaultPaperSize.h > subtract);
+			Ensure (fDefaultPaperSize.h > subtract);
 			return Led_TWIPS (fDefaultPaperSize.h - subtract);
 		}
 
@@ -1229,7 +1229,7 @@ class	StyledTextIOWriter_RTF::WriterContext {
 #endif
 	inline	StyledTextIOReader_RTF::ReaderContext::Destination_&	StyledTextIOReader_RTF::ReaderContext::GetDestination () const
 		{
-			Led_EnsureNotNil (fCurrentDestination);
+			EnsureNotNull (fCurrentDestination);
 			return (*fCurrentDestination);
 		}
 	inline	void			StyledTextIOReader_RTF::ReaderContext::SetDestination (Destination_* destination)
@@ -1305,7 +1305,7 @@ class	StyledTextIOWriter_RTF::WriterContext {
 		{
 			if (not readerContext.fStartedBodyYet) {
 				AboutToStartBody (readerContext);
-				Led_Assert (readerContext.fStartedBodyYet);
+				Assert (readerContext.fStartedBodyYet);
 			}
 		}
 	/*

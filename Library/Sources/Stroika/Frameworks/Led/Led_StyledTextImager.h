@@ -518,7 +518,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 	template	<class	BASECLASS>
 		Led_FontSpecification		SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				return imager->GetDefaultFont ();
 			}
 	template	<class	BASECLASS>
@@ -527,7 +527,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 													Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 												)
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				imager->DrawSegment_ (tablet, MakeFontSpec (imager, runElement), from, to, text, drawInto, useBaseLine, pixelsDrawn);
 			}
 	template	<class	BASECLASS>
@@ -536,19 +536,19 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 														Led_Distance* distanceResults
 													) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				imager->MeasureSegmentWidth_ (MakeFontSpec (imager, runElement), from, to, text, distanceResults);
 			}
 	template	<class	BASECLASS>
 		Led_Distance	SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				return (imager->MeasureSegmentHeight_ (MakeFontSpec (imager, runElement), from, to));
 			}
 	template	<class	BASECLASS>
 		Led_Distance	SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				return (imager->MeasureSegmentBaseLine_ (MakeFontSpec (imager, runElement), from, to));
 			}
 
@@ -567,7 +567,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 	template	<class	BASECLASS>
 		Led_FontSpecification		SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				Led_FontSpecification	fsp	=	inherited::MakeFontSpec (imager, runElement);
 				fsp.MergeIn (fFontSpecification);
 				return fsp;
@@ -601,7 +601,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 					typedef	StyledTextImager::StyleMarker	StyleMarker;
 				#endif
 				RunElement	newRunElement	=	inRunElt;
-				Led_Require (inRunElt.fMarker == (StyleMarker*)this);
+				Require (inRunElt.fMarker == (StyleMarker*)this);
 				newRunElement.fMarker = NULL;
 				for (vector<StyleMarker*>::iterator i = newRunElement.fSupercededMarkers.begin (); i != newRunElement.fSupercededMarkers.end (); ) {
 					if (newRunElement.fMarker == NULL or newRunElement.fMarker->GetPriority () < (*i)->GetPriority ()) {
@@ -620,8 +620,8 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 													Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
 												)
 			{
-				Led_RequireNotNil (imager);
-				Led_AssertNotNil (pixelsDrawn);	// if allowed to pass NULL - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
+				RequireNotNull (imager);
+				AssertNotNull (pixelsDrawn);	// if allowed to pass NULL - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
 
 				RunElement	re	=	MungeRunElement (runElement);
 				if (re.fMarker == NULL) {
@@ -638,7 +638,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 														Led_Distance* distanceResults
 													) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				RunElement	re	=	MungeRunElement (runElement);
 				if (re.fMarker == NULL) {
 					imager->MeasureSegmentWidth_ (MakeFontSpec (imager, re), from, to, text, distanceResults);
@@ -650,7 +650,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 	template	<class	BASECLASS>
 		Led_Distance	SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				RunElement	re	=	MungeRunElement (runElement);
 				if (re.fMarker == NULL) {
 					return (imager->MeasureSegmentHeight_ (MakeFontSpec (imager, re), from, to));
@@ -662,7 +662,7 @@ template	<class	BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::St
 	template	<class	BASECLASS>
 		Led_Distance	SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
 			{
-				Led_RequireNotNil (imager);
+				RequireNotNull (imager);
 				RunElement	re	=	MungeRunElement (runElement);
 				if (re.fMarker == NULL) {
 					return (imager->MeasureSegmentBaseLine_ (MakeFontSpec (imager, re), from, to));

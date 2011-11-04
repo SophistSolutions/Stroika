@@ -70,7 +70,7 @@ class	WordWrappedTextImager : public MultiRowTextImager {
 		/*
 		@METHOD:		WordWrappedTextImager::GetLayoutMargins
 		@DESCRIPTION:
-				<p>NB: this routine must @'Led_Ensure' that the *rhs and *lhs results be valid after a call (garbage in), and must ensure *rhs > *lhs,
+				<p>NB: this routine must @'Ensure' that the *rhs and *lhs results be valid after a call (garbage in), and must ensure *rhs > *lhs,
 			assuming that both 'lhs' and 'rhs' are non-null pointers (either or both of these pointers can be null).</p>
 				<p>You must specify the wrap-width for each paragraph in a subclass. This routine can be overriden
 			to return a constant width - eg. width of the window, or a different per-paragraph width. But note,
@@ -193,7 +193,7 @@ template	<typename TEXTSTORE, typename	IMAGER = WordWrappedTextImager>
 	template	<typename TEXTSTORE, typename	IMAGER>
 		void	TrivialWordWrappedImager<TEXTSTORE,IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
 		{
-			Led_Ensure (GetWindowRect ().GetWidth () >= 1);
+			Ensure (GetWindowRect ().GetWidth () >= 1);
 			if (lhs != NULL) {
 				*lhs = 0;
 			}
@@ -202,7 +202,7 @@ template	<typename TEXTSTORE, typename	IMAGER = WordWrappedTextImager>
 			}
 			#if		qDebug
 				if (lhs != NULL and rhs != NULL) {
-					Led_Ensure (*rhs > *lhs);
+					Ensure (*rhs > *lhs);
 				}
 			#endif
 		}

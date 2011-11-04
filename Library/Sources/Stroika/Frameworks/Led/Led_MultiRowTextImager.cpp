@@ -49,7 +49,7 @@ MultiRowTextImager::MultiRowTextImager ():
 
 MultiRowTextImager::~MultiRowTextImager ()
 {
-	Led_Assert (fTopLinePartitionMarkerInWindow == NULL);
+	Assert (fTopLinePartitionMarkerInWindow == NULL);
 }
 
 void	MultiRowTextImager::HookLosingTextStore ()
@@ -138,7 +138,7 @@ size_t	MultiRowTextImager::GetRowNumber (RowReference rowRef) const
 	// it forces a wrap. This is meant only to be a convenient code-saver in implementing rownumber based
 	// APIs - even though their use is discouraged...
 	size_t	rowNumber	=	rowRef.GetSubRow ();
-	Led_AssertNotNil (rowRef.GetPartitionMarker ());
+	AssertNotNull (rowRef.GetPartitionMarker ());
 	for (PartitionMarker* cur = rowRef.GetPartitionMarker ()->GetPrevious (); cur != NULL; cur = cur->GetPrevious ()) {
 		rowNumber += GetPartitionElementCacheInfo (cur).GetRowCount ();
 	}
@@ -173,7 +173,7 @@ size_t	MultiRowTextImager::CountRowDifference (RowReference lhs, RowReference rh
 	size_t	rowsGoneBy	=	0;
 	for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
 		bool	result	=	GetIthRowReferenceFromHere (&cur, 1);
-		Led_Assert (result);
+		Assert (result);
 	}
 	return (rowsGoneBy);
 }
@@ -210,7 +210,7 @@ size_t	MultiRowTextImager::CountRowDifferenceLimited (RowReference lhs, RowRefer
 	size_t	rowsGoneBy	=	0;
 	for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
 		bool	result	=	GetIthRowReferenceFromHere (&cur, 1);
-		Led_Assert (result);
+		Assert (result);
 		if (rowsGoneBy >= limit) {
 			break;
 		}
@@ -239,13 +239,13 @@ void	MultiRowTextImager::SetTopRowInWindow (size_t newTopRow)
 {
 	// NB: Use of this function is discouraged as it is inefficent in the presence of word-wrapping
 #if		0
-	Led_Assert (newTopRow <= GetRowCount ());		// We require this, but don't call since would cause word-wrapping of entire text...
+	Assert (newTopRow <= GetRowCount ());		// We require this, but don't call since would cause word-wrapping of entire text...
 #endif
 
 
 	SetTopRowInWindow (GetIthRowReference (newTopRow));
 
-	Led_Assert (GetTopRowInWindow () == newTopRow);	// Since a SetTopRowInWindow() was called - all the
+	Assert (GetTopRowInWindow () == newTopRow);	// Since a SetTopRowInWindow() was called - all the
 													// intervening lines have been wrapped anyhow - may
 													// as well check we have our definitions straight...
 }
@@ -280,7 +280,7 @@ size_t		MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
 
 long	MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
 {
-	Led_Assert (long (GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
+	Assert (long (GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
 	size_t			pos			=	long (GetMarkerPositionOfStartOfWindow ()) + deltaChars;
 	RowReference	targetRow	=	GetRowReferenceContainingPosition (pos);
 	size_t			rowDiff		=	CountRowDifference (targetRow, GetTopRowReferenceInWindow ());
@@ -306,13 +306,13 @@ void	MultiRowTextImager::ScrollByIfRoom (long downByRows)
 */
 void	MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos)
 {
-	Led_Assert (markerPos <= GetLength ());				// Allow any marker position (not just character?)
-	Led_Assert (fTotalRowsInWindow == 0 or fTotalRowsInWindow == ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ()));
+	Assert (markerPos <= GetLength ());				// Allow any marker position (not just character?)
+	Assert (fTotalRowsInWindow == 0 or fTotalRowsInWindow == ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ()));
 
 	if (andTryToShowMarkerPos == 0) {			// special flag indicating we don't care...
 		andTryToShowMarkerPos = markerPos;
 	}
-	Led_Assert (andTryToShowMarkerPos <= GetLength ());	// Allow any marker position (not just character?)
+	Assert (andTryToShowMarkerPos <= GetLength ());	// Allow any marker position (not just character?)
 
 
 	/*
@@ -363,7 +363,7 @@ void	MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowM
 			}
 			newTop = RowReference (newTop.GetPartitionMarker ()->GetNext (), 0);	// use row 0 to avoid computing RowCount()
 		}
-		Led_Assert (Contains (markerPos, markerPos, *newTop.GetPartitionMarker ()));
+		Assert (Contains (markerPos, markerPos, *newTop.GetPartitionMarker ()));
 	}
 
 
@@ -377,8 +377,8 @@ void	MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowM
 		   ;
 
 	// At this point our main desired position should be visible
-	Led_Assert (markerPos >= GetStartOfRow (newTop));
-	Led_Assert (PositionWouldFitInWindowWithThisTopRow (markerPos, newTop));
+	Assert (markerPos >= GetStartOfRow (newTop));
+	Assert (PositionWouldFitInWindowWithThisTopRow (markerPos, newTop));
 
 
 	/*
@@ -436,7 +436,7 @@ void	MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowM
 
 	SetTopRowInWindow (newTop);		// This handles any notification of scrolling/update of sbars etc...
 
-	Led_Assert (GetMarkerPositionOfStartOfWindow () <= markerPos and markerPos <= GetMarkerPositionOfEndOfWindow ());
+	Assert (GetMarkerPositionOfStartOfWindow () <= markerPos and markerPos <= GetMarkerPositionOfEndOfWindow ());
 
 	/*
 	 * Must call this AFTER we've done some VERTICAL scrolling - cuz the vertical scrolling could have affected the MaxHPOS.
@@ -474,7 +474,7 @@ void	MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 
 	Tablet_Acquirer	tablet_ (this);
 	Led_Tablet	tablet	=	tablet_;
-	Led_AssertNotNil (tablet);
+	AssertNotNull (tablet);
 
 
 	/*
@@ -507,7 +507,7 @@ void	MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 		RowReference	topRowInWindow		=	GetTopRowReferenceInWindow ();
 		size_t			rowsLeftInWindow	=	totalRowsInWindow;
 		for (PartitionMarker* pm = topRowInWindow.GetPartitionMarker (); rowsLeftInWindow != 0; pm = pm->GetNext ()) {
-			Led_Assert (pm != NULL);
+			Assert (pm != NULL);
 			size_t		startSubRow		=	0;
 			size_t		maxSubRow		=	static_cast<size_t> (-1);
 			if (pm == topRowInWindow.GetPartitionMarker ()) {
@@ -520,14 +520,14 @@ void	MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 				printing, subsetToDraw,
 				&rowsLeftToDrawRect, &rowsDrawn
 			);
-			Led_Assert (rowsLeftInWindow >= rowsDrawn);
+			Assert (rowsLeftInWindow >= rowsDrawn);
 			rowsLeftInWindow -= rowsDrawn;
 		}
 
 		/*
 		 *	Now erase to the end of the page.
 		 */
-		Led_Assert (tablet == tablet_);	// Draw to screen directly past here...
+		Assert (tablet == tablet_);	// Draw to screen directly past here...
 		{
 			Led_Rect	eraser	=	GetWindowRect ();
 			eraser.top = rowsLeftToDrawRect.top;			// only from here down...
@@ -580,14 +580,14 @@ void	MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 			// But the code has been in place for quite some time (dont think broken by my offscreen bitmap move to LedGDI) with no
 			// noticable bugs/problems... Reconsider later...
 			// LGP 2001-05-11
-			Led_Assert (*tablet == Led_GetCurrentGDIPort ());
+			Assert (*tablet == Led_GetCurrentGDIPort ());
 			GDI_RGBForeColor (oldForeColor);
 			GDI_RGBBackColor (oldBackColor);
 		#endif
 		throw;
 	}
 	#if		qMacOS
-		Led_Assert (*tablet == Led_GetCurrentGDIPort ());
+		Assert (*tablet == Led_GetCurrentGDIPort ());
 		GDI_RGBForeColor (oldForeColor);
 		GDI_RGBBackColor (oldBackColor);
 	#endif
@@ -599,14 +599,14 @@ void	MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 */
 void	MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
 {
-	Led_RequireNotNil (pm);
-	Led_RequireNotNil (remainingDrawArea);
-	Led_RequireNotNil (rowsDrawn);
+	RequireNotNull (pm);
+	RequireNotNull (remainingDrawArea);
+	RequireNotNull (rowsDrawn);
 
 	size_t	start	=	pm->GetStart ();
 	size_t	end		=	pm->GetEnd ();
 
-	Led_Assert (end <= GetLength () + 1);
+	Assert (end <= GetLength () + 1);
 	if (end == GetLength () + 1) {
 		end--;		// don't include bogus char at end of buffer
 	}
@@ -639,9 +639,9 @@ void	MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
 			}
 			{
 				if (subRow == pmCacheInfo.GetLastRow ()) {
-					Led_Assert (pm->GetEnd () > 0);
+					Assert (pm->GetEnd () > 0);
 					size_t	markerEnd	=	pm->GetEnd ();
-					Led_Assert (markerEnd <= GetLength () + 1);
+					Assert (markerEnd <= GetLength () + 1);
 					if (markerEnd == GetLength () + 1) {
 						rowEnd = GetLength ();
 					}
@@ -656,7 +656,7 @@ void	MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
 						}
 					}
 				}
-				Led_Assert (rowEnd == GetEndOfRowContainingPosition (rowStart));
+				Assert (rowEnd == GetEndOfRowContainingPosition (rowStart));
 			}
 
 #if 1
@@ -773,7 +773,7 @@ size_t	MultiRowTextImager::GetStartOfRow (RowReference row) const
 {
 	PartitionMarker*	cur		=	row.GetPartitionMarker ();
 	size_t				subRow	=	row.GetSubRow ();
-	Led_AssertNotNil (cur);
+	AssertNotNull (cur);
 	return (cur->GetStart () + (subRow==0? 0: GetPartitionElementCacheInfo (cur).GetLineRelativeRowStartPosition (subRow)));
 }
 
@@ -781,16 +781,16 @@ size_t	MultiRowTextImager::GetEndOfRow (RowReference row) const
 {
 	PartitionMarker*	cur		=	row.GetPartitionMarker ();
 	size_t				subRow	=	row.GetSubRow ();
-	Led_AssertNotNil (cur);
+	AssertNotNull (cur);
 	PartitionElementCacheInfo	pmCacheInfo	=	GetPartitionElementCacheInfo (cur);
 	if (subRow == pmCacheInfo.GetLastRow ()) {
 		// Be careful about NL at end. If we end with an NL, then don't count that.
 		// And for the last PM - it contains a bogus empty character. Dont count
 		// that either.
-		Led_Assert (cur->GetEnd () > 0);
+		Assert (cur->GetEnd () > 0);
 
 		size_t	markerEnd	=	cur->GetEnd ();
-		Led_Assert (markerEnd <= GetLength () + 1);
+		Assert (markerEnd <= GetLength () + 1);
 		if (markerEnd == GetLength () + 1) {
 			return (GetLength ());
 		}
@@ -814,10 +814,10 @@ size_t	MultiRowTextImager::GetRealEndOfRow (RowReference row) const
 {
 	PartitionMarker*	cur		=	row.GetPartitionMarker ();
 	size_t				subRow	=	row.GetSubRow ();
-	Led_AssertNotNil (cur);
+	AssertNotNull (cur);
 	PartitionElementCacheInfo	pmCacheInfo	=	GetPartitionElementCacheInfo (cur);
 	if (subRow == pmCacheInfo.GetLastRow ()) {
-		Led_Assert (cur->GetEnd () > 0);
+		Assert (cur->GetEnd () > 0);
 		size_t	markerEnd	=	cur->GetEnd ();
 		return (markerEnd);
 	}
@@ -828,9 +828,9 @@ size_t	MultiRowTextImager::GetRealEndOfRow (RowReference row) const
 
 MultiRowTextImager::RowReference	MultiRowTextImager::GetRowReferenceContainingPosition (size_t charPosition) const
 {
-	Led_Require (charPosition <= GetEnd ());
+	Require (charPosition <= GetEnd ());
 	PartitionMarker*	pm	=	GetPartitionMarkerContainingPosition (charPosition);
-	Led_AssertNotNil (pm);
+	AssertNotNull (pm);
 
 	size_t	pmStart	=	pm->GetStart ();
 	if (charPosition == pmStart) {		// slight speed tweek
@@ -854,8 +854,8 @@ size_t	MultiRowTextImager::GetRowCount () const
 	// NB: This is an expensive routine because it forces a word-wrap on all the text!
 	size_t	rowCount	=	0;
 	for (PartitionMarker* cur = GetFirstPartitionMarker (); cur != NULL; cur = cur->GetNext ()) {
-		Led_AssertNotNil (cur);
-		Led_Assert (GetPartitionElementCacheInfo (cur).GetRowCount () >= 1);
+		AssertNotNull (cur);
+		Assert (GetPartitionElementCacheInfo (cur).GetRowCount () >= 1);
 		rowCount += GetPartitionElementCacheInfo (cur).GetRowCount ();
 	}
 	return (rowCount);
@@ -888,10 +888,10 @@ Led_Distance	MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition (
 void	MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
 								size_t* expandedFromMarkerPos, size_t * expandedToMarkerPos) const
 {
-	Led_AssertNotNil (expandedFromMarkerPos);
-	Led_AssertNotNil (expandedToMarkerPos);
-	Led_Assert (fromMarkerPos <= toMarkerPos);
-	Led_Assert (toMarkerPos <= GetEnd ());
+	AssertNotNull (expandedFromMarkerPos);
+	AssertNotNull (expandedToMarkerPos);
+	Assert (fromMarkerPos <= toMarkerPos);
+	Assert (toMarkerPos <= GetEnd ());
 	#if		qMultiByteCharacters && qDebug
 		Assert_CharPosDoesNotSplitCharacter (fromMarkerPos);
 		Assert_CharPosDoesNotSplitCharacter (toMarkerPos);
@@ -902,7 +902,7 @@ void	MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMa
 	RowReference	curRow	=	GetTopRowReferenceInWindow ();
 	do {
 		PartitionMarker*	cur		=	curRow.GetPartitionMarker ();
-		Led_AssertNotNil (cur);
+		AssertNotNull (cur);
 		size_t	start	=	cur->GetStart ();
 		size_t	end		=	cur->GetEnd ();
 
@@ -923,8 +923,8 @@ void	MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMa
 		if (Contains (*cur, fromMarkerPos) and Contains (*cur, toMarkerPos)) {
 			(*expandedFromMarkerPos) = start;
 			(*expandedToMarkerPos) = end;
-			Led_Assert ((*expandedFromMarkerPos) <= (*expandedToMarkerPos));
-			Led_Assert ((*expandedToMarkerPos) <= GetEnd ());
+			Assert ((*expandedFromMarkerPos) <= (*expandedToMarkerPos));
+			Assert ((*expandedToMarkerPos) <= GetEnd ());
 			return;
 		}
 
@@ -983,7 +983,7 @@ void	MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) throw ()
 
 	InvalidateTotalRowsInWindow ();
 	inherited::DidUpdateText (updateInfo);
-	Led_AssertNotNil (fTopLinePartitionMarkerInWindow);
+	AssertNotNull (fTopLinePartitionMarkerInWindow);
 //	ReValidateSubRowInTopLineInWindow ();
 	AssureWholeWindowUsedIfNeeded ();
 	InvalidateScrollBarParameters ();			// even if we don't change the top row, we might change enuf about the text to change sbar
@@ -1078,7 +1078,7 @@ MultiRowTextImager::RowReference	MultiRowTextImager::AdjustPotentialTopRowRefere
 		if (heightUsed > windowHeight) {
 			// We went back one too far - forward one and return that.
 			bool	result	=	GetNextRowReference (&curRow);
-			Led_Assert (result);
+			Assert (result);
 			return (curRow);
 		}
 		else if (heightUsed == windowHeight) {
@@ -1093,7 +1093,7 @@ MultiRowTextImager::RowReference	MultiRowTextImager::AdjustPotentialTopRowRefere
 			#pragma warn -8008
 			#pragma warn -8066
 		#endif
-	Led_Assert (false);	return (potentialTopRow);	// NotReached / silence compiler warnings
+	Assert (false);	return (potentialTopRow);	// NotReached / silence compiler warnings
 		#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 			#pragma pop
 		#endif
@@ -1113,7 +1113,7 @@ bool	MultiRowTextImager::PositionWouldFitInWindowWithThisTopRow (size_t markerPo
 
 void	MultiRowTextImager::ReValidateSubRowInTopLineInWindow ()
 {
-	Led_AssertNotNil (fTopLinePartitionMarkerInWindow);
+	AssertNotNull (fTopLinePartitionMarkerInWindow);
 
 	// don't bother calling GetRowCount () if fSubRowInTopLineInWindow is already ZERO - avoid possible word-wrap
 	if (fSubRowInTopLineInWindow != 0) {
@@ -1195,7 +1195,7 @@ Led_Rect	MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
 	const	Led_Rect	kMagicBeforeRect	=	Led_Rect (-10000, 0, 0, 0);
 	const	Led_Rect	kMagicAfterRect		=	Led_Rect (10000, 0, 0, 0);
 
-	Led_Require (afterPosition <= GetEnd ());
+	Require (afterPosition <= GetEnd ());
 	#if		qMultiByteCharacters && qDebug
 		Assert_CharPosDoesNotSplitCharacter (afterPosition);
 	#endif
@@ -1210,11 +1210,11 @@ Led_Rect	MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
 	do {
 		PartitionMarker*	cur		=	curRow.GetPartitionMarker ();
 		size_t				subRow	=	curRow.GetSubRow ();
-		Led_AssertNotNil (cur);
+		AssertNotNull (cur);
 		size_t	start	=	cur->GetStart ();
 		size_t	end		=	cur->GetEnd ();			// end points JUST PAST LAST VISIBLE/OPERATED ON CHAR
 
-		Led_Assert (end <= GetEnd () + 1);
+		Assert (end <= GetEnd () + 1);
 
 		PartitionElementCacheInfo	pmCacheInfo		=	GetPartitionElementCacheInfo (cur);
 
@@ -1224,7 +1224,7 @@ Led_Rect	MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
 		start += pmCacheInfo.PeekAtRowStart (subRow);
 		if (subRow < pmCacheInfo.GetLastRow ()) {
 			end = cur->GetStart () + pmCacheInfo.PeekAtRowStart (subRow+1);
-			Led_Assert (start <= end);
+			Assert (start <= end);
 		}
 
 		curTopRowRelativeRowNumber++;
@@ -1233,11 +1233,11 @@ Led_Rect	MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
 		 *	When we've found the right row, then add in the right horizontal offset.
 		 */
 		if (afterPosition >= start and afterPosition < end) {
-			Led_Assert (start <= afterPosition);
+			Assert (start <= afterPosition);
 			Led_Distance	hStart	=	0;
 			Led_Distance	hEnd	=	0;
 			GetRowRelativeCharLoc (afterPosition, &hStart, &hEnd);
-			Led_Assert (hStart <= hEnd);
+			Assert (hStart <= hEnd);
 			return (Led_Rect (topVPos, hStart, pmCacheInfo.GetRowHeight (subRow), hEnd-hStart));
 		}
 
@@ -1277,7 +1277,7 @@ size_t		MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where
 	do {
 		PartitionMarker*	cur		=	curRow.GetPartitionMarker ();
 		size_t				subRow	=	curRow.GetSubRow ();
-		Led_AssertNotNil (cur);
+		AssertNotNull (cur);
 		size_t	start	=	cur->GetStart ();
 		#if		qMultiByteCharacters
 			Assert_CharPosDoesNotSplitCharacter (start);
@@ -1342,10 +1342,10 @@ bool	MultiRowTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text,
 size_t	MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const
 {
 	size_t	newLen	=	inherited::RemoveMappedDisplayCharacters (copyText, nTChars);
-	Led_Assert (newLen <= nTChars);
+	Assert (newLen <= nTChars);
 	size_t	newerLen	=	RemoveMappedDisplayCharacters_HelperForChar (copyText, newLen, '\n');
-	Led_Assert (newerLen <= newLen);
-	Led_Assert (newerLen <= nTChars);
+	Assert (newerLen <= newLen);
+	Assert (newerLen <= nTChars);
 	return newerLen;
 }
 
@@ -1372,14 +1372,14 @@ void	MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCache
 	// If rowStart array not big enough then allocate it from the heap...
 	if (fRep->fRowCountCache > kPackRowStartCount + 1) {
 		RowStart_*	newRowStartArray	=	new RowStart_ [fRep->fRowCountCache-1];
-		Led_AssertNotNil (newRowStartArray);
+		AssertNotNull (newRowStartArray);
 		if (fRep->fRowCountCache == kPackRowStartCount + 1 + 1) {
 			::memcpy (newRowStartArray, &fRep->fRowStartArray, sizeof (fRep->fRowStartArray));
 		}
 		else {
-			Led_Assert (fRep->fRowCountCache > 2);
+			Assert (fRep->fRowCountCache > 2);
 			if (fRep->fRowCountCache > kPackRowStartCount+1+1) {
-				Led_AssertNotNil (fRep->fRowStartArray);
+				AssertNotNull (fRep->fRowStartArray);
 				(void)memcpy (newRowStartArray, fRep->fRowStartArray, sizeof (newRowStartArray[1])*(fRep->fRowCountCache-2));
 				delete[] fRep->fRowStartArray;
 			}
@@ -1390,14 +1390,14 @@ void	MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCache
 	// If rowHeight array not big enough then allocate it from the heap...
 	if (fRep->fRowCountCache > kPackRowHeightCount) {
 		RowHeight_*	newRowHeightArray	=	new RowHeight_ [fRep->fRowCountCache];
-		Led_AssertNotNil (newRowHeightArray);
+		AssertNotNull (newRowHeightArray);
 		if (fRep->fRowCountCache == kPackRowHeightCount + 1) {
 			::memcpy (newRowHeightArray, &fRep->fRowHeightArray, sizeof (fRep->fRowHeightArray));
 		}
 		else {
-			Led_Assert (fRep->fRowCountCache > 1);
+			Assert (fRep->fRowCountCache > 1);
 			if (fRep->fRowCountCache > kPackRowHeightCount+1) {
-				Led_AssertNotNil (fRep->fRowHeightArray);
+				AssertNotNull (fRep->fRowHeightArray);
 				memcpy (newRowHeightArray, fRep->fRowHeightArray, sizeof (newRowHeightArray[1])*(fRep->fRowCountCache-1));
 				delete[] fRep->fRowHeightArray;
 			}
@@ -1431,7 +1431,7 @@ MultiRowTextImager::PMInfoCacheMgr::PMInfoCacheMgr (MultiRowTextImager& imager):
 // REDO this class to make IT a MarkerOwner - and use THAT markerowner for MyMarker. Then - store an additional MyMarker for EACH marker
 // added to cache (just around the PM its used to wrap). Then remove ONLY that PM from the cache in its DIDUpdate.
 	PartitionPtr	part	=	imager.GetPartition ();
-	Led_Assert (not part.IsNull ());
+	Assert (not part.IsNull ());
 	part->AddPartitionWatcher (this);
 	#if		qAutoPtrBrokenBug
 		fMyMarker = Led_RefCntPtr<MyMarker> (new MyMarker (*this));
@@ -1459,32 +1459,32 @@ MultiRowTextImager::PartitionElementCacheInfo	MultiRowTextImager::PMInfoCacheMgr
 	MAP_CACHE::iterator i	=	fPMCache.find (pm);
 	if (i == fPMCache.end ()) {
 		try {
-			Led_Assert (fCurFillCachePM == NULL);	// can only do one fillcache at a time...
+			Assert (fCurFillCachePM == NULL);	// can only do one fillcache at a time...
 			fCurFillCachePM = pm;
 			fImager.FillCache (pm, fCurFillCacheInfo);
 			#if		qDebug
 				{
 					for (size_t t = 0; t < fCurFillCacheInfo.GetRowCount (); ++t) {
-						Led_Assert (fCurFillCacheInfo.GetLineRelativeRowStartPosition (t) <= pm->GetLength ());
-						Led_Assert (fCurFillCacheInfo.PeekAtRowStart (t) <= pm->GetLength ());
+						Assert (fCurFillCacheInfo.GetLineRelativeRowStartPosition (t) <= pm->GetLength ());
+						Assert (fCurFillCacheInfo.PeekAtRowStart (t) <= pm->GetLength ());
 					}
 				}
 			#endif
 			i = fPMCache.insert (MAP_CACHE::value_type (pm, fCurFillCacheInfo)).first;
 			#if		qDebug
 				{
-					Led_Assert (fCurFillCacheInfo.GetRowCount () == i->second.GetRowCount ());
+					Assert (fCurFillCacheInfo.GetRowCount () == i->second.GetRowCount ());
 					for (size_t t = 0; t < fCurFillCacheInfo.GetRowCount (); ++t) {
-						Led_Assert (fCurFillCacheInfo.PeekAtRowHeight (t) == i->second.PeekAtRowHeight (t));
-						Led_Assert (fCurFillCacheInfo.PeekAtRowStart (t) == i->second.PeekAtRowStart (t));
+						Assert (fCurFillCacheInfo.PeekAtRowHeight (t) == i->second.PeekAtRowHeight (t));
+						Assert (fCurFillCacheInfo.PeekAtRowStart (t) == i->second.PeekAtRowStart (t));
 					}
 				}
 			#endif
-			Led_Assert (fCurFillCachePM == pm);
+			Assert (fCurFillCachePM == pm);
 			fCurFillCachePM = NULL;
 		}
 		catch (...) {
-			Led_Assert (fCurFillCachePM == pm);
+			Assert (fCurFillCachePM == pm);
 			fCurFillCachePM = NULL;
 			throw;
 		}
@@ -1534,7 +1534,7 @@ void	MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, vo
 			newTopLine = fImager.fTopLinePartitionMarkerInWindow->GetNext ();
 			useFirstRow = true;
 		}
-		Led_AssertNotNil (newTopLine);
+		AssertNotNull (newTopLine);
 	}
 
 	if (newTopLine != NULL) {
@@ -1557,7 +1557,7 @@ void	MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, vo
 			newTopLine = fTextImager.fTopLinePartitionMarkerInWindow->GetNextMRPM ();
 			useFirstRow = true;
 		}
-		Led_AssertNotNil (newTopLine);
+		AssertNotNull (newTopLine);
 	}
 
 	MultiRowPartitionMarker*	successor	=	(MultiRowPartitionMarker*)pm->GetNext ();	// all our pms are subtypes of this type
@@ -1570,7 +1570,7 @@ void	MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, vo
 	if (newTopLine != NULL) {
 		fTextImager.SetTopRowInWindow_ (RowReference (newTopLine, useFirstRow? 0: fTextImager.GetPartitionElementCacheInfo (newTopLine).GetLastRow ()));
 	}
-	Led_AssertNotNil (fTextImager.fTopLinePartitionMarkerInWindow);	// can't delete last one...
+	AssertNotNull (fTextImager.fTopLinePartitionMarkerInWindow);	// can't delete last one...
 	Led_AssertMember (fTextImager.fTopLinePartitionMarkerInWindow, MultiRowPartitionMarker);
 	fTextImager.InvalidateTotalRowsInWindow ();
 #endif

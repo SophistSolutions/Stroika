@@ -200,12 +200,12 @@ namespace {
 				MyIsWXXXTesterFunctions ()
 					{
 						for (wchar_t c = 0; c < 0xffff; ++c) {
-							Led_Assert (CharacterProperties::IsAlpha_M (c) == !!iswalpha (c));
-							Led_Assert (CharacterProperties::IsAlnum_M (c) == !!iswalnum (c));
-							Led_Assert (CharacterProperties::IsPunct_M (c) == !!iswpunct (c));
-							Led_Assert (CharacterProperties::IsSpace_M (c) == !!iswspace (c));
-							Led_Assert (CharacterProperties::IsCntrl_M (c) == !!iswcntrl (c));
-							Led_Assert (CharacterProperties::IsDigit_M (c) == !!iswdigit (c));
+							Assert (CharacterProperties::IsAlpha_M (c) == !!iswalpha (c));
+							Assert (CharacterProperties::IsAlnum_M (c) == !!iswalnum (c));
+							Assert (CharacterProperties::IsPunct_M (c) == !!iswpunct (c));
+							Assert (CharacterProperties::IsSpace_M (c) == !!iswspace (c));
+							Assert (CharacterProperties::IsCntrl_M (c) == !!iswcntrl (c));
+							Assert (CharacterProperties::IsDigit_M (c) == !!iswdigit (c));
 						}
 					}
 		}	sMyIsWXXXTesterFunctions;
@@ -234,14 +234,14 @@ namespace {
 */
 void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
-	Led_Require (inMBCharCnt == 0 or inMBChars != NULL);
-	Led_RequireNotNil (outCharCnt);
-	Led_Require (*outCharCnt == 0 or outChars != NULL);
+	Require (inMBCharCnt == 0 or inMBChars != NULL);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != NULL);
 
 	if (GetHandleBOM ()) {
 		size_t			bytesToStrip	=	0;
 		if (CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, NULL, &bytesToStrip) == fCodePage) {
-			Led_Assert (inMBCharCnt >= bytesToStrip);
+			Assert (inMBCharCnt >= bytesToStrip);
 			inMBChars += bytesToStrip;
 			inMBCharCnt -= bytesToStrip;
 		}
@@ -303,17 +303,17 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		Led_SmallStackBuffer<wchar_t>	tstBuf (*outCharCnt);
 
 		Win32_CodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
-		Led_Assert (tstCharCnt == *outCharCnt);
-		Led_Assert (memcmp (tstBuf, outChars, sizeof (wchar_t)*tstCharCnt) == 0);
+		Assert (tstCharCnt == *outCharCnt);
+		Assert (memcmp (tstBuf, outChars, sizeof (wchar_t)*tstCharCnt) == 0);
 	}
 #endif
 }
 
 void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-	Led_Require (inCharCnt == 0 or inChars != NULL);
-	Led_RequireNotNil (outCharCnt);
-	Led_Require (*outCharCnt == 0 or outChars != NULL);
+	Require (inCharCnt == 0 or inChars != NULL);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != NULL);
 	switch (fCodePage) {
 		case	kCodePage_ANSI:		TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
 		case	kCodePage_MAC:		TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt); break;
@@ -441,8 +441,8 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
 		// used for bad conversions. Reason is cuz for characters that don't map - our table and
 		// the system table can differ in how they map depending on current OS code page.
-		Led_Assert (win32TstCharCnt == *outCharCnt or outChars[0] == '?');
-		Led_Assert (memcmp (win32TstBuf, outChars, win32TstCharCnt) == 0 or outChars[0] == '?');
+		Assert (win32TstCharCnt == *outCharCnt or outChars[0] == '?');
+		Assert (memcmp (win32TstBuf, outChars, win32TstCharCnt) == 0 or outChars[0] == '?');
 	}
 #endif
 }
@@ -461,18 +461,18 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
  */
 void	Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
-	Led_Require (inMBCharCnt == 0 or inMBChars != NULL);
-	Led_RequireNotNil (outCharCnt);
-	Led_Require (*outCharCnt == 0 or outChars != NULL);
+	Require (inMBCharCnt == 0 or inMBChars != NULL);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != NULL);
 //	*outCharCnt	= ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
 	*outCharCnt	= ::MultiByteToWideChar (fCodePage, 0, inMBChars, inMBCharCnt, outChars, *outCharCnt);
 }
 
 void	Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-	Led_Require (inCharCnt == 0 or inChars != NULL);
-	Led_RequireNotNil (outCharCnt);
-	Led_Require (*outCharCnt == 0 or outChars != NULL);
+	Require (inCharCnt == 0 or inChars != NULL);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != NULL);
 	*outCharCnt	= ::WideCharToMultiByte (fCodePage, 0, inChars, inCharCnt, outChars, *outCharCnt, NULL, NULL);
 }
 #endif
@@ -1099,9 +1099,9 @@ void	TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar
 
 void	UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
 {
-	Led_Require (inMBCharCnt == 0 or inMBChars != NULL);
-	Led_RequireNotNil (outCharCnt);
-	Led_Require (*outCharCnt == 0 or outChars != NULL);
+	Require (inMBCharCnt == 0 or inMBChars != NULL);
+	RequireNotNull (outCharCnt);
+	Require (*outCharCnt == 0 or outChars != NULL);
 	
 	/*
 	 *	NOTE - based on ConvertUTF16toUTF8 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
@@ -1358,7 +1358,7 @@ BOOL FAR	PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageString)
 
 void	CodePagesInstalled::Init ()
 {
-	Led_Assert (sCodePages.size () == 0);
+	Assert (sCodePages.size () == 0);
 	#if		qWindows
 		::EnumSystemCodePages (EnumCodePagesProc, CP_INSTALLED);
 	#endif
@@ -2006,7 +2006,7 @@ bool	CharacterProperties::IsAlpha_M (wchar_t c)
 			||(248 <= c && c <= 254)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswalpha(c));
+			Assert (iswalpha(c));
 			#endif
 			return true;
 		}
@@ -2230,7 +2230,7 @@ bool	CharacterProperties::IsAlpha_M (wchar_t c)
 			||(4936 <= c && c <= 4954)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswalpha(c));
+			Assert (iswalpha(c));
 			#endif
 			return true;
 		}
@@ -2320,13 +2320,13 @@ bool	CharacterProperties::IsAlpha_M (wchar_t c)
 			||(65498 <= c && c <= 65500)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswalpha(c));
+			Assert (iswalpha(c));
 			#endif
 			return true;
 		}
 	}
 	#if		qTestMyISWXXXFunctions
-	Led_Assert (!iswalpha(c));
+	Assert (!iswalpha(c));
 	#endif
 	return false;
 }
@@ -2346,7 +2346,7 @@ bool	CharacterProperties::IsAlnum_M (wchar_t c)
 			||(248 <= c && c <= 254)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswalnum(c));
+			Assert (iswalnum(c));
 			#endif
 			return true;
 		}
@@ -2583,7 +2583,7 @@ bool	CharacterProperties::IsAlnum_M (wchar_t c)
 			||(4969 <= c && c <= 4977)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswalnum(c));
+			Assert (iswalnum(c));
 			#endif
 			return true;
 		}
@@ -2676,13 +2676,13 @@ bool	CharacterProperties::IsAlnum_M (wchar_t c)
 			||(65498 <= c && c <= 65500)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswalnum(c));
+			Assert (iswalnum(c));
 			#endif
 			return true;
 		}
 	}
 	#if		qTestMyISWXXXFunctions
-	Led_Assert (!iswalnum(c));
+	Assert (!iswalnum(c));
 	#endif
 	return false;
 }
@@ -2701,7 +2701,7 @@ bool	CharacterProperties::IsPunct_M (wchar_t c)
 			||(247 <= c && c <= 247)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswpunct(c));
+			Assert (iswpunct(c));
 			#endif
 			return true;
 		}
@@ -2734,7 +2734,7 @@ bool	CharacterProperties::IsPunct_M (wchar_t c)
 			||(4961 <= c && c <= 4968)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswpunct(c));
+			Assert (iswpunct(c));
 			#endif
 			return true;
 		}
@@ -2777,13 +2777,13 @@ bool	CharacterProperties::IsPunct_M (wchar_t c)
 			||(65377 <= c && c <= 65381)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswpunct(c));
+			Assert (iswpunct(c));
 			#endif
 			return true;
 		}
 	}
 	#if		qTestMyISWXXXFunctions
-	Led_Assert (!iswpunct(c));
+	Assert (!iswpunct(c));
 	#endif
 	return false;
 }
@@ -2798,7 +2798,7 @@ bool	CharacterProperties::IsSpace_M (wchar_t c)
 			||(160 <= c && c <= 160)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswspace(c));
+			Assert (iswspace(c));
 			#endif
 			return true;
 		}
@@ -2806,7 +2806,7 @@ bool	CharacterProperties::IsSpace_M (wchar_t c)
 	else if (c < 5000) {
 		if (false			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswspace(c));
+			Assert (iswspace(c));
 			#endif
 			return true;
 		}
@@ -2819,13 +2819,13 @@ bool	CharacterProperties::IsSpace_M (wchar_t c)
 			||(12288 <= c && c <= 12288)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswspace(c));
+			Assert (iswspace(c));
 			#endif
 			return true;
 		}
 	}
 	#if		qTestMyISWXXXFunctions
-	Led_Assert (!iswspace(c));
+	Assert (!iswspace(c));
 	#endif
 	return false;
 }
@@ -2839,7 +2839,7 @@ bool	CharacterProperties::IsCntrl_M (wchar_t c)
 			||(127 <= c && c <= 159)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswcntrl(c));
+			Assert (iswcntrl(c));
 			#endif
 			return true;
 		}
@@ -2848,7 +2848,7 @@ bool	CharacterProperties::IsCntrl_M (wchar_t c)
 		if ((1807 <= c && c <= 1807)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswcntrl(c));
+			Assert (iswcntrl(c));
 			#endif
 			return true;
 		}
@@ -2862,13 +2862,13 @@ bool	CharacterProperties::IsCntrl_M (wchar_t c)
 			||(65529 <= c && c <= 65531)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswcntrl(c));
+			Assert (iswcntrl(c));
 			#endif
 			return true;
 		}
 	}
 	#if		qTestMyISWXXXFunctions
-	Led_Assert (!iswcntrl(c));
+	Assert (!iswcntrl(c));
 	#endif
 	return false;
 }
@@ -2883,7 +2883,7 @@ bool	CharacterProperties::IsDigit_M (wchar_t c)
 			||(185 <= c && c <= 185)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswdigit(c));
+			Assert (iswdigit(c));
 			#endif
 			return true;
 		}
@@ -2907,7 +2907,7 @@ bool	CharacterProperties::IsDigit_M (wchar_t c)
 			||(4969 <= c && c <= 4977)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswdigit(c));
+			Assert (iswdigit(c));
 			#endif
 			return true;
 		}
@@ -2918,13 +2918,13 @@ bool	CharacterProperties::IsDigit_M (wchar_t c)
 			||(65296 <= c && c <= 65305)
 			) {
 			#if		qTestMyISWXXXFunctions
-			Led_Assert (iswdigit(c));
+			Assert (iswdigit(c));
 			#endif
 			return true;
 		}
 	}
 	#if		qTestMyISWXXXFunctions
-	Led_Assert (!iswdigit(c));
+	Assert (!iswdigit(c));
 	#endif
 	return false;
 }

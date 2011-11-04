@@ -506,7 +506,7 @@ class	StandardStyledTextInteractor::EmptySelStyleTextRep : public InteractiveRep
 //	class	StandardStyledTextInteractor::StandardStyledTextIOSinkStream
 	inline	TextStore&	StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetTextStore () const
 		{
-			Led_EnsureNotNil (fTextStore);
+			EnsureNotNull (fTextStore);
 			return *fTextStore;
 		}
 	inline	StandardStyledTextImager::StyleDatabasePtr	StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const

@@ -916,12 +916,12 @@ class	TextImager::Tablet_Acquirer {
 		Tablet_Acquirer (const TextImager* textImager):
 			fTextImager (textImager)
 			{
-				Led_AssertNotNil (fTextImager);
+				AssertNotNull (fTextImager);
 				fTablet = fTextImager->AcquireTablet ();
 			}
 		operator	Led_Tablet  ()
 			{
-				Led_AssertNotNil (fTablet);
+				AssertNotNull (fTablet);
 				return (fTablet);
 			}
 		Led_Tablet	operator-> ()
@@ -930,8 +930,8 @@ class	TextImager::Tablet_Acquirer {
 			}
 		~Tablet_Acquirer ()
 			{
-				Led_AssertNotNil (fTextImager);
-				Led_AssertNotNil (fTablet);
+				AssertNotNull (fTextImager);
+				AssertNotNull (fTablet);
 				fTextImager->ReleaseTablet (fTablet);
 			}
 	private:
@@ -1069,7 +1069,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 			TabStopList (),
 			fTWIPSPerTabStop (twipsPerTabStop)
 			{
-				Led_Require (twipsPerTabStop > 0);
+				Require (twipsPerTabStop > 0);
 			}
 		inline	Led_TWIPS	TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
 			{
@@ -1077,11 +1077,11 @@ template	<typename TEXTSTORE, typename	IMAGER>
 			}
 		inline	Led_TWIPS	TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const
 			{
-				Led_Assert (fTWIPSPerTabStop > 0);
+				Assert (fTWIPSPerTabStop > 0);
 				size_t	idx	=	afterPos/fTWIPSPerTabStop;
 				Led_TWIPS	result	=	Led_TWIPS (static_cast<long> ((idx+1)*fTWIPSPerTabStop));
-				Led_Ensure (result % fTWIPSPerTabStop == 0);
-				Led_Ensure (result > afterPos);
+				Ensure (result % fTWIPSPerTabStop == 0);
+				Ensure (result > afterPos);
 				return result;
 			}
 
@@ -1107,28 +1107,28 @@ template	<typename TEXTSTORE, typename	IMAGER>
 			fDefaultTabWidth (720),		//	default to 1/2 inch - RTF spec default
 			fTabStops ()
 			{
-				Led_Assert (fDefaultTabWidth > 0);
+				Assert (fDefaultTabWidth > 0);
 			}
 		inline	TextImager::StandardTabStopList::StandardTabStopList (Led_TWIPS eachWidth):
 			TabStopList (),
 			fDefaultTabWidth (eachWidth),
 			fTabStops ()
 			{
-				Led_Require (fDefaultTabWidth > 0);
+				Require (fDefaultTabWidth > 0);
 			}
 		inline	TextImager::StandardTabStopList::StandardTabStopList (const vector<Led_TWIPS>& tabstops):
 			TabStopList (),
 			fDefaultTabWidth (720),		//	default to 1/2 inch - RTF spec default
 			fTabStops (tabstops)
 			{
-				Led_Assert (fDefaultTabWidth > 0);
+				Assert (fDefaultTabWidth > 0);
 			}
 		inline	TextImager::StandardTabStopList::StandardTabStopList (const vector<Led_TWIPS>& tabstops, Led_TWIPS afterTabsWidth):
 			TabStopList (),
 			fDefaultTabWidth (afterTabsWidth),
 			fTabStops (tabstops)
 			{
-				Led_Require (fDefaultTabWidth > 0);
+				Require (fDefaultTabWidth > 0);
 			}
 		inline	Led_TWIPS	TextImager::StandardTabStopList::ComputeIthTab (size_t i) const
 			{
@@ -1151,15 +1151,15 @@ template	<typename TEXTSTORE, typename	IMAGER>
 
 				// Go back first to assure we've gotten the FIRST one after 'afterPos' - not just 'A' tabstop after 'afterPos'.
 				while (guessIdx > 0 and guessVal > afterPos) {
-					Led_Assert (guessIdx == 0 or ComputeIthTab (guessIdx-1) < ComputeIthTab (guessIdx));	// assure monotonicly increasing so this will complete!
+					Assert (guessIdx == 0 or ComputeIthTab (guessIdx-1) < ComputeIthTab (guessIdx));	// assure monotonicly increasing so this will complete!
 					guessIdx--;
 					guessVal = ComputeIthTab (guessIdx);
 				}
 
 				// Now we've scanned to a good spot to start looking...
-				Led_Assert (guessIdx == 0 or guessVal <= afterPos);
+				Assert (guessIdx == 0 or guessVal <= afterPos);
 				for ( ; ; ++guessIdx) {
-					Led_Assert (guessIdx == 0 or ComputeIthTab (guessIdx-1) < ComputeIthTab (guessIdx));	// assure monotonicly increasing so this will complete!
+					Assert (guessIdx == 0 or ComputeIthTab (guessIdx-1) < ComputeIthTab (guessIdx));	// assure monotonicly increasing so this will complete!
 					Led_TWIPS	d	=	ComputeIthTab (guessIdx);
 					if (d > afterPos) {
 						return d;
@@ -1170,7 +1170,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
                                         #pragma warn -8008
 					#pragma warn -8066
 				#endif
-				Led_Assert (false); return afterPos;
+				Assert (false); return afterPos;
 				#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 					#pragma pop
 				#endif
@@ -1350,7 +1350,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	*/
 	inline	Led_Color*	TextImager::GetDefaultTextColor (DefaultColorIndex dci) const
 		{
-			Led_Require (dci < eMaxDefaultColorIndex);
+			Require (dci < eMaxDefaultColorIndex);
 			return fDefaultColorIndex[dci];
 		}
 	/*
@@ -1367,14 +1367,14 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	*/
 	inline	Led_Color	TextImager::GetEffectiveDefaultTextColor (DefaultColorIndex dci) const
 		{
-			Led_Require (dci < eMaxDefaultColorIndex);
+			Require (dci < eMaxDefaultColorIndex);
 			if (fDefaultColorIndex[dci] == NULL) {
 				switch (dci) {
 					case	eDefaultTextColor:						return fDefaultFont.GetTextColor ();;
 					case	eDefaultBackgroundColor:				return Led_GetTextBackgroundColor ();
 					case	eDefaultSelectedTextColor:				return Led_GetSelectedTextColor ();
 					case	eDefaultSelectedTextBackgroundColor:	return Led_GetSelectedTextBackgroundColor ();
-					default:										Led_Assert (false);/*NOTREACHED*/ return Led_Color::kBlack;
+					default:										Assert (false);/*NOTREACHED*/ return Led_Color::kBlack;
 				}
 			}
 			else {
@@ -1395,7 +1395,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	*/
 	inline	void	TextImager::ClearDefaultTextColor (DefaultColorIndex dci)
 		{
-			Led_Require (dci < eMaxDefaultColorIndex);
+			Require (dci < eMaxDefaultColorIndex);
 			delete fDefaultColorIndex[dci];
 			fDefaultColorIndex[dci] = NULL;
 			if (dci == eDefaultTextColor) {
@@ -1416,7 +1416,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	*/
 	inline	void	TextImager::SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor)
 		{
-			Led_Require (dci < eMaxDefaultColorIndex);
+			Require (dci < eMaxDefaultColorIndex);
 			ClearDefaultTextColor (dci);
 			if (dci == eDefaultTextColor) {
 				fDefaultFont.SetTextColor (textColor);
@@ -1462,10 +1462,10 @@ template	<typename TEXTSTORE, typename	IMAGER>
 		{
 			#if		qWindows
 				if (fRestoreObject != NULL) {
-					Led_Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
+					Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
 				}
 				if (fRestoreAttribObject != NULL) {
-					Led_Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
+					Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
 				}
 			#endif
 		}
@@ -1551,9 +1551,9 @@ template	<typename TEXTSTORE, typename	IMAGER>
 					// Should probably do something similar?
 				#elif	qWindows
 					HFONT	hFont	=	(HFONT)::GetCurrentObject (fTablet->m_hAttribDC, OBJ_FONT);
-					Led_Verify (hFont != NULL);
+					Verify (hFont != NULL);
 					LOGFONT	lf;
-					Led_Verify (::GetObject (hFont, sizeof(LOGFONT), &lf));
+					Verify (::GetObject (hFont, sizeof(LOGFONT), &lf));
 					SetDefaultFont (Led_FontSpecification (lf));
 					SetDefaultTextColor (eDefaultBackgroundColor, Led_Color (::GetBkColor (fTablet->m_hAttribDC)));
 					if (::GetBkMode (fTablet->m_hAttribDC) == TRANSPARENT) {

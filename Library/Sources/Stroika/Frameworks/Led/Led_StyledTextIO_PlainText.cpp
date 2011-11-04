@@ -68,7 +68,7 @@ void	StyledTextIOReader_PlainText::Read ()
 	size_t	oldPos	=	GetSrcStream ().current_offset ();
 	GetSrcStream ().seek_to (UINT_MAX);
 	size_t	endPos	=	GetSrcStream ().current_offset ();
-	Led_Assert (endPos >= oldPos);
+	Assert (endPos >= oldPos);
 	GetSrcStream ().seek_to (oldPos);
 	size_t	len	=	endPos-oldPos;
 	Led_SmallStackBuffer<char>	buf (len);
@@ -85,7 +85,7 @@ void	StyledTextIOReader_PlainText::Read ()
 	cpc.SetHandleBOM (true);
 	cpc.MapToUNICODE (static_cast<const char*> (buf), len, static_cast<wchar_t*> (wbuf), &outCharCnt);
 	size_t	charsRead = outCharCnt;
-	Led_Assert (charsRead <= len);
+	Assert (charsRead <= len);
 	Led_tChar*	useBuf	=	wbuf;
 #else
 	size_t		charsRead	=	len;

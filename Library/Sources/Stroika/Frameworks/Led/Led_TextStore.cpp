@@ -46,8 +46,8 @@ namespace	Stroika {
 */
 void	TextStore::VectorMarkerSink::Append (Marker* m)
 {
-	Led_RequireNotNil (m);
-	Led_AssertNotNil (fMarkers);
+	RequireNotNull (m);
+	AssertNotNull (fMarkers);
 	//fMarkers->push_back (m);
 	PUSH_BACK(*fMarkers, m);
 }
@@ -70,8 +70,8 @@ void	TextStore::VectorMarkerSink::Append (Marker* m)
 */
 void	TextStore::SmallStackBufferMarkerSink::Append (Marker* m)
 {
-	Led_RequireNotNil (m);
-	Led_AssertNotNil (fMarkers);
+	RequireNotNull (m);
+	AssertNotNull (fMarkers);
 	fMarkers.push_back (m);
 }
 
@@ -96,7 +96,7 @@ const	MarkerOwner*	TextStore::kAnyMarkerOwner	=	reinterpret_cast<MarkerOwner*> (
 
 TextStore::~TextStore ()
 {
-	Led_Require (fMarkerOwners.size () == 1 and fMarkerOwners[0] == this);	// better have deleted 'em all by now (except for US)!
+	Require (fMarkerOwners.size () == 1 and fMarkerOwners[0] == this);	// better have deleted 'em all by now (except for US)!
 }
 
 #if		qMultiByteCharacters
@@ -134,10 +134,10 @@ size_t	TextStore::TCharToCharacterIndex (size_t i)
 */
 void	TextStore::Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)
 {
-	Led_Require (from <= to);
-	Led_Require (to <= GetEnd ());
+	Require (from <= to);
+	Require (to <= GetEnd ());
 	#if		qMultiByteCharacters
-		Led_Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
+		Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
 		Assert_CharPosDoesNotSplitCharacter (from);
 		Assert_CharPosDoesNotSplitCharacter (to);
 	#endif
@@ -162,8 +162,8 @@ void	TextStore::Replace (size_t from, size_t to, const Led_tChar* withWhat, size
 */
 size_t	TextStore::GetStartOfLine (size_t lineNumber) const
 {
-	Led_Require (lineNumber >= 0);
-	Led_Require (lineNumber <= GetLineCount ());
+	Require (lineNumber >= 0);
+	Require (lineNumber <= GetLineCount ());
 
 	/*
 	 *	Just walk through each char looking for '\n's and count lines. Could be
@@ -181,7 +181,7 @@ size_t	TextStore::GetStartOfLine (size_t lineNumber) const
 			curLineNum++;
 		}
 	}
-	Led_Assert  (curLineNum == lineNumber);
+	Assert  (curLineNum == lineNumber);
 	return len;	// this can happen when the last line is at end of buffer
 }
 
@@ -193,8 +193,8 @@ size_t	TextStore::GetStartOfLine (size_t lineNumber) const
 size_t	TextStore::GetEndOfLine (size_t lineNumber) const
 {
 // LGP 961129 - not 100% sure this is right - quickie implementation...
-	Led_Require (lineNumber >= 0);
-	Led_Require (lineNumber <= GetLineCount ());
+	Require (lineNumber >= 0);
+	Require (lineNumber <= GetLineCount ());
 
 	/*
 	 *	Just walk through each char looking for '\n's and count lines. Could be
@@ -224,8 +224,8 @@ size_t	TextStore::GetEndOfLine (size_t lineNumber) const
 size_t	TextStore::GetLineContainingPosition (size_t charPosition) const
 {
 // LGP 961129 - not 100% sure this is right - quickie implementation...
-	Led_Assert (charPosition >= 0);
-	Led_Assert (charPosition <= GetEnd ());
+	Assert (charPosition >= 0);
+	Assert (charPosition <= GetEnd ());
 	size_t	curLineNum	=	0;
 	size_t	lineStart	=	0;
 	size_t	lineEnd		=	0;
@@ -277,8 +277,8 @@ size_t	TextStore::GetLineCount () const
 */
 size_t	TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
 {
-	Led_Assert (afterPos >= 0);
-	Led_Assert (afterPos <= GetEnd ());
+	Assert (afterPos >= 0);
+	Assert (afterPos <= GetEnd ());
 
 	// Scan back looking for '\n', and the character AFTER that is the start of this line...
 
@@ -286,7 +286,7 @@ size_t	TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
 	// a valid second byte (at least in SJIS - probaly should check out other MBYTE
 	// charsets - assert good enuf for now)!!!
 	#if		qMultiByteCharacters
-		Led_Assert (not Led_IsValidSecondByte ('\n'));
+		Assert (not Led_IsValidSecondByte ('\n'));
 	#endif
 
 	/*
@@ -296,9 +296,9 @@ size_t	TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
 	size_t			lastReadAtPos	=	afterPos;		// set as past where we need the text to be to force a read
 	Led_tChar		charBuf[64];
 	const size_t	kBufSize		=	sizeof (charBuf)/sizeof(charBuf[0]);
-	Led_Assert (afterPos < INT_MAX);	// cuz of casts - cannot go up to UINT_MAX
+	Assert (afterPos < INT_MAX);	// cuz of casts - cannot go up to UINT_MAX
 	for (int curPos = afterPos-1; curPos > -1; curPos--) {
-		Led_Assert (curPos >= 0);
+		Assert (curPos >= 0);
 		if (lastReadAtPos > static_cast<size_t> (curPos)) {
 			if (lastReadAtPos > kBufSize) {
 				lastReadAtPos -= kBufSize;
@@ -306,10 +306,10 @@ size_t	TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
 			else {
 				lastReadAtPos = 0;
 			}
-			Led_Assert (lastReadAtPos >= 0);
+			Assert (lastReadAtPos >= 0);
 			CopyOut (lastReadAtPos, Led_Min (kBufSize, GetLength ()), charBuf);
 		}
-		Led_Assert (curPos-lastReadAtPos < kBufSize);
+		Assert (curPos-lastReadAtPos < kBufSize);
 		Led_tChar&	thisChar	=	charBuf[curPos-lastReadAtPos];
 
 		// sensible todo but too slow - this code is only called in DEBUG mode and its performance critical there...
@@ -317,7 +317,7 @@ size_t	TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
 		{	
 			Led_tChar xxx;
 			CopyOut (curPos, 1, &xxx);
-			Led_Assert (xxx == thisChar);
+			Assert (xxx == thisChar);
 		}
 		#endif
 
@@ -335,8 +335,8 @@ size_t	TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
 */
 size_t	TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
 {
-	Led_Assert (afterPos >= 0);
-	Led_Assert (afterPos <= GetEnd ());
+	Assert (afterPos >= 0);
+	Assert (afterPos <= GetEnd ());
 
 	// Scan forward looking for '\n' (and don't count NL - just like GetEndOfLine())
 
@@ -344,7 +344,7 @@ size_t	TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
 	// a valid second byte (at least in SJIS - probaly should check out other MBYTE
 	// charsets - assert good enuf for now)!!!
 	#if		qMultiByteCharacters
-		Led_Assert (not Led_IsValidSecondByte ('\n'));
+		Assert (not Led_IsValidSecondByte ('\n'));
 	#endif
 
 	/*
@@ -357,16 +357,16 @@ size_t	TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
 	for (size_t curPos = afterPos; curPos+1 <= GetLength (); curPos++) {
 		if (lastReadAtPos == 0 or lastReadAtPos + kBufSize <= curPos) {
 			lastReadAtPos = curPos;
-			Led_Assert (lastReadAtPos >= 0);
+			Assert (lastReadAtPos >= 0);
 			CopyOut (lastReadAtPos, Led_Min (kBufSize, GetLength ()-(lastReadAtPos)), charBuf);
 		}
-		Led_Assert (curPos-lastReadAtPos < kBufSize);
+		Assert (curPos-lastReadAtPos < kBufSize);
 		Led_tChar&	thisChar	=	charBuf[curPos-lastReadAtPos];
 		#if		qDebug
 		{	
 			Led_tChar xxx;
 			CopyOut (curPos, 1, &xxx);
-			Led_Assert (xxx == thisChar);
+			Assert (xxx == thisChar);
 		}
 		#endif
 		if (thisChar == '\n') {
@@ -383,7 +383,7 @@ size_t	TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
 */
 size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 {
-	Led_Assert (beforePos >= 0);
+	Assert (beforePos >= 0);
 	if (beforePos == 0) {
 		return (0);
 	}
@@ -402,10 +402,10 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 			bool	notFoundSyncPoint	=	true;
 			for (; notFoundSyncPoint; ) {					// we return out when we find what we are looking for...
 
-				Led_Assert (bytesReadOutSoFar < beforePos);
+				Assert (bytesReadOutSoFar < beforePos);
 				bytesReadOutSoFar += chunkSize;
 				bytesReadOutSoFar = Led_Min (bytesReadOutSoFar, beforePos-1);		// don't read more than there is!!!
-				Led_Assert (bytesReadOutSoFar > 0);
+				Assert (bytesReadOutSoFar > 0);
 				if (bytesReadOutSoFar > sizeof (_stackBuf_)) {
 					if (buf != _stackBuf_) {
 						delete[] buf;
@@ -413,7 +413,7 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 					buf = NULL;
 					buf = new Led_tChar [bytesReadOutSoFar];
 				}
-				Led_Assert (beforePos > bytesReadOutSoFar);
+				Assert (beforePos > bytesReadOutSoFar);
 				CopyOut (beforePos-bytesReadOutSoFar, bytesReadOutSoFar, buf);
 
 				const Led_tChar* fromHere	=	&buf[bytesReadOutSoFar];
@@ -431,7 +431,7 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 				 *	a lot like lead-bytes - so this happens a lot.
 				 */
 				if (Led_IsLeadByte (*(fromHere-1))) {
-					Led_Assert (fromHere-buf >= 2);		// else split character...
+					Assert (fromHere-buf >= 2);		// else split character...
 					return ((fromHere - 2 - buf) + beforePos-bytesReadOutSoFar);
 				}
 
@@ -441,7 +441,7 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 
 				// we go back by BYTES til we find a syncronization point
 				for (cur = fromHere-2; cur > buf; cur--) {
-					Led_Assert (cur >= buf);
+					Assert (cur >= buf);
 					if (not Led_IsLeadByte (*cur)) {
 						// Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
 						// at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
@@ -456,14 +456,14 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 					notFoundSyncPoint = false;
 				}
 			}
-			Led_Assert (not notFoundSyncPoint);
-			Led_Assert (cur >= buf);
+			Assert (not notFoundSyncPoint);
+			Assert (cur >= buf);
 
 			// Now we are pointing AT LEAST one mbyte char back from 'fromHere' so scan forward as we used
 			// to to find the previous character...
 			const Led_tChar* fromHere	=	&buf[bytesReadOutSoFar];
-			Led_Assert (cur < fromHere);
-			Led_Assert (Led_IsValidMultiByteString (cur, bytesReadOutSoFar - (cur-buf)));
+			Assert (cur < fromHere);
+			Assert (Led_IsValidMultiByteString (cur, bytesReadOutSoFar - (cur-buf)));
 			for (; cur < fromHere; ) {
 				const Led_tChar*	next = Led_NextChar (cur);
 				if (next == fromHere) {
@@ -472,13 +472,13 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 					}
 					return ((cur-buf) + beforePos-bytesReadOutSoFar);
 				}
-				Led_Assert (next < fromHere);	// if we've gone past - then fromHere must have split a mbyte char!
+				Assert (next < fromHere);	// if we've gone past - then fromHere must have split a mbyte char!
 				cur = next;
 			}
-			Led_Assert (false);	return (0);
+			Assert (false);	return (0);
 		#else
 			size_t	newPos	=	beforePos - 1;
-			Led_Ensure (newPos >= 0);	// cuz we cannot split Wide-Characters, and if we were already at beginning
+			Ensure (newPos >= 0);	// cuz we cannot split Wide-Characters, and if we were already at beginning
 										// of buffer, we'd have never gotten to this code
 			return (newPos);
 		#endif
@@ -494,9 +494,9 @@ size_t	TextStore::FindPreviousCharacter (size_t beforePos) const
 */
 void	TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker)
 {
-	Led_AssertNotNil (wordStartResult);
-	Led_AssertNotNil (wordEndResult);
-	Led_AssertNotNil (wordReal);
+	AssertNotNull (wordStartResult);
+	AssertNotNull (wordEndResult);
+	AssertNotNull (wordReal);
 	size_t	startOfThisLine	=	GetStartOfLineContainingPosition (afterPosition);
 	size_t	endOfThisLine	=	GetEndOfLineContainingPosition (afterPosition);
 	size_t	len				=	endOfThisLine-startOfThisLine;
@@ -504,17 +504,17 @@ void	TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, s
 	Led_SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (startOfThisLine, len, buf);
 
-	Led_Assert (afterPosition >= startOfThisLine);
-	Led_Assert (afterPosition <= endOfThisLine);
+	Assert (afterPosition >= startOfThisLine);
+	Assert (afterPosition <= endOfThisLine);
 	size_t	zeroBasedStart	=	0;
 	size_t	zeroBasedEnd	=	0;
 	if (useTextBreaker == NULL) {
 		useTextBreaker = GetTextBreaker ();
 	}
-	Led_AssertNotNil (useTextBreaker);
+	AssertNotNull (useTextBreaker);
 	useTextBreaker->FindWordBreaks (buf, len, afterPosition-startOfThisLine, &zeroBasedStart, &zeroBasedEnd, wordReal);
-	Led_Assert (zeroBasedStart <= zeroBasedEnd);
-	Led_Assert (zeroBasedEnd <= len);
+	Assert (zeroBasedStart <= zeroBasedEnd);
+	Assert (zeroBasedEnd <= len);
 	*wordStartResult = zeroBasedStart + startOfThisLine;
 	*wordEndResult = zeroBasedEnd + startOfThisLine;
 }
@@ -527,8 +527,8 @@ void	TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, s
 */
 void	TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker)
 {
-	Led_AssertNotNil (wordEndResult);
-	Led_AssertNotNil (wordReal);
+	AssertNotNull (wordEndResult);
+	AssertNotNull (wordReal);
 	size_t	startOfThisLine	=	GetStartOfLineContainingPosition (afterPosition);
 	size_t	endOfThisLine	=	GetEndOfLineContainingPosition (afterPosition);
 	size_t	len				=	endOfThisLine-startOfThisLine;
@@ -536,15 +536,15 @@ void	TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, boo
 	Led_SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (startOfThisLine, len, buf);
 
-	Led_Assert (afterPosition >= startOfThisLine);
-	Led_Assert (afterPosition <= endOfThisLine);
+	Assert (afterPosition >= startOfThisLine);
+	Assert (afterPosition <= endOfThisLine);
 	size_t	zeroBasedEnd	=	0;
 	if (useTextBreaker == NULL) {
 		useTextBreaker = GetTextBreaker ();
 	}
-	Led_AssertNotNil (useTextBreaker);
+	AssertNotNull (useTextBreaker);
 	useTextBreaker->FindLineBreaks (buf, len, afterPosition-startOfThisLine, &zeroBasedEnd, wordReal);
-	Led_Assert (zeroBasedEnd <= len);
+	Assert (zeroBasedEnd <= len);
 	*wordEndResult = zeroBasedEnd + startOfThisLine;
 }
 
@@ -645,7 +645,7 @@ size_t	TextStore::FindFirstWordStartAfterPosition (size_t position)
 */
 size_t	TextStore::Find (const SearchParameters& params, size_t searchFrom, size_t searchTo)
 {
-	Led_Require (searchTo == eUseSearchParameters or searchTo <= GetEnd ());
+	Require (searchTo == eUseSearchParameters or searchTo <= GetEnd ());
 
 	const	Led_tChar*	pattern		=	params.fMatchString.c_str ();
 	bool				matchCase	=	params.fCaseSensativeSearch;
@@ -783,7 +783,7 @@ notFoundByBuffersEnd:
 #if		qSupportLed30CompatAPI
 void	TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers)
 {
-	Led_Assert (false);
+	Assert (false);
 	DoAboutToUpdateCalls (updateInfo, &*markers.begin (), &*markers.end ());
 }
 #endif
@@ -845,9 +845,9 @@ void	TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker*const * m
 		vector<MarkerOwner*>::reverse_iterator	start	=	markerOwners.rbegin ();
 		vector<MarkerOwner*>::reverse_iterator	end		=	markerOwners.rend ();
 		for (vector<MarkerOwner*>::reverse_iterator i = start; i != end; ++i) {
-			Led_Assert (GetMarkerOwners () == markerOwners);
+			Assert (GetMarkerOwners () == markerOwners);
 			(*i)->EarlyDidUpdateText (updateInfo);
-			Led_Assert (GetMarkerOwners () == markerOwners);
+			Assert (GetMarkerOwners () == markerOwners);
 		}
 	}
 #if 1
@@ -856,7 +856,7 @@ void	TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker*const * m
 			--i;
 //			(*(i-1))->DidUpdateText (updateInfo);
 			(*i)->DidUpdateText (updateInfo);
-			Led_Assert (GetMarkerOwners () == markerOwners);
+			Assert (GetMarkerOwners () == markerOwners);
 		}
 	}
 #else
@@ -865,7 +865,7 @@ void	TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker*const * m
 		vector<Marker*>::const_reverse_iterator	end		=	markers.rend ();
 		for (vector<Marker*>::const_reverse_iterator i = start; i != end; ++i) {
 			(*i)->DidUpdateText (updateInfo);
-			Led_Assert (GetMarkerOwners () == markerOwners);
+			Assert (GetMarkerOwners () == markerOwners);
 		}
 	}
 #endif
@@ -873,9 +873,9 @@ void	TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker*const * m
 		vector<MarkerOwner*>::reverse_iterator	start	=	markerOwners.rbegin ();
 		vector<MarkerOwner*>::reverse_iterator	end		=	markerOwners.rend ();
 		for (vector<MarkerOwner*>::reverse_iterator i = start; i != end; ++i) {
-			Led_Assert (GetMarkerOwners () == markerOwners);
+			Assert (GetMarkerOwners () == markerOwners);
 			(*i)->DidUpdateText (updateInfo);
-			Led_Assert (GetMarkerOwners () == markerOwners);
+			Assert (GetMarkerOwners () == markerOwners);
 		}
 	}
 }
@@ -906,7 +906,7 @@ void	TextStore::Invariant_ () const
 	for (; curChar < end; curChar = Led_NextChar (curChar)) {
 		// no need todo anything in here since Led_tChar() checks for 
 	}
-	Led_Assert (curChar == end);
+	Assert (curChar == end);
 }
 #endif
 

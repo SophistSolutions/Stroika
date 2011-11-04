@@ -179,7 +179,7 @@ namespace	Stroika {
 	#if		qWideCharacters && (qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBugs)
 		inline	void	Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 			{
-				Led_Assert (nChars >= 0);
+				Assert (nChars >= 0);
 				Led_SmallStackBuffer<char>	buf (2*nChars);
 
 
@@ -204,7 +204,7 @@ namespace	Stroika {
 					lpSize->cy = 0;
 					for (size_t i = 0; i < nChars; ++i) {
 						SIZE	size;
-						Led_Verify (::GetTextExtentPoint32W (hdc, &str[i], 1, &size));
+						Verify (::GetTextExtentPoint32W (hdc, &str[i], 1, &size));
 						lpSize->cx += size.cx;
 						lpSize->cy = max (size.cy, lpSize->cy);
 						alpDx[i] = lpSize->cx;
@@ -213,22 +213,22 @@ namespace	Stroika {
 				}
 				UINT	codePage	=	Win32CharSetToCodePage (::GetTextCharset (hdc));	// Was CP_ACP...
 				int	nChars2	=	::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars*2, NULL, NULL);
-				Led_Assert (lpnFit == NULL);	// cuz we don't support handling/mapping this # back not needed right now - LGP 980422
+				Assert (lpnFit == NULL);	// cuz we don't support handling/mapping this # back not needed right now - LGP 980422
 				Led_SmallStackBuffer<int>	tmpAlpDxArray (nChars2);
-				Led_Verify (::GetTextExtentExPointA (hdc, buf, nChars2, maxExtent, NULL, tmpAlpDxArray, lpSize));
+				Verify (::GetTextExtentExPointA (hdc, buf, nChars2, maxExtent, NULL, tmpAlpDxArray, lpSize));
 				// Now walk through the tmpAlpDxArray, and as we find CHARACTER boundaries in the text, map that to CHARACTER (by one)
 				// boundaries in the UNICODE based array
 				const char* mbyteStrIter = buf;
 				const int* mbyteAlpDxIter = tmpAlpDxArray;
 				for (size_t i = 0; i < nChars; ++i, mbyteAlpDxIter++) {
 					int	nBytesInThisChar	=	::WideCharToMultiByte (codePage, 0, &str[i], 1, NULL, 0, NULL, NULL);
-					Led_Assert (nBytesInThisChar == 1 or nBytesInThisChar == 2);
+					Assert (nBytesInThisChar == 1 or nBytesInThisChar == 2);
 					if (nBytesInThisChar == 2) {
 						mbyteAlpDxIter++;
 					}
 					alpDx[i] = *mbyteAlpDxIter;
 				}
-				Led_Assert (mbyteAlpDxIter - static_cast<int*>(tmpAlpDxArray) == nChars2);	// be sure the sum we get is the sum of the individual chars... Else maybe we read off end of array!
+				Assert (mbyteAlpDxIter - static_cast<int*>(tmpAlpDxArray) == nChars2);	// be sure the sum we get is the sum of the individual chars... Else maybe we read off end of array!
 			}
 	#endif
 	#if		qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
@@ -236,12 +236,12 @@ namespace	Stroika {
 			{
 				UINT	codePage	=	Win32CharSetToCodePage (::GetTextCharset (hdc));	// Was CP_ACP...
 				if (CodePageBetterOffUsingWideCharVersion (codePage)) {
-					Led_Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
+					Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
 					return;
 				}
 				Led_SmallStackBuffer<char>	buf (2*nChars);
 				int	nChars2	=	::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars*2, NULL, NULL);
-				Led_Verify (::GetTextExtentPointA (hdc, buf, nChars2, lpSize));
+				Verify (::GetTextExtentPointA (hdc, buf, nChars2, lpSize));
 			}
 	#endif
 	#if		qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
@@ -249,12 +249,12 @@ namespace	Stroika {
 			{
 				UINT	codePage	=	Win32CharSetToCodePage (::GetTextCharset (hdc));	// Was CP_ACP...
 				if (CodePageBetterOffUsingWideCharVersion (codePage)) {
-					Led_Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
+					Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
 					return;
 				}
 				Led_SmallStackBuffer<char>	buf (2*nChars);
 				int	nChars2	=	::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars*2, NULL, NULL);
-				Led_Verify (::TextOutA (hdc, xStart, yStart, buf, nChars2));
+				Verify (::TextOutA (hdc, xStart, yStart, buf, nChars2));
 			}
 	#endif
 	inline	void	Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
@@ -266,9 +266,9 @@ namespace	Stroika {
 						return;
 					}
 				#endif
-				Led_Verify (::GetTextExtentExPointW (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
+				Verify (::GetTextExtentExPointW (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
 			#else
-				Led_Verify (::GetTextExtentExPointA (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
+				Verify (::GetTextExtentExPointA (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
 			#endif
 		}
 	inline	void	Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
@@ -280,9 +280,9 @@ namespace	Stroika {
 						return;
 					}
 				#endif
-				Led_Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
+				Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
 			#else
-				Led_Verify (::GetTextExtentPointA (hdc, str, nChars, lpSize));
+				Verify (::GetTextExtentPointA (hdc, str, nChars, lpSize));
 			#endif
 		}
 	inline	void	Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
@@ -294,9 +294,9 @@ namespace	Stroika {
 						return;
 					}
 				#endif
-				Led_Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
+				Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
 			#else
-				Led_Verify (::TextOutA (hdc, xStart, yStart, str, nChars));
+				Verify (::TextOutA (hdc, xStart, yStart, str, nChars));
 			#endif
 		}
 #endif
@@ -352,7 +352,7 @@ namespace	Stroika {
 		~UniscribeDLL ()
 			{
 				if (fDLL != NULL) {
-					Led_Verify (::FreeLibrary (fDLL));
+					Verify (::FreeLibrary (fDLL));
 				}
 			}
 
@@ -463,14 +463,14 @@ namespace	Stroika {
 		inline	bool	IS_WIN30_DIB (const Led_DIB* dib)
 			{
 				// Logic from MSFT DibLook sample in MSVC.Net 2003
-				Led_RequireNotNil (dib);
+				RequireNotNull (dib);
 				const BITMAPINFOHEADER&	hdr	=	dib->bmiHeader;
 				return Led_ByteSwapFromWindows (hdr.biSize) == sizeof(BITMAPINFOHEADER);
 			}
 		inline	size_t	DIBNumColors (const Led_DIB* dib)
 			{
 				// Logic from MSFT DibLook sample in MSVC.Net 2003
-				Led_RequireNotNil (dib);
+				RequireNotNull (dib);
 				const BITMAPINFOHEADER&	hdr	=	dib->bmiHeader;
 
 				/*  If this is a Windows-style DIB, the number of colors in the
@@ -518,7 +518,7 @@ namespace	Stroika {
 			}
 		inline	void	MaybeAddColorRefToTable_ (RGBQUAD colorTable[256], size_t* iP, COLORREF c)
 			{
-				Led_Assert (sizeof (RGBQUAD) == sizeof (COLORREF));
+				Assert (sizeof (RGBQUAD) == sizeof (COLORREF));
 				COLORREF*	ct	=	reinterpret_cast<COLORREF*> (colorTable);	// use COLORREF instead of RGBQUAD cuz same size but COLOREF has op== defined
 				if (find (ct, ct + *iP, c) == ct + *iP and c != RGB (255,255,255)) {
 					colorTable[*iP] = mkRGBQuad (c);
@@ -557,7 +557,7 @@ namespace	Stroika {
 								greenIdx = 0;
 								redIdx++;
 								if (redIdx >= kColorSpecValCnt) {
-									Led_Assert (i == kColorSpecValCnt * kColorSpecValCnt * kColorSpecValCnt - 1);
+									Assert (i == kColorSpecValCnt * kColorSpecValCnt * kColorSpecValCnt - 1);
 									break;
 								}
 							}
@@ -571,7 +571,7 @@ namespace	Stroika {
 
 				i--;	// don't count the WHITE color just added. It will be forced to be last.
 				size_t	nColorsLeft	=	255 - i;
-				Led_Assert (nColorsLeft == 41);
+				Assert (nColorsLeft == 41);
 
 
 				// Check each color and see if needs to be added. Do this BEFORE removing white so we don't need to check
@@ -582,14 +582,14 @@ namespace	Stroika {
 				MaybeAddColorRefToTable_ (colorTable, &i, c4);
 
 				nColorsLeft	=	255 - i;
-				Led_Assert (nColorsLeft > 0);
+				Assert (nColorsLeft > 0);
 
 				size_t	aveSpace	=	255 / nColorsLeft;
 
 				BYTE	startAt	=	aveSpace;
 				while (i < 254 and startAt < 255) {
 					COLORREF	c	=	RGB (startAt,startAt, startAt);
-					Led_Assert (sizeof (RGBQUAD) == sizeof (COLORREF));
+					Assert (sizeof (RGBQUAD) == sizeof (COLORREF));
 					COLORREF*	ct	=	reinterpret_cast<COLORREF*> (colorTable);	// use COLORREF instead of RGBQUAD cuz same size but COLOREF has op== defined
 					if (find (ct, ct + i, c) == ct + i) {
 						colorTable[i] = mkRGBQuad (c);
@@ -599,10 +599,10 @@ namespace	Stroika {
 					startAt += aveSpace;
 				}
 
-				Led_Assert (nColorsLeft	== 255 - i);
+				Assert (nColorsLeft	== 255 - i);
 
-				Led_Assert (nColorsLeft < 5);	// I'm pretty sure this has to get us under 5 - or pretty close...
-				Led_Assert (nColorsLeft >= 1);	// I'm pretty sure this has to get us under 5 - or pretty close...
+				Assert (nColorsLeft < 5);	// I'm pretty sure this has to get us under 5 - or pretty close...
+				Assert (nColorsLeft >= 1);	// I'm pretty sure this has to get us under 5 - or pretty close...
 
 				for (; i <= 255; ++i) {
 					colorTable[i].rgbRed   = i;
@@ -748,7 +748,7 @@ static	bool	Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* s
  */
 BOOL	Led_Bitmap::CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight)
 {
-	Led_Assert (m_hObject == NULL);
+	Assert (m_hObject == NULL);
 	m_hObject = ::CreateCompatibleBitmap (hdc, nWidth, nHeight);
 	fImageSize = Led_Size (nHeight, nWidth);
 	return (m_hObject != NULL);	// return value backward compat hack...
@@ -756,8 +756,8 @@ BOOL	Led_Bitmap::CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Dista
 
 BOOL	Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight)
 {
-	Led_RequireNotNil (hdc);
-	Led_Require (m_hObject == NULL);
+	RequireNotNull (hdc);
+	Require (m_hObject == NULL);
 	int	useDepth	=	16;	// default to DIBSection depth - seems to work pretty well in most cases
 
 	fImageSize = Led_Size (nHeight, nWidth);
@@ -773,20 +773,20 @@ BOOL	Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_D
 		case	8:	m_hObject = Create8BitDIBSection (hdc, nWidth, nHeight); break;
 		case	16:	m_hObject = Create16BitDIBSection (hdc, nWidth, nHeight); break;
 		case	32:	m_hObject = Create32BitDIBSection (hdc, nWidth, nHeight); break;
-		default:	Led_Assert (false);	//NotReached
+		default:	Assert (false);	//NotReached
 	}
 	return (m_hObject != NULL);	// return value backward compat hack...
 }
 
 void	Led_Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
 {
-	Led_Require (m_hObject == NULL);
+	Require (m_hObject == NULL);
 	m_hObject = ::LoadBitmap (hInstance, lpBitmapName);
 	Led_ThrowIfNull (m_hObject);
 	{
 		BITMAP bm;
 		(void)::memset (&bm, 0, sizeof (bm));
-		Led_Verify (::GetObject (m_hObject, sizeof(BITMAP), (LPVOID)&bm));
+		Verify (::GetObject (m_hObject, sizeof(BITMAP), (LPVOID)&bm));
 		fImageSize = Led_Size (bm.bmHeight, bm.bmWidth);
 	}
 }
@@ -1208,7 +1208,7 @@ Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color
 	CreateStandardColorTable (fColorTable, fHilightBackColor, fHilightForeColor, fOldBackColor, fOldForeColor);
 	fDibSection	= Create8BitDIBSection (baseHDC, size.h, size.v, fColorTable, &fDibData);
 	BITMAP      bm;
-	Led_Verify (::GetObject (fDibSection, sizeof (BITMAP), &bm) == sizeof (BITMAP));
+	Verify (::GetObject (fDibSection, sizeof (BITMAP), &bm) == sizeof (BITMAP));
 	fDibDataByteCount = bm.bmWidthBytes * bm.bmHeight;
 	fHMemDC = ::CreateCompatibleDC (fBaseDC);
 	fOldBitmap = reinterpret_cast<HBITMAP> (::SelectObject (fHMemDC, fDibSection));
@@ -1347,7 +1347,7 @@ void	Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (cons
 	 *	the outer one over rows, and the inner row loop stopping NOT at teh end of the REAL row - but just at the end
 	 *	of the subset we are using (easy cuz we always start at 0,0).
 	 */
-	Led_Verify (::GdiFlush ());	// make sure bits in sync... - not SURE if this is needed?
+	Verify (::GdiFlush ());	// make sure bits in sync... - not SURE if this is needed?
 	{
 		register const unsigned char*	kMappingTable	=	fMappingTable;
 		unsigned char*					dataStart		=	fDibData;
@@ -1380,7 +1380,7 @@ void	Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (cons
 Led_Tablet_::Led_Tablet_ (GrafPtr gp):
 	fGrafPort (gp)
 	{
-		Led_RequireNotNil (gp);
+		RequireNotNull (gp);
 	}
 #elif	qWindows
 Led_Tablet_::Led_Tablet_ (HDC hdc, Led_Tablet_::OwnDCControl ownsDC):
@@ -1424,7 +1424,7 @@ Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable):
 	}
 	else {
 		fColormap = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
-//			Led_Assert (false);//???
+//			Assert (false);//???
 			// make new colormap...call XGetWMColormap ()...
 		// CALL XSetWindowColormap ().... if not gotten
 		// .
@@ -1568,7 +1568,7 @@ void	Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Co
 				event.xexpose.width = (int)exposedRect.GetWidth ();
 				event.xexpose.height = (int)exposedRect.GetHeight ();
 				event.xexpose.count = 0;
-				Led_Verify (::XSendEvent (fDisplay, fDrawable, false, ExposureMask, &event) != 0);
+				Verify (::XSendEvent (fDisplay, fDrawable, false, ExposureMask, &event) != 0);
 			#else
 				::XClearArea (fDisplay, fDrawable, (int)exposedRect.GetLeft (), (int)exposedRect.GetTop (),
 					  (unsigned int)exposedRect.GetWidth (), (unsigned int)exposedRect.GetHeight (), true
@@ -1576,7 +1576,7 @@ void	Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Co
 			#endif
 		}
 	#else
-		Led_Assert (false);	//NYI
+		Assert (false);	//NYI
 	#endif
 }
 
@@ -1596,7 +1596,7 @@ void	Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
 		Led_Brush	brush	=	Led_Brush (c.GetOSRep ());
 		(void)::FrameRgn (*this, r, brush, 1, 1);
 	#else
-		Led_Assert (false);	// NYI
+		Assert (false);	// NYI
 	#endif
 }
 
@@ -1634,8 +1634,8 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 											const Led_tChar* text, size_t nTChars, Led_Distance* charLocations
 										)
 {
-	Led_RequireNotNil (text);
-	Led_RequireNotNil (charLocations);
+	RequireNotNull (text);
+	RequireNotNull (charLocations);
 	#if		qMacOS
 		SetPort ();
 	#endif
@@ -1659,15 +1659,15 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 			kMaxChars = kMaxUNISCRIBECharacters;
 		}
 	#endif
-	Led_Assert (kMaxChars > 1);
+	Assert (kMaxChars > 1);
 
 	Led_Distance	runningCharCount = 0;
 	for (size_t charsToGo = nTChars; charsToGo > 0; ) {
 		size_t	i				=	nTChars - charsToGo;
-		Led_Assert (i < nTChars);
+		Assert (i < nTChars);
 
 		while (text[i] == '\t') {
-			Led_Assert (charsToGo > 0);
+			Assert (charsToGo > 0);
 
 			charLocations[i] = runningCharCount;
 			i++;
@@ -1693,21 +1693,21 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 			 *	See if i+charsThisTime is on a real character boundary - and if not - then step back one so it is.
 			 */
 			if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[i+charsThisTime]) != &text[i+charsThisTime]) {
-				Led_Assert (charsThisTime > 0);
+				Assert (charsThisTime > 0);
 				charsThisTime--;
 			}
 		#endif
 
 		#if		qMacOS
 			Led_SmallStackBuffer<short>	shortOffsets (charsThisTime + 1);
-			Led_Assert (Led_GetCurrentGDIPort () == *this);
+			Assert (Led_GetCurrentGDIPort () == *this);
 			::MeasureText (charsThisTime, &text[i], shortOffsets);
 			for (size_t j = 0; j < charsThisTime; j++) {
 				charLocations[i+j] = shortOffsets[j+1] + runningCharCount;		// Silly Apple defines shortOffsets[0] always to be zero!
 			}
 		#elif	qWindows
 			SIZE	size;
-			Led_Assert (sizeof (int) == sizeof (Led_Distance));
+			Assert (sizeof (int) == sizeof (Led_Distance));
 			#if		qUseUniscribeToImage && qWideCharacters
 			{
 				if (sUniscribeDLL.IsAvail ()) {
@@ -1728,14 +1728,14 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 					SCRIPT_STRING_ANALYSIS	ssa;
 					memset (&ssa, 0, sizeof (ssa));
 
-					Led_Verify (sUniscribeDLL.ScriptStringAnalyse (m_hAttribDC, &text[i], charsThisTime, 0, -1, SSA_GLYPHS|SSA_FALLBACK, -1, &scriptControl, &scriptState, NULL, NULL, NULL, &ssa) == S_OK);
+					Verify (sUniscribeDLL.ScriptStringAnalyse (m_hAttribDC, &text[i], charsThisTime, 0, -1, SSA_GLYPHS|SSA_FALLBACK, -1, &scriptControl, &scriptState, NULL, NULL, NULL, &ssa) == S_OK);
 
 #if		qTryScriptToCPX
 					for (size_t j = 0; j < charsThisTime; j++) {
 						int	leadingEdge		=	0;
 						int	trailingEdge	=	0;
-						Led_Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, false, &leadingEdge) == S_OK);
-						Led_Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, true, &trailingEdge) == S_OK);
+						Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, false, &leadingEdge) == S_OK);
+						Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, true, &trailingEdge) == S_OK);
 
 						int	logicalWidth	=	abs (trailingEdge-leadingEdge);		// can be zero-width - but never negative...
 						if (j == 0) {
@@ -1747,17 +1747,17 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 					}
 #else
 					Led_SmallStackBuffer<int> logicalWidths (charsThisTime);
-					Led_Verify (sUniscribeDLL.ScriptStringGetLogicalWidths (ssa, logicalWidths) == S_OK);
+					Verify (sUniscribeDLL.ScriptStringGetLogicalWidths (ssa, logicalWidths) == S_OK);
 
-					Led_Assert (charsThisTime > 0);
-					Led_Assert (logicalWidths[0] >= 0);	// can be zero-width - but never negative...
+					Assert (charsThisTime > 0);
+					Assert (logicalWidths[0] >= 0);	// can be zero-width - but never negative...
 					charLocations[i] = runningCharCount + logicalWidths[0];
 					for (size_t j = 1; j < charsThisTime; j++) {
-						Led_Assert (logicalWidths[j] >= 0);	// can be zero-width - but never negative...
+						Assert (logicalWidths[j] >= 0);	// can be zero-width - but never negative...
 						charLocations[i+j] = charLocations[i+j-1] + logicalWidths[j];
 					}
 #endif
-					Led_Verify (sUniscribeDLL.ScriptStringFree (&ssa) == S_OK);
+					Verify (sUniscribeDLL.ScriptStringFree (&ssa) == S_OK);
 					goto Succeeded;
 				}
 			}
@@ -1783,7 +1783,7 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 
 		runningCharCount = charLocations[i+charsThisTime-1];
 		
-		Led_Assert (charsToGo >= charsThisTime);
+		Assert (charsToGo >= charsThisTime);
 		charsToGo -= charsThisTime;
 	}
 
@@ -1799,7 +1799,7 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 	if (nTChars > 0) {
 		int	lastWidth = (nTChars==1)?charLocations[0]: (charLocations[nTChars-1]-charLocations[nTChars-2]);
 		SIZE	size;
-		Led_AssertNotNil (m_hAttribDC);
+		AssertNotNull (m_hAttribDC);
 		Win32_GetTextExtentPoint (m_hAttribDC, &text[nTChars-1], 1, &size);
 		int	sbWidth = size.cx;
 		if (sbWidth != lastWidth) {
@@ -1813,7 +1813,7 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 		// Assure charLocations are in non-decreasing order (OK to have some zero width - but never negative).
 		Led_Distance	d	=	0;
 		for (size_t i = 0; i < nTChars; ++i) {
-			Led_Ensure (d <= charLocations[i]);
+			Ensure (d <= charLocations[i]);
 			d = charLocations[i];
 		}
 	}
@@ -1857,14 +1857,14 @@ void	Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
 
 			// We can get away with nextTabAt++ even under SJIS so long as...
 			#if		qMultiByteCharacters
-				Led_Assert (not Led_IsValidSecondByte ('\t'));
+				Assert (not Led_IsValidSecondByte ('\t'));
 			#endif
 			nextTabAt++;
 		}
 
 		// Actually image the characters
 		#if		qMacOS
-			Led_Assert (Led_GetCurrentGDIPort () == *this);
+			Assert (Led_GetCurrentGDIPort () == *this);
 			Led_Point	cursor	=	Led_Point (outputAt.v + precomputedFontMetrics.GetAscent (), outputAt.h - hScrollOffset);	// ascent - goto baseline...
 			::MoveTo (cursor.h+widthSoFar, cursor.v);
 			::TextMode (srcOr);
@@ -1915,11 +1915,11 @@ void	Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
 									goto UniscribeFailure;	// Can happen - for example - during ColeControl::DrawMetaFile ()
 															// call - see SPR#1447 - fallback on older draw code...
 								}
-								Led_Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h+ int (widthSoFar) - hScrollOffset, outputAt.v, 0, NULL, 0, 0, false) == S_OK);
+								Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h+ int (widthSoFar) - hScrollOffset, outputAt.v, 0, NULL, 0, 0, false) == S_OK);
 								const SIZE*	sizep	=	sUniscribeDLL.ScriptString_pSize (ssa);
-								Led_AssertNotNil (sizep);
+								AssertNotNull (sizep);
 								widthSoFar +=	sizep->cx;
-								Led_Verify (sUniscribeDLL.ScriptStringFree (&ssa) == S_OK);
+								Verify (sUniscribeDLL.ScriptStringFree (&ssa) == S_OK);
 							}
 
 							#if		qTryToOptimizeLongUNISCRIBEScriptOutCalls
@@ -1927,13 +1927,13 @@ void	Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
 								// (not REALLY doing a great/reliable test for that either???
 								if (len > kMaxCharsToDrawAtATime) {
 									POINT	vpOrg;
-									Led_Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
+									Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
 									POINT	wOrg;
-									Led_Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
+									Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
 									int	deviceWidth	=	GetDeviceCaps (HORZRES);
 									POINT	x	=	vpOrg;
 									x.x += deviceWidth;
-									Led_Verify (::DPtoLP (m_hAttribDC, &x, 1));
+									Verify (::DPtoLP (m_hAttribDC, &x, 1));
 									if (x.x < outputAt.h+int (widthSoFar) - hScrollOffset) {
 										// assume we're done - and can break out...
 										break;
@@ -1981,7 +1981,7 @@ UniscribeFailure:
 					gcpResult.lpGlyphs = glyphs;
 					gcpResult.nGlyphs = len;
 					if (::GetCharacterPlacementW (m_hDC, textCursor, len, 0, &gcpResult, GCP_GLYPHSHAPE | GCP_LIGATE) != 0) {
-						Led_Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, NULL, gcpResult.lpGlyphs, gcpResult.nGlyphs, NULL));
+						Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, NULL, gcpResult.lpGlyphs, gcpResult.nGlyphs, NULL));
 						goto Succeeded_But_Need_To_Adjust_Width;
 					}
 				}
@@ -1992,7 +1992,7 @@ UniscribeFailure:
 					size_t							len = nextTabAt-textCursor;
 					Led_SmallStackBuffer<wchar_t>	glyphs (len);
 					if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs) != 0) {
-						Led_Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, NULL, glyphs, len, NULL));
+						Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, NULL, glyphs, len, NULL));
 						goto Succeeded_But_Need_To_Adjust_Width;
 					}
 				}
@@ -2003,9 +2003,9 @@ UniscribeFailure:
 					// Fallback - if the above fails...
 					// Displays the text in the right order, but doesn't do contextual shaping (tested on WinXP and WinME) - LGP 2002-12-10
 					#if		qWideCharacters
-						Led_Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, 0, NULL, textCursor, len, NULL));
+						Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, 0, NULL, textCursor, len, NULL));
 					#else
-						Led_Verify (::ExtTextOutA (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, 0, NULL, textCursor, len, NULL));
+						Verify (::ExtTextOutA (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, 0, NULL, textCursor, len, NULL));
 					#endif
 				}
 
@@ -2049,7 +2049,7 @@ Succeeded:
 				Led_Distance	curOutputAtZeroBased	=	(outputAt.h - hTabOrigin) + widthSoFar;
 				Led_Distance	tabStop = tabStopList.ComputeTabStopAfterPosition (this, curOutputAtZeroBased);
 				thisTabWidth = tabStop - curOutputAtZeroBased;
-				Led_Assert (thisTabWidth >= 0);
+				Assert (thisTabWidth >= 0);
 			}
 
 			widthSoFar += thisTabWidth;
@@ -2316,9 +2316,9 @@ void	Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Co
 		//	GDI_RGBForeColor (foreColor.GetOSRep ());		// See IM V-61- docs on "The Hilite Mode".
 			::InvertRgn (hilightArea.GetOSRep ());
 		#elif	qWindows
-			Led_Assert (false);	// probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
+			Assert (false);	// probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
 		#elif	qXWindows
-			Led_Assert (false);	 // I have no XWin region implementation yet... LGP 2002-12-03
+			Assert (false);	 // I have no XWin region implementation yet... LGP 2002-12-03
 		#endif
 	}
 }
@@ -2335,9 +2335,9 @@ Led_FontMetrics	Led_Tablet_::GetFontMetrics () const
 		::GetFontInfo (&fontInfo);
 		return (fontInfo);
 	#elif	qWindows
-		Led_RequireNotNil (m_hAttribDC);
+		RequireNotNull (m_hAttribDC);
 		TEXTMETRIC	tms;
-		Led_Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
+		Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
 		return tms;
 	#elif	qXWindows
 		Led_FontMetrics::PlatformSpecific	result;
@@ -2363,7 +2363,7 @@ void	Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
 			XFontStruct*	newFontStruct	=	i->second;
 			if (newFontStruct != fCachedFontInfo) {
 				fCachedFontInfo = i->second;
-				Led_AssertNotNil (fCachedFontInfo);
+				AssertNotNull (fCachedFontInfo);
 				::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
 			}
 			return;
@@ -2393,7 +2393,7 @@ void	Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
 		string	useFontName;
 		if (i != fFontMappingCache.end ()) {
 			useFontName = i->second;
-			Led_Assert (not useFontName.empty ());
+			Assert (not useFontName.empty ());
 		}
 		else {
 			// try font-matching algorithm...
@@ -2439,7 +2439,7 @@ void	Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
 				}
 			#endif
 			useFontName = bestMatchingName;
-			Led_Assert (not useFontName.empty ());
+			Assert (not useFontName.empty ());
 			#if		qDebugFontDetails
 				fprintf (stderr, "Adding mapping to  fFontMappingCache: '%s'- ==> '%s'\r\n", fontSpec.GetOSRep ().c_str (), useFontName.c_str ());
 			#endif
@@ -2449,7 +2449,7 @@ void	Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
 		Led_ThrowIfNull (fCachedFontInfo);
 	}
 	fFontCache.insert (map<string,XFontStruct*>::value_type (fontSpec.GetOSRep (), fCachedFontInfo));
-	Led_AssertNotNil (fCachedFontInfo);
+	AssertNotNull (fCachedFontInfo);
 	::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
 }
 
@@ -2522,9 +2522,9 @@ int	Led_Tablet_::IngoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error
 
 void	Led_Tablet_::ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant)
 {
-	Led_RequireNotNil (familyName);
-	Led_RequireNotNil (fontSize);
-	Led_RequireNotNil (fontWeight);
+	RequireNotNull (familyName);
+	RequireNotNull (fontSize);
+	RequireNotNull (fontWeight);
 
 	Led_SDK_String	foundry;
 	Led_SDK_String	family;
@@ -2670,18 +2670,18 @@ OffscreenTablet::~OffscreenTablet ()
 */
 void	OffscreenTablet::Setup (Led_Tablet origTablet)
 {
-	Led_Require (fOrigTablet == NULL);	// can only call once.
-	Led_RequireNotNil (origTablet);
+	Require (fOrigTablet == NULL);	// can only call once.
+	RequireNotNull (origTablet);
 
 	fOrigTablet = origTablet;
 	#if		qMacOS
 		// Save the old gworld info
-		Led_Assert (fOrigPort == NULL);
-		Led_Assert (fOrigDevice == NULL);
+		Assert (fOrigPort == NULL);
+		Assert (fOrigDevice == NULL);
 		::GetGWorld (&fOrigPort, &fOrigDevice);
 
 		// Create our gworld (may have to cache this if it turns out to be expensive to re-create...
-		Led_Assert (fOffscreenGWorld == NULL);
+		Assert (fOffscreenGWorld == NULL);
 		{
 			Rect	bounds	=	AsQDRect (Led_Rect (0, 0, 1, 1));	// size appropriately on a row-by-row basis below...
 			OSErr	theErr	=	SafeNewGWorld (&fOffscreenGWorld, 0, &bounds, NULL, NULL, noNewDevice | useTempMem);
@@ -2697,7 +2697,7 @@ void	OffscreenTablet::Setup (Led_Tablet origTablet)
 			fOffscreenTablet = &fMemDC;
 		}
 	#elif	qXWindows
-		Led_Assert (fPixmap == 0);
+		Assert (fPixmap == 0);
 		// Nothing todo yet - create the pixmap when we know the RowRect.
 	#endif
 }
@@ -2729,7 +2729,7 @@ Led_Tablet	OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Dis
 			if ((fOffscreenRect.GetSize () == curOffscreenGWorldSize) or
 				SafeUpdateGWorld (&fOffscreenGWorld, 0, &bounds, NULL, NULL, 0) >= 0
 				) {
-				Led_AssertNotNil (::GetGWorldPixMap (fOffscreenGWorld));
+				AssertNotNull (::GetGWorldPixMap (fOffscreenGWorld));
 				if (::LockPixels (::GetGWorldPixMap (fOffscreenGWorld))) {
 					// UpdateGWorld () can change grafPortPTR!
 					delete fOffscreenTablet;
@@ -2823,7 +2823,7 @@ Led_Tablet	OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Dis
 			fPixmap = ::XCreatePixmap (fOrigTablet->fDisplay, fOrigTablet->fDrawable,
 										fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), depth
 									);
-			Led_Assert (fPixmap != 0);
+			Assert (fPixmap != 0);
 			try {
 				fOffscreenTablet = new OT (fOrigTablet->fDisplay, fPixmap);
 				fOffscreenTablet->fColormap = fOrigTablet->fColormap;
@@ -2872,7 +2872,7 @@ void	OffscreenTablet::BlastBitmapToOrigTablet ()
 								fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY
 								);
 		#elif	qXWindows
-			Led_Assert (fPixmap != 0);
+			Assert (fPixmap != 0);
 			::XCopyArea (fOrigTablet->fDisplay, fOffscreenTablet->fDrawable, fOrigTablet->fDrawable, fOrigTablet->fGC,
 						0, 0,
 						fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
@@ -2937,7 +2937,7 @@ Led_InstalledFonts::Led_InstalledFonts (
 	::XFreeFontNames (fontList); fontList = NULL;
 	fFontNames = vector<string> (fontNames.begin (), fontNames.end ());
 #else
-	Led_Assert (false);		// NYI for other platforms
+	Assert (false);		// NYI for other platforms
 #endif
 }
 
@@ -3032,7 +3032,7 @@ void	Led_GDIGlobals::InvalidateGlobals ()
  */
 void	AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn)
 {
-	Led_RequireNotNil (toRgn);
+	RequireNotNull (toRgn);
 	*toRgn = *toRgn + Led_Region (addRect);
 }
 
@@ -3054,10 +3054,10 @@ void	AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn)
 */
 Led_Size	Led_GetDIBImageSize (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
-	Led_Assert (sizeof (BITMAPINFOHEADER) == 40);	// just to make sure we have these defined right on other platforms
-	Led_Assert (sizeof (BITMAPCOREHEADER) == 12);	// ''
-	Led_Assert (sizeof (RGBTRIPLE) == 3);			// ''
+	RequireNotNull (dib);
+	Assert (sizeof (BITMAPINFOHEADER) == 40);	// just to make sure we have these defined right on other platforms
+	Assert (sizeof (BITMAPCOREHEADER) == 12);	// ''
+	Assert (sizeof (RGBTRIPLE) == 3);			// ''
 
 	if (IS_WIN30_DIB (dib)) {
 		const BITMAPINFOHEADER&	hdr	=	dib->bmiHeader;
@@ -3080,7 +3080,7 @@ Led_Size	Led_GetDIBImageSize (const Led_DIB* dib)
  */
 size_t		Led_GetDIBPalletByteCount (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
+	RequireNotNull (dib);
 	/*
 	 *	Logic from MSFT DibLook sample in MSVC.Net 2003, plus:
 	 *		MSVC.Net 2003 SDK docs mention this case - that:
@@ -3095,15 +3095,15 @@ size_t		Led_GetDIBPalletByteCount (const Led_DIB* dib)
 		unsigned short			bitCount	=	Led_ByteSwapFromWindows (hdr.biBitCount);
 		if (Led_ByteSwapFromWindows (hdr.biCompression) == BI_BITFIELDS) {
 			#if		qWindows
-				Led_Assert (sizeof (DWORD) == sizeof (unsigned int));
+				Assert (sizeof (DWORD) == sizeof (unsigned int));
 			#endif
-			Led_Assert (4 == sizeof (unsigned int));
+			Assert (4 == sizeof (unsigned int));
 			byteCount += 3 * sizeof (unsigned int);
 		}
 		return (byteCount);
 	}
 	else {
-		Led_Assert (sizeof (RGBTRIPLE) == 3);		// make sure we have this defined right on each platform
+		Assert (sizeof (RGBTRIPLE) == 3);		// make sure we have this defined right on each platform
 		return (DIBNumColors (dib) * sizeof (RGBTRIPLE));
 	}
 }
@@ -3124,7 +3124,7 @@ size_t		Led_GetDIBPalletByteCount (const Led_DIB* dib)
 */
 size_t		Led_GetDIBImageRowByteCount (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
+	RequireNotNull (dib);
 	Led_Size				imageSize	=	Led_GetDIBImageSize (dib);
 	const BITMAPINFOHEADER&	hdr			=	dib->bmiHeader;
 
@@ -3147,7 +3147,7 @@ size_t		Led_GetDIBImageRowByteCount (const Led_DIB* dib)
 */
 size_t		Led_GetDIBImageByteCount (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
+	RequireNotNull (dib);
 	Led_Size				imageSize	=	Led_GetDIBImageSize (dib);
 	const BITMAPINFOHEADER&	hdr			=	dib->bmiHeader;
 	size_t					byteCount	=	Led_ByteSwapFromWindows (hdr.biSize);
@@ -3180,7 +3180,7 @@ size_t		Led_GetDIBImageByteCount (const Led_DIB* dib)
 */
 Led_DIB*	Led_CloneDIB (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
+	RequireNotNull (dib);
 	size_t	nBytes	=	Led_GetDIBImageByteCount (dib);
 	Led_DIB*	newDIB	=	reinterpret_cast<Led_DIB*> (new char [nBytes]);
 	(void)::memcpy (newDIB, dib, nBytes);
@@ -3202,7 +3202,7 @@ Led_DIB*	Led_CloneDIB (const Led_DIB* dib)
 */
 const void*		Led_GetDIBBitsPointer (const Led_DIB* dib)
 {
-	Led_RequireNotNil (dib);
+	RequireNotNull (dib);
 	const BITMAPINFOHEADER&	hdr	=	dib->bmiHeader;
 	return	reinterpret_cast<const char*> (dib) +
 				Led_ByteSwapFromWindows (hdr.biSize) +
@@ -3220,9 +3220,9 @@ const void*		Led_GetDIBBitsPointer (const Led_DIB* dib)
  */
 Led_DIB*	Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
 {
-	Led_RequireNotNil (hbm);
+	RequireNotNull (hbm);
 	BITMAP bm;
-	Led_Verify (::GetObject (hbm, sizeof(BITMAP), (LPVOID)&bm));
+	Verify (::GetObject (hbm, sizeof(BITMAP), (LPVOID)&bm));
 
 	Led_DIB*	dibResult	=	NULL;
 	{
@@ -3238,12 +3238,12 @@ Led_DIB*	Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
 		size_t	nBytes	=	Led_GetDIBImageByteCount (reinterpret_cast<Led_DIB*> (&bmiHdr));
 //		dibResult = reinterpret_cast<Led_DIB*> (::operator new (nBytes));
 		dibResult = reinterpret_cast<Led_DIB*> (new char [nBytes]);
-		Led_Assert (nBytes > sizeof (BITMAPINFOHEADER));
+		Assert (nBytes > sizeof (BITMAPINFOHEADER));
 		(void)::memcpy (dibResult, &bmiHdr, sizeof (bmiHdr));
 	}
 
 	int	nScanLinesCopied = ::GetDIBits (hDC, hbm, 0, dibResult->bmiHeader.biHeight, reinterpret_cast<char*>(dibResult) + Led_GetDIBPalletByteCount (dibResult) + sizeof (BITMAPINFOHEADER), dibResult, DIB_RGB_COLORS);
-	Led_Assert (nScanLinesCopied == dibResult->bmiHeader.biHeight);
+	Assert (nScanLinesCopied == dibResult->bmiHeader.biHeight);
 	return dibResult;		
 }
 #endif
@@ -3295,7 +3295,7 @@ Led_IME::Led_IME ():
 	fLastX (-1),
 	fLastY (-1)	 	
 {
-	Led_Assert (sThe == NULL);
+	Assert (sThe == NULL);
 	sThe = this;
 
 	#ifdef _UNICODE
@@ -3373,7 +3373,7 @@ void	Led_IME::IMEOn (HWND hWnd)
 		if (fImmGetContext != NULL and fImmSetOpenStatus != NULL and fImmReleaseContext != NULL) {
 			DWORD	hImc	=	NULL;
 			if ((hImc = fImmGetContext (hWnd)) != NULL) {
-				Led_Verify (fImmSetOpenStatus (hImc, true));
+				Verify (fImmSetOpenStatus (hImc, true));
 				fImmReleaseContext (hWnd, hImc);
 			}
 		}
@@ -3388,7 +3388,7 @@ void	Led_IME::IMEOff (HWND hWnd)
 		if (fImmGetContext != NULL and fImmSetOpenStatus != NULL and fImmReleaseContext != NULL) {
 			DWORD	hImc	=	NULL;
 			if ((hImc = fImmGetContext (hWnd)) != NULL) {
-				Led_Verify (fImmSetOpenStatus (hImc, false));
+				Verify (fImmSetOpenStatus (hImc, false));
 				fImmReleaseContext (hWnd, hImc);
 			}
 		}
@@ -3409,7 +3409,7 @@ void	Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
 				compForm.dwStyle = CFS_FORCE_POSITION;
 				compForm.ptCurrentPos.x = x;
 				compForm.ptCurrentPos.y = y;
-				Led_Verify (fImmSetCompositionWindow (hImc, &compForm));
+				Verify (fImmSetCompositionWindow (hImc, &compForm));
 				fImmReleaseContext (hWnd, hImc);
 				fLastX = x;
 				fLastY = y;
@@ -3504,12 +3504,12 @@ Led_Rect	CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
 #if		qWindows
 void	Led_CenterWindowInParent (HWND w)
 {
-	Led_Assert (::IsWindow (w));
+	Assert (::IsWindow (w));
 	HWND hWndCenter = ::GetWindow (w, GW_OWNER);
 	if (hWndCenter == NULL) {
 		hWndCenter = ::GetDesktopWindow ();
 	}
-	Led_Assert (::IsWindow (hWndCenter));
+	Assert (::IsWindow (hWndCenter));
 
 	// get coordinates of the window relative to its parent
 	RECT rcDlg;

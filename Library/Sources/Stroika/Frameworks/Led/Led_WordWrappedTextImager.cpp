@@ -33,7 +33,7 @@ namespace	Stroika {
 	inline	AdjustToValidCharIndex (const Led_tChar* text, size_t index)
 		{
 			if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
-				Led_Assert (index > 0);
+				Assert (index > 0);
 				index--;
 			}
 			return (index);
@@ -42,12 +42,12 @@ namespace	Stroika {
 
 	inline	Led_Distance	LookupLengthInVector (const Led_Distance* widthsVector, size_t startSoFar, size_t i)
 		{
-			Led_AssertNotNil (widthsVector);
+			AssertNotNull (widthsVector);
 			if (i == 0) {
 				return 0;
 			}
 			Led_Distance	startPointCorrection	=	(startSoFar == 0)? 0: widthsVector[startSoFar-1];
-			Led_Assert (i+startSoFar >= 1);
+			Assert (i+startSoFar >= 1);
 			return (widthsVector[i+startSoFar-1]-startPointCorrection);
 		}
 
@@ -83,19 +83,19 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 // Need to be careful about exceptions here!!! Probably good enuf to just
 // Invalidate the caceh and then propogate exception...
 // Perhaps better to place bogus entry in? No - probably not...
-	Led_RequireNotNil (pm);
+	RequireNotNull (pm);
 
 	size_t	start;
 	size_t	end;
 	pm->GetRange (&start, &end);
 	size_t	len		=	end-start;
 
-	Led_Assert (end <= GetEnd () + 1);
+	Assert (end <= GetEnd () + 1);
 	if (end == GetEnd () + 1) {
 		end--;		// don't include bogus char at end of buffer
 		len--;
 	}
-	Led_Assert (end <= GetEnd ());
+	Assert (end <= GetEnd ());
 
 	Led_SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (start, len, buf);
@@ -134,12 +134,12 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 				Led_Coordinate	lhsMargin;
 				Led_Coordinate	rhsMargin;
 				GetLayoutMargins (RowReference (pm, cacheInfo.GetRowCount () -1), &lhsMargin, &rhsMargin);
-				Led_Assert (lhsMargin < rhsMargin);
+				Assert (lhsMargin < rhsMargin);
 				wrapWidth = rhsMargin - lhsMargin;
 			}
 			size_t	bestRowLength	=	FindWrapPointForMeasuredText (buf + startSoFar, leftToGo, wrapWidth, start+startSoFar, distanceVector, startSoFar);
 
-			Led_Assert (bestRowLength != 0);	// FindWrapPoint() could only do this if we gave it a zero leftToGo - but we wouldn't
+			Assert (bestRowLength != 0);	// FindWrapPoint() could only do this if we gave it a zero leftToGo - but we wouldn't
 												// be in the loop in that case!!!
 
 
@@ -147,11 +147,11 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 
 			// Now OVERRIDE the above for soft-breaks...
 			{
-				Led_Assert (bestRowLength > 0);
+				Assert (bestRowLength > 0);
 				const Led_tChar*	text	=	buf + startSoFar;
 				const Led_tChar*	end		=	&text[min (bestRowLength+1, leftToGo)];
 				AdjustBestRowLength (start + startSoFar, text, end, &bestRowLength);
-				Led_Assert (bestRowLength > 0);
+				Assert (bestRowLength > 0);
 			}
 
 
@@ -159,20 +159,20 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 			cacheInfo.SetRowHeight (cacheInfo.GetRowCount ()-1, newRowHeight);
 
 			startSoFar += bestRowLength;
-			Led_Assert (len >= startSoFar);
+			Assert (len >= startSoFar);
 			leftToGo = len-startSoFar;
 		}
 
 		// always have at least one row...even if there were no bytes in the row
-		Led_Assert (len == 0 or cacheInfo.PeekRowCount () != 0);
+		Assert (len == 0 or cacheInfo.PeekRowCount () != 0);
 		if (cacheInfo.PeekRowCount () == 0) {
-			Led_Assert (len == 0);
-			Led_Assert (startSoFar == 0);
+			Assert (len == 0);
+			Assert (startSoFar == 0);
 			cacheInfo.IncrementRowCountAndFixCacheBuffers (0, MeasureSegmentHeight (start, end));
 		}
 
 		cacheInfo.SetInterLineSpace (CalculateInterLineSpace (pm));
-		Led_Assert (cacheInfo.GetRowCount () >= 1);
+		Assert (cacheInfo.GetRowCount () >= 1);
 	}
 	catch (...) {
 		// If we run into exceptions filling the cache, don't leave it in an inconsistent state.
@@ -196,16 +196,16 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 */
 void	WordWrappedTextImager::AdjustBestRowLength (size_t /*textStart*/, const Led_tChar* text, const Led_tChar* end, size_t* rowLength)
 {
-	Led_Require (*rowLength > 0);
+	Require (*rowLength > 0);
 	for (const Led_tChar* cur = &text[0]; cur < end; cur = Led_NextChar (cur)) {
 		if (*cur == WordWrappedTextImager::kSoftLineBreakChar) {
 			size_t	newBestRowLength	=	(cur-text)+1;
-			Led_Assert (newBestRowLength <= *rowLength + 1);	// Assure newBestRowLength is less than it would have been without the
+			Assert (newBestRowLength <= *rowLength + 1);	// Assure newBestRowLength is less than it would have been without the
 																// softlinebreak character, EXCEPT if the softlinebreak char is already
 																// at the spot we would have broken - then the row gets bigger by the
 																// one softlinebreak char length...
 																// LGP 2001-05-09 (see SPR707 test file-SimpleAlignDivTest.html)
-			Led_Assert (newBestRowLength >= 1);
+			Assert (newBestRowLength >= 1);
 			*rowLength = newBestRowLength;
 			break;
 		}
@@ -232,10 +232,10 @@ bool	WordWrappedTextImager::ContainsMappedDisplayCharacters (const Led_tChar* te
 size_t	WordWrappedTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const
 {
 	size_t	newLen	=	inherited::RemoveMappedDisplayCharacters (copyText, nTChars);
-	Led_Assert (newLen <= nTChars);
+	Assert (newLen <= nTChars);
 	size_t	newerLen	=	RemoveMappedDisplayCharacters_HelperForChar (copyText, newLen, kSoftLineBreakChar);
-	Led_Assert (newerLen <= newLen);
-	Led_Assert (newerLen <= nTChars);
+	Assert (newerLen <= newLen);
+	Assert (newerLen <= nTChars);
 	return newerLen;
 }
 
@@ -259,10 +259,10 @@ size_t	WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 											size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar
 											)
 {
-	Led_RequireNotNil (widthsVector);
-	Led_Require (wrapWidth >= 1);
+	RequireNotNull (widthsVector);
+	Require (wrapWidth >= 1);
 #if		qMultiByteCharacters
-	Led_Assert (Led_IsValidMultiByteString (text, length));
+	Assert (Led_IsValidMultiByteString (text, length));
 #endif
 	size_t	bestRowLength = 0;
 
@@ -312,7 +312,7 @@ size_t	WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 			#endif
 
 			if (bestBreakPointIndex > (kCharsFromEndToSearchFrom+5)) {	// no point on a short search
-				Led_Assert (bestBreakPointIndex > kCharsFromEndToSearchFrom);
+				Assert (bestBreakPointIndex > kCharsFromEndToSearchFrom);
 				guessIndex = bestBreakPointIndex - kCharsFromEndToSearchFrom;
 				#if		qMultiByteCharacters
 					guessIndex = AdjustToValidCharIndex (text, guessIndex);
@@ -323,13 +323,13 @@ size_t	WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 	}
 
 	if (bestBreakPointIndex >= length) {
-		Led_Assert (bestBreakPointIndex <= length+1);	// else last char in text with be 1/2 dbcs char
+		Assert (bestBreakPointIndex <= length+1);	// else last char in text with be 1/2 dbcs char
 		bestRowLength = length;
-		Led_Assert (guessIndex == 0);
+		Assert (guessIndex == 0);
 	}
 	else {
 		size_t	wordWrapMax	=	(Led_NextChar (&text[bestBreakPointIndex]) - text);
-		Led_Assert (wordWrapMax <= length);	// cuz only way could fail is if we had split character, or were already at end, in which case
+		Assert (wordWrapMax <= length);	// cuz only way could fail is if we had split character, or were already at end, in which case
 											// we'd be in other part of if-test.
 
 		if (guessIndex != 0) {
@@ -353,13 +353,13 @@ size_t	WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 				 *		If we got here then there was no good breaking point - we must have one VERY long word
 				 *	(or a relatively narrow layout width).
 				 */
-				Led_Assert (bestBreakPointIndex == FindWrapPointForOneLongWordForMeasuredText (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar));
+				Assert (bestBreakPointIndex == FindWrapPointForOneLongWordForMeasuredText (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar));
 				bestRowLength = bestBreakPointIndex;
 			}
 		}
 	}
 
-	Led_Assert (bestRowLength > 0);
+	Assert (bestRowLength > 0);
 	#if		qMultiByteCharacters
 		Assert_CharPosDoesNotSplitCharacter (offsetToMarkerCoords + bestRowLength);
 	#endif
@@ -376,15 +376,15 @@ size_t	WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
 											size_t searchStart, size_t wrapLength
 									)
 {
-	Led_AssertNotNil (widthsVector);
+	AssertNotNull (widthsVector);
 #if		qMultiByteCharacters
-	Led_Assert (Led_IsValidMultiByteString (text, length));
-	Led_Assert (Led_IsValidMultiByteString (text, wrapLength));
+	Assert (Led_IsValidMultiByteString (text, length));
+	Assert (Led_IsValidMultiByteString (text, wrapLength));
 	Assert_CharPosDoesNotSplitCharacter (offsetToMarkerCoords + searchStart);
 #endif
 
 
-	Led_Assert (wrapLength <= length);
+	Assert (wrapLength <= length);
 
 	Led_RefCntPtr<TextBreaks>	breaker	=	GetTextStore ().GetTextBreaker ();
 
@@ -392,7 +392,7 @@ size_t	WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
 	 *	We take a bit of text here - and decide the proper position in the text to make the break.
 	 *	return 0 for bestRowLength if we could not find a good breaking point
 	 */
-	Led_AssertNotNil (text);
+	AssertNotNull (text);
 	size_t			bestRowLength	=	0;
 	Led_Distance	width			=	0;
 	size_t			wordEnd			=	0;
@@ -403,12 +403,12 @@ size_t	WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
 		lastLineTest = i;
 		breaker->FindLineBreaks (text, wrapLength, i, &wordEnd, &wordReal);
 
-		Led_Assert (i < wordEnd);
+		Assert (i < wordEnd);
 		width	=	LookupLengthInVector (widthsVector, startSoFar, wordReal? wordEnd: i);
 		i = wordEnd;
 
-		Led_Assert (i > 0);
-		Led_Assert (i <= wrapLength);
+		Assert (i > 0);
+		Assert (i <= wrapLength);
 
 		/*
 		 *	This code to only break if wordReal has the effect of "eating" up a string of
@@ -427,7 +427,7 @@ size_t	WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
 	if ((not wordReal) and (wrapLength < length) and (bestRowLength != 0)) {
 		// may be a lot of trailing whitespace that could be lost
 		breaker->FindLineBreaks (text, length, lastLineTest, &wordEnd, &wordReal);
-		Led_Assert (not wordReal);
+		Assert (not wordReal);
 		bestRowLength = wordEnd;
 	}
 
@@ -456,12 +456,12 @@ size_t	WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 	// the first character as an estimate, and then spin up or down til we get just the
 	// right length...
 	size_t			secondCharIdx	=	FindNextCharacter (offsetToMarkerCoords+0);
-	Led_Assert (secondCharIdx >= offsetToMarkerCoords);
+	Assert (secondCharIdx >= offsetToMarkerCoords);
 	Led_Distance	fullWordWidth	=	LookupLengthInVector (widthsVector, startSoFar, length);
 
-	Led_Assert (length >= 1);
+	Assert (length >= 1);
 	size_t			guessIdx		=	size_t ((length-1) * (float (wrapWidth)/float (fullWordWidth)));
-	Led_Assert (guessIdx < length);
+	Assert (guessIdx < length);
 
 	/*
 	 *	Note - at this point guessIdx may not be on an even character boundary.
@@ -473,7 +473,7 @@ size_t	WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 		 */
 		guessIdx = AdjustToValidCharIndex (text, guessIdx);
 	#endif
-	Led_Assert (guessIdx < length);
+	Assert (guessIdx < length);
 
 	Led_Distance	guessWidth		=	LookupLengthInVector (widthsVector, startSoFar, guessIdx);
 	bestRowLength = guessIdx;
@@ -481,7 +481,7 @@ size_t	WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 	if (guessWidth > wrapWidth) {
 		// keeping going down til we are fit.
 		for (size_t	j = guessIdx; j >= 1; j = FindPreviousCharacter (offsetToMarkerCoords+j)-offsetToMarkerCoords) {
-			Led_Assert (j < length);	// no wrap
+			Assert (j < length);	// no wrap
 			Led_Distance	smallerWidth	=	LookupLengthInVector (widthsVector, startSoFar, j);
 			bestRowLength = j;
 			if (smallerWidth <= wrapWidth) {
@@ -492,7 +492,7 @@ size_t	WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 	else {
 		// keeping going down til we are fit.
 		for (size_t	j = guessIdx; j < length; j = FindNextCharacter (offsetToMarkerCoords+j)-offsetToMarkerCoords) {
-			Led_Assert (j < length);	// no wrap
+			Assert (j < length);	// no wrap
 			Led_Distance	smallerWidth	=	LookupLengthInVector (widthsVector, startSoFar, j);
 			if (smallerWidth > wrapWidth) {
 				break;

@@ -634,13 +634,13 @@ inline	void	StyledTextIOReader::BufferedIndirectSrcStream::FillCache ()
 		size_t bytesRead = fRealSrcStream.read (fWindowTop_Data, Led_NEltsOf (fWindowTop_Data));
 		fWindowBottom_Data = fWindowTop_Data + bytesRead;
 		fWindowBottom_Offset = fWindowTop_Offset + bytesRead;
-Led_Assert (fCursor_Offset >= fWindowTop_Offset and fCursor_Offset <= fWindowBottom_Offset);	// should only call FillCache in that case?
-Led_Assert (fCursor_Offset == fWindowTop_Offset);	// should only call FillCache in that case?
+Assert (fCursor_Offset >= fWindowTop_Offset and fCursor_Offset <= fWindowBottom_Offset);	// should only call FillCache in that case?
+Assert (fCursor_Offset == fWindowTop_Offset);	// should only call FillCache in that case?
 		if (fCursor_Offset >= fWindowTop_Offset and fCursor_Offset <= fWindowBottom_Offset) {
 			fCursor_Data = fWindowTop_Data + (fCursor_Offset - fWindowTop_Offset);
 		}
-		Led_Ensure (fWindowTop_Data <= fCursor_Data and fCursor_Data <= fWindowBottom_Data);
-		Led_Ensure (fWindowTop_Offset <= fCursor_Offset and fCursor_Offset <= fWindowBottom_Offset);
+		Ensure (fWindowTop_Data <= fCursor_Data and fCursor_Data <= fWindowBottom_Data);
+		Ensure (fWindowTop_Offset <= fCursor_Offset and fCursor_Offset <= fWindowBottom_Offset);
 	}
 inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::current_offset () const
 	{
@@ -660,7 +660,7 @@ inline	void	StyledTextIOReader::BufferedIndirectSrcStream::seek_to (size_t to)
 	}
 inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::read (void* buffer, size_t bytes)
 	{
-		Led_RequireNotNil (buffer);
+		RequireNotNull (buffer);
 
 		Byte*	destCursor		=	reinterpret_cast<Byte*> (buffer);
 		size_t	bytesReadSoFar	=	0;
@@ -672,7 +672,7 @@ inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::read (void* buffer,
 		if (fCursor_Data != NULL and fWindowTop_Offset >= fCursor_Offset and fCursor_Offset < fWindowBottom_Offset) {
 			size_t	bytesAvail		=	fWindowBottom_Offset - fCursor_Offset;	// must be > 0 UNLESS we are at EOF
 			size_t	thisReadCount	=	min (bytesAvail, bytes);
-			Led_AssertNotNil (fCursor_Data);
+			AssertNotNull (fCursor_Data);
 			(void)::memcpy (destCursor, fCursor_Data, thisReadCount);
 			destCursor += thisReadCount;
 			fCursor_Data += thisReadCount;
@@ -690,7 +690,7 @@ inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::read (void* buffer,
 				FillCache ();
 				size_t	bytesAvail		=	fWindowBottom_Offset - fCursor_Offset;	// must be > 0 UNLESS we are at EOF
 				size_t	thisReadCount	=	min (bytesAvail, bytesLeftToRead);
-				Led_AssertNotNil (fCursor_Data);
+				AssertNotNull (fCursor_Data);
 				(void)::memcpy (destCursor, fCursor_Data, thisReadCount);
 				destCursor += thisReadCount;
 				fCursor_Data += thisReadCount;
@@ -710,7 +710,7 @@ inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::read (void* buffer,
 	}
 inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::read1 (char* c)
 	{
-		Led_RequireNotNil (c);
+		RequireNotNull (c);
 		/*
 		 *	See if we can read ANY non-zero number of bytes out of our window. If yes - then just
 		 *	return those (even if thats less than the user requested - following standard UNIX read
@@ -720,12 +720,12 @@ inline	size_t	StyledTextIOReader::BufferedIndirectSrcStream::read1 (char* c)
 		if ((fCursor_Data == NULL) or (fCursor_Offset < fWindowTop_Offset or fCursor_Offset >= fWindowBottom_Offset)) {
 			FillCache ();
 		}
-		Led_Assert (fWindowTop_Offset <= fCursor_Offset and fCursor_Offset <= fWindowBottom_Offset);
+		Assert (fWindowTop_Offset <= fCursor_Offset and fCursor_Offset <= fWindowBottom_Offset);
 		if (fWindowBottom_Offset == fCursor_Offset) {
 			return 0;
 		}
 		else {
-			Led_AssertNotNil (fCursor_Data);
+			AssertNotNull (fCursor_Data);
 			*c = *fCursor_Data;
 			fCursor_Data++;
 			fCursor_Offset++;
@@ -926,7 +926,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 		fSinkStream (sinkStream),
 		fBadInputHandler (badInputHander)
 		{
-			Led_RequireNotNil (srcStream);
+			RequireNotNull (srcStream);
 			if (fBadInputHandler.IsNull ()) {
 				fBadInputHandler = new BadInputHandler ();
 			}
@@ -937,7 +937,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 		}
 	inline	StyledTextIOReader::SinkStream&	StyledTextIOReader::GetSinkStream () const
 		{
-			Led_EnsureNotNil (fSinkStream);
+			EnsureNotNull (fSinkStream);
 			return *fSinkStream;
 		}
 	/*
@@ -949,7 +949,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 	*/
 	inline	Led_RefCntPtr<StyledTextIOReader::BadInputHandler>	StyledTextIOReader::GetBadInputHandler () const
 		{
-			Led_Ensure (not fBadInputHandler.IsNull ());
+			Ensure (not fBadInputHandler.IsNull ());
 			return fBadInputHandler;
 		}
 	/*
@@ -980,7 +980,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 	*/
 	inline	void	StyledTextIOReader::PutBackLastChar () const
 		{
-			Led_Require (fSrcStream.current_offset () > 0);
+			Require (fSrcStream.current_offset () > 0);
 			fSrcStream.seek_to (fSrcStream.current_offset ()-1);
 		}
 	inline	char	StyledTextIOReader::GetNextChar () const
@@ -997,7 +997,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 					#pragma warn -8066
 					#pragma warn -8008
 				#endif
-				Led_Assert (false); return 0; // NOT REACHED
+				Assert (false); return 0; // NOT REACHED
 				#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 					#pragma pop
 				#endif
@@ -1018,7 +1018,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 					#pragma warn -8066
 					#pragma warn -8008
 				#endif
-				Led_Assert (false); return 0; // NOT REACHED
+				Assert (false); return 0; // NOT REACHED
 				#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 					#pragma pop
 				#endif
@@ -1036,17 +1036,17 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 		fSrcStream (srcStream),
 		fSinkStream (sinkStream)
 		{
-			Led_RequireNotNil (srcStream);
-			Led_RequireNotNil (sinkStream);
+			RequireNotNull (srcStream);
+			RequireNotNull (sinkStream);
 		}
 	inline	StyledTextIOWriter::SrcStream&	StyledTextIOWriter::GetSrcStream () const
 		{
-			Led_EnsureNotNil (fSrcStream);
+			EnsureNotNull (fSrcStream);
 			return *fSrcStream;
 		}
 	inline	StyledTextIOWriter::SinkStream&	StyledTextIOWriter::GetSinkStream () const
 		{
-			Led_EnsureNotNil (fSinkStream);
+			EnsureNotNull (fSinkStream);
 			return *fSinkStream;
 		}
 

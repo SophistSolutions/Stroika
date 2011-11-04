@@ -94,7 +94,7 @@ TempMarker::TempMarker (TextStore& ts, size_t start, size_t end):
 	fTextStore (ts),
 	fMarker ()
 {
-	Led_Require (start <= end);
+	Require (start <= end);
 	GetTextStore ().AddMarkerOwner (this);
 	try {
 		GetTextStore ().AddMarker (&fMarker, start, end-start, this);

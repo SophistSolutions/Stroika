@@ -112,7 +112,7 @@ SingleUndoCommandHandler::SingleUndoCommandHandler ():
 
 void	SingleUndoCommandHandler::Post (Command* newCommand)
 {
-	Led_Require (not fDoingCommands);
+	Require (not fDoingCommands);
 	IdleManager::NonIdleContext	nonIdleContext;
 	delete fLastCmd;
 	fLastCmd = newCommand;
@@ -137,15 +137,15 @@ void	SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const L
 
 void	SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 {
-	Led_Require (CanUndo ());
+	Require (CanUndo ());
 
-	Led_RequireNotNil (fLastCmd);
-	Led_Require (GetDone ());
+	RequireNotNull (fLastCmd);
+	Require (GetDone ());
 
 	IdleManager::NonIdleContext	nonIdleContext;
 
 	#if		qDebug
-	Led_Require (not fDoingCommands);
+	Require (not fDoingCommands);
 	fDoingCommands = true;
 	try {
 	#endif
@@ -162,14 +162,14 @@ void	SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 
 void	SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
 {
-	Led_Require (CanRedo ());
-	Led_RequireNotNil (fLastCmd);
-	Led_Require (not GetDone ());
+	Require (CanRedo ());
+	RequireNotNull (fLastCmd);
+	Require (not GetDone ());
 
 	IdleManager::NonIdleContext	nonIdleContext;
 
 	#if		qDebug
-	Led_Require (not fDoingCommands);
+	Require (not fDoingCommands);
 	fDoingCommands = true;
 	try {
 	#endif
@@ -256,20 +256,20 @@ MultiLevelUndoCommandHandler::~MultiLevelUndoCommandHandler ()
 
 void	MultiLevelUndoCommandHandler::Post (Command* newCommand)
 {
-	Led_RequireNotNil (newCommand);
-	Led_Require (not fDoingCommands);
+	RequireNotNull (newCommand);
+	Require (not fDoingCommands);
 
 	IdleManager::NonIdleContext	nonIdleContext;
 
 	// When we've undone some things, and DO another, commit those UNDONE commands. We have no
 	// UI for keeping multiple threads of undos alive...
-	Led_Assert (fUndoCursor <= fCommands.size ());
+	Assert (fUndoCursor <= fCommands.size ());
 	Commit_After (fUndoCursor);
-	Led_Assert (fCommandGroupCount >= fUndoneGroupCount);
+	Assert (fCommandGroupCount >= fUndoneGroupCount);
 	fCommandGroupCount -= fUndoneGroupCount;
 	fUndoneGroupCount = 0;
 
-	Led_Assert (fCommandGroupCount <= fMaxUndoLevels);
+	Assert (fCommandGroupCount <= fMaxUndoLevels);
 
 	if (fMaxUndoLevels == 0) {
 		// prevent memory leak/crash if no undo allowed
@@ -286,12 +286,12 @@ void	MultiLevelUndoCommandHandler::Post (Command* newCommand)
 			size_t lastItemInFirstGroup = 0;
 			for (; lastItemInFirstGroup <= fUndoCursor; lastItemInFirstGroup++) {
 				if (fCommands[lastItemInFirstGroup] == NULL) {
-					Led_Assert (lastItemInFirstGroup != 0);	// cannot have break here!
+					Assert (lastItemInFirstGroup != 0);	// cannot have break here!
 					// must be a break in here someplace - delete back from here...
 					break;
 				}
 			}
-			Led_Assert (lastItemInFirstGroup <= fUndoCursor);	// didn't fall through loop
+			Assert (lastItemInFirstGroup <= fUndoCursor);	// didn't fall through loop
 			Commit_Before (lastItemInFirstGroup);
 			fUndoCursor = fCommands.size ();
 		}
@@ -300,7 +300,7 @@ void	MultiLevelUndoCommandHandler::Post (Command* newCommand)
 		}
 	}
 	else {
-		Led_AssertNotNil (fCommands.back ());
+		AssertNotNull (fCommands.back ());
 	}
 
 
@@ -371,7 +371,7 @@ void	MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (con
 
 void	MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 {
-	Led_Require (CanUndo ());
+	Require (CanUndo ());
 
 	IdleManager::NonIdleContext	nonIdleContext;
 
@@ -380,10 +380,10 @@ void	MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 	size_t	start;
 	size_t	end;
 	bool	result	=	GetLastCmdRangeBefore (&start, &end);
-	Led_Assert (result);
+	Assert (result);
 
 	#if		qDebug
-	Led_Require (not fDoingCommands);
+	Require (not fDoingCommands);
 	fDoingCommands = true;
 	try {
 	#endif
@@ -401,22 +401,22 @@ void	MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 
 	fUndoCursor = start;
 	fUndoneGroupCount++;
-	Led_Assert (fUndoneGroupCount <= fCommandGroupCount);
+	Assert (fUndoneGroupCount <= fCommandGroupCount);
 }
 
 void	MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
 {
-	Led_Require (CanRedo ());
+	Require (CanRedo ());
 
 	IdleManager::NonIdleContext	nonIdleContext;
 
 	size_t	start;
 	size_t	end;
 	bool	result	=	GetLastCmdRangeAfter (&start, &end);
-	Led_Assert (result);
+	Assert (result);
 
 	#if		qDebug
-	Led_Require (not fDoingCommands);
+	Require (not fDoingCommands);
 	fDoingCommands = true;
 	try {
 	#endif
@@ -433,15 +433,15 @@ void	MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
 	#endif
 
 	fUndoCursor = end + 1;	// point AFTER last cmd
-	Led_Assert (fUndoCursor <= fCommands.size ());
+	Assert (fUndoCursor <= fCommands.size ());
 	if (fCommands[fUndoCursor] == NULL) {
 		// if pointing to breaker, then point just past it, so new posted commands
 		// come after that
 		fUndoCursor++;
-		Led_Assert (fUndoCursor <= fCommands.size ());
+		Assert (fUndoCursor <= fCommands.size ());
 	}
-	Led_Assert (fUndoneGroupCount <= fCommandGroupCount);
-	Led_Assert (fUndoneGroupCount >= 1);
+	Assert (fUndoneGroupCount <= fCommandGroupCount);
+	Assert (fUndoneGroupCount >= 1);
 	fUndoneGroupCount--;
 }
 
@@ -472,7 +472,7 @@ const Led_SDK_Char*	MultiLevelUndoCommandHandler::GetUndoCmdName ()
 		size_t	start;
 		size_t	end;
 		bool	result	=	GetLastCmdRangeBefore (&start, &end);
-		Led_Assert (result);
+		Assert (result);
 		// arbitrarily pick name from any of the commands in group
 		return fCommands[start]->GetName ();
 	}
@@ -487,7 +487,7 @@ const Led_SDK_Char*	MultiLevelUndoCommandHandler::GetRedoCmdName ()
 		size_t	start;
 		size_t	end;
 		bool	result	=	GetLastCmdRangeAfter (&start, &end);
-		Led_Assert (result);
+		Assert (result);
 		// arbitrarily pick name from any of the commands in group
 		return fCommands[start]->GetName ();
 	}
@@ -511,8 +511,8 @@ void	MultiLevelUndoCommandHandler::SetMaxUnDoLevels (size_t maxUndoLevels)
 
 bool	MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size_t* endIdx) const
 {
-	Led_RequireNotNil (startIdx);
-	Led_RequireNotNil (endIdx);
+	RequireNotNull (startIdx);
+	RequireNotNull (endIdx);
 
 	*startIdx = 0;
 	*endIdx = 0;
@@ -522,7 +522,7 @@ bool	MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size
 	if (commandListLen == 0) {
 		return false;
 	}
-	Led_Assert (fUndoCursor >= 0);
+	Assert (fUndoCursor >= 0);
 	if (fUndoCursor == 0) {
 		return false;
 	}
@@ -547,17 +547,17 @@ bool	MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size
 
 bool	MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_t* endIdx) const
 {
-	Led_RequireNotNil (startIdx);
-	Led_RequireNotNil (endIdx);
+	RequireNotNull (startIdx);
+	RequireNotNull (endIdx);
 
 	*startIdx = 0;
 	*endIdx = 0;
 
-	Led_Assert (fUndoCursor != kBadIndex);	// if triggered must do some fixing...
+	Assert (fUndoCursor != kBadIndex);	// if triggered must do some fixing...
 
 	size_t	commandListLen		=	fCommands.size ();
 	size_t	listPastEnd			=	commandListLen;
-	Led_Assert (fUndoCursor <= listPastEnd);
+	Assert (fUndoCursor <= listPastEnd);
 	if (fUndoCursor == listPastEnd) {
 		return false;
 	}
@@ -574,7 +574,7 @@ bool	MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_
 				return true;
 			}
 		}
-		Led_Assert (listPastEnd > 0);
+		Assert (listPastEnd > 0);
 		*endIdx = listPastEnd-1;
 		return true;
 	}
@@ -582,11 +582,11 @@ bool	MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_
 
 void	MultiLevelUndoCommandHandler::Commit_After (size_t after)
 {
-	Led_Require (after >= 0);
+	Require (after >= 0);
 	size_t	commandsLen	=	fCommands.size ();
 	if (commandsLen != 0) {
 		for (long i = commandsLen-1; i >= long (after); i--) {
-			Led_Assert (i >= 0);
+			Assert (i >= 0);
 			delete fCommands[i];
 			fCommands.erase (fCommands.begin () + i);
 		}
@@ -597,8 +597,8 @@ void	MultiLevelUndoCommandHandler::Commit_Before (size_t before)
 {
 	// delete items before 'before' - and INCLUDING THAT ITEM. So this MUST BE CALLED ON
 	// A NON_EMPTY LIST!
-	Led_Require (before >= 0);
-	Led_Require (before <= fCommands.size ());
+	Require (before >= 0);
+	Require (before <= fCommands.size ());
 	size_t	countToCommit	=	(before) + 1;
 	while (countToCommit != 0) {
 		delete fCommands[0];
@@ -740,8 +740,8 @@ InteractiveReplaceCommand::InteractiveReplaceCommand (SavedTextRep* beforeRegion
 	fAt (at),
 	fCmdName (cmdName)
 {
-	Led_RequireNotNil (fBeforeRegion);
-	Led_RequireNotNil (fAfterRegion);
+	RequireNotNull (fBeforeRegion);
+	RequireNotNull (fAfterRegion);
 }
 
 InteractiveReplaceCommand::~InteractiveReplaceCommand ()
@@ -752,13 +752,13 @@ InteractiveReplaceCommand::~InteractiveReplaceCommand ()
 
 void	InteractiveReplaceCommand::Do (TextInteractor& /*interactor*/)
 {
-	Led_Assert (false);	// illegal to call - command must be PRE-DONE
+	Assert (false);	// illegal to call - command must be PRE-DONE
 }
 
 void	InteractiveReplaceCommand::UnDo (TextInteractor& interactor)
 {
-	Led_AssertNotNil (fBeforeRegion);
-	Led_AssertNotNil (fAfterRegion);
+	AssertNotNull (fBeforeRegion);
+	AssertNotNull (fAfterRegion);
 	fBeforeRegion->InsertSelf (&interactor, fAt, fAfterRegion->GetLength ());
 	fBeforeRegion->ApplySelection (&interactor);
 
@@ -767,8 +767,8 @@ void	InteractiveReplaceCommand::UnDo (TextInteractor& interactor)
 
 void	InteractiveReplaceCommand::ReDo (TextInteractor& interactor)
 {
-	Led_AssertNotNil (fBeforeRegion);
-	Led_AssertNotNil (fAfterRegion);
+	AssertNotNull (fBeforeRegion);
+	AssertNotNull (fAfterRegion);
 	fAfterRegion->InsertSelf (&interactor, fAt, fBeforeRegion->GetLength ());
 	fAfterRegion->ApplySelection (&interactor);
 
@@ -777,8 +777,8 @@ void	InteractiveReplaceCommand::ReDo (TextInteractor& interactor)
 
 bool	InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
 {
-	Led_AssertNotNil (fBeforeRegion);
-	Led_AssertNotNil (fAfterRegion);
+	AssertNotNull (fBeforeRegion);
+	AssertNotNull (fAfterRegion);
 
 	PlainTextRep*	afterPTR	=	dynamic_cast<PlainTextRep*> (fAfterRegion);
 	if (afterPTR != NULL) {
@@ -805,7 +805,7 @@ const Led_SDK_Char*	InteractiveReplaceCommand::GetName () const
  */
 void	InteractiveReplaceCommand::SavedTextRep::ApplySelection (TextInteractor* imager)
 {
-	Led_RequireNotNil (imager);
+	RequireNotNull (imager);
 	imager->SetSelection (fSelStart, fSelEnd);
 }
 
@@ -843,7 +843,7 @@ size_t	InteractiveReplaceCommand::PlainTextRep::GetLength () const
 
 void	InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {
-	Led_RequireNotNil (interactor);
+	RequireNotNull (interactor);
 	interactor->Replace (at, at + nBytesToOverwrite, fText, fTextLength);
 }
 

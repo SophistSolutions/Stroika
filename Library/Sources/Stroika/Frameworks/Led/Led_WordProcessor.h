@@ -2181,7 +2181,7 @@ namespace	Stroika {
 		}
 	inline	void	WordProcessor::ParagraphInfo::SetMargins (Led_TWIPS lhs, Led_TWIPS rhs)
 		{
-			Led_Require (lhs < rhs);
+			Require (lhs < rhs);
 			fLeftMargin = lhs;
 			fRightMargin = rhs;
 		}
@@ -2381,7 +2381,7 @@ namespace	Stroika {
 		}
 	inline	Led_Justification	WordProcessor::IncrementalParagraphInfo::GetJustification () const
 		{
-			Led_Require (fJustificationValid);
+			Require (fJustificationValid);
 			return inherited::GetJustification ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetJustification (Led_Justification justification)
@@ -2399,7 +2399,7 @@ namespace	Stroika {
 		}
 	inline	const TextImager::StandardTabStopList&	WordProcessor::IncrementalParagraphInfo::GetTabStopList () const
 		{
-			Led_Require (fTabStopListValid);
+			Require (fTabStopListValid);
 			return inherited::GetTabStopList ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops)
@@ -2417,12 +2417,12 @@ namespace	Stroika {
 		}
 	inline	Led_TWIPS	WordProcessor::IncrementalParagraphInfo::GetLeftMargin () const
 		{
-			Led_Require (fMarginsValid);
+			Require (fMarginsValid);
 			return inherited::GetLeftMargin ();
 		}
 	inline	Led_TWIPS	WordProcessor::IncrementalParagraphInfo::GetRightMargin () const
 		{
-			Led_Require (fMarginsValid);
+			Require (fMarginsValid);
 			return inherited::GetRightMargin ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetMargins (Led_TWIPS lhs, Led_TWIPS rhs)
@@ -2440,7 +2440,7 @@ namespace	Stroika {
 		}
 	inline	Led_TWIPS	WordProcessor::IncrementalParagraphInfo::GetFirstIndent () const
 		{
-			Led_Require (fFirstIndentValid);
+			Require (fFirstIndentValid);
 			return inherited::GetFirstIndent ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetFirstIndent (Led_TWIPS firstIndent)
@@ -2458,7 +2458,7 @@ namespace	Stroika {
 		}
 	inline	Led_TWIPS	WordProcessor::IncrementalParagraphInfo::GetSpaceBefore () const
 		{
-			Led_Require (fSpaceBeforeValid);
+			Require (fSpaceBeforeValid);
 			return inherited::GetSpaceBefore ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetSpaceBefore (Led_TWIPS sb)
@@ -2476,7 +2476,7 @@ namespace	Stroika {
 		}
 	inline	Led_TWIPS	WordProcessor::IncrementalParagraphInfo::GetSpaceAfter () const
 		{
-			Led_Require (fSpaceAfterValid);
+			Require (fSpaceAfterValid);
 			return inherited::GetSpaceAfter ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetSpaceAfter (Led_TWIPS sa)
@@ -2494,7 +2494,7 @@ namespace	Stroika {
 		}
 	inline	Led_LineSpacing	WordProcessor::IncrementalParagraphInfo::GetLineSpacing () const
 		{
-			Led_Require (fLineSpacingValid);
+			Require (fLineSpacingValid);
 			return inherited::GetLineSpacing ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetLineSpacing (Led_LineSpacing sl)
@@ -2512,7 +2512,7 @@ namespace	Stroika {
 		}
 	inline	ListStyle	WordProcessor::IncrementalParagraphInfo::GetListStyle () const
 		{
-			Led_Require (fListStyleValid);
+			Require (fListStyleValid);
 			return inherited::GetListStyle ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetListStyle (ListStyle listStyle)
@@ -2530,7 +2530,7 @@ namespace	Stroika {
 		}
 	inline	unsigned char	WordProcessor::IncrementalParagraphInfo::GetListIndentLevel () const
 		{
-			Led_Require (fListIndentLevelValid);
+			Require (fListIndentLevelValid);
 			return inherited::GetListIndentLevel ();
 		}
 	inline	void	WordProcessor::IncrementalParagraphInfo::SetListIndentLevel (unsigned char indentLevel)
@@ -2925,7 +2925,7 @@ namespace	Stroika {
 		{
 			if (fNeedLayout != eNeedFullLayout) {
 				AbstractParagraphDatabaseRep*	o	=	dynamic_cast<AbstractParagraphDatabaseRep*> (GetOwner ());
-				Led_AssertNotNil (o);
+				AssertNotNull (o);
 				o->fSomeInvalidTables = true;
 				fNeedLayout = eNeedFullLayout;
 			}
@@ -2944,23 +2944,23 @@ namespace	Stroika {
 		}
 	inline	WordProcessor::Table::Cell&	WordProcessor::Table::GetCell (size_t row, size_t column)
 		{
-			Led_Require (row < GetRowCount ());
-			Led_Require (column < GetColumnCount (row));
-			Led_Assert (fRows.size () == GetRowCount ());
-			Led_Assert (fRows[row].fCells.size () == GetColumnCount (row));
+			Require (row < GetRowCount ());
+			Require (column < GetColumnCount (row));
+			Assert (fRows.size () == GetRowCount ());
+			Assert (fRows[row].fCells.size () == GetColumnCount (row));
 			return fRows[row].fCells[column];
 		}
 	inline	const WordProcessor::Table::Cell&	WordProcessor::Table::GetCell (size_t row, size_t column) const
 		{
-			Led_Require (row < GetRowCount ());
-			Led_Require (column < GetColumnCount (row));
-			Led_Assert (fRows.size () == GetRowCount ());
-			Led_Assert (fRows[row].fCells.size () == GetColumnCount (row));
+			Require (row < GetRowCount ());
+			Require (column < GetColumnCount (row));
+			Assert (fRows.size () == GetRowCount ());
+			Assert (fRows[row].fCells.size () == GetColumnCount (row));
 			return fRows[row].fCells[column];
 		}
 	inline	WordProcessor::Table::CellMergeFlags	WordProcessor::Table::GetCellFlags (size_t row, size_t column) const
 		{
-			Led_Require (row < GetRowCount ());
+			Require (row < GetRowCount ());
 			const RowInfo&	rowInfo	=	fRows[row];
 			if (column < rowInfo.fCells.size ()) {
 				return rowInfo.fCells[column].GetCellMergeFlags ();
@@ -2983,10 +2983,10 @@ namespace	Stroika {
 	*/
 	inline	void	WordProcessor::Table::GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const
 		{
-			Led_Ensure (fRowSelStart <= fRowSelEnd);
-			Led_Ensure (fRowSelEnd <= GetRowCount ());
-			Led_Ensure (fColSelStart <= fColSelEnd);
-			Led_Ensure (fColSelEnd <= GetColumnCount ());
+			Ensure (fRowSelStart <= fRowSelEnd);
+			Ensure (fRowSelEnd <= GetRowCount ());
+			Ensure (fColSelStart <= fColSelEnd);
+			Ensure (fColSelEnd <= GetColumnCount ());
 			if (rowSelStart != NULL) {
 				*rowSelStart = fRowSelStart;
 			}
@@ -3011,11 +3011,11 @@ namespace	Stroika {
 	inline	bool	WordProcessor::Table::GetIntraCellMode (size_t* row, size_t* col) const
 		{
 			if (fIntraCellMode) {
-				Led_Assert (fRowSelEnd == fRowSelStart + 1);
+				Assert (fRowSelEnd == fRowSelStart + 1);
 				if (row != NULL) {
 					*row = fRowSelStart;
 				}
-				Led_Assert (fColSelEnd == fColSelStart + 1);
+				Assert (fColSelEnd == fColSelStart + 1);
 				if (col != NULL) {
 					*col = fColSelStart;
 				}
@@ -3024,8 +3024,8 @@ namespace	Stroika {
 		}
 	inline	void	WordProcessor::Table::GetIntraCellSelection (size_t* selStart, size_t* selEnd) const
 		{
-			Led_RequireNotNil (selStart);
-			Led_RequireNotNil (selEnd);
+			RequireNotNull (selStart);
+			RequireNotNull (selEnd);
 			*selStart = fIntraSelStart;
 			*selEnd = fIntraSelEnd;
 		}
@@ -3043,8 +3043,8 @@ namespace	Stroika {
 									Led_FontSpecification* intraCellSelectionEmptySelFontSpecification
 								)
 		{
-			Led_RequireNotNil (leftSideOfSelectionInteresting);
-			Led_RequireNotNil (intraCellSelectionEmptySelFontSpecification);
+			RequireNotNull (leftSideOfSelectionInteresting);
+			RequireNotNull (intraCellSelectionEmptySelFontSpecification);
 			if (fSavedIntraCellInfoValid) {
 				*leftSideOfSelectionInteresting = fSavedLeftSideOfSelectionInteresting;
 				*intraCellSelectionEmptySelFontSpecification = fSavedIntraCellSelectionEmptySelFontSpecification;
@@ -3165,22 +3165,22 @@ namespace	Stroika {
 			}
 	inline	WordProcessor::Table::TemporarilyAllocateCellWP::~TemporarilyAllocateCellWP ()
 		{
-			Led_AssertNotNil (fCellEditor);
+			AssertNotNull (fCellEditor);
 			fOwningTable.ReleaseEmbeddedTableWordProcessor (fCellEditor);
 		}
 	inline	WordProcessor::Table::TemporarilyAllocateCellWP::operator WordProcessor::Table::EmbeddedTableWordProcessor* ()
 		{
-			Led_AssertNotNil (fCellEditor);
+			AssertNotNull (fCellEditor);
 			return fCellEditor;
 		}
 	inline	WordProcessor::Table::EmbeddedTableWordProcessor& WordProcessor::Table::TemporarilyAllocateCellWP::operator& ()
 		{
-			Led_AssertNotNil (fCellEditor);
+			AssertNotNull (fCellEditor);
 			return *fCellEditor;
 		}
 	inline	WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWP::operator-> ()
 		{
-			Led_AssertNotNil (fCellEditor);
+			AssertNotNull (fCellEditor);
 			return fCellEditor;
 		}
 

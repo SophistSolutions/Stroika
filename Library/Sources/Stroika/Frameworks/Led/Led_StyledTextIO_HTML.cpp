@@ -104,7 +104,7 @@ static	pair<string,string>	kColorNameTable [] = {
 
 	static	inline	char	NumToHexChar (unsigned i)
 		{
-			Led_Require (i <= 15);
+			Require (i <= 15);
 			if (i <= 9) {
 				return i + '0';
 			}
@@ -487,9 +487,9 @@ int	HTMLInfo::HTMLFontSizeToRealFontSize (int size)
 		case	5:	return (14);	break;
 		case	6:	return (18);	break;
 		case	7:	return (24);	break;
-		default:	Led_Assert (false);
+		default:	Assert (false);
 	}
-	Led_Assert (false); return (12);
+	Assert (false); return (12);
 }
 
 int	HTMLInfo::RealFontSizeToHTMLFontSize (int size)
@@ -591,7 +591,7 @@ void	StyledTextIOReader_HTML::Read ()
 			break;
 
 			default: {
-				Led_Assert (false);
+				Assert (false);
 			}
 			break;
 		}
@@ -645,12 +645,12 @@ Again:
 		break;
 
 		default: {
-			Led_Assert (false);
+			Assert (false);
 			return false;	// Not reached
 		}
 		break;
 	}
-	Led_Assert (false);	return false;	// Not reached
+	Assert (false);	return false;	// Not reached
 }
 
 /*
@@ -705,12 +705,12 @@ StyledTextIOReader_HTML::ThingyType	StyledTextIOReader_HTML::ScanTilNextHTMLThin
 	catch (ReadEOFException& /*eof*/) {
 		return eEOF;
 	}
-	Led_Assert (false);	return (eEOF); // not reached
+	Assert (false);	return (eEOF); // not reached
 }
 
 void	StyledTextIOReader_HTML::ScanTilAfterHTMLThingy (ThingyType thingy)
 {
-	Led_Require (thingy != eEOF);
+	Require (thingy != eEOF);
 	switch (thingy) {
 		case	eEntityRef: {
 // should check first char is '&'
@@ -756,7 +756,7 @@ void	StyledTextIOReader_HTML::ScanTilAfterHTMLThingy (ThingyType thingy)
 		break;
 
 		default: {
-			Led_Assert (false);
+			Assert (false);
 		}
 		break;
 	}
@@ -822,8 +822,8 @@ void	StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 	nBytes = Led_NormalizeTextToNL (text, nBytes, outBuf, nBytes);
 
 	if (not skipNLCheck and fNormalizeInputWhitespace) {
-		Led_Assert (fNormalizeInputWhitespace);
-		Led_Assert (not skipNLCheck);
+		Assert (fNormalizeInputWhitespace);
+		Assert (not skipNLCheck);
 
 		// Normalize space (including NLs) to one
 		Led_tChar*	out	=	outBuf;
@@ -843,7 +843,7 @@ void	StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 			fLastCharSpace = thisCharSpace;
 		}
 		size_t	newNBytes	=	out - static_cast<Led_tChar*> (outBuf);
-		Led_Assert (newNBytes <= nBytes);
+		Assert (newNBytes <= nBytes);
 		nBytes = newNBytes;
 	}
 
@@ -859,14 +859,14 @@ void	StyledTextIOReader_HTML::HandleHTMLThingy (StyledTextIOReader_HTML::ThingyT
 		case	eEntityRef:		HandleHTMLThingy_EntityReference (text, nBytes);	break;
 		case	eTag:			HandleHTMLThingy_Tag (text, nBytes);				break;
 		case	eEOF:																break;
-		default:				Led_Assert (false);
+		default:				Assert (false);
 	}
 }
 
 void	StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text, size_t nBytes)
 {
-	Led_RequireNotNil (text);
-	Led_Require (nBytes >= 1);
+	RequireNotNull (text);
+	Require (nBytes >= 1);
 
 	// For understood entity references, emit the character. For others, just emit the original enity ref..
 	string	refName	=	string (&text[1], nBytes-1);
@@ -922,7 +922,7 @@ void	StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 
 void	StyledTextIOReader_HTML::HandleHTMLThingy_Tag (const char* text, size_t nBytes)
 {
-	Led_RequireNotNil (text);
+	RequireNotNull (text);
 
 	char	tagBuf[1024];
 	bool	isStartTag	=	true;
@@ -986,9 +986,9 @@ void	StyledTextIOReader_HTML::HandleHTMLThingy_Tag (const char* text, size_t nBy
 
 void	StyledTextIOReader_HTML::ExtractHTMLTagIntoTagNameBuf (const char* text, size_t nBytes, char* tagBuf, size_t tagBufSize, bool* isStartTag)
 {
-	Led_RequireNotNil (text);
-	Led_RequireNotNil (tagBuf);
-	Led_RequireNotNil (isStartTag);
+	RequireNotNull (text);
+	RequireNotNull (tagBuf);
+	RequireNotNull (isStartTag);
 
 	{
 		const char*	in		=	&text[0];
@@ -1115,7 +1115,7 @@ void	StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
 				(void)ParseHTMLTagArgOut (fCurAHRefText, "href", &tagValue);
 				EmbeddedObjectCreatorRegistry::Assoc	assoc;
 				if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
-					Led_AssertNotNil (assoc.fReadFromMemory);
+					AssertNotNull (assoc.fReadFromMemory);
 					#if		qWideCharacters
 						CodePageConverter	cpc (kCodePage_ANSI);
 						size_t	outCharCnt	=	cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
@@ -1921,7 +1921,7 @@ bool	StyledTextIOReader_HTML::ParseCSSTagArgOut (const string& text, const strin
 void	StyledTextIOReader_HTML::StartPara ()
 {
 	EndParaIfOpen ();
-	Led_Assert (not fInAPara);
+	Assert (not fInAPara);
 	fInAPara = true;
 }
 
@@ -1933,7 +1933,7 @@ void	StyledTextIOReader_HTML::EndParaIfOpen ()
 		fLastCharSpace = true;
 		GetSinkStream ().SetJustification (eLeftJustify);	// unclear if this is needed or desirable?
 	}
-	Led_Ensure (not fInAPara);
+	Ensure (not fInAPara);
 }
 
 void	StyledTextIOReader_HTML::SetHTMLFontSize (int to)
@@ -1964,7 +1964,7 @@ SimpleEmbeddedObjectStyleMarker*	StyledTextIOWriter_HTML::WriterContext::GetCurS
 {
 	size_t	offset	=	GetCurSrcOffset ();
 	vector<SimpleEmbeddedObjectStyleMarker*>	embeddingsList	=	GetSrcStream ().CollectAllEmbeddingMarkersInRange (offset-1, offset);
-	Led_Assert (embeddingsList.size () <= 1);	// cuz we gave a range of one, and can only have a single
+	Assert (embeddingsList.size () <= 1);	// cuz we gave a range of one, and can only have a single
 												// embedding in one place. Allow for there to be NONE - if the user
 												// wants to allow having NUL characters in his text for other reasons.
 	if (embeddingsList.empty ()) {
@@ -2200,7 +2200,7 @@ void	StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
 			if (table.get () != NULL) {
 				WriteTable (writerContext, table.get ());
 				size_t	x	=	table->GetOffsetEnd ();
-				Led_Assert (x == 1);
+				Assert (x == 1);
 				break;
 			}
 
@@ -2235,7 +2235,7 @@ void	StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
 					CodePageConverter	cpc	(kInternalCodePageToMapFrom);
 					size_t	outCharCnt	=	1;
 					cpc.MapToUNICODE (&c, 1, &unicodeC, &outCharCnt);
-					Led_Assert (outCharCnt == 1);
+					Assert (outCharCnt == 1);
 				}
 			#endif
 
@@ -2274,7 +2274,7 @@ void	StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
 */
 void	StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table* table)
 {
-	Led_RequireNotNil (table);
+	RequireNotNull (table);
 	write ("\r\n");
 
 	typedef	Table::CellInfo	CellInfo;
@@ -2320,9 +2320,9 @@ void	StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table* t
 */
 void	StyledTextIOWriter_HTML::WriteOpenTag (WriterContext& writerContext, const string& tagName, const string& tagExtras)
 {
-	Led_Require (not tagName.empty ());
-	Led_Require (tagName[0] != '<');		// just the name - not the surrounding brackets...
-	Led_Require (tagName[0] != '/');
+	Require (not tagName.empty ());
+	Require (tagName[0] != '<');		// just the name - not the surrounding brackets...
+	Require (tagName[0] != '/');
 	writerContext.fTagStack.push_back (tagName);
 	write ("<" + tagName);
 	string	te	=	tagExtras;
@@ -2341,9 +2341,9 @@ void	StyledTextIOWriter_HTML::WriteOpenTag (WriterContext& writerContext, const 
 */
 void	StyledTextIOWriter_HTML::WriteOpenTagSpecial (WriterContext& writerContext, const string& tagName, const string& tagFullText)
 {
-	Led_Require (not tagName.empty ());
-	Led_Require (tagName[0] != '<');		// just the name - not the surrounding brackets...
-	Led_Require (tagName[0] != '/');
+	Require (not tagName.empty ());
+	Require (tagName[0] != '<');		// just the name - not the surrounding brackets...
+	Require (tagName[0] != '/');
 	writerContext.fTagStack.push_back (tagName);
 	write (tagFullText);
 }
@@ -2377,9 +2377,9 @@ void	StyledTextIOWriter_HTML::WriteCloseTag (WriterContext& writerContext, const
 */
 void	StyledTextIOWriter_HTML::WriteOpenCloseTag (WriterContext& /*writerContext*/, const string& tagName, const string& tagExtras)
 {
-	Led_Require (not tagName.empty ());
-	Led_Require (tagName[0] != '<');		// just the name - not the surrounding brackets...
-	Led_Require (tagName[0] != '/');
+	Require (not tagName.empty ());
+	Require (tagName[0] != '<');		// just the name - not the surrounding brackets...
+	Require (tagName[0] != '/');
 	// NB: don't add to the tagstack since this is an OPEN & a CLOSE
 	write ("<");
 	string	te	=	tagExtras;

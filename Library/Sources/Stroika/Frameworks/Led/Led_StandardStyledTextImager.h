@@ -331,7 +331,7 @@ template	<class	BASECLASS>
 	inline	Led_FontSpecification	StandardStyledTextImager::GetStyleInfo (size_t charAfterPos) const
 		{
 			vector<StandardStyledTextImager::InfoSummaryRecord>	result	=	fStyleDatabase->GetStyleInfo (charAfterPos, 1);
-			Led_Assert (result.size () == 1);
+			Assert (result.size () == 1);
 			return result[0];
 		}
 	inline	vector<StandardStyledTextImager::InfoSummaryRecord>	StandardStyledTextImager::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const

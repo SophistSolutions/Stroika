@@ -77,13 +77,13 @@ namespace	Stroika {
 			}
 			else {
 				Led_ThrowBadFormatDataException ();
-				Led_Assert (false); return 0; // not reached
+				Assert (false); return 0; // not reached
 			}
 		}
 	inline	char	ConvertWriteSingleHexDigit (int numZeroToFifteen)
 		{
-			Led_Require (numZeroToFifteen >= 0);
-			Led_Require (numZeroToFifteen <= 15);
+			Require (numZeroToFifteen >= 0);
+			Require (numZeroToFifteen <= 15);
 			if (numZeroToFifteen < 10) {
 				return ('0' + numZeroToFifteen);
 			}
@@ -379,7 +379,7 @@ size_t	RTFIO::ColorTable::LookupColor (const Led_Color& color) const
 			return i;
 		}
 	}
-	Led_Ensure (false);	return 0;
+	Ensure (false);	return 0;
 }
 
 int		RTFIO::ColorTable::EnterColor (const Led_Color& color)
@@ -481,9 +481,9 @@ inline	RTFIO::ControlWordNameMap	RTFIO::mkDefaultControlWordNameMap ()
 		{
 			RTFIO::ControlWordNameMap	table;
 #if		qUseMapForControlWordMap
-			#define	TAB_INS_METHOD(name)	Led_Assert (table.size () == RTFIO::eControlAtom_##name); table.insert (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
+			#define	TAB_INS_METHOD(name)	Assert (table.size () == RTFIO::eControlAtom_##name); table.insert (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
 #else
-			#define	TAB_INS_METHOD(name)	Led_Assert (table.size () == RTFIO::eControlAtom_##name); table.push_back (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
+			#define	TAB_INS_METHOD(name)	Assert (table.size () == RTFIO::eControlAtom_##name); table.push_back (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
 #endif
 
 			TAB_INS_METHOD(tab);
@@ -638,7 +638,7 @@ inline	RTFIO::ControlWordNameMap	RTFIO::mkDefaultControlWordNameMap ()
 			TAB_INS_METHOD(wbitmap);
 			TAB_INS_METHOD(wmetafile);
 			#undef	TAB_INS_METHOD
-			Led_Assert (table.size () == RTFIO::eControlAtomDynamicRangeStart);
+			Assert (table.size () == RTFIO::eControlAtomDynamicRangeStart);
 			#if		!qUseMapForControlWordMap
 				sort (table.begin (), table.end ());
 			#endif
@@ -656,7 +656,7 @@ string	RTFIO::GetAtomName (ControlWordAtom atom)
 			return string ((*it).first);
 		}
 	}
-	Led_Assert (false); return "";
+	Assert (false); return "";
 }
 
 #if		!qUseMapForControlWordMap
@@ -676,7 +676,7 @@ RTFIO::ControlWordAtom	RTFIO::EnterControlWord (
 						)
 {
 	#if		!qUseMapForControlWordMap
-		Led_RequireNotNil (controlWord);
+		RequireNotNull (controlWord);
 	#endif
 
 	typedef	ControlWordNameMap::iterator	ITER;
@@ -781,7 +781,7 @@ SinkStreamDestination::~SinkStreamDestination ()
 	// must FLUSH THIS GUY BEFORE DTOR - cannot flush here cuz that could raise exception, and
 	// (at least with MWERKS CW9) that appears to cause unexpected() to be called - illegal in C++
 	// to throw from DTOR? - LGP 960921
-	Led_Require (fTCharsInSmallBuffer == 0);
+	Require (fTCharsInSmallBuffer == 0);
 }
 
 void	SinkStreamDestination::AppendText (const Led_tChar* text, size_t nTChars)
@@ -942,8 +942,8 @@ void	SinkStreamDestination::EndRow (bool forceEmit)
 		fSinkStream.EndTableRow ();
 		fTableInRow = false;
 	}
-	Led_Ensure (not fTableInRow);
-	Led_Ensure (not fTableInCell);
+	Ensure (not fTableInRow);
+	Ensure (not fTableInCell);
 	SetInTable (false);	// not SURE this is right - but I THINK \intbl needs to be repeated after each row???
 }
 
@@ -1141,8 +1141,8 @@ void	SinkStreamDestination::DoEndTable ()
 		fTableNextCellNum = 0;
 		fTableNextRowNum = 0;
 	}
-	Led_Ensure (not fTableInRow);
-	Led_Ensure (not fTableOpen);
+	Ensure (not fTableInRow);
+	Ensure (not fTableOpen);
 }
 
 void	SinkStreamDestination::Flush ()
@@ -1204,7 +1204,7 @@ size_t	SinkStreamDestination::current_offset () const
 
 void	SinkStreamDestination::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner)
 {
-	Led_Require (at <= current_offset ());
+	Require (at <= current_offset ());
 	AboutToChange ();
 	// Flush () before adding markers if any part of the marker must wrap text inserted text. Must let
 	// the textstore know about the extra text before we can safely add the marker.
@@ -1244,7 +1244,7 @@ void	SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
 	}
 	else {
 		Flush ();
-		Led_Assert (fTCharsInSmallBuffer == 0);
+		Assert (fTCharsInSmallBuffer == 0);
 
 		if (nTChars < (Led_NEltsOf (fSmallBuffer))) {
 			(void)::memcpy (&fSmallBuffer[0], text, nTChars*sizeof (Led_tChar));
@@ -1381,7 +1381,7 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
 
 StyledTextIOReader_RTF::ReaderContext::~ReaderContext ()
 {
-	Led_Require (fCurrentGroup == NULL);	// all our current groups must be deleted before this whole
+	Require (fCurrentGroup == NULL);	// all our current groups must be deleted before this whole
 											// reader context (else they would have pointers back to us
 											// after we've been destroyed)
 	delete fFontTable;
@@ -1412,7 +1412,7 @@ void	StyledTextIOReader_RTF::ReaderContext::UseOutputCharSetEncoding (CodePage c
 
 void	StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
 {
-	Led_RequireNotNil (GetCurrentGroupContext ());
+	RequireNotNull (GetCurrentGroupContext ());
 
 	#if		qWideCharacters
 	if (fSkipNextNChars_UC > 0) {
@@ -1464,7 +1464,7 @@ void	StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
 		wchar_t	outChar;
 		size_t	nOutChars	=	1;
 		CodePageConverter (codePage).MapToUNICODE (fMultiByteInputCharBuf, fMultiByteInputCharBuf[1]==0?1: 2, &outChar, &nOutChars);
-		Led_Assert (nOutChars == 0 or nOutChars == 1);
+		Assert (nOutChars == 0 or nOutChars == 1);
 		if (nOutChars == 1) {
 			GetDestination ().AppendText (&outChar, 1);
 			fMultiByteInputCharBuf[0] = '\0';
@@ -1525,7 +1525,7 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::GroupContext (ReaderContext
 
 StyledTextIOReader_RTF::ReaderContext::GroupContext::~GroupContext ()
 {
-	Led_Assert (fReaderContext.fCurrentGroup == this);	// cuz these always (even with exceptions) must be unwound in
+	Assert (fReaderContext.fCurrentGroup == this);	// cuz these always (even with exceptions) must be unwound in
 														// reverse order of creation.
 	fReaderContext.fCurrentGroup = fParentGroup;
 	if (fReaderContext.fCurrentGroup != NULL) {
@@ -2193,7 +2193,7 @@ ColorComplete:
 	}
 
 ColorsComplete:
-	Led_Assert (readerContext.fColorTable == NULL);
+	Assert (readerContext.fColorTable == NULL);
 	readerContext.fColorTable = new RTFIO::ColorTable (colorTable);
 
 	return true;
@@ -2321,7 +2321,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_fonttbl (ReaderContext& readerCon
 			}
 			break;
 			default: {
-				Led_Assert (false);
+				Assert (false);
 			}
 			break;
 		}
@@ -2433,7 +2433,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_margX (ReaderContext& /*readerCon
 		HandleBadlyFormattedInput ();		// must have a numeric argument
 		return false;
 	}
-	Led_AssertNotNil (fRTFInfo);
+	AssertNotNull (fRTFInfo);
 	switch (controlWord.fWord) {
 		case	RTFIO::eControlAtom_margt: {
 			fRTFInfo->fDefaultMarginTop = Led_TWIPS (controlWord.fValue);
@@ -2452,7 +2452,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_margX (ReaderContext& /*readerCon
 		}
 		break;
 		default: {
-			Led_Assert (false);
+			Assert (false);
 		}
 	}
 	return false;
@@ -2470,7 +2470,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*readerCo
 		HandleBadlyFormattedInput ();		// must have a numeric argument
 		return false;
 	}
-	Led_AssertNotNil (fRTFInfo);
+	AssertNotNull (fRTFInfo);
 	switch (controlWord.fWord) {
 		case	RTFIO::eControlAtom_paperh: {
 			fRTFInfo->fDefaultPaperSize.v = Led_TWIPS (controlWord.fValue);
@@ -2481,7 +2481,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*readerCo
 		}
 		break;
 		default: {
-			Led_Assert (false);
+			Assert (false);
 		}
 	}
 	return false;
@@ -2632,7 +2632,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
 			}
 			break;
 			default: {
-				Led_Assert (false);
+				Assert (false);
 			}
 			break;
 		}
@@ -2907,7 +2907,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_trpaddX (ReaderContext& readerCon
 		case	RTFIO::eControlAtom_trpaddl:	readerContext.GetDestination ().SetDefaultCellMarginsForRow_left (margin); break;
 		case	RTFIO::eControlAtom_trpaddr:	readerContext.GetDestination ().SetDefaultCellMarginsForRow_right (margin); break;
 		case	RTFIO::eControlAtom_trpaddt:	readerContext.GetDestination ().SetDefaultCellMarginsForRow_top (margin); break;
-		default:								Led_Assert (false);	// NOT REACHED
+		default:								Assert (false);	// NOT REACHED
 	}
 	return false;
 }
@@ -2924,7 +2924,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_trspdX (ReaderContext& readerCont
 		case	RTFIO::eControlAtom_trspdl:	readerContext.GetDestination ().SetDefaultCellSpacingForRow_left (margin); break;
 		case	RTFIO::eControlAtom_trspdr:	readerContext.GetDestination ().SetDefaultCellSpacingForRow_right (margin); break;
 		case	RTFIO::eControlAtom_trspdt:	readerContext.GetDestination ().SetDefaultCellSpacingForRow_top (margin); break;
-		default:							Led_Assert (false);	// NOT REACHED
+		default:							Assert (false);	// NOT REACHED
 	}
 	return false;
 }
@@ -2944,7 +2944,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
 		if (newStop <= lastStop) {
 			HandleBadlyFormattedInput ();		return false;			// Allow this to be a recoverable error by ignoring it... LGP 2000-09-20
 		}
-		Led_Assert (newStop > lastStop);
+		Assert (newStop > lastStop);
 		curTabs->fTabStops.push_back (Led_TWIPS (newStop - lastStop));
 		readerContext.GetDestination ().SetTabStops (*curTabs);
 	}
@@ -3111,9 +3111,9 @@ RTFIO::ControlWord	StyledTextIOReader_RTF::ReadControlWord ()
 	RTFIO::ControlWord	controlWord;
 
 	if (GetNextChar () != RTFIO::kRTFStartTagChar) {
-		Led_Require (false);	// should only be called when we have one...
+		Require (false);	// should only be called when we have one...
 		HandleBadlyFormattedInput (true);
-		Led_Assert (false);	// NOTREACHED
+		Assert (false);	// NOTREACHED
 	}
 
 	/*
@@ -3187,7 +3187,7 @@ RTFIO::ControlWord	StyledTextIOReader_RTF::ReadControlWord ()
 			}
 			#if		qDebug
 			else {
-				Led_Assert (false);	// just a notification that I should probably up the eMaxControlAtomNameLen define...
+				Assert (false);	// just a notification that I should probably up the eMaxControlAtomNameLen define...
 			}
 			#endif
 		}
@@ -3233,12 +3233,12 @@ RTFIO::ControlWord	StyledTextIOReader_RTF::ReadControlWord ()
 
 void	StyledTextIOReader_RTF::AboutToStartBody (ReaderContext& readerContext)
 {
-	Led_Require (not readerContext.fStartedBodyYet);
+	Require (not readerContext.fStartedBodyYet);
 	readerContext.fStartedBodyYet = true;
 
 	if (readerContext.fDefaultFontNumber != size_t (-1)) {
 		// Set the initial font of our destination to this font spec.
-		Led_RequireNotNil (readerContext.GetCurrentGroupContext ());
+		RequireNotNull (readerContext.GetCurrentGroupContext ());
 		Led_IncrementalFontSpecification	fontSpec	=	readerContext.GetCurrentGroupContext ()->fDestinationContext.fFontSpec;
 
 		// We probably SHOULD do a Led_ThrowBadFormatDataException () here, but on pastes from MS Word 5.1, this sometimes happens
@@ -3266,7 +3266,7 @@ FontTableEntry	StyledTextIOReader_RTF::ReadInFontTablesEntry ()
 	FontTableEntry	entry;
 
 	if (GetNextChar () != RTFIO::kRTFOpenGroupChar) {
-		Led_Require (false);		// should only be called when looking at one
+		Require (false);		// should only be called when looking at one
 		//Led_ThrowBadFormatDataException ();
 	}
 ReadRest:
@@ -3336,7 +3336,7 @@ ReadRest:
 	ScanForwardFor ("}");
 	if (GetNextChar () != RTFIO::kRTFCloseGroupChar) {
 		HandleBadlyFormattedInput (true);	// EOF reading font-entry
-		Led_Assert (false);	// NOTREACHED
+		Assert (false);	// NOTREACHED
 	}
 
 	return entry;
@@ -3344,9 +3344,9 @@ ReadRest:
 
 void	StyledTextIOReader_RTF::ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt)
 {
-	Led_RequireNotNil (data);
+	RequireNotNull (data);
 	if (GetNextChar () != RTFIO::kRTFOpenGroupChar) {
-		HandleBadlyFormattedInput (true);		Led_Assert (false);	// NOTREACHED
+		HandleBadlyFormattedInput (true);		Assert (false);	// NOTREACHED
 	}
 	if (PeekNextChar () == RTFIO::kRTFStartTagChar) {
 
@@ -3385,7 +3385,7 @@ void	StyledTextIOReader_RTF::ReadInObjectSubGroupEntry (ReaderContext& readerCon
 
 void	StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
 {
-	Led_RequireNotNil (data);
+	RequireNotNull (data);
 
 	// Keep reading hex characters, and concatenate them onto 'data'. When we get a close-brace, we are done.
 	for (char c = PeekNextChar (); c != RTFIO::kRTFCloseGroupChar; c = PeekNextChar ()) {
@@ -3395,7 +3395,7 @@ void	StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
 		}
 		data->push_back (GetNextRTFHexByte ());
 	}
-	Led_Assert (PeekNextChar () == RTFIO::kRTFCloseGroupChar);
+	Assert (PeekNextChar () == RTFIO::kRTFCloseGroupChar);
 	ConsumeNextChar ();		// Eat terminating brace
 }
 
@@ -3408,7 +3408,7 @@ void	StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& re
 		for (size_t i = 0; i < types.size (); i++) {
 			EmbeddedObjectCreatorRegistry::Assoc	assoc	=	types[i];
 			if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
-				Led_AssertNotNil (assoc.fReadFromMemory);
+				AssertNotNull (assoc.fReadFromMemory);
 				SimpleEmbeddedObjectStyleMarker*	embedding	=	(assoc.fReadFromMemory) (RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
 				RTFOLEEmbedding*	rtfe	=	dynamic_cast<RTFOLEEmbedding*> (embedding);
 				if (rtfe != NULL) {
@@ -3447,7 +3447,7 @@ void	StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
 	for (size_t i = 0; i < types.size (); i++) {
 		EmbeddedObjectCreatorRegistry::Assoc	assoc	=	types[i];
 		if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
-			Led_AssertNotNil (assoc.fReadFromMemory);
+			AssertNotNull (assoc.fReadFromMemory);
 			SimpleEmbeddedObjectStyleMarker*	embedding	=	 (assoc.fReadFromMemory) (tag, theData, theDataNBytes);
 			try {
 				readerContext.GetDestination ().AppendEmbedding (embedding);
@@ -3464,7 +3464,7 @@ void	StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
 
 void	StyledTextIOReader_RTF::ReadPictData (vector<char>* data)
 {
-	Led_RequireNotNil (data);
+	RequireNotNull (data);
 
 	// Keep reading hex characters, and concatenate them onto 'data'. When we get a close-brace or start of another tag, we are done.
 	// This routine can be called many times to append more and more to 'data'.
@@ -3475,7 +3475,7 @@ void	StyledTextIOReader_RTF::ReadPictData (vector<char>* data)
 		}
 		PUSH_BACK (*data, GetNextRTFHexByte ());
 	}
-	Led_Assert (PeekNextChar () == RTFIO::kRTFCloseGroupChar or PeekNextChar () == RTFIO::kRTFStartTagChar);
+	Assert (PeekNextChar () == RTFIO::kRTFCloseGroupChar or PeekNextChar () == RTFIO::kRTFStartTagChar);
 }
 
 /*
@@ -3581,10 +3581,10 @@ Led_DIB*	StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize
 				result = ConstructDIBFromEMFHelper (shownSize, bmSize, hMF);
 			}
 			catch (...) {
-				Led_Verify (::DeleteEnhMetaFile (hMF));
+				Verify (::DeleteEnhMetaFile (hMF));
 				throw;
 			}
-			Led_Verify (::DeleteEnhMetaFile (hMF));
+			Verify (::DeleteEnhMetaFile (hMF));
 			return result;
 		}
 		break;
@@ -3595,10 +3595,10 @@ Led_DIB*	StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize
 				result = ConstructDIBFromEMFHelper (shownSize, bmSize, hMF);
 			}
 			catch (...) {
-				Led_Verify (::DeleteEnhMetaFile (hMF));
+				Verify (::DeleteEnhMetaFile (hMF));
 				throw;
 			}
-			Led_Verify (::DeleteEnhMetaFile (hMF));
+			Verify (::DeleteEnhMetaFile (hMF));
 			return result;
 		}
 		break;
@@ -3619,11 +3619,11 @@ Led_DIB*	StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize
 */
 Led_DIB*	StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF)
 {
-	Led_RequireNotNil (hMF);
+	RequireNotNull (hMF);
 
 	ENHMETAHEADER	header;
 	memset (&header, 0, sizeof (header));
-	Led_Verify (::GetEnhMetaFileHeader (hMF, sizeof (header), &header) == sizeof (header));
+	Verify (::GetEnhMetaFileHeader (hMF, sizeof (header), &header) == sizeof (header));
 
 	// Don't know best way to get a DIB from a metafile - but this way I HOPE will at least WORK!
 	Led_Tablet_		screenDC	=	(::GetWindowDC (NULL));		// not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
@@ -3656,12 +3656,12 @@ Led_DIB*	StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point show
 		HPALETTE	usePalette	=	NULL;
 		{
 			UINT	nPalEntries	=	::GetEnhMetaFilePaletteEntries (hMF, 0, NULL);
-			Led_Assert (nPalEntries != GDI_ERROR);
+			Assert (nPalEntries != GDI_ERROR);
 			if (nPalEntries != 0) {
 				LOGPALETTE*		paletteData	=	reinterpret_cast<LOGPALETTE*> (new char [sizeof (LOGPALETTE) + nPalEntries*sizeof (PALETTEENTRY)]);
 				paletteData->palVersion = 0;
 				paletteData->palNumEntries = nPalEntries;
-				Led_Verify (::GetEnhMetaFilePaletteEntries (hMF, nPalEntries, paletteData->palPalEntry) == nPalEntries);
+				Verify (::GetEnhMetaFilePaletteEntries (hMF, nPalEntries, paletteData->palPalEntry) == nPalEntries);
 				usePalette = ::CreatePalette (paletteData);
 				delete[] (char*) paletteData;
 			}
@@ -3739,12 +3739,12 @@ void	StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
 				fontSpec.SetFontNameSpecifier (a.GetFontNameSpecifier ());
 			}
 
-			Led_AssertNotNil (readerContext.fFontTable);
+			AssertNotNull (readerContext.fFontTable);
 			const FontTableEntry*	fte	=	readerContext.fFontTable->LookupEntryByNumber (cw.fValue);
 			if (fte == NULL) {
 				// We probably SHOULD do a Led_ThrowBadFormatDataException () here, 
 				// see spr#0696
-				Led_Assert (false);	// was getting this cuz of bad fonttable generation with hidden text - Just test if we still get - but not really a bug to get here - since input RTF could really be bad!
+				Assert (false);	// was getting this cuz of bad fonttable generation with hidden text - Just test if we still get - but not really a bug to get here - since input RTF could really be bad!
 									// LGP 2000/04/26
 				return;
 			}
@@ -3930,7 +3930,7 @@ void	StyledTextIOReader_RTF::SkipToEndOfCurrentGroup ()
 			}
 			break;
 			default: {
-				Led_Assert (false);
+				Assert (false);
 			}
 			break;
 		}
@@ -3939,7 +3939,7 @@ void	StyledTextIOReader_RTF::SkipToEndOfCurrentGroup ()
 
 void	StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
 {
-	Led_RequireNotNil (setOfChars);
+	RequireNotNull (setOfChars);
 
 	#if		qUseCompiledSetHack
 		bitset<256>	compiledSet;
@@ -3984,11 +3984,11 @@ void	StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
 */
 bool	StyledTextIOReader_RTF::SearchForwardFor (const char* searchFor, size_t maxCharsToExamine)
 {
-	Led_RequireNotNil (searchFor);
+	RequireNotNull (searchFor);
 	SrcStream&	srcStream	=	GetSrcStream ();
 	size_t		origOffset	=	srcStream.current_offset ();
 	size_t		matchStrLen	=	::strlen (searchFor);
-	Led_Require (matchStrLen >= 1);
+	Require (matchStrLen >= 1);
 	try {
 RetryNextMatch:
 		char		c			=	'\0';
@@ -4008,7 +4008,7 @@ RetryNextMatch:
 					}
 				}
 				// If we fall through - must have been a good match!
-				Led_Assert (matchStrLen == srcStream.current_offset () - foundAt);
+				Assert (matchStrLen == srcStream.current_offset () - foundAt);
 				srcStream.seek_to (foundAt);
 				return true;
 			}
@@ -4031,7 +4031,7 @@ RetryNextMatch:
 
 RTFInfo&	StyledTextIOReader_RTF::GetRTFInfo () const
 {
-	Led_AssertNotNil (fRTFInfo);
+	AssertNotNull (fRTFInfo);
 	return *fRTFInfo;
 }
 
@@ -4055,7 +4055,7 @@ SimpleEmbeddedObjectStyleMarker*	StyledTextIOWriter_RTF::WriterContext::GetCurSi
 {
 	size_t	offset	=	GetCurSrcOffset ();
 	vector<SimpleEmbeddedObjectStyleMarker*>	embeddingsList	=	GetSrcStream ().CollectAllEmbeddingMarkersInRange (offset-1, offset);
-	Led_Assert (embeddingsList.size () <= 1);	// cuz we gave a range of one, and can only have a single
+	Assert (embeddingsList.size () <= 1);	// cuz we gave a range of one, and can only have a single
 												// embedding in one place. Allow for there to be NONE - if the user
 												// wants to allow having NUL characters in his text for other reasons.
 	if (embeddingsList.empty ()) {
@@ -4275,10 +4275,10 @@ void	StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
 		case	kEmbeddingSentinalChar: {
 			auto_ptr<StyledTextIOWriter_RTF::Table>		table (writerContext.GetCurRTFTable ());
 			if (table.get () != NULL) {
-				Led_Assert (writerContext.fCharsToSkip == 0);	// must preserve / restore for nested tables?
+				Assert (writerContext.fCharsToSkip == 0);	// must preserve / restore for nested tables?
 				WriteTable (writerContext, table.get ());
 				size_t	x	=	table->GetOffsetEnd ();
-				Led_Assert (x >= 1);
+				Assert (x >= 1);
 				writerContext.fCharsToSkip = x-1;
 				break;
 			}
@@ -4338,7 +4338,7 @@ void	StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c)
 	char	mbCharBuf[2];
 	size_t	mbCharCount	=	2;
 	CodePageConverter (fCurrentOutputCharSetEncoding).MapFromUNICODE (&c, 1, mbCharBuf, &mbCharCount);
-	Led_Assert (mbCharCount == 1 or mbCharCount == 2);
+	Assert (mbCharCount == 1 or mbCharCount == 2);
 
 	bool	needToWriteUNICODE	=	c >= 0x80;	//	write UNICODE if non-ascii
 	if (needToWriteUNICODE) {
@@ -4471,7 +4471,7 @@ void	StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
 void	StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* table)
 {
 	typedef	StyledTextIOWriter_RTF::Table::CellInfo	CellInfo;
-	Led_RequireNotNil (table);
+	RequireNotNull (table);
 	write ("\r\n");	// should write a newline every once in a while...
 					// according to RTF spec
 	size_t	rows	=	table->GetRows ();
@@ -4558,7 +4558,7 @@ void	StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
 					#endif
 				}
 			}
-			Led_Assert (nCellsWritten == cellInfos.size ());	//  must write same number of cells as celldefs
+			Assert (nCellsWritten == cellInfos.size ());	//  must write same number of cells as celldefs
 		WriteTag ("row");
 		write ("\r\n");	// should write a newline every once in a while...
 						// according to RTF spec
@@ -4705,7 +4705,7 @@ bool	StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
 				HDC		hMFDC	=	::CreateEnhMetaFile (NULL, NULL, &rect, NULL);
 				::SetMapMode (hMFDC, mapMode);
 				const char* lpBits =  reinterpret_cast<const char*>(dib) + Led_GetDIBPalletByteCount (dib) + sizeof (BITMAPINFOHEADER);
-				Led_Assert (mapMode == MM_TWIPS or mapMode == MM_TEXT);
+				Assert (mapMode == MM_TWIPS or mapMode == MM_TEXT);
 				if (mapMode == MM_TWIPS) {
 					::StretchDIBits (hMFDC, 0, 0, Led_CvtScreenPixelsToTWIPSH (size.h), Led_CvtScreenPixelsToTWIPSV (size.v), 0, 0, size.h, size.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);
 				}
@@ -4716,11 +4716,11 @@ bool	StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
 			}
 			nBytes	=	::GetWinMetaFileBits (hMF, 0, NULL, mapMode, screenDC);
 			if (nBytes == 0) {
-				Led_Assert (false);	//??
+				Assert (false);	//??
 				return false;		//??? ERROR
 			}
 			BYTE*	bytes	=	new BYTE[nBytes];
-			Led_Verify (::GetWinMetaFileBits (hMF, nBytes, bytes, mapMode, screenDC) == nBytes);
+			Verify (::GetWinMetaFileBits (hMF, nBytes, bytes, mapMode, screenDC) == nBytes);
 			
 			theDataBytes = bytes;
 			theDataBytes_ = auto_ptr<BYTE> (bytes);
@@ -4796,9 +4796,9 @@ void	StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerCon
 
 void	StyledTextIOWriter_RTF::WriteTag (const char* tagStr)
 {
-	Led_RequireNotNil (tagStr);
-	Led_Require (tagStr[0] != '\\');			// we write that ourselves
-	Led_Require (::strchr (tagStr, ' ') == 0);	// we write trailing space, and better note be others!
+	RequireNotNull (tagStr);
+	Require (tagStr[0] != '\\');			// we write that ourselves
+	Require (::strchr (tagStr, ' ') == 0);	// we write trailing space, and better note be others!
 	write ('\\');
 	write (tagStr);
 	write (' ');
@@ -4806,9 +4806,9 @@ void	StyledTextIOWriter_RTF::WriteTag (const char* tagStr)
 
 void	StyledTextIOWriter_RTF::WriteTagNValue (const char* tagStr, int value)
 {
-	Led_RequireNotNil (tagStr);
-	Led_Require (tagStr[0] != '\\');			// we write that ourselves
-	Led_Require (::strchr (tagStr, ' ') == 0);	// we write trailing space, and better note be others!
+	RequireNotNull (tagStr);
+	Require (tagStr[0] != '\\');			// we write that ourselves
+	Require (::strchr (tagStr, ' ') == 0);	// we write trailing space, and better note be others!
 	write ('\\');
 	write (tagStr);
 	char buf[1024];
@@ -4834,8 +4834,8 @@ void	StyledTextIOWriter_RTF::WriteRTFHexByte (unsigned char theByte)
 {
 	unsigned char	hiNibble	=	(theByte) >> 4;
 	unsigned char	lowNibble	=	(theByte) & 0xf;
-	Led_Require (hiNibble <= 0xf);
-	Led_Require (lowNibble <= 0xf);
+	Require (hiNibble <= 0xf);
+	Require (lowNibble <= 0xf);
 	write (ConvertWriteSingleHexDigit (hiNibble));
 	write (ConvertWriteSingleHexDigit (lowNibble));
 }
@@ -4859,7 +4859,7 @@ void	StyledTextIOWriter_RTF::WriteFontTable (WriterContext& writerContext)
 	WriteTag ("fonttbl");
 
 	AssureFontTableBuilt (writerContext);
-	Led_AssertNotNil (fFontTable);
+	AssertNotNull (fFontTable);
 
 	size_t	entryCount	=	fFontTable->fEntries.size ();
 	for (size_t i = 0; i < entryCount; i++) {
@@ -4904,7 +4904,7 @@ void	StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry)
 void	StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext)
 {
 	AssureColorTableBuilt (writerContext);
-	Led_AssertNotNil (fColorTable);
+	AssertNotNull (fColorTable);
 
 	write ('{');
 	WriteTag ("colortbl");
@@ -4999,7 +4999,7 @@ void	StyledTextIOWriter_RTF::WriteGenerator ()
 
 void	StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne)
 {
-	Led_RequireNotNil (fFontTable);
+	RequireNotNull (fFontTable);
 
 	WriteTag ("plain");
 
@@ -5008,9 +5008,9 @@ void	StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContex
 	}
 
 	{
-		Led_RequireNotNil (fFontTable);
+		RequireNotNull (fFontTable);
 		const FontTableEntry*	fe	=	fFontTable->LookupEntryByName (newOne.GetFontName ());
-		Led_RequireNotNil (fe);	// this routine cannot be called with an invalid font table setup. It would imply
+		RequireNotNull (fe);	// this routine cannot be called with an invalid font table setup. It would imply
 								// a bug in the AssureFontTableBuilt () code, most probably...
 		WriteTagNValue ("f", fe->fFNum);
 	}
