@@ -171,7 +171,7 @@ Socket::_Rep::~_Rep ()
 
 /*
  ********************************************************************************
- ************************************ Network::Socket ***************************
+ ********************************** Network::Socket *****************************
  ********************************************************************************
  */
 const	String	Socket::BindProperties::kANYHOST;
@@ -180,6 +180,11 @@ const	String	Socket::BindProperties::kANYHOST;
 
 Socket::Socket ()
 	: fRep_ ()
+{
+}
+
+Socket::Socket (const Memory::SharedPtr<_Rep>& rep)
+	: fRep_ (rep)
 {
 }
 

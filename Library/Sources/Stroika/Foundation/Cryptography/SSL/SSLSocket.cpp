@@ -7,4 +7,19 @@
 
 
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Cryptography;
+using	namespace	Stroika::Foundation::Cryptography::SSL;
 
+
+
+
+
+
+/*
+ ********************************************************************************
+ ******************************* Network::SSLSocket *****************************
+ ********************************************************************************
+ */
+SSLSocket::SSLSocket ()
+{
+}

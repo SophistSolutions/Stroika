@@ -46,6 +46,11 @@ namespace	Stroika {
 
 						// TODO: By default - when refcount goes to zero - this socket auto-closed. MAYBE offer overload where that is not so?
 						explicit Socket (NativeSocket sd);
+					
+					protected:
+						Socket (const Memory::SharedPtr<_Rep>& rep);
+
+					public:
 						~Socket ();
 						const Socket& operator= (const Socket& s);
 

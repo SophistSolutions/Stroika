@@ -22,7 +22,12 @@ namespace	Stroika {
 
 
 				// wrapper calss - real work is in protected REP subclasses from Socket Rep...
-				class	SSLSocket {
+				class	SSLSocket : public IO::Network::Socket {
+					public:
+						SSLSocket ();
+
+					private:
+						class	Rep_;
 				};
 
 			}
