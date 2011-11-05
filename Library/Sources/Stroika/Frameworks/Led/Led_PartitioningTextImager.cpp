@@ -76,7 +76,7 @@ Partition::~Partition ()
 	 */
 	for (PartitionMarker* cur = fPartitionMarkerFirst; cur != NULL;) {
 		Marker*	markersToRemoveAtATime[1000];
-		const	size_t	kMaxBufMarkers	=	Led_NEltsOf (markersToRemoveAtATime);
+		const	size_t	kMaxBufMarkers	=	NEltsOf (markersToRemoveAtATime);
 		size_t	i = 0;
 		for (; i < kMaxBufMarkers and cur != NULL; i++, cur = cur->fNext) {
 			markersToRemoveAtATime[i] = cur;

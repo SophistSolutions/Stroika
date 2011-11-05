@@ -138,11 +138,11 @@ namespace {
 							size_t	wordEnd		=	0;
 							bool	wordReal	=	false;
 							fTI.GetTextStore ().FindWordBreaks (startRegion, &wordStart, &wordEnd, &wordReal, sce->PeekAtTextBreaksUsed ());
-							if (wordReal and wordStart + Led_NEltsOf (charBuf) > startRegion) {
+							if (wordReal and wordStart + NEltsOf (charBuf) > startRegion) {
 								startRegion = wordStart;
 							}
 						}
-						size_t		endRegion	=	min (startRegion + Led_NEltsOf (charBuf), fTI.GetEnd ());
+						size_t		endRegion	=	min (startRegion + NEltsOf (charBuf), fTI.GetEnd ());
 						fTI.CopyOut (startRegion, endRegion-startRegion, charBuf);
 						const Led_tChar*	cursor		=	NULL;
 						const Led_tChar*	wordStart	=	NULL;
@@ -2780,7 +2780,7 @@ void	TextInteractor::OnPasteCommand_PasteBestFlavor ()
 		long	clipFormat	=	0;
 		while ( (clipFormat = ::EnumClipboardFormats (clipFormat)) != 0) {
 			TCHAR	buf[1024];
-			int		nChars	=	::GetClipboardFormatName (clipFormat, buf, Led_NEltsOf (buf));
+			int		nChars	=	::GetClipboardFormatName (clipFormat, buf, NEltsOf (buf));
 			int		breakHere	=	0;
 		}
 	#endif

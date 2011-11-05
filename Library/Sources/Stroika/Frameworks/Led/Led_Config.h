@@ -552,11 +552,6 @@
 			#error	"MSVC 6.0 or later requires you to turn on RTTI"
 		#endif
 
-		// Verified still broken in VC++.Net 2003 (VC7.1) - LGP 2003-05-09
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken										1
-		#endif
-
 
 
 		//	Still broken - by default - for MSVC .Net 2003 programs - LGP 2003-05-09
@@ -606,11 +601,6 @@
 			#error	"MSVC 6.0 or later requires you to turn on RTTI"
 		#endif
 
-		// Verified still broken in VC++.Net 2003 (VC7.1) - LGP 2003-05-09
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken										1
-		#endif
-
 		//	Still broken - by default - for MSVC .Net 2003 programs - LGP 2003-05-09
 		//
 		//	Still (effectively) broken for MS VC++.NET (MSVC70). They now have a compiler option (/Zc:forLoop) which
@@ -651,10 +641,6 @@
 		// MSVC OPTIONALLY supports RTTI - be sure option turned on (Led requires RTTI)!
 		#ifndef	_CPPRTTI
 			#error	"MSVC 6.0 or later requires you to turn on RTTI"
-		#endif
-
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken										1
 		#endif
 
 		//	Broken still but now DOCUMENTED in VC++.NET (VC7) - LGP 2002-09-03:
@@ -771,10 +757,6 @@
 		// MSVC OPTIONALLY supports RTTI - be sure option turned on (Led requires RTTI)!
 		#ifndef	_CPPRTTI
 			#error	"MSVC 6.0 requires you to turn on RTTI"
-		#endif
-
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken										1
 		#endif
 
 		//	Broken  in MSVC60 - LGP 2004-01-23
@@ -952,10 +934,6 @@
 		// MSVC OPTIONALLY supports RTTI - be sure option turned on (Led requires RTTI)!
 		#ifndef	_CPPRTTI
 			#error	"MSVC 5.0 requires you to turn on RTTI"
-		#endif
-
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken										1
 		#endif
 
 		//	Still broken in MSVC50 - LGP 970312
@@ -1195,14 +1173,6 @@
 		#endif
 
 
-		#ifndef	qKeywordsForAndOrNotBroken
-			#if		qUseGCC295
-				#define	qKeywordsForAndOrNotBroken							0
-			#else
-				#define	qKeywordsForAndOrNotBroken							1
-			#endif
-		#endif
-
 		//g++ libs doesn't seem to have this
 		#define	qBitSetTemplateAvailable							0
 
@@ -1291,10 +1261,6 @@
 
 #if     defined (__BCPLUSPLUS__)
 	#if	__BCPLUSPLUS__ == 0x0550
-
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken													1
-		#endif
 
 		// noticed bug... LGP 2003-03-24 - NOT a problem for NON-UNICODE - but it IS a problem for UNICODE builds...
 		#ifndef	qNoSTRNICMP
@@ -1389,9 +1355,6 @@
 
 	#elif	__BCPLUSPLUS__ == 0x0540
 	
-		#ifndef	qKeywordsForAndOrNotBroken
-			#define	qKeywordsForAndOrNotBroken													1
-		#endif
 	
 		//new - borland specific bug... LGP 2000-12-30
 		#ifndef	qCannotAssignRValueAutoPtrToExistingOneInOneStepBug
@@ -1465,17 +1428,6 @@
 
 
 
-
-
-/*
- *	I recall reading a LONG time ago that these were going to be included in STD C++ as keywords. Maybe this
- * is wrong (and so they name of the #define is then wrong, and I should just #define these myself always). Anyhow - for now
- * it appears basically nobdoy supports them, but treat it as a compiler bug til I read otherwise - LGP 2002-09-03
- *	manually for cases that matter.
- */
-#ifndef	qKeywordsForAndOrNotBroken
-	#define	qKeywordsForAndOrNotBroken			0
-#endif
 
 
 

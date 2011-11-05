@@ -3,6 +3,8 @@
  */
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/IO/FileSystem/FileUtils.h"
+
 #include	"Led_Config.h"
 
 #if		qMacOS
@@ -264,6 +266,7 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 										size_t from, size_t to
 								)
 {
+	using	Stroika::Foundation::IO::FileSystem::FileReader;
 	FileReader	fileReader (fileName);
 	const Byte* fileBuf = fileReader.GetFileStart ();
 	size_t		fileLen	= fileReader.GetFileEnd () - fileReader.GetFileStart ();

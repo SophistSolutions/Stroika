@@ -1967,7 +1967,7 @@ bool	CharacterProperties::IsMirrored (Led_tChar c, Led_tChar* mirrorChar)
 #if 1
 	// LGP simple hack to avoid the fact this STL code doesn't compile...
 	const MirrorChars* b = kMirrorChars;
-	const MirrorChars* e = b + Led_NEltsOf (kMirrorChars);
+	const MirrorChars* e = b + NEltsOf (kMirrorChars);
 	const MirrorChars*	mi	=	e;
 	{
 		for (const MirrorChars* i = b; i != e; ++i) {
@@ -1980,10 +1980,10 @@ bool	CharacterProperties::IsMirrored (Led_tChar c, Led_tChar* mirrorChar)
 #else
 #if		qBCCOverloadWIthCallToLowerBoundTemplateBug
 	const MirrorChars* b = kMirrorChars;
-	const MirrorChars* e = b + Led_NEltsOf (kMirrorChars);
+	const MirrorChars* e = b + NEltsOf (kMirrorChars);
 	const MirrorChars*	mi	=	lower_bound (b, e, c, MirrorChars_Compare ());
 #else
-	const MirrorChars*	mi	=	lower_bound (kMirrorChars, kMirrorChars + Led_NEltsOf (kMirrorChars), c, MirrorChars_Compare ());
+	const MirrorChars*	mi	=	lower_bound (kMirrorChars, kMirrorChars + NEltsOf (kMirrorChars), c, MirrorChars_Compare ());
 #endif
 #endif
  	if (mi != NULL and mi->fChar == c and mirrorChar != NULL) {

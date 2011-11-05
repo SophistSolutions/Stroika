@@ -5,6 +5,7 @@
 #define	__LedSupport_h__	1
 
 #include	"../../Foundation/StroikaPreComp.h"
+#include	"../../Foundation/Configuration/Common.h"
 #include	"../../Foundation/Debug/Assertions.h"
 
 /*
@@ -16,12 +17,6 @@
 	where possible.</p>
  */
 
-
-#if		_MSC_VER == 1200
-	//A bit of a hack for MSVC60, cuz this needs to be done before including <vector> - otherwise we get
-	// lots of needless warnigns - regardless of what is done later -- LGP 980925
-	#pragma	warning (4 : 4786)
-#endif
 
 #include	<climits>
 #include	<cstdint>
@@ -55,9 +50,7 @@
 #endif
 
 
-
-
-	using	namespace	std;
+using	namespace	std;
 
 namespace	Stroika {	
 	namespace	Frameworks {
@@ -66,9 +59,7 @@ namespace	Stroika {
 
 
 
-
-
-
+		using	Foundation::Byte;
 
 
 
@@ -124,28 +115,6 @@ namespace	Stroika {
 
 
 
-
-
-
-
-
-// HACK for MSVC whihc doesnt support override yet
-#define	override
-
-
-#define	nonvirtual	
-
-
-
-#if		qKeywordsForAndOrNotBroken
-	#define	and	&&
-	#define	or ||
-	#define	not !
-#endif
-
-
-
-
 /*
  *	The StandaredC++ mechanism of commenting out unused parameters isn't good enuf
  *	in the case where the parameters might be used conditionally. This hack is
@@ -160,15 +129,6 @@ namespace	Stroika {
 const	size_t	kBadIndex	=	size_t (-1);
 
 
-
-
-
-
-/*
-@CLASS:			Byte
-@DESCRIPTION:	<p><code>typedef unsigned char Byte</code></p>
-*/
-typedef	unsigned char Byte;
 
 
 
@@ -618,13 +578,6 @@ void	Led_ThrowIfNull (void* p);
 
 
 
-
-
-/*
-@METHOD:		Led_NEltsOf
-@DESCRIPTION:	<p>Trivial wrapper on sizeof () to get n-elts of a C++ array</p>
-*/
-#define	Led_NEltsOf(X)	(sizeof(X)/sizeof(X[0]))
 
 
 short			Led_ByteSwapFromMac (short src);
@@ -1180,76 +1133,6 @@ char		Led_NumberToDigitChar (unsigned digitValue);	// require input is valid dec
 bool	Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase = true);
 bool	Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase = true);
 
-
-
-
-
-
-
-/*
-@CLASS:			FileReader
-@DESCRIPTION:	<p>Utility class to read in a given file and store its image in RAM. This could be implemented in
-			such a way as to leave the file open for the duration of the read or not. Because of those semantics,
-			it COULD be implemented to use file-mapping, instead of direct reads. This throws exceptions
-			in its CTOR if it fails to open the file entirely and fully read it in (or map it).</p>
-				<p>NB: because of the fact that this class COULD be implemented using memory-mapped file IO,
-			its NOT legal to update the file while this object is opened (file would be opened readonly, but
-			denying writes) - and the data pointers returned by GetFileStart/End must not be modified in-place.</p>
-				<p>See also @'FileWriter'</p>
-*/
-class	FileReader {
-	public:
-		FileReader (
-						#if		qMacOS
-							const FSSpec* fileName
-						#elif	qWindows || qXWindows
-								const Led_SDK_Char* fileName
-						#endif
-					);
-		~FileReader ();
-
-	public:
-		const Byte*	GetFileStart () const;
-		const Byte* GetFileEnd () const;
-
-	private:
-		const Byte*	fFileDataStart;
-		const Byte*	fFileDataEnd;
-};
-
-
-
-
-
-
-
-/*
-@CLASS:			FileWriter
-@DESCRIPTION:	<p>This class creates the file if it doesn't exist. It truncates the file. Then use
-			the Append () method to append data to the file.</p>
-				<p>See also @'FileReader'</p>
-*/
-class	FileWriter {
-	public:
-		FileWriter (
-						#if		qMacOS
-							const FSSpec* fileName
-						#elif	qWindows || qXWindows
-								const Led_SDK_Char* fileName
-						#endif
-					);
-		~FileWriter ();
-
-	public:
-		void	Append (const Byte* data, size_t count);
-
-	private:
-		#if		qMacOS
-			short	fFD;
-		#else
-			int		fFD;
-		#endif
-};
 
 
 
@@ -1907,7 +1790,7 @@ namespace	Stroika {
 			fSize = nElements;
 			// very rare we'll need to grow past this limit. And we want to keep this routine small so it can be
 			// inlined. And put the rare, complex logic in other outofline function
-			if (nElements > (Led_NEltsOf (fBuffer))) {
+			if (nElements > (NEltsOf (fBuffer))) {
 				GrowToSize_ (nElements);
 			}
 		}
@@ -1918,12 +1801,12 @@ namespace	Stroika {
 				#pragma warn -8008
 				#pragma warn -8066
 			#endif
-			Require (nElements > (Led_NEltsOf (fBuffer)));
+			Require (nElements > (NEltsOf (fBuffer)));
 			// if we were using buffer, then assume whole thing, and if we malloced, save
 			// size in unused buffer
 			Assert (sizeof (fBuffer) >= sizeof (size_t));	// one customer changes the size of the buffer to 1, and wondered why it crashed...
 			size_t	oldEltCount	=	(fPointer == fBuffer)?
-										Led_NEltsOf (fBuffer):
+										NEltsOf (fBuffer):
 										*(size_t*)&fBuffer;
 			#if		qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
         			#pragma pop
@@ -2931,19 +2814,6 @@ FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
 			// require input is valid decimal digit value
 			Require (digitValue <= 9);
 			return (digitValue+'0');
-		}
-
-
-
-
-//	class	FileReader
-	inline	const Byte*	FileReader::GetFileStart () const
-		{
-			return fFileDataStart;
-		}
-	inline	const Byte* FileReader::GetFileEnd () const
-		{
-			return fFileDataEnd;
 		}
 
 

@@ -75,7 +75,7 @@ static	vector<pair<string,string> >	_mk_Color_Name_Table ()
 			pair<string,string> ("teal",	"008080"),
 			pair<string,string> ("aqua",	"00FFFF"),
 		};
-		return vector<pair<string,string> > (&kColorNameTable[0], &kColorNameTable[Led_NEltsOf (kColorNameTable)]);
+		return vector<pair<string,string> > (&kColorNameTable[0], &kColorNameTable[NEltsOf (kColorNameTable)]);
 	}
 static	vector<pair<string,string> >	kColorNameTable = _mk_Color_Name_Table ();
 #else
@@ -137,7 +137,7 @@ static	pair<string,string>	kColorNameTable [] = {
 					}
 				}
 			#else
-				for (size_t i = 0; i < Led_NEltsOf (kColorNameTable); ++i) {
+				for (size_t i = 0; i < NEltsOf (kColorNameTable); ++i) {
 					if (Led_CasedStringsEqual (colorStr, kColorNameTable[i].first)) {
 						colorStr = kColorNameTable[i].second;
 						break;
@@ -472,7 +472,7 @@ HTMLInfo::EntityRefMapEntry	HTMLInfo::sDefaultEntityRefMapTable[]	=	 {
 	EntityRefMapEntry ("lsaquo",	0x2039),
 	EntityRefMapEntry ("rsaquo",	0x203a),
 };
-const size_t		HTMLInfo::kDefaultEntityRefMapTable_Count	=	Led_NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
+const size_t		HTMLInfo::kDefaultEntityRefMapTable_Count	=	NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
 
 
 int	HTMLInfo::HTMLFontSizeToRealFontSize (int size)
@@ -2430,7 +2430,7 @@ bool	StyledTextIOWriter_HTML::IsTagOnStack (WriterContext& writerContext, const 
 					}
 				}
 			#else
-				for (size_t i = 0; i < Led_NEltsOf (kColorNameTable); ++i) {
+				for (size_t i = 0; i < NEltsOf (kColorNameTable); ++i) {
 					if (Led_CasedStringsEqual (buf, "\"" + kColorNameTable[i].second + "\"")) {
 						//result = "\'" + kColorNameTable[i].first + "\'";
 						result = kColorNameTable[i].first;

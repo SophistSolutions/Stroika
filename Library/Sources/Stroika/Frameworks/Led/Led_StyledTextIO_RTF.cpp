@@ -1238,7 +1238,7 @@ void	SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
 		}
 	}
 
-	if (fTCharsInSmallBuffer + nTChars < (Led_NEltsOf (fSmallBuffer))) {
+	if (fTCharsInSmallBuffer + nTChars < (NEltsOf (fSmallBuffer))) {
 		(void)::memcpy (&fSmallBuffer[fTCharsInSmallBuffer], text, nTChars*sizeof (Led_tChar));
 		fTCharsInSmallBuffer += nTChars;
 	}
@@ -1246,7 +1246,7 @@ void	SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
 		Flush ();
 		Assert (fTCharsInSmallBuffer == 0);
 
-		if (nTChars < (Led_NEltsOf (fSmallBuffer))) {
+		if (nTChars < (NEltsOf (fSmallBuffer))) {
 			(void)::memcpy (&fSmallBuffer[0], text, nTChars*sizeof (Led_tChar));
 			fTCharsInSmallBuffer = nTChars;
 		}
@@ -3034,7 +3034,7 @@ bool	StyledTextIOReader_RTF::HandleControlWord_UnknownControlWord (ReaderContext
 bool	StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
 {
 	// Lookup. If good, then insert special character, and return true. Else return false to handle normally.
-	for (size_t i = 0; i < Led_NEltsOf (kMappings); i++) {
+	for (size_t i = 0; i < NEltsOf (kMappings); i++) {
 		if (controlWord.fWord == kMappings[i].fControlWordName) {
 			CheckIfAboutToStartBody (readerContext);
 			#if		qWideCharacters
@@ -4114,7 +4114,7 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
 		pair<string,wchar_t> ("ldblquote",		0x201c),
 		pair<string,wchar_t> ("rdblquote",		0x201d),
 	};
-	SetCharactersSavedByName (vector<pair<string,wchar_t> > (&kCharsWrittenByName[0], &kCharsWrittenByName[Led_NEltsOf (kCharsWrittenByName)]));
+	SetCharactersSavedByName (vector<pair<string,wchar_t> > (&kCharsWrittenByName[0], &kCharsWrittenByName[NEltsOf (kCharsWrittenByName)]));
 }
 
 StyledTextIOWriter_RTF::~StyledTextIOWriter_RTF ()
@@ -5108,8 +5108,8 @@ void	StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
 				#elif	qWindows
 					LOGFONT	lf;
 					(void)::memset (&lf, 0, sizeof (lf));
-					(void)::_tcsncpy (lf.lfFaceName, name.c_str (), Led_NEltsOf (lf.lfFaceName)-1);
-					lf.lfFaceName[Led_NEltsOf (lf.lfFaceName)-1] = '\0';
+					(void)::_tcsncpy (lf.lfFaceName, name.c_str (), NEltsOf (lf.lfFaceName)-1);
+					lf.lfFaceName[NEltsOf (lf.lfFaceName)-1] = '\0';
 					lf.lfCharSet = DEFAULT_CHARSET;
 					BYTE	useCharset	=	DEFAULT_CHARSET;
 					::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, (long)&useCharset, 0);

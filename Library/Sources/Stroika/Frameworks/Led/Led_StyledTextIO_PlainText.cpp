@@ -130,13 +130,13 @@ void	StyledTextIOWriter_PlainText::Write ()
 {
 	Led_tChar	buf[8*1024];
 	size_t	bytesRead	=	0;
-	while ( (bytesRead = GetSrcStream ().readNTChars (buf, Led_NEltsOf (buf))) != 0 ) {
+	while ( (bytesRead = GetSrcStream ().readNTChars (buf, NEltsOf (buf))) != 0 ) {
 		#if		qMacOS || qXWindows
-			Led_tChar	buf2[Led_NEltsOf (buf)];
+			Led_tChar	buf2[NEltsOf (buf)];
 		#elif	qWindows
-			Led_tChar	buf2[2*Led_NEltsOf (buf)];
+			Led_tChar	buf2[2*NEltsOf (buf)];
 		#endif
-		bytesRead = Led_NLToNative (buf, bytesRead, buf2, Led_NEltsOf (buf2));
+		bytesRead = Led_NLToNative (buf, bytesRead, buf2, NEltsOf (buf2));
 		#if		qWideCharacters
 			Led_SmallStackBuffer<char>	ansiBuf (bytesRead * sizeof (Led_tChar));
 #if 1

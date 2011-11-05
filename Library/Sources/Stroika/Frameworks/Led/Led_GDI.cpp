@@ -3475,10 +3475,10 @@ wstring	Led_IME::GetCompositionResultStringW (HWND hWnd)
 		DWORD	hImc	=	NULL;
 		if ((hImc = fImmGetContext (hWnd)) != NULL) {
 			wchar_t	curIMEString[2048];
-			LONG nChars  =	fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, Led_NEltsOf (curIMEString));
+			LONG nChars  =	fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, NEltsOf (curIMEString));
 
 			nChars /= sizeof (wchar_t);		// why???? LGP 991214
-			if (nChars >= 0 and nChars < Led_NEltsOf (curIMEString)) {
+			if (nChars >= 0 and nChars < NEltsOf (curIMEString)) {
 				curIMEString[nChars] = '\0';
 			}
 			else {
