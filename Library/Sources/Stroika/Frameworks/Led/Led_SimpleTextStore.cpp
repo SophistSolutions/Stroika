@@ -37,7 +37,7 @@ namespace	Stroika {
 				}
 
 		public:
-			LED_DECLARE_USE_BLOCK_ALLOCATION (SimpleTextStoreMarkerHook);
+			DECLARE_USE_BLOCK_ALLOCATION (SimpleTextStoreMarkerHook);
 
 		public:
 			virtual		MarkerOwner*	GetOwner () const override;

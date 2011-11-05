@@ -5542,7 +5542,7 @@ WordProcessor::StandardStyledTextIOSrcStream*	WordProcessorFlavorPackageExternal
 			typedef	InteractiveReplaceCommand	inherited;
 
 		public:
-			LED_DECLARE_USE_BLOCK_ALLOCATION(TableCMD);
+			DECLARE_USE_BLOCK_ALLOCATION(TableCMD);
 
 		public:
 			TableCMD (size_t tableAt, size_t tRow, size_t tCol, SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName):

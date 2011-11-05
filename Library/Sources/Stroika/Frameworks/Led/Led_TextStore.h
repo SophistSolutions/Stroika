@@ -495,7 +495,7 @@ class	TextStore::SimpleUpdater {
 		~SimpleUpdater ();
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION (SimpleUpdater);
+		DECLARE_USE_BLOCK_ALLOCATION (SimpleUpdater);
 
 	public:
 		nonvirtual	void	Cancel ();

@@ -290,7 +290,7 @@ class	HidableTextMarkerOwner::FontSpecHidableTextMarker :
 		FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo);
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION(FontSpecHidableTextMarker);
+		DECLARE_USE_BLOCK_ALLOCATION(FontSpecHidableTextMarker);
 
 	protected:
 		virtual		Led_FontSpecification		MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
@@ -330,7 +330,7 @@ class	HidableTextMarkerOwner::LightUnderlineHidableTextMarker :
 		virtual		Led_Color	GetUnderlineBaseColor () const override;
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION(LightUnderlineHidableTextMarker);
+		DECLARE_USE_BLOCK_ALLOCATION(LightUnderlineHidableTextMarker);
 };
 
 

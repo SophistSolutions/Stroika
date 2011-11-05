@@ -167,7 +167,7 @@ class	Partition::PartitionMarker : public Marker {
 		PartitionMarker (Partition& owner, PartitionMarker* insertAfterMe);	// if insertAfter==NULL then prepend
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION (PartitionMarker);
+		DECLARE_USE_BLOCK_ALLOCATION (PartitionMarker);
 
 	// Calls Partition::UpdatePartitions ()
 	public:

@@ -6,6 +6,9 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/BlockAllocated.h"
+
+
 /*
 @MODULE:	Command
 @DESCRIPTION:
@@ -364,7 +367,7 @@ class	InteractiveReplaceCommand::SavedTextRep {
 @BASES:			@'InteractiveReplaceCommand::SavedTextRep'
 @DESCRIPTION:	<p>Keep track of only the text, and no font, or misc embedding info. On its
 			@'InteractiveReplaceCommand::SavedTextRep::InsertSelf' call, it uses @'TextInteractor::Replace'</p>
-				<p>Note that this class uses @'LED_DECLARE_USE_BLOCK_ALLOCATION' - so be carefull when subclass.
+				<p>Note that this class uses @'DECLARE_USE_BLOCK_ALLOCATION' - so be carefull when subclass.
 			</p>
 */
 class	InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand::SavedTextRep {
@@ -376,7 +379,7 @@ class	InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand
 		~PlainTextRep ();
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION(PlainTextRep);
+		DECLARE_USE_BLOCK_ALLOCATION(PlainTextRep);
 
 	public:
 		virtual		size_t	GetLength () const override;

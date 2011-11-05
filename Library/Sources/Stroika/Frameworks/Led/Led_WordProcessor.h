@@ -1632,7 +1632,7 @@ class	WordProcessor::Table::CellRep : public MarkerOwner {
 		~CellRep ();
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION (CellRep);
+		DECLARE_USE_BLOCK_ALLOCATION (CellRep);
 
 	public:
 		virtual		TextStore*	PeekAtTextStore () const override;
@@ -1799,7 +1799,7 @@ class	WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand:
 #endif
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION (SavedTextRepWSel);
+		DECLARE_USE_BLOCK_ALLOCATION (SavedTextRepWSel);
 
 	public:
 		enum	WPRelativeFlag { eWPDirect, eWPAbove };

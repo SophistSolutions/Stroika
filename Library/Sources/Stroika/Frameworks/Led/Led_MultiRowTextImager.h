@@ -349,7 +349,7 @@ class	MultiRowTextImager::PartitionElementCacheInfo {
 				RowHeight_*		fRowHeightArray;
 
 			public:
-				LED_DECLARE_USE_BLOCK_ALLOCATION (Rep);
+				DECLARE_USE_BLOCK_ALLOCATION (Rep);
 
 			private:
 				Rep (const Rep&);				//	intentionally not defined

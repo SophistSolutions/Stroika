@@ -378,7 +378,7 @@ class	TrivialFontSpecStyleMarker : public SimpleStyleMarkerByIncrementalFontSpec
 		virtual		int		GetPriority () const override;
 
 	public:
-		LED_DECLARE_USE_BLOCK_ALLOCATION (TrivialFontSpecStyleMarker);
+		DECLARE_USE_BLOCK_ALLOCATION (TrivialFontSpecStyleMarker);
 };
 
 
