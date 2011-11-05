@@ -6,6 +6,7 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -373,10 +374,10 @@ class	TextStore : public virtual MarkerOwner {
 
 
 	public:
-		nonvirtual	Led_RefCntPtr<TextBreaks>	GetTextBreaker () const;
-		nonvirtual	void						SetTextBreaker (const Led_RefCntPtr<TextBreaks>& textBreaker);
+		nonvirtual	Foundation::Memory::SharedPtr<TextBreaks>	GetTextBreaker () const;
+		nonvirtual	void							SetTextBreaker (const Foundation::Memory::SharedPtr<TextBreaks>& textBreaker);
 	private:
-		mutable	Led_RefCntPtr<TextBreaks>	fTextBreaker;
+		mutable	Foundation::Memory::SharedPtr<TextBreaks>	fTextBreaker;
 
 	public:
 		nonvirtual	void	FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = NULL);
@@ -845,17 +846,17 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 		}
 	/*
 	@METHOD:		TextStore::GetTextBreaker
-	@DESCRIPTION:	<p>Returns a @'Led_RefCntPtr<T>' wrapper on the @'TextBreaks' subclass associated
+	@DESCRIPTION:	<p>Returns a @'Memory::SharedPtr<T>' wrapper on the @'TextBreaks' subclass associated
 				with this TextStore. This
 				procedure can be changed at any time (though if any information in other parts of Led is cached and dependent on this procedures
 				results - you may wish to invalidate those caches).</p>
 					<p>If none is associated with the TextStore right now - and default one is built and returned.</p>
 					<p>See also See @'TextStore::SetTextBreaker'.</p>
 	*/
-	inline	Led_RefCntPtr<TextBreaks>	TextStore::GetTextBreaker () const
+	inline	Foundation::Memory::SharedPtr<TextBreaks>	TextStore::GetTextBreaker () const
 		{
 			if (fTextBreaker.IsNull ()) {
-				fTextBreaker = Led_RefCntPtr<TextBreaks> (new TextBreaks_DefaultImpl ());
+				fTextBreaker = Foundation::Memory::SharedPtr<TextBreaks> (new TextBreaks_DefaultImpl ());
 			}
 			return fTextBreaker;
 		}
@@ -863,7 +864,7 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 	@METHOD:		TextStore::SetTextBreaker
 	@DESCRIPTION:	<p>See @'TextStore::GetTextBreaker'.</p>
 	*/
-	inline	void	TextStore::SetTextBreaker (const Led_RefCntPtr<TextBreaks>& textBreaker)
+	inline	void	TextStore::SetTextBreaker (const Foundation::Memory::SharedPtr<TextBreaks>& textBreaker)
 		{
 			fTextBreaker = textBreaker;
 		}

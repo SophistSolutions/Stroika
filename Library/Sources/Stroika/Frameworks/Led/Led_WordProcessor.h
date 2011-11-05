@@ -6,6 +6,8 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 /*
 @MODULE:	WordProcessor
 @DESCRIPTION:
@@ -134,10 +136,10 @@ class	WordProcessor : public StandardStyledWordWrappedTextInteractor {
 		class		ParagraphDatabaseRep;
 		/*
 		@CLASS:			WordProcessor::ParagraphDatabasePtr
-		@BASES:			@'Led_RefCntPtr<T>', (T=@'WordProcessor::AbstractParagraphDatabaseRep')
-		@DESCRIPTION:	<p>A Led_RefCntPtr (smart pointer) to a @'WordProcessor::AbstractParagraphDatabaseRep'.</p>
+		@BASES:			@'Memory::SharedPtr<T>', (T=@'WordProcessor::AbstractParagraphDatabaseRep')
+		@DESCRIPTION:	<p>A Memory::SharedPtr (smart pointer) to a @'WordProcessor::AbstractParagraphDatabaseRep'.</p>
 		*/
-		typedef	Led_RefCntPtr<AbstractParagraphDatabaseRep>	ParagraphDatabasePtr;
+		typedef	Foundation::Memory::SharedPtr<AbstractParagraphDatabaseRep>	ParagraphDatabasePtr;
 		nonvirtual	ParagraphDatabasePtr			GetParagraphDatabase () const;
 		nonvirtual	void							SetParagraphDatabase (const ParagraphDatabasePtr& paragraphDatabase);
 	private:
@@ -152,10 +154,10 @@ class	WordProcessor : public StandardStyledWordWrappedTextInteractor {
 	public:
 		/*
 		@CLASS:			WordProcessor::HidableTextDatabasePtr
-		@BASES:			@'Led_RefCntPtr<T>', (T=@'HidableTextMarkerOwner')
-		@DESCRIPTION:	<p>A Led_RefCntPtr (smart pointer) to a @'HidableTextMarkerOwner'.</p>
+		@BASES:			@'Memory::SharedPtr<T>', (T=@'HidableTextMarkerOwner')
+		@DESCRIPTION:	<p>A Memory::SharedPtr (smart pointer) to a @'HidableTextMarkerOwner'.</p>
 		*/
-		typedef	Led_RefCntPtr<HidableTextMarkerOwner>	HidableTextDatabasePtr;
+		typedef	Foundation::Memory::SharedPtr<HidableTextMarkerOwner>	HidableTextDatabasePtr;
 		nonvirtual	HidableTextDatabasePtr	GetHidableTextDatabase () const;
 		nonvirtual	void					SetHidableTextDatabase (const HidableTextDatabasePtr& hidableTextDatabase);
 	private:
@@ -167,8 +169,8 @@ class	WordProcessor : public StandardStyledWordWrappedTextInteractor {
 		nonvirtual	void		HookHidableTextDatabaseChanged_ ();
 
 	protected:
-		virtual		Led_RefCntPtr<FlavorPackageInternalizer>	MakeDefaultInternalizer () override;
-		virtual		Led_RefCntPtr<FlavorPackageExternalizer>	MakeDefaultExternalizer () override;
+		virtual		Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	MakeDefaultInternalizer () override;
+		virtual		Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	MakeDefaultExternalizer () override;
 	protected:
 		virtual		void	HookInternalizerChanged () override;
 		virtual		void	HookExternalizerChanged () override;
@@ -828,7 +830,7 @@ class	WordProcessor::AbstractParagraphDatabaseRep :	public virtual MarkerOwner {
 		AbstractParagraphDatabaseRep ();
 
 	public:
-		typedef	Led_RefCntPtr<Partition>	PartitionPtr;
+		typedef	Foundation::Memory::SharedPtr<Partition>	PartitionPtr;
 		virtual	PartitionPtr	GetPartition () const								= 0;
 		virtual	void			SetPartition (const PartitionPtr& partitionPtr)		= 0;
 
@@ -867,7 +869,7 @@ class	WordProcessor::ParagraphDatabaseRep :	public WordProcessor::AbstractParagr
 		ParagraphDatabaseRep (TextStore& textStore);
 
 	public:
-		typedef	Led_RefCntPtr<Partition>	PartitionPtr;
+		typedef	Foundation::Memory::SharedPtr<Partition>	PartitionPtr;
 		virtual		PartitionPtr	GetPartition () const override;
 		virtual		void			SetPartition (const PartitionPtr& partitionPtr) override;
 	private:
@@ -1278,7 +1280,7 @@ class	WordProcessor::Table : public SimpleEmbeddedObjectStyleMarker {
 		class	CellRep;
 
 	private:
-		friend	class	Led_RefCntPtr<CellRep>;
+		friend	class	Foundation::Memory::SharedPtr<CellRep>;
 
 	public:
 		virtual		void			DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
@@ -1612,7 +1614,7 @@ class	WordProcessor::Table::Cell {
 		nonvirtual	void		SetCachedBoundsRect (Led_Rect r);
 
 	public:
-		Led_RefCntPtr<CellRep>	fCellRep;
+		Foundation::Memory::SharedPtr<CellRep>	fCellRep;
 };
 
 

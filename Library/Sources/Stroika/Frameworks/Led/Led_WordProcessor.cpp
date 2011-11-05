@@ -248,7 +248,7 @@ ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore):
 {
 	//tmphack test - see if this fixes SPR#1129
 	// LGP 2002-10-19 - didnt appear to work so probably get rid of it - but test some more!!!
-	SetPartition (new WordProcessor::WPPartition (GetTextStore (), *this));
+	SetPartition (PartitionPtr (new WordProcessor::WPPartition (GetTextStore (), *this)));
 }
 
 void	ParagraphDatabaseRep::SetPartition (const PartitionPtr& partitionPtr)
@@ -985,18 +985,18 @@ void	WordProcessor::HookLosingTextStore_ ()
 	if (fICreatedParaDB) {
 		fICreatedParaDB = false;
 		if (not fParagraphDatabase.IsNull ()) {
-			fParagraphDatabase = NULL;	// Cannot call WordProcessor::SetParagraphDatabase (NULL) cuz that might build a NEW one
+			fParagraphDatabase.clear ();	// Cannot call WordProcessor::SetParagraphDatabase (NULL) cuz that might build a NEW one
 			HookParagraphDatabaseChanged ();
 		}
 	}
 	if (fICreatedHidableTextDB) {
-		SetHidableTextDatabase (NULL);
+		SetHidableTextDatabase (HidableTextDatabasePtr ());
 		fICreatedHidableTextDB = false;
 	}
 	//to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
 	if (not fHidableTextDatabase.IsNull ()) {
-		fHidableTextDatabase->SetInternalizer (NULL);
-		fHidableTextDatabase->SetExternalizer (NULL);
+		fHidableTextDatabase->SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());
+		fHidableTextDatabase->SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());
 	}
 }
 
@@ -1016,10 +1016,10 @@ void	WordProcessor::HookGainedNewTextStore ()
 void	WordProcessor::HookGainedNewTextStore_ ()
 {
 	if (fParagraphDatabase.IsNull ()) {
-		SetParagraphDatabase (NULL);	// fills in default value since we have e textstore...
+		SetParagraphDatabase (ParagraphDatabasePtr ());	// fills in default value since we have e textstore...
 	}
 	if (fHidableTextDatabase.IsNull ()) {
-		SetHidableTextDatabase (new UniformHidableTextMarkerOwner (GetTextStore ()));	// fills in default value since we have e textstore...
+		SetHidableTextDatabase (HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (GetTextStore ())));	// fills in default value since we have e textstore...
 		fICreatedHidableTextDB = true;													// do this AFTER above call - cuz WordProcessor::SetHidableTextDatabase () sets flag FALSE (so for case when others call it)
 	}
 }
@@ -1029,11 +1029,11 @@ PartitioningTextImager::PartitionPtr	WordProcessor::MakeDefaultPartition () cons
 // Probably no point in overriding this anymore - LGP 2002-10-20 -- RETHINK??? Perhaps no harm - either...
 	RequireNotNull (PeekAtTextStore ());
 	if (fParagraphDatabase.IsNull ()) {
-		return new LineBasedPartition (GetTextStore ());
+		return PartitionPtr (new LineBasedPartition (GetTextStore ()));
 	}
 	else {
 		const MarkerOwner*	mo	=	fParagraphDatabase;
-		return (new WPPartition (GetTextStore (), *const_cast<MarkerOwner*> (mo)));
+		return PartitionPtr (new WPPartition (GetTextStore (), *const_cast<MarkerOwner*> (mo)));
 	}
 }
 
@@ -1051,7 +1051,7 @@ void	WordProcessor::SetParagraphDatabase (const ParagraphDatabasePtr& paragraphD
 	fParagraphDatabase = paragraphDatabase;
 	fICreatedParaDB = false;
 	if (fParagraphDatabase.IsNull () and PeekAtTextStore () != NULL) {
-		fParagraphDatabase = new ParagraphDatabaseRep (GetTextStore ());
+		fParagraphDatabase = ParagraphDatabasePtr (new ParagraphDatabaseRep (GetTextStore ()));
 		fICreatedParaDB = true;
 	}
 	//Any newly assigned fParagraphDatabase better share the same Partition we do!
@@ -1107,8 +1107,8 @@ void	WordProcessor::SetHidableTextDatabase (const HidableTextDatabasePtr& hidabl
 {
 	//to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
 	if (not fHidableTextDatabase.IsNull ()) {
-		fHidableTextDatabase->SetInternalizer (NULL);
-		fHidableTextDatabase->SetExternalizer (NULL);
+		fHidableTextDatabase->SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());
+		fHidableTextDatabase->SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());
 	}
 
 	fHidableTextDatabase = hidableTextDatabase;
@@ -1142,14 +1142,14 @@ void	WordProcessor::HookHidableTextDatabaseChanged_ ()
 	}
 }
 
-Led_RefCntPtr<FlavorPackageInternalizer>	WordProcessor::MakeDefaultInternalizer ()
+Memory::SharedPtr<FlavorPackageInternalizer>	WordProcessor::MakeDefaultInternalizer ()
 {
-	return new WordProcessorFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ());
+	return Memory::SharedPtr<FlavorPackageInternalizer> (new WordProcessorFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
 }
 
-Led_RefCntPtr<FlavorPackageExternalizer>	WordProcessor::MakeDefaultExternalizer ()
+Memory::SharedPtr<FlavorPackageExternalizer>	WordProcessor::MakeDefaultExternalizer ()
 {
-	return new WordProcessorFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ());
+	return Memory::SharedPtr<FlavorPackageExternalizer> (new WordProcessorFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
 }
 
 /*
@@ -7599,9 +7599,9 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable):
 {
 	fTextStore = new SimpleTextStore ();
 	fTextStore->AddMarkerOwner (this);
-	fStyleDatabase = new StyleDatabaseRep (*fTextStore);
-	fParagraphDatabase	= new ParagraphDatabaseRep (*fTextStore);
-	fHidableTextDatabase = new UniformHidableTextMarkerOwner (*fTextStore);
+	fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (*fTextStore));
+	fParagraphDatabase	= ParagraphDatabasePtr (new ParagraphDatabaseRep (*fTextStore));
+	fHidableTextDatabase = HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (*fTextStore));
 }
 
 WordProcessor::Table::CellRep::~CellRep ()
@@ -7609,10 +7609,10 @@ WordProcessor::Table::CellRep::~CellRep ()
 	Require (fStyleDatabase.CurrentRefCount () == 1);		// hack to debug SPR#1465
 	Require (fParagraphDatabase.CurrentRefCount () == 1);	// ''
 	Require (fHidableTextDatabase.CurrentRefCount () == 1);	// ''
-	fStyleDatabase = NULL;
-	fParagraphDatabase	= NULL;
-	fHidableTextDatabase = NULL;
-	if (fTextStore != NULL) {
+	fStyleDatabase.clear ();
+	fParagraphDatabase.clear ();
+	fHidableTextDatabase.clear ();
+	if (fTextStore != nullptr) {
 		fTextStore->RemoveMarkerOwner (this);
 	}
 	delete fTextStore;

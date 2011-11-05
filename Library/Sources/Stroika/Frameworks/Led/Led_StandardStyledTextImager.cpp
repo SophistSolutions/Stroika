@@ -106,7 +106,7 @@ void	StandardStyledTextImager::HookLosingTextStore_ ()
 	if (fICreatedDatabase) {
 		fICreatedDatabase = false;
 		if (not fStyleDatabase.IsNull ()) {
-			fStyleDatabase = NULL;
+			fStyleDatabase = StyleDatabasePtr ();
 			HookStyleDatabaseChanged ();
 		}
 	}
@@ -121,7 +121,7 @@ void	StandardStyledTextImager::HookGainedNewTextStore ()
 void	StandardStyledTextImager::HookGainedNewTextStore_ ()
 {
 	if (fStyleDatabase.IsNull ()) {
-		fStyleDatabase = new StyleDatabaseRep (GetTextStore ());
+		fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
 		fICreatedDatabase = true;
 		HookStyleDatabaseChanged ();
 	}
@@ -132,7 +132,7 @@ void	StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDa
 	fStyleDatabase = styleDatabase;
 	fICreatedDatabase = false;
 	if (fStyleDatabase.IsNull () and PeekAtTextStore () != NULL) {
-		fStyleDatabase = new StyleDatabaseRep (GetTextStore ());
+		fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
 		fICreatedDatabase = true;
 	}
 	HookStyleDatabaseChanged ();

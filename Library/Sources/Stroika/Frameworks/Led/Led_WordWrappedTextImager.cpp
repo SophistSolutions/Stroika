@@ -6,6 +6,8 @@
 #include	<cctype>
 
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 
 #include	"Led_WordWrappedTextImager.h"
 
@@ -388,7 +390,7 @@ size_t	WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
 
 	Assert (wrapLength <= length);
 
-	Led_RefCntPtr<TextBreaks>	breaker	=	GetTextStore ().GetTextBreaker ();
+	Memory::SharedPtr<TextBreaks>	breaker	=	GetTextStore ().GetTextBreaker ();
 
 	/*
 	 *	We take a bit of text here - and decide the proper position in the text to make the break.

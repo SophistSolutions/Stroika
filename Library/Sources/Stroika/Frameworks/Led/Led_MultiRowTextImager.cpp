@@ -63,7 +63,7 @@ void	MultiRowTextImager::HookLosingTextStore ()
 
 void	MultiRowTextImager::HookLosingTextStore_ ()
 {
-	SetPartition (NULL);
+	SetPartition (PartitionPtr ());
 }
 
 void	MultiRowTextImager::HookGainedNewTextStore ()
@@ -93,7 +93,7 @@ void	MultiRowTextImager::SetPartition (const PartitionPtr& partitionPtr)
 	}
 	else {
 		#if		qAutoPtrBrokenBug
-			fPMCacheMgr = Led_RefCntPtr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
+			fPMCacheMgr = Memory::SharedPtr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
 		#else
 			fPMCacheMgr = auto_ptr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
 		#endif
@@ -107,7 +107,7 @@ InvalidateTotalRowsInWindow ();
 
 PartitioningTextImager::PartitionPtr	MultiRowTextImager::MakeDefaultPartition () const
 {
-	return new LineBasedPartition (GetTextStore ());
+	return PartitionPtr (new LineBasedPartition (GetTextStore ()));
 }
 
 MultiRowTextImager::PartitionElementCacheInfo	MultiRowTextImager::GetPartitionElementCacheInfo (Partition::PartitionMarker* pm) const
@@ -1365,7 +1365,7 @@ size_t	MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, s
  */
 void	MultiRowTextImager::PartitionElementCacheInfo::Clear ()
 {
-	fRep = new Rep ();
+	fRep = Memory::SharedPtr<Rep> (new Rep ());
 }
 
 void	MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight)
@@ -1437,7 +1437,7 @@ MultiRowTextImager::PMInfoCacheMgr::PMInfoCacheMgr (MultiRowTextImager& imager):
 	Assert (not part.IsNull ());
 	part->AddPartitionWatcher (this);
 	#if		qAutoPtrBrokenBug
-		fMyMarker = Led_RefCntPtr<MyMarker> (new MyMarker (*this));
+		fMyMarker = Memory::SharedPtr<MyMarker> (new MyMarker (*this));
 	#else
 		fMyMarker = auto_ptr<MyMarker> (new MyMarker (*this));
 	#endif

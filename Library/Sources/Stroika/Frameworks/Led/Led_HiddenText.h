@@ -6,6 +6,9 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
+
 /*
 @MODULE:	HiddenText
 @DESCRIPTION:
@@ -83,16 +86,16 @@ class	HidableTextMarkerOwner : public MarkerOwner {
 
 
 	public:
-		nonvirtual	Led_RefCntPtr<FlavorPackageInternalizer>	GetInternalizer () const;
-		nonvirtual	void										SetInternalizer (const Led_RefCntPtr<FlavorPackageInternalizer>& i);
+		nonvirtual	Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	GetInternalizer () const;
+		nonvirtual	void										SetInternalizer (const Foundation::Memory::SharedPtr<FlavorPackageInternalizer>& i);
 	private:
-		Led_RefCntPtr<FlavorPackageInternalizer>	fInternalizer;
+		Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	fInternalizer;
 
 	public:
-		nonvirtual	Led_RefCntPtr<FlavorPackageExternalizer>	GetExternalizer () const;
-		nonvirtual	void										SetExternalizer (const Led_RefCntPtr<FlavorPackageExternalizer>& e);
+		nonvirtual	Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	GetExternalizer () const;
+		nonvirtual	void										SetExternalizer (const Foundation::Memory::SharedPtr<FlavorPackageExternalizer>& e);
 	private:
-		Led_RefCntPtr<FlavorPackageExternalizer>	fExternalizer;
+		Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	fExternalizer;
 
 	protected:
 		class	HidableTextMarker;
@@ -376,11 +379,11 @@ class	ColoredUniformHidableTextMarkerOwner : public UniformHidableTextMarkerOwne
  ********************************************************************************
  */
 //	class	HidableTextMarkerOwner
-	inline	Led_RefCntPtr<FlavorPackageInternalizer>	HidableTextMarkerOwner::GetInternalizer () const
+	inline	Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	HidableTextMarkerOwner::GetInternalizer () const
 		{
 			return fInternalizer;
 		}
-	inline	Led_RefCntPtr<FlavorPackageExternalizer>	HidableTextMarkerOwner::GetExternalizer () const
+	inline	Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	HidableTextMarkerOwner::GetExternalizer () const
 		{
 			return fExternalizer;
 		}

@@ -6,6 +6,7 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -251,7 +252,7 @@ class	TextLayoutBlock_Copy : public TextLayoutBlock {
 			const ScriptRunElt*	fScriptRunsEnd;
 			// and we allocate extra space off the end of this object for the acutal data...
 		};
-		Led_RefCntPtr<BlockRep>	fRep;
+		Foundation::Memory::SharedPtr<BlockRep>	fRep;
 };
 
 

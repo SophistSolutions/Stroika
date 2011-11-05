@@ -909,7 +909,7 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from):
 	neededSize += sizeof (Led_tChar) * strLength;				// fRealText
 	neededSize += sizeof (Led_tChar) * strLength;				// fVirtualText
 	neededSize += sizeof (ScriptRunElt) * scriptRuns.size ();	// fScriptRuns
-	fRep = Led_RefCntPtr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte [neededSize]));
+	fRep = Memory::SharedPtr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte [neededSize]));
 
 	fRep->fTextLength = strLength;
 

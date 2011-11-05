@@ -6,6 +6,8 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 /*
 @MODULE:	MultiRowTextImager
 @DESCRIPTION:
@@ -107,7 +109,7 @@ class	MultiRowTextImager : public PartitioningTextImager {
 	private:
 		class	PMInfoCacheMgr;
 		#if		qAutoPtrBrokenBug
-			Led_RefCntPtr<PMInfoCacheMgr>	fPMCacheMgr;
+			Foundation::Memory::SharedPtr<PMInfoCacheMgr>	fPMCacheMgr;
 		#else
 			auto_ptr<PMInfoCacheMgr>		fPMCacheMgr;
 		#endif
@@ -354,11 +356,11 @@ class	MultiRowTextImager::PartitionElementCacheInfo {
 				void operator= (const Rep&);	//	ditto
 		};
 	private:
-		Led_RefCntPtr<Rep>	fRep;
+		Foundation::Memory::SharedPtr<Rep>	fRep;
 
 	private:
 		friend	struct	Rep;
-		friend	class	Led_RefCntPtr<Rep>;
+		friend	class	Foundation::Memory::SharedPtr<Rep>;
 };
 
 
@@ -403,7 +405,7 @@ class	MultiRowTextImager::PMInfoCacheMgr : public Partition::PartitionWatcher {
 		mutable	PartitionElementCacheInfo						fCurFillCacheInfo;
 		MultiRowTextImager&										fImager;
 		#if		qAutoPtrBrokenBug
-			Led_RefCntPtr<MyMarker>								fMyMarker;
+			Foundation::Memory::SharedPtr<MyMarker>								fMyMarker;
 		#else
 			auto_ptr<MyMarker>									fMyMarker;
 		#endif

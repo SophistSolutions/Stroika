@@ -150,8 +150,8 @@ class	StandardStyledTextInteractor : public virtual TextInteractor, public Stand
 		virtual		void	HookStyleDatabaseChanged () override;
 
 	protected:
-		virtual		Led_RefCntPtr<FlavorPackageInternalizer>	MakeDefaultInternalizer () override;
-		virtual		Led_RefCntPtr<FlavorPackageExternalizer>	MakeDefaultExternalizer () override;
+		virtual		Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	MakeDefaultInternalizer () override;
+		virtual		Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	MakeDefaultExternalizer () override;
 
 	protected:
 		virtual		bool	ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) override;

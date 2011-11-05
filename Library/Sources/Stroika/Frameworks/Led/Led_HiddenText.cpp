@@ -5,6 +5,8 @@
 
 #include	<iterator>
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 #include	"Led_Config.h"
 
 #if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -17,7 +19,7 @@
 
 
 
-
+using	namespace	Stroika::Foundation;
 
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
@@ -51,8 +53,8 @@ HidableTextMarkerOwner::HidableTextMarkerOwner (TextStore& textStore):
 	fTextStore (textStore),
 	fMarkersToBeDeleted ()
 {
-	SetInternalizer (NULL);	// sets default
-	SetExternalizer (NULL);	// DITTO
+	SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());	// sets default
+	SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());	// DITTO
 	fTextStore.AddMarkerOwner (this);
 }
 
@@ -361,11 +363,11 @@ bool	HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t to
 @DESCRIPTION:	<p>Sets the internalizer (@'FlavorPackageInternalizer' subclass). to be used with this class.
 	It defaults to @'FlavorPackageInternalizer'.</p>
 */
-void	HidableTextMarkerOwner::SetInternalizer (const Led_RefCntPtr<FlavorPackageInternalizer>& i)
+void	HidableTextMarkerOwner::SetInternalizer (const Memory::SharedPtr<FlavorPackageInternalizer>& i)
 {
 	fInternalizer = i;
 	if (fInternalizer.IsNull ()) {
-		fInternalizer = new FlavorPackageInternalizer (GetTextStore ());;
+		fInternalizer = Memory::SharedPtr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
 	}
 }
 
@@ -374,11 +376,11 @@ void	HidableTextMarkerOwner::SetInternalizer (const Led_RefCntPtr<FlavorPackageI
 @DESCRIPTION:	<p>Sets the externalizer (@'FlavorPackageExternalizer' subclass). to be used with this class.
 	It defaults to @'FlavorPackageExternalizer'.</p>
 */
-void	HidableTextMarkerOwner::SetExternalizer (const Led_RefCntPtr<FlavorPackageExternalizer>& e)
+void	HidableTextMarkerOwner::SetExternalizer (const Memory::SharedPtr<FlavorPackageExternalizer>& e)
 {
 	fExternalizer = e;
 	if (fExternalizer.IsNull ()) {
-		fExternalizer = new FlavorPackageExternalizer (GetTextStore ());;
+		fExternalizer = Memory::SharedPtr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
 	}
 }
 

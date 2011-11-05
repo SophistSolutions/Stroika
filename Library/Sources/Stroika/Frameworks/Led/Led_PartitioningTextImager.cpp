@@ -418,7 +418,7 @@ void	PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr)
 	#if		qCacheTextMeasurementsForPM
 		if (not partitionPtr.IsNull ()) {
 			#if		qAutoPtrBrokenBug
-				fMeasureTextCache = Led_RefCntPtr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
+				fMeasureTextCache = Memory::SharedPtr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
 			#else
 				fMeasureTextCache = auto_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
 			#endif

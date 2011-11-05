@@ -1356,8 +1356,8 @@ void	TextInteractor::HookLosingTextStore ()
 void	TextInteractor::HookLosingTextStore_ ()
 {
 	AbortReplace (fTmpPreReplaceInfo);
-	fExternalizer = NULL;
-	fInternalizer = NULL;
+	fExternalizer.clear ();
+	fInternalizer.clear ();
 }
 
 void	TextInteractor::HookGainedNewTextStore ()
@@ -2987,9 +2987,9 @@ void	TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPack
 	to make a different subclass, which supports different style and file formats from the (simple) default.</p>
 		<p>By default, this creates a @'FlavorPackageInternalizer'.</p>
 */
-Led_RefCntPtr<FlavorPackageInternalizer>	TextInteractor::MakeDefaultInternalizer ()
+Memory::SharedPtr<FlavorPackageInternalizer>	TextInteractor::MakeDefaultInternalizer ()
 {
-	return new FlavorPackageInternalizer (GetTextStore ());
+	return Memory::SharedPtr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
 }
 
 /*
@@ -3026,9 +3026,9 @@ void	TextInteractor::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage)
 	to make a different subclass, which supports different style and file formats from the (simple) default.</p>
 		<p>By default, this creates a @'FlavorPackageExternalizer'.</p>
 */
-Led_RefCntPtr<FlavorPackageExternalizer>	TextInteractor::MakeDefaultExternalizer ()
+Memory::SharedPtr<FlavorPackageExternalizer>	TextInteractor::MakeDefaultExternalizer ()
 {
-	return new FlavorPackageExternalizer (GetTextStore ());
+	return Memory::SharedPtr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
 }
 
 /*

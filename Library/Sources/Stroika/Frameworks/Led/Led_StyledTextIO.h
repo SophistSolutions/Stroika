@@ -6,6 +6,8 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 
 /*
 @MODULE:	StyledTextIO
@@ -117,7 +119,7 @@ class	StyledTextIOReader {
 		class	BadInputHandler;
 
 	protected:
-		StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Led_RefCntPtr<BadInputHandler>& badInputHander = NULL);	// callers responsability to destroy srcStream/sinkStream
+		StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHander = Foundation::Memory::SharedPtr<BadInputHandler> ());	// callers responsability to destroy srcStream/sinkStream
 
 
 	// The Read() method must be overriden by one subclass to provide the format interpretation
@@ -167,10 +169,10 @@ class	StyledTextIOReader {
 		SinkStream*							fSinkStream;
 
 	public:
-		nonvirtual	Led_RefCntPtr<BadInputHandler>	GetBadInputHandler () const;
-		nonvirtual	void							SetBadInputHandler (const Led_RefCntPtr<BadInputHandler>& badInputHandler);
+		nonvirtual	Foundation::Memory::SharedPtr<BadInputHandler>	GetBadInputHandler () const;
+		nonvirtual	void							SetBadInputHandler (const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHandler);
 	private:
-		Led_RefCntPtr<BadInputHandler>	fBadInputHandler;
+		Foundation::Memory::SharedPtr<BadInputHandler>	fBadInputHandler;
 
 	public:
 		nonvirtual	void	HandleBadlyFormattedInput (bool unrecoverable = false) const;
@@ -921,14 +923,14 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 
 
 // class StyledTextIOReader
-	inline	StyledTextIOReader::StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Led_RefCntPtr<BadInputHandler>& badInputHander):
+	inline	StyledTextIOReader::StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHander):
 		fSrcStream (*srcStream),
 		fSinkStream (sinkStream),
 		fBadInputHandler (badInputHander)
 		{
 			RequireNotNull (srcStream);
 			if (fBadInputHandler.IsNull ()) {
-				fBadInputHandler = new BadInputHandler ();
+				fBadInputHandler = Foundation::Memory::SharedPtr<BadInputHandler> (new BadInputHandler ());
 			}
 		}
 	inline	StyledTextIOReader::SrcStream&	StyledTextIOReader::GetSrcStream () const
@@ -947,7 +949,7 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 				@'StyledTextIOReader::BadInputHandler'.</p>
 					<p>See also @'StyledTextIOReader::SetBadInputHandler' and @'StyledTextIOReader::HandleBadlyFormattedInput'.</p>
 	*/
-	inline	Led_RefCntPtr<StyledTextIOReader::BadInputHandler>	StyledTextIOReader::GetBadInputHandler () const
+	inline	Foundation::Memory::SharedPtr<StyledTextIOReader::BadInputHandler>	StyledTextIOReader::GetBadInputHandler () const
 		{
 			Ensure (not fBadInputHandler.IsNull ());
 			return fBadInputHandler;
@@ -956,11 +958,11 @@ class	EmbeddingSinkStream : public SimpleEmbeddedObjectStyleMarker::SinkStream {
 	@METHOD:		StyledTextIOReader::SetBadInputHandler
 	@DESCRIPTION:	<p>See @'StyledTextIOReader::GetBadInputHandler'</p>
 	*/
-	inline	void		StyledTextIOReader::SetBadInputHandler (const Led_RefCntPtr<BadInputHandler>& badInputHandler)
+	inline	void		StyledTextIOReader::SetBadInputHandler (const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHandler)
 		{
 			fBadInputHandler = badInputHandler;
 			if (fBadInputHandler.IsNull ()) {
-				fBadInputHandler = new BadInputHandler ();
+				fBadInputHandler = Foundation::Memory::SharedPtr<BadInputHandler> (new BadInputHandler ());
 			}
 		}
 	/*

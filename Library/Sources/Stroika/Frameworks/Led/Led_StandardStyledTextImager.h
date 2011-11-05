@@ -6,6 +6,8 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 /*
 @MODULE:	StandardStyledTextImager
 @DESCRIPTION:	<p>@'StandardStyledTextImager' is not intended to be a general and flexible
@@ -128,10 +130,10 @@ class	StandardStyledTextImager : public virtual StyledTextImager {
 	public:
 		/*
 		@CLASS:			StandardStyledTextImager::StyleDatabasePtr
-		@BASES:			@'Led_RefCntPtr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
+		@BASES:			@'Memory::SharedPtr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
 		@DESCRIPTION:	
 		*/
-		typedef	Led_RefCntPtr<AbstractStyleDatabaseRep>	StyleDatabasePtr;
+		typedef	Foundation::Memory::SharedPtr<AbstractStyleDatabaseRep>	StyleDatabasePtr;
 	public:
 		nonvirtual	StyleDatabasePtr			GetStyleDatabase () const;
 		nonvirtual	void						SetStyleDatabase (const StyleDatabasePtr& styleDatabase);

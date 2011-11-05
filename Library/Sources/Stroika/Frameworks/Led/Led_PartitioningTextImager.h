@@ -6,6 +6,7 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -230,7 +231,7 @@ class	PartitioningTextImager : public virtual TextImager {
 		virtual ~PartitioningTextImager ();
 
 	public:
-		typedef	Led_RefCntPtr<Partition>	PartitionPtr;
+		typedef	Foundation::Memory::SharedPtr<Partition>	PartitionPtr;
 		nonvirtual	PartitionPtr	GetPartition () const;
 	protected:
 		virtual		void			SetPartition (const PartitionPtr& partitionPtr);
@@ -244,7 +245,7 @@ class	PartitioningTextImager : public virtual TextImager {
 	private:
 		class	MeasureTextCache;
 		#if		qAutoPtrBrokenBug
-			Led_RefCntPtr<MeasureTextCache>	fMeasureTextCache;
+			Foundation::Memory::SharedPtr<MeasureTextCache>	fMeasureTextCache;
 		#else
 			auto_ptr<MeasureTextCache>		fMeasureTextCache;
 		#endif

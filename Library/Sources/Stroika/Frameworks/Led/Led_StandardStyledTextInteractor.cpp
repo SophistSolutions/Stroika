@@ -3,6 +3,8 @@
  */
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 #include	"Led_StyledTextEmbeddedObjects.h"
 #include	"Led_StyledTextIO_HTML.h"
 #include	"Led_StyledTextIO_RTF.h"
@@ -292,14 +294,14 @@ void	StandardStyledTextInteractor::HookStyleDatabaseChanged ()
 	}
 }
 
-Led_RefCntPtr<FlavorPackageInternalizer>	StandardStyledTextInteractor::MakeDefaultInternalizer ()
+Memory::SharedPtr<FlavorPackageInternalizer>	StandardStyledTextInteractor::MakeDefaultInternalizer ()
 {
-	return new StyledTextFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase ());
+	return Memory::SharedPtr<FlavorPackageInternalizer> (new StyledTextFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase ()));
 }
 
-Led_RefCntPtr<FlavorPackageExternalizer>	StandardStyledTextInteractor::MakeDefaultExternalizer ()
+Memory::SharedPtr<FlavorPackageExternalizer>	StandardStyledTextInteractor::MakeDefaultExternalizer ()
 {
-	return new StyledTextFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase ());
+	return Memory::SharedPtr<FlavorPackageExternalizer> (new StyledTextFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase ()));
 }
 
 /*

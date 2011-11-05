@@ -6,6 +6,8 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SharedPtr.h"
+
 /*
 @MODULE:	TextInteractor
 @DESCRIPTION:
@@ -631,13 +633,13 @@ class	TextInteractor : public virtual TextImager {
 													bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate
 												);
 	public:
-		nonvirtual	Led_RefCntPtr<FlavorPackageInternalizer>	GetInternalizer () const;
-		nonvirtual	void										SetInternalizer (const Led_RefCntPtr<FlavorPackageInternalizer>& i);
+		nonvirtual	Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	GetInternalizer () const;
+		nonvirtual	void										SetInternalizer (const Foundation::Memory::SharedPtr<FlavorPackageInternalizer>& i);
 	private:
-		Led_RefCntPtr<FlavorPackageInternalizer>	fInternalizer;
+		Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	fInternalizer;
 
 	protected:
-		virtual	Led_RefCntPtr<FlavorPackageInternalizer>	MakeDefaultInternalizer ();
+		virtual	Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	MakeDefaultInternalizer ();
 		virtual	void	HookInternalizerChanged ();
 
 
@@ -647,13 +649,13 @@ class	TextInteractor : public virtual TextImager {
 		virtual	void	ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage);
 
 	public:
-		nonvirtual	Led_RefCntPtr<FlavorPackageExternalizer>	GetExternalizer () const;
-		nonvirtual	void										SetExternalizer (const Led_RefCntPtr<FlavorPackageExternalizer>& e);
+		nonvirtual	Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	GetExternalizer () const;
+		nonvirtual	void										SetExternalizer (const Foundation::Memory::SharedPtr<FlavorPackageExternalizer>& e);
 	private:
-		Led_RefCntPtr<FlavorPackageExternalizer>	fExternalizer;
+		Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	fExternalizer;
 
 	protected:
-		virtual	Led_RefCntPtr<FlavorPackageExternalizer>	MakeDefaultExternalizer ();
+		virtual	Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	MakeDefaultExternalizer ();
 		virtual	void	HookExternalizerChanged ();
 
 
@@ -1759,7 +1761,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	@METHOD:		TextInteractor::GetInternalizer
 	@DESCRIPTION:
 	*/
-	inline	Led_RefCntPtr<FlavorPackageInternalizer>	TextInteractor::GetInternalizer () const
+	inline	Foundation::Memory::SharedPtr<FlavorPackageInternalizer>	TextInteractor::GetInternalizer () const
 		{
 			return fInternalizer;
 		}
@@ -1767,7 +1769,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	@METHOD:		TextInteractor::SetInternalizer
 	@DESCRIPTION:	<p>Calls @'TextInteractor::HookInternalizerChanged' whenever the internalizer changes. Can be a NULL externalizer.</p>
 	*/
-	inline	void										TextInteractor::SetInternalizer (const Led_RefCntPtr<FlavorPackageInternalizer>& i)
+	inline	void										TextInteractor::SetInternalizer (const Foundation::Memory::SharedPtr<FlavorPackageInternalizer>& i)
 		{
 			fInternalizer = i;
 			HookInternalizerChanged ();
@@ -1776,7 +1778,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	@METHOD:		TextInteractor::GetExternalizer
 	@DESCRIPTION:
 	*/
-	inline	Led_RefCntPtr<FlavorPackageExternalizer>	TextInteractor::GetExternalizer () const
+	inline	Foundation::Memory::SharedPtr<FlavorPackageExternalizer>	TextInteractor::GetExternalizer () const
 		{
 			return fExternalizer;
 		}
@@ -1784,7 +1786,7 @@ template	<typename TEXTSTORE, typename	IMAGER>
 	@METHOD:		TextInteractor::SetExternalizer
 	@DESCRIPTION:	<p>Calls @'TextInteractor::HookExternalizerChanged' whenever the externalizer changes. Can be a NULL externalizer.</p>
 	*/
-	inline	void	TextInteractor::SetExternalizer (const Led_RefCntPtr<FlavorPackageExternalizer>& e)
+	inline	void	TextInteractor::SetExternalizer (const Foundation::Memory::SharedPtr<FlavorPackageExternalizer>& e)
 		{
 			fExternalizer = e;
 			HookExternalizerChanged ();
