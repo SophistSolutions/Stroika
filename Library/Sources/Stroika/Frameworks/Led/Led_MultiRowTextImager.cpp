@@ -5,6 +5,8 @@
 
 #include	<climits>
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 #include	"Led_Support.h"
 #include	"Led_GDI.h"
 
@@ -13,6 +15,7 @@
 
 
 
+using	namespace	Stroika::Foundation;
 
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
@@ -617,7 +620,7 @@ void	MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
 	*rowsDrawn = 0;
 
 	size_t	partLen		=	end-start;
-	Led_SmallStackBuffer<Led_tChar>	partitionBuf (partLen);
+	Memory::SmallStackBuffer<Led_tChar>	partitionBuf (partLen);
 	CopyOut (start, partLen, partitionBuf);
 
 	for (size_t subRow = startSubRow; subRow <= endSubRow; ++subRow) {

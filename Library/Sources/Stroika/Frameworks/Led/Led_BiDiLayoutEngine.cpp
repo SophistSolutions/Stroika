@@ -43,6 +43,8 @@
 #endif
 
 
+using	namespace	Stroika::Foundation;
+
 
 
 namespace	Stroika {	
@@ -537,7 +539,7 @@ void	TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
 	 */
 	#if		qTestUNISCRIBEResultsEqualFriBidi
 		(void)Construct_UNISCRIBE (initialDirection);
-		Led_SmallStackBuffer<Led_tChar>	savedVirtualText (fTextLength);
+		Memory::SmallStackBuffer<Led_tChar>	savedVirtualText (fTextLength);
 		copy (static_cast<const Led_tChar*> (fVirtualText), static_cast<const Led_tChar*> (fVirtualText) + fTextLength, static_cast<Led_tChar*> (savedVirtualText));
 		vector<ScriptRunElt>			savedScriptRuns = fScriptRuns;
 		fScriptRuns = vector<ScriptRunElt> ();
@@ -574,7 +576,7 @@ void	TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
 				se.fDirection = newDir;
 				// now reverse the virtual text in the run...
 				size_t	runLen	=	se.fVirtualEnd - se.fVirtualStart;
-				Led_SmallStackBuffer<Led_tChar>	reverseBuf (runLen);
+				Memory::SmallStackBuffer<Led_tChar>	reverseBuf (runLen);
 				for (size_t j = se.fVirtualStart; j < se.fVirtualEnd; ++j) {
 					reverseBuf[runLen-1-(j-se.fVirtualStart)] = fVirtualText[j];
 				}
@@ -593,7 +595,7 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 		/*
 		 *	See SPR#1224 for why we pass along zeroed scriptControl/scriptState.
 		 */
-		Led_SmallStackBuffer<SCRIPT_ITEM>		scriptItems (fTextLength+1);
+		Memory::SmallStackBuffer<SCRIPT_ITEM>	scriptItems (fTextLength+1);
 		int										nScriptItems	=	0;
 		SCRIPT_CONTROL							scriptControl;
 		SCRIPT_STATE							scriptState;
@@ -624,13 +626,13 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 		Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength+1, &scriptControl, &scriptState, scriptItems, &nScriptItems) == S_OK);
 		Assert (nScriptItems >= 1);
 
-		Led_SmallStackBuffer<BYTE>	bidiLevels (nScriptItems);
+		Memory::SmallStackBuffer<BYTE>	bidiLevels (nScriptItems);
 		for (size_t i = 0; i < static_cast<size_t> (nScriptItems); ++i) {
 			bidiLevels[i] = scriptItems[i].a.s.uBidiLevel;
 		}
 
-		Led_SmallStackBuffer<int>	visualToLogical (nScriptItems);
-		Led_SmallStackBuffer<int>	logicalToVisual (nScriptItems);
+		Memory::SmallStackBuffer<int>	visualToLogical (nScriptItems);
+		Memory::SmallStackBuffer<int>	logicalToVisual (nScriptItems);
 
 		Verify (sUniscribeDLL.ScriptLayout (nScriptItems, bidiLevels, visualToLogical, logicalToVisual) == S_OK);
 
@@ -640,7 +642,7 @@ bool	TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 		 *	(a slightly tricky computation - noting that we must map back to logical coords to use the scriptItems array
 		 *	and note that the UNISCRIBE API gives you the length of a cell by taking diff between it and following cell start).
 		 */
-		Led_SmallStackBuffer<size_t>	visualSegStarts (nScriptItems);
+		Memory::SmallStackBuffer<size_t>	visualSegStarts (nScriptItems);
 		{
 			Assert (nScriptItems > 0);
 			visualSegStarts[0] = 0;
@@ -769,11 +771,11 @@ void	TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirec
 	if (initialDirection != NULL) {
 		baseDir = (*initialDirection == eLeftToRight)? FRIBIDI_TYPE_L: FRIBIDI_TYPE_R;
 	}
-	Led_SmallStackBuffer<FriBidiChar>		srcText (fTextLength);
-	Led_SmallStackBuffer<FriBidiChar>		vText (fTextLength + 1);		// fribidi_log2vis NUL-terminates the string
+	Memory::SmallStackBuffer<FriBidiChar>		srcText (fTextLength);
+	Memory::SmallStackBuffer<FriBidiChar>		vText (fTextLength + 1);		// fribidi_log2vis NUL-terminates the string
 	copy (static_cast<Led_tChar*> (fRealText), fRealText + fTextLength, static_cast<FriBidiChar*> (srcText));
-	Led_SmallStackBuffer<FriBidiStrIndex>	posLtoVList (fTextLength);
-	Led_SmallStackBuffer<FriBidiLevel>		bidiLevels (fTextLength*2);	// no docs on size - but looking at code it appears it can be up to this big...
+	Memory::SmallStackBuffer<FriBidiStrIndex>	posLtoVList (fTextLength);
+	Memory::SmallStackBuffer<FriBidiLevel>		bidiLevels (fTextLength*2);	// no docs on size - but looking at code it appears it can be up to this big...
 																		// LGP 2002-12-04
 
 	bool	result	=	::fribidi_log2vis (srcText, fTextLength, &baseDir,

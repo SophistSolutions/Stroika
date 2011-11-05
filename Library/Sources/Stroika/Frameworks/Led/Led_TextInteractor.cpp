@@ -17,6 +17,9 @@
 #include	"Led_TextInteractor.h"
 
 
+using	namespace	Stroika::Foundation;
+
+
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
@@ -198,7 +201,7 @@ namespace {
 					{
 						size_t							origSelStart	=	fTI.GetSelectionStart ();
 						size_t							origSelEnd		=	fTI.GetSelectionEnd ();
-						Led_SmallStackBuffer<Led_tChar>	text (origSelEnd-origSelStart+1);
+						Memory::SmallStackBuffer<Led_tChar>	text (origSelEnd-origSelStart+1);
 						fTI.CopyOut (origSelStart, origSelEnd-origSelStart, text);
 						Led_tString	ignoredWord = Led_tString (text, origSelEnd-origSelStart);
 						fIgnoredWords.insert (ignoredWord);
@@ -211,7 +214,7 @@ namespace {
 					size_t						origSelEnd		=	fTI.GetSelectionEnd ();
 					TextInteractor::SearchParameters	sp;
 					{
-						Led_SmallStackBuffer<Led_tChar>	text (origSelEnd-origSelStart+1);
+						Memory::SmallStackBuffer<Led_tChar>	text (origSelEnd-origSelStart+1);
 						fTI.CopyOut (origSelStart, origSelEnd-origSelStart, text);
 						sp.fMatchString = Led_tString (text, origSelEnd-origSelStart);
 					}
@@ -224,7 +227,7 @@ namespace {
 					size_t								origSelEnd		=	fTI.GetSelectionEnd ();
 					TextInteractor::SearchParameters	sp;
 					{
-						Led_SmallStackBuffer<Led_tChar>	text (origSelEnd-origSelStart+1);
+						Memory::SmallStackBuffer<Led_tChar>	text (origSelEnd-origSelStart+1);
 						fTI.CopyOut (origSelStart, origSelEnd-origSelStart, text);
 						sp.fMatchString = Led_tString (text, origSelEnd-origSelStart);
 					}
@@ -867,7 +870,7 @@ void	TextInteractor::OnEnterFindString ()
 	size_t	selEnd		=	GetSelectionEnd ();
 	size_t	selLength	=	selEnd-selStart;
 
-	Led_SmallStackBuffer<Led_tChar>	buf (selLength);
+	Memory::SmallStackBuffer<Led_tChar>	buf (selLength);
 	CopyOut (selStart, selLength, buf);
 	parameters.fMatchString = Led_tString (buf, selLength);
 	parameters.fRecentFindStrings = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
@@ -2838,7 +2841,7 @@ bool	TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
 		}
 		#endif
 
-		Led_SmallStackBuffer<char>	buf (length);	// could use bufsize=(len+1)/sizeof (Led_tChar)
+		Memory::SmallStackBuffer<char>	buf (length);	// could use bufsize=(len+1)/sizeof (Led_tChar)
 		length = clipData.ReadFlavorData (textFormat, length, buf);
 		if (doSmartCNP) {
 			Led_tChar*		buffp			= reinterpret_cast<Led_tChar*> (static_cast<char*> (buf));

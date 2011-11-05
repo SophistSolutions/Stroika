@@ -13,6 +13,11 @@
 #endif
 
 
+using	namespace	Stroika::Foundation;
+
+
+
+
 
 namespace	Stroika {	
 	namespace	Frameworks {
@@ -152,7 +157,7 @@ void	LineBasedPartition::Invariant_ () const
 		if (end > GetEnd ()) {
 			len--;	// Last partition extends past end of text
 		}
-		Led_SmallStackBuffer<Led_tChar>	buf (len);
+		Memory::SmallStackBuffer<Led_tChar>	buf (len);
 		CopyOut (start, len, buf);
 		for (size_t i = 1; i < len; i++) {
 			Assert (buf[i-1] != '\n');

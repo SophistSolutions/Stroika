@@ -18,6 +18,9 @@
 #include	"Led_StyledTextIO_HTML.h"
 
 
+using	namespace	Stroika::Foundation;
+
+
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
@@ -788,7 +791,7 @@ bool	StyledTextIOReader_HTML::LookingAt (const char* text) const
 Led_tString	StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
 	#if		qWideCharacters
-		Led_SmallStackBuffer<Led_tChar>	wBuf (text.length () + 1);
+		Memory::SmallStackBuffer<Led_tChar>	wBuf (text.length () + 1);
 		size_t	charsRead	=	0;
 		CodePageConverter	cpc	(kCodePage_ANSI);
 		size_t	outCharCnt	=	text.length ();
@@ -818,7 +821,7 @@ void	StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 		return;
 	}
 
-	Led_SmallStackBuffer<Led_tChar>	outBuf (nBytes);
+	Memory::SmallStackBuffer<Led_tChar>	outBuf (nBytes);
 	nBytes = Led_NormalizeTextToNL (text, nBytes, outBuf, nBytes);
 
 	if (not skipNLCheck and fNormalizeInputWhitespace) {
@@ -890,7 +893,7 @@ void	StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 			#else
 				CodePageConverter	cpc (kInternalCodePageToMapTo);
 				size_t				outCharCnt	=	cpc.MapFromUNICODE_QuickComputeOutBufSize (&result, 1);
-				Led_SmallStackBuffer<char>	buf (outCharCnt);
+				Memory::SmallStackBuffer<char>	buf (outCharCnt);
 				cpc.MapFromUNICODE (&result, 1, buf, &outCharCnt);
 				EmitText (buf, outCharCnt);
 			#endif
@@ -906,7 +909,7 @@ void	StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 					#else
 						CodePageConverter	cpc (kInternalCodePageToMapTo);
 						size_t				outCharCnt	=	cpc.MapFromUNICODE_QuickComputeOutBufSize (&(*i).fCharValue, 1);
-						Led_SmallStackBuffer<char>	buf (outCharCnt);
+						Memory::SmallStackBuffer<char>	buf (outCharCnt);
 						cpc.MapFromUNICODE (&(*i).fCharValue, 1, buf, &outCharCnt);
 						EmitText (buf, outCharCnt);
 					#endif
@@ -1119,7 +1122,7 @@ void	StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
 					#if		qWideCharacters
 						CodePageConverter	cpc (kCodePage_ANSI);
 						size_t	outCharCnt	=	cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
-						Led_SmallStackBuffer<char>	buf (outCharCnt);
+						Memory::SmallStackBuffer<char>	buf (outCharCnt);
 						cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf, &outCharCnt);
 						buf[outCharCnt] = '\0';
 						Led_URLD	urld	=	Led_URLD (tagValue.c_str (), buf);

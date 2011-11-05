@@ -30,6 +30,10 @@
 
 
 
+using	namespace	Stroika::Foundation;
+
+
+
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
 #endif
@@ -97,12 +101,12 @@ void	FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
 	Require (start <= end);
 	size_t	length	=	end - start;
 	#if		qMacOS || qXWindows
-		Led_SmallStackBuffer<Led_tChar> buf (length);
+		Memory::SmallStackBuffer<Led_tChar> buf (length);
 	#elif	qWindows
-		Led_SmallStackBuffer<Led_tChar> buf (2*length+1);
+		Memory::SmallStackBuffer<Led_tChar> buf (2*length+1);
 	#endif
 	if (length != 0) {
-		Led_SmallStackBuffer<Led_tChar> buf2 (length);
+		Memory::SmallStackBuffer<Led_tChar> buf2 (length);
 		GetTextStore ().CopyOut (start, length, buf2);
 		#if		qMacOS || qXWindows
 			length = Led_NLToNative (buf2, length, buf, length);
@@ -124,7 +128,7 @@ void	FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
 	flavorPackage.AddFlavorData (kTEXTClipFormat, length * sizeof (Led_tChar), buf);
 
 	#if		qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-		Led_SmallStackBuffer<char>	bufwa (length * sizeof (Led_tChar));
+		Memory::SmallStackBuffer<char>	bufwa (length * sizeof (Led_tChar));
 		size_t	nextPackageSize	=	::WideCharToMultiByte (GetACP (), 0, buf, length, bufwa, length * sizeof (Led_tChar), NULL, NULL);
 		flavorPackage.AddFlavorData (CF_TEXT, nextPackageSize, bufwa);
 	#endif
@@ -179,7 +183,7 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& fla
 			length = flavorPackage.GetFlavorSize (textFormat);
 		}
 		#endif
-		Led_SmallStackBuffer<char> buf (length * sizeof (Led_tChar));		// data read from flavor package is just an array of bytes (not Led_tChar)
+		Memory::SmallStackBuffer<char> buf (length * sizeof (Led_tChar));		// data read from flavor package is just an array of bytes (not Led_tChar)
 																			// but allocate enuf space for converting TO UNICODE - in case of
 																			// qWorkAroundWin95BrokenUNICODESupport workaround below - we may
 																			// want to copy UNICODE chars in there instead.
@@ -221,7 +225,7 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
 	// For now, we ingore any files beyond the first one (Mac&PC)...LGP 960522
 	if (flavorPackage.GetFlavorAvailable (kFILEClipFormat)) {
 		size_t	fileSpecBufferLength		=	flavorPackage.GetFlavorSize (kFILEClipFormat);
-		Led_SmallStackBuffer<char> fileSpecBuffer (fileSpecBufferLength);
+		Memory::SmallStackBuffer<char> fileSpecBuffer (fileSpecBufferLength);
 		fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer);
 
 		// Unpack the filename
@@ -366,12 +370,12 @@ bool	FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
 		}
 		CodePageConverter				cpc			=	CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
 		size_t							outCharCnt	=	cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
-		Led_SmallStackBuffer<Led_tChar>	fileData2 (outCharCnt);
+		Memory::SmallStackBuffer<Led_tChar>	fileData2 (outCharCnt);
 		cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
 		size_t	charsRead = outCharCnt;
 		Assert (charsRead <= nRawBytes);
 	#else
-		Led_SmallStackBuffer<Led_tChar>	fileData2 (nRawBytes);
+		Memory::SmallStackBuffer<Led_tChar>	fileData2 (nRawBytes);
 		memcpy (fileData2, (char*)rawBytes, nRawBytes);
 		size_t	charsRead	=	nRawBytes;
 	#endif

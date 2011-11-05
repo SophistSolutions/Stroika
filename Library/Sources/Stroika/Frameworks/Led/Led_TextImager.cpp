@@ -13,6 +13,8 @@
 
 
 
+using	namespace	Stroika::Foundation;
+
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
@@ -902,7 +904,7 @@ size_t	TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
 						positionInLine = Led_Min (positionInLine, GetTextStore ().GetLineLength (newLine));		// don't go past end of new line...
 						#if		qMultiByteCharacters
 							// Don't split a mbyte character
-							Led_SmallStackBuffer<Led_tChar>	buf (positionInLine);
+							Memory::SmallStackBuffer<Led_tChar>	buf (positionInLine);
 							CopyOut (GetTextStore ().GetStartOfLine (newLine), positionInLine, buf);
 							if (Led_FindPrevOrEqualCharBoundary (buf, buf + positionInLine) != buf+positionInLine) {
 								Assert (positionInLine > 0);
@@ -1380,7 +1382,7 @@ vector<Led_Rect>	TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
 TextLayoutBlock_Copy	TextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd)	const
 {
 	size_t							rowLen		=	rowEnd-rowStart;
-	Led_SmallStackBuffer<Led_tChar>	rowBuf (rowLen);
+	Memory::SmallStackBuffer<Led_tChar>	rowBuf (rowLen);
 	CopyOut (rowStart, rowLen, rowBuf);
 	TextLayoutBlock_Basic	text (rowBuf, rowBuf + rowLen);
 	return TextLayoutBlock_Copy (text);
@@ -1436,7 +1438,7 @@ vector<Led_Rect>	TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 		TextLayoutBlock_Copy	text = GetTextLayoutBlock (startOfRow, endOfRow);
 #else
 		size_t	rowLen		=	endOfRow-startOfRow;
-		Led_SmallStackBuffer<Led_tChar>	rowBuf (rowLen);
+		Memory::SmallStackBuffer<Led_tChar>	rowBuf (rowLen);
 		CopyOut (startOfRow, rowLen, rowBuf);
 		TextLayoutBlock_Basic	text (rowBuf, rowBuf + rowLen);
 #endif
@@ -1971,7 +1973,7 @@ void	TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 		/*
 		 *	Fill in the useVirtualText buffer with the text to draw.
 		 */
-		Led_SmallStackBuffer<Led_tChar>	useVirtualText (runLength);
+		Memory::SmallStackBuffer<Led_tChar>	useVirtualText (runLength);
 		copy (&fullVirtualText[se.fVirtualStart], &fullVirtualText[se.fVirtualStart] + runLength, static_cast<Led_tChar*> (useVirtualText));
 
 		/*
@@ -1979,7 +1981,7 @@ void	TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 		 */
 		Led_tChar*	drawText	=	useVirtualText;
 		size_t		drawTextLen	=	runLength;
-		Led_SmallStackBuffer<Led_tChar>	mappedDisplayBuf (1);
+		Memory::SmallStackBuffer<Led_tChar>	mappedDisplayBuf (1);
 		if (ContainsMappedDisplayCharacters (drawText, drawTextLen)) {
 			mappedDisplayBuf.GrowToSize (drawTextLen);
 			ReplaceMappedDisplayCharacters (drawText, mappedDisplayBuf, drawTextLen);
@@ -2036,7 +2038,7 @@ void		TextImager::MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, s
 	FontCacheInfoUpdater	fontCacheUpdater (this, tablet, fontSpec);
 
 	if (ContainsMappedDisplayCharacters (text, length)) {
-		Led_SmallStackBuffer<Led_tChar>	buf2 (length);
+		Memory::SmallStackBuffer<Led_tChar>	buf2 (length);
 		ReplaceMappedDisplayCharacters (text, buf2, length);
 		tablet->MeasureText (fCachedFontInfo, buf2, length, distanceResults);
 		PatchWidthRemoveMappedDisplayCharacters (buf2, distanceResults, length);

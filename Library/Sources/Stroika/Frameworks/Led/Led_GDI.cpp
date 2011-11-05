@@ -7,8 +7,15 @@
 #include	<cstdio>
 #include	<set>
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
+
 #include	"Led_CodePage.h"
 #include	"Led_GDI.h"
+
+
+
+using	namespace	Stroika::Foundation;
 
 
 
@@ -180,7 +187,7 @@ namespace	Stroika {
 		inline	void	Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 			{
 				Assert (nChars >= 0);
-				Led_SmallStackBuffer<char>	buf (2*nChars);
+				Memory::SmallStackBuffer<char>	buf (2*nChars);
 
 
 				/*
@@ -214,7 +221,7 @@ namespace	Stroika {
 				UINT	codePage	=	Win32CharSetToCodePage (::GetTextCharset (hdc));	// Was CP_ACP...
 				int	nChars2	=	::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars*2, NULL, NULL);
 				Assert (lpnFit == NULL);	// cuz we don't support handling/mapping this # back not needed right now - LGP 980422
-				Led_SmallStackBuffer<int>	tmpAlpDxArray (nChars2);
+				Memory::SmallStackBuffer<int>	tmpAlpDxArray (nChars2);
 				Verify (::GetTextExtentExPointA (hdc, buf, nChars2, maxExtent, NULL, tmpAlpDxArray, lpSize));
 				// Now walk through the tmpAlpDxArray, and as we find CHARACTER boundaries in the text, map that to CHARACTER (by one)
 				// boundaries in the UNICODE based array
@@ -239,7 +246,7 @@ namespace	Stroika {
 					Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
 					return;
 				}
-				Led_SmallStackBuffer<char>	buf (2*nChars);
+				Memory::SmallStackBuffer<char>	buf (2*nChars);
 				int	nChars2	=	::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars*2, NULL, NULL);
 				Verify (::GetTextExtentPointA (hdc, buf, nChars2, lpSize));
 			}
@@ -252,7 +259,7 @@ namespace	Stroika {
 					Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
 					return;
 				}
-				Led_SmallStackBuffer<char>	buf (2*nChars);
+				Memory::SmallStackBuffer<char>	buf (2*nChars);
 				int	nChars2	=	::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars*2, NULL, NULL);
 				Verify (::TextOutA (hdc, xStart, yStart, buf, nChars2));
 			}
@@ -616,7 +623,7 @@ namespace	Stroika {
 				/*
 				 *	Cannot use ::GetStockObject (DEFAULT_PALETTE) - because - believe it or not - it returns a 20-entry pallete.
 				 */
-				Led_SmallStackBuffer<char>	palBuf (sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * 256);
+				Memory::SmallStackBuffer<char>	palBuf (sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * 256);
 				LPLOGPALETTE				lplgPal = reinterpret_cast<LPLOGPALETTE> (static_cast<char*> (palBuf));
 
 				lplgPal->palVersion = 0x300;
@@ -655,7 +662,7 @@ namespace	Stroika {
 
 				// Create the header big enough to contain color table and bitmasks if needed
 				size_t						nInfoSize = sizeof (BITMAPINFOHEADER) + sizeof(RGBQUAD) * (1 << wBits);
-				Led_SmallStackBuffer<char>	bmiBuf (nInfoSize);
+				Memory::SmallStackBuffer<char>	bmiBuf (nInfoSize);
 				LPBITMAPINFO				pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
 				(void)::memset (pbmi, 0, nInfoSize);
 				pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -680,7 +687,7 @@ namespace	Stroika {
 			{
 				// Create the header big enough to contain color table and bitmasks if needed
 				size_t	nInfoSize = sizeof( BITMAPINFOHEADER ) +  3 * sizeof(DWORD);
-				Led_SmallStackBuffer<char>	bmiBuf (nInfoSize);
+				Memory::SmallStackBuffer<char>	bmiBuf (nInfoSize);
 				LPBITMAPINFO				pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
 				(void)::memset (pbmi, 0, nInfoSize);
 				pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -705,7 +712,7 @@ namespace	Stroika {
 			{
 				// Create the header big enough to contain color table and bitmasks if needed
 				size_t	nInfoSize = sizeof( BITMAPINFOHEADER ) + 3 * sizeof(DWORD);
-				Led_SmallStackBuffer<char>	bmiBuf (nInfoSize);
+				Memory::SmallStackBuffer<char>	bmiBuf (nInfoSize);
 				LPBITMAPINFO				pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
 				(void)::memset (pbmi, 0, nInfoSize);
 				pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -1699,7 +1706,7 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 		#endif
 
 		#if		qMacOS
-			Led_SmallStackBuffer<short>	shortOffsets (charsThisTime + 1);
+			Memory::SmallStackBuffer<short>	shortOffsets (charsThisTime + 1);
 			Assert (Led_GetCurrentGDIPort () == *this);
 			::MeasureText (charsThisTime, &text[i], shortOffsets);
 			for (size_t j = 0; j < charsThisTime; j++) {
@@ -1746,7 +1753,7 @@ void	Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 						}
 					}
 #else
-					Led_SmallStackBuffer<int> logicalWidths (charsThisTime);
+					Memory::SmallStackBuffer<int> logicalWidths (charsThisTime);
 					Verify (sUniscribeDLL.ScriptStringGetLogicalWidths (ssa, logicalWidths) == S_OK);
 
 					Assert (charsThisTime > 0);
@@ -1974,7 +1981,7 @@ UniscribeFailure:
 				#if		qUseGetCharPlacementToImage && qWideCharacters
 				{
 					size_t							len = nextTabAt-textCursor;
-					Led_SmallStackBuffer<wchar_t>	glyphs (len);
+					Memory::SmallStackBuffer<wchar_t>	glyphs (len);
 					GCP_RESULTSW					gcpResult;
 					memset (&gcpResult, 0, sizeof (gcpResult));
 					gcpResult.lStructSize = sizeof(GCP_RESULTS);
@@ -1990,7 +1997,7 @@ UniscribeFailure:
 				#if		qUseFakeTTGetWPlacementToImage && qWideCharacters
 				{
 					size_t							len = nextTabAt-textCursor;
-					Led_SmallStackBuffer<wchar_t>	glyphs (len);
+					Memory::SmallStackBuffer<wchar_t>	glyphs (len);
 					if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs) != 0) {
 						Verify (::ExtTextOutW (m_hDC, outputAt.h+widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, NULL, glyphs, len, NULL));
 						goto Succeeded_But_Need_To_Adjust_Width;

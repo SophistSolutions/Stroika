@@ -24,6 +24,10 @@
 
 
 
+using	namespace	Stroika::Foundation;
+
+
+
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
 #endif
@@ -319,7 +323,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardMacPictureStyleMarker::mk (const char* 
 SimpleEmbeddedObjectStyleMarker*	StandardMacPictureStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
 {
 	size_t	length		=	flavorPackage.GetFlavorSize (kClipFormat);
-	Led_SmallStackBuffer<Led_tChar> buf (length);
+	Memory::SmallStackBuffer<Led_tChar> buf (length);
 	length = flavorPackage.ReadFlavorData (kClipFormat, length, buf);
 	return (mk (kEmbeddingTag, buf, length));
 }
@@ -469,7 +473,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardDIBStyleMarker::mk (const char* embeddi
 SimpleEmbeddedObjectStyleMarker*	StandardDIBStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
 {
 	size_t	length		=	flavorPackage.GetFlavorSize (kClipFormat);
-	Led_SmallStackBuffer<Led_tChar> buf (length);
+	Memory::SmallStackBuffer<Led_tChar> buf (length);
 	length = flavorPackage.ReadFlavorData (kClipFormat, length, buf);
 	return (mk (kEmbeddingTag, buf, length));
 }
@@ -606,14 +610,14 @@ SimpleEmbeddedObjectStyleMarker*	StandardURLStyleMarker::mk (ReaderFlavorPackage
 	 */
 	if (flavorPackage.GetFlavorAvailable (kURLDClipFormat)) {
 		size_t	length		=	flavorPackage.GetFlavorSize (kURLDClipFormat);
-		Led_SmallStackBuffer<Led_tChar> buf (length);
+		Memory::SmallStackBuffer<Led_tChar> buf (length);
 		length = flavorPackage.ReadFlavorData (kURLDClipFormat, length, buf);
 		return (mk (kEmbeddingTag, buf, length));
 	}
 	#if		qWindows
 		if (flavorPackage.GetFlavorAvailable (kWin32URLClipFormat)) {
 			size_t	length		=	flavorPackage.GetFlavorSize (kWin32URLClipFormat);
-			Led_SmallStackBuffer<char> buf (length);
+			Memory::SmallStackBuffer<char> buf (length);
 			length = flavorPackage.ReadFlavorData (kWin32URLClipFormat, length, buf);
 			// tmp/medium term hack.. Seems both formats look roughly the same. URL first. Then title. At least for now,
 			// we can take advtangage of this and share code on read. If not, we can read/reformat to fit so this below works.
@@ -782,7 +786,7 @@ void	StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 			distanceResults[0] = 0;
 		}
 		else {
-			Led_SmallStackBuffer<Led_Distance>	distRes (displayText.length ());
+			Memory::SmallStackBuffer<Led_Distance>	distRes (displayText.length ());
 			imager->MeasureSegmentWidth_ (fsp, from, from + displayText.length (), displayText.c_str (), distRes);
 			distanceResults[0] = distRes[displayText.length () - 1];
 		}
@@ -890,7 +894,7 @@ void	StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPack
 	flavorPackage.AddFlavorData (kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
 	#if		qWindows
 	size_t	len	=	fURLData.GetURLLength () + 1;
-	Led_SmallStackBuffer<char>	hackBuf(len);
+	Memory::SmallStackBuffer<char>	hackBuf(len);
 	memcpy (hackBuf, fURLData.PeekAtURL (), len-1);
 	hackBuf[len] = '\0';
 	flavorPackage.AddFlavorData (kWin32URLClipFormat, len, hackBuf);
@@ -1079,12 +1083,12 @@ SimpleEmbeddedObjectStyleMarker*	StandardMacPictureWithURLStyleMarker::mk (const
 SimpleEmbeddedObjectStyleMarker*	StandardMacPictureWithURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
 {
 	size_t	pictLength		=	flavorPackage.GetFlavorSize (kPICTClipFormat);
-	Led_SmallStackBuffer<char> buf1 (pictLength);
+	Memory::SmallStackBuffer<char> buf1 (pictLength);
 	pictLength = flavorPackage.ReadFlavorData (kPICTClipFormat, pictLength, buf1);
 	Led_Picture*	picBuf	=	(Led_Picture*)(char*)buf1;
 
 	size_t	urlSize		=	flavorPackage.GetFlavorSize (StandardURLStyleMarker::kURLDClipFormat);
-	Led_SmallStackBuffer<Led_tChar> buf2 (urlSize);
+	Memory::SmallStackBuffer<Led_tChar> buf2 (urlSize);
 	urlSize = flavorPackage.ReadFlavorData (StandardURLStyleMarker::kURLDClipFormat, urlSize, buf2);
 	return new StandardMacPictureWithURLStyleMarker (picBuf, pictLength, Led_URLD (buf2, urlSize));
 }
@@ -1270,7 +1274,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardDIBWithURLStyleMarker::mk (const char* 
 SimpleEmbeddedObjectStyleMarker*	StandardDIBWithURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
 {
 	size_t	length		=	flavorPackage.GetFlavorSize (StandardDIBStyleMarker::kClipFormat);
-	Led_SmallStackBuffer<char> buf (length);
+	Memory::SmallStackBuffer<char> buf (length);
 	length = flavorPackage.ReadFlavorData (StandardDIBStyleMarker::kClipFormat, length, buf);
 	if (length < 40) {
 		// This is less than we need to peek and see size of DIB...
@@ -1293,7 +1297,7 @@ SimpleEmbeddedObjectStyleMarker*	StandardDIBWithURLStyleMarker::mk (ReaderFlavor
 	}
 
 	size_t	urlSize		=	flavorPackage.GetFlavorSize (StandardURLStyleMarker::kURLDClipFormat);
-	Led_SmallStackBuffer<char> buf2 (urlSize);
+	Memory::SmallStackBuffer<char> buf2 (urlSize);
 	urlSize = flavorPackage.ReadFlavorData (StandardURLStyleMarker::kURLDClipFormat, urlSize, buf2);
 
 	return new StandardDIBWithURLStyleMarker ((const Led_DIB*)(char*)buf, Led_URLD (buf2, urlSize));

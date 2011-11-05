@@ -17,6 +17,8 @@
 #endif
 
 
+using	namespace	Stroika::Foundation;
+
 
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
@@ -1027,7 +1029,7 @@ bool	StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderF
 	if (inherited::InternalizeFlavor_TEXT (flavorPackage, pasteStart, pasteEnd)) {
 		if (flavorPackage.GetFlavorAvailable ('styl')) {
 			size_t	length		=	flavorPackage.GetFlavorSize ('styl');
-			Led_SmallStackBuffer<char> buf (length);
+			Memory::SmallStackBuffer<char> buf (length);
 			length	=	flavorPackage.ReadFlavorData ('styl', length, buf);
 			Assert (newSel.GetStart () >= pasteStart + 1);
 			size_t	pasteEndXXX	=	newSel.GetStart () - 1;
@@ -1050,7 +1052,7 @@ bool	StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFlavor
 {
 	if (flavorPackage.GetFlavorAvailable (kLedPrivateClipFormat)) {
 		size_t	length		=	flavorPackage.GetFlavorSize (kLedPrivateClipFormat);
-		Led_SmallStackBuffer<char> buf (length);
+		Memory::SmallStackBuffer<char> buf (length);
 		length	=	flavorPackage.ReadFlavorData (kLedPrivateClipFormat, length, buf);
 
 		size_t	start	=	from;
@@ -1083,7 +1085,7 @@ bool	StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPac
 			// try to copy it... LGP 2000/04/26
 			return false;
 		}
-		Led_SmallStackBuffer<char> buf (length);
+		Memory::SmallStackBuffer<char> buf (length);
 		length = flavorPackage.ReadFlavorData (kRTFClipFormat, length, buf);
 
 		size_t	start	=	from;
@@ -1110,7 +1112,7 @@ bool	StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPa
 {
 	if (flavorPackage.GetFlavorAvailable (kHTMLClipFormat)) {
 		size_t	length		=	flavorPackage.GetFlavorSize (kHTMLClipFormat);
-		Led_SmallStackBuffer<char> buf (length);
+		Memory::SmallStackBuffer<char> buf (length);
 		length = flavorPackage.ReadFlavorData (kHTMLClipFormat, length, buf);
 
 		size_t	start	=	from;
@@ -1259,7 +1261,7 @@ void	StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPa
 	Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short));	// thats why we add sizeof (short)
 
 	size_t						nBytes	=	sizeof (short) + nStyleRuns*sizeof (ScrpSTElement);
-	Led_SmallStackBuffer<char>	buf (nBytes);
+	Memory::SmallStackBuffer<char>	buf (nBytes);
 	StScrpPtr					stylePtr	=	(StScrpPtr)(char*)buf;
 
 	stylePtr->scrpNStyles = nStyleRuns;

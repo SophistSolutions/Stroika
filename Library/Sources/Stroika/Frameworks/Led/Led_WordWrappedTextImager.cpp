@@ -5,11 +5,13 @@
 
 #include	<cctype>
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 #include	"Led_WordWrappedTextImager.h"
 
 
 
-
+using	namespace	Stroika::Foundation;
 
 
 
@@ -97,7 +99,7 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 	}
 	Assert (end <= GetEnd ());
 
-	Led_SmallStackBuffer<Led_tChar>	buf (len);
+	Memory::SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (start, len, buf);
 
 	Tablet_Acquirer	tablet (this);
@@ -105,7 +107,7 @@ void	WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 	cacheInfo.Clear ();
 
 	try {
-		Led_SmallStackBuffer<Led_Distance>	distanceVector (len);
+		Memory::SmallStackBuffer<Led_Distance>	distanceVector (len);
 		if (start != end) {
 			MeasureSegmentWidth (start, end, buf, distanceVector);
 		}

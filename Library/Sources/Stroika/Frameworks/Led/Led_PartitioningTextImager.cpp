@@ -6,6 +6,7 @@
 
 
 
+using	namespace	Stroika::Foundation;
 
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
@@ -457,7 +458,7 @@ TextLayoutBlock_Copy	PartitioningTextImager::GetTextLayoutBlock (size_t rowStart
 	}
 	else {
 		size_t							rowLen		=	rowEnd-rowStart;
-		Led_SmallStackBuffer<Led_tChar>	rowBuf (rowLen);
+		Memory::SmallStackBuffer<Led_tChar>	rowBuf (rowLen);
 		CopyOut (rowStart, rowLen, rowBuf);
 		return TextLayoutBlock_Copy (TextLayoutBlock_Basic	(rowBuf, rowBuf + rowLen, GetPrimaryPartitionTextDirection (rowStart)));
 	}
@@ -524,7 +525,7 @@ Led_Distance	PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
 		Require (startOfRow <= from);		//	WE REQUIRE from/to be contained within a single row!!!
 		Require (to <= rowEnd);				//	''
 		size_t	rowLen		=	rowEnd - startOfRow;
-		Led_SmallStackBuffer<Led_Distance>	distanceVector (rowLen);
+		Memory::SmallStackBuffer<Led_Distance>	distanceVector (rowLen);
 		CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector);
 		Assert (to > startOfRow);															// but from could be == startOfRow, so must be careful of that...
 		Assert (to-startOfRow-1 < (GetEndOfRowContainingPosition (startOfRow)-startOfRow));	// now buffer overflows!
@@ -595,7 +596,7 @@ void	PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t row
 	// we must re-snag the text to get the width/tab alignment of the initial segment (for reset tabstops)- a bit more complicated ...
 	size_t	len	=	rowEnd-rowStart;
 
-	Led_SmallStackBuffer<Led_tChar>	fullRowTextBuf (len);
+	Memory::SmallStackBuffer<Led_tChar>	fullRowTextBuf (len);
 	CopyOut (rowStart, len, fullRowTextBuf);
 
 	MeasureSegmentWidth (rowStart, rowEnd, fullRowTextBuf, distanceVector);

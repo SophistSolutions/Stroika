@@ -6,6 +6,10 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
+
+
 /*
 @MODULE:	BiDiLayout
 @DESCRIPTION:	<p>Code to break up a string to be displayed - which might contain right-to-left text mixed
@@ -205,8 +209,8 @@ class	TextLayoutBlock_Basic : public TextLayoutBlock {
 
 	private:
 		size_t							fTextLength;
-		Led_SmallStackBuffer<Led_tChar>	fRealText;
-		Led_SmallStackBuffer<Led_tChar>	fVirtualText;
+		Foundation::Memory::SmallStackBuffer<Led_tChar>	fRealText;
+		Foundation::Memory::SmallStackBuffer<Led_tChar>	fVirtualText;
 		vector<ScriptRunElt>			fScriptRuns;
 };
 
@@ -282,11 +286,11 @@ class	TextLayoutBlock_VirtualSubset : public TextLayoutBlock {
 		virtual		vector<ScriptRunElt>	GetScriptRuns () const override;
 
 	private:
-		const TextLayoutBlock&			fSubsetOf;
-		size_t							fStart;
-		size_t							fEnd;
-		vector<ScriptRunElt>			fScriptRuns;
-		Led_SmallStackBuffer<Led_tChar>	fRealText;
+		const TextLayoutBlock&				fSubsetOf;
+		size_t								fStart;
+		size_t								fEnd;
+		vector<ScriptRunElt>				fScriptRuns;
+		Foundation::Memory::SmallStackBuffer<Led_tChar>	fRealText;
 };
 
 

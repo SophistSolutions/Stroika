@@ -6,6 +6,9 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
+
 /*
 @MODULE:	TextStore
 @DESCRIPTION:
@@ -312,7 +315,7 @@ class	TextStore : public virtual MarkerOwner {
 				virtual		void	Append (Marker* m) override;
 
 			public:
-				Led_SmallStackBuffer<Marker*>	fMarkers;
+				Foundation::Memory::SmallStackBuffer<Marker*>	fMarkers;
 		};
 
 	public:
@@ -564,7 +567,7 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2Vector : public TextStore::
 @CLASS:			MarkersOfATypeMarkerSink2SmallStackBuffer<T>
 @BASES:			@'TextStore::MarkerSink'
 @DESCRIPTION:	<p>A MarkerSink template which grabs only Markers of subtype 'T' (using dynamic_cast<>).
-			Dumps results into a @'Led_SmallStackBuffer<T>' named 'fResult'.</p>
+			Dumps results into a @'Memory::SmallStackBuffer<T>' named 'fResult'.</p>
 */
 template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public TextStore::MarkerSink {
 	public:
@@ -572,7 +575,7 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 
 		virtual		void	Append (Marker* m) override;
 
-		Led_SmallStackBuffer<T*>	fResult;
+		Foundation::Memory::SmallStackBuffer<T*>	fResult;
 };
 
 
@@ -882,7 +885,7 @@ template	<typename	T>	class	MarkersOfATypeMarkerSink2SmallStackBuffer : public T
 				size_t	startOfFromLine	=	GetStartOfLineContainingPosition (charPos);
 				Assert (startOfFromLine <= charPos);
 				size_t	len				=	charPos-startOfFromLine;
-				Led_SmallStackBuffer<Led_tChar>	buf (len);
+				Memory::SmallStackBuffer<Led_tChar>	buf (len);
 				CopyOut (startOfFromLine, len, buf);
 				Assert (Led_IsValidMultiByteString (buf, len));	// This check that the whole line from the beginning to the charPos point
 																	// is valid makes sure that the from position doesn't split a double-byte

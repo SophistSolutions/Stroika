@@ -3,11 +3,16 @@
  */
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 #include	"Led_CodePage.h"
 
 #include	"Led_StyledTextIO_PlainText.h"
 
 
+
+
+using	namespace	Stroika::Foundation;
 
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
@@ -45,10 +50,10 @@ void	StyledTextIOReader_PlainText::Read ()
 {
 #if	1
 	// Read into a contiguous block of memory since it makes the dealing with CRLF
-	// strattling a buffer-bounary problem go away. Note that the Led_SmallStackBuffer<>::GrowToSize()
+	// strattling a buffer-bounary problem go away. Note that the Memory::SmallStackBuffer<>::GrowToSize()
 	// code grows exponentially so that we minimize buffer copies on grows...
 	size_t	len	=	0;
-	Led_SmallStackBuffer<char>	buf (len);
+	Memory::SmallStackBuffer<char>	buf (len);
 	while (true) {
 		size_t	kTryToReadThisTime	=	16 * 1024;
 		buf.GrowToSize (len + kTryToReadThisTime);
@@ -71,7 +76,7 @@ void	StyledTextIOReader_PlainText::Read ()
 	Assert (endPos >= oldPos);
 	GetSrcStream ().seek_to (oldPos);
 	size_t	len	=	endPos-oldPos;
-	Led_SmallStackBuffer<char>	buf (len);
+	Memory::SmallStackBuffer<char>	buf (len);
 	size_t	bytesRead	=	0;
 	if ( (bytesRead = GetSrcStream ().read (buf, len)) != len ) {
 		Led_ThrowBadFormatDataException ();
@@ -81,7 +86,7 @@ void	StyledTextIOReader_PlainText::Read ()
 	CodePage						useCodePage =	CodePagesGuesser ().Guess (buf, len);
 	CodePageConverter				cpc			=	CodePageConverter (useCodePage);
 	size_t							outCharCnt	=	cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<const char*> (buf), len + 1);
-	Led_SmallStackBuffer<Led_tChar>	wbuf (outCharCnt);
+	Memory::SmallStackBuffer<Led_tChar>	wbuf (outCharCnt);
 	cpc.SetHandleBOM (true);
 	cpc.MapToUNICODE (static_cast<const char*> (buf), len, static_cast<wchar_t*> (wbuf), &outCharCnt);
 	size_t	charsRead = outCharCnt;
@@ -138,7 +143,7 @@ void	StyledTextIOWriter_PlainText::Write ()
 		#endif
 		bytesRead = Led_NLToNative (buf, bytesRead, buf2, NEltsOf (buf2));
 		#if		qWideCharacters
-			Led_SmallStackBuffer<char>	ansiBuf (bytesRead * sizeof (Led_tChar));
+			Memory::SmallStackBuffer<char>	ansiBuf (bytesRead * sizeof (Led_tChar));
 #if 1
 			size_t	nChars	=	bytesRead * sizeof (Led_tChar);
 			CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);

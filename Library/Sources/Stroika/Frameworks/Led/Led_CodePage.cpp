@@ -6,9 +6,15 @@
 #include	<algorithm>
 #include	<cstdio>
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 
 #include	"Led_Config.h"
 
+
+
+
+using	namespace	Stroika::Foundation;
 
 
 #ifndef	qBuildInTableDrivenCodePageBuilderProc
@@ -300,7 +306,7 @@ void	CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 		fCodePage == kCodePage_UTF8
 	) {
 		size_t	tstCharCnt	=	*outCharCnt;
-		Led_SmallStackBuffer<wchar_t>	tstBuf (*outCharCnt);
+		Memory::SmallStackBuffer<wchar_t>	tstBuf (*outCharCnt);
 
 		Win32_CodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
 		Assert (tstCharCnt == *outCharCnt);
@@ -435,7 +441,7 @@ void	CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt
 	// Assure my baked tables perform the same as the builtin Win32 API
 	if (fCodePage == kCodePage_ANSI or fCodePage == kCodePage_MAC or fCodePage == kCodePage_PC or fCodePage == kCodePage_PCA) {
 		size_t						win32TstCharCnt	=	*outCharCnt;
-		Led_SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
+		Memory::SmallStackBuffer<char>	win32TstBuf (*outCharCnt);
 
 		Win32_CodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, win32TstBuf, &win32TstCharCnt);
 		// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -

@@ -6,6 +6,8 @@
 #include	<cctype>
 #include	<cstdarg>
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 #include	"Led_Config.h"	// For qWindows etc defines...
 
 #if		qMacOS
@@ -43,6 +45,10 @@
 
 
 
+
+using	namespace	Stroika::Foundation;
+
+
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
 #endif
@@ -63,7 +69,7 @@ namespace	Stroika {
 wstring	ACP2WideString (const string& s)
 {
 	size_t nChars	= s.length () + 1;	// convert null byte, too
-	Led_SmallStackBuffer<wchar_t>	result (nChars);
+	Memory::SmallStackBuffer<wchar_t>	result (nChars);
 	CodePageConverter	cpg (GetDefaultSDKCodePage ());
 	cpg.MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return wstring (result);
@@ -79,7 +85,7 @@ wstring	ACP2WideString (const string& s)
 string	Wide2ACPString (const wstring& s)
 {
 	size_t nChars	= s.length () * sizeof (wchar_t) + 1;	// convert null byte, too
-	Led_SmallStackBuffer<char>	result (nChars);
+	Memory::SmallStackBuffer<char>	result (nChars);
 	CodePageConverter	cpg (GetDefaultSDKCodePage ());
 	cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return string (result);
@@ -96,7 +102,7 @@ string	Wide2ACPString (const wstring& s)
 Led_SDK_String	Led_ANSI2SDKString (const string& s)
 {
 	size_t nChars	= s.length () + 1;	// convert null byte, too
-	Led_SmallStackBuffer<Led_SDK_Char>	result (nChars);
+	Memory::SmallStackBuffer<Led_SDK_Char>	result (nChars);
 	CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return Led_SDK_String (result);
 }
@@ -104,7 +110,7 @@ Led_SDK_String	Led_ANSI2SDKString (const string& s)
 Led_SDK_String	Led_Wide2SDKString (const wstring& s)
 {
 	size_t nChars	= s.length () * sizeof (wchar_t) + 1;	// convert null byte, too
-	Led_SmallStackBuffer<char>	result (nChars);
+	Memory::SmallStackBuffer<char>	result (nChars);
 	CodePageConverter	cpg (GetDefaultSDKCodePage ());
 	cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return Led_SDK_String (result);
@@ -123,7 +129,7 @@ wstring	Led_SDKString2Wide (const Led_SDK_String& s)
 string	Led_SDKString2ANSI (const Led_SDK_String& s)
 {
 	size_t nChars	= s.length () * sizeof (wchar_t) + 1;	// convert null byte, too
-	Led_SmallStackBuffer<char>	result (nChars);
+	Memory::SmallStackBuffer<char>	result (nChars);
 	CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return string (result);
 }
@@ -150,12 +156,12 @@ Led_SDK_String	Led_tString2SDKString (const Led_tString& s)
 {
 	#if		qWideCharacters && !qSDK_UNICODE
 		size_t nChars	= s.length () * sizeof (wchar_t) + 1;	// convert null byte, too
-		Led_SmallStackBuffer<Led_SDK_Char>	result (nChars);
+		Memory::SmallStackBuffer<Led_SDK_Char>	result (nChars);
 		CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 		return Led_SDK_String (result);
 	#elif	!qWideCharacters && qSDK_UNICODE
 		size_t nChars	= s.length () + 1;	// convert null byte, too
-		Led_SmallStackBuffer<Led_SDK_Char>	result (nChars);
+		Memory::SmallStackBuffer<Led_SDK_Char>	result (nChars);
 		CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 		return Led_SDK_String (result);
 	#else
@@ -173,12 +179,12 @@ Led_tString	Led_SDKString2tString (const Led_SDK_String& s)
 {
 	#if		qWideCharacters && !qSDK_UNICODE
 		size_t nChars	= s.length () + 1;	// convert null byte, too
-		Led_SmallStackBuffer<Led_tChar>	result (nChars);
+		Memory::SmallStackBuffer<Led_tChar>	result (nChars);
 		CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 		return Led_tString (result);
 	#elif	!qWideCharacters && qSDK_UNICODE
 		size_t nChars	= s.length () * sizeof (wchar_t) + 1;	// convert null byte, too
-		Led_SmallStackBuffer<Led_tChar>	result (nChars);
+		Memory::SmallStackBuffer<Led_tChar>	result (nChars);
 		CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 		return Led_tString (result);
 	#else
@@ -195,7 +201,7 @@ Led_tString	Led_SDKString2tString (const Led_SDK_String& s)
 Led_tString	Led_ANSIString2tString (const string& s)
 {
 	size_t nChars	= s.length () + 1;	// convert null byte, too
-	Led_SmallStackBuffer<Led_tChar>	result (nChars);
+	Memory::SmallStackBuffer<Led_tChar>	result (nChars);
 	CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return Led_tString (result);
 }
@@ -209,7 +215,7 @@ Led_tString	Led_ANSIString2tString (const string& s)
 string	Led_tString2ANSIString (const Led_tString& s)
 {
 	size_t nChars	= s.length () * sizeof (wchar_t) + 1;	// convert null byte, too
-	Led_SmallStackBuffer<char>	result (nChars);
+	Memory::SmallStackBuffer<char>	result (nChars);
 	CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
 	return string (result);
 }
@@ -419,7 +425,7 @@ Led_SDK_String	Format (const Led_SDK_Char* format, ...)
 */
 void	EmitTraceMessage (const Led_SDK_Char* format, ...)
 {
-	Led_SmallStackBuffer<Led_SDK_Char>	msgBuf (10*1024);	// no idea how big to make it...
+	Memory::SmallStackBuffer<Led_SDK_Char>	msgBuf (10*1024);	// no idea how big to make it...
 	va_list								argsList;
 	va_start (argsList, format);
 
@@ -1063,14 +1069,14 @@ void	DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char*
 {
 	{
 		size_t						labelLen	=	((objectName == NULL)? 0: ::strlen (objectName)) + 100;
-		Led_SmallStackBuffer<char>	labelBuf (labelLen);
+		Memory::SmallStackBuffer<char>	labelBuf (labelLen);
 		if (objectName == NULL) {
 			labelBuf[0] = '\0';
 		}
 		else {
 			(void)::sprintf (labelBuf, " (named '%s')", objectName);
 		}
-		Led_SmallStackBuffer<char>	msgBuf (labelLen + 1000);
+		Memory::SmallStackBuffer<char>	msgBuf (labelLen + 1000);
 		(void)::sprintf (msgBuf, "Dumping interfaces for object%s at 0x%x:\n", static_cast<char*> (labelBuf), reinterpret_cast<int> (obj));
 		::OutputDebugStringA (msgBuf);
 
@@ -1153,14 +1159,14 @@ void	DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const 
 {
 	{
 		size_t						labelLen	=	((iteratorName == NULL)? 0: ::strlen (iteratorName)) + 100;
-		Led_SmallStackBuffer<char>	labelBuf (labelLen);
+		Memory::SmallStackBuffer<char>	labelBuf (labelLen);
 		if (iteratorName == NULL) {
 			labelBuf[0] = '\0';
 		}
 		else {
 			(void)::sprintf (labelBuf, " (named '%s')", iteratorName);
 		}
-		Led_SmallStackBuffer<char>	msgBuf (labelLen + 1000);
+		Memory::SmallStackBuffer<char>	msgBuf (labelLen + 1000);
 		(void)::sprintf (msgBuf, "Dumping objects (and their interface names) for iterator%s at 0x%x\n", static_cast<char*> (labelBuf), reinterpret_cast<int> (iter));
 		::OutputDebugStringA (msgBuf);
 
@@ -1479,7 +1485,7 @@ void	Led_URLManager::Open_SpyglassAppleEvent (const string& url)
 #if		qUseActiveXToOpenURLs
 void	Led_URLManager::Open_ActiveX (const string& url)
 {
-	Led_SmallStackBuffer<wchar_t>	wideURLBuf (url.length ()+1);
+	Memory::SmallStackBuffer<wchar_t>	wideURLBuf (url.length ()+1);
 	{
 		int nWideChars = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), url.length (), wideURLBuf, url.length ());
 		wideURLBuf[nWideChars] = '\0';
@@ -1609,7 +1615,7 @@ void	Led_URLManager::Open_SystemNetscape (const string& url)
 #endif
 	{
 		// Try to connect to a running Netscape, if not, start new one
-		Led_SmallStackBuffer<char> buf (url.length () * 2 + 1000);
+		Memory::SmallStackBuffer<char> buf (url.length () * 2 + 1000);
 		sprintf (buf, "netscape -remote openURL\\(\"%s\"\\) || netscape \"%s\" &", url.c_str (), url.c_str ());
 		execString = buf;
 	}

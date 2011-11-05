@@ -18,6 +18,10 @@
 #include	"Led_WordProcessor.h"
 
 
+using	namespace	Stroika::Foundation;
+
+
+
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
@@ -1766,7 +1770,7 @@ void	WordProcessor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
 			// Walk backwards and see if we can find a recent OPEN-quote
 			const size_t	kScanBackSize	=	1024;
 			size_t			scanBackTo	=	static_cast<size_t> (max (0, static_cast<int> (selStart)-static_cast<int>(kScanBackSize)));
-			Led_SmallStackBuffer<Led_tChar>	buf (kScanBackSize);
+			Memory::SmallStackBuffer<Led_tChar>	buf (kScanBackSize);
 			size_t			scanBackCount	=	selStart - scanBackTo;
 			CopyOut (scanBackTo, scanBackCount, buf);
 			for (size_t i = scanBackCount; i != 0; --i) {
@@ -3257,7 +3261,7 @@ Led_Distance	WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) cons
 		return 0;
 	}
 	else {
-		Led_SmallStackBuffer<Led_Distance>	distanceResults (len);
+		Memory::SmallStackBuffer<Led_Distance>	distanceResults (len);
 		Led_FontSpecification				nextCharsFontStyle	=	GetStyleInfo (paragraphMarkerPos);
 		Led_FontSpecification				useBulletFont		=	GetStaticDefaultFont ();
 		useBulletFont.SetPointSize (Led_Max (14, nextCharsFontStyle.GetPointSize ()));
@@ -4196,7 +4200,7 @@ Led_Distance	WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
 
 	{
 		size_t	lenOfText		=	rowEnd-rowStart;
-		Led_SmallStackBuffer<Led_tChar>	buf (lenOfText);
+		Memory::SmallStackBuffer<Led_tChar>	buf (lenOfText);
 		CopyOut (rowStart, lenOfText, buf);
 		// Throw away trailing space characters
 		while (rowStart < rowEnd) {
@@ -5451,7 +5455,7 @@ void	WordProcessor::WPPartition::Invariant_ () const
 		if (end > GetEnd ()) {
 			len--;	// Last partition extends past end of text
 		}
-		Led_SmallStackBuffer<Led_tChar>	buf (len);
+		Memory::SmallStackBuffer<Led_tChar>	buf (len);
 		CopyOut (start, len, buf);
 		for (size_t i = 1; i < len; i++) {
 			Assert (buf[i-1] != '\n');
@@ -7146,7 +7150,7 @@ void		Table::PerformLayout ()
 			 *	Compute REAL (non-merge) cells widths.
 			 */
 			size_t								cols		=	GetColumnCount (r);
-			Led_SmallStackBuffer<Led_Distance>	realCellWidths (cols);	// cell widths for this row - only for REAL (plain - non-merge) cells
+			Memory::SmallStackBuffer<Led_Distance>	realCellWidths (cols);	// cell widths for this row - only for REAL (plain - non-merge) cells
 			Led_Distance						rowWidth	=	0;
 			{
 				size_t	lastRealCellIdx	=	0;

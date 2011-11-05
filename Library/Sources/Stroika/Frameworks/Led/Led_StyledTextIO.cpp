@@ -13,6 +13,8 @@
 	#include	<TextEdit.h>		// for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 #include	"Led_StyledTextImager.h"
 #include	"Led_StyledTextEmbeddedObjects.h"
 
@@ -25,6 +27,10 @@
 	#include	<bitset>
 #endif
 
+
+
+
+using	namespace	Stroika::Foundation;
 
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
@@ -911,7 +917,7 @@ string	StyledTextIOReader::GrabString (size_t from, size_t to)
 	Require (from <= effectiveTo);
 
 	size_t	strLen	=	effectiveTo-from;
-	Led_SmallStackBuffer<char>	buf (strLen+1);
+	Memory::SmallStackBuffer<char>	buf (strLen+1);
 	GetSrcStream ().seek_to (from);
 	if (GetSrcStream ().read (buf, strLen) != strLen) {
 		GetSrcStream ().seek_to (onEntrySeekPos);

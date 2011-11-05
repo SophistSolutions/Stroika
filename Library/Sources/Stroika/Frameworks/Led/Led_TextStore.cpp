@@ -11,6 +11,8 @@
 
 
 
+using	namespace	Stroika::Foundation;
+
 
 #if		defined (CRTDBG_MAP_ALLOC_NEW)
 	#define	new	CRTDBG_MAP_ALLOC_NEW
@@ -66,7 +68,7 @@ void	TextStore::VectorMarkerSink::Append (Marker* m)
 /*
 @METHOD:		TextStore::SmallStackBufferMarkerSink::Append
 @DESCRIPTION:	<p>Don't call directly. Called as a by-product of TextStore::CollectAllMarkersInRange ().
-	This TextStore::VectorMarkerSink produces a @'Led_SmallStackBuffer<T>' for such collect calls.</p>
+	This TextStore::VectorMarkerSink produces a @'Memory::SmallStackBuffer<T>' for such collect calls.</p>
 */
 void	TextStore::SmallStackBufferMarkerSink::Append (Marker* m)
 {
@@ -501,7 +503,7 @@ void	TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, s
 	size_t	endOfThisLine	=	GetEndOfLineContainingPosition (afterPosition);
 	size_t	len				=	endOfThisLine-startOfThisLine;
 
-	Led_SmallStackBuffer<Led_tChar>	buf (len);
+	Memory::SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (startOfThisLine, len, buf);
 
 	Assert (afterPosition >= startOfThisLine);
@@ -533,7 +535,7 @@ void	TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, boo
 	size_t	endOfThisLine	=	GetEndOfLineContainingPosition (afterPosition);
 	size_t	len				=	endOfThisLine-startOfThisLine;
 
-	Led_SmallStackBuffer<Led_tChar>	buf (len);
+	Memory::SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (startOfThisLine, len, buf);
 
 	Assert (afterPosition >= startOfThisLine);
@@ -657,7 +659,7 @@ size_t	TextStore::Find (const SearchParameters& params, size_t searchFrom, size_
 	size_t	bufferEnd	=	(searchTo == eUseSearchParameters)? GetEnd (): searchTo;
 	size_t	searchIdx	=	searchFrom;		// index of where we are currently searching from
 
-	Led_SmallStackBuffer<Led_tChar> lookingAtData (patternLen);
+	Memory::SmallStackBuffer<Led_tChar> lookingAtData (patternLen);
 
 searchSMORE:
 	if (searchIdx + patternLen > bufferEnd) {
@@ -898,7 +900,7 @@ TextStore*	TextStore::PeekAtTextStore () const
 void	TextStore::Invariant_ () const
 {
 	size_t							len	=	GetLength ();
-	Led_SmallStackBuffer<Led_tChar>	buf (len);
+	Memory::SmallStackBuffer<Led_tChar>	buf (len);
 	CopyOut (0, len, buf);
 	const Led_tChar*	start	=	buf;
 	const Led_tChar*	end		=	&start[len];

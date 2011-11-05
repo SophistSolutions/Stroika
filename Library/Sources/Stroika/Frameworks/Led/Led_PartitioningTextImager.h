@@ -6,6 +6,8 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Memory/SmallStackBuffer.h"
+
 
 /*
 @MODULE:	PartitioningTextImager
@@ -353,7 +355,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 					}
 
 			public:
-				Led_SmallStackBuffer<Led_Distance>	fMeasurementsCache;		// for just the given PM
+				Foundation::Memory::SmallStackBuffer<Led_Distance>	fMeasurementsCache;		// for just the given PM
 	
 			private:
 				friend	class	PartitioningTextImager::MeasureTextCache;
