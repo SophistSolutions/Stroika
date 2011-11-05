@@ -6,6 +6,7 @@
 #include	<cctype>
 #include	<cstdarg>
 
+#include	"../../Foundation/Characters/StringUtils.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 #include	"Led_Config.h"	// For qWindows etc defines...
@@ -1182,7 +1183,7 @@ void	DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const 
 	IUnknown*	nextObj	=	NULL;
 	for (size_t i = 0; SUCCEEDED (iter->Next (1, &nextObj, NULL)); ++i) {
 		char	nameBuf[1024];
-		(void)::sprintf (nameBuf, "obj#%d", i);
+		(void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", i);
 		char	levelPrefixBuf[1024];
 		Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf)/2);	// assert MUCH less
 		strcpy (levelPrefixBuf, levelPrefix);
@@ -1779,7 +1780,7 @@ HSZ	Led_URLManager::ClientArguments (const char* pFormat, ...)
 			DWORD*	pWord = va_arg (VarList, DWORD *);
 			if(pWord != NULL)	{
 			    //  See if we need to use hex.
-				sprintf (caNumpad, "%lu", *pWord);
+				snprintf (caNumpad, NEltsOf (caNumpad), "%lu", *pWord);
 				csRetval += caNumpad;
 			}
 		}
@@ -2113,7 +2114,7 @@ string	MakeSophistsAppNameVersionURL (const string& relURL, const string& appNam
 {
 	Require (relURL.length () > 0 and relURL[0] == '/');
 	char	fullVersionBuf[1024];
-	(void)::sprintf (fullVersionBuf, "%d", qLed_FullVersion);
+	(void)::snprintf (fullVersionBuf, NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
 	string	fullURL	=	"http://www.sophists.com" + relURL +
 							"?AppName=" + appName +
 							#if		qWindows
