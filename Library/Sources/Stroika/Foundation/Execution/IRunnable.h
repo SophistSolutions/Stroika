@@ -20,10 +20,17 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-			/// More TODO - Improve use of RUNNABLE CLASS - SEE http://bugzilla/show_bug.cgi?id=746
+			/*
+			 * This simple class is the basis of Stroika deferred run-task support (and threading etc). Just create Shared<IRunnable> entites and you can pass the tasks
+			 * around, and the shared semantics exactly keep all the results and code etc alive until the last reference.
+			 */
 			class	IRunnable {
 				public:
 					virtual ~IRunnable ();
+				/*
+				 * Note - is is perfectly legal to throw an exception out of 'Run()' - and it depends on the containier or 'runner' you are using if/how that
+				 * exception will be reported/propagated.
+				 */
 				public:
 					virtual	void	Run () = 0;
 			};
