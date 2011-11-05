@@ -631,23 +631,6 @@ size_t	Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tChar ch
 
 
 /*
-@CLASS:			LED_DECLARE_DONT_USE_BLOCK_ALLOCATION
-@DESCRIPTION:	<p>If you subclass from a class which uses block-allication, you can use this to turn off block allocation
-	in your particular subclass.</p>
-		<p>See also @'LED_DECLARE_USE_BLOCK_ALLOCATION' and @'Led_BlockAllocated<T>'.</p>
-*/
-#if		qAllowBlockAllocation
-	#define	LED_DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)\
-			static	void*	operator new (size_t n)		{	return ::operator new (n);	}\
-			static	void	operator delete (void* p)	{	::operator delete (p);		}
-#else
-	#define	LED_DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
-#endif
-
-
-
-
-/*
 @METHOD:		PUSH_BACK
 @DESCRIPTION:	<p></p>
 */
