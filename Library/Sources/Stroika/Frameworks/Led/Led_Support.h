@@ -406,29 +406,8 @@ wstring	Led_tString2WideString (const Led_tString& s);
 
 void			SPrintF (Led_SDK_Char* buffer, const Led_SDK_Char* format, ...);
 
-Led_SDK_String	Format (const Led_SDK_Char* format, ...);
 
 
-
-void	EmitTraceMessage (const Led_SDK_Char* format, ...);
-
-
-/*
-@METHOD:		LedDebugTrace
-@DESCRIPTION:	<p>This function either does NOTHING (trying to not even evaluate its arguments)
-			or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
-			these two behaviors you see is conditioned on @'qDefaultTracingOn'</p>
-*/
-#ifndef	LedDebugTrace
-	#if		qDefaultTracingOn
-		#define	LedDebugTrace	EmitTraceMessage
-	#elif	qNoOpKeywordSupported
-		#define	LedDebugTrace	__noop
-	#else
-		// not ideal - but the best portable solution I can think of???
-		#define	LedDebugTrace
-	#endif
-#endif
 
 
 

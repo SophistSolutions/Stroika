@@ -579,11 +579,6 @@
 			#define	qUniscribeAvailableWithSDK										1
 		#endif
 
-		//	Still supported in MSVC 7.1 - LGP 2003-05-08
-		//	This feature is at least supported in MSVC70 - LGP 2002-12-19
-		#ifndef	qNoOpKeywordSupported
-			#define	qNoOpKeywordSupported											1
-		#endif
 
 	#elif		_MSC_VER == _MSVC71_VER_
 
@@ -626,11 +621,6 @@
 			#define	qUniscribeAvailableWithSDK										1
 		#endif
 
-		//	Still supported in MSVC 7.1 - LGP 2003-05-08
-		//	This feature is at least supported in MSVC70 - LGP 2002-12-19
-		#ifndef	qNoOpKeywordSupported
-			#define	qNoOpKeywordSupported											1
-		#endif
 
 	#elif		_MSC_VER >= _MSVC70_VER_
 
@@ -745,11 +735,6 @@
 		//	Is the Uniscribe SDK (.h file etc) available with this compiler?
 		#ifndef	qUniscribeAvailableWithSDK
 			#define	qUniscribeAvailableWithSDK										1
-		#endif
-
-		//	This feature is at least supported in MSVC70 - LGP 2002-12-19
-		#ifndef	qNoOpKeywordSupported
-			#define	qNoOpKeywordSupported											1
 		#endif
 
 	#elif	_MSC_VER >= _MSVC60_VER_
@@ -924,10 +909,6 @@
 			#define	qUniscribeAvailableWithSDK										0
 		#endif
 
-		//	This feature is NOT supported in MSVC60 - LGP 2004-02-10
-		#ifndef	qNoOpKeywordSupported
-			#define	qNoOpKeywordSupported											0
-		#endif
 
 	#elif	_MSC_VER == _MSVC50_VER_
 
@@ -1531,31 +1512,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-
-
-
-/*
-@CONFIGVAR:		qDefaultTracingOn
-@DESCRIPTION:	<p>Led contains a limited amount of pre-built tracing code. This could be expanded someday,
-			depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
-			on (windows only cuz thats the only place I've implemented the trace message emitter so far).</p>
-				<p>See also @'qDebug' and @'LedDebugTrace'</p>
- */
-#ifndef	qDefaultTracingOn
-#define	qDefaultTracingOn	qDebug && qWindows
-#endif
-
-
-
-
-/*
-@CONFIGVAR:		qNoOpKeywordSupported
-@DESCRIPTION:	<p>MSVC-specific hack - but a useful one. Allows for trace macro calls (see @'qDefaultTracingOn'). I don't
-			know of any compilers which support this other than MSVC.</p>
- */
-#ifndef	qNoOpKeywordSupported
-#define	qNoOpKeywordSupported	0
-#endif
 
 
 

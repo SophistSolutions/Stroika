@@ -5,6 +5,8 @@
 
 #include	<cctype>
 
+#include	"../../Foundation/Characters/Format.h"
+
 #include	"Led_Config.h"
 
 #if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -1855,7 +1857,7 @@ void	WordProcessor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t drag
 	}
 	inherited::WhileSimpleMouseTracking (newMousePos, dragAnchor);
 #if		0
-LedDebugTrace ("WordProcessor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), clickedOnChar=%d, dragAnchor=%d)\n",
+DbgTrace ("WordProcessor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), clickedOnChar=%d, dragAnchor=%d)\n",
 				Led_GetTickCount (), newMousePos.v, newMousePos.h, clickedOnChar, dragAnchor
 		);
 #endif
@@ -2596,7 +2598,7 @@ void	WordProcessor::OnUpdateFontSizeChangeCommand (CommandUpdater* enabler)
 					int	pointSize	=	fCachedCurSelFontSpec.GetPointSize ();
 					if (not GetDialogSupport ().IsPredefinedFontSize (pointSize)) {
 						enabler->SetChecked (true);
-						enabler->SetText (Format (GetCommandNames ().fFontSizeChange_Other_OneArg.c_str (), pointSize).c_str ());
+						enabler->SetText (Characters::Format (GetCommandNames ().fFontSizeChange_Other_OneArg.c_str (), pointSize).c_str ());
 						return;
 					}
 				}
@@ -6633,7 +6635,7 @@ const char*	Table::GetTag () const
 bool	Table::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection)
 {
 	#if		0
-		LedDebugTrace ("ENTERING Table::ProcessSimpleClick (this= 0x%x, clickedAt=(%d,%d), clickCount=%d, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+		DbgTrace ("ENTERING Table::ProcessSimpleClick (this= 0x%x, clickedAt=(%d,%d), clickCount=%d, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
 						this, clickedAt.v, clickedAt.h, clickCount, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
 					);
 	#endif
@@ -6705,7 +6707,7 @@ bool	Table::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool e
 		}
 	}
 	#if		0
-		LedDebugTrace ("EXITING Table::ProcessSimpleClick (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+		DbgTrace ("EXITING Table::ProcessSimpleClick (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
 						this, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
 					);
 	#endif
@@ -6715,7 +6717,7 @@ bool	Table::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool e
 void	Table::WhileSimpleMouseTracking (Led_Point newMousePos)
 {
 	#if		0
-		LedDebugTrace ("ENTERING Table::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+		DbgTrace ("ENTERING Table::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
 						this, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
 					);
 	#endif
@@ -6768,7 +6770,7 @@ void	Table::WhileSimpleMouseTracking (Led_Point newMousePos)
 		}
 	}
 	#if		0
-		LedDebugTrace ("EXITING Table::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+		DbgTrace ("EXITING Table::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
 						this, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
 					);
 	#endif
@@ -6965,7 +6967,7 @@ void	Table::SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSe
 		}
 	}
 	#if		0
-		LedDebugTrace ("Table::SetCellSelection (table=0x%x, tickCount=%f, rs=%d, re=%d, cs=%d, ce=%d, changed=%d)\n",
+		DbgTrace ("Table::SetCellSelection (table=0x%x, tickCount=%f, rs=%d, re=%d, cs=%d, ce=%d, changed=%d)\n",
 						this, Led_GetTickCount (), rowSelStart, rowSelEnd, colSelStart, colSelEnd, changed
 				);
 	#endif
@@ -7009,7 +7011,7 @@ void	Table::SetIntraCellSelection (size_t selStart, size_t selEnd)
 {
 	if (fIntraSelStart != selStart or fIntraSelEnd != selEnd) {
 		#if		0
-			LedDebugTrace ("Table::SetIntraCellSelection (selStart = %d, selEnd = %d)- oldSel=(%d,%d), tickcount=%f\n", selStart, selEnd, fIntraSelStart, fIntraSelEnd, Led_GetTickCount ());
+			DbgTrace ("Table::SetIntraCellSelection (selStart = %d, selEnd = %d)- oldSel=(%d,%d), tickcount=%f\n", selStart, selEnd, fIntraSelStart, fIntraSelEnd, Led_GetTickCount ());
 		#endif
 		if (fCurrentOwningWP != NULL) {
 			fCurrentOwningWP->fCachedCurSelFontSpecValid = false;
@@ -7788,7 +7790,7 @@ void	WordProcessor::Table::EmbeddedTableWordProcessor::ReleaseTablet (Led_Tablet
 void	WordProcessor::Table::EmbeddedTableWordProcessor::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
 {
 	#if		0
-		LedDebugTrace ("EmbeddedTableWordProcessor::RefreshWindowRect_ (supressRefreshCalls = %d, updadeMode=%d)\n", fSupressRefreshCalls, updateMode);
+		DbgTrace ("EmbeddedTableWordProcessor::RefreshWindowRect_ (supressRefreshCalls = %d, updadeMode=%d)\n", fSupressRefreshCalls, updateMode);
 	#endif
 	if (not fSupressRefreshCalls) {
 		// See SPR#1455- really never a need to do IMMEDIATE update and for these embedded WP's can get into a

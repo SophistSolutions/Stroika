@@ -6,6 +6,8 @@
 #include	<cctype>
 #include	<set>
 
+#include	"../../Foundation/Characters/Format.h"
+
 #include	"Led_Config.h"
 
 
@@ -646,13 +648,13 @@ void	TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
 		if (enabler->GetCmdID () == kUndo_CmdID) {
 			enabler->SetEnabled (GetCommandHandler ()->CanUndo ());
 
-			Led_SDK_String	menuItemText	=	Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
+			Led_SDK_String	menuItemText	=	Characters::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
 			enabler->SetText (menuItemText.c_str ());
 		}
 		else if (enabler->GetCmdID () == kRedo_CmdID)  {
 			enabler->SetEnabled (GetCommandHandler ()->CanRedo ());
 
-			Led_SDK_String	menuItemText	=	Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
+			Led_SDK_String	menuItemText	=	Characters::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
 			enabler->SetText (menuItemText.c_str ());
 		}
 	}
@@ -1445,7 +1447,7 @@ bool	TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCoun
 		break;
 	}
 	#if		0
-		LedDebugTrace ("TextInteractor::ProcessSimpleClick (tickCount=%f, newMousePos=(%d,%d), clickCount=%d, extendSel=%d, newSelStart=%d, newSelEnd=%d)\n",
+		DbgTrace ("TextInteractor::ProcessSimpleClick (tickCount=%f, newMousePos=(%d,%d), clickCount=%d, extendSel=%d, newSelStart=%d, newSelEnd=%d)\n",
 						Led_GetTickCount (), clickedAt.v, clickedAt.h, clickCount, extendSelection, GetSelectionStart (), GetSelectionEnd ()
 					);
 	#endif
@@ -1552,7 +1554,7 @@ void	TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
 		sLastTimeThrough = now;
 	#endif
 	#if		0
-		LedDebugTrace ("TextInteractor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), dragAnchor=%d, newSelStart=%d, newSelEnd=%d)\n",
+		DbgTrace ("TextInteractor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), dragAnchor=%d, newSelStart=%d, newSelEnd=%d)\n",
 						Led_GetTickCount (), newMousePos.v, newMousePos.h, dragAnchor, newSelStart, newSelEnd
 					);
 	#endif

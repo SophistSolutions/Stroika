@@ -381,72 +381,7 @@ void	SPrintF (Led_SDK_Char* buffer, const Led_SDK_Char* format, ...)
 
 
 
-/*
- ********************************************************************************
- ************************************* Format ***********************************
- ********************************************************************************
- */
 
-/*
-@METHOD:		Format
-@DESCRIPTION:	<p>A simple wrapper on @'SPrintF' - but this function has a fixed size (10K Led_SDK_Char)
-			buffer. Use @'SPrintF' directly if a larger buffer is required.</p>
-*/
-Led_SDK_String	Format (const Led_SDK_Char* format, ...)
-{
-	Led_SDK_Char				msgBuf [10*1024];	// no idea how big to make it...
-	va_list						argsList;
-	va_start (argsList, format);
-
-	#if		qSDK_UNICODE
-		(void)::vswprintf (msgBuf, format, argsList);
-	#else
-		(void)::vsprintf (msgBuf, format, argsList);
-	#endif
-	va_end (argsList);
-	return msgBuf;
-}
-
-
-
-
-
-
-/*
- ********************************************************************************
- ******************************** EmitTraceMessage ******************************
- ********************************************************************************
- */
-/*
-@METHOD:		EmitTraceMessage
-@DESCRIPTION:	<p>This function takes a 'format' argument and then any number of additional arguments - exactly
-			like std::printf (). It calls std::vsprintf () internally. This can be called directly - regardless of the 
-			 @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
-			 @'LedDebugTrace'.</p>
-*/
-void	EmitTraceMessage (const Led_SDK_Char* format, ...)
-{
-	Memory::SmallStackBuffer<Led_SDK_Char>	msgBuf (10*1024);	// no idea how big to make it...
-	va_list								argsList;
-	va_start (argsList, format);
-
-	#if		qSDK_UNICODE
-		(void)::vswprintf (msgBuf, format, argsList);
-	#else
-		(void)::vsprintf (msgBuf, format, argsList);
-	#endif
-	#if		qWindows
-		size_t	len	=	::_tcslen (msgBuf);
-		if (msgBuf[len-1] != '\r' and msgBuf[len-1] != '\n') {
-			(void)::_tcscat (msgBuf, Led_SDK_TCHAROF ("\r\n"));
-		}
-		::OutputDebugString (msgBuf);
-	#else
-		// SB pretty easy - but no need right now... LGP 2002-12-19
-		Assert (false);	// NYI
-	#endif
-	va_end (argsList);
-}
 
 
 

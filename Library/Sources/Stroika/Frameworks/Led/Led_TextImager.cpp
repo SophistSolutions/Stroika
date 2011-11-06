@@ -760,7 +760,7 @@ void	TextImager::SetSelection (size_t start, size_t end)
 #endif
 
 	#if		0
-		LedDebugTrace ("TextImager::SetSelection (this= 0x%x, this_class = %s, oldSelStart=%d, oldSelEnd=%d, newSelStart=%d, newSelEnd=%d)\n",
+		DbgTrace ("TextImager::SetSelection (this= 0x%x, this_class = %s, oldSelStart=%d, oldSelEnd=%d, newSelStart=%d, newSelEnd=%d)\n",
 						this, typeid (*this).name (), GetSelectionStart (), GetSelectionEnd (), start, end
 					);
 	#endif

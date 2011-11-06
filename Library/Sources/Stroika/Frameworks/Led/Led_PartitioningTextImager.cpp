@@ -742,7 +742,7 @@ size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
 						#if		qMultiByteCharacters
 							Assert_CharPosDoesNotSplitCharacter (prevEnd);
 						#endif
-						//LedDebugTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (LTR)", hOffset, prevEnd);
+						//DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (LTR)", hOffset, prevEnd);
 						return (prevEnd);
 					}
 				}
@@ -751,12 +751,12 @@ size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
 						#if		qMultiByteCharacters
 							Assert_CharPosDoesNotSplitCharacter (prevEnd);
 						#endif
-						//LedDebugTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (RTL)", hOffset, prevEnd);
+						//DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (RTL)", hOffset, prevEnd);
 						return (prevEnd);
 					}
 				}
 			}
-			//LedDebugTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOS)", hOffset, prevEnd);
+			//DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOS)", hOffset, prevEnd);
 			return (prevEnd);
 		}
 
@@ -765,11 +765,11 @@ size_t	PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
 
 	Assert (hOffset > 0 or runs.size () == 0);
 	if (lastRunDir == eLeftToRight) {
-		//LedDebugTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-LTR)", hOffset, rowEnd);
+		//DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-LTR)", hOffset, rowEnd);
 		return rowEnd;
 	}
 	else {
-		//LedDebugTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-RTL)", hOffset, rowStart);
+		//DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-RTL)", hOffset, rowStart);
 		return rowStart;
 	}
 }
