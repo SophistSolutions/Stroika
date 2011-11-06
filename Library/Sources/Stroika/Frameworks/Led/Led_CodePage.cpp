@@ -6,6 +6,7 @@
 #include	<algorithm>
 #include	<cstdio>
 
+#include	"../../Foundation/Characters/Format.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -1534,9 +1535,7 @@ Led_SDK_String	CodePagePrettyNameMapper::GetName (CodePage cp)
 			case	10001:								return sCodePageNames.f10001;
 			case	50220:								return sCodePageNames.f50220;
 			default: {
-				char	buf[1024];
-				(void)::sprintf (buf, "%d", cp);
-				return Led_ANSI2SDKString (buf);
+				return Led_ANSI2SDKString (Characters::Format ("%d", cp));
 			}
 		}
 	}

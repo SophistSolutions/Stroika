@@ -27,6 +27,8 @@ namespace	Stroika {
 			a helpful class you may want to use elsewhere in your code.</p>
 
 			// typically sizeof(SmallStackBuffer<T,BUF_SIZE>) will come to roughly 4K, and always at least something.
+
+			NB: this code is only safe for POD-types - not for types with constructors etc.
 		*/
 		template	<typename	T, size_t BUF_SIZE = ((4096/sizeof(T)) == 0? 1 : (4096/sizeof(T)))>
 			class	SmallStackBuffer {
@@ -59,6 +61,7 @@ namespace	Stroika {
 					nonvirtual	size_t	GetSize () const;
 
 				public:
+					// Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize ()
 					nonvirtual	void	GrowToSize (size_t nElements);
 				private:
 					nonvirtual	void	GrowToSize_ (size_t nElements);

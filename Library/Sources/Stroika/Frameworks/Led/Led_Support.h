@@ -404,12 +404,6 @@ wstring	Led_tString2WideString (const Led_tString& s);
 
 
 
-void			SPrintF (Led_SDK_Char* buffer, const Led_SDK_Char* format, ...);
-
-
-
-
-
 
 
 /*

@@ -6,6 +6,8 @@
 #include	<cctype>
 #include	<cstdio>	// for sprintf()
 
+#include	"../../Foundation/Characters/StringUtils.h"
+
 #include	"Led_Config.h"
 
 #if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -38,7 +40,7 @@ namespace	Stroika {
 namespace {
 
 
-	bool	ParseStringToInt (const string& s, int* t)
+	bool	ParseStringToInt_ (const string& s, int* t)
 		{
 			int	l	=	0;
 			if (::sscanf (s.c_str (), "%d", &l) < 1) {
@@ -1042,7 +1044,7 @@ Led_IncrementalFontSpecification	StyledTextIOReader_HTML::ExtractFontSpecFromCSS
 			Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt")
 			) {
 			int	sizeVal	=	0;
-			if (ParseStringToInt (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and
+			if (ParseStringToInt_ (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and
 				sizeVal >= 2 and sizeVal <= 128
 				) {
 				f.SetPointSize (sizeVal);
@@ -1061,7 +1063,7 @@ Led_IncrementalFontSpecification	StyledTextIOReader_HTML::ExtractFontSpecFromCSS
 		int	bv	=	0;
 		if (Led_CasedStringsEqual (itemValue, "bold") or
 			Led_CasedStringsEqual (itemValue, "bolder") or
-			(itemValue.length () > 0 and isdigit (itemValue[0]) and ParseStringToInt (itemValue, &bv) and bv >= 400)
+			(itemValue.length () > 0 and isdigit (itemValue[0]) and ParseStringToInt_ (itemValue, &bv) and bv >= 400)
 			) {
 			f.SetStyle_Bold (true);
 		}
@@ -2483,7 +2485,7 @@ void	StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
 			char	sprintfBuffer[1024];
 			string	cssInfo	=	"style=\"";
 				cssInfo += "font-family: '" + Led_SDKString2ANSI (newOne.GetFontName ()) + "'; ";
-				cssInfo += (sprintf (sprintfBuffer, "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
+				cssInfo += (::snprintf (sprintfBuffer, NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
 				cssInfo += "color: " + PrintColorString (newOne.GetTextColor ());
 				cssInfo += "\"";
 			WriteOpenTag (writerContext, "span",
@@ -2550,7 +2552,7 @@ string	StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
 		}
 		else {
 			char	buf[1024];
-			(void)::sprintf (buf, "&#%d;", static_cast<unsigned int> (*i));
+			(void)::snprintf (buf, NEltsOf (buf), "&#%d;", static_cast<unsigned int> (*i));
 			result += buf;
 		}
 	}

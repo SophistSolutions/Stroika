@@ -914,7 +914,7 @@ void	StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 			TCHAR	dir[_MAX_DIR];
 			TCHAR	fname[_MAX_FNAME];
 			TCHAR	ext[_MAX_EXT];
-			::_tsplitpath (fileName, drive, dir, fname, ext);
+			::_tsplitpath_s (fileName, drive, dir, fname, ext);
 			if (::_tcsicmp (ext, Led_SDK_TCHAROF (".rtf")) == 0) {
 				*suggestedClipFormat = kRTFClipFormat;
 			}

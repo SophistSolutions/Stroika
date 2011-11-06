@@ -353,34 +353,6 @@ float	Led_GetDoubleClickTime ()
 
 
 
-/*
- ********************************************************************************
- ************************************ SPrintF ***********************************
- ********************************************************************************
- */
-
-/*
-@METHOD:		SPrintF
-@DESCRIPTION:	<p>An @'Led_SDK_String' version of @'std::sprintf'. A slightly more convenient form
-			of this function is the @'Format' function.
-			</p>
-*/
-void	SPrintF (Led_SDK_Char* buffer, const Led_SDK_Char* format, ...)
-{
-	va_list								argsList;
-	va_start (argsList, format);
-
-	#if		qSDK_UNICODE
-		(void)::vswprintf (buffer, format, argsList);
-	#else
-		(void)::vsprintf (buffer, format, argsList);
-	#endif
-	va_end (argsList);
-}
-
-
-
-
 
 
 
@@ -430,7 +402,7 @@ int	Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 	#elif	qMultiByteCharacters
 		return ::_mbsnicmp (l, r, n);
 	#elif	qWideCharacters
-		return ::wcsnicmp (l, r, n);
+		return ::_wcsnicmp (l, r, n);
 	#endif	
 }
 
@@ -443,7 +415,7 @@ int	Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 	#elif	qMultiByteCharacters
 		return ::_mbsicmp (l, r);
 	#elif	qWideCharacters
-		return ::wcsicmp (l, r);
+		return ::_wcsicmp (l, r);
 	#endif	
 }
 #endif
