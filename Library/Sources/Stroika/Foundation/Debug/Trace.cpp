@@ -207,7 +207,7 @@ Emitter::Emitter ()
 @DESCRIPTION:	<p>This function takes a 'format' argument and then any number of additional arguments - exactly
 			like std::printf (). It calls std::vsprintf () internally. This can be called directly - regardless of the 
 			 @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
-			 @'LedDebugTrace'.</p>
+			 @'DbgTrace'.</p>
 */
 void	Emitter::EmitTraceMessage (const char* format, ...)
 {
