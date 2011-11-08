@@ -70,6 +70,16 @@ wstring	Exception::GetReason () const
 	return mkReason_ (fStatus_, fReason_);
 }
 
+wstring	Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
+{
+	if (forceAlwaysFound) {
+		return mkReason_ (s, wstring ());
+	}
+	else {
+		return mkCanBeEmptyReason_ (s, wstring ());
+	}
+}
+
 void	Exception::DoThrowIfError (Status status, const wstring& reason)
 {
 	if (IsHTTPStatusOK (status)) {
