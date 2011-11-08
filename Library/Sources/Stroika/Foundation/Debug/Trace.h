@@ -120,12 +120,16 @@ namespace	Stroika {
 					TraceContextBumper (const TChar* contextName);
 					~TraceContextBumper ();
 
+				private:
+					NO_COPY_CONSTRUCTOR(TraceContextBumper);
+					NO_ASSIGNMENT_OPERATOR(TraceContextBumper);
+
 			#if		qDefaultTracingOn
 				public:
 					bool	fDoEndMarker;
 				private:
-					TChar										fSavedContextName[50];
-					Emitter::TraceLastBufferedWriteTokenType	fLastWriteToken;			// used to COMBINE items into a single line if they happen quickly enuf
+					TChar										fSavedContextName_[50];
+					Emitter::TraceLastBufferedWriteTokenType	fLastWriteToken_;			// used to COMBINE items into a single line if they happen quickly enuf
 
 				public:
 					static	unsigned int	GetCount ();
