@@ -13,6 +13,16 @@
 
 
 
+/*
+ * TODO:
+ *		o	DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
+ *			AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
+ */
+
+
+
+
+
 
 
 /*
