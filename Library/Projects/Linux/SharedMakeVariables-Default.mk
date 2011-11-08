@@ -19,9 +19,14 @@ ifndef ObjDir
 endif
 
 
-ifndef StroikaLibDir
-	StroikaLibDir		=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
+ifndef StroikaPlatformTargetBuildDir
+	StroikaPlatformTargetBuildDir		=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
 endif
+
+ifndef StroikaLibDir
+	StroikaLibDir		=	$(StroikaPlatformTargetBuildDir)
+endif
+
 
 ifndef StroikaLinkerArgs
 	StroikaLinkerArgs	= 
