@@ -141,7 +141,7 @@ namespace	Stroika {
 					/*
 					 * Only legal to call if state is eInProgress. It sets the state to eCompleted.
 					 */
-					nonvirtual	void	Redirect (const wstring& url);
+					nonvirtual	void	Redirect (const String& url);
 
 				public:
 					nonvirtual	void	write (const Byte* start, const Byte* end);
@@ -166,9 +166,12 @@ namespace	Stroika {
 					 */
 					nonvirtual	Status	GetStatus () const;
 					/*
-					 * It is only legal to call SetStatus with state == eInProgress
+					 * It is only legal to call SetStatus with state == eInProgress.
+					 *
+					 * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
+					 * be automatically generated based on the status.
 					 */
-					nonvirtual	void	SetStatus (Status newStatus);
+					nonvirtual	void	SetStatus (Status newStatus, const String& overrideReason = wstring ());
 
 
 				public:
@@ -195,6 +198,7 @@ namespace	Stroika {
 					IO::Network::Socket						fSocket_;
 					State									fState_;
 					Status									fStatus_;
+					String									fStatusOverrideReason_;
 					Streams::BinaryOutputStream&			fUnderlyingOutStream_;
 					Streams::BufferedBinaryOutputStream		fUseOutStream_;
 					map<String,String>						fHeaders_;

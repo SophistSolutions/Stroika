@@ -22,6 +22,8 @@ namespace	{
 			wstring	effectiveReason	=	reason;
 			if (effectiveReason.empty ()) {
 				switch (status) {
+					case	StatusCodes::kOK:					effectiveReason = L"OK"; break;
+					case	StatusCodes::kMovedPermanently:		effectiveReason = L"Moved Permanently"; break;
 					case	StatusCodes::kUnauthorized:			effectiveReason = L"Unauthorized access"; break;
 					case	402:								effectiveReason = L"Payment required"; break;
 					case	403:								effectiveReason = L"Forbidden"; break;

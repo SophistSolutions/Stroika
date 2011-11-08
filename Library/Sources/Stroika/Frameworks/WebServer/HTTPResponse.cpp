@@ -14,6 +14,7 @@
 #include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include	"../../Foundation/Debug/Assertions.h"
 #include	"../../Foundation/Execution/Exceptions.h"
+#include	"../../Foundation/IO/Network/HTTP/Exception.h"
 #include	"../../Foundation/IO/Network/HTTP/Headers.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -64,6 +65,7 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
 	, fUseOutStream_ (outStream)
 	, fState_ (eInProgress)
 	, fStatus_ (StatusCodes::kOK)
+	, fStatusOverrideReason_ ()
 	, fHeaders_ ()
 	, fContentType_ (ct)
 	, fCodePage_ (Characters::kCodePage_UTF8)
@@ -106,10 +108,11 @@ void	HTTPResponse::SetCodePage (Characters::CodePage codePage)
 	fCodePage_ = codePage;
 }
 
-void	HTTPResponse::SetStatus (Status newStatus)
+void	HTTPResponse::SetStatus (Status newStatus, const String& overrideReason)
 {
 	Require (fState_ == eInProgress);
 	fStatus_ = newStatus;
+	fStatusOverrideReason_ = overrideReason;
 }
 
 void	HTTPResponse::AddHeader (String headerName, String value)
@@ -169,13 +172,9 @@ void	HTTPResponse::Flush ()
 {
 	if (fState_ == eInProgress) {
 		{
-			wstring	statusMsg;
-			switch (fStatus_) {
-				case StatusCodes::kOK:					statusMsg = L"OK"; break;
-				case StatusCodes::kMovedPermanently:	statusMsg = L"Moved Permanently"; break;
-			}
+			String	statusMsg	=	fStatusOverrideReason_.empty ()? IO::Network::HTTP::Exception::GetStandardTextForStatus (fStatus_, true): fStatusOverrideReason_;
 			wstring	version	=	L"1.1";
-			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.c_str ());
+			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.As<wstring> ().c_str ());
 			string	utf8	=	String (tmp).AsUTF8 ();
 			fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
@@ -226,7 +225,7 @@ void	HTTPResponse::Abort ()
 	Ensure (fBytes_.empty ());
 }
 
-void	HTTPResponse::Redirect (const wstring& url)
+void	HTTPResponse::Redirect (const String& url)
 {
 	Require (fState_ == eInProgress);
 	fBytes_.clear ();
