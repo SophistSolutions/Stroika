@@ -5,7 +5,7 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/WebServer/
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)HTTPConnection.o\

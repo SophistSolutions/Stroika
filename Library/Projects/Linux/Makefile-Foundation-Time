@@ -5,8 +5,7 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Time/
 
-
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Date.o\

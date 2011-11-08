@@ -6,7 +6,7 @@ RelPathToStroikaDevRoot		=	../../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Streams/iostream/
 
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 
 Objs	=	\

@@ -8,7 +8,7 @@ SrcDir                          =       $(RelPathToStroikaDevRoot)Library/Source
 .PHONY:				JSON
 .PHONY:				XML
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)BadFormatException.o\

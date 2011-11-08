@@ -15,7 +15,8 @@ SubDirs	=	\
 	Network	\
 
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
+
 
 Objs	=	\
 	$(ObjDir)FileAccessException.o\

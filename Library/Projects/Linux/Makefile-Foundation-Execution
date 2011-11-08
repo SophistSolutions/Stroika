@@ -11,7 +11,7 @@ SubDirs	=	\
 	Platform/POSIX \
 
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AtomicOperations.o\

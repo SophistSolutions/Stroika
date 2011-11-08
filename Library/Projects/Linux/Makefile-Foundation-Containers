@@ -6,7 +6,7 @@ include	../../SharedBuildRules.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Containers/
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 

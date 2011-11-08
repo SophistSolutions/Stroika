@@ -774,6 +774,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

@@ -6,7 +6,7 @@ RelPathToStroikaDevRoot		=	../../../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
 
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Exception.o\

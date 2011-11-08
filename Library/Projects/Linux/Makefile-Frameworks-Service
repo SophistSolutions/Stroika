@@ -5,7 +5,7 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/Service/
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Main.o\

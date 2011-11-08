@@ -6,7 +6,7 @@ include	../../../SharedBuildRules.mk
 RelPathToStroikaDevRoot		=	../../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/SSL/
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)ClientContext.o\

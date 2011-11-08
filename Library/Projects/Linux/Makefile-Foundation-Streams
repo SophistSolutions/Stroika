@@ -7,7 +7,7 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Strea
 
 .PHONY:			iostream
 
-VPATH = $(SrcDir)
+vpath %cpp $(SrcDir)
 
 SubDirs	=	\
 	iostream	\
