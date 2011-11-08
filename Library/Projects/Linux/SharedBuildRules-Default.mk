@@ -1,14 +1,19 @@
-.cpp.o:
+#
+#
+#
+
+.DEFAULT_GOAL := all
+
+.SUFFIXES:	.o .cpp .i .h .swsp .a
+
+%.o : %.cpp
 	@echo "Compiling $<"
 	@$(CPlusPlus) $(CFLAGS) $< -o $@
 
 
-.swsp.i:
+%.i : %.swsp
 	@echo "Compiling $<"
 	@$(HTMLViewCompiler) $< $@
-
-
-.DEFAULT_GOAL := all
 
 
 clean::
