@@ -23,6 +23,10 @@ ifndef StroikaLibDir
 	StroikaLibDir		=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
 endif
 
+ifndef StroikaLinkerArgs
+	StroikaLinkerArgs	= 
+endif
+
 
 ifndef Includes
 	Includes	=	-I$(RelPathToStroikaDevRoot)/Library/Sources/
@@ -43,9 +47,28 @@ endif
 
 
 
+ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
+  ifeq ($(IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD), 1)
+    STDCPPLIBArgs      :=      $(shell g++ -print-file-name=libstdc++.a)
+  else
+    STDCPPLIBArgs=		-lstdc++
+    StroikaLinkerArgs	+=  -static-libstdc++
+  endif
+else
+  STDCPPLIBArgs=		-lstdc++
+endif
+
+
+# -static-libgcc doesnt seem to work, nor does -static-libstdc++??? -- LGP 2011-11-07
+#ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
+#	StroikaLinkerArgs	+=  -static-libgcc  -static-libstdc++
+#endif
+
+
+
 ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaFoundationSupportLibs	=	$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a  -lpthread -lrt -lstdc++
+	StroikaFoundationSupportLibs	=	$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a  -lpthread -lrt $(STDCPPLIBArgs)
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
@@ -73,17 +96,7 @@ endif
 
 
 
-ifndef StroikaLinkerArgs
-	StroikaLinkerArgs	= 
-endif
-ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
-	StroikaLinkerArgs	+=  -static-libgcc  -static-libstdc++
-else
-	StroikaLinkerArgs	+=  -shared-libgcc  -shared-libstdc++
-endif
-
-
 
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	=	"$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Debug/HTMLViewCompiler"
+	HTMLViewCompiler	=	"$(RelPathToStroikaDevRoot)Builds/Platform_Linux/HTMLViewCompiler"
 endif

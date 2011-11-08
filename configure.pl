@@ -34,6 +34,10 @@ my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
 
+#quite unclear why this is needed - or even if it is - but it appears to be that
+# just regular
+my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
+
 
 
 sub	DoHelp_
@@ -89,6 +93,12 @@ sub	ParseCommandLine_
 		}
 		if ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
 			$ENABLE_ASSERTIONS = 0;
+		}
+		if ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
+			$STATIC_LINK_GCCRUNTIME = 1;
+		}
+		if ((lc ($var) eq "-disable-static-link-gccruntime") or (lc ($var) eq "--disable-static-link-gccruntime")) {
+			$STATIC_LINK_GCCRUNTIME = 0;
 		}
 		if ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
 			$i++;
@@ -342,6 +352,7 @@ sub WriteStroikaConfigMakeHeader
 	
 	print (OUT "\n");
 	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");
+	print (OUT "IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=	$IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD\n");
 	print (OUT "ENABLE_ASSERTIONS=		$ENABLE_ASSERTIONS\n");
 	print (OUT "INCLUDE_SYMBOLS=			$INCLUDE_SYMBOLS\n");
 	print (OUT "\n");
