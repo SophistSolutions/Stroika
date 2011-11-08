@@ -22,6 +22,15 @@
  *
  */
 
+/*
+@CONFIGVAR:		qHas_OpenSSL
+@DESCRIPTION:	<p>0 or 1</p>
+*/
+#if		!defined (qHas_OpenSSL)
+	#error "qHas_OpenSSL should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Cryptography {
