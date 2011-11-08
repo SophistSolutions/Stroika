@@ -30,22 +30,11 @@ namespace	Stroika {
 						IncCount ();
 					#endif
 				}
-			inline	TraceContextBumper::TraceContextBumper (const TChar* contextName)
-				#if		qDefaultTracingOn
-					: fDoEndMarker (true)
-					//,fSavedContextName_ ()
-				#endif
-				{
-					#if		qDefaultTracingOn
-						fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (5, TSTR ("<%s> {"), contextName);
-						size_t	len	=	min (NEltsOf (fSavedContextName_), char_traits<TChar>::length (contextName));
-						char_traits<TChar>::copy (fSavedContextName_, contextName, len);
-						*(EndOfArray (fSavedContextName_)-1) = '\0';
-						fSavedContextName_[len] = '\0';
-						IncCount ();
-					#endif
-				}
+
 			#if		!qDefaultTracingOn
+			inline	TraceContextBumper::TraceContextBumper (const TChar* contextName)
+				{
+				}
 			inline	TraceContextBumper::~TraceContextBumper ()
 				{
 				}

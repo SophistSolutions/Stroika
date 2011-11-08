@@ -341,9 +341,9 @@ template	<typename	CHARTYPE>
 				fLastNCharBuf_Token_++;	// even if not buffering, increment, so other buffers known to be invalid
 			}
 			else {
-				Assert (Characters::Length (p) > bufferLastNChars);
-				BufferNChars_ (bufferLastNChars, p + Characters::Length (p) - bufferLastNChars);
-				DoEmit_ (p, p + (Characters::Length (p) - bufferLastNChars));
+				Assert ((e-p) > bufferLastNChars);
+				BufferNChars_ (bufferLastNChars, e - bufferLastNChars);
+				DoEmit_ (p, e - bufferLastNChars);
 				fLastNCharBuf_WriteTickcount_ = curRelativeTime + sStartOfTime;
 				fLastNCharBuf_Token_++;	// even if not buffering, increment, so other buffers known to be invalid
 			}
@@ -496,6 +496,19 @@ namespace	{
 			}
 		}
 }
+#if		qDefaultTracingOn
+TraceContextBumper::TraceContextBumper (const TChar* contextName)
+	: fDoEndMarker (true)
+	//,fSavedContextName_ ()
+{
+		fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + strlen (GetEOL<char> ()), TSTR ("<%s> {"), contextName);
+		size_t	len	=	min (NEltsOf (fSavedContextName_), char_traits<TChar>::length (contextName));
+		char_traits<TChar>::copy (fSavedContextName_, contextName, len);
+		*(EndOfArray (fSavedContextName_)-1) = '\0';
+		fSavedContextName_[len] = '\0';
+		IncCount ();
+}
+#endif
 
 unsigned int	TraceContextBumper::GetCount ()
 {

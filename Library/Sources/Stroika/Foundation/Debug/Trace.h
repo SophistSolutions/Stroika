@@ -128,7 +128,7 @@ namespace	Stroika {
 				public:
 					bool	fDoEndMarker;
 				private:
-					TChar										fSavedContextName_[50];
+					TChar										fSavedContextName_[64];
 					Emitter::TraceLastBufferedWriteTokenType	fLastWriteToken_;			// used to COMBINE items into a single line if they happen quickly enuf
 
 				public:
