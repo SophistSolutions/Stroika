@@ -35,6 +35,9 @@ namespace	Stroika {
 			 * A request handler should be understood to be stateless - as far as the connection is concerned.
 			 * ??? Maybe - or maybe have add/remove or notication so assocaited?? For now - assume stateless - and just called
 			 * with HandleRequest ...
+			 *
+			 * Also - a HTTPRequestHandler should be careful about threads, as it could be called first on one thread, and
+			 * then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
 			 */
 			struct	HTTPRequestHandler {
 				protected:
