@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
  */
 
+#include	"../../Containers/Common.h"
 #include	"../../Execution/Exceptions.h"
 #include	"../../Execution/ErrNoException.h"
 #include	"../../Memory/SmallStackBuffer.h"
