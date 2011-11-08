@@ -18,10 +18,6 @@ namespace	Stroika {
 
 			typedef	unsigned char	Byte;
 
-
-//GET RID OF Nil - use nullptr instead -- LGP 2011-08-21
-//			#define	Nil		nullptr
-
 			#define	nonvirtual
 
 			#define	NEltsOf(X)		(sizeof((X))/sizeof((X)[0]))
