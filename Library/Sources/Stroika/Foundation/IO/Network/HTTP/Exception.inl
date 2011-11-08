@@ -20,15 +20,7 @@ namespace	Stroika {
 				//	class	Exception
 					inline	Status	Exception::GetStatus () const
 						{
-							return fStatus;
-						}
-					inline	wstring	Exception::GetReason () const
-						{
-							return fReason;
-						}
-					inline	wstring	Exception::GetBody () const
-						{
-							return fBody;
+							return fStatus_;
 						}
 					inline	bool	Exception::IsHTTPStatusOK (Status status)
 						{
