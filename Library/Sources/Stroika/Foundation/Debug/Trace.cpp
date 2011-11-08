@@ -341,7 +341,7 @@ template	<typename	CHARTYPE>
 				fLastNCharBuf_Token_++;	// even if not buffering, increment, so other buffers known to be invalid
 			}
 			else {
-				Assert ((e-p) > bufferLastNChars);
+				Assert ((e-p) > static_cast<ptrdiff_t> (bufferLastNChars));
 				BufferNChars_ (bufferLastNChars, e - bufferLastNChars);
 				DoEmit_ (p, e - bufferLastNChars);
 				fLastNCharBuf_WriteTickcount_ = curRelativeTime + sStartOfTime;
