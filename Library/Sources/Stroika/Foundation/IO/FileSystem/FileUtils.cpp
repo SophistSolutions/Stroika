@@ -779,95 +779,10 @@ void	FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreErro
 
 
 
-/*
- ********************************************************************************
- ************************************ FileSystem::WriteString ***************************
- ********************************************************************************
- */
-void	FileSystem::WriteString (ostream& out, const wstring& s)
-{
-	string	s1 = WideStringToNarrow (s, kCodePage_UTF8);
-	out << s1.size ();
-	out << ' ';
-	out << s1 << '\t';
-}
-
-
-
-
-
-
-/*
- ********************************************************************************
- ************************************* FileSystem::ReadString ***************************
- ********************************************************************************
- */
-wstring	FileSystem::ReadString (istream& in)
-{
-	int	strlen;
-	in >> strlen;
-	in.get ();	// throw away character between size and string
-	
-	string	s;
-	s.reserve (strlen);
-	for (int i = 0; i < strlen; ++i) {
-		s += in.get ();
-	}
-	return NarrowStringToWide (s, kCodePage_UTF8);
-}
-
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- *********************************** FileSystem::ReadBytes ******************************
- ********************************************************************************
- */
-vector<Byte>	FileSystem::ReadBytes (istream& in)
-{
-	streamoff	start	=	in.tellg ();
-	in.seekg (0, ios_base::end);
-	streamoff	end		=	in.tellg ();
-	Assert (start <= end);
-	if (streamoff (end - start) > streamoff (numeric_limits<size_t>::max ())) {
-		Execution::DoThrow (StringException (L"stream too large"));
-	}
-	size_t	len	=	static_cast<size_t> (end-start);
-	SmallStackBuffer<Byte>	buf (len);
-	in.seekg (start, ios_base::beg);
-	in.read (reinterpret_cast<char*> (buf.begin ()), len);
-	size_t xxx = static_cast<size_t> (in.gcount ());
-	Assert (xxx <= len);
-	return vector<Byte> (static_cast<const Byte*> (buf), static_cast<const Byte*> (buf) + xxx);
-}
-
-
-
-
-/*
- ********************************************************************************
- ************************************* FileSystem::WriteBytes ***************************
- ********************************************************************************
- */
-void	FileSystem::WriteBytes (ostream& out, const vector<Byte>& s)
-{
-	out.write (reinterpret_cast<const char*> (Containers::Start (s)), s.size ());
-}
-
-
-
-
-
-
 #if		qPlatform_Windows
 /*
  ********************************************************************************
- ***************************** FileSystem::DirectoryChangeWatcher ***********************
+ ********************* FileSystem::DirectoryChangeWatcher ***********************
  ********************************************************************************
  */
 FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& directoryName, bool watchSubTree, DWORD notifyFilter):

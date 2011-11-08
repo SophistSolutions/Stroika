@@ -7,6 +7,7 @@
 
 #include	"../../Characters/StringUtils.h"
 #include	"../../Characters/Format.h"
+#include	"../../Streams/iostream/Utilities.h"
 #include	"../BadFormatException.h"
 
 #include	"Reader.h"
@@ -48,42 +49,6 @@ namespace	{
 	};
 
 
-	wstring	ReadTextStream_ (istream& in)
-		{
-			streamoff	start	=	in.tellg ();
-			in.seekg (0, ios_base::end);
-			streamoff	end		=	in.tellg ();
-			Assert (start <= end);
-			if (end - start > numeric_limits<ptrdiff_t>::max ()) {
-				Execution::DoThrow (Execution::StringException (L"stream too large"));
-			}
-			size_t	bufLen	=	static_cast<size_t> (end - start);
-			Memory::SmallStackBuffer<Byte>	buf (bufLen);
-			in.seekg (start, ios_base::beg);
-			in.read (reinterpret_cast<char*> (buf.begin ()), bufLen);
-			size_t readLen = static_cast<size_t> (in.gcount ());
-			Assert (readLen <= bufLen);
-			const char*	startOfBuf	=	reinterpret_cast<const char*> (static_cast<const Byte*> (buf));
-			return Characters::MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
-		}
-	wstring	ReadTextStream_ (wistream& in)
-		{
-			streamoff	start	=	in.tellg ();
-			in.seekg (0, ios_base::end);
-			streamoff	end		=	in.tellg ();
-			Assert (start <= end);
-			if (end - start > numeric_limits<ptrdiff_t>::max ()) {
-				Execution::DoThrow (Execution::StringException (L"stream too large"));
-			}
-			size_t	bufLen	=	static_cast<size_t> (end - start);
-			Memory::SmallStackBuffer<wchar_t>	buf (bufLen);
-			in.seekg (start, ios_base::beg);
-			in.read (reinterpret_cast<wchar_t*> (buf.begin ()), bufLen);
-			size_t readLen = static_cast<size_t> (in.gcount ());
-			Assert (readLen <= bufLen);
-			const wchar_t*	startOfBuf	=	reinterpret_cast<const wchar_t*> (static_cast<const wchar_t*> (buf));
-			return wstring (startOfBuf, startOfBuf + readLen);
-		}
 
 
 	wstring	Prepass2UNICODE_ (const wstring& in)
@@ -94,11 +59,11 @@ namespace	{
 		}
 	wstring	Prepass2UNICODE_ (wistream& in)
 		{
-			return Prepass2UNICODE_ (ReadTextStream_ (in));
+			return Prepass2UNICODE_ (Streams::iostream::ReadTextStream (in));
 		}
 	wstring	Prepass2UNICODE_ (istream& in)
 		{
-			return Prepass2UNICODE_ (ReadTextStream_ (in));
+			return Prepass2UNICODE_ (Streams::iostream::ReadTextStream (in));
 		}
 
 

@@ -302,6 +302,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.cpp" />
@@ -460,6 +461,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.h" />

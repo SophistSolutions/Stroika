@@ -11,6 +11,7 @@
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Execution/StringException.h"
 #include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include	"Stroika/Foundation/Streams/iostream/Utilities.h"
 
 
 using	namespace	Stroika::Foundation;
@@ -25,28 +26,6 @@ const	wchar_t	kCloseCodeTag[]	=	L"%>";
 const	wchar_t	kMagicWriteChar	=	'=';	// if first char after open tag - treat as synonmym for fResponse.write ()
 
 
-
-namespace	{
-	// TODO:		REDO USING STROIKA TEXTSTREAM CODE
-	wstring	ReadTextStream_ (istream& in)
-		{
-			streamoff	start	=	in.tellg ();
-			in.seekg (0, ios_base::end);
-			streamoff	end		=	in.tellg ();
-			Assert (start <= end);
-			if (end - start > static_cast<streamoff> (numeric_limits<size_t>::max ())) {
-				Execution::DoThrow (StringException (L"stream too large"));
-			}
-			size_t	bufLen	=	static_cast<size_t> (end - start);
-			SmallStackBuffer<Byte>	buf (bufLen);
-			in.seekg (start, ios_base::beg);
-			in.read (reinterpret_cast<char*> (buf.begin ()), bufLen);
-			size_t readLen = static_cast<size_t> (in.gcount ());
-			Assert (readLen <= bufLen);
-			const char*	startOfBuf	=	reinterpret_cast<const char*> (static_cast<const Byte*> (buf));
-			return MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
-		}
-}
 
 
 
@@ -153,7 +132,7 @@ class	CompilerApp {
 	private:
 		nonvirtual	void	ProcessFile_ (istream& in, ostream& out)
 			{
-				wstring	orig	=	ReadTextStream_ (in);
+				wstring	orig	=	Streams::iostream::ReadTextStream (in);
 
 				out << "/*Auto-Generated C++ file from the Source HTML file '" << TString2NarrowSDK (fInputFile) << "'*/" << endl;
 				out << "void	" << TString2NarrowSDK (fFormGeneratorName) << " ()" << endl;

@@ -6,11 +6,8 @@
 
 #include	"../../StroikaPreComp.h"
 
-#include	<fstream>
-#include	<sstream>
 #include	<set>
 #include	<vector>
-
 
 #if			qPlatform_Windows
 	#include	<Windows.h>
@@ -100,12 +97,6 @@ namespace	Stroika {
 				void	DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors = true);
 
 				void	CopyFile (const TString& srcFile, const TString& destPath);
-
-				void	WriteString (ostream& out, const wstring& s);
-				wstring	ReadString (istream& in);
-
-				vector<Byte>	ReadBytes (istream& in);
-				void			WriteBytes (ostream& out, const vector<Byte>& s);
 
 
 			// COULD be made portable but alot of changes needed

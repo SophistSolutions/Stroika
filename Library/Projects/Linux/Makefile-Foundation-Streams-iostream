@@ -11,6 +11,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)FStreamSupport.o\
+	$(ObjDir)Utilities.o\
 
 
 all:	$(Objs)
