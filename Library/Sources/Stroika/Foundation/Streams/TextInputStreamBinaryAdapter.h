@@ -12,6 +12,13 @@
 #include	"TextInputStream.h"
 
 
+/*
+ * TODO:
+ *			o	Must use either stdc++ multibyte code or Stroika CodePage code - currnetly a hack assuming input is ascii.
+ *
+ *			o	CONSIDER REDOING USE SharedPtr<> - to make lifetime stuff workout better...
+ */
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Streams {
@@ -19,9 +26,6 @@ namespace	Stroika {
 			using	Characters::Character;
 
 			/*
-			 * CONSIDER REDOING USE SharedPtr<> - to make lifetime stuff workout better...
-			 *
-			 *	HACK INCORRECT IMPLEMENTAITON FOR NOW
 			 */
 			class	TextInputStreamBinaryAdapter : public TextInputStream {
 				public:
