@@ -32,7 +32,16 @@ size_t	BinaryInputStreamFromIStreamAdapter::_Read (Byte* intoStart, Byte* intoEn
 	RequireNotNull (intoEnd);
 	Require (intoStart < intoEnd);
 
+	if (fOriginalStream_.eof ()) {
+		return 0;
+	}
 	size_t	maxToRead	=	intoEnd - intoStart;
 	fOriginalStream_.read (reinterpret_cast<char*> (intoStart), maxToRead);
-	return static_cast<size_t> (fOriginalStream_.gcount ());		// cast safe cuz amount asked to read was also size_t
+	size_t	n	=	 static_cast<size_t> (fOriginalStream_.gcount ());		// cast safe cuz amount asked to read was also size_t
+	
+	// apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
+	if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
+		Execution::DoThrow (Execution::StringException (L"Failed to read from istream"));
+	}
+	return n;
 }
