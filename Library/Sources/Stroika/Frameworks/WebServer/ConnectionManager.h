@@ -6,6 +6,8 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	<list>
+
 #include	"../../Foundation/Execution/ThreadPool.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
 
@@ -35,6 +37,7 @@ namespace	Stroika {
 			using	namespace	Stroika::Foundation;
 			using	namespace	Stroika::Foundation::IO;
 			using	Characters::String;
+			using	Memory::SharedPtr;
 
 
 			/*
@@ -59,31 +62,30 @@ namespace	Stroika {
 					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
 				public:
-					nonvirtual	void	AddHandler (Memory::SharedPtr<HTTPRequestHandler> h);
-					nonvirtual	void	RemoveHandler (Memory::SharedPtr<HTTPRequestHandler> h);
+					nonvirtual	void	AddHandler (const SharedPtr<HTTPRequestHandler>& h);
+					nonvirtual	void	RemoveHandler (const SharedPtr<HTTPRequestHandler>& h);
 
 				public:
-					nonvirtual	void	AddConnection (Memory::SharedPtr<HTTPConnection> c);
-					nonvirtual	void	AbortConnection (Memory::SharedPtr<HTTPConnection> c);
+					nonvirtual	void	AddConnection (const SharedPtr<HTTPConnection>& conn);
+					nonvirtual	void	AbortConnection (const SharedPtr<HTTPConnection>& conn);
 			
 				public:
 					/* 
 					 * We need some sort of status flag on connections - saying of they are OPEN or not - or done. But this will return just those
 					 * which are not 'done'. Of course - due to asyncrhony, by the time one looks at the list, some may already be done.
 					 */
-					nonvirtual	vector<Memory::SharedPtr<HTTPConnection>> GetConnections () const;
-
+					nonvirtual	vector<SharedPtr<HTTPConnection>> GetConnections () const;
 
 				private:
 					//VERY VERY SUPER PRIMITIVE FIFRST DRAFT OF CONNECTION HANDLING
 					nonvirtual	void	DoMainConnectionLoop_ ();
 					static		void	DoMainConnectionLoop_S_ (void* ThIs);	// til we get lambda stuff really working
-					nonvirtual	void	DoOneConnection_ (Memory::SharedPtr<HTTPConnection> c);
+					nonvirtual	void	DoOneConnection_ (SharedPtr<HTTPConnection> c);
 				
 				private:
 					// REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
-					vector<Memory::SharedPtr<HTTPRequestHandler> >	fHandlers_;
-					vector<Memory::SharedPtr<HTTPConnection> >		fActiveConnections_;
+					list<SharedPtr<HTTPRequestHandler> >	fHandlers_;
+					list<SharedPtr<HTTPConnection> >		fActiveConnections_;
 
 					// we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
 					// connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
@@ -91,7 +93,6 @@ namespace	Stroika {
 					// But for now - KISS
 					Execution::ThreadPool							fThreads_;
 			};
-
 
 		}
 	}

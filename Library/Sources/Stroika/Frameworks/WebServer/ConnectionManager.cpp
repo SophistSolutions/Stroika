@@ -63,20 +63,29 @@ void	ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 	fThreads_.AbortAndWaitForDone ();
 }
 
-void	ConnectionManager::AddHandler (SharedPtr<HTTPRequestHandler> h)
+void	ConnectionManager::AddHandler (const SharedPtr<HTTPRequestHandler>& h)
 {
 	fHandlers_.push_back (h);
 }
 
-void	ConnectionManager::RemoveHandler (SharedPtr<HTTPRequestHandler> h)
+void	ConnectionManager::RemoveHandler (const SharedPtr<HTTPRequestHandler>& h)
 {
-	for (vector<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+	for (list<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
 		if (*i == h) {
 			fHandlers_.erase (i);
 			return;
 		}
 	}
 	RequireNotReached ();	// you must specify a valid handler to remove
+}
+
+void	ConnectionManager::AddConnection (const SharedPtr<HTTPConnection>& conn)
+{
+	fActiveConnections_.push_back (conn);
+}
+
+void	ConnectionManager::AbortConnection (const SharedPtr<HTTPConnection>& conn)
+{
 }
 
 void	ConnectionManager::DoMainConnectionLoop_ ()
@@ -86,14 +95,14 @@ void	ConnectionManager::DoMainConnectionLoop_ ()
 		Execution::Sleep (0.1);	// hack - need smarter wait on available data
 		SharedPtr<HTTPConnection>	conn;
 		if (fActiveConnections_.empty ()) {
-			conn = fActiveConnections_[0];
+			conn = fActiveConnections_.front ();
 		}
 
 		if (not conn.IsNull ()) {
 			
 			DoOneConnection_ (conn);
 
-			for (vector<SharedPtr<HTTPConnection>>::iterator i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
+			for (list<SharedPtr<HTTPConnection>>::iterator i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
 				if (*i == conn) {
 					fActiveConnections_.erase (i);
 					break;
@@ -114,7 +123,7 @@ void	ConnectionManager::DoMainConnectionLoop_S_ (void* ThIs)
 void	ConnectionManager::DoOneConnection_ (SharedPtr<HTTPConnection> c)
 {
 	c->ReadHeaders ();
-	for (vector<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+	for (list<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
 		if ((*i)->CanHandleRequest (*c)) {
 			(*i)->HandleRequest (*c);
 			c->GetResponse ().End ();
