@@ -17,6 +17,8 @@ Objs	=	\
 	$(ObjDir)BinaryOutputStream.o\
 	$(ObjDir)BufferedBinaryInputStream.o\
 	$(ObjDir)BufferedBinaryOutputStream.o\
+	$(ObjDir)ExternallyOwnedMemoryBinaryInputStream.o\
+	$(ObjDir)MemoryBinaryInputStream.o\
 	$(ObjDir)Seekable.o\
 	$(ObjDir)TextInputStream.o\
 	$(ObjDir)TextInputStreamBinaryAdapter.o\
