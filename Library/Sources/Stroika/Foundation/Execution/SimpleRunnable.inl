@@ -36,13 +36,13 @@ namespace	Stroika {
 
 
 			template	<typename	OBJ>
-				inline	SimpleObjRunnable<OBJ>::SimpleObjRunnable (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
+				inline	SimpleObjRunnable<OBJ>::SimpleObjRunnable (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
 					: fPtrToMemberFunction_ (ptrToMemberFunction)
 					, fObjPtr_ (objPtr)
 					{
 					}
 			template	<typename	OBJ>
-				inline	Memory::SharedPtr<IRunnable>	SimpleObjRunnable<OBJ>::MAKE (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
+				inline	Memory::SharedPtr<IRunnable>	SimpleObjRunnable<OBJ>::MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
 					{
 						return Memory::SharedPtr<IRunnable> (new SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
 					}
