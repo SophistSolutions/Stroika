@@ -14,8 +14,6 @@ namespace	Stroika {
 	namespace	Frameworks	{
 		namespace	WebServer {
 
-			// class	HTTPConnection
-
 		}
 	}
 }

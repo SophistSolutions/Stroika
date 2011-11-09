@@ -55,8 +55,8 @@ namespace	Stroika {
 				public:
 					nonvirtual	void	Start ();
 					nonvirtual	void	Abort ();
-					nonvirtual	void	WaitUnitlDone (int timeoutGetRightTime);
-					nonvirtual	void	AbortAndWaitUnitlDone (int timeoutGetRightTime);
+					nonvirtual	void	WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+					nonvirtual	void	AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
 				public:
 					nonvirtual	void	AddHandler (Memory::SharedPtr<HTTPRequestHandler> h);
@@ -73,6 +73,13 @@ namespace	Stroika {
 					 */
 					nonvirtual	vector<Memory::SharedPtr<HTTPConnection>> GetConnections () const;
 
+
+				private:
+					//VERY VERY SUPER PRIMITIVE FIFRST DRAFT OF CONNECTION HANDLING
+					nonvirtual	void	DoMainConnectionLoop_ ();
+					static		void	DoMainConnectionLoop_S_ (void* ThIs);	// til we get lambda stuff really working
+					nonvirtual	void	DoOneConnection_ (Memory::SharedPtr<HTTPConnection> c);
+				
 				private:
 					// REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
 					vector<Memory::SharedPtr<HTTPRequestHandler> >	fHandlers_;
