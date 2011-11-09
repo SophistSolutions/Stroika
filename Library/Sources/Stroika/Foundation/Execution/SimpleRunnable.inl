@@ -37,8 +37,8 @@ namespace	Stroika {
 
 			template	<typename	OBJ>
 				inline	SimpleObjRunnable<OBJ>::SimpleObjRunnable (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
-					: fPtrToMemberFunction (ptrToMemberFunction)
-					, fObjPtr (objPtr)
+					: fPtrToMemberFunction_ (ptrToMemberFunction)
+					, fObjPtr_ (objPtr)
 					{
 					}
 			template	<typename	OBJ>
@@ -49,7 +49,7 @@ namespace	Stroika {
 			template	<typename	OBJ>
 				void	SimpleObjRunnable<OBJ>::Run () override
 					{
-						((*fObjPtr).*(fPtrToMemberFunction)) ();
+						((*fObjPtr_).*(fPtrToMemberFunction_)) ();
 					}
 
 

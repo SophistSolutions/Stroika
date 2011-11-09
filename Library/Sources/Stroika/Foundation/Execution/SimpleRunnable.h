@@ -54,17 +54,17 @@ namespace	Stroika {
 			template	<typename	OBJ>
 				class	SimpleObjRunnable : public IRunnable {
 					public:
-						SimpleObjRunnable (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
+						SimpleObjRunnable (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
 
 					public:
 						virtual	void	Run () override;
 
 					public:
-						static	Memory::SharedPtr<IRunnable>	MAKE (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
+						static	Memory::SharedPtr<IRunnable>	MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
 
 					private:
-						OBJ* fObjPtr;
-						typename void (OBJ::*fPtrToMemberFunction)();
+						OBJ*	fObjPtr_;
+						void	(OBJ::*fPtrToMemberFunction_)();
 
 					public:
 						DECLARE_USE_BLOCK_ALLOCATION(SimpleObjRunnable);
