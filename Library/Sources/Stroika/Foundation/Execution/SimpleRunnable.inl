@@ -33,6 +33,26 @@ namespace	Stroika {
 					return Memory::SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg));
 				}
 
+
+
+			template	<typename	OBJ>
+				inline	SimpleObjRunnable<OBJ>::SimpleObjRunnable (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
+					: fPtrToMemberFunction (ptrToMemberFunction)
+					, fObjPtr (objPtr)
+					{
+					}
+			template	<typename	OBJ>
+				inline	Memory::SharedPtr<IRunnable>	SimpleObjRunnable<OBJ>::MAKE (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
+					{
+						return Memory::SharedPtr<IRunnable> (new SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
+					}
+			template	<typename	OBJ>
+				void	SimpleObjRunnable<OBJ>::Run () override
+					{
+						((*fObjPtr).*(fPtrToMemberFunction)) ();
+					}
+
+
 		}
 	}
 }

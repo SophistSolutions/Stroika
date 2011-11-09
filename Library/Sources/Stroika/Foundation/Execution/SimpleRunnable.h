@@ -48,6 +48,32 @@ namespace	Stroika {
 					DECLARE_USE_BLOCK_ALLOCATION(SimpleRunnable);
 			};
 
+
+
+			// This can go away once we have the abilitiy to convert lambda functions to regular functions
+			template	<typename	OBJ>
+				class	SimpleObjRunnable : public IRunnable {
+					public:
+						SimpleObjRunnable (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
+
+					public:
+						virtual	void	Run () override;
+
+					public:
+						static	Memory::SharedPtr<IRunnable>	MAKE (typename void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
+
+					private:
+						OBJ* fObjPtr;
+						typename void (OBJ::*fPtrToMemberFunction)();
+
+					public:
+						DECLARE_USE_BLOCK_ALLOCATION(SimpleObjRunnable);
+				};
+
+
+
+
+
 		}
 	}
 }

@@ -45,7 +45,7 @@ ConnectionManager::~ConnectionManager ()
 
 void	ConnectionManager::Start ()
 {
-	fThreads_.AddTask (Execution::SimpleRunnable::MAKE (DoMainConnectionLoop_S_, this));
+	fThreads_.AddTask (Execution::SimpleObjRunnable<ConnectionManager>::MAKE (&ConnectionManager::DoMainConnectionLoop_, this));
 }
 
 void	ConnectionManager::Abort ()
@@ -112,12 +112,6 @@ void	ConnectionManager::DoMainConnectionLoop_ ()
 
 		// now go again...
 	}
-}
-
-void	ConnectionManager::DoMainConnectionLoop_S_ (void* ThIs)
-{
-	RequireNotNull (ThIs);
-	reinterpret_cast<ConnectionManager*> (ThIs)->DoMainConnectionLoop_ ();
 }
 
 void	ConnectionManager::DoOneConnection_ (SharedPtr<HTTPConnection> c)
