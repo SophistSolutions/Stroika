@@ -6,6 +6,8 @@
 
 #include	"../../StroikaPreComp.h"
 
+#include	<istream>
+
 #include	"../../Configuration/Common.h"
 #include	"../../Execution/CriticalSection.h"
 #include	"../../Memory/SmallStackBuffer.h"
