@@ -94,5 +94,5 @@ void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffset
 		}
 		break;
 	}
-	Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));		// ensure here not end of function to get critsection lock
+	Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
 }

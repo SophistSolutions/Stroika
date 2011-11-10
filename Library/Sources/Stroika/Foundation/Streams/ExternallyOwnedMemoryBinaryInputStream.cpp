@@ -5,8 +5,6 @@
 
 #include	<algorithm>
 
-#include	"../Execution/OperationNotSupportedException.h"
-
 #include	"ExternallyOwnedMemoryBinaryInputStream.h"
 
 
@@ -50,18 +48,52 @@ size_t	ExternallyOwnedMemoryBinaryInputStream::_Read (Byte* intoStart, Byte* int
 
 Streams::SeekOffsetType	ExternallyOwnedMemoryBinaryInputStream::_GetOffset () const override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::GetOffset"));
+	return fCursor_ - fStart_;
 }
 
 bool	ExternallyOwnedMemoryBinaryInputStream::_CanSeek (Streams::Whence whence) const override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	return false;
+	return true;
 }
 
 void	ExternallyOwnedMemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::Seek"));
+	Execution::AutoCriticalSection	critSec (fCriticalSection_);
+	switch (whence) {
+		case	FromStart_W: {
+			if (offset < 0) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			if (offset > (fEnd_ - fStart_)) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			fCursor_ = fStart_ + offset;
+		}
+		break;
+		case	FromCurrent_W: {
+			Streams::SeekOffsetType curOffset	=	fCursor_ - fStart_;
+			Streams::SeekOffsetType newOffset	=	curOffset + offset;
+			if (newOffset < 0) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			if (newOffset > (fEnd_ - fStart_)) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			fCursor_ = fStart_ + newOffset;
+		}
+		break;
+		case	FromEnd_W: {
+			Streams::SeekOffsetType curOffset	=	fCursor_ - fStart_;
+			Streams::SeekOffsetType newOffset	=	(fEnd_ - fStart_) + offset;
+			if (newOffset < 0) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			if (newOffset > (fEnd_ - fStart_)) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			fCursor_ = fStart_ + newOffset;
+		}
+		break;
+	}
+	Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
 }
