@@ -15,6 +15,8 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
+			using	Characters::String;
+
 			class	OperationNotSupportedException : public StringException {
 				public:
 					OperationNotSupportedException ();

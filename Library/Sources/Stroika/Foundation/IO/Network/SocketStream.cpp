@@ -10,6 +10,9 @@
 #endif
 #include	<cstdlib>
 
+#include	"../../Execution/Exceptions.h"
+#include	"../../Execution/OperationNotSupportedException.h"
+
 #include	"SocketStream.h"
 
 
@@ -40,3 +43,18 @@ void	SocketStream::_Write (const Byte* start, const Byte* end) override
 	fSD_.Write (start, end);
 }
 
+Streams::SeekOffsetType	SocketStream::_GetOffset () const override
+{
+	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::GetOffset"));
+}
+
+bool	SocketStream::_CanSeek (Streams::Whence whence) const override
+{
+	// Socket streams not seekable
+	return false;
+}
+
+void	SocketStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
+	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::Seek"));
+}

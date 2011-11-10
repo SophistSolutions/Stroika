@@ -5,6 +5,8 @@
 
 #include	<algorithm>
 
+#include	"../Execution/OperationNotSupportedException.h"
+
 #include	"MemoryBinaryInputStream.h"
 
 
@@ -41,4 +43,22 @@ size_t	MemoryBinaryInputStream::_Read (Byte* intoStart, Byte* intoEnd)
 	memcpy (intoStart, fCursor_, nCopied);
 	fCursor_ += nCopied;
 	return nCopied;	// this can be zero on EOF
+}
+
+Streams::SeekOffsetType	MemoryBinaryInputStream::_GetOffset () const override
+{
+	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
+	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::GetOffset"));
+}
+
+bool	MemoryBinaryInputStream::_CanSeek (Streams::Whence whence) const override
+{
+	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
+	return false;
+}
+
+void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
+	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
+	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::Seek"));
 }

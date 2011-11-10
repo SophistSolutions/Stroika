@@ -37,9 +37,12 @@ namespace	Stroika {
 						explicit SocketStream (Socket sd);
 						~SocketStream ();
 	
-					public:
-						virtual	size_t	_Read (Byte* intoStart, Byte* intoEnd) override;
-						virtual	void	_Write (const Byte* start, const Byte* end) override;
+					protected:
+						virtual	size_t					_Read (Byte* intoStart, Byte* intoEnd) override;
+						virtual	void					_Write (const Byte* start, const Byte* end) override;
+						virtual	Streams::SeekOffsetType	_GetOffset () const override;
+						virtual	bool					_CanSeek (Streams::Whence whence) const override;
+						virtual	void					_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override;
 
 					private:
 						Socket	fSD_;

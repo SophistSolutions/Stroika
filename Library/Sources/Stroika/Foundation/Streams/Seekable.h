@@ -19,6 +19,12 @@ namespace	Stroika {
 		namespace	Streams {
 
 
+			// When seeking, you can see an offset from the start or from the end of the stream.
+			enum	Whence {
+				FromStart_W,
+				FromEnd_W,
+			};
+
 			typedef	uint64_t	SeekOffsetType;
 
 			/*
@@ -40,15 +46,27 @@ namespace	Stroika {
 			 */
 			class	Seekable {
 				public:
-					virtual	SeekOffsetType	GetOffset () const						=	0;
-					virtual	void			Seek (SeekOffsetType offset)			=	0;
+					nonvirtual	bool	CanSeek () const;
+					nonvirtual	bool	CanSeek (Whence whence) const;
+				protected:
+					virtual	bool	_CanSeek (Whence whence) const						=	0;
+
+				public:
+					nonvirtual	SeekOffsetType	GetOffset () const;
+				protected:
+					virtual	SeekOffsetType	_GetOffset () const						=	0;
+
+				public:
+					nonvirtual	void		Seek (SeekOffsetType offset);
+					nonvirtual	void		Seek (Whence whence, SeekOffsetType offset);
+				protected:
+					virtual	void			_Seek (Whence whence, SeekOffsetType offset)			=	0;
 			};
 
 		}
 	}
 }
 #endif	/*_Stroika_Foundation_Streams_Seekable_h_*/
-
 
 
 

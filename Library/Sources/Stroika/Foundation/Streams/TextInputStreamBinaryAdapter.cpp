@@ -6,6 +6,7 @@
 
 
 #include	"../Containers/Common.h"
+#include	"../Execution/OperationNotSupportedException.h"
 #include	"../Memory/SmallStackBuffer.h"
 
 #include	"TextInputStreamBinaryAdapter.h"
@@ -38,5 +39,22 @@ size_t	TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* int
 	}
 	Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
 	return outN;
+}
 
+Streams::SeekOffsetType	TextInputStreamBinaryAdapter::_GetOffset () const override
+{
+	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
+	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::GetOffset"));
+}
+
+bool	TextInputStreamBinaryAdapter::_CanSeek (Streams::Whence whence) const override
+{
+	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
+	return false;
+}
+
+void	TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
+	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
+	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::Seek"));
 }

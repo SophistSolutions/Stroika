@@ -27,7 +27,11 @@ namespace	Stroika {
 					BufferedBinaryInputStream (const Memory::SharedPtr<BinaryInputStream>& realIn);
 				
 				protected:
-					virtual	size_t	_Read (Byte* intoStart, Byte* intoEnd) override;
+					virtual	size_t			_Read (Byte* intoStart, Byte* intoEnd) override;
+					virtual	SeekOffsetType	_GetOffset () const override;
+					virtual	bool			_CanSeek (Whence whence) const override;
+					virtual	void			_Seek (Whence whence, SeekOffsetType offset) override;
+
 
 				private:
 					Memory::SharedPtr<BinaryInputStream>	fRealIn_;

@@ -49,7 +49,10 @@ namespace	Stroika {
 				protected:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
 					// Writes always succeed fully or throw.
-					virtual	void	_Write (const Byte* start, const Byte* end) override;
+					virtual	void			_Write (const Byte* start, const Byte* end) override;
+					virtual	SeekOffsetType	_GetOffset () const override;
+					virtual	bool			_CanSeek (Whence whence) const override;
+					virtual	void			_Seek (Whence whence, SeekOffsetType offset) override;
 
 				private:
 					vector<Byte>		fBuffer_;
