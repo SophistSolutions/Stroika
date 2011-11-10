@@ -24,7 +24,7 @@ namespace	Stroika {
 			};
 
 
-			// Offset is signed, because you can see a negative # from the end or from the current position.
+			// Offset is signed, because you can use a negative # from the end or from the current position.
 			typedef	int64_t	SeekOffsetType;
 
 
