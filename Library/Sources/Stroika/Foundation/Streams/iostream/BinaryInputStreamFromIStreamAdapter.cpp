@@ -3,6 +3,8 @@
  */
 #include	"../../StroikaPreComp.h"
 
+#include	"../../Execution/OperationNotSupportedException.h"
+
 #include	"BinaryInputStreamFromIStreamAdapter.h"
 
 
@@ -16,9 +18,10 @@ using	namespace	Stroika::Foundation::Streams::iostream;
 
 
 
+
 /*
  ********************************************************************************
- ******* Streams::iostream::BinaryInputStreamFromIStreamAdapter *****************
+ ********* Streams::iostream::BinaryInputStreamFromIStreamAdapter ***************
  ********************************************************************************
  */
 BinaryInputStreamFromIStreamAdapter::BinaryInputStreamFromIStreamAdapter (std::istream& originalStream)
@@ -44,4 +47,23 @@ size_t	BinaryInputStreamFromIStreamAdapter::_Read (Byte* intoStart, Byte* intoEn
 		Execution::DoThrow (Execution::StringException (L"Failed to read from istream"));
 	}
 	return n;
+}
+
+Streams::SeekOffsetType	BinaryInputStreamFromIStreamAdapter::_GetOffset () const override
+{
+	return fOriginalStream_.tellg ();
+}
+
+bool	BinaryInputStreamFromIStreamAdapter::_CanSeek (Streams::Whence whence) const override
+{
+	return true;
+}
+
+void	BinaryInputStreamFromIStreamAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
+	switch (whence) {
+		case	FromStart_W:		fOriginalStream_.seekg (offset, ios::beg);	break;
+		case	FromCurrent_W:		fOriginalStream_.seekg (offset, ios::cur);	break;
+		case	FromEnd_W:			fOriginalStream_.seekg (offset, ios::end);	break;
+	}
 }
