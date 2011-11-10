@@ -17,6 +17,9 @@ namespace	Stroika {
 		namespace	Streams {
 
 
+			inline	TextInputStream::~TextInputStream ()
+				{
+				}
 			inline	size_t	TextInputStream::Read (Character* intoStart, Character* intoEnd)
 				{
 					RequireNotNull (intoStart);

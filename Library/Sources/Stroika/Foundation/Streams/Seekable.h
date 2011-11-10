@@ -54,6 +54,8 @@ namespace	Stroika {
 			 */
 			class	Seekable {
 				public:
+					virtual	~Seekable ();
+				public:
 					nonvirtual	SeekOffsetType	GetOffset () const;
 				protected:
 					virtual	SeekOffsetType	_GetOffset () const						=	0;

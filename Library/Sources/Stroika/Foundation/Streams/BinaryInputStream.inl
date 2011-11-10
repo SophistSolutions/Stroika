@@ -19,6 +19,9 @@ namespace	Stroika {
 			inline	BinaryInputStream::BinaryInputStream ()
 				{
 				}
+			inline	BinaryInputStream::~BinaryInputStream ()
+				{
+				}
 			inline	size_t	BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd)
 				{
 					RequireNotNull (intoStart);

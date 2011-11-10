@@ -9,6 +9,11 @@
 #include	"../Configuration/Common.h"
 
 
+/*
+ *	TODO:
+ *		o	Consider/document approaches to timeouts. We COULD have a stream class where it was a PROPERTY OF THE CLASS (or alternate API)
+ *			where writes timeout after a certain point.
+ */
 
 
 namespace	Stroika {	
@@ -24,6 +29,8 @@ namespace	Stroika {
 			class	BinaryOutputStream {
 				protected:
 					BinaryOutputStream ();
+				public:
+					virtual ~BinaryOutputStream ();
 				
 				public:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.

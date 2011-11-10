@@ -28,6 +28,8 @@ namespace	Stroika {
 			class	TextOutputStream {
 				protected:
 					TextOutputStream ();
+				public:
+					virtual ~TextOutputStream ();
 				
 				public:
 					// pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.

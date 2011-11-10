@@ -36,6 +36,11 @@ namespace	Stroika {
 			 */
 			class	BufferedBinaryOutputStream : public BinaryOutputStream {
 				public:
+					NO_DEFAULT_CONSTRUCTOR (BufferedBinaryOutputStream);
+					NO_COPY_CONSTRUCTOR (BufferedBinaryOutputStream);
+					NO_ASSIGNMENT_OPERATOR (BufferedBinaryOutputStream);
+
+				public:
 					BufferedBinaryOutputStream (BinaryOutputStream& realOut);
 					~BufferedBinaryOutputStream ();
 				

@@ -15,8 +15,10 @@ namespace	Stroika {
 		namespace	Streams {
 
 
-
 			//	class	Seekable
+			inline	Seekable::~Seekable ()
+				{
+				}
 			inline	SeekOffsetType	Seekable::GetOffset () const
 				{
 					return _GetOffset ();

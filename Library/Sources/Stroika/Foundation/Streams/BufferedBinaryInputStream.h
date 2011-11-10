@@ -18,6 +18,10 @@
  *
  *		o Not actually implemented. Must think out if this should mixin Seekable or not. I THINK it must.
  *			I THINK if one SEEKS this, but the underlying class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
+ *
+ *		o	Examine other choices in stream class. Decide between using the Memory::SharedPtr<> pattern, or just using references (and count on coding styles
+ *			to manage lifetime issues).
+ *
  */
 
 

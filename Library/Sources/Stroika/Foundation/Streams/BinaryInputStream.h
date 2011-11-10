@@ -14,7 +14,18 @@
 /*
  *	TODO:
  *
- *		o	Unclear about lifetime of arguments. COULD have CTORs take SharedPtr<> of appropriate 'base stream'. Thats sensible.
+ *		o	Unclear about lifetime of stream objects. Right now - the overall design is agnostic. But I could redo class
+ *			X as X (envelope) and X::IRep is implementaiton using SharedPtr<>. This would have the advantage of making the
+ *			lifetime issues clear and simple. But right now - so far - things seem to be going OK without that.
+ *
+ *		o	Consider template basic_istream<>
+ *				and do of BYTE and CHARACTER (for binary and text i/ostreams). Abstract bases. 
+ *				Points the way towards creating streams of OTHER sorts of objects if desired.
+ *
+ *		o	Explain in docs how Stroika streams differ from iostream
+ *				o	MUCH MUCH easier to implement your own complaint stream
+ *				o	Separarate interface from implementation (thats why easier to implement)
+ *				o	Doesn’t mix text with binary APIs. Keeps them logically separate (view as you will – diff – if better or worse)
  *
  */
 
@@ -41,6 +52,8 @@ namespace	Stroika {
 			class	BinaryInputStream {
 				protected:
 					BinaryInputStream ();
+				public:
+					virtual ~BinaryInputStream ();
 				
 				public:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.

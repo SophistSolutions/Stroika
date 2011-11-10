@@ -16,7 +16,11 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Streams {
 
+			//	class	TextOutputStream
 			inline	TextOutputStream::TextOutputStream ()
+				{
+				}
+			inline	TextOutputStream::~TextOutputStream ()
 				{
 				}
 			void	TextOutputStream::Write (const Character* start, const Character* end)
@@ -25,6 +29,7 @@ namespace	Stroika {
 					Require (end - start >= 1);
 					_Write (start, end);
 				}
+
 		}
 	}
 }

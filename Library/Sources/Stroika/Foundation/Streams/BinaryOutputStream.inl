@@ -19,6 +19,9 @@ namespace	Stroika {
 			inline	BinaryOutputStream::BinaryOutputStream ()
 				{
 				}
+			inline	BinaryOutputStream::~BinaryOutputStream ()
+				{
+				}
 			inline	void	BinaryOutputStream::Write (const Byte* start, const Byte* end)
 				{
 					RequireNotNull (start);

@@ -45,6 +45,8 @@ namespace	Stroika {
 			class	TextInputStream {
 				protected:
 					TextInputStream ();
+				public:
+					virtual ~TextInputStream ();
 				
 				public:
 					// Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
