@@ -26,6 +26,7 @@ Objs	=	\
 	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
+	$(ObjDir)OperationNotSupportedException.o\
 	$(ObjDir)ProgressMonitor.o\
 	$(ObjDir)SimpleRunnable.o\
 	$(ObjDir)Signals.o\

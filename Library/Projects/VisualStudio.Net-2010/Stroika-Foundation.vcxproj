@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -396,6 +397,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>

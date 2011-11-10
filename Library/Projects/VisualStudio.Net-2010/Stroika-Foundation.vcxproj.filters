@@ -366,6 +366,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryInputStreamFromIStreamAdapter.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -794,6 +797,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryInputStreamFromIStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
