@@ -31,7 +31,7 @@ namespace	Stroika {
 			/*
 			 * Design Overview:
 			 *
-			 *		o	Designed to be mixed into BinaryInputStream, BinaryOutputStream, TextInputStream, or TextOutputStream. 
+			 *		o	Designed to be mixed with BinaryInputStream, BinaryOutputStream, TextInputStream, or TextOutputStream. 
 			 *
 			 *		o	It should be mixed in as a virtual base, so an IO stream shares a COMMON notion of current offset. Note - this choice differs from iostreams, but mirrors
 			 *			the choice in UNIX fileio ('read and write pointers the same).
@@ -42,9 +42,8 @@ namespace	Stroika {
 			 *			and in Binary streams, offsets are in Bytes. This implies one CANNOT reasonably mix together Binary streams and Text streams (one combines them
 			 *			by use of a special TextStream that refers to another BinaryStream for actual IO).
 			 *
-			 *		o	Considered making this a MIXIN class - and NOT having BinaryInputStream(ETC) directly mix it in. That turned out to be inconvenient because ALL our
-			 *			concrete implementation classes needed to support seeking (so they could be used when soemthign had seeking or not). The CanSeek() approach used
-			 *			in .Net just seems more pragmatically simple.
+			 *		o	BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an input/output stream. Similarly, they can both be
+			 *			mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
 			 *
 			 *		o	Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it was simpler and more elegant to just keep things separate and
 			 *			use mixin classes like 'interfaces' - and use dynamic_cast<> to see what functionality is available on a stream.
@@ -54,12 +53,6 @@ namespace	Stroika {
 			 *			enuf to do another way (e.g. wrap the stream you are using, and track read calls to it and increment your own offset).
 			 */
 			class	Seekable {
-				public:
-					nonvirtual	bool	CanSeek () const;
-					nonvirtual	bool	CanSeek (Whence whence) const;
-				protected:
-					virtual	bool	_CanSeek (Whence whence) const						=	0;
-
 				public:
 					nonvirtual	SeekOffsetType	GetOffset () const;
 				protected:

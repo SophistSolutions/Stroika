@@ -50,11 +50,6 @@ Streams::SeekOffsetType	MemoryBinaryInputStream::_GetOffset () const override
 	return fCursor_ - fData_.begin ();
 }
 
-bool	MemoryBinaryInputStream::_CanSeek (Streams::Whence whence) const override
-{
-	return true;
-}
-
 void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
 {
 	Execution::AutoCriticalSection	critSec (fCriticalSection_);

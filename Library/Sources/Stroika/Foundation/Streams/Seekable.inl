@@ -17,14 +17,6 @@ namespace	Stroika {
 
 
 			//	class	Seekable
-			inline	bool	Seekable::CanSeek () const
-				{
-					return _CanSeek (FromStart_W) or _CanSeek (FromCurrent_W) or _CanSeek (FromEnd_W);
-				}
-			inline	bool	Seekable::CanSeek (Whence whence) const
-				{
-					return _CanSeek (whence);
-				}
 			inline	SeekOffsetType	Seekable::GetOffset () const
 				{
 					return _GetOffset ();

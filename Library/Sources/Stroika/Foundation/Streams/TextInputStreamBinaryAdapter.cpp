@@ -43,18 +43,11 @@ size_t	TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* int
 
 Streams::SeekOffsetType	TextInputStreamBinaryAdapter::_GetOffset () const override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::GetOffset"));
-}
-
-bool	TextInputStreamBinaryAdapter::_CanSeek (Streams::Whence whence) const override
-{
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	return false;
+	AssertNotImplemented ();
+	return 0;
 }
 
 void	TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::Seek"));
+	AssertNotImplemented ();
 }

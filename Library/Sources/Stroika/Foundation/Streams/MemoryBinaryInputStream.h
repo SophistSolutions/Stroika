@@ -11,13 +11,12 @@
 #include	"../Memory/SmallStackBuffer.h"
 
 #include	"BinaryInputStream.h"
+#include	"Seekable.h"
 
 
 /*
  * TODO:
  *			o	Re-implemnt using atomics to avoid critical section (cheaper).
- *
- *			o	Consider mixing in Seekable here. Would be easy
  */
 
 
@@ -31,7 +30,7 @@ namespace	Stroika {
 			 *
 			 * This class is threadsafe - meaning _Read() can safely be called from multiple threads at a time freely.
 			 */
-			class	MemoryBinaryInputStream : public BinaryInputStream {
+			class	MemoryBinaryInputStream : public virtual BinaryInputStream, public virtual Seekable {
 				public:
 					NO_DEFAULT_CONSTRUCTOR(MemoryBinaryInputStream);
 					NO_COPY_CONSTRUCTOR(MemoryBinaryInputStream);
@@ -43,7 +42,6 @@ namespace	Stroika {
 				protected:
 					virtual	size_t			_Read (Byte* intoStart, Byte* intoEnd) override;
 					virtual	SeekOffsetType	_GetOffset () const override;
-					virtual	bool			_CanSeek (Whence whence) const override;
 					virtual	void			_Seek (Whence whence, SeekOffsetType offset) override;
 
 				private:

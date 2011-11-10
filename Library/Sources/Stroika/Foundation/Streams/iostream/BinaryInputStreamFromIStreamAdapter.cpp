@@ -55,11 +55,6 @@ Streams::SeekOffsetType	BinaryInputStreamFromIStreamAdapter::_GetOffset () const
 	return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
 }
 
-bool	BinaryInputStreamFromIStreamAdapter::_CanSeek (Streams::Whence whence) const override
-{
-	return true;
-}
-
 void	BinaryInputStreamFromIStreamAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
 {
 	switch (whence) {

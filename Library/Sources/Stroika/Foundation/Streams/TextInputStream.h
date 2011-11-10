@@ -11,11 +11,8 @@
 #include	"../Characters/Character.h"
 #include	"../Configuration/Common.h"
 
-#include	"Seekable.h"
 
 
-///VERY PRELININARY PROTOTYPE DESIGN - JUST WRITTEN DOWN TO REVIEWW - NOT USED ANYWHERE YET
-///		-- LGP 2011-06-22
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -45,7 +42,7 @@ namespace	Stroika {
 			 *		We PROBABL>Y should make it a CONFIG PARAM (or param to ReadLine?) if we expect to find CR, LF, or CRLF. Reason is - on file ending in CR, we COULD block needlessly looking for LF
 			 *		after reading CR...
 			 */
-			class	TextInputStream : public virtual Seekable {
+			class	TextInputStream {
 				protected:
 					TextInputStream ();
 				

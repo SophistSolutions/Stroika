@@ -13,6 +13,13 @@
 
 
 
+/*
+ *	TODO:
+ *
+ *		o Not actually implemented. Must think out if this should mixin Seekable or not. I THINK it must.
+ *			I THINK if one SEEKS this, but the underlying class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
+ */
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -28,10 +35,6 @@ namespace	Stroika {
 				
 				protected:
 					virtual	size_t			_Read (Byte* intoStart, Byte* intoEnd) override;
-					virtual	SeekOffsetType	_GetOffset () const override;
-					virtual	bool			_CanSeek (Whence whence) const override;
-					virtual	void			_Seek (Whence whence, SeekOffsetType offset) override;
-
 
 				private:
 					Memory::SharedPtr<BinaryInputStream>	fRealIn_;

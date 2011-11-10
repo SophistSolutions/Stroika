@@ -27,7 +27,7 @@ namespace	Stroika {
 				 *
 				 * The only real conneciton is that they share a common socket, and if IT is closed, then the whole SocketStream will stop working.
 				 */
-				class	SocketStream : public Streams::BinaryInputStream, public Streams::BinaryOutputStream {
+				class	SocketStream : public virtual Streams::BinaryInputStream, public virtual Streams::BinaryOutputStream {
 					public:
 						// Note - socket is CLOSED (filesystem close for now) in DTOR 
 						// TODO:
@@ -40,9 +40,6 @@ namespace	Stroika {
 					protected:
 						virtual	size_t					_Read (Byte* intoStart, Byte* intoEnd) override;
 						virtual	void					_Write (const Byte* start, const Byte* end) override;
-						virtual	Streams::SeekOffsetType	_GetOffset () const override;
-						virtual	bool					_CanSeek (Streams::Whence whence) const override;
-						virtual	void					_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override;
 
 					private:
 						Socket	fSD_;

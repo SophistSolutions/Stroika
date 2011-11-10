@@ -9,7 +9,9 @@
 #include	<string>
 
 #include	"BinaryInputStream.h"
+#include	"Seekable.h"
 #include	"TextInputStream.h"
+
 
 
 /*
@@ -27,14 +29,13 @@ namespace	Stroika {
 
 			/*
 			 */
-			class	TextInputStreamBinaryAdapter : public TextInputStream {
+			class	TextInputStreamBinaryAdapter : public virtual TextInputStream, public virtual Seekable {
 				public:
 					TextInputStreamBinaryAdapter (BinaryInputStream& src);
 
 				protected:
 					virtual	size_t			_Read (Character* intoStart, Character* intoEnd) override;
 					virtual	SeekOffsetType	_GetOffset () const override;
-					virtual	bool			_CanSeek (Whence whence) const override;
 					virtual	void			_Seek (Whence whence, SeekOffsetType offset) override;
 
 				private:

@@ -51,11 +51,6 @@ Streams::SeekOffsetType	ExternallyOwnedMemoryBinaryInputStream::_GetOffset () co
 	return fCursor_ - fStart_;
 }
 
-bool	ExternallyOwnedMemoryBinaryInputStream::_CanSeek (Streams::Whence whence) const override
-{
-	return true;
-}
-
 void	ExternallyOwnedMemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
 {
 	Execution::AutoCriticalSection	critSec (fCriticalSection_);

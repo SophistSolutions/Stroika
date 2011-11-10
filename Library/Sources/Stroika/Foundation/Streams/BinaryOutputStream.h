@@ -8,7 +8,6 @@
 
 #include	"../Configuration/Common.h"
 
-#include	"Seekable.h"
 
 
 
@@ -22,7 +21,7 @@ namespace	Stroika {
 			 *		o	BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an input/output stream. Simlarly, they can both be
 			 *			mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
 			 */
-			class	BinaryOutputStream : public virtual Seekable {
+			class	BinaryOutputStream {
 				protected:
 					BinaryOutputStream ();
 				

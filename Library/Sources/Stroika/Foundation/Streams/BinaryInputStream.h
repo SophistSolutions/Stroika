@@ -8,46 +8,20 @@
 
 #include	"../Configuration/Common.h"
 
-#include	"Seekable.h"
-
-///VERY PRELININARY PROTOTYPE DESIGN - JUST WRITTEN DOWN TO REVIEWW - NOT USED ANYWHERE YET
-///		-- LGP 2011-06-22
 
 
-//// TODO - REVIEW .NET API for STREAMS - SEE IF WE MISSED ANYTHIGN IMPORTANT, or how our hierarchy matches up with theirs
 
-/* **************** STREAMS MODULE TODO ******************************
-
-	>NEW BUffered classes
-		>	Need BUffered variants for Binary/Text and Input/Output. Do them separately - thats 4 classes.
-		>	Must figure out of I want 2 more - BinaryBufferedInputOutputStream and TextBufferedInputOutputStream (good idea? - unclear?)
-		>	Possibly use SmallStackBuffer<> inside as impl detail?
-		>	Unclear about lifetime of arguments. COULD have CTORs take SharedPtr<> of appropriate 'base stream'. Thats sensible.
-		>	UNCELAR how to handle 'seekability' - more variants, or only do buffered wrapper on 'seekable' combinations? Maybe do a TEMPLATED
-		>	implmentation so can work with various combos?
-
-
-	>NEW TextInputStreamAdaptor (subclass from TextInputStream, but takes BinaryInputStream as arg -)
-		>	 like with buffered - do we require use of SharedPtr?
-		>	Takes as argument input CODEPAGE (so we automatically map from binary data
-		>	Takes as argument AUTODETECT INPUT CODEPAGE (very useful - LED already has code for this)
-		>	Similarly on TextOutputStreamAdaptor (takes binary stream arg, and flags about codepage to use, and BOM flag)
-		>	UNCLEAR if/how to deal with SEEKABLE option? EIther explosiion in classes (not the end of the world) - or 
-		>	maybe find a way to use tempaltes to share code? Or revist the idea of baking Seekable directly into Binary/TextInput/OutputStream base classes
-		>	NOTE - these classes are meant to be analagous to .Net TextReader  and TextWriter (maybe use those names? but I wanted to empahzie they are like streams?)
-		>		(oops - I was wrong - they are analgous to the .Net StreamREader which subclassest from TextReader and StreamWRite rsubclassing from TextWriter) - and then
-		>		thats closer naming/functionality
-
-
-*/
-
+/*
+ *	TODO:
+ *
+ *		o	Unclear about lifetime of arguments. COULD have CTORs take SharedPtr<> of appropriate 'base stream'. Thats sensible.
+ *
+ */
 
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Streams {
-
-
 
 			/*
 			 * Design Overview:
@@ -64,7 +38,7 @@ namespace	Stroika {
 			 *		o	BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an input/output stream. Similarly, they can both be
 			 *			mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
 			 */
-			class	BinaryInputStream : public virtual Seekable {
+			class	BinaryInputStream {
 				protected:
 					BinaryInputStream ();
 				
