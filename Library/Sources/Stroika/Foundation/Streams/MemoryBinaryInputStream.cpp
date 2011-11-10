@@ -63,7 +63,7 @@ void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffset
 			if (offset < 0) {
 				Execution::DoThrow (std::range_error ("seek"));
 			}
-			if (offset > fData_.GetSize ()) {
+			if (static_cast<size_t> (offset) > fData_.GetSize ()) {
 				Execution::DoThrow (std::range_error ("seek"));
 			}
 			fCursor_ = fData_.begin () + offset;
@@ -75,7 +75,7 @@ void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffset
 			if (newOffset < 0) {
 				Execution::DoThrow (std::range_error ("seek"));
 			}
-			if (newOffset > fData_.GetSize ()) {
+			if (static_cast<size_t> (newOffset) > fData_.GetSize ()) {
 				Execution::DoThrow (std::range_error ("seek"));
 			}
 			fCursor_ = fData_.begin () + newOffset;
@@ -87,7 +87,7 @@ void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffset
 			if (newOffset < 0) {
 				Execution::DoThrow (std::range_error ("seek"));
 			}
-			if (newOffset > fData_.GetSize ()) {
+			if (static_cast<size_t> (newOffset) > fData_.GetSize ()) {
 				Execution::DoThrow (std::range_error ("seek"));
 			}
 			fCursor_ = fData_.begin () + newOffset;
