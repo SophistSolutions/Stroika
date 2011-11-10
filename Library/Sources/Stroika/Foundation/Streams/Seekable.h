@@ -66,6 +66,9 @@ namespace	Stroika {
 					virtual	SeekOffsetType	_GetOffset () const						=	0;
 
 				public:
+					/*
+					 * The new position, measured in bytes, is obtained by adding offset bytes to the position specified by whence
+					 */
 					nonvirtual	void		Seek (SeekOffsetType offset);
 					nonvirtual	void		Seek (Whence whence, SeekOffsetType offset);
 				protected:

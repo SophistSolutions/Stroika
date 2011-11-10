@@ -47,18 +47,52 @@ size_t	MemoryBinaryInputStream::_Read (Byte* intoStart, Byte* intoEnd)
 
 Streams::SeekOffsetType	MemoryBinaryInputStream::_GetOffset () const override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::GetOffset"));
+	return fCursor_ - fData_.begin ();
 }
 
 bool	MemoryBinaryInputStream::_CanSeek (Streams::Whence whence) const override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	return false;
+	return true;
 }
 
 void	MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
 {
-	// REALLY JUST NOT YET IMPLEMENTED - BUT IT SHOULD BE
-	Execution::DoThrow (Execution::OperationNotSupportedException (L"SocketStream::Seek"));
+	Execution::AutoCriticalSection	critSec (fCriticalSection_);
+	switch (whence) {
+		case	FromStart_W: {
+			if (offset < 0) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			if (offset > fData_.GetSize ()) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			fCursor_ = fData_.begin () + offset;
+		}
+		break;
+		case	FromCurrent_W: {
+			Streams::SeekOffsetType curOffset	=	fCursor_ - fData_.begin ();
+			Streams::SeekOffsetType newOffset	=	curOffset + offset;
+			if (newOffset < 0) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			if (newOffset > fData_.GetSize ()) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			fCursor_ = fData_.begin () + newOffset;
+		}
+		break;
+		case	FromEnd_W: {
+			Streams::SeekOffsetType curOffset	=	fCursor_ - fData_.begin ();
+			Streams::SeekOffsetType newOffset	=	fData_.GetSize () + offset;
+			if (newOffset < 0) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			if (newOffset > fData_.GetSize ()) {
+				Execution::DoThrow (std::range_error ("seek"));
+			}
+			fCursor_ = fData_.begin () + newOffset;
+		}
+		break;
+	}
+	Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));		// ensure here not end of function to get critsection lock
 }
