@@ -1,0 +1,30 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
+#ifndef	_Stroika_Foundation_Execution_FeatureNotSupportedInThisVersionException_h_
+#define	_Stroika_Foundation_Execution_FeatureNotSupportedInThisVersionException_h_	1
+
+#include	"../StroikaPreComp.h"
+
+#include	"../Characters/String.h"
+
+#include	"Exceptions.h"
+
+
+namespace	Stroika {	
+	namespace	Foundation {
+		namespace	Execution {
+
+			using	Characters::String;
+
+			class	FeatureNotSupportedInThisVersionException : public StringException {
+				public:
+					FeatureNotSupportedInThisVersionException (const wstring& feature);
+				public:
+					wstring	fFeature;
+			};
+
+		}
+	}
+}
+#endif	/*_Stroika_Foundation_Execution_FeatureNotSupportedInThisVersionException_h_*/

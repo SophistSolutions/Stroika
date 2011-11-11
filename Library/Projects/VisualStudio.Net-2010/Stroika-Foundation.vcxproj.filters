@@ -369,6 +369,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -799,6 +808,15 @@
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>

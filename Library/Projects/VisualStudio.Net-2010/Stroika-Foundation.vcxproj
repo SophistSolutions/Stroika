@@ -204,6 +204,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
@@ -253,6 +254,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
@@ -392,6 +395,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h" />
@@ -425,6 +429,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />

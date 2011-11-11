@@ -24,6 +24,12 @@
 #endif
 
 
+/*
+ *	TODO:
+ *		o	Probably get rid of this, or refactor it alot more.
+ */
+
+
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -42,31 +48,6 @@ namespace	Stroika {
 			class	UserCanceledException : public SilentException {
 			};
 
-
-
-			class	RequiredComponentMissingException : public StringException {
-				public:
-					static	const	wchar_t	kJava[];
-					static	const	wchar_t	kPDFViewer[];
-					static	const	wchar_t	kPDFOCXViewer[];
-				public:
-					RequiredComponentMissingException (const wstring& component);
-
-				public:
-					wstring	fComponent;
-			};
-
-			class	RequiredComponentVersionMismatchException : public StringException {
-				public:
-					RequiredComponentVersionMismatchException (const wstring& component, const wstring& requiredVersion = wstring ());
-			};
-
-			class	FeatureNotSupportedInThisVersionException : public StringException {
-				public:
-					FeatureNotSupportedInThisVersionException (const wstring& feature);
-				public:
-					wstring	fFeature;
-			};
 
 
 
