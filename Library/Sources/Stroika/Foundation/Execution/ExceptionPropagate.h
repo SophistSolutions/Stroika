@@ -9,8 +9,8 @@
 #include	"../IO/FileBusyException.h"
 #include	"../IO/FileFormatException.h"
 #include	"../Memory/SharedPtr.h"
-
 #include	"IRunnable.h"
+#include	"RequiredComponentMissingException.h"
 
 #include	"Exceptions.h"
 
