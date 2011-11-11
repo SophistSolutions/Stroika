@@ -37,7 +37,7 @@ namespace	Stroika {
 				#endif
 				{
 					#if			qPlatform_Windows
-						ThrowIfFalseGetLastError (fEventHandle != nullptr);
+						Platform::Windows::ThrowIfFalseGetLastError (fEventHandle != nullptr);
 						#if		qTrack_Execution_HandleCounts
 							Execution::AtomicIncrement (&sCurAllocatedHandleCount);
 						#endif

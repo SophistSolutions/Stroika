@@ -79,30 +79,6 @@ namespace	Stroika {
 
 
 
-		#if		qPlatform_Windows
-			inline	void	ThrowIfFalseGetLastError (bool test)
-				{
-					if (not test) {
-						Platform::Windows::Exception::DoThrow (::GetLastError ());
-					}
-				}
-		#endif
-			#if		qPlatform_Windows
-			inline	void	ThrowIfFalseGetLastError (BOOL test)
-				{
-					if (not test) {
-						Platform::Windows::Exception::DoThrow (::GetLastError ());
-					}
-				}
-			#endif
-			#if		qPlatform_Windows
-			inline	void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
-				{
-					if (win32ErrCode != ERROR_SUCCESS) {
-						Platform::Windows::Exception::DoThrow (win32ErrCode);
-					}
-				}
-			#endif
 			inline	void	ThrowIfNull (const void* p)
 				{
 					if (p == nullptr) {

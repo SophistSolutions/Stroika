@@ -43,7 +43,7 @@ String	Execution::GetCurrentUserName (UserNameFormat format)
 		ULONG					sz			=	0;
 		::GetUserName (nullptr, &sz);
 		Memory::SmallStackBuffer<Characters::TChar>	buf (sz + 1);
-		Execution::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
+		Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
 		return String::FromTString (buf);
 	#elif	qPlatform_POSIX
 		return Platform::POSIX::uid_t2UserName (Platform::POSIX::GetUID ());

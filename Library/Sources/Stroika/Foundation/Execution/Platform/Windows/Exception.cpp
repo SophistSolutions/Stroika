@@ -43,7 +43,6 @@ using	namespace	Stroika::Foundation::Execution::Platform::Windows;
 
 
 
-#if		qPlatform_Windows
 namespace {
 	inline	TString	Win32Error2String_ (DWORD win32Err)
 		{
@@ -93,7 +92,6 @@ namespace {
 			return Trim (result);
 		}
 }
-#endif
 
 
 
@@ -104,7 +102,6 @@ namespace {
 
 
 
-#if		qPlatform_Windows
 /*
  ********************************************************************************
  *********************** Platform::Windows::Exception ***************************
@@ -150,4 +147,74 @@ TString	Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)
 {
 	return Win32Error2String_ (dw);
 }
-#endif
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ***************************** ThrowIfShellExecError ****************************
+ ********************************************************************************
+ */
+void	Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
+{
+	int	errCode	=	reinterpret_cast<int> (r);
+	if (errCode <= 32) {
+		DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
+		switch (errCode) {
+			case	0:						Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);	// The operating system is out of memory or resources. 
+			case	ERROR_FILE_NOT_FOUND:	Platform::Windows::Exception::DoThrow (ERROR_FILE_NOT_FOUND);	// The specified file was not found. 
+			case	ERROR_PATH_NOT_FOUND:	Platform::Windows::Exception::DoThrow (ERROR_PATH_NOT_FOUND);	//  The specified path was not found. 
+			case	ERROR_BAD_FORMAT:		Platform::Windows::Exception::DoThrow (ERROR_BAD_FORMAT);		//  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image). 
+			case	SE_ERR_ACCESSDENIED:	throw (Platform::Windows::HRESULTErrorException (E_ACCESSDENIED));			//  The operating system denied access to the specified file. 
+			case	SE_ERR_ASSOCINCOMPLETE:	Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);	//  The file name association is incomplete or invalid. 
+			case	SE_ERR_DDEBUSY:			Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);			//  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed. 
+			case	SE_ERR_DDEFAIL:			Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);			//  The DDE transaction failed. 
+			case	SE_ERR_DDETIMEOUT:		Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);			//  The DDE transaction could not be completed because the request timed out. 
+			case	SE_ERR_DLLNOTFOUND:		Platform::Windows::Exception::DoThrow (ERROR_DLL_NOT_FOUND);		//  The specified dynamic-link library (DLL) was not found. 
+			//case	SE_ERR_FNF:				throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));		//  The specified file was not found. 
+			case	SE_ERR_NOASSOC:			Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);	//  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable. 
+			case	SE_ERR_OOM:				Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);	//  There was not enough memory to complete the operation. 
+			//case	SE_ERR_PNF:				throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));		//  The specified path was not found. 
+			case	SE_ERR_SHARE:			Platform::Windows::Exception::DoThrow (ERROR_INVALID_SHARENAME);	//  
+			default: {
+				// Not sure what error to report here...
+				Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ *********** Execution::RegisterDefaultHandler_invalid_parameter ****************
+ ********************************************************************************
+ */
+	namespace	{
+		/*
+		 *	Because of Microsoft's new secure-runtime-lib  - we must provide a handler to catch errors (shouldn't occur - but in case.
+		 *	We treat these largely like ASSERTION errors, but then translate them into a THROW of an exception - since that is
+		 *	probably more often the right thing todo.
+		 */
+		void	invalid_parameter_handler_ (const wchar_t * expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved)
+			{
+				TraceContextBumper	trcCtx (TSTR ("invalid_parameter_handler"));
+				DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
+				Assert (false);
+				Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));
+			}
+	}
+void	Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ()
+{
+	(void)_set_invalid_parameter_handler (invalid_parameter_handler_);
+}

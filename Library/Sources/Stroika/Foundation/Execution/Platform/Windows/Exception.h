@@ -51,6 +51,17 @@ namespace	Stroika {
 							static	const	DWORD	kERROR_INTERNET_CANNOT_CONNECT				=	12029;
 					};
 
+
+					void	ThrowIfFalseGetLastError (bool test);
+					void	ThrowIfFalseGetLastError (BOOL test);
+					void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
+					void	ThrowIfShellExecError (HINSTANCE r);
+
+
+					// these map invalid parameters etc to Execution (with assertions and appropriate
+					// logging)
+					void	RegisterDefaultHandler_invalid_parameter ();
+
 				}
 			}
 		}

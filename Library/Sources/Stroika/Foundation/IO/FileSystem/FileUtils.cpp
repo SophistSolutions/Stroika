@@ -44,6 +44,9 @@ using	namespace	Stroika::Foundation::IO::FileSystem;
 using	namespace	Stroika::Foundation::Memory;
 
 
+#if		qPlatform_Windows
+using	Execution::Platform::Windows::ThrowIfFalseGetLastError;
+#endif
 
 
 
@@ -231,7 +234,7 @@ FileOffset_t	FileSystem::GetFileSize (const TString& fileName)
 #if		qPlatform_Windows
 	WIN32_FILE_ATTRIBUTE_DATA	fileAttrData;
 	(void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
-	ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+	Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
 	return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
 #else
 	AssertNotImplemented ();

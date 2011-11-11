@@ -29,11 +29,11 @@ DLLLoader::DLLLoader (const TChar* dllName)
 {
 	DbgTrace (TSTR ("DLLLoader - loading DLL %s"), dllName);
 	RequireNotNull (dllName);
-#if		qPlatform_Windows
-	ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
-#else
-	fModule = LoadDLL (dllName);
-#endif
+	#if		qPlatform_Windows
+		Execution::Platform::Windows::ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
+	#else
+		fModule = LoadDLL (dllName);
+	#endif
 }
 
 DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
@@ -41,20 +41,20 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
 	DbgTrace (TSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
 	RequireNotNull (dllName);
 	try {
-#if		qPlatform_Windows
-		ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
-#else
-		fModule = LoadDLL (dllName);
-#endif
+		#if		qPlatform_Windows
+			Execution::Platform::Windows::ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
+		#else
+			fModule = LoadDLL (dllName);
+		#endif
 	}
 	catch (...) {
 		for (vector<TString>::const_iterator i = searchPath.begin (); i != searchPath.end (); ++i) {
 			TString modulePath = *i + TSTR ("\\") + dllName;
-#if		qPlatform_Windows
-			fModule = ::LoadLibrary (modulePath.c_str ());
-#else
-			IgnoreExceptionsForCall (fModule = LoadDLL (modulePath.c_str ()));
-#endif
+			#if		qPlatform_Windows
+				fModule = ::LoadLibrary (modulePath.c_str ());
+			#else
+				IgnoreExceptionsForCall (fModule = LoadDLL (modulePath.c_str ()));
+			#endif
 			if (fModule != nullptr) {
 				return;
 			}
@@ -66,11 +66,11 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
 #if		!qPlatform_Windows
 DLLHandle	DLLLoader::LoadDLL (const TChar* dllName, int flags)
 {
-#if qTargetPlatformSDKUseswchar_t
-	DLLHandle module = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
-#else
-	DLLHandle module = dlopen (dllName, flags);
-#endif
+	#if qTargetPlatformSDKUseswchar_t
+		DLLHandle module = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
+	#else
+		DLLHandle module = dlopen (dllName, flags);
+	#endif
 
 	if (module == nullptr) {
 		// either main module or not found

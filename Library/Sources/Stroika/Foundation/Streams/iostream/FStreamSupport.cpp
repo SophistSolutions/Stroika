@@ -63,7 +63,7 @@ ifstream&	Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TStr
 		ifStream->open (fileName.c_str (), mode | ios_base::in);
 		if (!(*ifStream)) {
 			#if		qPlatform_Windows
-				Execution::ThrowIfNotERROR_SUCCESS (::GetLastError ());
+				Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
 			#elif	qPlatform_POSIX
 				Execution::ThrowIfError_errno_t ();
 				AssertNotReached ();// errno sb set
@@ -100,7 +100,7 @@ ofstream&	Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TSt
 		ofStream->open (fileName.c_str (), mode | ios_base::out);
 		if (!(*ofStream)) {
 			#if		qPlatform_Windows
-				Execution::ThrowIfNotERROR_SUCCESS (::GetLastError ());
+				Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
 			#elif	qPlatform_POSIX
 				Execution::ThrowIfError_errno_t ();
 				AssertNotReached ();// errno sb set

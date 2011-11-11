@@ -41,7 +41,7 @@ TString	FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 #if		qPlatform_Windows
 	TChar	fileBuf[MAX_PATH];
 	memset (fileBuf, 0, sizeof (fileBuf));
-	ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
+	Execution::Platform::Windows::ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
 	TString	result = fileBuf;
 	// Assure non-empty result
 	if (result.empty ()) {

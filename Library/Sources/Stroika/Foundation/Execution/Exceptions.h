@@ -101,14 +101,6 @@ namespace	Stroika {
 			void	_NoReturn_	DoReThrow (const wchar_t* traceMsg);
 
 
-
-		#if		qPlatform_Windows
-			void	ThrowIfFalseGetLastError (bool test);
-			void	ThrowIfFalseGetLastError (BOOL test);
-			void	ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
-			void	ThrowIfShellExecError (HINSTANCE r);
-		#endif
-
 			template	<typename E>
 				void	ThrowIfNull (const void* p, const E& e = E ());
 			void	ThrowIfNull (const void* p);
@@ -116,13 +108,6 @@ namespace	Stroika {
 
 			#define	IgnoreExceptionsForCall(theCode)		try {theCode;} catch (...) {}
 
-
-
-			#if		qPlatform_Windows
-				// these map invalid parameters etc to Execution (with assertions and appropriate
-				// logging)
-				void	RegisterDefaultHandler_invalid_parameter ();
-			#endif
 
 		}
 	}
