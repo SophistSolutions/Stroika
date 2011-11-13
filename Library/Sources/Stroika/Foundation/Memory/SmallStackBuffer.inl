@@ -105,7 +105,10 @@ namespace	Stroika {
 				SmallStackBuffer<T,BUF_SIZE>&	SmallStackBuffer<T,BUF_SIZE>::operator= (const SmallStackBuffer<T,BUF_SIZE>& rhs)
 					{
 						GrowToSize (rhs.fSize);
+						#pragma	warning (push)
+						#pragma	warning (4 : 4996)		// MSVC unneeded warning about std::copy
 						std::copy (rhs.fPointer, rhs.fPointer + rhs.fSize, fPointer);
+						#pragma warning (pop)
 						return *this;
 					}
 			template	<typename	T, size_t BUF_SIZE>
