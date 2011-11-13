@@ -113,7 +113,13 @@ namespace	Stroika {
 					nonvirtual	TallyRep<T>*		GetRep ();
 
 				private:
-					Memory::SharedByValue<TallyRep<T> >	fRep;
+					struct	Rep_Cloner_ {
+						inline	static	TallyRep<T>*	Copy (const TallyRep<T>& t)
+							{
+								return Tally::Clone (t);
+							}
+					};
+					Memory::SharedByValue<TallyRep<T>,Rep_Cloner_>	fRep;
 
 					static	TallyRep<T>*	Clone (const TallyRep<T>& rep);
 

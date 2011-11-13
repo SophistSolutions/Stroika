@@ -67,13 +67,13 @@ namespace	Stroika {
 
 			//Tally
 			template	<typename T> Tally<T>::Tally () :
-				fRep (0, &Clone)
+				fRep (0)
 			{
 				*this = Tally_Array<T> ();
 			}
 
 			template	<typename T> Tally<T>::Tally (const T* items, size_t size) :
-				fRep (0, &Clone)
+				fRep (0)
 			{
 				*this = Tally_Array<T> (items, size);
 			}
@@ -113,7 +113,7 @@ namespace	Stroika {
 			}
 
 			template	<typename T>	inline	Tally<T>::Tally (TallyRep<T>* rep) :
-				fRep (rep, &Clone)
+				fRep (rep)
 			{
 			}
 

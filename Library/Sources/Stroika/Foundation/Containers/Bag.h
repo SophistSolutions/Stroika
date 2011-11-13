@@ -155,7 +155,13 @@ namespace	Stroika {
                     nonvirtual	BagRep<T>*			GetRep ();
 
                 private:
-                    Memory::SharedByValue<BagRep<T> >	fRep;
+					struct	Rep_Cloner_ {
+						inline	static	BagRep<T>*	Copy (const BagRep<T>& t)
+							{
+								return Bag::Clone (t);
+							}
+					};
+                    Memory::SharedByValue<BagRep<T>,Rep_Cloner_>	fRep;
 
                     static	BagRep<T>*	Clone (const BagRep<T>& rep);
 

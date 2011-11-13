@@ -20,18 +20,18 @@ namespace	Stroika {
             }
 
             template	<typename T>	inline	Bag<T>::Bag (BagRep<T>* rep) :
-                fRep (rep, &Clone)
+                fRep (rep)
             {
             }
 
             template	<class T>	Bag<T>::Bag () :
-                fRep (0, &Clone)
+                fRep (0)
             {
                 *this = Bag_Array<T> ();
             }
 
             template	<class T>	Bag<T>::Bag (const T* items, size_t size) :
-                fRep (0, &Clone)
+                fRep (0)
             {
                 *this = Bag_Array<T> (items, size);
             }

@@ -128,7 +128,8 @@ namespace	Stroika {
 					static	Iterator<T>			GetSentinal ();
 
                 protected:
-                    Memory::SharedByValue<Rep>	fIterator;
+					// probably should not need to use SharedByValue_CopyByFunction....
+                    Memory::SharedByValue<Rep,Memory::SharedByValue_CopyByFunction<Rep>>	fIterator;
                     T       fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
 					static	Rep*	Clone_ (const Rep& rep);
