@@ -23,7 +23,7 @@ namespace	Stroika {
 
 			#if		!qCompilerAndStdLib_Supports_lambda_default_argument
 			template	<typename	T>
-				T*	SharedByValue_CopyByFunction::DefaultElementCopier_ (const T& t)
+				T*	SharedByValue_CopyByFunction<T>::DefaultElementCopier_ (const T& t)
 					{
 						return new T (t);
 					}
