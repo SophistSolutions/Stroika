@@ -25,20 +25,30 @@ namespace	Stroika {
 
 
 			/*
+			 * SharedByValue_CopyByFunction is the a simple copying mechanism used by SharedByValue<>. It is not the most efficient approach (since it stores an actual pointer for the
+			 * copy function. But its very simple and usually adequate.
 			 */
 			template	<typename	T>
 				struct	SharedByValue_CopyByFunction {
-						#if		qCompilerAndStdLib_Supports_lambda_default_argument
-						SharedByValue_CopyByFunction (T* (*copier) (const T&) = [](const T& t) { return new T (t); });
-						#else
-						static	T*	DefaultElementCopier_ (const T& t);
-						SharedByValue_CopyByFunction (T* (*copier) (const T&) = DefaultElementCopier_);
-						#endif
+					#if		qCompilerAndStdLib_Supports_lambda_default_argument
+					SharedByValue_CopyByFunction (T* (*copier) (const T&) = [](const T& t) { return new T (t); });
+					#else
+					static	T*	DefaultElementCopier_ (const T& t);
+					SharedByValue_CopyByFunction (T* (*copier) (const T&) = DefaultElementCopier_);
+					#endif
 					nonvirtual	T*	Copy (const T& t) const;
 					T*		(*fCopier_) (const T&);
 				};
 
 
+			/*
+			 * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>. It simply hardwires use of new T() - the default T(T&) constructor to copy
+			 * elements of type T.
+			 */
+			template	<typename	T>
+				struct	SharedByValue_CopyByDefault {
+					static	T*	Copy (const T& t);
+				};
 
 
 			/*
@@ -49,7 +59,7 @@ namespace	Stroika {
 					<p>This class should allow SHARED_IMLP to be either Memory::SharedPtr<> or std::shared_ptr</p>
 					<p>This class template was originally called CopyOnWrite<></p>
 			*/
-			template    <typename	T, typename COPIER = SharedByValue_CopyByFunction<T>, typename SHARED_IMLP = SharedPtr<T>>
+			template    <typename	T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = SharedPtr<T>>
 				class	SharedByValue : public SHARED_IMLP {
 					public:
 						SharedByValue ();
@@ -64,10 +74,10 @@ namespace	Stroika {
 
 					public:
 						/*
-							* GetPointer () returns the real underlying ptr we store. It can be nullptr. This should
-							* rarely be used - use operator-> in preference. This is only for dealing with cases where
-							* the ptr could legitimately be nil.
-							*/
+						 * GetPointer () returns the real underlying ptr we store. It can be nullptr. This should
+						 * rarely be used - use operator-> in preference. This is only for dealing with cases where
+						 * the ptr could legitimately be nil.
+						 */
 						nonvirtual	const T*	GetPointer () const;
 						nonvirtual	T*			GetPointer ();
 
