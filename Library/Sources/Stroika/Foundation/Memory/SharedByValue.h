@@ -11,13 +11,34 @@
 
 /*
  * TODO:
- *		o	Redo SharedByValue<> so its possible to have a COPIER as a static member(so no size wasted) OR 
- *			copier as data member.
+ *		o	SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it saves it as a data member and has min-size 1 byte it wastes
+ *			space in SharedByValue<T>. See if this is optimized away in release builds and if not, see if we can find some clever way around it.
+ *			(template specializaiton?). Note - this is exactly what the msvc vector<T> template does so presumably it IS optimized.
+ *
  */
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Memory {
+
+
+
+
+			/*
+			 */
+			template	<typename	T>
+				struct	SharedByValue_CopyByFunction {
+						#if		qCompilerAndStdLib_Supports_lambda_default_argument
+						SharedByValue_CopyByFunction (T* (*copier) (const T&) = [](const T& t) { return new T (t); });
+						#else
+						static	T*	DefaultElementCopier_ (const T& t);
+						SharedByValue_CopyByFunction (T* (*copier) (const T&) = DefaultElementCopier_);
+						#endif
+					nonvirtual	T*	Copy (const T& t) const;
+					T*		(*fCopier_) (const T&);
+				};
+
+
 
 
 			/*
@@ -28,31 +49,18 @@ namespace	Stroika {
 					<p>This class should allow SHARED_IMLP to be either Memory::SharedPtr<> or std::shared_ptr</p>
 					<p>This class template was originally called CopyOnWrite<></p>
 			*/
-			template    <typename	T, typename SHARED_IMLP = SharedPtr<T>>
+			template    <typename	T, typename COPIER = SharedByValue_CopyByFunction<T>, typename SHARED_IMLP = SharedPtr<T>>
 				class	SharedByValue : public SHARED_IMLP {
 					public:
 						SharedByValue ();
-						SharedByValue (const SharedByValue<T,SHARED_IMLP>& from);
-
-					#if		!qCompilerAndStdLib_Supports_lambda_default_argument
-					public:
-						inline	T*	DefaultElementCopier_ (const T& t)
-							{
-								return new T (t);
-							}
-					#endif
+						SharedByValue (const SharedByValue<T,COPIER,SHARED_IMLP>& from);
 
 					public:
-						#if		qCompilerAndStdLib_Supports_lambda_default_argument
-						SharedByValue (const SHARED_IMLP& from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
-						SharedByValue (T* from, T* (*copier) (const T&) = [](const T& t) { return new T (t); });
-						#else
-						SharedByValue (const SHARED_IMLP& from, T* (*copier) (const T&) = DefaultElementCopier_);
-						SharedByValue (T* from, T* (*copier) (const T&) = DefaultElementCopier_);
-						#endif
+						SharedByValue (const SHARED_IMLP& from, const COPIER& copier = COPIER ());
+						SharedByValue (T* from, const COPIER& copier = COPIER ());
 
 					public:
-						nonvirtual	SharedByValue<T,SHARED_IMLP>& operator= (const SharedByValue<T,SHARED_IMLP>& src);
+						nonvirtual	SharedByValue<T,COPIER,SHARED_IMLP>& operator= (const SharedByValue<T,COPIER,SHARED_IMLP>& src);
 
 					public:
 						/*
@@ -73,7 +81,7 @@ namespace	Stroika {
 						nonvirtual	T&			operator* ();
 
 					private:
-						T*		(*fCopier) (const T&);
+						COPIER	fCopier_;
 
 					public:
 						nonvirtual	void	Assure1Reference ();

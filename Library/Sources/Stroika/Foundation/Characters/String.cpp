@@ -21,6 +21,12 @@
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
+using	Memory::SharedPtr;
+using	Memory::SharedByValue;
+
+
+
+
 
 /*
  * INTERNAL (INCOMPLETE/PARTLY OBSOLETE) NOTES ABOUT STRING REPS:
@@ -169,7 +175,7 @@ namespace	{
 	struct String_Substring_ : public String {
 		class	MyRep_ : public String::_Rep {
 			public:
-				MyRep_ (const Memory::SharedByValue<_Rep>& baseString, size_t from, size_t length);
+				MyRep_ (const SharedByValue<_Rep,_Rep_Cloner>& baseString, size_t from, size_t length);
 
 				virtual		_Rep*	Clone () const override;
 
@@ -188,7 +194,7 @@ namespace	{
 				virtual	int	Compare (const _Rep& rhs, String::CompareOptions co) const override;
 
 			private:
-				Memory::SharedByValue<_Rep>	fBase;
+				SharedByValue<_Rep,_Rep_Cloner>	fBase;
 
 				size_t	fFrom;
 				size_t	fLength;
@@ -214,13 +220,13 @@ namespace	{
 			{
 				return (rep.Clone ());
 			}
-		static	Memory::SharedByValue<String::_Rep>	mkEmptyStrRep_ ()
+		static	SharedByValue<_Rep,_Rep_Cloner>	mkEmptyStrRep_ ()
 			{
 				static	bool								sInited_	=	false;
-				static	Memory::SharedByValue<String::_Rep>	s_;
+				static	SharedByValue<_Rep,_Rep_Cloner>	s_;
 				if (not sInited_) {
 					sInited_ = true;
-					s_ = Memory::SharedByValue<String::_Rep> (DEBUG_NEW String_CharArray::MyRep_ (nullptr, 0), &Clone_);
+					s_ = SharedByValue<_Rep,_Rep_Cloner> (DEBUG_NEW String_CharArray::MyRep_ (nullptr, 0), _Rep_Cloner ());
 				}
 				return s_;
 			}
@@ -243,14 +249,14 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-	: fRep_ (new String_CharArray::MyRep_ ((const Character*)cString, wcslen (cString)), &Clone_)
+	: fRep_ (new String_CharArray::MyRep_ ((const Character*)cString, wcslen (cString)), _Rep_Cloner ())
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-	: fRep_ (new String_CharArray::MyRep_ ((const Character*)from, to-from), &Clone_)
+	: fRep_ (new String_CharArray::MyRep_ ((const Character*)from, to-from), _Rep_Cloner ())
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
@@ -258,19 +264,19 @@ String::String (const wchar_t* from, const wchar_t* to)
 }
 
 String::String (const Character* from, const Character* to)
-	: fRep_ (new String_CharArray::MyRep_ (from, to-from), &Clone_)
+	: fRep_ (new String_CharArray::MyRep_ (from, to-from), _Rep_Cloner ())
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
 }
 
 String::String (const std::wstring& r)
-    : fRep_ (new String_CharArray::MyRep_ ((const Character*)r.c_str (), r.length ()), &Clone_)
+    : fRep_ (new String_CharArray::MyRep_ ((const Character*)r.c_str (), r.length ()), _Rep_Cloner ())
 {
 }
 
 String::String (_Rep* sharedPart, bool)
-	: fRep_ (sharedPart, &Clone_)
+	: fRep_ (sharedPart, _Rep_Cloner ())
 {
 	RequireNotNull (sharedPart);
 	Require (fRep_.unique ());
@@ -1095,7 +1101,7 @@ void	String_ExternalMemoryOwnership::MyRep_::AssureWeOwnBuffer_ ()
  ************************** String_Substring_::MyRep_ ***************************
  ********************************************************************************
  */
-String_Substring_::MyRep_::MyRep_ (const Memory::SharedByValue<_Rep>& baseString, size_t from, size_t length)
+String_Substring_::MyRep_::MyRep_ (const SharedByValue<_Rep,_Rep_Cloner>& baseString, size_t from, size_t length)
 	: fBase (baseString)
 	, fFrom (from)
 	, fLength (length)

@@ -355,20 +355,26 @@ namespace	Stroika {
 
 				protected:
                     class	_Rep;
+					struct	_Rep_Cloner {
+						inline	_Rep*	Copy (const _Rep& t) const
+							{
+								return String::Clone_ (t);
+							}
+					};
 
 				protected:
 					// _Rep MUST be not-null
                     String (_Rep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
 
                 private:
-                    Memory::SharedByValue<_Rep>	fRep_;
+                    Memory::SharedByValue<_Rep,_Rep_Cloner>	fRep_;
 
                     static	_Rep*	Clone_ (const _Rep& rep);
 
 				// Try to get rid of _PeekRep () Or at least make protected
 				protected:
 				public:
-					nonvirtual	Memory::SharedByValue<_Rep>	_PeekRep () const;
+					nonvirtual	Memory::SharedByValue<_Rep,_Rep_Cloner>	_PeekRep () const;
 
 				private:
 					/*

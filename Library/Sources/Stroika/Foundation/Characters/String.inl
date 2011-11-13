@@ -70,7 +70,7 @@ namespace	Stroika {
 				{
 					return (rep.Clone ());
 				}
-			inline	Memory::SharedByValue<String::_Rep>	String::_PeekRep () const
+			inline	Memory::SharedByValue<String::_Rep,String::_Rep_Cloner>	String::_PeekRep () const
 				{
 					return fRep_;
 				}
