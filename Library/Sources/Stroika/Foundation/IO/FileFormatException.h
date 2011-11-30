@@ -7,6 +7,7 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Characters/TString.h"
+#include	"../Execution/StringException.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
@@ -15,12 +16,15 @@ namespace	Stroika {
 
 			using	Characters::TString;
 
-			class	FileFormatException {
+			class	FileFormatException : public Execution::StringException {
 				public:
 					FileFormatException (const TString& fileName);
 
 				public:
-					TString	fFileName;
+					nonvirtual	TString			GetFileName () const;
+
+				private:
+					TString	fFileName_;
 			};
 
 		}

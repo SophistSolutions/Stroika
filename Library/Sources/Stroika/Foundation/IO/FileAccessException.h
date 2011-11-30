@@ -31,8 +31,12 @@ namespace	Stroika {
 					FileAccessException (const TString& fileName = TString (), FileAccessMode fileAccessMode = eReadWrite_FAM);
 
 				public:
-					TString			fFileName;
-					FileAccessMode	fFileAccessMode;
+					nonvirtual	TString			GetFileName () const;
+					nonvirtual	FileAccessMode	GetFileAccessMode () const;
+				
+				private:
+					TString			fFileName_;
+					FileAccessMode	fFileAccessMode_;
 			};
 
 
@@ -43,8 +47,8 @@ namespace	Stroika {
 					_CODE_;\
 				}\
 				catch (const IO::FileAccessException& prevFAE) {\
-					if (prevFAE.fFileName.empty ()) {\
-						Execution::DoThrow (FileAccessException (_FILENAME_, prevFAE.fFileAccessMode));\
+					if (prevFAE.GetFileName ().empty ()) {\
+						Execution::DoThrow (FileAccessException (_FILENAME_, prevFAE.GetFileAccessMode ()));\
 					}\
 					Execution::DoReThrow ();\
 				}\

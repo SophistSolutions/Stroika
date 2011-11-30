@@ -15,19 +15,16 @@
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	IO {
-
-		//	class	FileBusyException
-			inline	FileBusyException::FileBusyException (const TString& fileName)
-				: fFileName (fileName)
+			inline	TString			FileBusyException::GetFileName () const
 				{
+					return fFileName_;
 				}
-
 		}
 		namespace	Execution {
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const IO::FileBusyException& e2Throw)
 					{
-						DbgTrace (TSTR ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.fFileName.c_str ());
+						DbgTrace (TSTR ("Throwing FileBusyException: fFileName = '%s'"), e2Throw.GetFileName ().c_str ());
 						throw e2Throw;
 					}
 		}

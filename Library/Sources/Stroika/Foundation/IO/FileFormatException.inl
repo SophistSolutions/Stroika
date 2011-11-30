@@ -14,12 +14,10 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	IO {
 
-		//	class	FileFormatException
-			inline	FileFormatException::FileFormatException (const TString& fileName)
-				: fFileName (fileName)
+			inline	TString			FileFormatException::GetFileName () const
 				{
+					return fFileName_;
 				}
-
 		}
 	}
 }

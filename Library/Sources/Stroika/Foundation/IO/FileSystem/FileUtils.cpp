@@ -56,19 +56,19 @@ using	Execution::Platform::Windows::ThrowIfFalseGetLastError;
  */
 #define		CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)	\
 	catch (const FileBusyException& e) {	\
-		if (e.fFileName.empty ()) {\
+		if (e.GetFileName ().empty ()) {\
 			Execution::DoThrow (FileBusyException (USEFILENAME));\
 		}\
 		Execution::DoReThrow ();\
 	}\
 	catch (const FileAccessException& e) {	\
-		if (e.fFileName.empty ()) {\
-			Execution::DoThrow (FileAccessException (USEFILENAME, e.fFileAccessMode));\
+		if (e.GetFileName ().empty ()) {\
+			Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
 		}\
 		Execution::DoReThrow ();\
 	}\
 	catch (const FileFormatException& e) {	\
-		if (e.fFileName.empty ()) {\
+		if (e.GetFileName ().empty ()) {\
 			Execution::DoThrow (FileFormatException (USEFILENAME));\
 		}\
 		Execution::DoReThrow ();\

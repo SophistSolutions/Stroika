@@ -42,10 +42,9 @@ namespace	{
 		}
 }
 FileAccessException::FileAccessException (const TString& fileName, FileAccessMode fileAccessMode)
-	:StringException (mkMessage_ (fileName, fileAccessMode))
-	,fFileName (fileName)
-	,fFileAccessMode (fileAccessMode)
+	: StringException (mkMessage_ (fileName, fileAccessMode))
+	, fFileName_ (fileName)
+	, fFileAccessMode_ (fileAccessMode)
 {
 }
-
 

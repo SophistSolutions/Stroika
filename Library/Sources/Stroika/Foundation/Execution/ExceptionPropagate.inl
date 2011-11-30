@@ -31,9 +31,6 @@ namespace	Stroika {
 				catch (const Stroika::Foundation::Execution::RequiredComponentMissingException& e) {\
 					(CE).fRequiredComponentMissingException = Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Execution::RequiredComponentMissingException> (DEBUG_NEW Stroika::Foundation::Execution::RequiredComponentMissingException (e));\
 				}\
-				catch (const Stroika::Foundation::Execution::StringException& e) {\
-					(CE).fStringException = Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (e));\
-				}\
 				CATCH_AND_CAPTURE_CATCH_BLOCK_PLATFORM_WINDOWS_PART_(CE)\
 				catch (const Stroika::Foundation::IO::FileFormatException& e) {\
 					(CE).fFileFormatException = Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::IO::FileFormatException> (DEBUG_NEW Stroika::Foundation::IO::FileFormatException (e));\
@@ -43,6 +40,9 @@ namespace	Stroika {
 				}\
 				catch (const Stroika::Foundation::Execution::SilentException& e) {\
 					(CE).fSilentException = Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Execution::SilentException> (DEBUG_NEW Stroika::Foundation::Execution::SilentException (e));\
+				}\
+				catch (const Stroika::Foundation::Execution::StringException& e) {\
+					(CE).fStringException = Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (e));\
 				}\
 				catch (...) {\
 					(CE).fStringException = Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Execution::StringException> (DEBUG_NEW Stroika::Foundation::Execution::StringException (L"Unknown Exception"));\
