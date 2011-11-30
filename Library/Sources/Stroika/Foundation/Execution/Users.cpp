@@ -8,6 +8,9 @@
 #endif
 
 #include	"../Characters/TChar.h"
+#if		qPlatform_Windows
+	#include	"../Execution/Platform/Windows/Exception.h"
+#endif
 #include	"../Memory/SmallStackBuffer.h"
 
 #if		qPlatform_POSIX

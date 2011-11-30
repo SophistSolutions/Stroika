@@ -12,7 +12,7 @@
  */
 #include	"../Debug/Assertions.h"
 
-#include	"Exceptions.h"
+#include	"UserCanceledException.h"
 
 
 namespace	Stroika {	

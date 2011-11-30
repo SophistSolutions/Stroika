@@ -14,6 +14,9 @@
 #include	"../Characters/Format.h"
 #include	"../Debug/Assertions.h"
 #include	"../Execution/Exceptions.h"
+#if		qPlatform_Windows
+	#include	"../Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
 #include	"../Memory/SmallStackBuffer.h"
 #include	"../Linguistics/Words.h"
 #include	"DateTime.h"

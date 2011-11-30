@@ -13,6 +13,9 @@
 #include	"../../Characters/StringUtils.h"
 #include	"../../Characters/Format.h"
 #include	"../../Execution/Exceptions.h"
+#if		qPlatform_Windows
+	#include	"../../Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
 
 #include	"URL.h"
 

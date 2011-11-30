@@ -10,29 +10,26 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	<typeinfo>
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
 
 
 
-
 			template	<typename T>
-				inline		void	 _NoReturn_	DoThrow (const T& e2Throw) 
+				void	 _NoReturn_	DoThrow (const T& e2Throw) 
 					{
 						DbgTrace ("Throwing exception: %s", typeid (T).name ());
 						throw e2Throw;
 					}
 			template	<typename T>
-				inline	void		_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg)
+				void		_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg)
 					{
 						DbgTrace ("%s", traceMsg);
 						DoThrow (e2Throw);		// important todo this way to get its template specialization
 					}
 			template	<typename T>
-				inline	void		_NoReturn_	DoThrow (const T& e2Throw, const wchar_t* traceMsg)
+				void		_NoReturn_	DoThrow (const T& e2Throw, const wchar_t* traceMsg)
 					{
 						DbgTrace (L"%s", traceMsg);
 						DoThrow (e2Throw);		// important todo this way to get its template specialization
@@ -57,19 +54,6 @@ namespace	Stroika {
 					throw;
 				}
 
-
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const SilentException& e2Throw)
-					{
-						DbgTrace (TSTR ("Throwing SilentException"));
-						throw e2Throw;
-					}
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const UserCanceledException& e2Throw)
-					{
-						DbgTrace (TSTR ("Throwing UserCanceledException"));
-						throw e2Throw;
-					}
 
 
 

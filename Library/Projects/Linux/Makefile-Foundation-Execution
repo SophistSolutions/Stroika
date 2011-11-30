@@ -20,7 +20,6 @@ Objs	=	\
 	$(ObjDir)CriticalSection.o\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)ErrNoException.o\
-	$(ObjDir)Exceptions.o\
 	$(ObjDir)ExceptionPropagate.o\
 	$(ObjDir)Event.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\

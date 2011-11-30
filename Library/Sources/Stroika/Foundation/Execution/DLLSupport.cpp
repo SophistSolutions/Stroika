@@ -7,6 +7,9 @@
 #include	"../Debug/Trace.h"
 
 #include	"Exceptions.h"
+#if		qPlatform_Windows
+	#include	"Platform/Windows/Exception.h"
+#endif
 
 #include	"DLLSupport.h"
 

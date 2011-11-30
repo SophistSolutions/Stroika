@@ -13,6 +13,7 @@
 #endif
 
 #include	"../../../Configuration/Common.h"
+#include	"../../../Characters/TString.h"
 
 
 namespace	Stroika {	

@@ -15,6 +15,8 @@
 #include	"WaitTimedOutException.h"
 #if		qPlatform_Windows
 #include	"Platform/Windows/WaitSupport.h"
+#include	"Platform/Windows/Exception.h"
+#include	"Platform/Windows/HRESULTErrorException.h"
 #endif
 
 

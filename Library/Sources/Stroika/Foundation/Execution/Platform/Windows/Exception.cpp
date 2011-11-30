@@ -17,6 +17,9 @@
 #include	"../../../Containers/Common.h"
 #include	"../../../Debug/Trace.h"
 #include	"../../../Execution/WaitTimedOutException.h"
+#if		qPlatform_Windows
+	#include	"HRESULTErrorException.h"
+#endif
 #include	"../../../IO/FileAccessException.h"
 #include	"../../../IO/FileBusyException.h"
 #include	"../../../Time/Realtime.h"

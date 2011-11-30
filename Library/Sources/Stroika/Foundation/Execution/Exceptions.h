@@ -13,18 +13,13 @@
 #include	"../Configuration/Common.h"
 #include	"../Debug/Trace.h"
 
-//#include	"StringException.h"
 
-#if		qPlatform_Windows
-	#include	"Platform/Windows/Exception.h"
-	#include	"Platform/Windows/HRESULTErrorException.h"
-	#include	"Platform/Windows/StructuredException.h"
-#endif
 
 
 /*
  *	TODO:
  *		o	Probably get rid of this, or refactor it alot more.
+ *			(((NOW MOSLTY CLEANED UP - BUT STILL MUST DOCUMENT HTIS MODULE)))
  */
 
 
@@ -35,18 +30,6 @@ namespace	Stroika {
 
 
 			using	Characters::TString;
-
-
-
-			// Throw this when an error has already been reported - so that it isn't reported again
-			class	SilentException {
-			};
-
-			// mostly treat the same as SilentException
-			class	UserCanceledException : public SilentException {
-			};
-
-
 
 
 			/*
@@ -64,12 +47,6 @@ namespace	Stroika {
 			template	<typename T>
 				void	_NoReturn_ 	DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
-
-
-			template	<>
-				void	_NoReturn_	DoThrow (const SilentException& e2Throw);
-			template	<>
-				void	_NoReturn_	DoThrow (const UserCanceledException& e2Throw);
 
 
 			// Just a regular C++ rethrow, but with a DbgTrace message...

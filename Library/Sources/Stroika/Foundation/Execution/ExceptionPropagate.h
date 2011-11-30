@@ -6,6 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
+#include	"../Execution/SilentException.h"
 #include	"../IO/FileBusyException.h"
 #include	"../IO/FileFormatException.h"
 #include	"../Memory/SharedPtr.h"
