@@ -30,9 +30,6 @@ namespace	Stroika {
 		}
 
 		namespace	Execution {
-			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
-			template	<typename T>
-				void	 _NoReturn_	DoThrow (const T& e2Throw);
 			template	<>
 				inline	void	_NoReturn_	DoThrow (const IO::FileBusyException& e2Throw);
 		}

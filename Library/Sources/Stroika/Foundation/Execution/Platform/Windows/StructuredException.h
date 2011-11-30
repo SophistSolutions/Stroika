@@ -13,6 +13,7 @@
 #endif
 
 #include	"../../../Configuration/Common.h"
+#include	"../../Exceptions.h"
 
 namespace	Stroika {	
 	namespace	Foundation {

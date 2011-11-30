@@ -312,9 +312,6 @@ namespace	Stroika {
 
 
 		namespace	Execution {
-			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
-			template	<typename	T>
-				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
 			template	<typename	T>
 				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
 		}

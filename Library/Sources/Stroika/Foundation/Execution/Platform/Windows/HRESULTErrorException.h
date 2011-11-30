@@ -13,6 +13,7 @@
 #endif
 
 #include	"../../../Configuration/Common.h"
+#include	"../../Exceptions.h"
 
 
 
@@ -45,20 +46,12 @@ namespace	Stroika {
 				}
 			}
 
-
-			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
-			template	<typename T>
-				void	 _NoReturn_	DoThrow (const T& e2Throw);
 			template	<>
 				void	_NoReturn_	DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw);
 
 
-			// Re-declare so we can specialize (real declaration is in Execution/Excpetions.h)
-			template	<typename E>
-				void	ThrowIfNull (const void* p, const E& e);
 			template<>
 				void	ThrowIfNull (const void* p, const HRESULT& hr);
-
 
 
 
