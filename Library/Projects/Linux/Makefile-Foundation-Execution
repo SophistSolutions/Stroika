@@ -30,11 +30,13 @@ Objs	=	\
 	$(ObjDir)ProgressMonitor.o\
 	$(ObjDir)RequiredComponentMissingException.o\
 	$(ObjDir)RequiredComponentVersionMismatchException.o\
+	$(ObjDir)SilentException.o\
 	$(ObjDir)SimpleRunnable.o\
 	$(ObjDir)Signals.o\
 	$(ObjDir)Sleep.o\
 	$(ObjDir)Thread.o\
 	$(ObjDir)ThreadPool.o\
+	$(ObjDir)UserCanceledException.o\
 	$(ObjDir)Users.o\
 	$(ObjDir)WaitAbandonedException.o\
 	$(ObjDir)WaitTimedOutException.o\

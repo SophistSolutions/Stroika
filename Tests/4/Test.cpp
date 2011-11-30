@@ -13,6 +13,9 @@
 #endif
 
 #include	"Stroika/Foundation/Execution/Exceptions.h"
+#if		qPlatform_Windows
+	#include	"Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include	"../TestHarness/TestHarness.h"
 
