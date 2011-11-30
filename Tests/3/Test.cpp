@@ -41,7 +41,7 @@ namespace	{
 				static	void	DoIt (void* ignored)
 					{
 						for (int i = 1; i < 10; i++) {
-							Execution::Sleep (.1);
+							Execution::Sleep (.01);
 						}
 					}
 			};
@@ -225,7 +225,7 @@ namespace	{
 			struct	FRED {
 				static	void	DoIt ()
 					{
-						Execution::Sleep (1.0);
+						Execution::Sleep (0.1);
 					}
 			};
 
@@ -247,7 +247,7 @@ namespace	{
 				Thread	thread (&FRED::DoIt);
 				thread.Start ();
 				thread.WaitForDone ();
-				thread.WaitForDone (1.0);
+				thread.WaitForDone (1.0);		// doesn't matter how long cuz its already DONE
 				thread.WaitForDone ();
 				thread.WaitForDone ();
 			}
