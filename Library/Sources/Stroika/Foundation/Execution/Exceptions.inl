@@ -26,13 +26,13 @@ namespace	Stroika {
 				void		_NoReturn_	DoThrow (const T& e2Throw, const char* traceMsg)
 					{
 						DbgTrace ("%s", traceMsg);
-						DoThrow (e2Throw);		// important todo this way to get its template specialization
+						DoThrow (e2Throw);		// important todo this way to get its template specialization (even though the cost is an extra trace message)
 					}
 			template	<typename T>
 				void		_NoReturn_	DoThrow (const T& e2Throw, const wchar_t* traceMsg)
 					{
 						DbgTrace (L"%s", traceMsg);
-						DoThrow (e2Throw);		// important todo this way to get its template specialization
+						DoThrow (e2Throw);		// important todo this way to get its template specialization (even though the cost is an extra trace message)
 					}
 
 

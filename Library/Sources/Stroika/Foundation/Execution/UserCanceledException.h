@@ -14,7 +14,7 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Execution {
 
-\
+
 			// mostly treat the same as SilentException
 			class	UserCanceledException : public SilentException {
 			};
@@ -27,14 +27,3 @@ namespace	Stroika {
 	}
 }
 #endif	/*_Stroia_Foundation_Execution_UserCanceledException_h_*/
-
-
-
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include	"UserCanceledException.inl"
-
