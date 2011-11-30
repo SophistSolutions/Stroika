@@ -12,8 +12,6 @@
 
 #include	"../Configuration/Common.h"
 #include	"../Debug/Trace.h"
-#include	"../IO/FileBusyException.h"
-#include	"../IO/FileFormatException.h"
 
 #include	"StringException.h"
 
@@ -68,8 +66,6 @@ namespace	Stroika {
 
 
 
-			template	<>
-				void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw);
 			template	<>
 				void	_NoReturn_	DoThrow (const SilentException& e2Throw);
 			template	<>

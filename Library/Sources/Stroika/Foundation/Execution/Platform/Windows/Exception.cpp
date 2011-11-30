@@ -18,6 +18,7 @@
 #include	"../../../Debug/Trace.h"
 #include	"../../../Execution/WaitTimedOutException.h"
 #include	"../../../IO/FileAccessException.h"
+#include	"../../../IO/FileBusyException.h"
 #include	"../../../Time/Realtime.h"
 
 #include	"Exception.h"

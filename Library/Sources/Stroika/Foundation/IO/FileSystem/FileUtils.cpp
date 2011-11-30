@@ -28,6 +28,8 @@
 #include	"../../Containers/SetUtils.h"
 #include	"../../Debug/Trace.h"
 #include	"../../IO/FileAccessException.h"
+#include	"../../IO/FileBusyException.h"
+#include	"../../IO/FileFormatException.h"
 #include	"../../Memory/SmallStackBuffer.h"
 #include	"PathName.h"
 #include	"WellKnownLocations.h"

@@ -19,6 +19,16 @@ namespace	Stroika {
 					return fFileName_;
 				}
 		}
+
+		namespace	Execution {
+			template	<>
+				inline	void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw)
+					{
+						DbgTrace (TSTR ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.GetFileName ().c_str ());
+						throw e2Throw;
+					}
+		}
+
 	}
 }
 #endif	/*_Stroika_Foundation_IO_FileFormatException_inl_*/

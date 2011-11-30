@@ -59,12 +59,6 @@ namespace	Stroika {
 
 
 			template	<>
-				inline	void	_NoReturn_	DoThrow (const IO::FileFormatException& e2Throw)
-					{
-						DbgTrace (TSTR ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.GetFileName ().c_str ());
-						throw e2Throw;
-					}
-			template	<>
 				inline	void	_NoReturn_	DoThrow (const SilentException& e2Throw)
 					{
 						DbgTrace (TSTR ("Throwing SilentException"));

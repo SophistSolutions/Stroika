@@ -15,7 +15,6 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 using	namespace	Stroika::Foundation::Containers;
 using	namespace	Stroika::Foundation::Execution;
-using	namespace	Stroika::Foundation::IO;
 using	namespace	Stroika::Foundation::Memory;
 using	namespace	Stroika::Foundation::Streams;
 using	namespace	Stroika::Foundation::Streams::iostream;
