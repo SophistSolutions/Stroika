@@ -10,10 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include	<typeinfo>		// needed for use of typeid()
+
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Execution {
-
 
 
 			template	<typename T>
