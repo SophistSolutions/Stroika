@@ -6,7 +6,7 @@
 
 #include	"../StroikaPreComp.h"
 
-#include	"Exceptions.h"
+#include	"StringException.h"
 
 
 namespace	Stroika {	

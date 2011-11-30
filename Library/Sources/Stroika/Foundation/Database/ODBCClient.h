@@ -12,7 +12,7 @@
 
 #include	<string>
 
-#include	"../Execution/Exceptions.h"
+#include	"../Execution/StringException.h"
 #include	"../Memory/SharedPtr.h"
 
 namespace	Stroika {	

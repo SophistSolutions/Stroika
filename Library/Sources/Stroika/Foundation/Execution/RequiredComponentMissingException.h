@@ -8,7 +8,7 @@
 
 #include	"../Characters/String.h"
 
-#include	"Exceptions.h"
+#include	"StringException.h"
 
 
 namespace	Stroika {	

@@ -13,7 +13,7 @@
 #include	"../Configuration/Common.h"
 #include	"../Debug/Trace.h"
 
-#include	"StringException.h"
+//#include	"StringException.h"
 
 #if		qPlatform_Windows
 	#include	"Platform/Windows/Exception.h"
