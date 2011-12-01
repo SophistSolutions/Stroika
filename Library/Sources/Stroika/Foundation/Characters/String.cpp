@@ -834,7 +834,7 @@ size_t	String_CharArray::MyRep_::GetLength () const
 
 bool	String_CharArray::MyRep_::Contains (Character item) const
 {
-	Assert (fStorage != NULL or GetLength () == 0);
+	Assert (fStorage != nullptr or GetLength () == 0);
 
 	char asciiItem = item.GetAsciiCode ();
 	for (size_t i = 0; i < fLength; i++) {
@@ -918,7 +918,7 @@ void	String_CharArray::MyRep_::SetLength (size_t newLength)
 		fStorage = (wchar_t*)realloc (fStorage, amountToAlloc);
 	}
 	fLength = newLength;
-    Ensure (fStorage != NULL or GetLength () == 0);
+    Ensure (fStorage != nullptr or GetLength () == 0);
 	Ensure (fLength == newLength);
 }
 

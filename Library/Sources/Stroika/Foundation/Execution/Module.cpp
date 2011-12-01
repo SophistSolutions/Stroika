@@ -49,7 +49,7 @@ TString	Execution::GetEXEPath ()
 	//		Solaris: getexecname()
 	//		FreeBSD: sysctl CTL_KERN KERN_PROC KERN_PROC_PATHNAME -1
 	//		BSD with procfs: readlink /proc/curproc/file
-	//		Windows: GetModuleFileName() with hModule = NULL
+	//		Windows: GetModuleFileName() with hModule = nullptr
 	//
 #if		qPlatform_Windows
 	Characters::TChar	buf[MAX_PATH];

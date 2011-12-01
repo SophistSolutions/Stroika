@@ -37,7 +37,7 @@ uid_t	Platform::POSIX::UserName2UID (const String& name)
 	if (err < 0) {
 		errno_ErrorException::DoThrow (err);
 	}
-    if (result == NULL) {
+    if (result == nullptr) {
 		Execution::DoThrow (StringException (L"No such username"));
 	}
 	return pwd.pw_uid;
@@ -65,7 +65,7 @@ String	Platform::POSIX::uid_t2UserName (uid_t uid)
 	if (err < 0) {
 		errno_ErrorException::DoThrow (err);
 	}
-    if (result == NULL) {
+    if (result == nullptr) {
 		Execution::DoThrow (StringException (L"No such username"));
 	}
 	return String::FromTString (pwd.pw_name);

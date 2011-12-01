@@ -131,7 +131,7 @@ namespace	Stroika {
 					typedef	ProgressMontior	inherited;
 
 				public:
-					// NB: progressCallback argment can be NULL
+					// NB: progressCallback argment can be nullptr
 					SubTask (ProgressMontior* progressCallback, float fromProg, float toProg)
 					{
 						//for now - ignored - do nothing

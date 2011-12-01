@@ -85,7 +85,7 @@ namespace	Stroika {
 					(so itmust either exit the program, or longjump/throw). Led makes no gaurantee that attempts
 					to throw out past an assertion will succeed.
 					
-					GetAssertionHandler() never returns NULL - it always returns some handler.
+					GetAssertionHandler() never returns nullptr - it always returns some handler.
 					</p>
 				*/
 				AssertionHandlerType	GetAssertionHandler ();

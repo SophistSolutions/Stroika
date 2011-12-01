@@ -186,7 +186,7 @@ namespace	Stroika {
 			template	<typename T>
 				inline	bool	SharedPtr<T>::IsUnique () const
 					{
-						return fCountHolder == NULL? false: fCountHolder->fCount_DONT_ACCESS == 1;
+						return fCountHolder == nullptr? false: fCountHolder->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T>
 				inline	bool	SharedPtr<T>::unique () const

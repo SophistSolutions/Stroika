@@ -199,7 +199,7 @@ namespace	{
 				}
 			virtual		void	deallocate (void* p) override
 				{
-					if (p != NULL) {
+					if (p != nullptr) {
 						#if		qXMLDBTrackAllocs
 							return fAllocator.Deallocate (p);
 						#else
@@ -343,7 +343,7 @@ namespace	{
 			struct	UsingLibInterHelper_XERCES {
 				MyXercesMemMgr*	fUseXercesMemoryManager;
 				UsingLibInterHelper_XERCES ():
-					fUseXercesMemoryManager (NULL)
+					fUseXercesMemoryManager (nullptr)
 					{
 						#if		qUseMyXMLDBMemManager
 							fUseXercesMemoryManager = DEBUG_NEW MyXercesMemMgr ();
@@ -377,7 +377,7 @@ namespace	{
 
 namespace	{
 	static	unsigned int	sUsingModuleHelper_Count;
-	UsingLibInterHelper*	sUsingLibInterHelper	=	NULL;
+	UsingLibInterHelper*	sUsingLibInterHelper	=	nullptr;
 }
 
 		class	UsingModuleHelper {
@@ -390,7 +390,7 @@ namespace	{
 UsingModuleHelper::UsingModuleHelper ()
 {
 	TraceContextBumper ctx (TSTR ("XMLDB::Private::UsingModuleHelper::UsingModuleHelper"));
-	Require (sUsingLibInterHelper == NULL);
+	Require (sUsingLibInterHelper == nullptr);
 	sUsingLibInterHelper = DEBUG_NEW UsingLibInterHelper ();
 }
 
@@ -399,7 +399,7 @@ UsingModuleHelper::~UsingModuleHelper ()
 	TraceContextBumper ctx (TSTR ("XMLDB::Private::UsingModuleHelper::~UsingModuleHelper"));
 	RequireNotNull (sUsingLibInterHelper);
 	delete sUsingLibInterHelper;
-	sUsingLibInterHelper = NULL;
+	sUsingLibInterHelper = nullptr;
 }
 
 UsingModuleHelper	sUsingModuleHelper_;		// not sure how we want to control lifetime of this object!!!
