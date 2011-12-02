@@ -595,7 +595,8 @@ namespace	Stroika {
 			 *		o	FULL APPLICATION LIFETIME,
 			 *		o	and never changes value through that pointer
 			 *
-			 *	Note that the memory passed in MAY be READONLY, and will be treated as READONLY by String_ExternalMemoryOwnership
+			 *	Note that the memory passed in MUST BE MODIFIABLE (READ/WRITE) - as String_ExternalMemoryOwnership MAY modify the data in the pointer during the
+			 *	objects lifetime.
 			 *
 			 *	Strings constructed with this String_ExternalMemoryOwnership maybe treated like normal strings - passed anywhere, and even modified via the
 			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
@@ -617,7 +618,7 @@ namespace	Stroika {
 			 */
             class	String_ExternalMemoryOwnership : public String {
                 public:
-                    explicit String_ExternalMemoryOwnership (const wchar_t* cString);
+                    explicit String_ExternalMemoryOwnership (wchar_t* cString);
                     String_ExternalMemoryOwnership (const String_ExternalMemoryOwnership& s);
 
                     String_ExternalMemoryOwnership& operator= (const String_ExternalMemoryOwnership& s);

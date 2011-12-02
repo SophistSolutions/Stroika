@@ -18,6 +18,13 @@
 
 
 
+
+//////GET RID OF     Assert (sizeof (Character) == sizeof (wchar_t))
+/// and use static_assert() - already DONE in many places
+
+
+
+
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
@@ -138,7 +145,7 @@ namespace	{
 								return 0;
 						}
 					}
-                virtual	void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	override
+                virtual	void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	override
 					{
 						Execution::DoThrow (UnsupportedFeatureException_ ());
 					}
@@ -176,7 +183,12 @@ namespace	{
 		// since we don't know in general we can (thats left to subtypes)
 		struct	_ReadWriteRep : public _ReadOnlyRep {
 			public:
-				_ReadWriteRep () 
+				_ReadWriteRep ()
+					: _ReadOnlyRep ()
+					{
+					}
+				_ReadWriteRep (wchar_t* start, wchar_t* end)
+					: _ReadOnlyRep (start, end)
 					{
 					}
 				virtual	void	RemoveAll () override
@@ -274,6 +286,7 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
 
 
 
+
 class	String_ConstantCString::MyRep_ : public HELPER_::_ReadOnlyRep {
     public:
         MyRep_ (const wchar_t* start, const wchar_t* end)
@@ -285,28 +298,14 @@ class	String_ConstantCString::MyRep_ : public HELPER_::_ReadOnlyRep {
 
 
 
-class	String_ExternalMemoryOwnership::MyRep_ : public String_CharArray::MyRep_ {
+// COULD do better - saving ORIGNIAL BUFFER SIZE - in addition to memory range
+class	String_ExternalMemoryOwnership::MyRep_ : public HELPER_::_ReadWriteRep {
     public:
-        MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
-        ~MyRep_ ();
-
-        virtual		void	RemoveAll () override;
-
-        virtual		void	SetAt (Character item, size_t index) override;
-        virtual		void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-        virtual		void	RemoveAt (size_t index, size_t amountToRemove) override;
-
-        virtual		void	SetLength (size_t newLength) override;
-
-    private:
-        bool	fWeOwnBuffer_;
-
-        // called before calling any method that modifies the string, to ensure that
-        // we do not munge memory we did not alloc
-        nonvirtual	void	AssureWeOwnBuffer_ ();
+        MyRep_ (wchar_t* start, wchar_t* end)
+			: _ReadWriteRep (start, end)
+			{
+			}
 };
-
-
 
 
 
@@ -365,6 +364,9 @@ namespace	{
 			return (new String_CharArray::MyRep_ ((const Character*)_fStart, _fEnd - _fStart));
 		}
 }
+
+
+
 
 
 
@@ -545,14 +547,21 @@ void	String::InsertAt (Character c, size_t i)
 void	String::RemoveAt (size_t index, size_t nCharsToRemove)
 {
 	Require (index + nCharsToRemove < GetLength ());
-	fRep_->RemoveAt (index, nCharsToRemove);
+	try {
+		fRep_->RemoveAt (index, nCharsToRemove);
+	}
+	catch (const UnsupportedFeatureException_&) {
+		String_BufferedCharArray	tmp	=	String_BufferedCharArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		fRep_ = tmp.fRep_;
+		fRep_->RemoveAt (index, nCharsToRemove);
+	}
 }
 
 void	String::Remove (Character c)
 {
 	size_t index = IndexOf (c);
 	if (index != kBadStringIndex) {
-		fRep_->RemoveAt (index, 1);
+		RemoveAt (index, 1);
 	}
 }
 
@@ -940,6 +949,8 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
 
 
 
+
+
 /*
  ********************************************************************************
  ******************************* String_ConstantCString *************************
@@ -963,8 +974,8 @@ String_ConstantCString::String_ConstantCString (const wchar_t* cString)
  *********************** String_ExternalMemoryOwnership *************************
  ********************************************************************************
  */
-String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (const wchar_t* cString)
-	: String (new MyRep_ ((const Character*)cString, wcslen (cString)), false)
+String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (wchar_t* cString)
+	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
 }
@@ -999,7 +1010,7 @@ String_StackLifetimeReadOnly::String_StackLifetimeReadOnly (const wchar_t* cStri
 
 /*
  ********************************************************************************
- ****************************** String_StackLifetimeReadWrite ****************************
+ ************************* String_StackLifetimeReadWrite ************************
  ********************************************************************************
  */
 String_StackLifetimeReadWrite::String_StackLifetimeReadWrite (wchar_t* cString)
@@ -1073,7 +1084,6 @@ void	String_CharArray::MyRep_::InsertAt (const Character* srcStart, const Charac
 	Require (index >= 0);
 	Require (index <= GetLength ());
 
-#if 1
 	size_t		origLen		=	GetLength ();
 	size_t		amountToAdd	=	(srcEnd - srcStart);
 	SetLength (origLen + amountToAdd);
@@ -1093,24 +1103,6 @@ void	String_CharArray::MyRep_::InsertAt (const Character* srcStart, const Charac
 		*outI = *srcI;
 	}
 	Ensure (_fStart <= _fEnd);
-#else
-&&&&&&&&&&&&&&
-Assert (srcEnd - srcStart == 1);	//tmphack - just havne't implemtend more general case
-Character item = *srcStart;
-
-	SetLength (GetLength () + 1);
-	if (index < (fLength_-1)) {
-		wchar_t*	lhs	=	&fStorage_ [fLength_];
-		wchar_t*	rhs	=	&fStorage_ [fLength_-1];
-		Assert ((fLength_-index) > 0);
-		size_t amt = fLength_-index-1;   // minus one because fLength_ increased by one by SetLength above
-		for (size_t i = 1; i <= amt; ++i) {
-			*lhs-- = *rhs--;
-		}
-		Assert (lhs == &fStorage_ [index]);
-	}
-	fStorage_[index] = item.As<wchar_t> ();
-#endif
 }
 
 void	String_CharArray::MyRep_::SetLength (size_t newLength)
@@ -1200,83 +1192,6 @@ size_t	String_BufferedCharArray::MyRep_::CalcAllocChars_ (size_t requested)
 
 
 
-
-
-
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ****************** String_ExternalMemoryOwnership::MyRep_ **********************
- ********************************************************************************
- */
-String_ExternalMemoryOwnership::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
-	: String_CharArray::MyRep_ ()
-	, fWeOwnBuffer_ (false)
-{
-	RequireNotNull (arrayOfCharacters);
-	SetStorage (const_cast<Character*>(arrayOfCharacters), nCharacters);
-}
-
-String_ExternalMemoryOwnership::MyRep_::~MyRep_ ()
-{
-	if (not fWeOwnBuffer_) {
-		SetStorage (nullptr, 0);	// make sure that memory is not deleted, as we never alloced
-	}
-}
-
-void	String_ExternalMemoryOwnership::MyRep_::RemoveAll ()
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::RemoveAll ();
-}
-
-void	String_ExternalMemoryOwnership::MyRep_::SetAt (Character item, size_t index)
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::SetAt (item, index);
-}
-
-void	String_ExternalMemoryOwnership::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
-{
-	Execution::DoThrow (UnsupportedFeatureException_ ());
-#if 0
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::InsertAt (srcStart, srcEnd, index);
-#endif
-}
-
-void	String_ExternalMemoryOwnership::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::RemoveAt (index, amountToRemove);
-}
-
-void	String_ExternalMemoryOwnership::MyRep_::SetLength (size_t newLength)
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::SetLength (newLength);
-}
-
-void	String_ExternalMemoryOwnership::MyRep_::AssureWeOwnBuffer_ ()
-{
-	if (not fWeOwnBuffer_) {
-	    Assert (sizeof (Character) == sizeof (wchar_t));
-
-		size_t	len	=	GetLength ();
-		wchar_t* storage = ::new wchar_t [len];
-		CopyTo (storage, storage + len);
-		SetStorage (reinterpret_cast<Character*> (storage), len);
-		fWeOwnBuffer_ = true;
-	}
-
-	Ensure (fWeOwnBuffer_);
-}
 
 
 
@@ -1397,7 +1312,6 @@ const Character*	String_Substring_::MyRep_::Peek () const
  */
 String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
 {
-#if 1
 	String_BufferedCharArray	tmp	=	String_BufferedCharArray (lhs);
 
 	// Very cruddy implementation - but should be functional -- LGP 2011-09-08
@@ -1405,14 +1319,6 @@ String	Stroika::Foundation::Characters::operator+ (const String& lhs, const Stri
 		tmp.InsertAt (rhs[i], tmp.GetLength ());
 	}
 	return tmp;
-#elif 0
-    size_t	lhsLen	=	lhs.GetLength ();
-    size_t	rhsLen	=	rhs.GetLength ();
-    String	s	=	String (nullptr, lhsLen + rhsLen);			// garbage string of right size
-    memcpy (&((char*)s.Peek ())[0], lhs.Peek (), size_t (lhsLen));
-    memcpy (&((char*)s.Peek ())[lhsLen], rhs.Peek (), size_t (rhsLen));
-    return (s);
-#endif
 }
 
 
@@ -1504,14 +1410,16 @@ bool	Stroika::Foundation::Characters::operator< (const String& lhs, const String
 bool	Stroika::Foundation::Characters::operator< (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_ExternalMemoryOwnership (lhs) < rhs);
+    return (String_StackLifetimeReadOnly (lhs) < rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator< (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
-    return (lhs < String_ExternalMemoryOwnership (rhs));
+    return (lhs < String_StackLifetimeReadOnly (rhs));
 }
+
+
 
 
 
