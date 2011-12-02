@@ -287,7 +287,7 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
 
 
 
-class	String_ConstantCString::MyRep_ : public HELPER_::_ReadOnlyRep {
+class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : public HELPER_::_ReadOnlyRep {
     public:
         MyRep_ (const wchar_t* start, const wchar_t* end)
 			: _ReadOnlyRep (start, end)
@@ -299,7 +299,7 @@ class	String_ConstantCString::MyRep_ : public HELPER_::_ReadOnlyRep {
 
 
 // COULD do better - saving ORIGNIAL BUFFER SIZE - in addition to memory range
-class	String_ExternalMemoryOwnership::MyRep_ : public HELPER_::_ReadWriteRep {
+class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : public HELPER_::_ReadWriteRep {
     public:
         MyRep_ (wchar_t* start, wchar_t* end)
 			: _ReadWriteRep (start, end)
@@ -949,10 +949,10 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
 
 /*
  ********************************************************************************
- ******************************* String_ConstantCString *************************
+ ********** String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly *********
  ********************************************************************************
  */
-String_ConstantCString::String_ConstantCString (const wchar_t* cString)
+String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
 	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
@@ -967,10 +967,10 @@ String_ConstantCString::String_ConstantCString (const wchar_t* cString)
 
 /*
  ********************************************************************************
- *********************** String_ExternalMemoryOwnership *************************
+ ********** String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite ********
  ********************************************************************************
  */
-String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (wchar_t* cString)
+String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
 	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
@@ -983,17 +983,17 @@ String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (wchar_t* cString
 
 /*
  ********************************************************************************
- ****************************** String_StackLifetimeReadOnly ****************************
+ ********* String_ExternalMemoryOwnership_StackLifetime_ReadOnly ****************
  ********************************************************************************
  */
-String_StackLifetimeReadOnly::String_StackLifetimeReadOnly (const wchar_t* cString)
+String_ExternalMemoryOwnership_StackLifetime_ReadOnly::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* cString)
 	: String (cString)
 {
 	/* TODO: FIX PERFORMANCE!!!
 	 *		This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
 	 *	advantages the class description promises.
 	 *
-	 *		TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
+	 *		TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
 	 *	Then in the DTOR for this envelope, we call FREEZE on that rep - causing it to throw away its unsafe pointer. That must ONLY be done if refcount > 1 (in our DTOR).
 	 */
 }
@@ -1006,17 +1006,17 @@ String_StackLifetimeReadOnly::String_StackLifetimeReadOnly (const wchar_t* cStri
 
 /*
  ********************************************************************************
- ************************* String_StackLifetimeReadWrite ************************
+ *********** String_ExternalMemoryOwnership_StackLifetime_ReadWrite *************
  ********************************************************************************
  */
-String_StackLifetimeReadWrite::String_StackLifetimeReadWrite (wchar_t* cString)
+String_ExternalMemoryOwnership_StackLifetime_ReadWrite::String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* cString)
 	: String (cString)
 {
 	/* TODO: FIX PERFORMANCE!!!
 	 *		This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
 	 *	advantages the class description promises.
 	 *
-	 *		TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
+	 *		TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
 	 *	Then in the DTOR for this envelope, we call FREEZE on that rep - causing it to throw away its unsafe pointer. That must ONLY be done if refcount > 1 (in our DTOR).
 	 */
 }
@@ -1406,13 +1406,13 @@ bool	Stroika::Foundation::Characters::operator< (const String& lhs, const String
 bool	Stroika::Foundation::Characters::operator< (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_StackLifetimeReadOnly (lhs) < rhs);
+    return (String_ExternalMemoryOwnership_StackLifetime_ReadOnly (lhs) < rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator< (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
-    return (lhs < String_StackLifetimeReadOnly (rhs));
+    return (lhs < String_ExternalMemoryOwnership_StackLifetime_ReadOnly (rhs));
 }
 
 
@@ -1442,12 +1442,12 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const Strin
 bool	Stroika::Foundation::Characters::operator<= (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_StackLifetimeReadOnly (lhs) <= rhs);
+    return (String_ExternalMemoryOwnership_StackLifetime_ReadOnly (lhs) <= rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
     RequireNotNull (rhs);
-    return (lhs <= String_StackLifetimeReadOnly (rhs));
+    return (lhs <= String_ExternalMemoryOwnership_StackLifetime_ReadOnly (rhs));
 }

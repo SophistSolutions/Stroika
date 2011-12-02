@@ -246,24 +246,24 @@ namespace	Stroika {
 				}
 
 
-			//	class	String_ConstantCString
-			inline	String_ConstantCString::String_ConstantCString (const String_ConstantCString& s)
+			//	class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly
+			inline	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
 				: String (s)
 				{
 				}
-            inline	String_ConstantCString& String_ConstantCString::operator= (const String_ConstantCString& s)
+            inline	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
 				{
 					String::operator= (s);
 					return (*this);
 				}
 
 
-			//	class	String_ExternalMemoryOwnership
-			inline	String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (const String_ExternalMemoryOwnership& s)
+			//	class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
+			inline	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s)
 				: String (s)
 				{
 				}
-            inline	String_ExternalMemoryOwnership& String_ExternalMemoryOwnership::operator= (const String_ExternalMemoryOwnership& s)
+            inline	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s)
 				{
 					String::operator= (s);
 					return (*this);

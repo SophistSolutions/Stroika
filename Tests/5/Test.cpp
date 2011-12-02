@@ -58,7 +58,7 @@ namespace	{
 		void	StressTest1_ (String big)
 			{
 				for (int j = 1; j <= kLoopEnd/50; j++) {
-					String_ExternalMemoryOwnership	a (L"a");
+					String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly	a (L"a");
 					for (int i = 0; i <= kLoopEnd; i++) {
 						big += a;
 						VerifyTestResult ((big.GetLength () -1) == i);
@@ -201,8 +201,8 @@ namespace	{
 				}
 
 				{
-					String	s1	=	String_ExternalMemoryOwnership (L"test strings");
-					String	s2	=	String_ExternalMemoryOwnership (L"test strings");
+					String	s1	=	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"test strings");
+					String	s2	=	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"test strings");
 					Test2_Helper_ (s1, s2);
 				}
 			}
@@ -404,7 +404,7 @@ namespace	{
 
 	void    Test8_ReadOnlyStrings_ ()
 		{
-			String_ConstantCString s (L"fred");
+			String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
 			VerifyTestResult (s[0] == 'f');
 			s.SetLength (3);
 			VerifyTestResult (s[0] == 'f');
@@ -419,7 +419,7 @@ namespace	{
 
 	void    Test8_ExternalMemoryOwnershipStrings_ ()
 		{
-			String_ExternalMemoryOwnership s (L"fred");
+			String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
 			VerifyTestResult (s[0] == 'f');
 			s.SetLength (3);
 			VerifyTestResult (s[0] == 'f');
@@ -523,7 +523,7 @@ namespace	{
 		{
 			wchar_t	buf[1024]	=	L"fred";
 			{
-				String_StackLifetimeReadOnly s (buf);
+				String_ExternalMemoryOwnership_StackLifetime_ReadOnly s (buf);
 				VerifyTestResult (s[0] == 'f');
 				s.SetLength (3);
 				VerifyTestResult (s[0] == 'f');
@@ -538,7 +538,7 @@ namespace	{
 		{
 			wchar_t	buf[1024]	=	L"fred";
 			{
-				String_StackLifetimeReadWrite s (buf);
+				String_ExternalMemoryOwnership_StackLifetime_ReadWrite s (buf);
 				VerifyTestResult (s[0] == 'f');
 				s.SetLength (3);
 				VerifyTestResult (s[0] == 'f');

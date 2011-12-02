@@ -9,6 +9,7 @@
 
 
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Characters;
 using	namespace	Stroika::Foundation::DataExchangeFormat;
 using	namespace	Stroika::Foundation::Execution;
 
@@ -22,29 +23,29 @@ using	namespace	Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchangeFormat::Private_::InternetMediaType_INIT::InternetMediaType_INIT ()
-	: kOctetStream_CT						(L"application/octet-stream")
+	: kOctetStream_CT						(String_Constant (L"application/octet-stream"))
 
-	, kImage_CT								(L"image")
-	, kImage_PNG_CT							(L"image/png")
-	, kImage_GIF_CT							(L"image/gif")
+	, kImage_CT								(String_Constant (L"image"))
+	, kImage_PNG_CT							(String_Constant (L"image/png"))
+	, kImage_GIF_CT							(String_Constant (L"image/gif"))
 
-	, kText_CT								(L"text")
-	, kText_HTML_CT							(L"text/html")
-	, kText_XHTML_CT						(L"text/xhtml")
-	, kText_PLAIN_CT						(L"text/plain")
+	, kText_CT								(String_Constant (L"text"))
+	, kText_HTML_CT							(String_Constant (L"text/html"))
+	, kText_XHTML_CT						(String_Constant (L"text/xhtml"))
+	, kText_PLAIN_CT						(String_Constant (L"text/plain"))
 
-	, kJSON_CT								(L"application/json")
+	, kJSON_CT								(String_Constant (L"application/json"))
 
-	, kPDF_CT								(L"application/pdf")
+	, kPDF_CT								(String_Constant (L"application/pdf"))
 
 	// very unclear what to use, no clear standard!
-	, kURL_CT								(L"application/x-url")
+	, kURL_CT								(String_Constant (L"application/x-url"))
 
-	, kXML_CT								(L"text/xml")
+	, kXML_CT								(String_Constant (L"text/xml"))
 
-	, kXSLT_CT								(L"application/x-xslt")
-	, kJavaArchive_CT						(L"application/java-archive")
-	, kApplication_RTF_CT					(L"application/rtf")
+	, kXSLT_CT								(String_Constant (L"application/x-xslt"))
+	, kJavaArchive_CT						(String_Constant (L"application/java-archive"))
+	, kApplication_RTF_CT					(String_Constant (L"application/rtf"))
 {
 }
 
