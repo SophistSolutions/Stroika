@@ -43,6 +43,18 @@
 
 
 
+/*
+ * TODO:
+ *		o	At least one StringRep variant (maybe the stanrdard/common string-buffer rep
+ *			which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
+ */
+
+
+/*
+ * TODO:
+ *		o	String::CTOR protected with REP should take funky ENUM - protected - not BOOL. That reads confusingly.
+ */
+
 
 /*
  * TODO:

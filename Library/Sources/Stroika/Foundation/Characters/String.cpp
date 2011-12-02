@@ -681,19 +681,15 @@ String	String::Replace (const String& regEx, const String& with) const
 
 String	String::SubString (size_t from, size_t to) const
 {
-	size_t	length	=	to-from;	// akwardly written cuz arg used to be 'length' - but fix impl later...
-	Require (from >= 0);
-	Require ((to == kBadStringIndex) or (length <= (GetLength ()-from) and (length >= 0)));
-
+	Require ((from <= to) or (to == kBadStringIndex));
+	
+	size_t	myLength	=	GetLength ();
+	size_t	length	=	(to == kBadStringIndex)? (myLength - from) : (to-from);	
 	if (length == 0) {
 		return String ();
     }
-	if (length == kBadStringIndex) {
-		length = GetLength () - from;
-	}
-	if (from == 0 and length == GetLength ()) {
-		// just bump reference count
-		return *this;
+	if ((from == 0) and (length == myLength)) {
+		return *this;		// just bump reference count
 	}
 	#if		qString_SubStringClassWorks
 		return (String (new String_Substring_::MyRep_ (fRep_, from, length), false));
