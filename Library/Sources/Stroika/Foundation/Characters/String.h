@@ -51,31 +51,7 @@
  *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
  *			 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
- *		o	WRITEUP NUL-TERMIANTED STINGS:
- *			Stroika String classes do NOT - in general - NUL-terminate strings. Most implementations - in fact - will support
- *			intenral NUL characters, but not all implementations, and so you shoudln't count on this behavior.
  *
- *			Stroika Strings make it easy to be created from NUL-terminated strings (String has such a constructor), and make it
- *			easy to create NUL-terminated strings (String::As<wstring> ().c_str ()). Note - however - this can be inefficnet
- *			if the strings are large, or this conversion must be done alot. For that situation, use String_stdwstring.
- *
- *			Among the reasons to NOT promise NUL-terminated strings internally stored inside String classes are:
- *				(1)	Would cost extra byte (very minor)
- *				(2)	Would prevent 'Substring::Rep' style optimized classes, or String_Catentation::Rep either.
- *				(3)	We might wnat to do a String::Rep that stores stirngs as UTF8, and that wouldn't fit well with
- *					constraints on the represnetation of internal sequence of chars being wchar_t* with NUL-term byte. In general
- *					we want to HIDE the representation chocies as mcuh as practical.
- *				(4)	MIGHT possible cause 'lifetime of pointer' issues. Maybe not. But I'd need to think through carefully the implications - especailly
- *					with multithreading etc.
- *
- *
- *
- *
-	(0)	Document if we store NUL-terminated strings internally or not. If not - how do we implement the stdC++ c_str () API safely? Perhaps temporarily store the extra char* in teh ENVOLOPE to be freed
-		when the envelope next changes gets copied/etc? Sucky). Do we really need that API?
-		Maybe return PROXY OBJECT which has operator char* in iT! THAT maybe safest thing!!!!
-		ANMYHOW - RIGHT NOW - As<const wchar_t*> () works - but it will be confusing to people cuz NOT nul-termianted!
-
 	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
 
 	(0)	Try and get rid of the Peek () API
@@ -85,10 +61,8 @@
 	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
 		it is all correct for each (especially SetStorage () sutff looks quesitonable)
 	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
-	(2)	Implement the UTF8 functions
-	(3)	Fix / Re-impemlement the SharedByValue() code to not store a POINTER to clone function. Best option is to use FUNCTOR
-		which is stored in SharedByValue object - IF the compiler properly handles zero-sized object (taking no space). Otherwise use
-		some kind of overload so there is a no-cost way todo the most common case of a static (per type) Clone function.
+
+
 	(4)	Migrate most of the StringUtils stuff here like:
 			> Contains- with CI optin
 // overload so can be string arg OR lambda!
@@ -142,8 +116,27 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	Characters {
 
-            const size_t    kBadStringIndex   = string::npos;
+            const size_t    kBadStringIndex   = wstring::npos;
 
+
+			/*
+			 * The Stroika String class is an alternatve for the std::wstring class, which should be largely interoperable with
+			 * code using wstring (there is wstring constructor and As<wstring>() methods).
+			 *
+			 * The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is no obvious way
+			 * to map the Stroika String to a std::string. However, if you specify a codepage for conversion, or are converting to/from
+			 * TString/TChar, there is builtin support for that.
+			 *
+			 *
+			 * EOS Handling:
+			 *		The Stroika String class does support having embedded NUL-characters. It also supports returning wchar_t* strings
+			 *		which are NUL-terminated. But - Stroika generally does NOT maintain strings internally as NUL-terminated (generally). It may add a performance
+			 *		overhead when you call the c_str() method to force a NUL-character termination. See String::c_str ().
+			 *
+			 *		Also note that some subclasses of String (e.g. future String_stdwstring) may not support internal NUL-characters, if their underling
+			 *		implementation doesn't allow for that.
+			 *
+			 */
             class	String {
                 public:
                     String ();
@@ -296,6 +289,8 @@ namespace	Stroika {
 				public:
 					/*
 					 * Convert String losslessly into a standard C++ type (right now just <wstring>,<const wchar_t*> supported)
+					 *
+					 * For the special case of <T=const wchar_t*>, the returned result is NOT NUL-terminated.
 					 */
 					template	<typename	T>
 						nonvirtual	T	As () const;
@@ -345,8 +340,20 @@ namespace	Stroika {
 				public:
 					nonvirtual	size_t			size () const;
 					nonvirtual	size_t			length () const;
+
+					// As with STL, the return value of the data () function should NOT be assumed to be NUL-terminated
+					//
+					// The lifetime of the pointer returned is gauranteed until the next call to this String envelope class (that is if other reps change, or are
+					// acceessed this data will not be modified)
 					nonvirtual	const wchar_t*	data () const;
+
+					// This will always return a value which is NUL-terminated. Note that Stroika generally does NOT keep strings in NUL-terminated form, so
+					// this could be a costly function, requiring a copy of the data.
+					//
+					// The lifetime of the pointer returned is gauranteed until the next call to this String envelope class (that is if other reps change, or are
+					// acceessed this data will not be modified)
 					nonvirtual	const wchar_t*	c_str () const;
+					
 					// need more overloads
 					nonvirtual	size_t find (wchar_t c) const;
 					// need more overloads
@@ -417,7 +424,7 @@ namespace	Stroika {
                 public:
                     virtual	~_Rep ();
 
-                    virtual	_Rep*	Clone () const		= 0;
+                    virtual	_Rep*	Clone () const						= 0;
 
                     virtual	size_t	GetLength () const 					= 0;
                     virtual	bool	Contains (Character item) const		= 0;
@@ -428,9 +435,15 @@ namespace	Stroika {
                     virtual	void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	= 0;
                     virtual	void		RemoveAt (size_t index, size_t amountToRemove)	= 0;
 
-                    virtual	void	SetLength (size_t newLength) 	= 0;
+                    virtual	void	SetLength (size_t newLength) 				= 0;
 
-                    virtual	const Character*	Peek () const 				= 0;
+					// return nullptr if its not already NUL-terminated
+                    virtual	const wchar_t*		c_str_peek () const				= 0;
+					
+					// change rep so its NUL-termainted
+                    virtual	const wchar_t*		c_str_change ()					= 0;
+
+                    virtual	const Character*	Peek () const 					= 0;
 
 					virtual	int		Compare (const _Rep& rhs, String::CompareOptions co) const	=	0;
 
@@ -492,8 +505,8 @@ namespace	Stroika {
 
                    String_CharArray& operator= (const String_CharArray& s);
 
-
 				public:
+					//THIS SB PROTECTED - I THINK? - LGP 2011-12-01
 					class	MyRep_;
             };
 

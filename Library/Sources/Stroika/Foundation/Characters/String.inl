@@ -157,7 +157,7 @@ namespace	Stroika {
 				{
 					return AsASCII<std::string> ();
 				}
-			inline	void		String::AsASCII (std::string* into) const
+			inline	void	String::AsASCII (std::string* into) const
 				{
 					AsASCII<std::string> (into);
 				}
@@ -169,13 +169,8 @@ namespace	Stroika {
 				{
 					return GetLength ();
 				}
-			inline	const wchar_t*	String::c_str () const
-				{
-					return As<const wchar_t*> ();
-				}
 			inline	const wchar_t*	String::data () const
 				{
-					// In STL this is not required to NUL-terminate, but our current implementation will (which is OK)
 					return As<const wchar_t*> ();
 				}
 			inline	size_t String::find (wchar_t c) const

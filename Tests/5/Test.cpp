@@ -610,6 +610,26 @@ namespace	{
 
 
 
+namespace	{
+	void	Test19_ConstCharStar_ ()
+		{
+			VerifyTestResult (wcscmp (String (L"fred").c_str (), L"fred") == 0);
+			{
+				String	tmp	=	L"333";
+				VerifyTestResult (wcscmp (tmp.c_str (), L"333") == 0);
+				tmp = L"Barny";
+				VerifyTestResult (wcscmp (tmp.c_str (), L"Barny") == 0);
+				tmp.SetCharAt ('c', 2);
+				VerifyTestResult (wcscmp (tmp.c_str (), L"Bacny") == 0);
+				String	bumpRefCnt	=	tmp;
+				tmp.SetCharAt ('d', 2);
+				VerifyTestResult (wcscmp (tmp.c_str (), L"Badny") == 0);
+			}
+		}
+}
+
+
+
 
 
 namespace	{
@@ -650,6 +670,7 @@ namespace	{
 			Test16_Format_ ();
 			Test17_RegExp_ ();
 			Test18_Compare_ ();
+			Test19_ConstCharStar_ ();
 		}
 }
 

@@ -92,6 +92,8 @@ class	String_CharArray::MyRep_ : public String::_Rep {
 		virtual		void	SetLength (size_t newLength) override;
 
 		virtual		const Character*	Peek () const override;
+		virtual		const wchar_t*		c_str_peek () const override;
+		virtual		const wchar_t*		c_str_change () override;
 
 		virtual	int	Compare (const _Rep& rhs, String::CompareOptions co) const override;
 
@@ -102,7 +104,7 @@ class	String_CharArray::MyRep_ : public String::_Rep {
 		virtual	size_t	CalcAllocChars_ (size_t requested);
 
 	private:
-		wchar_t*	fStorage;
+		wchar_t*	fStorage_;
 		size_t	    fLength;
 };
 
@@ -658,6 +660,22 @@ template	<>
 			}
 		}
 
+const wchar_t*	String::c_str () const
+{
+	const	wchar_t*	result	=	fRep_->c_str_peek ();
+	if (result == nullptr) {
+		// Then we must force it to be NUL-terminated
+		//
+		// We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
+		// fRep cloning stuff to work right, we must access it through a 
+		String*	REALTHIS	=	const_cast<String*> (this);
+		return REALTHIS->fRep_->c_str_change ();
+	}
+	else {
+		return result;
+	}
+
+}
 
 
 
@@ -799,32 +817,32 @@ String_StackLifetime::String_StackLifetime (const wchar_t* cString)
  */
 String_CharArray::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
 	: _Rep ()
-	, fStorage (nullptr)
+	, fStorage_ (nullptr)
 	, fLength (nCharacters)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
 
-	fStorage = ::new wchar_t [CalcAllocChars_ (fLength)];
+	fStorage_ = ::new wchar_t [CalcAllocChars_ (fLength)];
 	if (arrayOfCharacters != nullptr) {
-		memcpy (fStorage, arrayOfCharacters, fLength*sizeof (Character));
+		memcpy (fStorage_, arrayOfCharacters, fLength*sizeof (Character));
 	}
 }
 
 String_CharArray::MyRep_::MyRep_ ()
 	: _Rep ()
-	, fStorage (nullptr)
+	, fStorage_ (nullptr)
 	, fLength (0)
 {
 }
 
 String_CharArray::MyRep_::~MyRep_ ()
 {
-	delete fStorage;
+	delete fStorage_;
 }
 
 String::_Rep*	String_CharArray::MyRep_::Clone () const
 {
-	return (new String_CharArray::MyRep_ ((const Character*)fStorage, fLength));
+	return (new String_CharArray::MyRep_ ((const Character*)fStorage_, fLength));
 }
 
 size_t	String_CharArray::MyRep_::GetLength () const
@@ -834,11 +852,11 @@ size_t	String_CharArray::MyRep_::GetLength () const
 
 bool	String_CharArray::MyRep_::Contains (Character item) const
 {
-	Assert (fStorage != nullptr or GetLength () == 0);
+	Assert (fStorage_ != nullptr or GetLength () == 0);
 
 	char asciiItem = item.GetAsciiCode ();
 	for (size_t i = 0; i < fLength; i++) {
-		if (fStorage[i] == asciiItem) {
+		if (fStorage_[i] == asciiItem) {
 			return (true);
 		}
 	}
@@ -854,18 +872,18 @@ Character	String_CharArray::MyRep_::GetAt (size_t index) const
 {
 	Require (index >= 0);
 	Require (index < GetLength ());
-	AssertNotNull (fStorage);
+	AssertNotNull (fStorage_);
 
-	return (fStorage[index]);
+	return (fStorage_[index]);
 }
 
 void	String_CharArray::MyRep_::SetAt (Character item, size_t index)
 {
 	Require (index >= 0);
 	Require (index < GetLength ());
-	AssertNotNull (fStorage);
+	AssertNotNull (fStorage_);
 
-	fStorage[index] = item.As<wchar_t> ();
+	fStorage_[index] = item.As<wchar_t> ();
 }
 
 void	String_CharArray::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
@@ -879,16 +897,16 @@ Character item = *srcStart;
 
 	SetLength (GetLength () + 1);
 	if (index < (fLength-1)) {
-		wchar_t*	lhs	=	&fStorage [fLength];
-		wchar_t*	rhs	=	&fStorage [fLength-1];
+		wchar_t*	lhs	=	&fStorage_ [fLength];
+		wchar_t*	rhs	=	&fStorage_ [fLength-1];
 		Assert ((fLength-index) > 0);
 		size_t amt = fLength-index-1;   // minus one because fLength increased by one by SetLength above
 		for (size_t i = 1; i <= amt; ++i) {
 			*lhs-- = *rhs--;
 		}
-		Assert (lhs == &fStorage [index]);
+		Assert (lhs == &fStorage_ [index]);
 	}
-	fStorage[index] = item.As<wchar_t> ();
+	fStorage_[index] = item.As<wchar_t> ();
 }
 
 void	String_CharArray::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
@@ -897,8 +915,8 @@ void	String_CharArray::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
 	Require (index < fLength);
 
 	if (index < fLength-1) {
-		wchar_t*	lhs	=	&fStorage [index];
-		wchar_t*	rhs	=	&fStorage [index+amountToRemove];
+		wchar_t*	lhs	=	&fStorage_ [index];
+		wchar_t*	rhs	=	&fStorage_ [index+amountToRemove];
 		for (size_t i = fLength - index - amountToRemove; i > 0; i--) {
 			*lhs++ = *rhs++;
 		}
@@ -915,10 +933,10 @@ void	String_CharArray::MyRep_::SetLength (size_t newLength)
 		Assert (newAllocChars >= newLength);
 
         size_t amountToAlloc = newAllocChars*sizeof (Character);
-		fStorage = (wchar_t*)realloc (fStorage, amountToAlloc);
+		fStorage_ = (wchar_t*)realloc (fStorage_, amountToAlloc);
 	}
 	fLength = newLength;
-    Ensure (fStorage != nullptr or GetLength () == 0);
+    Ensure (fStorage_ != nullptr or GetLength () == 0);
 	Ensure (fLength == newLength);
 }
 
@@ -926,14 +944,31 @@ const Character*	String_CharArray::MyRep_::Peek () const
 {
     Require (sizeof (Character) == sizeof (wchar_t));
 
-	return ((const Character*)fStorage);
+	return ((const Character*)fStorage_);
 }
 
-/* Deliberately does not try to free up old fStorage, as this could be other than heap memory */
+const wchar_t*	String_CharArray::MyRep_::c_str_peek () const override
+{
+	//tmphack impl...
+	return nullptr;
+}
+
+const wchar_t*	String_CharArray::MyRep_::c_str_change () override
+{
+	// a quick hack (POOR) implemnation.
+	// REALLY must totally redo much of this storage code.
+	size_t	len	=	GetLength ();
+	SetLength (len + 1);
+	fStorage_[len] = '\0';
+	fLength = len;
+	return fStorage_;
+}
+
+/* Deliberately does not try to free up old fStorage_, as this could be other than heap memory */
 void	String_CharArray::MyRep_::SetStorage (Character* storage, size_t length)
 {
     Require (sizeof (Character) == sizeof (wchar_t))
-	fStorage = (wchar_t*)storage;
+	fStorage_ = (wchar_t*)storage;
 	fLength = length;
 }
 
@@ -941,7 +976,6 @@ size_t	String_CharArray::MyRep_::CalcAllocChars_ (size_t requested)
 {
 	return (requested);
 }
-
 
 int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions co) const override
 {
@@ -956,8 +990,8 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 		    size_t rLen = rhs.GetLength ();
 			size_t length	=	min (lLen, rLen);
 			for (size_t i = 0; i < length; i++) {
-				if (fStorage[i] != rhs.GetAt (i)) {
-					return (fStorage[i] - rhs.GetAt (i).GetCharacterCode ());
+				if (fStorage_[i] != rhs.GetAt (i)) {
+					return (fStorage_[i] - rhs.GetAt (i).GetCharacterCode ());
 				}
 			}
 			return Containers::CompareResultNormalizeHelper<ptrdiff_t,int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
@@ -970,7 +1004,7 @@ int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions c
 		    size_t rLen = rhs.GetLength ();
 			size_t length	=	min (lLen, rLen);
 			for (size_t i = 0; i < length; i++) {
-				Character	lc	=	Character (fStorage[i]).ToLowerCase ();
+				Character	lc	=	Character (fStorage_[i]).ToLowerCase ();
 				Character	rc	=	rhs.GetAt (i).ToLowerCase ();
 				if (lc.GetCharacterCode () != rc.GetCharacterCode ()) {
 					return (lc.GetCharacterCode () - rc.GetCharacterCode ());
