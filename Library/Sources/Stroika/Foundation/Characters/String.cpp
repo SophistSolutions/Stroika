@@ -40,6 +40,7 @@ namespace	{
 }
 
 
+
 namespace	{
 
 	// This is a utility class to implement most of the basic String::_Rep functionality
@@ -51,12 +52,23 @@ namespace	{
 					, _fEnd (nullptr)
 					{
 					}
+				_ReadOnlyRep (const wchar_t* start, const wchar_t* end)
+					: _fStart (start)
+					, _fEnd (end)
+					{
+					}
+				_ReadOnlyRep (const Character* start, const Character* end)
+					: _fStart (reinterpret_cast<const wchar_t*> (start))
+					, _fEnd (reinterpret_cast<const wchar_t*> (end))
+					{
+					}
 				nonvirtual	void	_SetData (const wchar_t* start, const wchar_t* end)
 					{
 						Require (_fStart <= _fEnd);
 						_fStart = start;
 						_fEnd = end;
 					}
+				virtual	String::_Rep*	Clone () const override;
 				virtual		size_t	GetLength () const override
 					{
 						Assert (_fStart <= _fEnd);
@@ -125,6 +137,34 @@ namespace	{
 								AssertNotReached ();
 								return 0;
 						}
+					}
+                virtual	void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	override
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
+					}
+				virtual	void	RemoveAll () override
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
+					}
+				virtual	void	SetAt (Character item, size_t index)
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
+					}
+				virtual	void	RemoveAt (size_t index, size_t amountToRemove)
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
+					}
+                virtual	void	SetLength (size_t newLength) override
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
+					}
+                virtual	const wchar_t*		c_str_peek () const  override
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
+					}
+                virtual	const wchar_t*		c_str_change () override
+					{
+						Execution::DoThrow (UnsupportedFeatureException_ ());
 					}
 
 			protected:
@@ -234,25 +274,12 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
 
 
 
-class	String_ConstantCString::MyRep_ : public String_CharArray::MyRep_ {
+class	String_ConstantCString::MyRep_ : public HELPER_::_ReadOnlyRep {
     public:
-        MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
-        ~MyRep_ ();
-
-        virtual		void	RemoveAll () override;
-
-        virtual		void	SetAt (Character item, size_t index) override;
-        virtual		void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-        virtual		void	RemoveAt (size_t index, size_t amountToRemove) override;
-
-        virtual		void	SetLength (size_t newLength) override;
-
-    private:
-        bool	fWeOwnBuffer_;
-
-        // called before calling any method that modifies the string, to ensure that
-        // we do not munge memory we did not alloc
-        nonvirtual	void	AssureWeOwnBuffer_ ();
+        MyRep_ (const wchar_t* start, const wchar_t* end)
+			: _ReadOnlyRep (start, end)
+			{
+			}
 };
 
 
@@ -325,6 +352,19 @@ namespace	{
 	#endif
 }
 
+
+
+
+
+
+
+
+namespace	{
+	String::_Rep*	HELPER_::_ReadOnlyRep::Clone () const override
+		{
+			return (new String_CharArray::MyRep_ ((const Character*)_fStart, _fEnd - _fStart));
+		}
+}
 
 
 
@@ -454,11 +494,23 @@ String&	String::operator+= (const String& appendage)
 
 void	String::SetLength (size_t newLength)
 {
-	if (newLength == 0) {
-		fRep_->RemoveAll ();
+	try {
+		if (newLength == 0) {
+			fRep_->RemoveAll ();
+		}
+		else {
+			fRep_->SetLength (newLength);
+		}
 	}
-	else {
-		fRep_->SetLength (newLength);
+	catch (const UnsupportedFeatureException_&) {
+		String_BufferedCharArray	tmp	=	String_BufferedCharArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		fRep_ = tmp.fRep_;
+		if (newLength == 0) {
+			fRep_->RemoveAll ();
+		}
+		else {
+			fRep_->SetLength (newLength);
+		}
 	}
 }
 
@@ -466,7 +518,14 @@ void	String::SetCharAt (Character c, size_t i)
 {
 	Require (i >= 0);
 	Require (i < GetLength ());
-	fRep_->SetAt (c, i);
+	try {
+		fRep_->SetAt (c, i);
+	}
+	catch (const UnsupportedFeatureException_&) {
+		String_BufferedCharArray	tmp	=	String_BufferedCharArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		fRep_ = tmp.fRep_;
+		fRep_->SetAt (c, i);
+	}
 }
 
 void	String::InsertAt (Character c, size_t i)
@@ -887,7 +946,7 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
  ********************************************************************************
  */
 String_ConstantCString::String_ConstantCString (const wchar_t* cString)
-	: String (new MyRep_ ((const Character*)cString, wcslen (cString)), false)
+	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
     Assert (sizeof (Character) == sizeof (wchar_t))
 }
@@ -1142,76 +1201,6 @@ size_t	String_BufferedCharArray::MyRep_::CalcAllocChars_ (size_t requested)
 
 
 
-
-
-
-/*
- ********************************************************************************
- ****************** String_ConstantCString::MyRep_ **********************
- ********************************************************************************
- */
-String_ConstantCString::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
-	: String_CharArray::MyRep_ ()
-	, fWeOwnBuffer_ (false)
-{
-	RequireNotNull (arrayOfCharacters);
-	SetStorage (const_cast<Character*>(arrayOfCharacters), nCharacters);
-}
-
-String_ConstantCString::MyRep_::~MyRep_ ()
-{
-	if (not fWeOwnBuffer_) {
-		SetStorage (nullptr, 0);	// make sure that memory is not deleted, as we never alloced
-	}
-}
-
-void	String_ConstantCString::MyRep_::RemoveAll ()
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::RemoveAll ();
-}
-
-void	String_ConstantCString::MyRep_::SetAt (Character item, size_t index)
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::SetAt (item, index);
-}
-
-void	String_ConstantCString::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
-{
-	Execution::DoThrow (UnsupportedFeatureException_ ());
-#if 0
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::InsertAt (srcStart, srcEnd, index);
-#endif
-}
-
-void	String_ConstantCString::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::RemoveAt (index, amountToRemove);
-}
-
-void	String_ConstantCString::MyRep_::SetLength (size_t newLength)
-{
-	AssureWeOwnBuffer_ ();
-	String_CharArray::MyRep_::SetLength (newLength);
-}
-
-void	String_ConstantCString::MyRep_::AssureWeOwnBuffer_ ()
-{
-	if (not fWeOwnBuffer_) {
-	    Assert (sizeof (Character) == sizeof (wchar_t));
-
-		size_t	len	=	GetLength ();
-		wchar_t* storage = ::new wchar_t [len];
-		CopyTo (storage, storage + len);
-		SetStorage (reinterpret_cast<Character*> (storage), len);
-		fWeOwnBuffer_ = true;
-	}
-
-	Ensure (fWeOwnBuffer_);
-}
 
 
 

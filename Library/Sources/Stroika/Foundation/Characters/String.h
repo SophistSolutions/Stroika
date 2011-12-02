@@ -555,13 +555,12 @@ namespace	Stroika {
 			 *	String_ConstantCString is a subtype of string you can use to construct a String object, so long as the memory pointed to
 			 * in the argument has a
 			 *		o	FULL APPLICATION LIFETIME,
-			 *		o	and never changes value through that pointer
+			 *		o	the member referenced never changes - is READONLY.
 			 *
-*	Note that the memory passed in MAY be READONLY, and will be treated as READONLY by String_ConstantCString
+			 *	String_ConstantCString will NOT change the memory referenced in the CTOR.
 			 *
 			 *	Strings constructed with this String_ConstantCString maybe treated like normal strings - passed anywhere, and even modified via the
-			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
-			 *	only call this String constructor with a block of read-only, never changing memory, and then - only as a performance optimization.
+			 *	String APIs.
 			 *
 			 *	For example
 			 *		String	tmp1	=	L"FRED";
