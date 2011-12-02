@@ -19,6 +19,10 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 
 
+#define	qPrintTimings	0
+
+
+
 /*
  * TODO:
  *
@@ -90,8 +94,8 @@ namespace	{
 		void	StressTestStrings ()
 			{
 			#if		qPrintTimings
-				cout << tab << "Stress testing strings..." << endl;
-				Time t = GetCurrentTime ();
+				cout <<  "Stress testing strings..." << endl;
+				Time::DurationSecondsType	t	=	Time::GetTickCount ();
 			#endif
 
 				{
@@ -100,9 +104,9 @@ namespace	{
 				}
 
 			#if		qPrintTimings
-				t = GetCurrentTime () - t;
-				cout << tab << "finished Stress testing strings += ... time elapsed = " << t << endl;
-				t = GetCurrentTime ();
+				t = Time::GetTickCount () - t;
+				cout << "finished Stress testing strings += ... time elapsed = " << t << endl;
+				t	=	Time::GetTickCount ();
 			#endif
 
 				{
@@ -111,15 +115,15 @@ namespace	{
 				}
 
 			#if		qPrintTimings
-				t = GetCurrentTime () - t;
-				cout << tab << "finished Stress testing strings + ... time elapsed = " << t << endl;
+				t = Time::GetTickCount () - t;
+				cout << "finished Stress testing strings + ... time elapsed = " << t << endl;
 			#endif
 		}
 	void	StressTestBufferedStrings ()
 		{
 		#if		qPrintTimings
-			cout << tab << "Stress testing buffered strings..." << endl;
-			Time t = GetCurrentTime ();
+			cout << "Stress testing buffered strings..." << endl;
+			Time::DurationSecondsType t = Time::GetTickCount ();
 		#endif
 
 			{
@@ -128,9 +132,9 @@ namespace	{
 			}
 
 		#if		qPrintTimings
-			t = GetCurrentTime () - t;
-			cout << tab << "finished stress testing buffered strings  += ... time elapsed = " << t << endl;
-			t = GetCurrentTime ();
+			t = Time::GetTickCount () - t;
+			cout << "finished stress testing buffered strings  += ... time elapsed = " << t << endl;
+			t = Time::GetTickCount ();
 		#endif
 
 			{
@@ -139,8 +143,8 @@ namespace	{
 			}
 
 		#if		qPrintTimings
-			t = GetCurrentTime () - t;
-			cout << tab << "finished stress testing buffered strings + ... at " << t << endl;
+			t = Time::GetTickCount () - t;
+			cout << "finished stress testing buffered strings + ... at " << t << endl;
 		#endif
 		}
 	}
@@ -364,16 +368,39 @@ namespace	{
 			delete[] (l);
 		}
 
-	String	Test6_ (const String& a, int depth)
-		{
-			String	b = a;
-			b += a;
-			if (depth > 0) {
-				b = Test6_ (b, depth-1) + Test6_ (b, depth-1);
+	template	<typename	STRING>
+		STRING	Test6_Helper_ (const STRING& a, int depth)
+			{
+				STRING	b = a;
+				b += a;
+				if (depth > 0) {
+					b = Test6_Helper_<STRING> (b, depth-1) + Test6_Helper_<STRING> (b, depth-1);
+				}
+				return (b);
 			}
-			return (b);
-		}
+	template	<typename	STRING>
+		void	Test6_Helper_ (const char* testMessage)
+			{
+				const	int	kRecurseDepth = 8;
+				STRING	testString = L"some dump test";
+				#if		qPrintTimings
+					cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
+					Time::DurationSecondsType t = Time::GetTickCount ();
+				#endif
 
+				STRING s = Test6_Helper_<STRING> (testString, kRecurseDepth);	// returns length 114688 for depth 6
+				VerifyTestResult (s.length () ==  (ipow (4,kRecurseDepth) * 2 * testString.length ()));
+
+				#if		qPrintTimings
+					t = Time::GetTickCount () - t;
+					cout << "\tfinished Recursive build test. Time elapsed = " << t << " length = " << s.length () << endl;
+				#endif
+			}
+	void	Test6_ ()
+		{
+			Test6_Helper_<String> ("Characters::String");
+			Test6_Helper_<wstring> ("std::wstring");
+		}
 	void	Test7_ ()
 		{
 			VerifyTestResult (String (L"1") <= String (L"1"));
@@ -674,23 +701,7 @@ namespace	{
 			Test3_ ();
 			Test4_ ();
 			Test5_ ();
-
-			const	int	kRecurseDepth = 6;
-			String	testString = L"some dump test";
-
-		#if		qPrintTimings
-			cout << '\t' << "Recursive build test with depth " << kRecurseDepth << " for " << testString << endl;
-			Time t = GetCurrentTime ();
-		#endif
-
-			String s = Test6_ (testString, kRecurseDepth);	// returns length 114688 for depth 6
-			VerifyTestResult (s.GetLength () ==  (ipow (4,kRecurseDepth) * 2 * testString.GetLength ()));
-
-		#if		qPrintTimings
-			t = GetCurrentTime () - t;
-			cout << tab << "finished Recursive build test. Time elapsed = " << t << " length = " << s.GetLength () << endl;
-		#endif
-
+			Test6_ ();
 			Test7_ ();
 			Test8_ReadOnlyStrings_ ();
 			Test8_ExternalMemoryOwnershipStrings_ ();
