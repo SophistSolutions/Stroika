@@ -59,7 +59,6 @@
 /*
  * TODO:
  *
- *		o	REWRITE DOCS ABOUT
  *		o	WRITEUP THREAD SAFETY:
  *		 THREAD SAFETY:
  *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
@@ -153,6 +152,10 @@ namespace	Stroika {
 			 */
             class	String {
                 public:
+					/*
+					 * All the constructors are obvious, except to note that NUL-character ARE allowed in strings, except for the case of single char* argument
+					 * constructors - which find the length based on the terminating NUL-character.
+					 */
                     String ();
                     String (const char16_t* cString);
                     String (const wchar_t* cString);
@@ -176,6 +179,10 @@ namespace	Stroika {
 
                 public:
                     nonvirtual	size_t	GetLength () const;
+					/*
+					 * NOTE - when you increase the size of a string with SetLength() - the extra characters added are not initialized, and 
+					 * will have random values.
+					 */
                     nonvirtual	void	SetLength (size_t newLength);
 
                 public:
@@ -398,11 +405,6 @@ namespace	Stroika {
                     Memory::SharedByValue<_Rep,_Rep_Cloner>	fRep_;
 
                     static	_Rep*	Clone_ (const _Rep& rep);
-
-				// Try to get rid of _PeekRep () Or at least make protected
-				protected:
-				public:
-					nonvirtual	Memory::SharedByValue<_Rep,_Rep_Cloner>	_PeekRep () const;
 
 				private:
 					/*

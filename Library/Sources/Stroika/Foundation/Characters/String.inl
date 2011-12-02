@@ -70,10 +70,6 @@ namespace	Stroika {
 				{
 					return (rep.Clone ());
 				}
-			inline	Memory::SharedByValue<String::_Rep,String::_Rep_Cloner>	String::_PeekRep () const
-				{
-					return fRep_;
-				}
 			inline	void	String::CopyTo (Character* bufFrom, Character* bufTo) const
 				{
 					RequireNotNull (bufFrom);

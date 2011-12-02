@@ -896,17 +896,18 @@ String_CharArray::String_CharArray (const wstring& str)
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
-
 String_CharArray::String_CharArray (const String& from)
-	: String (new String_CharArray::MyRep_ (from._PeekRep ()->Peek (), from.GetLength ()), false)
+	: String (new String_CharArray::MyRep_ ((const Character*)from.As<const wchar_t*> (), from.GetLength ()), false)
 {
 }
-
 
 String_CharArray::String_CharArray (const Character* arrayOfCharacters, size_t nCharacters)
 	: String (new String_CharArray::MyRep_ (arrayOfCharacters, nCharacters), false)
 {
 }
+
+
+
 
 
 
@@ -935,7 +936,7 @@ String_BufferedCharArray::String_BufferedCharArray (const wstring& str)
 }
 
 String_BufferedCharArray::String_BufferedCharArray (const String& from)
-	: String (new MyRep_ (from._PeekRep ()->Peek (), from.GetLength ()), false)
+	: String (new MyRep_ ((const Character*)from.As<const wchar_t*> (), from.GetLength ()), false)
 {
 }
 
