@@ -174,8 +174,15 @@ namespace	Stroika {
 
                 public:
                     nonvirtual	void		InsertAt (Character c, size_t i);
-                    nonvirtual	void		RemoveAt (size_t i);
-                    nonvirtual	void		RemoveAt (size_t i, size_t amountToRemove);
+
+                public:
+					/*
+					 * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1). It is an error if this implies removing
+					 * characters off the end of the string.
+					 */
+                    nonvirtual	void		RemoveAt (size_t index, size_t nCharsToRemove = 1);
+                
+				public:
                     nonvirtual	void		Remove (Character c);
 
                 public:
@@ -433,7 +440,7 @@ namespace	Stroika {
                     virtual	Character	GetAt (size_t index) const				= 0;
                     virtual	void		SetAt (Character item, size_t index)	= 0;
                     virtual	void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	= 0;
-                    virtual	void		RemoveAt (size_t index, size_t amountToRemove)	= 0;
+                    virtual	void		RemoveAt (size_t index, size_t nCharsToRemove)	= 0;
 
                     virtual	void	SetLength (size_t newLength) 				= 0;
 

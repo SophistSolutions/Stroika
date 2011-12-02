@@ -74,10 +74,6 @@ namespace	Stroika {
 				{
 					return fRep_;
 				}
-            inline	void	String::RemoveAt (size_t i)
-				{
-					RemoveAt (i, 1);
-				}
 			inline	void	String::CopyTo (Character* bufFrom, Character* bufTo) const
 				{
 					RequireNotNull (bufFrom);
