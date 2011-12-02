@@ -174,7 +174,7 @@ void	HTTPResponse::Flush ()
 		{
 			String	statusMsg	=	fStatusOverrideReason_.empty ()? IO::Network::HTTP::Exception::GetStandardTextForStatus (fStatus_, true): fStatusOverrideReason_;
 			wstring	version	=	L"1.1";
-			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.As<wstring> ().c_str ());
+			wstring	tmp	=	Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.c_str ());
 			string	utf8	=	String (tmp).AsUTF8 ();
 			fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 		}
@@ -182,7 +182,7 @@ void	HTTPResponse::Flush ()
 		{
 			map<String,String>	headers2Write	=	GetEffectiveHeaders ();
 			for (map<String,String>::const_iterator i = headers2Write.begin (); i != headers2Write.end (); ++i) {
-				wstring	tmp	=	Characters::Format (L"%s: %s\r\n", i->first.As<wstring> ().c_str (), i->second.As<wstring> ().c_str ());
+				wstring	tmp	=	Characters::Format (L"%s: %s\r\n", i->first.c_str (), i->second.c_str ());
 				string	utf8	=	String (tmp).AsUTF8 ();
 				fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
 			}

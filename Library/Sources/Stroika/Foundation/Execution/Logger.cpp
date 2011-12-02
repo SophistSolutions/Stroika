@@ -36,7 +36,7 @@ void	Logger::Log_ (Priority logLevel, const String& format, va_list argList)
 {
 	Memory::SharedPtr<IAppenderRep>	tmp	=	sThe_.fAppender_;	// avoid races and critical sections
 	if (not tmp.IsNull ()) {
-		tmp->Log (logLevel, Characters::FormatV (format.As<wstring> ().c_str (), argList));
+		tmp->Log (logLevel, Characters::FormatV (format.c_str (), argList));
 	}
 }
 
@@ -82,7 +82,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 
 void	Logger::SysLogAppender::Log (Priority logLevel, const String& message) override
 {
-	DbgTrace (L"%s", message.As<wstring> ().c_str ());
+	DbgTrace (L"%s", message.c_str ());
 	syslog (logLevel, "%s", message.AsTString ().c_str ());
 }
 #endif

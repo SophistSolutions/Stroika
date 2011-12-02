@@ -56,7 +56,7 @@ class	SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 				AssertNotNull (fSAXObjectReader_.GetTop ());
 				#if		qDefaultTracingOn
 					if (fSAXObjectReader_.fTraceThisReader) {
-						DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.As<wstring> ().c_str ());
+						DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.c_str ());
 					}
 				#endif
 				fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
@@ -66,7 +66,7 @@ class	SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 				AssertNotNull (fSAXObjectReader_.GetTop ());
 				#if		qDefaultTracingOn
 					if (fSAXObjectReader_.fTraceThisReader) {
-						DbgTrace (L"%sCalling EndElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.As<wstring> ().c_str ());
+						DbgTrace (L"%sCalling EndElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.c_str ());
 					}
 				#endif
 				fSAXObjectReader_.GetTop ()->HandleEndTag (fSAXObjectReader_);
@@ -76,7 +76,7 @@ class	SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 				AssertNotNull (fSAXObjectReader_.GetTop ());
 				#if		qDefaultTracingOn
 					if (fSAXObjectReader_.fTraceThisReader) {
-						DbgTrace (L"%sCalling CharactersInsideElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), text.As<wstring> ().c_str () );
+						DbgTrace (L"%sCalling CharactersInsideElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), text.c_str () );
 					}
 				#endif
 				fSAXObjectReader_.GetTop ()->HandleTextInside (fSAXObjectReader_, text);
