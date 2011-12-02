@@ -246,6 +246,18 @@ namespace	Stroika {
 				}
 
 
+			//	class	String_ConstantCString
+			inline	String_ConstantCString::String_ConstantCString (const String_ConstantCString& s)
+				: String (s)
+				{
+				}
+            inline	String_ConstantCString& String_ConstantCString::operator= (const String_ConstantCString& s)
+				{
+					String::operator= (s);
+					return (*this);
+				}
+
+
 			//	class	String_ExternalMemoryOwnership
 			inline	String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (const String_ExternalMemoryOwnership& s)
 				: String (s)

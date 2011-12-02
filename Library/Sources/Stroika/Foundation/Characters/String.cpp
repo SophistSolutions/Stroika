@@ -24,7 +24,20 @@ using	namespace	Stroika::Foundation::Characters;
 using	Memory::SharedPtr;
 using	Memory::SharedByValue;
 
-
+namespace	{
+	/*
+	 *	UnsupportedFeatureException_
+	 *
+	 *			Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support any operaiton that modifies the string.
+	 *		Its up to the CONTAINER change the rep to a generic one that supports everything todo that.
+	 *
+	 *			We COULD have done this by having a SUPPORTSX() predicate method called on each rep before each all, or have an extra return value about
+	 *		if it succeeded. But - that would be alot of overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one
+	 *		tries to change a string that happened to come from a 'readonly' source. We can handle that internally, and transparently by thorwing an
+	 *		excpetion that never makes it out of the String module/cpp file.
+	 */
+	class	UnsupportedFeatureException_ {};
+}
 
 
 namespace	{
@@ -165,9 +178,7 @@ namespace	{
 
 
 
-class	String_CharArray::MyRep_ : 
-		public HELPER_::_ReadWriteRep
-	{
+class	String_CharArray::MyRep_ : public HELPER_::_ReadWriteRep {
 	private:
 		typedef	HELPER_::_ReadWriteRep	inherited;
 	public:
@@ -219,6 +230,30 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
 };
 
 
+
+
+
+
+class	String_ConstantCString::MyRep_ : public String_CharArray::MyRep_ {
+    public:
+        MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
+        ~MyRep_ ();
+
+        virtual		void	RemoveAll () override;
+
+        virtual		void	SetAt (Character item, size_t index) override;
+        virtual		void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
+        virtual		void	RemoveAt (size_t index, size_t amountToRemove) override;
+
+        virtual		void	SetLength (size_t newLength) override;
+
+    private:
+        bool	fWeOwnBuffer_;
+
+        // called before calling any method that modifies the string, to ensure that
+        // we do not munge memory we did not alloc
+        nonvirtual	void	AssureWeOwnBuffer_ ();
+};
 
 
 
@@ -309,7 +344,7 @@ namespace	{
 			}
 		static	SharedByValue<_Rep,_Rep_Cloner>	mkEmptyStrRep_ ()
 			{
-				static	bool								sInited_	=	false;
+				static	bool							sInited_	=	false;
 				static	SharedByValue<_Rep,_Rep_Cloner>	s_;
 				if (not sInited_) {
 					sInited_ = true;
@@ -438,7 +473,14 @@ void	String::InsertAt (Character c, size_t i)
 {
 	Require (i >= 0);
 	Require (i <= (GetLength ()));
-	fRep_->InsertAt (&c, &c + 1, i);
+	try {
+		fRep_->InsertAt (&c, &c + 1, i);
+	}
+	catch (const UnsupportedFeatureException_&) {
+		String_BufferedCharArray	tmp	=	String_BufferedCharArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		fRep_ = tmp.fRep_;
+		fRep_->InsertAt (&c, &c + 1, i);
+	}
 }
 
 void	String::RemoveAt (size_t index, size_t nCharsToRemove)
@@ -839,6 +881,23 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
 
 
 
+/*
+ ********************************************************************************
+ ******************************* String_ConstantCString *************************
+ ********************************************************************************
+ */
+String_ConstantCString::String_ConstantCString (const wchar_t* cString)
+	: String (new MyRep_ ((const Character*)cString, wcslen (cString)), false)
+{
+    Assert (sizeof (Character) == sizeof (wchar_t))
+}
+
+
+
+
+
+
+
 
 /*
  ********************************************************************************
@@ -858,10 +917,33 @@ String_ExternalMemoryOwnership::String_ExternalMemoryOwnership (const wchar_t* c
 
 /*
  ********************************************************************************
- ****************************** String_StackLifetime ****************************
+ ****************************** String_StackLifetimeReadOnly ****************************
  ********************************************************************************
  */
-String_StackLifetime::String_StackLifetime (const wchar_t* cString)
+String_StackLifetimeReadOnly::String_StackLifetimeReadOnly (const wchar_t* cString)
+	: String (cString)
+{
+	/* TODO: FIX PERFORMANCE!!!
+	 *		This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
+	 *	advantages the class description promises.
+	 *
+	 *		TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
+	 *	Then in the DTOR for this envelope, we call FREEZE on that rep - causing it to throw away its unsafe pointer. That must ONLY be done if refcount > 1 (in our DTOR).
+	 */
+}
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** String_StackLifetimeReadWrite ****************************
+ ********************************************************************************
+ */
+String_StackLifetimeReadWrite::String_StackLifetimeReadWrite (wchar_t* cString)
 	: String (cString)
 {
 	/* TODO: FIX PERFORMANCE!!!
@@ -927,57 +1009,35 @@ String::_Rep*	String_CharArray::MyRep_::Clone () const
 	return (new String_CharArray::MyRep_ ((const Character*)fStorage_, fLength_));
 }
 
-#if 0
-size_t	String_CharArray::MyRep_::GetLength () const
-{
-	return (fLength_);
-}
-
-bool	String_CharArray::MyRep_::Contains (Character item) const
-{
-	Assert (fStorage_ != nullptr or GetLength () == 0);
-
-	char asciiItem = item.GetAsciiCode ();
-	for (size_t i = 0; i < fLength_; i++) {
-		if (fStorage_[i] == asciiItem) {
-			return (true);
-		}
-	}
-	return (false);
-}
-
-void	String_CharArray::MyRep_::RemoveAll ()
-{
-	SetLength (0);
-}
-
-Character	String_CharArray::MyRep_::GetAt (size_t index) const
-{
-	Require (index >= 0);
-	Require (index < GetLength ());
-	AssertNotNull (fStorage_);
-
-	return (fStorage_[index]);
-}
-
-void	String_CharArray::MyRep_::SetAt (Character item, size_t index)
-{
-	Require (index >= 0);
-	Require (index < GetLength ());
-	AssertNotNull (fStorage_);
-
-	fStorage_[index] = item.As<wchar_t> ();
-}
-#endif
-
 void	String_CharArray::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
 	Require (index >= 0);
 	Require (index <= GetLength ());
 
+#if 1
+	size_t		origLen		=	GetLength ();
+	size_t		amountToAdd	=	(srcEnd - srcStart);
+	SetLength (origLen + amountToAdd);
+	size_t		newLen		=	origLen + amountToAdd;
+	Assert (newLen == GetLength ());
+	Character*	lhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd) - amountToAdd);
+	Character*	rhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd));
+	// make space for insertion
+	size_t nSpacesToMove	=	origLen - index;
+	for (size_t i = nSpacesToMove; i > 0; i--) {
+		*--rhs = *--lhs;
+	}
+	// now copy in new characters
+
+	Character*	outI	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fStart) + index);
+	for (const Character* srcI = srcStart; srcI < srcEnd; ++srcI, ++outI) {
+		*outI = *srcI;
+	}
+	Ensure (_fStart <= _fEnd);
+#else
+&&&&&&&&&&&&&&
 Assert (srcEnd - srcStart == 1);	//tmphack - just havne't implemtend more general case
 Character item = *srcStart;
-
 
 	SetLength (GetLength () + 1);
 	if (index < (fLength_-1)) {
@@ -991,24 +1051,8 @@ Character item = *srcStart;
 		Assert (lhs == &fStorage_ [index]);
 	}
 	fStorage_[index] = item.As<wchar_t> ();
-}
-#if 0
-void	String_CharArray::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
-{
-	Require (index >= 0);
-	Require (index < fLength_);
-
-	if (index < fLength_-1) {
-		wchar_t*	lhs	=	&fStorage_ [index];
-		wchar_t*	rhs	=	&fStorage_ [index+amountToRemove];
-		for (size_t i = fLength_ - index - amountToRemove; i > 0; i--) {
-			*lhs++ = *rhs++;
-		}
-	}
-	fLength_ -= amountToRemove;
-	_SetData (fStorage_, fStorage_ + fLength_);
-}
 #endif
+}
 
 void	String_CharArray::MyRep_::SetLength (size_t newLength)
 {
@@ -1027,15 +1071,6 @@ void	String_CharArray::MyRep_::SetLength (size_t newLength)
     Ensure (fStorage_ != nullptr or GetLength () == 0);
 	Ensure (fLength_ == newLength);
 }
-
-#if 0
-const Character*	String_CharArray::MyRep_::Peek () const
-{
-    Require (sizeof (Character) == sizeof (wchar_t));
-
-	return ((const Character*)fStorage_);
-}
-#endif
 
 const wchar_t*	String_CharArray::MyRep_::c_str_peek () const override
 {
@@ -1070,50 +1105,6 @@ size_t	String_CharArray::MyRep_::CalcAllocChars_ (size_t requested)
 	return (requested);
 }
 
-#if 0
-
-int	String_CharArray::MyRep_::Compare (const _Rep& rhs, String::CompareOptions co) const override
-{
-	Require (co == eWithCase_CO or co == eCaseInsensitive_CO);
-    if (this == &rhs) {
-        return (0);
-    }
-	// Need a more efficient implementation - but this should do for starters...
-	switch (co) {
-		case	eWithCase_CO: {
-		    size_t lLen = GetLength ();
-		    size_t rLen = rhs.GetLength ();
-			size_t length	=	min (lLen, rLen);
-			for (size_t i = 0; i < length; i++) {
-				if (fStorage_[i] != rhs.GetAt (i)) {
-					return (fStorage_[i] - rhs.GetAt (i).GetCharacterCode ());
-				}
-			}
-			return Containers::CompareResultNormalizeHelper<ptrdiff_t,int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
-		}
-										
-		case	eCaseInsensitive_CO: 	{
-			// Not sure wcscasecmp even helps because of convert to c-str
-			//return ::wcscasecmp (l.c_str (), r.c_str ());;
-		    size_t lLen = GetLength ();
-		    size_t rLen = rhs.GetLength ();
-			size_t length	=	min (lLen, rLen);
-			for (size_t i = 0; i < length; i++) {
-				Character	lc	=	Character (fStorage_[i]).ToLowerCase ();
-				Character	rc	=	rhs.GetAt (i).ToLowerCase ();
-				if (lc.GetCharacterCode () != rc.GetCharacterCode ()) {
-					return (lc.GetCharacterCode () - rc.GetCharacterCode ());
-				}
-			}
-			return Containers::CompareResultNormalizeHelper<ptrdiff_t,int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
-		}
-
-		default:
-			AssertNotReached ();
-			return 0;
-	}
-}
-#endif
 
 
 
@@ -1144,6 +1135,84 @@ size_t	String_BufferedCharArray::MyRep_::CalcAllocChars_ (size_t requested)
 	// round up to buffer block size
 	return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
 }
+
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************** String_ConstantCString::MyRep_ **********************
+ ********************************************************************************
+ */
+String_ConstantCString::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
+	: String_CharArray::MyRep_ ()
+	, fWeOwnBuffer_ (false)
+{
+	RequireNotNull (arrayOfCharacters);
+	SetStorage (const_cast<Character*>(arrayOfCharacters), nCharacters);
+}
+
+String_ConstantCString::MyRep_::~MyRep_ ()
+{
+	if (not fWeOwnBuffer_) {
+		SetStorage (nullptr, 0);	// make sure that memory is not deleted, as we never alloced
+	}
+}
+
+void	String_ConstantCString::MyRep_::RemoveAll ()
+{
+	AssureWeOwnBuffer_ ();
+	String_CharArray::MyRep_::RemoveAll ();
+}
+
+void	String_ConstantCString::MyRep_::SetAt (Character item, size_t index)
+{
+	AssureWeOwnBuffer_ ();
+	String_CharArray::MyRep_::SetAt (item, index);
+}
+
+void	String_ConstantCString::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
+{
+	Execution::DoThrow (UnsupportedFeatureException_ ());
+#if 0
+	AssureWeOwnBuffer_ ();
+	String_CharArray::MyRep_::InsertAt (srcStart, srcEnd, index);
+#endif
+}
+
+void	String_ConstantCString::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
+{
+	AssureWeOwnBuffer_ ();
+	String_CharArray::MyRep_::RemoveAt (index, amountToRemove);
+}
+
+void	String_ConstantCString::MyRep_::SetLength (size_t newLength)
+{
+	AssureWeOwnBuffer_ ();
+	String_CharArray::MyRep_::SetLength (newLength);
+}
+
+void	String_ConstantCString::MyRep_::AssureWeOwnBuffer_ ()
+{
+	if (not fWeOwnBuffer_) {
+	    Assert (sizeof (Character) == sizeof (wchar_t));
+
+		size_t	len	=	GetLength ();
+		wchar_t* storage = ::new wchar_t [len];
+		CopyTo (storage, storage + len);
+		SetStorage (reinterpret_cast<Character*> (storage), len);
+		fWeOwnBuffer_ = true;
+	}
+
+	Ensure (fWeOwnBuffer_);
+}
+
 
 
 
@@ -1186,8 +1255,11 @@ void	String_ExternalMemoryOwnership::MyRep_::SetAt (Character item, size_t index
 
 void	String_ExternalMemoryOwnership::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
+	Execution::DoThrow (UnsupportedFeatureException_ ());
+#if 0
 	AssureWeOwnBuffer_ ();
 	String_CharArray::MyRep_::InsertAt (srcStart, srcEnd, index);
+#endif
 }
 
 void	String_ExternalMemoryOwnership::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
@@ -1477,15 +1549,12 @@ bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const Strin
 bool	Stroika::Foundation::Characters::operator<= (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    return (String_StackLifetime (lhs) <= rhs);
+    return (String_StackLifetimeReadOnly (lhs) <= rhs);
 }
 
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const wchar_t* rhs)
 {
     RequireNotNull (rhs);
     RequireNotNull (rhs);
-    return (lhs <= String_StackLifetime (rhs));
+    return (lhs <= String_StackLifetimeReadOnly (rhs));
 }
-
-
-

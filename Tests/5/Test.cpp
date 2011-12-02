@@ -404,6 +404,21 @@ namespace	{
 
 	void    Test8_ReadOnlyStrings_ ()
 		{
+			String_ConstantCString s (L"fred");
+			VerifyTestResult (s[0] == 'f');
+			s.SetLength (3);
+			VerifyTestResult (s[0] == 'f');
+			VerifyTestResult (s.GetLength () == 3);
+			s += L"x";
+			VerifyTestResult (s.GetLength () == 4);
+			VerifyTestResult (s[3] == 'x');
+			VerifyTestResult (s == L"frex");
+			s.InsertAt ('x', 2);
+			VerifyTestResult (s == L"frxex");
+		}
+
+	void    Test8_ExternalMemoryOwnershipStrings_ ()
+		{
 			String_ExternalMemoryOwnership s (L"fred");
 			VerifyTestResult (s[0] == 'f');
 			s.SetLength (3);
@@ -412,6 +427,9 @@ namespace	{
 			s += L"x";
 			VerifyTestResult (s.GetLength () == 4);
 			VerifyTestResult (s[3] == 'x');
+			VerifyTestResult (s == L"frex");
+			s.InsertAt ('x', 2);
+			VerifyTestResult (s == L"frxex");
 		}
 
 	namespace	{
@@ -501,11 +519,26 @@ namespace	{
 
 
 namespace	{
-	void    Test14_String_StackLifetime_ ()
+	void    Test14_String_StackLifetimeReadOnly_ ()
 		{
 			wchar_t	buf[1024]	=	L"fred";
 			{
-				String_StackLifetime s (buf);
+				String_StackLifetimeReadOnly s (buf);
+				VerifyTestResult (s[0] == 'f');
+				s.SetLength (3);
+				VerifyTestResult (s[0] == 'f');
+				VerifyTestResult (s.GetLength () == 3);
+				s += L"x";
+				VerifyTestResult (s.GetLength () == 4);
+				VerifyTestResult (s[3] == 'x');
+			}
+			VerifyTestResult (::wcscmp (buf, L"fred") == 0);
+		}
+	void    Test14_String_StackLifetimeReadWrite_ ()
+		{
+			wchar_t	buf[1024]	=	L"fred";
+			{
+				String_StackLifetimeReadWrite s (buf);
 				VerifyTestResult (s[0] == 'f');
 				s.SetLength (3);
 				VerifyTestResult (s[0] == 'f');
@@ -660,12 +693,14 @@ namespace	{
 
 			Test7_ ();
 			Test8_ReadOnlyStrings_ ();
+			Test8_ExternalMemoryOwnershipStrings_ ();
 			Test9_StringVersusStdCString_ ();
 			Test10_ConvertToFromSTDStrings_ ();
 			Test11_Trim_ ();
 			Test12_CodePageConverter_ ();
 			Test13_ToLowerUpper_ ();
-			Test14_String_StackLifetime_ ();
+			Test14_String_StackLifetimeReadOnly_ ();
+			Test14_String_StackLifetimeReadWrite_ ();
 			Test15_StripAll_ ();
 			Test16_Format_ ();
 			Test17_RegExp_ ();

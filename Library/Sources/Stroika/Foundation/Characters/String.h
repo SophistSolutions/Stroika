@@ -27,8 +27,10 @@
  *		This is which NEED be used. However, Stroika provides several String SUBTYPES
  *		which act EXACTLY like a String, but offer different performance behaviors.
  *
+ *				o	String_ConstantCString
  *				o	String_ExternalMemoryOwnership
- *				o	String_StackLifetime
+ *				o	String_StackLifetimeReadOnly
+ *				o	String_StackLifetimeReadWrite
  *				o	String_Common
  */
 
@@ -546,15 +548,59 @@ namespace	Stroika {
 
 
 
+
+
+
+            /*
+			 *	String_ConstantCString is a subtype of string you can use to construct a String object, so long as the memory pointed to
+			 * in the argument has a
+			 *		o	FULL APPLICATION LIFETIME,
+			 *		o	and never changes value through that pointer
+			 *
+*	Note that the memory passed in MAY be READONLY, and will be treated as READONLY by String_ConstantCString
+			 *
+			 *	Strings constructed with this String_ConstantCString maybe treated like normal strings - passed anywhere, and even modified via the
+			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
+			 *	only call this String constructor with a block of read-only, never changing memory, and then - only as a performance optimization.
+			 *
+			 *	For example
+			 *		String	tmp1	=	L"FRED";
+			 *		String	tmp2	=	String (L"FRED");
+			 *		String	tmp3	=	String_ConstantCString (L"FRED");
+			 *
+			 *		extern String saved;
+			 *		inline	String	F(String x)			{ saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
+			 *		F(tmp1);
+			 *		F(tmp2);
+			 *		F(tmp3);
+			 *
+			 *	These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation maybe slightly more efficent, but all are equally safe.
+			 *
+			 */
+            class	String_ConstantCString : public String {
+                public:
+                    explicit String_ConstantCString (const wchar_t* cString);
+                    String_ConstantCString (const String_ConstantCString& s);
+
+                    String_ConstantCString& operator= (const String_ConstantCString& s);
+
+				private:
+					class	MyRep_;
+            };
+
+
+
             /*
 			 *	String_ExternalMemoryOwnership is a subtype of string you can use to construct a String object, so long as the memory pointed to
 			 * in the argument has a
 			 *		o	FULL APPLICATION LIFETIME,
-			 *		o	and never changes value
+			 *		o	and never changes value through that pointer
+			 *
+			 *	Note that the memory passed in MAY be READONLY, and will be treated as READONLY by String_ExternalMemoryOwnership
 			 *
 			 *	Strings constructed with this String_ExternalMemoryOwnership maybe treated like normal strings - passed anywhere, and even modified via the
 			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
-			 *	only call this String constructor with a block of read-only, never changeing memory, and then - only as a performance optimization.
+			 *	only call this String constructor with a block of read-only, never changing memory, and then - only as a performance optimization.
 			 *
 			 *	For example
 			 *		String	tmp1	=	L"FRED";
@@ -584,18 +630,20 @@ namespace	Stroika {
 
 
             /*
-			 *	String_StackLifetime is a subtype of string you can use to construct a String object, so long as the memory pointed to
+			 *	String_StackLifetimeReadOnly is a subtype of string you can use to construct a String object, so long as the memory pointed to
 			 * in the argument has a
-			 *		o	Greater lifetime than the String_StackLifetime envelope class
-			 *		o	and buffer data never changes value
+			 *		o	Greater lifetime than the String_StackLifetimeReadOnly envelope class
+			 *		o	and buffer data never changes value externally to this String represenation
 			 *
-			 *	Strings constructed with this String_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the
+			 *	Note that the memory passed in must be READ/WRITE - and may be modified by the String_StackLifetimeReadOnly ()!
+			 *
+			 *	Strings constructed with this String_StackLifetimeReadOnly maybe treated like normal strings - passed anywhere, and even modified via the
 			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
 			 *	and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
 			 *
 			 *	This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
 			 *	call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
-			 *	association will be broken when the String_StackLifetime goes out of scope.
+			 *	association will be broken when the String_StackLifetimeReadOnly goes out of scope.
 			 *
 			 *	This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
 			 *	copied in that case).
@@ -610,18 +658,70 @@ namespace	Stroika {
 			 *			{
 			 *				F(L"FRED";);
 			 *				F(String (L"FRED"));
-			 *				F(String_StackLifetime (cs));
+			 *				F(String_StackLifetimeReadOnly (cs));
 			 *			}
 			 *
-			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_StackLifetime() based memory maybe more efficient than the
+			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_StackLifetimeReadOnly() based memory maybe more efficient than the
 			 *	previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
 			 *
 			 *		<<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
 			 *			real optimized implemenation >>
 			 */
-            class	String_StackLifetime : public String {
+            class	String_StackLifetimeReadOnly : public String {
                 public:
-                    explicit String_StackLifetime (const wchar_t* cString);
+                    explicit String_StackLifetimeReadOnly (const wchar_t* cString);
+// DOCUMENT THESE NEW EXTRA CTORS!!! NYI
+                    explicit String_StackLifetimeReadOnly (const wchar_t* start, const wchar_t* end);
+            };
+
+
+
+
+            /*
+			 *	String_StackLifetimeReadWrite is a subtype of string you can use to construct a String object, so long as the memory pointed to
+			 * in the argument has a
+			 *		o	Greater lifetime than the String_StackLifetimeReadWrite envelope class
+			 *		o	and buffer data never changes value externally to this String represenation
+			 *
+			 *	Note that the memory passed in must be READ/WRITE - and may be modified by the String_StackLifetimeReadWrite ()!
+			 *
+			 *	Strings constructed with this String_StackLifetimeReadWrite maybe treated like normal strings - passed anywhere, and even modified via the
+			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
+			 *	and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
+			 *
+			 *	This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
+			 *	call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
+			 *	association will be broken when the String_StackLifetimeReadWrite goes out of scope.
+			 *
+			 *	This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
+			 *	copied in that case).
+			 *
+			 *	For example
+			 *
+			 *		extern String saved;
+			 *		inline	String	F(String x)			{ saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
+			 *
+			 *
+			 *		void f (const wchar_t* cs)
+			 *			{
+			 *				F(L"FRED";);
+			 *				F(String (L"FRED"));
+			 *				F(String_StackLifetimeReadWrite (cs));
+			 *			}
+			 *
+			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_StackLifetimeReadWrite() based memory maybe more efficient than the
+			 *	previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
+			 *
+			 *		<<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
+			 *			real optimized implemenation >>
+			 */
+            class	String_StackLifetimeReadWrite : public String {
+                public:
+                    explicit String_StackLifetimeReadWrite (wchar_t* cString);
+// DOCUMENT THESE NEW EXTRA CTORS!!! NYI
+                    explicit String_StackLifetimeReadWrite (wchar_t* start, wchar_t* end);
+//TODO: start/end defines range of string, and bufend if 'extra bytes' usable after end - enen though not orignally part of string
+                    explicit String_StackLifetimeReadWrite (wchar_t* start, wchar_t* end, wchar_t* bufEnd);
             };
 
 
