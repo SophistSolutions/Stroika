@@ -18,6 +18,7 @@
 
 
 
+
 /*
  * TODO:
  *
@@ -236,23 +237,96 @@ namespace	{
 			private:
 				typedef	HELPER_::_ReadWriteRep	inherited;
 			public:
-				XXXSHAREDBUFFERINGMyRep_ (const Character* arrayOfCharacters, size_t nBytes);
-				~XXXSHAREDBUFFERINGMyRep_ ();
+				XXXSHAREDBUFFERINGMyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
+					: inherited ()
+					, fStorage_ (nullptr)
+					, fLength_ (0)
+					{
+						SetStorage (::new Character [CalcAllocChars_ (nCharacters)], nCharacters);
+						if (arrayOfCharacters != nullptr) {
+							memcpy (fStorage_, arrayOfCharacters, fLength_*sizeof (Character));
+						}
+					}
+				~XXXSHAREDBUFFERINGMyRep_ ()
+					{
+						delete fStorage_;
+					}
+				virtual		_Rep*	Clone () const override
+					{
+						return (new XXXSHAREDBUFFERINGMyRep_ ((const Character*)fStorage_, fLength_));
+					}
+				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override
+					{
+						Require (index >= 0);
+						Require (index <= GetLength ());
 
-				virtual		_Rep*	Clone () const override;
+						size_t		origLen		=	GetLength ();
+						size_t		amountToAdd	=	(srcEnd - srcStart);
+						SetLength (origLen + amountToAdd);
+						size_t		newLen		=	origLen + amountToAdd;
+						Assert (newLen == GetLength ());
+						Character*	lhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd) - amountToAdd);
+						Character*	rhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd));
+						// make space for insertion
+						size_t nSpacesToMove	=	origLen - index;
+						for (size_t i = nSpacesToMove; i > 0; i--) {
+							*--rhs = *--lhs;
+						}
+						// now copy in new characters
 
-				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
+						Character*	outI	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fStart) + index);
+						for (const Character* srcI = srcStart; srcI < srcEnd; ++srcI, ++outI) {
+							*outI = *srcI;
+						}
+						Ensure (_fStart <= _fEnd);
+					}
+				virtual		void		SetLength (size_t newLength) override
+					{
+						size_t	oldAllocChars	=	CalcAllocChars_ (fLength_);
+						size_t	newAllocChars	=	CalcAllocChars_ (newLength);
 
-				virtual		void		SetLength (size_t newLength) override;
+						if (oldAllocChars != newAllocChars) {
+							Assert (newAllocChars >= newLength);
 
-				virtual		const wchar_t*		c_str_peek () const override;
-				virtual		const wchar_t*		c_str_change () override;
+							size_t amountToAlloc = newAllocChars*sizeof (Character);
+//TODO:		VERY UNSAFE TO MIX realloc() with new/delete!			-- MUST FIX
+							fStorage_ = (wchar_t*)realloc (fStorage_, amountToAlloc);
+						}
+						fLength_ = newLength;
+						_SetData (fStorage_, fStorage_ + fLength_);
+						Ensure (fStorage_ != nullptr or GetLength () == 0);
+						Ensure (fLength_ == newLength);
+					}
+				virtual		const wchar_t*		c_str_peek () const override
+					{
+						//tmphack impl...
+						return nullptr;
+					}
+				virtual		const wchar_t*		c_str_change () override
+					{
+						// a quick hack (POOR) implemnation.
+						// REALLY must totally redo much of this storage code.
+						size_t	len	=	GetLength ();
+						SetLength (len + 1);
+						fStorage_[len] = '\0';
+						fLength_ = len;
+						_SetData (fStorage_, fStorage_ + fLength_);
+						return fStorage_;
+					}
+				/* Deliberately does not try to free up old fStorage_, as this could be other than heap memory */
+				nonvirtual	void	SetStorage (Character* storage, size_t length)
+					{
+						Require (sizeof (Character) == sizeof (wchar_t))
+						fStorage_ = (wchar_t*)storage;
+						fLength_ = length;
 
-			protected:
-				XXXSHAREDBUFFERINGMyRep_ ();
-				nonvirtual	void	SetStorage (Character* storage, size_t length);
-
-				virtual	size_t	CalcAllocChars_ (size_t requested);
+						_SetData (fStorage_, fStorage_ + fLength_);
+					}
+				virtual	size_t	CalcAllocChars_ (size_t requested)
+					{
+						// round up to buffer block size
+						return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
+					}
 
 			private:
 				wchar_t*	fStorage_;
@@ -261,115 +335,6 @@ namespace	{
 	};
 }
 
-
-
-
-
-HELPER_::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
-	: inherited ()
-	, fStorage_ (nullptr)
-	, fLength_ (0)
-{
-	SetStorage (::new Character [CalcAllocChars_ (nCharacters)], nCharacters);
-	if (arrayOfCharacters != nullptr) {
-		memcpy (fStorage_, arrayOfCharacters, fLength_*sizeof (Character));
-	}
-}
-
-HELPER_::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ ()
-	: inherited ()
-	, fStorage_ (nullptr)
-	, fLength_ (0)
-{
-}
-
-HELPER_::XXXSHAREDBUFFERINGMyRep_::~XXXSHAREDBUFFERINGMyRep_ ()
-{
-	delete fStorage_;
-}
-
-String::_Rep*	HELPER_::XXXSHAREDBUFFERINGMyRep_::Clone () const
-{
-	return (new HELPER_::XXXSHAREDBUFFERINGMyRep_ ((const Character*)fStorage_, fLength_));
-}
-
-void	HELPER_::XXXSHAREDBUFFERINGMyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
-{
-	Require (index >= 0);
-	Require (index <= GetLength ());
-
-	size_t		origLen		=	GetLength ();
-	size_t		amountToAdd	=	(srcEnd - srcStart);
-	SetLength (origLen + amountToAdd);
-	size_t		newLen		=	origLen + amountToAdd;
-	Assert (newLen == GetLength ());
-	Character*	lhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd) - amountToAdd);
-	Character*	rhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd));
-	// make space for insertion
-	size_t nSpacesToMove	=	origLen - index;
-	for (size_t i = nSpacesToMove; i > 0; i--) {
-		*--rhs = *--lhs;
-	}
-	// now copy in new characters
-
-	Character*	outI	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fStart) + index);
-	for (const Character* srcI = srcStart; srcI < srcEnd; ++srcI, ++outI) {
-		*outI = *srcI;
-	}
-	Ensure (_fStart <= _fEnd);
-}
-
-void	HELPER_::XXXSHAREDBUFFERINGMyRep_::SetLength (size_t newLength)
-{
-	size_t	oldAllocChars	=	CalcAllocChars_ (fLength_);
-	size_t	newAllocChars	=	CalcAllocChars_ (newLength);
-
-	if (oldAllocChars != newAllocChars) {
-		Assert (newAllocChars >= newLength);
-
-        size_t amountToAlloc = newAllocChars*sizeof (Character);
-//TODO:		VERY UNSAFE TO MIX realloc() with new/delete!			-- MUST FIX
-		fStorage_ = (wchar_t*)realloc (fStorage_, amountToAlloc);
-	}
-	fLength_ = newLength;
-	_SetData (fStorage_, fStorage_ + fLength_);
-    Ensure (fStorage_ != nullptr or GetLength () == 0);
-	Ensure (fLength_ == newLength);
-}
-
-const wchar_t*	HELPER_::XXXSHAREDBUFFERINGMyRep_::c_str_peek () const override
-{
-	//tmphack impl...
-	return nullptr;
-}
-
-const wchar_t*	HELPER_::XXXSHAREDBUFFERINGMyRep_::c_str_change () override
-{
-	// a quick hack (POOR) implemnation.
-	// REALLY must totally redo much of this storage code.
-	size_t	len	=	GetLength ();
-	SetLength (len + 1);
-	fStorage_[len] = '\0';
-	fLength_ = len;
-	_SetData (fStorage_, fStorage_ + fLength_);
-	return fStorage_;
-}
-
-/* Deliberately does not try to free up old fStorage_, as this could be other than heap memory */
-void	HELPER_::XXXSHAREDBUFFERINGMyRep_::SetStorage (Character* storage, size_t length)
-{
-    Require (sizeof (Character) == sizeof (wchar_t))
-	fStorage_ = (wchar_t*)storage;
-	fLength_ = length;
-
-	_SetData (fStorage_, fStorage_ + fLength_);
-}
-
-size_t	HELPER_::XXXSHAREDBUFFERINGMyRep_::CalcAllocChars_ (size_t requested)
-{
-	// round up to buffer block size
-	return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
-}
 
 
 
@@ -415,6 +380,8 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
 };
+
+
 
 
 
