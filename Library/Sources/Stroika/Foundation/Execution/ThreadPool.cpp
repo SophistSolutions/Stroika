@@ -349,7 +349,7 @@ void	ThreadPool::WaitForNextTask_ (TaskType* result)
 
 Thread		ThreadPool::mkThread_ ()
 {
-	Thread	t	=	Thread (SharedPtr<IRunnable> (new ThreadPool::MyRunnable_ (*this)));		// ADD MY THREADOBJ
+	Thread	t	=	Thread (SharedPtr<IRunnable> (DEBUG_NEW ThreadPool::MyRunnable_ (*this)));		// ADD MY THREADOBJ
 	t.SetThreadName (L"Thread Pool");
 	t.Start ();
 	return t;

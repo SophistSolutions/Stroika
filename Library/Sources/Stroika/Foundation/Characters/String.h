@@ -399,8 +399,9 @@ namespace	Stroika {
 					};
 
 				protected:
+					enum _REPCTOR { _eRepCTOR };
 					// _Rep MUST be not-null
-                    String (_Rep* sharedPart, bool ignored);	// bool arg to disamiguate constructors
+                    String (_Rep* sharedPart, _REPCTOR);
 
                 private:
                     Memory::SharedByValue<_Rep,_Rep_Cloner>	fRep_;

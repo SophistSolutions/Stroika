@@ -315,7 +315,7 @@ namespace	{
 							size_t		len		=	GetLength ();
 							wchar_t*	newBuf	=	nullptr;
 							if (newCapacity != 0) {
-								newBuf = new wchar_t [newCapacity];
+								newBuf = DEBUG_NEW wchar_t [newCapacity];
 								if (len != 0) {
 									memcpy (newBuf, _fStart, len*sizeof (wchar_t));
 								}
@@ -362,7 +362,7 @@ class	String_BufferedArray::MyRep_ : public HELPER_::BufferedStringRep_ {
 			}
 		virtual	_Rep*	Clone () const override
 			{
-				return (new MyRep_ (_fStart, _fEnd));
+				return (DEBUG_NEW MyRep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -390,7 +390,7 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 				 * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
 				 * make a rep that is modifyable
 				 */
-				return (new String_BufferedArray::MyRep_ (_fStart, _fEnd));
+				return (DEBUG_NEW String_BufferedArray::MyRep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -414,7 +414,7 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : pub
 				 * Subtle point - but since this code involves SHARING buffer space, we cannot have two DIFFERNT string reps both sharing the same pointer. Only
 				 * one can use it, and the other must make a copy.
 				 */
-				return (new String_BufferedArray::MyRep_ (_fStart, _fEnd));
+				return (DEBUG_NEW String_BufferedArray::MyRep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -520,14 +520,14 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-	: fRep_ (new String_BufferedArray::MyRep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
+	: fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-	: fRep_ (new String_BufferedArray::MyRep_ (from, to), _Rep_Cloner ())
+	: fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (from, to), _Rep_Cloner ())
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
@@ -535,7 +535,7 @@ String::String (const wchar_t* from, const wchar_t* to)
 }
 
 String::String (const Character* from, const Character* to)
-	: fRep_ (new String_BufferedArray::MyRep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
+	: fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	Require (from <= to);
@@ -543,11 +543,11 @@ String::String (const Character* from, const Character* to)
 }
 
 String::String (const std::wstring& r)
-    : fRep_ (new String_BufferedArray::MyRep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
+    : fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
 {
 }
 
-String::String (_Rep* sharedPart, bool)
+String::String (_Rep* sharedPart, _REPCTOR)
 	: fRep_ (sharedPart, _Rep_Cloner ())
 {
 	RequireNotNull (sharedPart);
@@ -800,7 +800,7 @@ String	String::SubString (size_t from, size_t to) const
 		return *this;		// just bump reference count
 	}
 	#if		qString_SubStringClassWorks
-		return (String (new String_Substring_::MyRep_ (fRep_, from, length), false));
+		return (String (DEBUG_NEW String_Substring_::MyRep_ (fRep_, from, length), false));
 	#else
 		return (String (fRep_->Peek () + from, fRep_->Peek () + from + length));
 	#endif
@@ -986,22 +986,22 @@ const wchar_t*	String::c_str () const
  ********************************************************************************
  */
 String_BufferedArray::String_BufferedArray ()
-	: String (new MyRep_ (nullptr, 0), false)
+	: String (DEBUG_NEW MyRep_ (nullptr, 0), _eRepCTOR)
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
+	: String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
-	: String (new MyRep_ (str.data (), str.data () + str.length ()), false)
+	: String (DEBUG_NEW MyRep_ (str.data (), str.data () + str.length ()), _eRepCTOR)
 {
 }
 
 String_BufferedArray::String_BufferedArray (const String& from)
-	: String (new MyRep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), false)
+	: String (DEBUG_NEW MyRep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR)
 {
 }
 
@@ -1020,7 +1020,7 @@ String_BufferedArray::String_BufferedArray (const String& from)
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
-	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
+	: String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
 {
 }
 
@@ -1037,7 +1037,7 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemo
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
-	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
+	: String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
 {
 }
 

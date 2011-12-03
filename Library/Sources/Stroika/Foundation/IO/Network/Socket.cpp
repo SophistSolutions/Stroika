@@ -196,7 +196,7 @@ Socket::Socket (const Socket& s)
 }
 
 Socket::Socket (NativeSocket sd)
-	: fRep_ (SharedPtr<_Rep> (new REALSOCKET_::Rep_ (sd)))
+	: fRep_ (SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)))
 {
 }
 
@@ -259,7 +259,7 @@ void	Socket::Bind (const BindProperties& bindProperties)
 
 	Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
-	fRep_  = SharedPtr<_Rep> (new REALSOCKET_::Rep_ (sd));
+	fRep_  = SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
 }
 
 void	Socket::Listen (unsigned int backlog)

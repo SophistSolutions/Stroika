@@ -129,7 +129,7 @@ void	SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, i
 	RequireNotNull (docEltBuilder);
 	Require (fStack_.size () == 0);
 
-	Push (Memory::SharedPtr<ObjectBase> (new DocumentReader_ (docEltBuilder)));
+	Push (Memory::SharedPtr<ObjectBase> (DEBUG_NEW DocumentReader_ (docEltBuilder)));
 
 	MyCallback_ cb (*this);
 	SAXParse (in, cb);
@@ -144,7 +144,7 @@ void	SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, c
 	RequireNotNull (docEltBuilder);
 	Require (fStack_.size () == 0);
 
-	Push (Memory::SharedPtr<ObjectBase> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
+	Push (Memory::SharedPtr<ObjectBase> (DEBUG_NEW DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
 
 	MyCallback_ cb (*this);
 	SAXParse (in, cb);

@@ -26,11 +26,11 @@ namespace	Stroika {
 				}
 			inline	Memory::SharedPtr<IRunnable>	SimpleRunnable::MAKE (void (*fun2CallOnce) ())
 				{
-					return Memory::SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce));
+					return Memory::SharedPtr<IRunnable> (DEBUG_NEW SimpleRunnable (fun2CallOnce));
 				}
 			inline	Memory::SharedPtr<IRunnable>	SimpleRunnable::MAKE (void (*fun2CallOnce) (void* arg), void* arg)
 				{
-					return Memory::SharedPtr<IRunnable> (new SimpleRunnable (fun2CallOnce, arg));
+					return Memory::SharedPtr<IRunnable> (DEBUG_NEW SimpleRunnable (fun2CallOnce, arg));
 				}
 
 
@@ -44,7 +44,7 @@ namespace	Stroika {
 			template	<typename	OBJ>
 				inline	Memory::SharedPtr<IRunnable>	SimpleObjRunnable<OBJ>::MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
 					{
-						return Memory::SharedPtr<IRunnable> (new SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
+						return Memory::SharedPtr<IRunnable> (DEBUG_NEW SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
 					}
 			template	<typename	OBJ>
 				void	SimpleObjRunnable<OBJ>::Run () override
