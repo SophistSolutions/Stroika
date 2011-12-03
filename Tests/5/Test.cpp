@@ -382,7 +382,11 @@ namespace	{
 	template	<typename	STRING>
 		void	Test6_Helper_ (const char* testMessage)
 			{
+				#if		qPrintTimings
+				const	int	kRecurseDepth = 10;
+				#else
 				const	int	kRecurseDepth = 8;
+				#endif
 				STRING	testString = L"some dump test";
 				#if		qPrintTimings
 					cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
