@@ -17,6 +17,7 @@
 #include	"String.h"
 
 
+
 /*
  * TODO:
  *
@@ -228,14 +229,9 @@ namespace	{
 					}
 
 		};
-	};
-
-}
 
 
 
-namespace	{
-	struct	FOO : String {
 		struct	XXXSHAREDBUFFERINGMyRep_ : HELPER_::_ReadWriteRep {
 			private:
 				typedef	HELPER_::_ReadWriteRep	inherited;
@@ -269,7 +265,7 @@ namespace	{
 
 
 
-FOO::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
+HELPER_::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
 	: inherited ()
 	, fStorage_ (nullptr)
 	, fLength_ (0)
@@ -280,24 +276,24 @@ FOO::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ (const Character* arrayO
 	}
 }
 
-FOO::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ ()
+HELPER_::XXXSHAREDBUFFERINGMyRep_::XXXSHAREDBUFFERINGMyRep_ ()
 	: inherited ()
 	, fStorage_ (nullptr)
 	, fLength_ (0)
 {
 }
 
-FOO::XXXSHAREDBUFFERINGMyRep_::~XXXSHAREDBUFFERINGMyRep_ ()
+HELPER_::XXXSHAREDBUFFERINGMyRep_::~XXXSHAREDBUFFERINGMyRep_ ()
 {
 	delete fStorage_;
 }
 
-String::_Rep*	FOO::XXXSHAREDBUFFERINGMyRep_::Clone () const
+String::_Rep*	HELPER_::XXXSHAREDBUFFERINGMyRep_::Clone () const
 {
-	return (new FOO::XXXSHAREDBUFFERINGMyRep_ ((const Character*)fStorage_, fLength_));
+	return (new HELPER_::XXXSHAREDBUFFERINGMyRep_ ((const Character*)fStorage_, fLength_));
 }
 
-void	FOO::XXXSHAREDBUFFERINGMyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
+void	HELPER_::XXXSHAREDBUFFERINGMyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
 	Require (index >= 0);
 	Require (index <= GetLength ());
@@ -323,7 +319,7 @@ void	FOO::XXXSHAREDBUFFERINGMyRep_::InsertAt (const Character* srcStart, const C
 	Ensure (_fStart <= _fEnd);
 }
 
-void	FOO::XXXSHAREDBUFFERINGMyRep_::SetLength (size_t newLength)
+void	HELPER_::XXXSHAREDBUFFERINGMyRep_::SetLength (size_t newLength)
 {
 	size_t	oldAllocChars	=	CalcAllocChars_ (fLength_);
 	size_t	newAllocChars	=	CalcAllocChars_ (newLength);
@@ -341,13 +337,13 @@ void	FOO::XXXSHAREDBUFFERINGMyRep_::SetLength (size_t newLength)
 	Ensure (fLength_ == newLength);
 }
 
-const wchar_t*	FOO::XXXSHAREDBUFFERINGMyRep_::c_str_peek () const override
+const wchar_t*	HELPER_::XXXSHAREDBUFFERINGMyRep_::c_str_peek () const override
 {
 	//tmphack impl...
 	return nullptr;
 }
 
-const wchar_t*	FOO::XXXSHAREDBUFFERINGMyRep_::c_str_change () override
+const wchar_t*	HELPER_::XXXSHAREDBUFFERINGMyRep_::c_str_change () override
 {
 	// a quick hack (POOR) implemnation.
 	// REALLY must totally redo much of this storage code.
@@ -360,7 +356,7 @@ const wchar_t*	FOO::XXXSHAREDBUFFERINGMyRep_::c_str_change () override
 }
 
 /* Deliberately does not try to free up old fStorage_, as this could be other than heap memory */
-void	FOO::XXXSHAREDBUFFERINGMyRep_::SetStorage (Character* storage, size_t length)
+void	HELPER_::XXXSHAREDBUFFERINGMyRep_::SetStorage (Character* storage, size_t length)
 {
     Require (sizeof (Character) == sizeof (wchar_t))
 	fStorage_ = (wchar_t*)storage;
@@ -369,11 +365,10 @@ void	FOO::XXXSHAREDBUFFERINGMyRep_::SetStorage (Character* storage, size_t lengt
 	_SetData (fStorage_, fStorage_ + fLength_);
 }
 
-size_t	FOO::XXXSHAREDBUFFERINGMyRep_::CalcAllocChars_ (size_t requested)
+size_t	HELPER_::XXXSHAREDBUFFERINGMyRep_::CalcAllocChars_ (size_t requested)
 {
 	// round up to buffer block size
 	return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
-//	return (requested);
 }
 
 
@@ -389,24 +384,7 @@ size_t	FOO::XXXSHAREDBUFFERINGMyRep_::CalcAllocChars_ (size_t requested)
 
 
 
-
-
-#if 0
-
-class	String_CharArray::MyRep_ : public FOO::XXXSHAREDBUFFERINGMyRep_ {
-	private:
-		typedef	XXXSHAREDBUFFERINGMyRep_	inherited;
-	public:
-		MyRep_ (const Character* arrayOfCharacters, size_t nBytes)
-			: XXXSHAREDBUFFERINGMyRep_ (arrayOfCharacters, nBytes)
-			{
-			}
-	public:
-		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-};
-#endif
-
-class	String_BufferedArray::MyRep_ : public FOO::XXXSHAREDBUFFERINGMyRep_ {
+class	String_BufferedArray::MyRep_ : public HELPER_::XXXSHAREDBUFFERINGMyRep_ {
 	private:
 		typedef	XXXSHAREDBUFFERINGMyRep_	inherited;
 	public:
@@ -421,33 +399,6 @@ class	String_BufferedArray::MyRep_ : public FOO::XXXSHAREDBUFFERINGMyRep_ {
 
 
 
-
-
-
-#if 0
-/*
-    * Subclasses from String_CharArray::MyRep_ instead of String::_Rep as a convenience (inheriting implementation).
-    * In nearly all cases, such inheritance is a bad idea, but here it is justified because people
-    * never directly manipulate the Reps, only the envelope classes, which have the conceptually
-    * proper derivation. And the code savings is significant, since they differ only in
-    * their buffering schemes.
-    * Of course, not all subclasses of String::_Rep can do this, and if it ever posed a problem here it
-    * could be modified without having any effect on peoples code.
-    *
-    */
-class	String_BufferedArray::MyRep_ : public String_CharArray::MyRep_ {
-    public:
-        MyRep_ (const Character* arrayOfCharacters, size_t nBytes);
-
-        virtual		_Rep*	Clone () const override;
-
-	public:
-		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-
-    protected:
-        virtual		size_t	CalcAllocChars_ (size_t requested) override;
-};
-#endif
 
 
 
@@ -463,7 +414,6 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-
 };
 
 
@@ -480,6 +430,9 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : pub
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
 
 };
+
+
+
 
 
 
@@ -1046,48 +999,9 @@ const wchar_t*	String::c_str () const
 
 
 
-#if 0
-
 /*
  ********************************************************************************
- ******************************** String_CharArray ******************************
- ********************************************************************************
- */
-String_CharArray::String_CharArray ()
-	: String (new String_CharArray::MyRep_ (nullptr, 0), false)
-{
-}
-
-String_CharArray::String_CharArray (const wchar_t* cString)
-	: String (new String_CharArray::MyRep_ ((const Character*)cString, wcslen (cString)), false)
-{
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-}
-
-String_CharArray::String_CharArray (const wstring& str)
-    : String (new String_CharArray::MyRep_ ((const Character*)str.c_str (), str.length ()), false)
-{
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-}
-
-String_CharArray::String_CharArray (const String& from)
-	: String (new String_CharArray::MyRep_ ((const Character*)from.As<const wchar_t*> (), from.GetLength ()), false)
-{
-}
-
-String_CharArray::String_CharArray (const Character* arrayOfCharacters, size_t nCharacters)
-	: String (new String_CharArray::MyRep_ (arrayOfCharacters, nCharacters), false)
-{
-}
-
-#endif
-
-
-
-
-/*
- ********************************************************************************
- **************************** String_BufferedArray **************************
+ ***************************** String_BufferedArray *****************************
  ********************************************************************************
  */
 String_BufferedArray::String_BufferedArray ()
@@ -1111,6 +1025,8 @@ String_BufferedArray::String_BufferedArray (const String& from)
 	: String (new MyRep_ ((const Character*)from.As<const wchar_t*> (), from.GetLength ()), false)
 {
 }
+
+
 
 
 
@@ -1145,6 +1061,8 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMem
 	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
 }
+
+
 
 
 
@@ -1192,45 +1110,6 @@ String_ExternalMemoryOwnership_StackLifetime_ReadWrite::String_ExternalMemoryOwn
 }
 
 
-
-
-
-
-
-
-
-
-
-
-#if 0
-
-/*
- ********************************************************************************
- *********************** String_BufferedArray::MyRep_ ***********************
- ********************************************************************************
- */
-String_BufferedArray::MyRep_::MyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
-	: String_CharArray::MyRep_ ()
-{
-	RequireNotNull (arrayOfCharacters);
-	Assert (sizeof (Character) == sizeof (wchar_t))
-
-	wchar_t*	storage = ::new wchar_t [CalcAllocChars_ (nCharacters)];
-	memcpy (storage, arrayOfCharacters, nCharacters*sizeof (Character));
-	SetStorage ((Character*)storage, nCharacters);
-}
-
-String::_Rep*	String_BufferedArray::MyRep_::Clone () const
-{
-	return (new String_BufferedArray::MyRep_ (Peek (), GetLength ()));
-}
-
-size_t	String_BufferedArray::MyRep_::CalcAllocChars_ (size_t requested)
-{
-	// round up to buffer block size
-	return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
-}
-#endif
 
 
 
@@ -1364,6 +1243,8 @@ String	Stroika::Foundation::Characters::operator+ (const String& lhs, const Stri
 	}
 	return tmp;
 }
+
+
 
 
 
