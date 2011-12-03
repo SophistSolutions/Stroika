@@ -26,7 +26,7 @@ namespace	Stroika {
 
 			/*
 			 * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
-			 * differnt sized values and just returning an int, but don't wnat the warnings about overflow etc.
+			 * different sized values and just returning an int, but don't want the warnings about overflow etc.
 			 */
 			template	<typename FROM_INT_TYPE, typename TO_INT_TYPE>
 				TO_INT_TYPE	CompareResultNormalizeHelper (FROM_INT_TYPE f);
