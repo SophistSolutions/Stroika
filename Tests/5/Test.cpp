@@ -186,6 +186,7 @@ namespace	{
 			 * Some simple tests to start off with.
 			 */
 			{
+				VerifyTestResult (String (L"a").length () == 1);
 				VerifyTestResult (String (String (L"fred") + String (L"joe")).GetLength () == 7);
 
 				VerifyTestResult (String (L"fred") + String (L"joe") == String (L"fredjoe"));
