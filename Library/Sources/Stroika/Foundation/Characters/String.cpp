@@ -21,25 +21,6 @@
 
 
 
-/*
- * TODO:
- *
- *		IMPLEMENT RESRVE/CAPCITY PUBLIUC API ON 
- *
- */
-
-
-
-
-
-/*
- * TODO:
- *
- *		STRING::RANGED INSERTAT AND USE TO SPEEDUP OPERATOR+ for strings (then re-run regtest speedtest compare) 
- *
- */
-
-
 
 /*
  * TODO:
@@ -281,6 +262,7 @@ namespace	{
 					{
 						Require (index >= 0);
 						Require (index <= GetLength ());
+						Require (srcStart < srcEnd);
 
 						size_t		origLen		=	GetLength ();
 						size_t		amountToAdd	=	(srcEnd - srcStart);
@@ -295,7 +277,6 @@ namespace	{
 							*--rhs = *--lhs;
 						}
 						// now copy in new characters
-
 						Character*	outI	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fStart) + index);
 						for (const Character* srcI = srcStart; srcI < srcEnd; ++srcI, ++outI) {
 							*outI = *srcI;
@@ -616,14 +597,18 @@ String	String::FromTString (const basic_string<TChar>& from)
 	return TString2Wide (from);
 }
 
+#if 0
+
 String&	String::operator+= (Character appendage)
 {
+//TODO:		MUST OPTIMZIE (at least reserve? if possible?) - or make INLINE INTENRAL WRAPPER ON ONSERTAT()
 	_fRep->InsertAt (&appendage, &appendage + 1, GetLength ());
 	return (*this);
 }
 
 String&	String::operator+= (const String& appendage)
 {
+//TODO:		MUST OPTIMZIE (at least reserve? if possible?) - or make INLINE INTENRAL WRAPPER ON ONSERTAT()
 	if ((_fRep == appendage._fRep) and _fRep.unique ()) {
 		/*
 		 * We must be careful about this case since blowing aways "this"s memory, and then
@@ -643,6 +628,7 @@ String&	String::operator+= (const String& appendage)
 	}
 	return (*this);
 }
+#endif
 
 void	String::SetLength (size_t newLength)
 {
@@ -655,7 +641,7 @@ void	String::SetLength (size_t newLength)
 		}
 	}
 	catch (const UnsupportedFeatureException_&) {
-		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		String_BufferedArray	tmp	=	String_BufferedArray (*this, max (GetLength (), newLength));
 		_fRep = tmp._fRep;
 		if (newLength == 0) {
 			_fRep->RemoveAll ();
@@ -674,23 +660,26 @@ void	String::SetCharAt (Character c, size_t i)
 		_fRep->SetAt (c, i);
 	}
 	catch (const UnsupportedFeatureException_&) {
-		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		String_BufferedArray	tmp	=	String_BufferedArray (*this);
 		_fRep = tmp._fRep;
 		_fRep->SetAt (c, i);
 	}
 }
 
-void	String::InsertAt (Character c, size_t i)
+void	String::InsertAt (const Character* from, const Character* to, size_t at)
 {
-	Require (i >= 0);
-	Require (i <= (GetLength ()));
+	Require (at >= 0);
+	Require (at <= (GetLength ()));
+	Require (from <= to);
+	Require (from != nullptr or from == to);
+	Require (to != nullptr or from == to);
 	try {
-		_fRep->InsertAt (&c, &c + 1, i);
+		_fRep->InsertAt (from, to, at);
 	}
 	catch (const UnsupportedFeatureException_&) {
-		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		String_BufferedArray	tmp	=	String_BufferedArray (*this, GetLength () + (to-from));
 		_fRep = tmp._fRep;
-		_fRep->InsertAt (&c, &c + 1, i);
+		_fRep->InsertAt (from, to, at);
 	}
 }
 
@@ -701,7 +690,7 @@ void	String::RemoveAt (size_t index, size_t nCharsToRemove)
 		_fRep->RemoveAt (index, nCharsToRemove);
 	}
 	catch (const UnsupportedFeatureException_&) {
-		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
+		String_BufferedArray	tmp	=	String_BufferedArray (*this);
 		_fRep = tmp._fRep;
 		_fRep->RemoveAt (index, nCharsToRemove);
 	}
@@ -1291,11 +1280,7 @@ const Character*	String_Substring_::MyRep_::Peek () const
 String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
 {
 	String_BufferedArray	tmp	=	String_BufferedArray (lhs, lhs.size () + rhs.size ());
-
-// Very cruddy implementation - but should be functional -- LGP 2011-09-08
-	for (size_t i = 0; i < rhs.GetLength (); ++i) {
-		tmp.InsertAt (rhs[i], tmp.GetLength ());
-	}
+	tmp.InsertAt (rhs, tmp.GetLength ());
 	return tmp;
 }
 

@@ -195,7 +195,11 @@ namespace	Stroika {
                     nonvirtual	void		SetCharAt (Character c, size_t i);
 
                 public:
-                    nonvirtual	void		InsertAt (Character c, size_t i);
+					// Note that it is legal, but pointless to pass in an empty string to insert
+                    nonvirtual	void		InsertAt (Character c, size_t at);
+                    nonvirtual	void		InsertAt (const String& s, size_t at);
+                    nonvirtual	void		InsertAt (const wchar_t* from, const wchar_t* to, size_t at);
+                    nonvirtual	void		InsertAt (const Character* from, const Character* to, size_t at);
 
                 public:
 					/*
@@ -462,6 +466,7 @@ namespace	Stroika {
 
                     virtual	Character	GetAt (size_t index) const				= 0;
                     virtual	void		SetAt (Character item, size_t index)	= 0;
+					// This rep is NEVER called with nullptr src/end nor start==end
                     virtual	void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)	= 0;
                     virtual	void		RemoveAt (size_t index, size_t nCharsToRemove)	= 0;
 

@@ -94,6 +94,32 @@ namespace	Stroika {
 				{
 					*this = String ();
 				}
+			inline	void	String::InsertAt (Character c, size_t at)
+				{
+					InsertAt (&c, &c + 1, at);
+				}
+			inline	void	String::InsertAt (const String& s, size_t at)
+				{
+					// NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
+					// And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
+					// another thread could only change that other envelopes copy
+					const wchar_t*	p	=	s.As<const wchar_t*> ();
+					InsertAt (p, p + s.length (), at);
+				}
+			inline	void	String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
+				{
+					InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
+				}
+			inline	String&	String::operator+= (Character appendage)
+				{
+					InsertAt (appendage, GetLength ());
+					return (*this);
+				}
+			inline	String&	String::operator+= (const String& appendage)
+				{
+					InsertAt (appendage, GetLength ());
+					return (*this);
+				}
             inline	Character	String::operator[] (size_t i) const
 				{
 					Require (i >= 0);
