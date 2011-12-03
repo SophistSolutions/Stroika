@@ -12,6 +12,7 @@
  */
 
 #include	<algorithm>
+#include	"../Math/Common.h"
 
 
 namespace	Stroika {	
@@ -64,8 +65,9 @@ namespace	Stroika {
 						size_t	size	=	c.size ();
 						//Assert (size <= c.capacity ());	we don't want to include the assertion library in this .h file.... for now... --LGP 2007-03-08
 						if (size == c.capacity ()) {
-							size *= 2;
-							size = std::min (size, kMinChunk);
+							size *= 6;
+							size /= 5;
+							size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
 							c.reserve (size);
 						}
 					}
@@ -75,8 +77,9 @@ namespace	Stroika {
 					{
 						size_t	size	=	c.size () + n;
 						if (size >= c.capacity ()) {
-							size *= 2;
-							size = std::min (size, kMinChunk);
+							size *= 6;
+							size /= 5;
+							size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
 							c.reserve (size);
 						}
 					}
