@@ -51,14 +51,18 @@
  */
 
 
+/*
+ * TODO:
+ *		o	WRITEUP THREAD SAFETY:
+ *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
+ *			 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+ */
+
+
 
 /*
  * TODO:
  *
- *		o	WRITEUP THREAD SAFETY:
- *		 THREAD SAFETY:
- *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
- *			 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
  *
 	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
