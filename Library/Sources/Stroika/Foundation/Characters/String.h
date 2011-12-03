@@ -27,6 +27,7 @@
  *		This is which NEED be used. However, Stroika provides several String SUBTYPES
  *		which act EXACTLY like a String, but offer different performance behaviors.
  *
+ *				o	String_BufferedArray
  *				o	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly		(aka String_Constant)
  *				o	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
  *				o	String_ExternalMemoryOwnership_StackLifetime_ReadOnly

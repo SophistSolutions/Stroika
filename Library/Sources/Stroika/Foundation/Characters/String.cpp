@@ -24,7 +24,8 @@
  *
  *		BIGGEST SHORTERM SPEEDUP - MUST FIX:
  *			String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
- *		to be faster
+ *		to be faster.
+ *			<>PARTLY - this will be done by using InsertAt () with RNAGE in public enveolope API, and then use thati noperaotr+
  *
  */
 
@@ -73,7 +74,6 @@ namespace	{
 						_fStart = start;
 						_fEnd = end;
 					}
-				virtual	String::_Rep*	Clone () const override;
 				virtual		size_t	GetLength () const override
 					{
 						Assert (_fStart <= _fEnd);
@@ -214,32 +214,27 @@ namespace	{
 					{
 						return const_cast<wchar_t*>	(_fStart);
 					}
-
 		};
-
-
 
 		struct	BufferedStringRep_ : HELPER_::_ReadWriteRep {
 			private:
 				typedef	HELPER_::_ReadWriteRep	inherited;
 			public:
-				BufferedStringRep_ (const Character* arrayOfCharacters, size_t nCharacters)
+				BufferedStringRep_ (const wchar_t* start, const wchar_t* end)
 					: inherited (nullptr, nullptr)
-					, fStorage_ (nullptr)
-					, fLength_ (0)
+					, fCapacity_ (0)
 					{
-						SetStorage (::new Character [CalcAllocChars_ (nCharacters)], nCharacters);
-						if (arrayOfCharacters != nullptr) {
-							memcpy (fStorage_, arrayOfCharacters, fLength_*sizeof (Character));
+						size_t	len		=	end - start;
+						ReserveAtLeast_ (len);
+						if (len != 0) {
+							AssertNotNull (PeekStart ());
+							memcpy (PeekStart (), start, len*sizeof (wchar_t));
+							_fEnd = _fStart + len;
 						}
 					}
 				~BufferedStringRep_ ()
 					{
-						delete fStorage_;
-					}
-				virtual		_Rep*	Clone () const override
-					{
-						return (new BufferedStringRep_ ((const Character*)fStorage_, fLength_));
+						delete[] PeekStart ();
 					}
 				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override
 					{
@@ -268,55 +263,66 @@ namespace	{
 					}
 				virtual		void		SetLength (size_t newLength) override
 					{
-						size_t	oldAllocChars	=	CalcAllocChars_ (fLength_);
-						size_t	newAllocChars	=	CalcAllocChars_ (newLength);
-
-						if (oldAllocChars != newAllocChars) {
-							Assert (newAllocChars >= newLength);
-
-							size_t amountToAlloc = newAllocChars*sizeof (Character);
-//TODO:		VERY UNSAFE TO MIX realloc() with new/delete!			-- MUST FIX
-							fStorage_ = (wchar_t*)realloc (fStorage_, amountToAlloc);
+						if (newLength < capacity ()) {
+							// We COULD shrink the capacity at this point, but not critical right now...
 						}
-						fLength_ = newLength;
-						_SetData (fStorage_, fStorage_ + fLength_);
-						Ensure (fStorage_ != nullptr or GetLength () == 0);
-						Ensure (fLength_ == newLength);
+						else {
+							ReserveAtLeast_ (newLength);
+						}
+						_fEnd = _fStart + newLength;	// we don't bother doing anything to added/removed characters
+						Ensure (GetLength () == newLength);
 					}
-				virtual		const wchar_t*		c_str_peek () const override
+				virtual		const wchar_t*	c_str_peek () const override
 					{
-						//tmphack impl...
+						size_t	len	=	GetLength ();
+						if (len < fCapacity_) {
+							const_cast<wchar_t*> (_fStart)[len] = '\0';		// Cheaper to always set than to check, and maybe set
+							return _fStart;
+						}
 						return nullptr;
 					}
 				virtual		const wchar_t*		c_str_change () override
 					{
-						// a quick hack (POOR) implemnation.
-						// REALLY must totally redo much of this storage code.
-						size_t	len	=	GetLength ();
-						SetLength (len + 1);
-						fStorage_[len] = '\0';
-						fLength_ = len;
-						_SetData (fStorage_, fStorage_ + fLength_);
-						return fStorage_;
+						ReserveAtLeast_ (GetLength () + 1);
+						return c_str_peek ();
 					}
-				/* Deliberately does not try to free up old fStorage_, as this could be other than heap memory */
-				nonvirtual	void	SetStorage (Character* storage, size_t length)
+				// size() function defined only so we can use Containers::ReserveSpeedTweekAddN() template
+				nonvirtual	size_t	size () const
 					{
-						Require (sizeof (Character) == sizeof (wchar_t))
-						fStorage_ = (wchar_t*)storage;
-						fLength_ = length;
+						return GetLength ();
+					}
+				nonvirtual	size_t	capacity () const
+					{
+						return fCapacity_;
+					}
+				nonvirtual	void	reserve (size_t newCapacity)
+					{
+						Require (GetLength () <= newCapacity);
 
-						_SetData (fStorage_, fStorage_ + fLength_);
+						// Force capacity to match request... even if 'unwise'
+						if (fCapacity_ != newCapacity) {
+							size_t		len		=	GetLength ();
+							wchar_t*	newBuf	=	nullptr;
+							if (newCapacity != 0) {
+								newBuf = new wchar_t [newCapacity];
+								if (len != 0) {
+									memcpy (newBuf, _fStart, len*sizeof (wchar_t));
+								}
+							}
+							delete[] PeekStart ();
+							_SetData (newBuf, newBuf + len);
+							fCapacity_ = newCapacity;
+						}
 					}
-				virtual	size_t	CalcAllocChars_ (size_t requested)
+				nonvirtual	void	ReserveAtLeast_ (size_t newCapacity)
 					{
-						// round up to buffer block size
-						return (Stroika::Foundation::Math::RoundUpTo (requested, static_cast<size_t> (32)));
+						const	size_t	kChunkSize	=	32;
+						Require (GetLength () <= newCapacity);
+						Containers::ReserveSpeedTweekAddN (*this, newCapacity - GetLength (), kChunkSize);
 					}
 
 			private:
-				wchar_t*	fStorage_;
-				size_t	    fLength_;
+				size_t	    fCapacity_;
 		};
 	};
 }
@@ -339,9 +345,13 @@ class	String_BufferedArray::MyRep_ : public HELPER_::BufferedStringRep_ {
 	private:
 		typedef	BufferedStringRep_	inherited;
 	public:
-		MyRep_ (const Character* arrayOfCharacters, size_t nBytes)
-			: BufferedStringRep_ (arrayOfCharacters, nBytes)
+		MyRep_ (const wchar_t* start, const wchar_t* end)
+			: BufferedStringRep_ (start, end)
 			{
+			}
+		virtual	_Rep*	Clone () const override
+			{
+				return (new MyRep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -363,6 +373,14 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 			: _ReadOnlyRep (start, end)
 			{
 			}
+		virtual	_Rep*	Clone () const override
+			{
+				/*
+				 * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
+				 * make a rep that is modifyable
+				 */
+				return (new String_BufferedArray::MyRep_ (_fStart, _fEnd));
+			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
 };
@@ -378,6 +396,14 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : pub
         MyRep_ (wchar_t* start, wchar_t* end)
 			: _ReadWriteRep (start, end)
 			{
+			}
+		virtual	_Rep*	Clone () const override
+			{
+				/*
+				 * Subtle point - but since this code involves SHARING buffer space, we cannot have two DIFFERNT string reps both sharing the same pointer. Only
+				 * one can use it, and the other must make a copy.
+				 */
+				return (new String_BufferedArray::MyRep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -438,16 +464,6 @@ namespace	{
 
 
 
-namespace	{
-	String::_Rep*	HELPER_::_ReadOnlyRep::Clone () const override
-		{
-			return (new String_BufferedArray::MyRep_ ((const Character*)_fStart, _fEnd - _fStart));
-		}
-}
-
-
-
-
 
 
 
@@ -493,14 +509,14 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-	: fRep_ (new String_BufferedArray::MyRep_ ((const Character*)cString, wcslen (cString)), _Rep_Cloner ())
+	: fRep_ (new String_BufferedArray::MyRep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-	: fRep_ (new String_BufferedArray::MyRep_ ((const Character*)from, to-from), _Rep_Cloner ())
+	: fRep_ (new String_BufferedArray::MyRep_ (from, to), _Rep_Cloner ())
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
@@ -508,14 +524,15 @@ String::String (const wchar_t* from, const wchar_t* to)
 }
 
 String::String (const Character* from, const Character* to)
-	: fRep_ (new String_BufferedArray::MyRep_ (from, to-from), _Rep_Cloner ())
+	: fRep_ (new String_BufferedArray::MyRep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
 {
+    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	Require (from <= to);
 	Require (from != nullptr or from == to);
 }
 
 String::String (const std::wstring& r)
-    : fRep_ (new String_BufferedArray::MyRep_ ((const Character*)r.c_str (), r.length ()), _Rep_Cloner ())
+    : fRep_ (new String_BufferedArray::MyRep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
 {
 }
 
@@ -963,19 +980,17 @@ String_BufferedArray::String_BufferedArray ()
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-	: String (new MyRep_ ((const Character*)cString, wcslen (cString)), false)
+	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
-	: String (new MyRep_ ((const Character*) str.c_str (), str.length ()), false)
+	: String (new MyRep_ (str.data (), str.data () + str.length ()), false)
 {
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String_BufferedArray::String_BufferedArray (const String& from)
-	: String (new MyRep_ ((const Character*)from.As<const wchar_t*> (), from.GetLength ()), false)
+	: String (new MyRep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), false)
 {
 }
 
