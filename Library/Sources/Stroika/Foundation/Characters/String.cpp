@@ -62,19 +62,9 @@ namespace	{
 	struct	HELPER_ : String {
 		struct	_ReadOnlyRep : public String::_Rep {
 			public:
-				_ReadOnlyRep ()
-					: _fStart (nullptr)
-					, _fEnd (nullptr)
-					{
-					}
 				_ReadOnlyRep (const wchar_t* start, const wchar_t* end)
 					: _fStart (start)
 					, _fEnd (end)
-					{
-					}
-				_ReadOnlyRep (const Character* start, const Character* end)
-					: _fStart (reinterpret_cast<const wchar_t*> (start))
-					, _fEnd (reinterpret_cast<const wchar_t*> (end))
 					{
 					}
 				nonvirtual	void	_SetData (const wchar_t* start, const wchar_t* end)
@@ -191,10 +181,6 @@ namespace	{
 		// since we don't know in general we can (thats left to subtypes)
 		struct	_ReadWriteRep : public _ReadOnlyRep {
 			public:
-				_ReadWriteRep ()
-					: _ReadOnlyRep ()
-					{
-					}
 				_ReadWriteRep (wchar_t* start, wchar_t* end)
 					: _ReadOnlyRep (start, end)
 					{
@@ -233,12 +219,12 @@ namespace	{
 
 
 
-		struct	XXXSHAREDBUFFERINGMyRep_ : HELPER_::_ReadWriteRep {
+		struct	BufferedStringRep_ : HELPER_::_ReadWriteRep {
 			private:
 				typedef	HELPER_::_ReadWriteRep	inherited;
 			public:
-				XXXSHAREDBUFFERINGMyRep_ (const Character* arrayOfCharacters, size_t nCharacters)
-					: inherited ()
+				BufferedStringRep_ (const Character* arrayOfCharacters, size_t nCharacters)
+					: inherited (nullptr, nullptr)
 					, fStorage_ (nullptr)
 					, fLength_ (0)
 					{
@@ -247,13 +233,13 @@ namespace	{
 							memcpy (fStorage_, arrayOfCharacters, fLength_*sizeof (Character));
 						}
 					}
-				~XXXSHAREDBUFFERINGMyRep_ ()
+				~BufferedStringRep_ ()
 					{
 						delete fStorage_;
 					}
 				virtual		_Rep*	Clone () const override
 					{
-						return (new XXXSHAREDBUFFERINGMyRep_ ((const Character*)fStorage_, fLength_));
+						return (new BufferedStringRep_ ((const Character*)fStorage_, fLength_));
 					}
 				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override
 					{
@@ -349,12 +335,12 @@ namespace	{
 
 
 
-class	String_BufferedArray::MyRep_ : public HELPER_::XXXSHAREDBUFFERINGMyRep_ {
+class	String_BufferedArray::MyRep_ : public HELPER_::BufferedStringRep_ {
 	private:
-		typedef	XXXSHAREDBUFFERINGMyRep_	inherited;
+		typedef	BufferedStringRep_	inherited;
 	public:
 		MyRep_ (const Character* arrayOfCharacters, size_t nBytes)
-			: XXXSHAREDBUFFERINGMyRep_ (arrayOfCharacters, nBytes)
+			: BufferedStringRep_ (arrayOfCharacters, nBytes)
 			{
 			}
 	public:
