@@ -956,7 +956,6 @@ String_BufferedCharArray::String_BufferedCharArray (const String& from)
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
 	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
-    Assert (sizeof (Character) == sizeof (wchar_t))
 }
 
 
@@ -974,7 +973,6 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemo
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
 	: String (new MyRep_ (cString, cString + wcslen (cString)), false)
 {
-    Assert (sizeof (Character) == sizeof (wchar_t))
 }
 
 

@@ -440,7 +440,11 @@ namespace	Stroika {
 
 
 
-            class	String::_Rep {
+
+			/*
+			 * Protected helper Rep class.
+			 */
+			class	String::_Rep {
                 protected:
                     _Rep ();
 
