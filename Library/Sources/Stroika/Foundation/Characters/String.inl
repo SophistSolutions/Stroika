@@ -218,6 +218,7 @@ namespace	Stroika {
 				}
 
 
+#if 0
 			//	class	String_CharArray
 			inline	String_CharArray::String_CharArray (const String_CharArray& s)
 				: String (s)
@@ -228,18 +229,22 @@ namespace	Stroika {
 					String::operator= (s);
 					return (*this);
 				}
+#endif
 
 
-			//	class	String_BufferedCharArray
-			inline	String_BufferedCharArray::String_BufferedCharArray (const String_BufferedCharArray& s)
+
+
+			//	class	String_BufferedArray
+			inline	String_BufferedArray::String_BufferedArray (const String_BufferedArray& s)
 				: String (s)
 				{
 				}
-            inline	String_BufferedCharArray& String_BufferedCharArray::operator= (const String_BufferedCharArray& s)
+            inline	String_BufferedArray& String_BufferedArray::operator= (const String_BufferedArray& s)
 				{	
 					String::operator= (s);	
 					return (*this);
 				}
+
 
 
 			//	class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly

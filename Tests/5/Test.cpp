@@ -127,7 +127,7 @@ namespace	{
 		#endif
 
 			{
-				String_BufferedCharArray s (L"");
+				String_BufferedArray s (L"");
 				StressTest1_ (s);
 			}
 
@@ -138,7 +138,7 @@ namespace	{
 		#endif
 
 			{
-				String_BufferedCharArray s (L"");
+				String_BufferedArray s (L"");
 				StressTest2_ (s);
 			}
 
@@ -190,14 +190,14 @@ namespace	{
 
 				VerifyTestResult (String (L"fred") + String (L"joe") == String (L"fredjoe"));
 				{
-					String	s1	=	String_CharArray (L"test strings");
-					String	s2	=	String_CharArray (L"test strings");
+					String	s1	=	String_BufferedArray (L"test strings");
+					String	s2	=	String_BufferedArray (L"test strings");
 					Test2_Helper_ (s1, s2);
 				}
 
 				{
-					String_BufferedCharArray s1 (L"test strings");
-					String_BufferedCharArray s2 (L"test strings");
+					String_BufferedArray s1 (L"test strings");
+					String_BufferedArray s2 (L"test strings");
 
 					VerifyTestResult (Character ('a') == 'a');
 

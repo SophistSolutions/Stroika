@@ -508,58 +508,31 @@ namespace	Stroika {
 
 
 
-			/*
-             * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
- *<<<NOT SURE THE BELOW IS RIGHT>>>
- *
- *		StringRep_CharArray uses buffering to make dynamically sizing String
- *		operations faster, at some cost in memory. It keeps a buffer that is at
- *		least as long as the String, but is often somewhat longer.
-			 *
-			 *
-			 * TODO:
-			 *		Consider possibly adding a const wchar_t* Peek () const method to this type. We don't want that for String in general,
-			 *		but its probably OK here (if we carefully document the thread / lifetime issues)
-             */
-            class	String_CharArray : public String {
-                public:
-                    String_CharArray ();
-                    explicit String_CharArray (const wchar_t* str);
-                    explicit String_CharArray (const Character* arrayOfCharacters, size_t nCharacters);
-                    explicit String_CharArray (const wstring& str);
-                    explicit String_CharArray (const String& from);
-                    String_CharArray (const String_CharArray& s);
 
-                   String_CharArray& operator= (const String_CharArray& s);
+			/*
+			 *	String_BufferedArray is a kind of string which maintains extra buffer space, and
+			 *	is more efficient if you are going to resize your string.
+			 */
+            class	String_BufferedArray  : public String {
+                public:
+                    String_BufferedArray ();
+                    explicit String_BufferedArray (const wchar_t* cString);
+                    explicit String_BufferedArray (const wstring& str);
+                    explicit String_BufferedArray (const String& from);
+                    String_BufferedArray (const String_BufferedArray& s);
+
+                    String_BufferedArray& operator= (const String_BufferedArray& s);
 
 				public:
-					//THIS SB PROTECTED - I THINK? - LGP 2011-12-01
-					class	MyRep_;
-            };
+					// This returns the number of characters of space available in the buffer (without doing memory allocations)
+					nonvirtual	size_t	capacity () const;
 
-
-
-			/*
-             * EXPLAIN WHAT THIS MEANS - DEFINE EXEACT SEMANTICS CAREFULLY
- *<<<NOT SURE THE BELOW IS RIGHT>>>
- *		StringRep_BufferedCharArray is a subclass of StringRep designed to minimized
- *		memory usage. It uses Realloc () to keep resizing the buffer it has allocated,
- *		and whatever argument you give IT in construction, is copied into memory it
- *		allocates, and frees. The buffer is always exactly the length of the string,
- *		which minimized memory usage, but may slow down doing many operations that
- *		change the length of the String.
-             */
-            class	String_BufferedCharArray  : public String {
-                public:
-                    String_BufferedCharArray ();
-                    explicit String_BufferedCharArray (const wchar_t* cString);
-                    explicit String_BufferedCharArray (const wstring& str);
-                    explicit String_BufferedCharArray (const String& from);
-                    String_BufferedCharArray (const String_BufferedCharArray& s);
-
-                    String_BufferedCharArray& operator= (const String_BufferedCharArray& s);
+				public:
+					// Reserve the given number of characters of space. N must be >= to the length of the string.
+					nonvirtual	void	reserve (size_t n);
 
 				private:
+public:
 					class	MyRep_;
             };
 
@@ -604,6 +577,7 @@ namespace	Stroika {
 				private:
 					class	MyRep_;
             };
+
 
 			/*
 			 *		String_Constant can safely be used to initilaize constant C-strings as Stroika strings, with a minimum of cost.
