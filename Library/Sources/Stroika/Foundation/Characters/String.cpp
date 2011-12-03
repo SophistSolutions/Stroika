@@ -17,10 +17,14 @@
 #include	"String.h"
 
 
-
-
-//////GET RID OF     Assert (sizeof (Character) == sizeof (wchar_t))
-/// and use static_assert() - already DONE in many places
+/*
+ * TODO:
+ *
+ *		BIGGEST SHORTERM SPEEDUP - MUST FIX:
+ *			String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
+ *		to be faster
+ *
+ */
 
 
 
@@ -30,6 +34,8 @@ using	namespace	Stroika::Foundation::Characters;
 
 using	Memory::SharedPtr;
 using	Memory::SharedByValue;
+
+
 
 namespace	{
 	/*
@@ -241,7 +247,8 @@ class	String_CharArray::MyRep_ : public HELPER_::_ReadWriteRep {
 
 		virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
 
-		virtual		void	SetLength (size_t newLength) override;
+		virtual		void		SetLength (size_t newLength) override;
+
 		virtual		const wchar_t*		c_str_peek () const override;
 		virtual		const wchar_t*		c_str_change () override;
 
@@ -250,6 +257,9 @@ class	String_CharArray::MyRep_ : public HELPER_::_ReadWriteRep {
 		nonvirtual	void	SetStorage (Character* storage, size_t length);
 
 		virtual	size_t	CalcAllocChars_ (size_t requested);
+
+	public:
+		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
 
 	private:
 		wchar_t*	fStorage_;
@@ -277,6 +287,9 @@ class	String_BufferedCharArray::MyRep_ : public String_CharArray::MyRep_ {
 
         virtual		_Rep*	Clone () const override;
 
+	public:
+		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
+
     protected:
         virtual		size_t	CalcAllocChars_ (size_t requested) override;
 };
@@ -293,6 +306,9 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 			: _ReadOnlyRep (start, end)
 			{
 			}
+	public:
+		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
+
 };
 
 
@@ -305,6 +321,9 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : pub
 			: _ReadWriteRep (start, end)
 			{
 			}
+	public:
+		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
+
 };
 
 
