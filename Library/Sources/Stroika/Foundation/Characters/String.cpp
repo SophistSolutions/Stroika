@@ -41,6 +41,11 @@
  */
 
 
+/*
+ * TODO:
+ *		o	EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer. Good reasons for both ways. Not sure whats best.
+ */
+
 
 
 using	namespace	Stroika::Foundation;
@@ -401,7 +406,16 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 
 
 
-// COULD do better - saving ORIGNIAL BUFFER SIZE - in addition to memory range
+/*
+ * TODO:
+ *		o	COULD do better - saving ORIGNIAL BUFFER SIZE - in addition to memory range.
+ *			Right now - this class takes a big buffer (possibly) and lets you modify it, and possibly shrunk the string, but if you ever try to insert,
+ *			its forgotten its original size (bufsize), and so it mallocs a new buffer (by thorwing unsupported).
+ *			
+ *			Not a biggie issue for now since this class really isn't used (much).
+ *				-- LGP 2011-12-03
+ *
+ */
 class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : public HELPER_::_ReadWriteRep {
     public:
         MyRep_ (wchar_t* start, wchar_t* end)
@@ -418,7 +432,6 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : pub
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-
 };
 
 
@@ -520,14 +533,14 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-	: fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
+	: fRep_ (cString[0] == '\0'? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-	: fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (from, to), _Rep_Cloner ())
+	: fRep_ ((from == to)? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (from, to), _Rep_Cloner ())
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
@@ -535,7 +548,7 @@ String::String (const wchar_t* from, const wchar_t* to)
 }
 
 String::String (const Character* from, const Character* to)
-	: fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
+	: fRep_ ((from == to)? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	Require (from <= to);
@@ -543,7 +556,7 @@ String::String (const Character* from, const Character* to)
 }
 
 String::String (const std::wstring& r)
-    : fRep_ (DEBUG_NEW String_BufferedArray::MyRep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
+    : fRep_ (r.empty ()? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
 {
 }
 
