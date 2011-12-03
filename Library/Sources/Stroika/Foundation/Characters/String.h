@@ -51,11 +51,6 @@
  */
 
 
-/*
- * TODO:
- *		o	String::CTOR protected with REP should take funky ENUM - protected - not BOOL. That reads confusingly.
- */
-
 
 /*
  * TODO:
@@ -109,16 +104,11 @@ MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
 	(o)		Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
 
 
-	(o)		Optimize bool	Stroika::Foundation::Characters::operator== (const String& lhs, const wchar_t* rhs)
-			by adding virtual ‘compare()’ method on rep – taking const wchar_t* arg. Current code 
-			quite slow (but only conclude this/do this AFTER we have a regression test to PROVE my theories!)
 	(o)		Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally. 
 			Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
 			(what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT – 
 			but pretty sure we want some sort of String_stdwstring(). 
 
-	(o)		Consider optimizing Sting::operator== () to check if reps ptrs are equal. Reason maybe opt is cuz of String::Common
-			stuff and special case of emptyu string. If it hits seldom enuf, just a wasted effort.
 */
 
 
@@ -321,9 +311,9 @@ namespace	Stroika {
 
 				public:
 					/*
-					 * Convert String losslessly into a standard C++ type (right now just <wstring>,<const wchar_t*> supported)
+					 * Convert String losslessly into a standard C++ type (right now just <wstring>,<const wchar_t*>,<const Character*> supported)
 					 *
-					 * For the special case of <T=const wchar_t*>, the returned result is NOT NUL-terminated.
+					 * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned result is NOT NUL-terminated.
 					 */
 					template	<typename	T>
 						nonvirtual	T	As () const;
@@ -367,6 +357,8 @@ namespace	Stroika {
 					};
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
 					nonvirtual	int	Compare (const String& rhs, CompareOptions co) const;
+					nonvirtual	int	Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const;
+					nonvirtual	int	Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const;
 
 
 				// StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
@@ -434,6 +426,8 @@ namespace	Stroika {
 				wstring	String::As () const;
 			template	<>
 				const wchar_t*	String::As () const;
+			template	<>
+				const Character*	String::As () const;
 
 			template	<>
 				void	String::AsUTF8 (string* into) const;
@@ -480,7 +474,9 @@ namespace	Stroika {
 
                     virtual	const Character*	Peek () const 					= 0;
 
-					virtual	int		Compare (const _Rep& rhs, String::CompareOptions co) const	=	0;
+                    virtual	pair<const Character*,const Character*>	GetData () const 	= 0;
+
+					virtual	int	Compare (const Character* rhsStart, const Character* rhsEnd, String::CompareOptions co) const	=	0;
 
 				public:
 					/*

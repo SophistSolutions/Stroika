@@ -103,8 +103,8 @@ namespace	Stroika {
 					// NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
 					// And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
 					// another thread could only change that other envelopes copy
-					const wchar_t*	p	=	s.As<const wchar_t*> ();
-					InsertAt (p, p + s.length (), at);
+					pair<const Character*,const Character*>	d	=	s._fRep->GetData ();
+					InsertAt (d.first, d.second, at);
 				}
 			inline	void	String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
 				{
@@ -148,6 +148,12 @@ namespace	Stroika {
 					{
 // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!	-- LGP 2011-09-01
 						return (const wchar_t*)_fRep->Peek ();
+					}
+			template	<>
+				inline	const Character*	String::As () const
+					{
+// I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!	-- LGP 2011-09-01
+						return (const Character*)_fRep->Peek ();
 					}
 			template	<>
 				inline	string	String::AsUTF8 () const
@@ -201,11 +207,75 @@ namespace	Stroika {
 				}
 			inline	int	String::Compare (const String& rhs, CompareOptions co) const
 				{
-					return _fRep->Compare (*rhs._fRep.GetPointer (), co);
+					pair<const Character*,const Character*>	d	=	rhs._fRep->GetData ();
+					return _fRep->Compare (d.first, d.second, co);
+				}
+			inline	int	String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
+				{
+					return _fRep->Compare (rhsStart, rhsEnd, co);
+				}
+			inline	int	String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
+				{
+					static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+					return _fRep->Compare (reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
 				}
 
 
 
+			inline	bool	operator== (const String& lhs, const String& rhs)
+				{
+					if (lhs._fRep == rhs._fRep) {
+						return (true);
+					}
+					pair<const Character*,const Character*>	d	=	rhs._fRep->GetData ();
+					return lhs.Compare (d.first, d.second, String::eWithCase_CO) == 0;
+				}
+			inline	bool	operator== (const wchar_t* lhs, const String& rhs)
+				{
+					RequireNotNull (lhs);
+					return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::eWithCase_CO) == 0;
+				}
+			inline	bool	operator== (const String& lhs, const wchar_t* rhs)
+				{
+					RequireNotNull (rhs);
+					return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::eWithCase_CO) == 0;
+				}
+			inline	bool	operator< (const String& lhs, const String& rhs)
+				{
+					if (lhs._fRep == rhs._fRep) {
+						return (false);
+					}
+					pair<const Character*,const Character*>	d	=	rhs._fRep->GetData ();
+					return lhs.Compare (d.first, d.second, String::eWithCase_CO) < 0;
+				}
+			inline	bool	operator< (const wchar_t* lhs, const String& rhs)
+				{
+					RequireNotNull (lhs);
+					return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::eWithCase_CO) >= 0;
+				}
+			inline	bool	operator< (const String& lhs, const wchar_t* rhs)
+				{
+					RequireNotNull (rhs);
+					return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::eWithCase_CO) < 0;
+				}
+			inline	bool	operator<= (const String& lhs, const String& rhs)
+				{
+					if (lhs._fRep == rhs._fRep) {
+						return (false);
+					}
+					pair<const Character*,const Character*>	d	=	rhs._fRep->GetData ();
+					return lhs.Compare (d.first, d.second, String::eWithCase_CO) <= 0;
+				}
+			inline	bool	operator<= (const wchar_t* lhs, const String& rhs)
+				{
+					RequireNotNull (lhs);
+					return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::eWithCase_CO) > 0;
+				}
+			inline	bool	operator<= (const String& lhs, const wchar_t* rhs)
+				{
+					RequireNotNull (rhs);
+					return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::eWithCase_CO) <= 0;
+				}
 			inline	bool	operator!= (const String& lhs, const String& rhs)
 				{
 					return (bool (not (lhs == rhs)));
