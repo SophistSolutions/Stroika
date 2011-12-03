@@ -30,6 +30,17 @@
 
 
 
+
+
+/*
+ * TODO:
+ *
+ *		STRING::RANGED INSERTAT AND USE TO SPEEDUP OPERATOR+ for strings (then re-run regtest speedtest compare) 
+ *
+ */
+
+
+
 /*
  * TODO:
  *
@@ -43,7 +54,8 @@
 
 /*
  * TODO:
- *		o	EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer. Good reasons for both ways. Not sure whats best.
+ *		o	EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer.
+ *			Good reasons for both ways. Not sure whats best.
  */
 
 
@@ -53,6 +65,7 @@ using	namespace	Stroika::Foundation::Characters;
 
 using	Memory::SharedPtr;
 using	Memory::SharedByValue;
+
 
 
 
@@ -354,24 +367,24 @@ namespace	{
 
 
 
+namespace	{
+	class	String_BufferedArray_Rep_ : public HELPER_::BufferedStringRep_ {
+		private:
+			typedef	BufferedStringRep_	inherited;
+		public:
+			String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
+				: BufferedStringRep_ (start, end)
+				{
+				}
+			virtual	_Rep*	Clone () const override
+				{
+					return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+				}
+		public:
+			DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
+	};
+}
 
-
-
-class	String_BufferedArray::MyRep_ : public HELPER_::BufferedStringRep_ {
-	private:
-		typedef	BufferedStringRep_	inherited;
-	public:
-		MyRep_ (const wchar_t* start, const wchar_t* end)
-			: BufferedStringRep_ (start, end)
-			{
-			}
-		virtual	_Rep*	Clone () const override
-			{
-				return (DEBUG_NEW MyRep_ (_fStart, _fEnd));
-			}
-	public:
-		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-};
 
 
 
@@ -395,7 +408,7 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 				 * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
 				 * make a rep that is modifyable
 				 */
-				return (DEBUG_NEW String_BufferedArray::MyRep_ (_fStart, _fEnd));
+				return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -428,7 +441,7 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : pub
 				 * Subtle point - but since this code involves SHARING buffer space, we cannot have two DIFFERNT string reps both sharing the same pointer. Only
 				 * one can use it, and the other must make a copy.
 				 */
-				return (DEBUG_NEW String_BufferedArray::MyRep_ (_fStart, _fEnd));
+				return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -510,7 +523,7 @@ namespace	{
 				static	SharedByValue<_Rep,_Rep_Cloner>	s_;
 				if (not sInited_) {
 					sInited_ = true;
-					s_ = SharedByValue<_Rep,_Rep_Cloner> (DEBUG_NEW String_BufferedArray::MyRep_ (nullptr, 0), _Rep_Cloner ());
+					s_ = SharedByValue<_Rep,_Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0), _Rep_Cloner ());
 				}
 				return s_;
 			}
@@ -518,12 +531,12 @@ namespace	{
 }
 
 String::String ()
-	: fRep_ (MyEmptyString_::mkEmptyStrRep_ ())
+	: _fRep (MyEmptyString_::mkEmptyStrRep_ ())
 {
 }
 
 String::String (const char16_t* cString)
-	: fRep_ (MyEmptyString_::mkEmptyStrRep_ ())
+	: _fRep (MyEmptyString_::mkEmptyStrRep_ ())
 {
 	RequireNotNull (cString);
 	// Horrible, but temporarily OK impl
@@ -533,14 +546,14 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-	: fRep_ (cString[0] == '\0'? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
+	: _fRep (cString[0] == '\0'? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
 {
 	RequireNotNull (cString);
 	static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-	: fRep_ ((from == to)? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (from, to), _Rep_Cloner ())
+	: _fRep ((from == to)? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray_Rep_ (from, to), _Rep_Cloner ())
 {
 	Require (from <= to);
 	Require (from != nullptr or from == to);
@@ -548,7 +561,7 @@ String::String (const wchar_t* from, const wchar_t* to)
 }
 
 String::String (const Character* from, const Character* to)
-	: fRep_ ((from == to)? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
+	: _fRep ((from == to)? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 	Require (from <= to);
@@ -556,15 +569,15 @@ String::String (const Character* from, const Character* to)
 }
 
 String::String (const std::wstring& r)
-    : fRep_ (r.empty ()? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray::MyRep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
+    : _fRep (r.empty ()? MyEmptyString_::mkEmptyStrRep_ (): DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
 {
 }
 
 String::String (_Rep* sharedPart, _REPCTOR)
-	: fRep_ (sharedPart, _Rep_Cloner ())
+	: _fRep (sharedPart, _Rep_Cloner ())
 {
 	RequireNotNull (sharedPart);
-	Require (fRep_.unique ());
+	Require (_fRep.unique ());
 }
 
 String	String::FromUTF8 (const char* from)
@@ -589,13 +602,13 @@ String	String::FromTString (const basic_string<TChar>& from)
 
 String&	String::operator+= (Character appendage)
 {
-	fRep_->InsertAt (&appendage, &appendage + 1, GetLength ());
+	_fRep->InsertAt (&appendage, &appendage + 1, GetLength ());
 	return (*this);
 }
 
 String&	String::operator+= (const String& appendage)
 {
-	if ((fRep_ == appendage.fRep_) and fRep_.unique ()) {
+	if ((_fRep == appendage._fRep) and _fRep.unique ()) {
 		/*
 		 * We must be careful about this case since blowing aways "this"s memory, and then
 		 * trying to copy from "appendage"s would be bad.
@@ -608,8 +621,8 @@ String&	String::operator+= (const String& appendage)
 		size_t	appendLength = appendage.GetLength ();
 		SetLength (oldLength + appendLength);
 		Assert (appendage.GetLength () == appendLength);
-		Assert (fRep_.unique ());
-		Character*	dstBuf	=	const_cast<Character*>(&(fRep_->Peek ())[oldLength]);
+		Assert (_fRep.unique ());
+		Character*	dstBuf	=	const_cast<Character*>(&(_fRep->Peek ())[oldLength]);
 		appendage.CopyTo (dstBuf, dstBuf + appendLength);
 	}
 	return (*this);
@@ -619,20 +632,20 @@ void	String::SetLength (size_t newLength)
 {
 	try {
 		if (newLength == 0) {
-			fRep_->RemoveAll ();
+			_fRep->RemoveAll ();
 		}
 		else {
-			fRep_->SetLength (newLength);
+			_fRep->SetLength (newLength);
 		}
 	}
 	catch (const UnsupportedFeatureException_&) {
 		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
-		fRep_ = tmp.fRep_;
+		_fRep = tmp._fRep;
 		if (newLength == 0) {
-			fRep_->RemoveAll ();
+			_fRep->RemoveAll ();
 		}
 		else {
-			fRep_->SetLength (newLength);
+			_fRep->SetLength (newLength);
 		}
 	}
 }
@@ -642,12 +655,12 @@ void	String::SetCharAt (Character c, size_t i)
 	Require (i >= 0);
 	Require (i < GetLength ());
 	try {
-		fRep_->SetAt (c, i);
+		_fRep->SetAt (c, i);
 	}
 	catch (const UnsupportedFeatureException_&) {
 		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
-		fRep_ = tmp.fRep_;
-		fRep_->SetAt (c, i);
+		_fRep = tmp._fRep;
+		_fRep->SetAt (c, i);
 	}
 }
 
@@ -656,12 +669,12 @@ void	String::InsertAt (Character c, size_t i)
 	Require (i >= 0);
 	Require (i <= (GetLength ()));
 	try {
-		fRep_->InsertAt (&c, &c + 1, i);
+		_fRep->InsertAt (&c, &c + 1, i);
 	}
 	catch (const UnsupportedFeatureException_&) {
 		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
-		fRep_ = tmp.fRep_;
-		fRep_->InsertAt (&c, &c + 1, i);
+		_fRep = tmp._fRep;
+		_fRep->InsertAt (&c, &c + 1, i);
 	}
 }
 
@@ -669,12 +682,12 @@ void	String::RemoveAt (size_t index, size_t nCharsToRemove)
 {
 	Require (index + nCharsToRemove < GetLength ());
 	try {
-		fRep_->RemoveAt (index, nCharsToRemove);
+		_fRep->RemoveAt (index, nCharsToRemove);
 	}
 	catch (const UnsupportedFeatureException_&) {
 		String_BufferedArray	tmp	=	String_BufferedArray (*this);	// SHOULD DO CALL TO RESERVE EXTRA SPACE
-		fRep_ = tmp.fRep_;
-		fRep_->RemoveAt (index, nCharsToRemove);
+		_fRep = tmp._fRep;
+		_fRep->RemoveAt (index, nCharsToRemove);
 	}
 }
 
@@ -690,7 +703,7 @@ size_t	String::IndexOf (Character c) const
 {
 	size_t length = GetLength ();
 	for (size_t i = 0; i < length; i++) {
-		if (fRep_->GetAt (i) == c) {
+		if (_fRep->GetAt (i) == c) {
 			return (i);
 		}
 	}
@@ -710,7 +723,7 @@ size_t	String::IndexOf (const String& subString) const
 	size_t	limit		=	GetLength () - subStrLen;
 	for (size_t i = 0; i <= limit; i++) {
 		for (size_t j = 0; j < subStrLen; j++) {
-			if (fRep_->GetAt (i+j) != subString.fRep_->GetAt (j)) {
+			if (_fRep->GetAt (i+j) != subString._fRep->GetAt (j)) {
 				goto nogood;
 			}
 		}
@@ -725,7 +738,7 @@ size_t	String::RIndexOf (Character c) const
 {
 	size_t length = GetLength ();
 	for (size_t i = length; i > 0; --i) {
-		if (fRep_->GetAt (i-1) == c) {
+		if (_fRep->GetAt (i-1) == c) {
 			return (i-1);
 		}
 	}
@@ -753,7 +766,7 @@ size_t	String::RIndexOf (const String& subString) const
 
 bool	String::Contains (Character c) const
 {
-	return (fRep_->Contains (c));
+	return (_fRep->Contains (c));
 }
 
 bool	String::Contains (const String& subString) const
@@ -813,9 +826,9 @@ String	String::SubString (size_t from, size_t to) const
 		return *this;		// just bump reference count
 	}
 	#if		qString_SubStringClassWorks
-		return (String (DEBUG_NEW String_Substring_::MyRep_ (fRep_, from, length), false));
+		return (String (DEBUG_NEW String_Substring_::MyRep_ (_fRep, from, length), false));
 	#else
-		return (String (fRep_->Peek () + from, fRep_->Peek () + from + length));
+		return (String (_fRep->Peek () + from, _fRep->Peek () + from + length));
 	#endif
 }
 
@@ -825,7 +838,7 @@ String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 	// Could be much more efficient if pushed into REP - so we avoid each character virtual call...
 	size_t length = GetLength ();
 	for (size_t i = 0; i < length; ++i) {
-		if (not (*shouldBeTrimmmed) (fRep_->GetAt (i))) {
+		if (not (*shouldBeTrimmmed) (_fRep->GetAt (i))) {
 			if (i == 0) {
 				// no change in string
 				return *this;
@@ -846,7 +859,7 @@ String	String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 	size_t length = GetLength ();
 	if (length != 0) {
 		for (ptrdiff_t i = length - 1; i != 0; --i) {
-			if (not (*shouldBeTrimmmed) (fRep_->GetAt (i))) {
+			if (not (*shouldBeTrimmmed) (_fRep->GetAt (i))) {
 				size_t	nCharsRemoved	=	(length - 1) - i;
 				if (nCharsRemoved == 0) {
 					// no change in string
@@ -973,14 +986,14 @@ template	<>
 
 const wchar_t*	String::c_str () const
 {
-	const	wchar_t*	result	=	fRep_->c_str_peek ();
+	const	wchar_t*	result	=	_fRep->c_str_peek ();
 	if (result == nullptr) {
 		// Then we must force it to be NUL-terminated
 		//
 		// We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
 		// fRep cloning stuff to work right, we must access it through a 
 		String*	REALTHIS	=	const_cast<String*> (this);
-		return REALTHIS->fRep_->c_str_change ();
+		return REALTHIS->_fRep->c_str_change ();
 	}
 	else {
 		return result;
@@ -999,24 +1012,35 @@ const wchar_t*	String::c_str () const
  ********************************************************************************
  */
 String_BufferedArray::String_BufferedArray ()
-	: String (DEBUG_NEW MyRep_ (nullptr, 0), _eRepCTOR)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0), _eRepCTOR)
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-	: String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _eRepCTOR)
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
-	: String (DEBUG_NEW MyRep_ (str.data (), str.data () + str.length ()), _eRepCTOR)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ()), _eRepCTOR)
 {
 }
 
 String_BufferedArray::String_BufferedArray (const String& from)
-	: String (DEBUG_NEW MyRep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR)
 {
 }
+
+size_t	String_BufferedArray::capacity () const
+{
+	return const_cast<String_BufferedArray*> (this)->_fRep.Dynamic_Cast<String_BufferedArray_Rep_> ()->capacity ();
+}
+
+void	String_BufferedArray::reserve (size_t n)
+{
+	_fRep.Dynamic_Cast<String_BufferedArray_Rep_> ()->reserve (n);
+}
+
 
 
 
@@ -1249,7 +1273,7 @@ String	Stroika::Foundation::Characters::operator+ (const String& lhs, const Stri
  */
 bool	Stroika::Foundation::Characters::operator== (const String& lhs, const String& rhs)
 {
-    if (lhs.fRep_ == rhs.fRep_) {
+    if (lhs._fRep == rhs._fRep) {
         return (true);
     }
     size_t length = lhs.GetLength ();
@@ -1312,7 +1336,7 @@ bool	Stroika::Foundation::Characters::operator== (const String& lhs, const wchar
  */
 bool	Stroika::Foundation::Characters::operator< (const String& lhs, const String& rhs)
 {
-    if (lhs.fRep_ == rhs.fRep_) {
+    if (lhs._fRep == rhs._fRep) {
         return (false);
     }
     size_t length = min (lhs.GetLength (), rhs.GetLength ());
@@ -1348,7 +1372,7 @@ bool	Stroika::Foundation::Characters::operator< (const String& lhs, const wchar_
  */
 bool	Stroika::Foundation::Characters::operator<= (const String& lhs, const String& rhs)
 {
-    if (lhs.fRep_ == rhs.fRep_) {
+    if (lhs._fRep == rhs._fRep) {
         return (true);
     }
     size_t length = min (lhs.GetLength (), rhs.GetLength ());

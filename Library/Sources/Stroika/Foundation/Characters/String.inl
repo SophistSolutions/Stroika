@@ -55,12 +55,12 @@ namespace	Stroika {
 
 			//	class	String
 			inline	String::String (const String& from)
-				: fRep_ (from.fRep_)
+				: _fRep (from._fRep)
 				{
 				}
             inline	String&	String::operator= (const String& newString)
 				{
-					fRep_ = newString.fRep_;
+					_fRep = newString._fRep;
 					return (*this);
 				}
             inline	String::~String ()
@@ -74,21 +74,21 @@ namespace	Stroika {
 				{
 					RequireNotNull (bufFrom);
 					Require (bufFrom + GetLength () >= bufTo);
-					fRep_->CopyTo (bufFrom, bufTo);
+					_fRep->CopyTo (bufFrom, bufTo);
 				}
 			inline	void	String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
 				{
 					RequireNotNull (bufFrom);
 					Require (bufFrom + GetLength () >= bufTo);
-					fRep_->CopyTo (bufFrom, bufTo);
+					_fRep->CopyTo (bufFrom, bufTo);
 				}
             inline	size_t	String::GetLength () const
 				{
-					return (fRep_->GetLength ());
+					return (_fRep->GetLength ());
 				}
 			inline	bool	String::empty () const
 				{
-					return fRep_->GetLength () == 0;
+					return _fRep->GetLength () == 0;
 				}
 			inline	void	String::clear ()
 				{
@@ -98,14 +98,14 @@ namespace	Stroika {
 				{
 					Require (i >= 0);
 					Require (i < GetLength ());
-					return (fRep_->GetAt (i));
+					return (_fRep->GetAt (i));
 				}
 			template	<>
 				inline	void	String::As (wstring* into) const
 					{
 						RequireNotNull (into);
 						size_t	n	=	GetLength ();
-						const Character* cp	=	fRep_->Peek ();
+						const Character* cp	=	_fRep->Peek ();
 						Assert (sizeof (Character) == sizeof (wchar_t));		// going to want to clean this up!!!	--LGP 2011-09-01
 						const wchar_t* wcp	=	(const wchar_t*)cp;
 						into->assign (wcp, wcp + n);
@@ -121,7 +121,7 @@ namespace	Stroika {
 				inline	const wchar_t*	String::As () const
 					{
 // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!	-- LGP 2011-09-01
-						return (const wchar_t*)fRep_->Peek ();
+						return (const wchar_t*)_fRep->Peek ();
 					}
 			template	<>
 				inline	string	String::AsUTF8 () const
@@ -175,7 +175,7 @@ namespace	Stroika {
 				}
 			inline	int	String::Compare (const String& rhs, CompareOptions co) const
 				{
-					return fRep_->Compare (*rhs.fRep_.GetPointer (), co);
+					return _fRep->Compare (*rhs._fRep.GetPointer (), co);
 				}
 
 

@@ -403,9 +403,10 @@ namespace	Stroika {
 					// _Rep MUST be not-null
                     String (_Rep* sharedPart, _REPCTOR);
 
-                private:
-                    Memory::SharedByValue<_Rep,_Rep_Cloner>	fRep_;
+                protected:
+                    Memory::SharedByValue<_Rep,_Rep_Cloner>	_fRep;
 
+                protected:
                     static	_Rep*	Clone_ (const _Rep& rep);
 
 				private:
@@ -532,10 +533,6 @@ namespace	Stroika {
 				public:
 					// Reserve the given number of characters of space. N must be >= to the length of the string.
 					nonvirtual	void	reserve (size_t n);
-
-				private:
-public:
-					class	MyRep_;
             };
 
 
