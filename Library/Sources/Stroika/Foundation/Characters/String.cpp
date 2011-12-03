@@ -261,11 +261,23 @@ namespace	{
 							_fEnd = _fStart + len;
 						}
 					}
+				BufferedStringRep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
+					: inherited (nullptr, nullptr)
+					, fCapacity_ (0)
+					{
+						size_t	len		=	end - start;
+						ReserveAtLeast_ (max (len, reserve));
+						if (len != 0) {
+							AssertNotNull (PeekStart ());
+							memcpy (PeekStart (), start, len*sizeof (wchar_t));
+							_fEnd = _fStart + len;
+						}
+					}
 				~BufferedStringRep_ ()
 					{
 						delete[] PeekStart ();
 					}
-				virtual		void		InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override
+				virtual		void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override
 					{
 						Require (index >= 0);
 						Require (index <= GetLength ());
@@ -374,6 +386,10 @@ namespace	{
 		public:
 			String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
 				: BufferedStringRep_ (start, end)
+				{
+				}
+			String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
+				: BufferedStringRep_ (start, end, reserve)
 				{
 				}
 			virtual	_Rep*	Clone () const override
@@ -1016,9 +1032,20 @@ String_BufferedArray::String_BufferedArray ()
 {
 }
 
+String_BufferedArray::String_BufferedArray (size_t reserve)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve), _eRepCTOR)
+{
+}
+
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
 	: String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _eRepCTOR)
 {
+}
+
+String_BufferedArray::String_BufferedArray (const wchar_t* cString, size_t reserve)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve), _eRepCTOR)
+{
+	Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
@@ -1026,9 +1053,21 @@ String_BufferedArray::String_BufferedArray (const wstring& str)
 {
 }
 
+String_BufferedArray::String_BufferedArray (const wstring& str, size_t reserve)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve), _eRepCTOR)
+{
+	Require (GetLength () <= reserve);
+}
+
 String_BufferedArray::String_BufferedArray (const String& from)
 	: String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR)
 {
+}
+
+String_BufferedArray::String_BufferedArray (const String& from, size_t reserve)
+	: String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve), _eRepCTOR)
+{
+	Require (GetLength () <= reserve);
 }
 
 size_t	String_BufferedArray::capacity () const
@@ -1251,9 +1290,9 @@ const Character*	String_Substring_::MyRep_::Peek () const
  */
 String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
 {
-	String_BufferedArray	tmp	=	String_BufferedArray (lhs);
+	String_BufferedArray	tmp	=	String_BufferedArray (lhs, lhs.size () + rhs.size ());
 
-	// Very cruddy implementation - but should be functional -- LGP 2011-09-08
+// Very cruddy implementation - but should be functional -- LGP 2011-09-08
 	for (size_t i = 0; i < rhs.GetLength (); ++i) {
 		tmp.InsertAt (rhs[i], tmp.GetLength ());
 	}
@@ -1323,6 +1362,8 @@ bool	Stroika::Foundation::Characters::operator== (const String& lhs, const wchar
     }
     return (true);
 }
+
+
 
 
 

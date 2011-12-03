@@ -519,9 +519,13 @@ namespace	Stroika {
             class	String_BufferedArray  : public String {
                 public:
                     String_BufferedArray ();
+                    String_BufferedArray (size_t reserve);
                     explicit String_BufferedArray (const wchar_t* cString);
+                    explicit String_BufferedArray (const wchar_t* cString, size_t reserve);
                     explicit String_BufferedArray (const wstring& str);
+                    explicit String_BufferedArray (const wstring& str, size_t reserve);
                     explicit String_BufferedArray (const String& from);
+                    explicit String_BufferedArray (const String& from, size_t reserve);
                     String_BufferedArray (const String_BufferedArray& s);
 
                     String_BufferedArray& operator= (const String_BufferedArray& s);
