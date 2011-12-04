@@ -77,6 +77,17 @@
  */
 
 
+/*
+ * TODO/Notes:
+ *
+ *		o	Windows thread interuption.
+ *			Currently we use EnterCriticalSeciton alot, But thats not 'alertable' - which potentially causes problems
+ *			with thread interuption.
+ *
+ *			Perhaps should use something like TryEnterCriticalSection, and loop, with SleepEx(0) or equiv, sprinkled.
+ *
+ */
+
 
 namespace	Stroika {	
 	namespace	Foundation {
