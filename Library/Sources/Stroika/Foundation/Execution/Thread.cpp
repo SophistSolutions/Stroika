@@ -338,6 +338,7 @@ unsigned int	__stdcall	Thread::Rep_::ThreadProc_ (void* lpParameter)
 void	Thread::Rep_::NotifyOfAbort ()
 {
 	Require (fStatus == eAborting or fStatus == eCompleted);
+	//TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbort"));
 	// CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
 	AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
 	if (GetCurrentThreadID () == GetID ()) {
@@ -513,6 +514,9 @@ void	Thread::Start ()
 
 void	Thread::Abort ()
 {
+	Debug::TraceContextBumper ctx (TSTR ("Thread::Abort"));
+	DbgTrace (L"(thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
+
 	if (fRep_.IsNull ()) {
 		// then its effectively already stopped.
 		return;
