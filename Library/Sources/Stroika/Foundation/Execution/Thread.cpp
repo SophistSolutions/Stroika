@@ -515,12 +515,12 @@ void	Thread::Start ()
 void	Thread::Abort ()
 {
 	Debug::TraceContextBumper ctx (TSTR ("Thread::Abort"));
-	DbgTrace (L"(thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
-
 	if (fRep_.IsNull ()) {
 		// then its effectively already stopped.
 		return;
 	}
+	DbgTrace (L"(thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
+
 
 #if			qUseThreads_WindowsNative
 	// I'm not sure this is 100% thread-friendly, in case two people from two differnt threads tried
