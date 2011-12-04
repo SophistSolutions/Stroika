@@ -294,8 +294,12 @@ void	ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
 	Require (fAborted_);
 	{
 		Time::DurationSecondsType	endAt	=	timeout + Time::GetTickCount ();
-		AutoCriticalSection	critSection (fCriticalSection_);
-		for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+		vector<Thread>	threadsToShutdown;	// cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
+		{
+			AutoCriticalSection	critSection (fCriticalSection_);
+			threadsToShutdown = fThreads_;
+		}
+		for (vector<Thread>::const_iterator i = threadsToShutdown.begin (); i != threadsToShutdown.end (); ++i) {
 			i->WaitForDone (endAt - Time::GetTickCount ());
 		}
 	}
@@ -350,7 +354,7 @@ void	ThreadPool::WaitForNextTask_ (TaskType* result)
 Thread		ThreadPool::mkThread_ ()
 {
 	Thread	t	=	Thread (SharedPtr<IRunnable> (DEBUG_NEW ThreadPool::MyRunnable_ (*this)));		// ADD MY THREADOBJ
-	t.SetThreadName (L"Thread Pool");
+	t.SetThreadName (L"Thread Pool Entry");
 	t.Start ();
 	return t;
 }
