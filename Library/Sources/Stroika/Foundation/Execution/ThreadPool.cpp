@@ -3,6 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
+#include	"../Characters/Format.h"
 #include	"Sleep.h"
 
 #include	"ThreadPool.h"
@@ -354,7 +355,8 @@ void	ThreadPool::WaitForNextTask_ (TaskType* result)
 Thread		ThreadPool::mkThread_ ()
 {
 	Thread	t	=	Thread (SharedPtr<IRunnable> (DEBUG_NEW ThreadPool::MyRunnable_ (*this)));		// ADD MY THREADOBJ
-	t.SetThreadName (L"Thread Pool Entry");
+	static	int	sThreadNum_	=	1;	// race condition for updating this number, but who cares - its purely cosmetic...
+	t.SetThreadName (Characters::Format (L"Thread Pool Entry %d", sThreadNum_++));
 	t.Start ();
 	return t;
 }
