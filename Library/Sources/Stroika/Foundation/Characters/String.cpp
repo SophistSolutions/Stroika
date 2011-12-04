@@ -21,16 +21,6 @@
 
 
 
-
-
-/*
- * TODO:
- *		o	EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer.
- *			Good reasons for both ways. Not sure whats best.
- */
-
-
-
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 

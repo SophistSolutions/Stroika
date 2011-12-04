@@ -46,74 +46,81 @@
 
 /*
  * TODO:
- *		o	At least one StringRep variant (maybe the stanrdard/common string-buffer rep
- *			which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
- */
-
-
-/*
- * TODO:
+ *
+ *
+ *		o	EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer.
+ *			Good reasons for both ways. Not sure whats best.
+ *
+ *			o	At least one StringRep variant (maybe the stanrdard/common string-buffer rep
+ *				which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
+ *
+ *			o	PROBABLY best to just DO direct blockallocated() calls for data < fixed size
+ *
+ *
+ *		o	Fix const	Memory::SharedByValue<String::String::Rep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+ *			to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
+ *			just in CPP file
+ *
+ *
+ *		o	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
+ *			it is all correct for each (especially SetStorage () sutff looks quesitonable)
+ *
+ *
+ *		o	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
+ *
+ *
+ *		o	Try and get rid of the Peek () API
+ *
+ *
  *		o	WRITEUP THREAD SAFETY:
  *			 Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
  *			 but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+ *
+ *		o	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
+ *
+ *
+ *		o	Migrate most of the StringUtils stuff here like:
+ *			> Contains- with CI optin
+ *overload so can be string arg OR lambda!
+ *			> StartsWtih- with CI optin
+ *			> EndsWith- with CI optin
+ *			> Compare () - returns < less > more =0 for equal- with CI optin
+ *			> Equals() - with CI optin
+ *
+ *
+ *		o	Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
+ *
+ *
+ *		o	Compare
+ *			template	<typename TCHAR>
+ *				basic_string<TCHAR>	RTrim (const basic_string<TCHAR>& text)
+ *					{
+ *						std::locale loc1;	// default locale
+ *						const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
+ *						typename basic_string<TCHAR>::const_iterator i = text.end ();
+ *						for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
+ *							;
+ *						return basic_string<TCHAR> (text.begin (), i);
+ *					}
+ *			with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
+ *
+ *
+ *		o	when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class
+ *			(will work beatifulyl with new stdc++ foreach() stuff).
+ *
+ *			(OR PERHAPS create new class Iterable<T> and make String subclass from that instead of Sequence?)?
+ *
+ *
+ *		o	Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
+ *
+ *
+ *		o	Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally. 
+ *			Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
+ *			(what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT – 
+ *			but pretty sure we want some sort of String_stdwstring(). 
+ *
+ *
  */
-
-
-
-/*
- * TODO:
- *
- *
- *
-	(0)	Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
-
-	(0)	Try and get rid of the Peek () API
-	(0)	Fix const	Memory::SharedByValue<String::String::Rep>	String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
-		to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
-			just in CPP file
-	(0)	Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
-		it is all correct for each (especially SetStorage () sutff looks quesitonable)
-	(1)	Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
-
-
-	(4)	Migrate most of the StringUtils stuff here like:
-			> Contains- with CI optin
-// overload so can be string arg OR lambda!
-			> StartsWtih- with CI optin
-			> EndsWith- with CI optin
-			> Compare () - returns < less > more =0 for equal- with CI optin
-			> Equals() - with CI optin
-	(5)	Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
-
-
-
-	(6)	Compare
-			template	<typename TCHAR>
-				basic_string<TCHAR>	RTrim (const basic_string<TCHAR>& text)
-					{
-						std::locale loc1;	// default locale
-						const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
-						typename basic_string<TCHAR>::const_iterator i = text.end ();
-						for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
-							;
-						return basic_string<TCHAR> (text.begin (), i);
-					}
-			with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
-
-
-MEDIUM TERM TODO (AFTER WE PORT MORE CONTAINER CLASSES):
-	(o)		when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class (will work beatifulyl with new stdc++ foreach() stuff).
-
-
-	(o)		Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
-
-
-	(o)		Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally. 
-			Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
-			(what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT – 
-			but pretty sure we want some sort of String_stdwstring(). 
-
-*/
 
 
 
