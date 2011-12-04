@@ -478,7 +478,7 @@ namespace	Stroika {
                     virtual	void	SetLength (size_t newLength) 				= 0;
 
 					// return nullptr if its not already NUL-terminated
-                    virtual	const wchar_t*		c_str_peek () const				= 0;
+                    virtual	const wchar_t*		c_str_peek () const noexcept 	= 0;
 					
 					// change rep so its NUL-termainted
                     virtual	const wchar_t*		c_str_change ()					= 0;

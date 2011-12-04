@@ -161,9 +161,9 @@ namespace	{
 					{
 						Execution::DoThrow (UnsupportedFeatureException_ ());
 					}
-                virtual	const wchar_t*		c_str_peek () const  override
+                virtual	const wchar_t*	c_str_peek () const  override noexcept
 					{
-						Execution::DoThrow (UnsupportedFeatureException_ ());
+						return nullptr;
 					}
                 virtual	const wchar_t*		c_str_change () override
 					{
@@ -282,7 +282,7 @@ namespace	{
 						_fEnd = _fStart + newLength;	// we don't bother doing anything to added/removed characters
 						Ensure (GetLength () == newLength);
 					}
-				virtual		const wchar_t*	c_str_peek () const override
+				virtual		const wchar_t*	c_str_peek () const override noexcept
 					{
 						size_t	len	=	GetLength ();
 						if (len < fCapacity_) {
@@ -386,6 +386,7 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
         MyRep_ (const wchar_t* start, const wchar_t* end)
 			: _ReadOnlyRep (start, end)
 			{
+				Require (start + ::wcslen (start) == end);
 			}
 		virtual	_Rep*	Clone () const override
 			{
@@ -394,6 +395,12 @@ class	String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : publ
 				 * make a rep that is modifyable
 				 */
 				return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+			}
+        virtual	const wchar_t*	c_str_peek () const  override noexcept
+			{
+				// This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
+				Assert (_fStart + ::wcslen (_fStart) == _fEnd);
+				return _fStart;
 			}
 	public:
 		DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -584,39 +591,6 @@ String	String::FromTString (const basic_string<TChar>& from)
 {
 	return TString2Wide (from);
 }
-
-#if 0
-
-String&	String::operator+= (Character appendage)
-{
-//TODO:		MUST OPTIMZIE (at least reserve? if possible?) - or make INLINE INTENRAL WRAPPER ON ONSERTAT()
-	_fRep->InsertAt (&appendage, &appendage + 1, GetLength ());
-	return (*this);
-}
-
-String&	String::operator+= (const String& appendage)
-{
-//TODO:		MUST OPTIMZIE (at least reserve? if possible?) - or make INLINE INTENRAL WRAPPER ON ONSERTAT()
-	if ((_fRep == appendage._fRep) and _fRep.unique ()) {
-		/*
-		 * We must be careful about this case since blowing aways "this"s memory, and then
-		 * trying to copy from "appendage"s would be bad.
-		 */
-		String tmp = appendage;
-		return (operator+= (tmp));
-	}
-	else {
-		size_t	oldLength	=	GetLength ();
-		size_t	appendLength = appendage.GetLength ();
-		SetLength (oldLength + appendLength);
-		Assert (appendage.GetLength () == appendLength);
-		Assert (_fRep.unique ());
-		Character*	dstBuf	=	const_cast<Character*>(&(_fRep->Peek ())[oldLength]);
-		appendage.CopyTo (dstBuf, dstBuf + appendLength);
-	}
-	return (*this);
-}
-#endif
 
 void	String::SetLength (size_t newLength)
 {
@@ -986,12 +960,18 @@ const wchar_t*	String::c_str () const
 		// We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
 		// fRep cloning stuff to work right, we must access it through a 
 		String*	REALTHIS	=	const_cast<String*> (this);
-		return REALTHIS->_fRep->c_str_change ();
+		try {
+			return REALTHIS->_fRep->c_str_change ();
+		}
+		catch (const UnsupportedFeatureException_&) {
+			String_BufferedArray	tmp	=	String_BufferedArray (*this, GetLength () + 1);
+			REALTHIS->_fRep = tmp._fRep;
+			return REALTHIS->_fRep->c_str_change ();
+		}
 	}
 	else {
 		return result;
 	}
-
 }
 
 
