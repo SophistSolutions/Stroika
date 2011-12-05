@@ -48,6 +48,11 @@
  * TODO:
  *
  *
+ *		o	At this stage - for our one trivial test - performance is now about 5% faster than visual studio.net 2010, but
+ *			about a factor of 2 SLOWER than GCC (as of 2011-12-04).
+ *
+ *			I SUSPECT the next big change to address this will be && MOVE OPERATOR support.
+ *
  *		o	EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer.
  *			Good reasons for both ways. Not sure whats best.
  *
