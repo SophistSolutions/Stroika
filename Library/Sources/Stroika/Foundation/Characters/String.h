@@ -530,6 +530,9 @@ namespace	Stroika {
 			 */
             class	String_BufferedArray  : public String {
                 public:
+					/*
+					 * Note for the meaning of the reserve parameter, see String_BufferedArray::reserve()
+					 */
                     String_BufferedArray ();
                     String_BufferedArray (size_t reserve);
                     explicit String_BufferedArray (const wchar_t* cString);
@@ -547,7 +550,7 @@ namespace	Stroika {
 					nonvirtual	size_t	capacity () const;
 
 				public:
-					// Reserve the given number of characters of space. N must be >= to the length of the string.
+					// Reserve the given number of characters of space. N can be any size, and is only a hint. A value of n < GetLength () will be ignored.
 					nonvirtual	void	reserve (size_t n);
             };
 

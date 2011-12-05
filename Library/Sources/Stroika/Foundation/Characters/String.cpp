@@ -304,8 +304,9 @@ namespace	{
 					}
 				nonvirtual	void	reserve (size_t newCapacity)
 					{
-						Require (GetLength () <= newCapacity);
-
+						if (GetLength () > newCapacity) {
+							// ignore and return
+						}
 						// Force capacity to match request... even if 'unwise'
 						if (fCapacity_ != newCapacity) {
 							size_t		len		=	GetLength ();
@@ -324,8 +325,17 @@ namespace	{
 				nonvirtual	void	ReserveAtLeast_ (size_t newCapacity)
 					{
 						const	size_t	kChunkSize	=	32;
-						Require (GetLength () <= newCapacity);
-						Containers::ReserveSpeedTweekAddN (*this, newCapacity - GetLength (), kChunkSize);
+						size_t			len			=	GetLength ();
+						if (newCapacity == 0 and len == 0) {
+							reserve (0);
+						}
+						else {
+							ptrdiff_t	n2Add	=	static_cast<ptrdiff_t> (newCapacity) - static_cast<ptrdiff_t> (len);
+							if (n2Add > 0) {
+								// Could be more efficent inlining the reserve code here - cuz we can avoid the call to length()
+								Containers::ReserveSpeedTweekAddN (*this, static_cast<size_t> (n2Add), kChunkSize);
+							}
+						}
 					}
 
 			private:
