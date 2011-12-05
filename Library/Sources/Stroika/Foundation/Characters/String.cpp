@@ -226,7 +226,7 @@ namespace	{
 						ReserveAtLeast_ (len);
 						if (len != 0) {
 							AssertNotNull (PeekStart ());
-							memcpy (PeekStart (), start, len*sizeof (wchar_t));
+							(void)::memcpy (PeekStart (), start, len*sizeof (wchar_t));
 							_fEnd = _fStart + len;
 						}
 					}
@@ -238,7 +238,7 @@ namespace	{
 						ReserveAtLeast_ (max (len, reserve));
 						if (len != 0) {
 							AssertNotNull (PeekStart ());
-							memcpy (PeekStart (), start, len*sizeof (wchar_t));
+							(void)::memcpy (PeekStart (), start, len*sizeof (wchar_t));
 							_fEnd = _fStart + len;
 						}
 					}
@@ -251,24 +251,21 @@ namespace	{
 						Require (index >= 0);
 						Require (index <= GetLength ());
 						Require (srcStart < srcEnd);
+						
+						// cannot insert pointer FROM THIS REP! Doing so would be buggy! MAYBE I need to handle this with special case logic - before I do the resize?
+						//		-- LGP 2011-12-04
+						Assert (not (_fStart <= reinterpret_cast<const wchar_t*> (srcStart) && reinterpret_cast<const wchar_t*> (srcStart) <= _fEnd));
 
 						size_t		origLen		=	GetLength ();
 						size_t		amountToAdd	=	(srcEnd - srcStart);
 						SetLength (origLen + amountToAdd);
 						size_t		newLen		=	origLen + amountToAdd;
 						Assert (newLen == GetLength ());
-						Character*	lhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd) - amountToAdd);
-						Character*	rhs	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fEnd));
+						wchar_t*	gapStart	=	PeekStart () + index;
 						// make space for insertion
-						size_t nSpacesToMove	=	origLen - index;
-						for (size_t i = nSpacesToMove; i > 0; i--) {
-							*--rhs = *--lhs;
-						}
+						(void)::memmove (gapStart + amountToAdd, gapStart, (origLen - index) * sizeof (wchar_t));
 						// now copy in new characters
-						Character*	outI	=	reinterpret_cast<Character*> (const_cast<wchar_t*> (_fStart) + index);
-						for (const Character* srcI = srcStart; srcI < srcEnd; ++srcI, ++outI) {
-							*outI = *srcI;
-						}
+						(void)::memcpy (gapStart, srcStart, amountToAdd * sizeof (wchar_t));
 						Ensure (_fStart <= _fEnd);
 					}
 				virtual		void		SetLength (size_t newLength) override
@@ -316,7 +313,7 @@ namespace	{
 							if (newCapacity != 0) {
 								newBuf = DEBUG_NEW wchar_t [newCapacity];
 								if (len != 0) {
-									memcpy (newBuf, _fStart, len*sizeof (wchar_t));
+									(void)::memcpy (newBuf, _fStart, len*sizeof (wchar_t));
 								}
 							}
 							delete[] PeekStart ();
@@ -668,6 +665,7 @@ void	String::Remove (Character c)
 
 size_t	String::IndexOf (Character c) const
 {
+	//TODO: HORRIBLE PERFORMANCE!!!
 	size_t length = GetLength ();
 	for (size_t i = 0; i < length; i++) {
 		if (_fRep->GetAt (i) == c) {
@@ -686,6 +684,7 @@ size_t	String::IndexOf (const String& subString) const
 		return (kBadStringIndex);	// important test cuz size_t is unsigned
 	}
 
+	//TODO: FIX HORRIBLE PERFORMANCE!!!
 	size_t	subStrLen	=	subString.GetLength ();
 	size_t	limit		=	GetLength () - subStrLen;
 	for (size_t i = 0; i <= limit; i++) {
@@ -703,6 +702,7 @@ nogood:
 
 size_t	String::RIndexOf (Character c) const
 {
+	//TODO: FIX HORRIBLE PERFORMANCE!!!
 	size_t length = GetLength ();
 	for (size_t i = length; i > 0; --i) {
 		if (_fRep->GetAt (i-1) == c) {
@@ -714,6 +714,7 @@ size_t	String::RIndexOf (Character c) const
 
 size_t	String::RIndexOf (const String& subString) const
 {
+	//TODO: FIX HORRIBLE PERFORMANCE!!!
 	/*
 	 * Do quickie implementation, and dont worry about efficiency...
 	 */
@@ -802,6 +803,7 @@ String	String::SubString (size_t from, size_t to) const
 String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
 	RequireNotNull (shouldBeTrimmmed);
+	//TODO: FIX HORRIBLE PERFORMANCE!!!
 	// Could be much more efficient if pushed into REP - so we avoid each character virtual call...
 	size_t length = GetLength ();
 	for (size_t i = 0; i < length; ++i) {
@@ -822,6 +824,7 @@ String	String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 String	String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
 	RequireNotNull (shouldBeTrimmmed);
+	//TODO: FIX HORRIBLE PERFORMANCE!!!
 	// Could be much more efficient if pushed into REP - so we avoid each character virtual call...
 	size_t length = GetLength ();
 	if (length != 0) {
@@ -855,7 +858,7 @@ String	String::StripAll (bool (*removeCharIf) (Character)) const
 {
 	RequireNotNull (removeCharIf);
 
-	// optimize special case where removeCharIf is always false
+	// TODO: optimize special case where removeCharIf is always false
 	//
 	// Walk string and find first character we need to remove
 	size_t	n	=	GetLength ();
@@ -880,6 +883,7 @@ String	String::StripAll (bool (*removeCharIf) (Character)) const
 
 String	String::ToLowerCase () const
 {
+	//TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
 	// Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
 	String	result	=	*this;
 	size_t	n	=	result.GetLength ();
@@ -894,6 +898,7 @@ String	String::ToLowerCase () const
 
 String	String::ToUpperCase () const
 {
+	//TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
 	// Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
 	String	result	=	*this;
 	size_t	n	=	result.GetLength ();
@@ -908,6 +913,7 @@ String	String::ToUpperCase () const
 
 bool String::IsWhitespace () const
 {
+	//TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
 	size_t	n	=	GetLength ();
 	for (size_t i = 0; i < n; ++i) {
 		Character	c	=	operator[] (i);
@@ -1242,7 +1248,7 @@ const Character*	String_Substring_::MyRep_::Peek () const
 
 /*
  ********************************************************************************
- ************************************* operator+ ********************************
+ ********************************** operator+ ***********************************
  ********************************************************************************
  */
 String	Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
@@ -1251,10 +1257,6 @@ String	Stroika::Foundation::Characters::operator+ (const String& lhs, const Stri
 	tmp.InsertAt (rhs, tmp.GetLength ());
 	return tmp;
 }
-
-
-
-
 
 
 
