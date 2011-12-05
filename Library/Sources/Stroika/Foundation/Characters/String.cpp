@@ -214,6 +214,18 @@ namespace	{
 					}
 		};
 
+
+		// Experimental block allocation scheme for strings. We COULD enahce this to have 2 block sizes - say 16 and 32 characters?
+		// But experiment with this a bit first, and see how it goes...
+		//		-- LGP 2011-12-04
+		#ifndef	qUseBlockAllocatedForSmallBufStrings
+		#define	qUseBlockAllocatedForSmallBufStrings		qAllowBlockAllocation
+		#endif
+		#if		qUseBlockAllocatedForSmallBufStrings
+			// #define until we have constexpr working
+			#define	kBlockAllocMinSizeInwchars	16
+		typedef	wchar_t	BufferedStringRepBlock_[kBlockAllocMinSizeInwchars];
+		#endif
 		struct	BufferedStringRep_ : HELPER_::_ReadWriteRep {
 			private:
 				typedef	HELPER_::_ReadWriteRep	inherited;
@@ -244,6 +256,12 @@ namespace	{
 					}
 				~BufferedStringRep_ ()
 					{
+						#if		qUseBlockAllocatedForSmallBufStrings
+							if (fCapacity_ == kBlockAllocMinSizeInwchars) {
+								Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (PeekStart ());
+								return;
+							}
+						#endif
 						delete[] PeekStart ();
 					}
 				virtual		void	InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override
@@ -312,12 +330,30 @@ namespace	{
 							size_t		len		=	GetLength ();
 							wchar_t*	newBuf	=	nullptr;
 							if (newCapacity != 0) {
-								newBuf = DEBUG_NEW wchar_t [newCapacity];
+								#if		qUseBlockAllocatedForSmallBufStrings
+									if (newCapacity <= kBlockAllocMinSizeInwchars) {
+										newCapacity = kBlockAllocMinSizeInwchars;
+										static_assert (sizeof (BufferedStringRepBlock_) == sizeof (wchar_t) * kBlockAllocMinSizeInwchars, "sizes should match");
+										newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocated<BufferedStringRepBlock_>::operator new (sizeof (BufferedStringRepBlock_)));
+									}
+								#endif
+								if (newBuf == nullptr) {
+									newBuf = DEBUG_NEW wchar_t [newCapacity];
+								}
 								if (len != 0) {
 									(void)::memcpy (newBuf, _fStart, len*sizeof (wchar_t));
 								}
 							}
-							delete[] PeekStart ();
+							#if		qUseBlockAllocatedForSmallBufStrings
+								if (fCapacity_ == kBlockAllocMinSizeInwchars) {
+									Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (PeekStart ());
+								}
+								else {
+									delete[] PeekStart ();
+								}
+							#else
+								delete[] PeekStart ();
+							#endif
 							_SetData (newBuf, newBuf + len);
 							fCapacity_ = newCapacity;
 						}
