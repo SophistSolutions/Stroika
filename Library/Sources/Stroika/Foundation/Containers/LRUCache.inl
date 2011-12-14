@@ -1,30 +1,50 @@
-#include "Common.h"
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ */
+#ifndef	_Stroika_Foundation_Containers_LRUCache_inl_
+#define	_Stroika_Foundation_Containers_LRUCache_inl_	1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#ifndef	_Stroika_Foundation_Containers_LRUCache_inl_
-#define	_Stroika_Foundation_Containers_LRUCache_inl_	1
-
 #include	"../Debug/Assertions.h"
+
+#include	"Common.h"
 
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Containers {
 
-			
+
+
+			//	class	LRUCache<ELEMENT,TRAITS>::CacheIterator
+			template	<typename	ELEMENT, typename TRAITS>
+				inline	typename	LRUCache<ELEMENT,TRAITS>::CacheIterator&	LRUCache<ELEMENT,TRAITS>::CacheIterator::operator++ ()
+					{
+						RequireNotNull (fCur);
+						fCur = fCur->fNext;
+						return *this;
+					}
+			template	<typename	ELEMENT, typename TRAITS>
+				inline	ELEMENT&	LRUCache<ELEMENT,TRAITS>::CacheIterator::operator* ()
+					{
+						RequireNotNull (fCur);
+						return fCur->fElement;
+					}
+
+
 			//	class	LRUCache<ELEMENT,TRAITS>
 				template	<typename	ELEMENT, typename TRAITS>
-					LRUCache<ELEMENT,TRAITS>::LRUCache (size_t maxCacheSize):
+					LRUCache<ELEMENT,TRAITS>::LRUCache (size_t maxCacheSize)
+							: fCachedElts_BUF ()
+							, fCachedElts_First (nullptr)
+							, fCachedElts_fLast (nullptr)
 							#if		qKeepLRUCacheStats
-							fCachedCollected_Hits (0),
-							fCachedCollected_Misses (0),
+							, fCachedCollected_Hits (0)
+							, fCachedCollected_Misses (0)
 							#endif
-							fCachedElts_BUF (),
-							fCachedElts_First (nullptr),
-							fCachedElts_fLast (nullptr)
 						{
 							SetMaxCacheSize (maxCacheSize);
 						}

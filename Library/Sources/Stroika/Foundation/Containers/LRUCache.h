@@ -10,26 +10,25 @@
 
 #include	"../Configuration/Common.h"
 
-// This is temporarily needed in .h file because we do Require() stuff in .h - but move to .inl before long....
-#include	"../Debug/Assertions.h"
+
+/*
+ * TODO:
+ *
+ *			o		In middle of converting to using LRUCacheDefaultTraits<>
+ *
+ *			o	ALSO - KDJ - suggestion/hint - provide MAYBE OPTIONAL HASH function (through traits). THEN - the LRUCache mechanism can 
+ *				store more elements efficeintly. Right now - LRU cache really just works for small numbers of items
+ *				NOTE - if user uses HASHING - then its not stricly LRU - just LRU per-hash element/value
+ *				Discuss with KDJ since it was his idea (indirectly) Maybe have HashedLRUCache as a separate impl? Maybe generically
+ *				do LRUCache (liek stroika style containers) and have differnt impls)
+ *					<<<CURRNET WORK IN PROGRESS - ADDING HASH MECHAMISN INTO THIS TEMPLATE, THROUGH TRAITS, and this class is same-old hashless impl
+ *						if used with HASHTABLESIZE (in traits) if 1>>>
+ */
 
 
 
-/// TODO: In middle of converting to using LRUCacheDefaultTraits<>
 
 
-
-/// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
-
-
-
-// THIS CODE NEEDS BIG CLEANUP. USE 'TRAITS' style stuff 
-
-// ALSO - KDJ - suggestion/hint - provide MAYBE OPTIONAL HASH function (through traits). THEN - the LRUCache mechanism can 
-// store more elements efficeintly. Right now - LRU cache really just works for small numbers of items
-// NOTE - if user uses HASHING - then its not stricly LRU - just LRU per-hash element/value
-// Discuss with KDJ since it was his idea (indirectly) Maybe have HashedLRUCache as a separate impl? Maybe generically
-// do LRUCache (liek stroika style containers) and have differnt impls)
 
 
 namespace	Stroika {	
@@ -49,7 +48,9 @@ namespace	Stroika {
 
 
 			/*
-			 * The LRUCacheDefaultTraits<> is a simple default traits implementation for building an LRUCache<>
+			 * The LRUCacheDefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
+			 *
+			 * Right now this is defined to facilitate backwards compatabilit with old LRUCache<> usage, but will soon be updated to have more reasonable, more usable defaults.
 			 */
 			template	<typename	ELEMENT>
 				struct	LRUCacheDefaultTraits {
@@ -80,9 +81,9 @@ namespace	Stroika {
 				};
 
 
-/*
-@CLASS:			LRUCache<ELEMENT>
-@DESCRIPTION:	<p>A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
+			/*
+				@CLASS:			LRUCache<ELEMENT>
+				@DESCRIPTION:	<p>A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
 				<br>
 				<code>
 					struct	ELEMENT {
@@ -92,17 +93,17 @@ namespace	Stroika {
 					};
 				</code>
 				</p>
-				<p>The <code>COMPARE_ITEM</code> is an object which defines the attributes which make the given item UNIQUE (for Lookup purposes).
-			Think of it as the KEY. The <code>Clear ()</code> method must be provided to invaliate the given item (usually by setting part of the COMPARE_ITEM
-			to an invalid value) so it won't get found by a Lookup. The 'Equal' method compares an element and a COMPARE_ITEM in the Lookup method.
+					<p>The <code>COMPARE_ITEM</code> is an object which defines the attributes which make the given item UNIQUE (for Lookup purposes).
+				Think of it as the KEY. The <code>Clear ()</code> method must be provided to invaliate the given item (usually by setting part of the COMPARE_ITEM
+				to an invalid value) so it won't get found by a Lookup. The 'Equal' method compares an element and a COMPARE_ITEM in the Lookup method.
+					</p>
+					<p>Note that the type 'ELEMENT' must be copyable (though its rarely copied - just in response
+				to a @'LRUCache<ELEMENT>::SetMaxCacheSize' call.</p>
+					<p>To iterate over the elements of the cache - use an @'LRUCache<ELEMENT>::CacheIterator'.
+					<p>Note this class is NOT THREADSAFE, and must be externally locked. This is because it returns pointers
+				to internal data structures (the cached elements).
 				</p>
-				<p>Note that the type 'ELEMENT' must be copyable (though its rarely copied - just in response
-			to a @'LRUCache<ELEMENT>::SetMaxCacheSize' call.</p>
-				<p>To iterate over the elements of the cache - use an @'LRUCache<ELEMENT>::CacheIterator'.
-				<p>Note this class is NOT THREADSAFE, and must be externally locked. This is because it returns pointers
-			to internal data structures (the cached elements).
-			</p>
-*/
+			*/
 			template	<typename	ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
 				class	LRUCache {
 					public:
@@ -161,7 +162,7 @@ namespace	Stroika {
 				};
 
 
-			template	<typename	ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
+			template	<typename	ELEMENT, typename TRAITS>
 				/*
 				@CLASS:			LRUCache<ELEMENT>::CacheIterator
 				@DESCRIPTION:	<p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
@@ -170,20 +171,11 @@ namespace	Stroika {
 							</p>
 				*/
 //TODO: Must update implementation to support BUCKETS (hashtable)
-				struct	LRUCache::CacheIterator {
+				struct	LRUCache<ELEMENT,TRAITS>::CacheIterator {
 					CacheIterator (CacheElement* c): fCur (c) {}
 					CacheElement*	fCur;
-					CacheIterator& operator++ ()
-						{
-							RequireNotNull (fCur);
-							fCur = fCur->fNext;
-							return *this;
-						}
-					ELEMENT& operator* ()
-						{
-							RequireNotNull (fCur);
-							return fCur->fElement;
-						}
+					CacheIterator& operator++ ();
+					ELEMENT& operator* ();
 					bool operator== (CacheIterator rhs)
 						{
 							return fCur == rhs.fCur;
