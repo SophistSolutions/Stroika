@@ -28,6 +28,11 @@
  *			o		Cleanup docs to reflect new TRAITS style
  *
  *			o		Move more INLINES to be in the IMPL file.
+ *
+ *			o	PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods in TRAITS, and STATS subobject in traits
+ *				So no cost. Trouble with subobject approach is C++ seems to force all objects to be at least one byte, so there WOULD be cost. Could avoid
+ *				that by having the TRAITS OBJECT ITSELF be what owns the counters - basically global vars. Since just used for testing, could still be usable
+ *				that way...
  */
 
 
