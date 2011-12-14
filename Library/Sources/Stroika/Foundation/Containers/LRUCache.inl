@@ -119,7 +119,7 @@ namespace	Stroika {
 					inline	ELEMENT*	LRUCache<ELEMENT,TRAITS>::LookupElement (const COMPARE_ITEM& item)
 						{
 							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
-								if (ELEMENT::Equal (cur->fElement, item)) {
+								if (TRAITS::Equal (cur->fElement, item)) {
 									ShuffleToHead_ (cur);
 									#if		qKeepLRUCacheStats
 										fCachedCollected_Hits++;

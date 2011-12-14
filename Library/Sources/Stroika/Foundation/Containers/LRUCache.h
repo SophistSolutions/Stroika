@@ -14,7 +14,8 @@
 /*
  * TODO:
  *
- *			o		In middle of converting to using LRUCacheDefaultTraits<>
+ *			o		The type CompareItem is defined for legacy purposes, and I'm not sure it makes sense anymore. 
+ *					Probably make sure nobody is using it (always same as ElementType) and then get rid of it.
  *
  *			o	ALSO - KDJ - suggestion/hint - provide MAYBE OPTIONAL HASH function (through traits). THEN - the LRUCache mechanism can 
  *				store more elements efficeintly. Right now - LRU cache really just works for small numbers of items
@@ -23,6 +24,10 @@
  *				do LRUCache (liek stroika style containers) and have differnt impls)
  *					<<<CURRNET WORK IN PROGRESS - ADDING HASH MECHAMISN INTO THIS TEMPLATE, THROUGH TRAITS, and this class is same-old hashless impl
  *						if used with HASHTABLESIZE (in traits) if 1>>>
+ *
+ *			o		Cleanup docs to reflect new TRAITS style
+ *
+ *			o		Move more INLINES to be in the IMPL file.
  */
 
 
@@ -49,36 +54,29 @@ namespace	Stroika {
 
 			/*
 			 * The LRUCacheDefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
-			 *
-			 * Right now this is defined to facilitate backwards compatabilit with old LRUCache<> usage, but will soon be updated to have more reasonable, more usable defaults.
 			 */
 			template	<typename	ELEMENT>
 				struct	LRUCacheDefaultTraits {
 					typedef	ELEMENT	ElementType;
 					typedef	typename ELEMENT::COMPARE_ITEM	CompareItemType;
-					
 					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
 					enum	{ HASHTABLESIZE	=	1 };
-
 					// If CompareItemType differnt type than ElementType we need a hash for that too
 					static	size_t	Hash (const ElementType& e)
 						{
 							return 0;
 						}
-
 					static	void	Clear (ElementType* element)
 						{
-							// Old system depended on these methods...
-							//(*element) = ElementType ();
-							element->Clear ();
+							(*element) = ElementType ();
 						}
 					static	bool	Equal (const ElementType& lhs, const CompareItemType& rhs)
 						{
-							//return lhs == rhs;
-							// Old system depended on these methods...
-							return ELEMENT::Equal (lhs, rhs);
+							return lhs == rhs;
 						}
 				};
+
+
 
 
 			/*
@@ -93,6 +91,7 @@ namespace	Stroika {
 					};
 				</code>
 				</p>
+TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 					<p>The <code>COMPARE_ITEM</code> is an object which defines the attributes which make the given item UNIQUE (for Lookup purposes).
 				Think of it as the KEY. The <code>Clear ()</code> method must be provided to invaliate the given item (usually by setting part of the COMPARE_ITEM
 				to an invalid value) so it won't get found by a Lookup. The 'Equal' method compares an element and a COMPARE_ITEM in the Lookup method.
@@ -162,15 +161,15 @@ namespace	Stroika {
 				};
 
 
-			template	<typename	ELEMENT, typename TRAITS>
-				/*
-				@CLASS:			LRUCache<ELEMENT>::CacheIterator
-				@DESCRIPTION:	<p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
-								<p>Please note that while an CacheIterator object exists for an LRUCache - it is not
-							safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
-							</p>
-				*/
+			/*
+			@CLASS:			LRUCache<ELEMENT>::CacheIterator
+			@DESCRIPTION:	<p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
+							<p>Please note that while an CacheIterator object exists for an LRUCache - it is not
+						safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
+						</p>
+			*/
 //TODO: Must update implementation to support BUCKETS (hashtable)
+			template	<typename	ELEMENT, typename TRAITS>
 				struct	LRUCache<ELEMENT,TRAITS>::CacheIterator {
 					CacheIterator (CacheElement* c): fCur (c) {}
 					CacheElement*	fCur;
