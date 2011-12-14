@@ -105,7 +105,7 @@ namespace	Stroika {
 					inline	void	LRUCache<ELEMENT,TRAITS>::ClearCache ()
 						{
 							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
-								TRAITS::Clear (cur->fElement);
+								TRAITS::Clear (&cur->fElement);
 							}
 						}
 				template	<typename	ELEMENT, typename TRAITS>

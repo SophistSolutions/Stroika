@@ -64,7 +64,7 @@ namespace	Stroika {
 					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
 					enum	{ HASHTABLESIZE	=	1 };
 					// If KeyType differnt type than ElementType we need a hash for that too
-					static	size_t	Hash (const ElementType& e)
+					static	size_t	Hash (const KeyType& e)
 						{
 							return 0;
 						}
