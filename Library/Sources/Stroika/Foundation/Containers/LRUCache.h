@@ -15,6 +15,10 @@
 
 
 
+/// TODO: In middle of converting to using LRUCacheDefaultTraits<>
+
+
+
 /// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
 
 
@@ -43,6 +47,39 @@ namespace	Stroika {
 
 
 
+
+			/*
+			 * The LRUCacheDefaultTraits<> is a simple default traits implementation for building an LRUCache<>
+			 */
+			template	<typename	ELEMENT>
+				struct	LRUCacheDefaultTraits {
+					typedef	ELEMENT	ElementType;
+					typedef	typename ELEMENT::COMPARE_ITEM	CompareItemType;
+					
+					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
+					enum	{ HASHTABLESIZE	=	1 };
+
+					// If CompareItemType differnt type than ElementType we need a hash for that too
+					static	size_t	Hash (const ElementType& e)
+						{
+							return 0;
+						}
+
+					static	void	Clear (ElementType* element)
+						{
+							// Old system depended on these methods...
+							//(*element) = ElementType ();
+							element->Clear ();
+						}
+					static	bool	Equal (const ElementType& lhs, const CompareItemType& rhs)
+						{
+							//return lhs == rhs;
+							// Old system depended on these methods...
+							return ELEMENT::Equal (lhs, rhs);
+						}
+				};
+
+
 /*
 @CLASS:			LRUCache<ELEMENT>
 @DESCRIPTION:	<p>A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
@@ -66,10 +103,10 @@ namespace	Stroika {
 			to internal data structures (the cached elements).
 			</p>
 */
-			template	<typename	ELEMENT>
+			template	<typename	ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
 				class	LRUCache {
 					public:
-						typedef	typename ELEMENT::COMPARE_ITEM	COMPARE_ITEM;
+						typedef	typename TRAITS::CompareItemType	COMPARE_ITEM;
 
 					public:
 						LRUCache (size_t maxCacheSize);
@@ -97,36 +134,7 @@ namespace	Stroika {
 						};
 
 					public:
-						/*
-						@CLASS:			LRUCache<ELEMENT>::CacheIterator
-						@DESCRIPTION:	<p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
-										<p>Please note that while an CacheIterator object exists for an LRUCache - it is not
-									safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
-									</p>
-						*/
-						struct	CacheIterator {
-							CacheIterator (CacheElement* c): fCur (c) {}
-							CacheElement*	fCur;
-							CacheIterator& operator++ ()
-								{
-									RequireNotNull (fCur);
-									fCur = fCur->fNext;
-									return *this;
-								}
-							ELEMENT& operator* ()
-								{
-									RequireNotNull (fCur);
-									return fCur->fElement;
-								}
-							bool operator== (CacheIterator rhs)
-								{
-									return fCur == rhs.fCur;
-								}
-							bool operator!= (CacheIterator rhs)
-								{
-									return fCur != rhs.fCur;
-								}
-						};
+						struct	CacheIterator;
 						nonvirtual	CacheIterator	begin ()	{ return fCachedElts_First; }
 						nonvirtual	CacheIterator	end ()		{ return nullptr; }
 
@@ -149,9 +157,42 @@ namespace	Stroika {
 						CacheElement*			fCachedElts_fLast;
 
 					private:
-						nonvirtual	void	ShuffleToHead (CacheElement* b);
+						nonvirtual	void	ShuffleToHead_ (CacheElement* b);
 				};
 
+
+			template	<typename	ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
+				/*
+				@CLASS:			LRUCache<ELEMENT>::CacheIterator
+				@DESCRIPTION:	<p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
+								<p>Please note that while an CacheIterator object exists for an LRUCache - it is not
+							safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
+							</p>
+				*/
+//TODO: Must update implementation to support BUCKETS (hashtable)
+				struct	LRUCache::CacheIterator {
+					CacheIterator (CacheElement* c): fCur (c) {}
+					CacheElement*	fCur;
+					CacheIterator& operator++ ()
+						{
+							RequireNotNull (fCur);
+							fCur = fCur->fNext;
+							return *this;
+						}
+					ELEMENT& operator* ()
+						{
+							RequireNotNull (fCur);
+							return fCur->fElement;
+						}
+					bool operator== (CacheIterator rhs)
+						{
+							return fCur == rhs.fCur;
+						}
+					bool operator!= (CacheIterator rhs)
+						{
+							return fCur != rhs.fCur;
+						}
+				};
 
 		}
 	}

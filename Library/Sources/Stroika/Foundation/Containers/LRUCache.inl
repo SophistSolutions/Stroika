@@ -15,9 +15,9 @@ namespace	Stroika {
 		namespace	Containers {
 
 			
-			//	class	LRUCache<ELEMENT>
-				template	<typename	ELEMENT>
-					LRUCache<ELEMENT>::LRUCache (size_t maxCacheSize):
+			//	class	LRUCache<ELEMENT,TRAITS>
+				template	<typename	ELEMENT, typename TRAITS>
+					LRUCache<ELEMENT,TRAITS>::LRUCache (size_t maxCacheSize):
 							#if		qKeepLRUCacheStats
 							fCachedCollected_Hits (0),
 							fCachedCollected_Misses (0),
@@ -28,13 +28,13 @@ namespace	Stroika {
 						{
 							SetMaxCacheSize (maxCacheSize);
 						}
-				template	<typename	ELEMENT>
-					inline	size_t	LRUCache<ELEMENT>::GetMaxCacheSize () const
+				template	<typename	ELEMENT, typename TRAITS>
+					inline	size_t	LRUCache<ELEMENT,TRAITS>::GetMaxCacheSize () const
 						{
 							return fCachedElts_BUF.size ();
 						}
-				template	<typename	ELEMENT>
-					void	LRUCache<ELEMENT>::SetMaxCacheSize (size_t maxCacheSize)
+				template	<typename	ELEMENT, typename TRAITS>
+					void	LRUCache<ELEMENT,TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
 						{
 							Require (maxCacheSize >= 1);
 							if (maxCacheSize != fCachedElts_BUF.size ()) {
@@ -50,8 +50,8 @@ namespace	Stroika {
 								fCachedElts_BUF[maxCacheSize-1].fNext = nullptr;
 							}
 						}
-				template	<typename	ELEMENT>
-					inline	void	LRUCache<ELEMENT>::ShuffleToHead (CacheElement* b)
+				template	<typename	ELEMENT, typename TRAITS>
+					inline	void	LRUCache<ELEMENT,TRAITS>::ShuffleToHead_ (CacheElement* b)
 						{
 							AssertNotNull (b);
 							if (b == fCachedElts_First) {
@@ -81,14 +81,14 @@ namespace	Stroika {
 							Ensure (fCachedElts_fLast != nullptr and fCachedElts_fLast->fNext == nullptr);
 							Ensure (fCachedElts_First != nullptr and fCachedElts_First == b and fCachedElts_First->fPrev == nullptr and fCachedElts_First->fNext != nullptr);
 						}
-				template	<typename	ELEMENT>
-					inline	void	LRUCache<ELEMENT>::ClearCache ()
+				template	<typename	ELEMENT, typename TRAITS>
+					inline	void	LRUCache<ELEMENT,TRAITS>::ClearCache ()
 						{
 							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
 								cur->fElement.Clear ();
 							}
 						}
-				template	<typename	ELEMENT>
+				template	<typename	ELEMENT, typename TRAITS>
 					/*
 					@METHOD:		LRUCache<ELEMENT>::LookupElement
 					@DESCRIPTION:	<p>Check and see if the given element is in the cache. Return that element if its tehre, and nullptr otherwise.
@@ -96,11 +96,11 @@ namespace	Stroika {
 								of this re-ordering, its illegal to do a Lookup while a @'LRUCache<ELEMENT>::CacheIterator' exists
 								for this LRUCache.</p>
 					*/
-					inline	ELEMENT*	LRUCache<ELEMENT>::LookupElement (const COMPARE_ITEM& item)
+					inline	ELEMENT*	LRUCache<ELEMENT,TRAITS>::LookupElement (const COMPARE_ITEM& item)
 						{
 							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
 								if (ELEMENT::Equal (cur->fElement, item)) {
-									ShuffleToHead (cur);
+									ShuffleToHead_ (cur);
 									#if		qKeepLRUCacheStats
 										fCachedCollected_Hits++;
 									#endif
@@ -112,7 +112,7 @@ namespace	Stroika {
 							#endif
 							return nullptr;
 						}
-				template	<typename	ELEMENT>
+				template	<typename	ELEMENT, typename TRAITS>
 					/*
 					@METHOD:		LRUCache<ELEMENT>::AddNew
 					@DESCRIPTION:	<p>Create a new LRUCache element (potentially bumping some old element out of the cache). This new element
@@ -120,9 +120,9 @@ namespace	Stroika {
 								up element is first, and because of this re-ordering, its illegal to do a Lookup while 
 								a @'LRUCache<ELEMENT>::CacheIterator' exists for this LRUCache.</p>
 					*/
-					inline	ELEMENT*	LRUCache<ELEMENT>::AddNew ()
+					inline	ELEMENT*	LRUCache<ELEMENT,TRAITS>::AddNew ()
 						{
-							ShuffleToHead (fCachedElts_fLast);
+							ShuffleToHead_ (fCachedElts_fLast);
 							return &fCachedElts_First->fElement;
 						}
 
