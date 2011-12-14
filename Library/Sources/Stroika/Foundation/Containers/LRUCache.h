@@ -14,9 +14,6 @@
 /*
  * TODO:
  *
- *			o		The type CompareItem is defined for legacy purposes, and I'm not sure it makes sense anymore. 
- *					Probably make sure nobody is using it (always same as ElementType) and then get rid of it.
- *
  *			o	ALSO - KDJ - suggestion/hint - provide MAYBE OPTIONAL HASH function (through traits). THEN - the LRUCache mechanism can 
  *				store more elements efficeintly. Right now - LRU cache really just works for small numbers of items
  *				NOTE - if user uses HASHING - then its not stricly LRU - just LRU per-hash element/value
@@ -63,10 +60,10 @@ namespace	Stroika {
 			template	<typename	ELEMENT>
 				struct	LRUCacheDefaultTraits {
 					typedef	ELEMENT	ElementType;
-					typedef	typename ELEMENT::COMPARE_ITEM	CompareItemType;
+					typedef	ELEMENT	KeyType;
 					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
 					enum	{ HASHTABLESIZE	=	1 };
-					// If CompareItemType differnt type than ElementType we need a hash for that too
+					// If KeyType differnt type than ElementType we need a hash for that too
 					static	size_t	Hash (const ElementType& e)
 						{
 							return 0;
@@ -75,7 +72,7 @@ namespace	Stroika {
 						{
 							(*element) = ElementType ();
 						}
-					static	bool	Equal (const ElementType& lhs, const CompareItemType& rhs)
+					static	bool	Equal (const ElementType& lhs, const KeyType& rhs)
 						{
 							return lhs == rhs;
 						}
@@ -111,7 +108,7 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 			template	<typename	ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
 				class	LRUCache {
 					public:
-						typedef	typename TRAITS::CompareItemType	COMPARE_ITEM;
+						typedef	typename TRAITS::KeyType	KeyType;
 
 					public:
 						LRUCache (size_t maxCacheSize);
@@ -147,7 +144,7 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 						nonvirtual	void	ClearCache ();
 
 					public:
-						nonvirtual	ELEMENT*	LookupElement (const COMPARE_ITEM& item);
+						nonvirtual	ELEMENT*	LookupElement (const KeyType& item);
 						nonvirtual	ELEMENT*	AddNew ();
 
 					#if		qKeepLRUCacheStats

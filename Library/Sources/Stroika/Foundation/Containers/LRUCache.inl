@@ -105,7 +105,7 @@ namespace	Stroika {
 					inline	void	LRUCache<ELEMENT,TRAITS>::ClearCache ()
 						{
 							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
-								cur->fElement.Clear ();
+								TRAITS::Clear (cur->fElement);
 							}
 						}
 				template	<typename	ELEMENT, typename TRAITS>
@@ -116,7 +116,7 @@ namespace	Stroika {
 								of this re-ordering, its illegal to do a Lookup while a @'LRUCache<ELEMENT>::CacheIterator' exists
 								for this LRUCache.</p>
 					*/
-					inline	ELEMENT*	LRUCache<ELEMENT,TRAITS>::LookupElement (const COMPARE_ITEM& item)
+					inline	ELEMENT*	LRUCache<ELEMENT,TRAITS>::LookupElement (const KeyType& item)
 						{
 							for (CacheElement* cur = fCachedElts_First; cur != nullptr; cur = cur->fNext) {
 								if (TRAITS::Equal (cur->fElement, item)) {
