@@ -6,6 +6,7 @@
 
 #include	"../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Containers/LRUCache.h"
 #include	"../../Foundation/Memory/SharedPtr.h"
 #include	"../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -330,6 +331,7 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		virtual		void	EarlyDidUpdateText (const UpdateInfo& updateInfo) throw () override;
 
 	public:
+		struct	CacheEltLRUCacheTraits;
 		class	CacheElt {
 			public:
 				CacheElt ();
@@ -344,12 +346,6 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 			private:
 				COMPARE_ITEM	fValidFor;
 
-			// For LRUCache<> class
-			public:
-				nonvirtual	void	Clear ()
-					{
-						fValidFor.fPM = nullptr;
-					}
 				static	bool	Equal (const CacheElt& lhs, const COMPARE_ITEM& rhs)
 					{
 						return lhs.fValidFor.fPM == rhs.fPM and lhs.fValidFor.fRowStartingAt == rhs.fRowStartingAt;
@@ -359,11 +355,27 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 				Foundation::Memory::SmallStackBuffer<Led_Distance>	fMeasurementsCache;		// for just the given PM
 	
 			private:
+				friend	struct	CacheEltLRUCacheTraits;
 				friend	class	PartitioningTextImager::MeasureTextCache;
+		};
+		struct	CacheEltLRUCacheTraits : Foundation::Containers::LRUCacheDefaultTraits<CacheElt, CacheElt::COMPARE_ITEM> {
+			static	KeyType	ExtractKey (const ElementType& e)
+				{
+					return e.fValidFor;
+				}
+			static	void	Clear (ElementType* element)
+				{
+					RequireNotNull (element);
+					element->fValidFor.fPM = nullptr;
+				}
+			static	bool	Equal (const KeyType& lhs, const KeyType& rhs)
+				{
+					return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
+				}
 		};
 
 	private:
-		mutable LRUCache<CacheElt>	fCache;
+		mutable Foundation::Containers::LRUCache<CacheElt, CacheEltLRUCacheTraits>	fCache;
 
 	public:
 		nonvirtual	void			ClearAll ();

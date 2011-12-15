@@ -15,6 +15,9 @@ using	namespace	Stroika::Foundation;
 
 
 
+using	Stroika::Foundation::Containers::LRUCache;
+
+
 
 namespace	Stroika {	
 	namespace	Frameworks {
@@ -859,9 +862,9 @@ void	PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm
 void	PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const throw ()
 {
 	PartitionMarker*	pm	=	reinterpret_cast<PartitionMarker*> (infoRecord);
-	for (LRUCache<CacheElt>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
+	for (LRUCache<CacheElt,CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
 		if ((*i).fValidFor.fPM == pm) {
-			(*i).Clear ();
+			CacheEltLRUCacheTraits::Clear (&(*i));
 		}
 	}
 }
@@ -876,9 +879,9 @@ void	PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* 
 void	PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const throw ()
 {
 	PartitionMarker*	pm	=	reinterpret_cast<PartitionMarker*> (infoRecord);
-	for (LRUCache<CacheElt>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
+	for (LRUCache<CacheElt,CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
 		if ((*i).fValidFor.fPM == pm) {
-			(*i).Clear ();
+			CacheEltLRUCacheTraits::Clear (&(*i));
 		}
 	}
 }
@@ -917,9 +920,9 @@ void	PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateI
 			break;
 		}
 // Could optimize this further.... (MUCH)
-		for (LRUCache<CacheElt>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
+		for (LRUCache<CacheElt,CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
 			if ((*i).fValidFor.fPM == pm) {
-				(*i).Clear ();
+				CacheEltLRUCacheTraits::Clear (&(*i));
 			}
 		}
 	}
