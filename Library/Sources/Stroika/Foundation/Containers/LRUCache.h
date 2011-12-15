@@ -57,12 +57,16 @@ namespace	Stroika {
 			/*
 			 * The LRUCacheDefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
 			 */
-			template	<typename	ELEMENT>
+			template	<typename	ELEMENT, typename KEY = ELEMENT>
 				struct	LRUCacheDefaultTraits {
 					typedef	ELEMENT	ElementType;
-					typedef	ELEMENT	KeyType;
+					typedef	KEY		KeyType;
 					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
 					enum	{ HASHTABLESIZE	=	1 };
+					static	KeyType	ExtractKey (const ElementType& e)
+						{
+							return e;
+						}
 					// If KeyType differnt type than ElementType we need a hash for that too
 					static	size_t	Hash (const KeyType& e)
 						{
@@ -72,7 +76,7 @@ namespace	Stroika {
 						{
 							(*element) = ElementType ();
 						}
-					static	bool	Equal (const ElementType& lhs, const KeyType& rhs)
+					static	bool	Equal (const KeyType& lhs, const KeyType& rhs)
 						{
 							return lhs == rhs;
 						}
@@ -108,7 +112,8 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 			template	<typename	ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
 				class	LRUCache {
 					public:
-						typedef	typename TRAITS::KeyType	KeyType;
+						typedef	typename TRAITS::ElementType	ElementType;
+						typedef	typename TRAITS::KeyType		KeyType;
 
 					public:
 						LRUCache (size_t maxCacheSize);
@@ -120,25 +125,20 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 					public:
 						struct	CacheElement {
 							public:
-								CacheElement ():
-									fNext (nullptr),
-									fPrev (nullptr),
-									fElement ()
-									{
-									}
+								CacheElement ();
 
 							public:
 								CacheElement*	fNext;
 								CacheElement*	fPrev;
 
 							public:
-								ELEMENT			fElement;
+								ElementType		fElement;
 						};
 
 					public:
 						struct	CacheIterator;
-						nonvirtual	CacheIterator	begin ()	{ return fCachedElts_First; }
-						nonvirtual	CacheIterator	end ()		{ return nullptr; }
+						nonvirtual	CacheIterator	begin ();
+						nonvirtual	CacheIterator	end ();
 
 					public:
 						nonvirtual	void	ClearCache ();
@@ -154,9 +154,9 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 					#endif
 
 					private:
-						vector<CacheElement>	fCachedElts_BUF;
-						CacheElement*			fCachedElts_First;
-						CacheElement*			fCachedElts_fLast;
+						vector<CacheElement>	fCachedElts_BUF_;
+						CacheElement*			fCachedElts_First_;
+						CacheElement*			fCachedElts_fLast_;
 
 					private:
 						nonvirtual	void	ShuffleToHead_ (CacheElement* b);
@@ -173,18 +173,12 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 //TODO: Must update implementation to support BUCKETS (hashtable)
 			template	<typename	ELEMENT, typename TRAITS>
 				struct	LRUCache<ELEMENT,TRAITS>::CacheIterator {
-					CacheIterator (CacheElement* c): fCur (c) {}
+					CacheIterator (CacheElement* c);
 					CacheElement*	fCur;
-					CacheIterator& operator++ ();
-					ELEMENT& operator* ();
-					bool operator== (CacheIterator rhs)
-						{
-							return fCur == rhs.fCur;
-						}
-					bool operator!= (CacheIterator rhs)
-						{
-							return fCur != rhs.fCur;
-						}
+					nonvirtual	CacheIterator& operator++ ();
+					nonvirtual	ELEMENT& operator* ();
+					nonvirtual	bool operator== (CacheIterator rhs);
+					nonvirtual	bool operator!= (CacheIterator rhs);
 				};
 
 		}
