@@ -601,7 +601,8 @@ class	PartitioningTextImager::MeasureTextCache : private Partition::PartitionWat
 		{
 			RequireNotNull (pm);
 			Led_Arg_Unused (pm);
-			return fCache.AddNew ();
+			// Safe to pass changing CacheElt::COMPARE_ITEM () because use HASH_TABLE_SIZE==1 for fCache
+			return fCache.AddNew (CacheElt::COMPARE_ITEM (pm, 0));
 		}
 
 

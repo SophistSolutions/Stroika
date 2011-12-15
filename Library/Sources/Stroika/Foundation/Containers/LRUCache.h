@@ -22,6 +22,10 @@
  *					<<<CURRNET WORK IN PROGRESS - ADDING HASH MECHAMISN INTO THIS TEMPLATE, THROUGH TRAITS, and this class is same-old hashless impl
  *						if used with HASHTABLESIZE (in traits) if 1>>>
  *
+ *					>>>> PROGRESS ON THIS - WROTE DRAFT BUT VERY INCOMPLETE - DIDNT FIX ITERATORS - THEY STILL ASSUME ONE CHAIN. LOTS OF OTHER CODE IS HARDWIRED TO JUST WORK ON
+ *						FIRST CHAIN, BUT ITS CLOSER NOW.
+ *
+ *
  *			o		Cleanup docs to reflect new TRAITS style
  *
  *			o	PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods in TRAITS, and STATS subobject in traits
@@ -60,7 +64,7 @@ namespace	Stroika {
 					typedef	ELEMENT		ElementType;
 					typedef	KEY			KeyType;
 					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-					enum	{ HASHTABLESIZE	=	1 };
+					enum	{ HASH_TABLE_SIZE	=	1 };
 					static	KeyType	ExtractKey (const ElementType& e);
 					// If KeyType differnt type than ElementType we need a hash for that too
 					static	size_t	Hash (const KeyType& e);
@@ -132,8 +136,12 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 						nonvirtual	void	ClearCache ();
 
 					public:
+						// NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
+						// In TRAITS object.
+						nonvirtual	ELEMENT*	AddNew (const KeyType& item);
+						// NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
+						// In TRAITS object.
 						nonvirtual	ELEMENT*	LookupElement (const KeyType& item);
-						nonvirtual	ELEMENT*	AddNew ();
 
 					#if		qKeepLRUCacheStats
 					public:
@@ -142,12 +150,12 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 					#endif
 
 					private:
-						vector<CacheElement>	fCachedElts_BUF_;
-						CacheElement*			fCachedElts_First_;
-						CacheElement*			fCachedElts_fLast_;
+						vector<CacheElement>	fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];
+						CacheElement*			fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
+						CacheElement*			fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
 
 					private:
-						nonvirtual	void	ShuffleToHead_ (CacheElement* b);
+						nonvirtual	void	ShuffleToHead_ (size_t chainIdx, CacheElement* b);
 				};
 
 
