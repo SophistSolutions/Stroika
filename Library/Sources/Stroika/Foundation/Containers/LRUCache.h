@@ -26,6 +26,11 @@
  *						FIRST CHAIN, BUT ITS CLOSER NOW.
  *
  *
+ *			o	Consider restructuring the API more like STL-MAP
+ *				KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
+ *				Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container pantheon. BUt it will be a bit of a PITA for all/some
+ *				of the existing LRUCache<> uses...
+ *
  *			o		Cleanup docs to reflect new TRAITS style
  *
  *			o	PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods in TRAITS, and STATS subobject in traits
