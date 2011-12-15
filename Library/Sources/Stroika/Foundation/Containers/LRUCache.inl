@@ -20,7 +20,7 @@ namespace	Stroika {
 
 			//	class	LRUCacheDefaultTraits<ELEMENT,TRAITS>
 			template	<typename	ELEMENT, typename KEY>
-				inline	LRUCacheDefaultTraits<ELEMENT,KEY>::KeyType	LRUCacheDefaultTraits<ELEMENT,KEY>::ExtractKey (const ElementType& e)
+				inline	typename	LRUCacheDefaultTraits<ELEMENT,KEY>::KeyType	LRUCacheDefaultTraits<ELEMENT,KEY>::ExtractKey (const ElementType& e)
 					{
 						return e;
 					}
