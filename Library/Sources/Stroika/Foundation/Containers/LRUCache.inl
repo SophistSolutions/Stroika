@@ -18,6 +18,29 @@ namespace	Stroika {
 		namespace	Containers {
 
 
+			//	class	LRUCacheDefaultTraits<ELEMENT,TRAITS>
+			template	<typename	ELEMENT, typename KEY>
+				inline	LRUCacheDefaultTraits<ELEMENT,KEY>::KeyType	LRUCacheDefaultTraits<ELEMENT,KEY>::ExtractKey (const ElementType& e)
+					{
+						return e;
+					}
+			template	<typename	ELEMENT, typename KEY>
+				inline	size_t	LRUCacheDefaultTraits<ELEMENT,KEY>::Hash (const KeyType& e)
+						{
+							return 0;
+						}
+			template	<typename	ELEMENT, typename KEY>
+				inline	void	LRUCacheDefaultTraits<ELEMENT,KEY>::Clear (ElementType* element)
+					{
+						(*element) = ElementType ();
+					}
+			template	<typename	ELEMENT, typename KEY>
+				inline	bool	LRUCacheDefaultTraits<ELEMENT,KEY>::Equal (const KeyType& lhs, const KeyType& rhs)
+					{
+						return lhs == rhs;
+					}
+
+
 
 
 			//	class	LRUCache<ELEMENT,TRAITS>::CacheElement

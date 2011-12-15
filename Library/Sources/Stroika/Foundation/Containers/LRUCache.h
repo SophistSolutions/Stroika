@@ -24,8 +24,6 @@
  *
  *			o		Cleanup docs to reflect new TRAITS style
  *
- *			o		Move more INLINES to be in the IMPL file.
- *
  *			o	PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods in TRAITS, and STATS subobject in traits
  *				So no cost. Trouble with subobject approach is C++ seems to force all objects to be at least one byte, so there WOULD be cost. Could avoid
  *				that by having the TRAITS OBJECT ITSELF be what owns the counters - basically global vars. Since just used for testing, could still be usable
@@ -59,27 +57,17 @@ namespace	Stroika {
 			 */
 			template	<typename	ELEMENT, typename KEY = ELEMENT>
 				struct	LRUCacheDefaultTraits {
-					typedef	ELEMENT	ElementType;
-					typedef	KEY		KeyType;
+					typedef	ELEMENT		ElementType;
+					typedef	KEY			KeyType;
 					// HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
 					enum	{ HASHTABLESIZE	=	1 };
-					static	KeyType	ExtractKey (const ElementType& e)
-						{
-							return e;
-						}
+					static	KeyType	ExtractKey (const ElementType& e);
 					// If KeyType differnt type than ElementType we need a hash for that too
-					static	size_t	Hash (const KeyType& e)
-						{
-							return 0;
-						}
-					static	void	Clear (ElementType* element)
-						{
-							(*element) = ElementType ();
-						}
-					static	bool	Equal (const KeyType& lhs, const KeyType& rhs)
-						{
-							return lhs == rhs;
-						}
+					static	size_t	Hash (const KeyType& e);
+					// defaults to using default CTOR for ElementType and copying over
+					static	void	Clear (ElementType* element);
+					// defaults to operator==
+					static	bool	Equal (const KeyType& lhs, const KeyType& rhs);
 				};
 
 
