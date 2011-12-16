@@ -26,9 +26,9 @@ namespace	Stroika {
 					}
 			template	<typename	ELEMENT, typename KEY>
 				inline	size_t	LRUCacheDefaultTraits<ELEMENT,KEY>::Hash (const KeyType& e)
-						{
-							return 0;
-						}
+					{
+						return 0;
+					}
 			template	<typename	ELEMENT, typename KEY>
 				inline	void	LRUCacheDefaultTraits<ELEMENT,KEY>::Clear (ElementType* element)
 					{
@@ -56,8 +56,10 @@ namespace	Stroika {
 
 			//	class	LRUCache<ELEMENT,TRAITS>::CacheIterator
 			template	<typename	ELEMENT, typename TRAITS>
-				inline	LRUCache<ELEMENT,TRAITS>::CacheIterator::CacheIterator (CacheElement* c)
-					: fCur (c)
+				inline	LRUCache<ELEMENT,TRAITS>::CacheIterator::CacheIterator (CacheElement** start, CacheElement** end)
+					: fCurV (start)
+					, fEndV (end)
+					, fCur (start == end? nullptr: *fCurV)
 					{
 					}
 			template	<typename	ELEMENT, typename TRAITS>
@@ -65,6 +67,10 @@ namespace	Stroika {
 					{
 						RequireNotNull (fCur);
 						fCur = fCur->fNext;
+						if (fCur == nullptr and fCurV != fEndV) {
+							fCurV++;
+							fCur  = *fCurV;
+						}
 						return *this;
 					}
 			template	<typename	ELEMENT, typename TRAITS>
@@ -100,8 +106,8 @@ namespace	Stroika {
 						{
 							// TODO: Find more elegant but equally efficent way to initailize and say these are all initialized to zero
 							// (INCLUDING fCachedElts_BUF_)
-							memset(&fCachedElts_First_, 0, sizeof (fCachedElts_First_));
-							memset(&fCachedElts_fLast_, 0, sizeof (fCachedElts_First_));
+							(void)::memset (&fCachedElts_First_, 0, sizeof (fCachedElts_First_));
+							(void)::memset (&fCachedElts_fLast_, 0, sizeof (fCachedElts_First_));
 
 							SetMaxCacheSize (maxCacheSize);
 						}
@@ -134,12 +140,12 @@ namespace	Stroika {
 				template	<typename	ELEMENT, typename TRAITS>
 					inline	typename	LRUCache<ELEMENT,TRAITS>::CacheIterator	LRUCache<ELEMENT,TRAITS>::begin ()
 						{
-							return fCachedElts_First_[0];
+							return CacheIterator (StartOfArray (fCachedElts_First_), EndOfArray (fCachedElts_First_));
 						}
 				template	<typename	ELEMENT, typename TRAITS>
 					inline	typename	LRUCache<ELEMENT,TRAITS>::CacheIterator	LRUCache<ELEMENT,TRAITS>::end ()
 						{
-							return nullptr;
+							return CacheIterator (nullptr, nullptr);
 						}
 				template	<typename	ELEMENT, typename TRAITS>
 					inline	void	LRUCache<ELEMENT,TRAITS>::ShuffleToHead_ (size_t chainIdx, CacheElement* b)
@@ -176,9 +182,10 @@ namespace	Stroika {
 				template	<typename	ELEMENT, typename TRAITS>
 					inline	void	LRUCache<ELEMENT,TRAITS>::ClearCache ()
 						{
-							size_t		chainIdx	=	0;
-							for (CacheElement* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
-								TRAITS::Clear (&cur->fElement);
+							for (size_t hi = 0; hi < TRAITS::HASH_TABLE_SIZE; hi++) {
+								for (CacheElement* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
+									TRAITS::Clear (&cur->fElement);
+								}
 							}
 						}
 				template	<typename	ELEMENT, typename TRAITS>

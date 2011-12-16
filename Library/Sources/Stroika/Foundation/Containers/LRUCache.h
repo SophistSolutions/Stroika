@@ -31,7 +31,11 @@
  *				Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container pantheon. BUt it will be a bit of a PITA for all/some
  *				of the existing LRUCache<> uses...
  *
- *			o		Cleanup docs to reflect new TRAITS style
+ *				Problem of doing this is that in some cases - we may want to create a cache of objects that already pre-exist, and have the 'key part' as a subobject
+ *				of themselves. Not a killer as we COULD just call the KEY/ELEMENT the same type and just use a simple test traits function that just pays attention to
+ *				the logical key parts?
+ *
+ *			o	Cleanup docs to reflect new TRAITS style
  *
  *			o	PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods in TRAITS, and STATS subobject in traits
  *				So no cost. Trouble with subobject approach is C++ seems to force all objects to be at least one byte, so there WOULD be cost. Could avoid
@@ -155,7 +159,7 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 					#endif
 
 					private:
-						vector<CacheElement>	fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];
+						vector<CacheElement>	fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];		// we don't directly use these, but use the First_Last pointers instead which are internal to this buf
 						CacheElement*			fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
 						CacheElement*			fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
 
@@ -174,8 +178,12 @@ TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
 //TODO: Must update implementation to support BUCKETS (hashtable)
 			template	<typename	ELEMENT, typename TRAITS>
 				struct	LRUCache<ELEMENT,TRAITS>::CacheIterator {
-					CacheIterator (CacheElement* c);
+					explicit CacheIterator (CacheElement** start, CacheElement** end);
+					
+					CacheElement**	fCurV;
+					CacheElement**	fEndV;
 					CacheElement*	fCur;
+					
 					nonvirtual	CacheIterator& operator++ ();
 					nonvirtual	ELEMENT& operator* ();
 					nonvirtual	bool operator== (CacheIterator rhs);
