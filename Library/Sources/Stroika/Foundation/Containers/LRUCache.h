@@ -14,17 +14,14 @@
 /*
  * TODO:
  *
- *			o	ALSO - KDJ - suggestion/hint - provide MAYBE OPTIONAL HASH function (through traits). THEN - the LRUCache mechanism can 
- *				store more elements efficeintly. Right now - LRU cache really just works for small numbers of items
- *				NOTE - if user uses HASHING - then its not stricly LRU - just LRU per-hash element/value
- *				Discuss with KDJ since it was his idea (indirectly) Maybe have HashedLRUCache as a separate impl? Maybe generically
- *				do LRUCache (liek stroika style containers) and have differnt impls)
- *					<<<CURRNET WORK IN PROGRESS - ADDING HASH MECHAMISN INTO THIS TEMPLATE, THROUGH TRAITS, and this class is same-old hashless impl
- *						if used with HASHTABLESIZE (in traits) if 1>>>
+ *			o	Test and make sure ITERATOR stuff works properly when using Hashing mode (HASTABLE SIZE > 1)
  *
- *					>>>> PROGRESS ON THIS - WROTE DRAFT BUT VERY INCOMPLETE - DIDNT FIX ITERATORS - THEY STILL ASSUME ONE CHAIN. LOTS OF OTHER CODE IS HARDWIRED TO JUST WORK ON
- *						FIRST CHAIN, BUT ITS CLOSER NOW.
- *
+ *			o	Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz has first/last, or do our own storage managemnet
+ *				with secondary array? - we do the mallocs/frees. To re-free, even though order distorted by shuffles, we can always figure out which was
+ *				the original array head by which has the lowest address!
+ *			
+ *				Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward in impl, consider using _fEnd? Or if it is (I think last maybe better
+ *				then document clearly why its better.
  *
  *			o	Consider restructuring the API more like STL-MAP
  *				KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
