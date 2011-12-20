@@ -17,6 +17,11 @@ namespace	Stroika {
 				{
 					return fDetails_;
 				}
+
+
+			template	<>
+				void	_NoReturn_	Execution::DoThrow (const DataExchangeFormat::BadFormatException& e2Throw);
+
 	}
 }
 #endif	/*_Stroika_Foundation_DataExchangeFormat_BadFormatException_inl_*/
