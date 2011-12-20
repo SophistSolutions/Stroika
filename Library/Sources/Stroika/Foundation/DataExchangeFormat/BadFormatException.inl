@@ -10,7 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace	Stroika {	
+namespace	Stroika {
 	namespace	Foundation {
 
 			inline	wstring	DataExchangeFormat::BadFormatException::GetDetails () const
@@ -19,8 +19,10 @@ namespace	Stroika {
 				}
 
 
+		namespace	Execution {
 			template	<>
-				void	_NoReturn_	Execution::DoThrow (const DataExchangeFormat::BadFormatException& e2Throw);
+				void	_NoReturn_	DoThrow (const DataExchangeFormat::BadFormatException& e2Throw);
+		}
 
 	}
 }
