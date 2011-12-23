@@ -43,6 +43,7 @@ namespace	Stroika {
 						URL ();
 						explicit URL (const wstring& fullURL);
 						explicit URL (const wstring& protocol, const wstring& host, int portNumber = kDefaultPort, const wstring& relPath = wstring (), const wstring& query = wstring (), const wstring& fragment = wstring ());
+						explicit URL (const wstring& protocol, const wstring& host, const wstring& relPath, const wstring& query = wstring (), const wstring& fragment = wstring ());
 
 					public:
 						// For example - the arg to GET in HTTP request - a regular URL but the part after the hostname

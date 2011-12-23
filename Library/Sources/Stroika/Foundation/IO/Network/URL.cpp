@@ -277,6 +277,16 @@ URL::URL (const wstring& protocol, const wstring& host, int portNumber, const ws
 {
 }
 
+URL::URL (const wstring& protocol, const wstring& host, const wstring& relPath, const wstring& query, const wstring& fragment)
+	: fProtocol (protocol)
+	, fHost (host)
+	, fPort (kDefaultPort)
+	, fRelPath (relPath)
+	, fQuery (query)
+	, fFragment (fragment)
+{
+}
+
 URL	URL::ParseHostRelativeURL (const wstring& w)
 {
 	URL	url;
