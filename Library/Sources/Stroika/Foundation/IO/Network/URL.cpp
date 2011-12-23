@@ -78,6 +78,16 @@ int		Network::GetDefaultPortForProtocol (const wstring& proto)
  ************************************** URL *************************************
  ********************************************************************************
  */
+URL::URL ()
+	: fProtocol ()
+	, fHost ()
+	, fPort (kDefaultPort)
+	, fRelPath ()
+	, fQuery ()
+	, fFragment ()
+{
+}
+
 #if	qPlatform_Windows
 namespace	{
 	void	OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
@@ -255,6 +265,16 @@ URL::URL (const wstring& w)
 		}
 	}
 #endif
+}
+
+URL::URL (const wstring& protocol, const wstring& host, int portNumber, const wstring& relPath, const wstring& query, const wstring& fragment)
+	: fProtocol (protocol)
+	, fHost (host)
+	, fPort (portNumber)
+	, fRelPath (relPath)
+	, fQuery (query)
+	, fFragment (fragment)
+{
 }
 
 URL	URL::ParseHostRelativeURL (const wstring& w)

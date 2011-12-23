@@ -9,7 +9,22 @@
 #include	<map>
 #include	<string>
 
+#include	"../../Characters/String.h"
 #include	"../../Configuration/Common.h"
+
+
+/*
+ * TODO:
+ *		o	Redo using Stroika String class
+ *		o	Add overload for URL with map<> for query.
+ *		o	Add PREDEFINED namespace and list predefined protocols
+ *				HTTP
+ *				HTTPS
+ *				FTP
+ *				FILE
+ *			(only do with new stroika string class so we can use low-cost constants)
+ */
+
 
 
 namespace	Stroika {	
@@ -25,7 +40,9 @@ namespace	Stroika {
 
 				class	URL {
 					public:
-						URL (const wstring& w = wstring ());
+						URL ();
+						explicit URL (const wstring& fullURL);
+						explicit URL (const wstring& protocol, const wstring& host, int portNumber = kDefaultPort, const wstring& relPath = wstring (), const wstring& query = wstring (), const wstring& fragment = wstring ());
 
 					public:
 						// For example - the arg to GET in HTTP request - a regular URL but the part after the hostname
