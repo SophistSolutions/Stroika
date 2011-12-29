@@ -1,5 +1,5 @@
 *** xerces-c-3.1.1/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj	2010-04-22 03:30:10.000000000 -0400
---- CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj	2011-09-17 11:12:12.765018600 -0400
+--- CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj	2011-12-28 23:53:17.994610500 -0500
 ***************
 *** 71,76 ****
 --- 71,77 ----
@@ -39,7 +39,7 @@
       </ClCompile>
       <ResourceCompile>
         <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
---- 390,405 ----
+--- 390,406 ----
         <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
         <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
         <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -53,11 +53,12 @@
 +       <WholeProgramOptimization>false</WholeProgramOptimization>
 +       <BufferSecurityCheck>false</BufferSecurityCheck>
 +       <FunctionLevelLinking>true</FunctionLevelLinking>
++       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       </ClCompile>
       <ResourceCompile>
         <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 ***************
-*** 419,425 ****
+*** 419,427 ****
         <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
         <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
         <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -65,14 +66,19 @@
         <WarningLevel>Level3</WarningLevel>
         <CompileAs>Default</CompileAs>
       </ClCompile>
---- 426,432 ----
+      <ResourceCompile>
+        <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+--- 427,436 ----
         <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
         <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
         <ObjectFileName>$(IntDir)</ObjectFileName>
 !       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
         <WarningLevel>Level3</WarningLevel>
         <CompileAs>Default</CompileAs>
++       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       </ClCompile>
+      <ResourceCompile>
+        <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 ***************
 *** 446,452 ****
         <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
@@ -82,7 +88,7 @@
         <WarningLevel>Level3</WarningLevel>
         <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
         <CompileAs>Default</CompileAs>
---- 453,459 ----
+--- 455,461 ----
         <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
         <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
         <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -99,7 +105,7 @@
         <WarningLevel>Level3</WarningLevel>
         <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
         <CompileAs>Default</CompileAs>
---- 482,488 ----
+--- 484,490 ----
         <PrecompiledHeaderOutputFile>$(IntDir)XercesLib.pch</PrecompiledHeaderOutputFile>
         <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
         <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -172,7 +178,7 @@
   </Command>
         <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">%(RootDir)%(Directory)\%(Filename).msvc.hpp;%(AdditionalInputs)</AdditionalInputs>
         <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'">%(FullPath);%(Outputs)</Outputs>
---- 728,790 ----
+--- 730,792 ----
       <ClInclude Include="..\..\..\..\..\src\xercesc\util\ValueStackOf.hpp" />
       <ClInclude Include="..\..\..\..\..\src\xercesc\util\ValueVectorOf.hpp" />
       <ClInclude Include="..\..\..\..\..\src\xercesc\util\Xerces_autoconf_config.hpp">
@@ -268,7 +274,7 @@
   copy "%(FullPath)" "%(RootDir)%(Directory)Xerces_autoconf_config.hpp"</Command>
         <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Debug|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
         <Outputs Condition="'$(Configuration)|$(Platform)'=='ICU Release|Win32'">%(RootDir)%(Directory)Xerces_autoconf_config.hpp</Outputs>
---- 829,858 ----
+--- 831,860 ----
       <ClInclude Include="..\..\..\..\..\src\xercesc\util\XMLUTF8Transcoder.hpp" />
       <ClInclude Include="..\..\..\..\..\src\xercesc\util\XMLWin1252Transcoder.hpp" />
       <CustomBuild Include="..\..\..\..\..\src\xercesc\util\Xerces_autoconf_config.msvc.hpp">
