@@ -12,6 +12,14 @@ my $EXTRACTED_DIRNAME	=	$BASENAME;
 my $trgDirName	=			$BASENAME;
 my $SLINKDIRNAME	=		$BASENAME;
 
+# DoCreateSymLink - this isn't currently used, and doesn't work well with windows (sets sys file attribute which casues
+# DOS delete file issues) - and slink doesnt really work except in cygwin tools
+my $DoCreateSymLink = 0;
+
+if ("$^O" eq "linux") {
+	$DoCreateSymLink = 1;
+}
+
 
 print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
 
@@ -36,7 +44,9 @@ system ("tar xf Origs/$BASENAME.tar.gz 2> /dev/null");
 sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 system ("mv $EXTRACTED_DIRNAME CURRENT");
 sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-system ("ln -s CURRENT $SLINKDIRNAME");
+if ($DoCreateSymLink) {
+	system ("ln -s CURRENT $SLINKDIRNAME");
+}
 
 print ("Patching Xerces...\n");
 system ("patch -t CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
