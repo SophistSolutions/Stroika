@@ -55,6 +55,9 @@ namespace	Stroika {
 			template	<typename T>
 				set<T>	Union (const set<T>& s1, const set<T>& s2);
 
+			template	<typename T>
+				set<T>	Difference (const set<T>& lhs, const set<T>& rhs);
+
 		}
 	}
 }
