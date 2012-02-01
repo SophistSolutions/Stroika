@@ -14,7 +14,7 @@ namespace	Stroika {
 		namespace	Containers {
 
 			template	<typename T>
-				set<T>	operator- (const set<T>& lhs, const set<T>& rhs)
+				set<T>	Difference (const set<T>& lhs, const set<T>& rhs)
 					{
 						set<T>	result;
 						for (typename set<T>::const_iterator i = lhs.begin (); i != lhs.end (); ++i) {
@@ -23,6 +23,11 @@ namespace	Stroika {
 							}
 						}
 						return result;
+					}
+			template	<typename T>
+				inline	set<T>	operator- (const set<T>& lhs, const set<T>& rhs)
+					{
+						return Difference (lhs, rhs);
 					}
 			template	<typename T>
 				set<T>	operator+ (const set<T>& lhs, const set<T>& rhs)
