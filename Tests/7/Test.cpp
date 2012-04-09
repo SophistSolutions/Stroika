@@ -148,6 +148,8 @@ namespace	{
 			{
 				wstring	testCase	=	L"7/4/1776";
 				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) < Date::kMax);
+				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) >= Date::kMin);
 			}
 			{
 				wstring	testCase	=	L"7/4/2076";
@@ -159,6 +161,12 @@ namespace	{
 			{
 				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF) == Date (Year (2001), Time::eNovember, DayOfMonth (1)));
 				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF).Format (Date::eJavascript_PF) == L"11/01/2001");
+			}
+			{
+				VerifyTestResult (Date::kMin < Date::kMax);
+				VerifyTestResult (Date::kMin <= Date::kMax);
+				VerifyTestResult (not (Date::kMin > Date::kMax));
+				VerifyTestResult (not (Date::kMin >= Date::kMax));
 			}
 		}
 

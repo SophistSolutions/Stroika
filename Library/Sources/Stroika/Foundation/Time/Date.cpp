@@ -509,6 +509,56 @@ void	Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
 	*year = static_cast<Year> (y);
 }
 
+
+
+
+
+/*
+ ********************************************************************************
+ *************************** Date::DayDifference ********************************
+ ********************************************************************************
+ */
+
+int	Time::DayDifference (const Date& lhs, const Date& rhs)
+{
+	Require (not lhs.empty ());
+	Require (not rhs.empty ());		// since unclear what diff would mean
+	Date::JulianRepType	l	=	lhs.GetJulianRep ();
+	Date::JulianRepType	r	=	rhs.GetJulianRep ();
+	if (l == r) {
+		return 0;
+	}
+	if (l < r) {
+		unsigned int	diff	=	r - l;
+		if (diff >= static_cast<unsigned int> (-INT_MIN)) {
+			return INT_MIN;
+		}
+		else {
+			return -static_cast<int> (diff);
+		}
+	}
+	else {
+		unsigned int	diff	=	l - r;
+		if (diff >= static_cast<unsigned int> (INT_MAX)) {
+			return INT_MAX;
+		}
+		else {
+			return static_cast<int> (diff);
+		}
+	}
+	return l < r? -1 : 1;
+	return lhs.GetJulianRep () - rhs.GetJulianRep ();
+}
+
+
+
+
+/*
+ ********************************************************************************
+ *************************** Date::YearDifference *******************************
+ ********************************************************************************
+ */
+
 int	Time::YearDifference (const Date& lhs, const Date& rhs)
 {
 	Require (not lhs.empty ());		// since meaning of diff wouldn't make much sense

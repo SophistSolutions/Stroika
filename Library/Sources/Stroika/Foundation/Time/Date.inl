@@ -33,15 +33,17 @@ namespace	Stroika {
 							return rhs.empty ()? 0: -1;
 						}
 						else {
-							return rhs.empty ()? 1 : (GetJulianRep () - rhs.GetJulianRep ());
+							if (rhs.empty ()) {
+								return 1;
+							}
+							// careful of signed/unsigned converstions - esp because of kMax which is very large
+							JulianRepType	l	=	GetJulianRep ();
+							JulianRepType	r	=	rhs.GetJulianRep ();
+							if (l == r) {
+								return 0;
+							}
+							return l < r? -1 : 1;
 						}
-					}
-
-				inline	int	DayDifference (const Date& lhs, const Date& rhs)
-					{
-						Require (not lhs.empty ());
-						Require (not rhs.empty ());		// since unclear what diff would mean
-						return lhs.GetJulianRep () - rhs.GetJulianRep ();
 					}
 
 
