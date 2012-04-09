@@ -68,6 +68,7 @@ class	CompilerApp {
 				cerr << "Usage: HTMLViewCompiler [options]? InputHTMLFile OutputCFile\n";
 				cerr << "\twhere [options]can be:\n";
 				cerr << "\t\t-help to print out this message\n";
+				cerr << "\t\t-n X set FormGenerator functioname to X\n";
 			}
 
 	private:
