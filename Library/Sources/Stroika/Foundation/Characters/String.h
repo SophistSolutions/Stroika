@@ -48,6 +48,9 @@
  * TODO:
  *
  *
+ *		o	Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite documentation, and make clearer,a nd document the tricky bits loosely
+ *			alluded to in the appropriate place if the API is truely DOABLE.
+ *
  *		o	At this stage - for our one trivial test - performance is now about 5% faster than visual studio.net 2010, but
  *			about a factor of 2 SLOWER than GCC (as of 2011-12-04).
  *
@@ -627,7 +630,8 @@ namespace	Stroika {
 			 *	For example
 			 *		String	tmp1	=	L"FRED";
 			 *		String	tmp2	=	String (L"FRED");
-			 *		String	tmp3	=	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (L"FRED");
+			 *		static	wchar_t	buf[1024] = { L"FRED" };
+			 *		String	tmp3	=	String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (buf);
 			 *
 			 *		extern String saved;
 			 *		inline	String	F(String x)			{ saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
@@ -653,13 +657,49 @@ namespace	Stroika {
 
 
 
+			/*
+ *		o	Seriously reconsider design / semantics of String_ExternalMemoryOwnership_StackLifetime_ReadOnly/String_ExternalMemoryOwnership_StackLifetime_ReadWrite classes.
+ *			There maybe a serious / hopeless bug having todo with threads and c_str(). Suppose in one thread we do:
+ *				void	f()
+ *					{
+ *						wchar_t buf[1024] = L"fred";
+ *						String_ExternalMemoryOwnership_StackLifetime_ReadOnly tmp (buf);
+ *
+ *						// Then call some function F() with tmp - where F() passes the value (as a String) to another thread, and that other thread runs for a very long time with the string - just READING
+ *						// the string - never MODIFYING it.
+ *						//
+ *						// THEN - because of second thread owning that string - the refCount is bumped up. And suppose that other string calls s.c_str() - and is ever so briefly using the s.c_str() results - say
+ *						// in a printf() call.
+ *						//
+ *						// Now when String_ExternalMemoryOwnership_StackLifetime_ReadOnly goes out of scope - and it notices its refCount != 0, it must somehow MORPH the underlying representation into
+ *						// something SAFE (copy all the strings). But thats tricky - ESPECIALLY in light of threads and someone else doing a c_str().
+ *						//
+ *						// I guess its not IMPOSSIBLE to fix all this. You could
+ *						//			(o)		On c_str() calls - at least for this class rep - maybe always - BREAKREFERENCES() - so the lifetime of your ptr is garuanteed friendly
+ *						//			(o)		Put in enuf flags and CriticalSection code - so on String_ExternalMemoryOwnership_StackLifetime_ReadOnly () - we block until we can
+ *						//					Copy all the data safely and set a flag saying to free it at the end - as a regular string - not a String_ExternalMemoryOwnership_StackLifetime_ReadOnly::Rep (would be nice
+ *						//					to transform the rep object but thats trickier).
+ *					}
+ 
+ *
+			 */
+
+/*
+ * In case of trouble in stack lifetime string make bundle copy object. Store it in rep. Then next call from envelope triggers exception which forces type morph call from envelope!
+
+Think that fixes most trouble except that aLl enveoes methods now need to handle exceotion
+*/
+
+
 
             /*
-			 *	String_ExternalMemoryOwnership_StackLifetime_ReadOnly is a subtype of string you can use to construct a String object, so long as the memory pointed to
+			 *	String_ExternalMemoryOwnership_StackLifetime_ReadOnly is a subtype of String you can use to construct a String object, so long as the memory pointed to
 			 * in the argument has a
 			 *		o	Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime_ReadOnly envelope class
 			 *		o	and buffer data never changes value externally to this String represenation
 			 *
+///REVIEW - PRETTY SURE THIS IS WRONG!!!! - UNSAFE - READONLY SHOULD mean pointer passed in is CONST - so memory may NOT be modified in this case -- LGP 2012-03-28
+/// DOBLE CHECK NO ASSIMPTIONS BELOW - WRONG - LINE NOT ASSUMED ANYWHERE
 			 *	Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime_ReadOnly ()!
 			 *
 			 *	Strings constructed with this String_ExternalMemoryOwnership_StackLifetime_ReadOnly maybe treated like normal strings - passed anywhere, and even modified via the
@@ -686,8 +726,8 @@ namespace	Stroika {
 			 *				F(String_ExternalMemoryOwnership_StackLifetime_ReadOnly (cs));
 			 *			}
 			 *
-			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime_ReadOnly() based memory maybe more efficient than the
-			 *	previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
+			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime_ReadOnly()
+			 *	based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
 			 *
 			 *		<<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
 			 *			real optimized implemenation >>
@@ -706,12 +746,12 @@ namespace	Stroika {
 			 *	String_ExternalMemoryOwnership_StackLifetime_ReadWrite is a subtype of string you can use to construct a String object, so long as the memory pointed to
 			 * in the argument has a
 			 *		o	Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime_ReadWrite envelope class
-			 *		o	and buffer data never changes value externally to this String represenation
+			 *		o	and buffer data never changes value externally to this String represenation (but maybe changed by the String_ExternalMemoryOwnership_StackLifetime_ReadWrite implementation)
 			 *
 			 *	Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime_ReadWrite ()!
 			 *
 			 *	Strings constructed with this String_ExternalMemoryOwnership_StackLifetime_ReadWrite maybe treated like normal strings - passed anywhere, and even modified via the
-			 *	String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
+			 *	String APIs. However, the underlying implemenation may cache the argument 'wchar_t* cString' for as long as the lifetime of the envelope class,
 			 *	and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
 			 *
 			 *	This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
@@ -727,15 +767,16 @@ namespace	Stroika {
 			 *		inline	String	F(String x)			{ saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
 			 *
 			 *
-			 *		void f (const wchar_t* cs)
+			 *		void f ()
 			 *			{
+			 *				char	cs[1024] = L"FRED";
 			 *				F(L"FRED";);
 			 *				F(String (L"FRED"));
 			 *				F(String_ExternalMemoryOwnership_StackLifetime_ReadWrite (cs));
 			 *			}
 			 *
-			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime_ReadWrite() based memory maybe more efficient than the
-			 *	previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
+			 *	These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime_ReadWrite()
+			 *	based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (until its changed inside F()).
 			 *
 			 *		<<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
 			 *			real optimized implemenation >>
