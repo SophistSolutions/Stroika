@@ -678,6 +678,9 @@ void	String::InsertAt (const Character* from, const Character* to, size_t at)
 	Require (from <= to);
 	Require (from != nullptr or from == to);
 	Require (to != nullptr or from == to);
+	if (from == to) {
+		return;
+	}
 	try {
 		_fRep->InsertAt (from, to, at);
 	}

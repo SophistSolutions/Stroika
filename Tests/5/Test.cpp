@@ -447,6 +447,15 @@ namespace	{
 			VerifyTestResult (s == L"frex");
 			s.InsertAt ('x', 2);
 			VerifyTestResult (s == L"frxex");
+			{
+				wchar_t	kZero[]	=	L"";
+				s.InsertAt (StartOfArray (kZero), StartOfArray (kZero), 0);
+				VerifyTestResult (s == L"frxex");
+				s.InsertAt (StartOfArray (kZero), StartOfArray (kZero), 1);
+				VerifyTestResult (s == L"frxex");
+				s.InsertAt (StartOfArray (kZero), StartOfArray (kZero), 5);
+				VerifyTestResult (s == L"frxex");
+			}
 		}
 
 	void    Test8_ExternalMemoryOwnershipStrings_ ()
