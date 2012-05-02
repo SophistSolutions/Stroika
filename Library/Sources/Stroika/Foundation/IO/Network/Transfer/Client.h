@@ -52,14 +52,14 @@ namespace	Stroika {
 						String				fMethod;
 						map<String,String>	fOverrideHeaders;
 						vector<Byte>		fData;	// usually empty, but provided for some methods like POST
-						InternetMediaType	fDataType;
+						InternetMediaType	fContentType;
 						
 					};
 					struct	Response {
 						Response ();
 
 						vector<Byte>		fData;	// usually empty, but provided for some methods like POST
-						InternetMediaType	fDataType;
+						InternetMediaType	fContentType;
 						map<String,String>	fHeaders;
 						HTTP::Status		fStatus;
 					};
@@ -105,9 +105,9 @@ namespace	Stroika {
 						// Simple wrappers, with hardwired methods
 						public:
 							nonvirtual	Response	Get (const map<String,String>& extraHeaders = map<String,String> ());
-							nonvirtual	Response	POST (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
+							nonvirtual	Response	Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
 							nonvirtual	Response	Delete (const map<String,String>& extraHeaders = map<String,String> ());
-							nonvirtual	Response	Put (const map<String,String>& extraHeaders = map<String,String> ());
+							nonvirtual	Response	Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
 
 						private:
 							Memory::SharedPtr<ISession>	fRep_;

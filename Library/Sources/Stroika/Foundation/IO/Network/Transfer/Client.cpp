@@ -39,6 +39,8 @@ vector<Byte>	Transfer::Fetch (const wstring& url)
 
 
 
+
+
 /*
  ********************************************************************************
  ******************************* Transfer::Request *****************************
@@ -48,9 +50,10 @@ Request::Request ()
 	: fMethod ()
 	, fOverrideHeaders ()
 	, fData ()
-	, fDataType ()
+	, fContentType ()
 {
 }
+
 
 
 
@@ -62,7 +65,7 @@ Request::Request ()
  */
 Response::Response ()
 	: fData ()
-	, fDataType ()
+	, fContentType ()
 	, fHeaders ()
 	, fStatus ()
 {
@@ -80,29 +83,41 @@ Response::Response ()
  */
 Response	Session::Get (const map<String,String>& extraHeaders)
 {
-	AssertNotImplemented ();
+	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
+	r.fMethod = L"GET";
+	r.fOverrideHeaders = extraHeaders;
 	return SendAndRequest (r);
 }
 
-Response	Session::POST (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
+Response	Session::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
 {
-	AssertNotImplemented ();
+	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
+	r.fMethod = L"POST";
+	r.fOverrideHeaders = extraHeaders;
+	r.fData = data;
+	r.fContentType = contentType;
 	return SendAndRequest (r);
 }
 
 Response	Session::Delete (const map<String,String>& extraHeaders)
 {
-	AssertNotImplemented ();
+	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
+	r.fMethod = L"DELETE";
+	r.fOverrideHeaders = extraHeaders;
 	return SendAndRequest (r);
 }
 
-Response	Session::Put (const map<String,String>& extraHeaders)
+Response	Session::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
 {
-	AssertNotImplemented ();
+	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
+	r.fMethod = L"POST";
+	r.fOverrideHeaders = extraHeaders;
+	r.fData = data;
+	r.fContentType = contentType;
 	return SendAndRequest (r);
 }
 
