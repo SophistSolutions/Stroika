@@ -207,6 +207,8 @@ namespace	Stroika {
 					 *
 					 *	NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
 					 *	logically extends Date with extra (TOD) information.
+					 *
+					 *	NB: This function result is TIMEZONE AGNOSTIC (always? at least for time_t - but assume for EVERYTHING unless documented otherwise) -- LGP 2012-05-01.
 					 */
 					template	<typename T>
 						nonvirtual	T	As () const;
