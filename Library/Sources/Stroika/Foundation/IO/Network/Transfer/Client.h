@@ -12,6 +12,7 @@
 #include	"../../../Configuration/Common.h"
 #include	"../../../Characters/String.h"
 #include	"../../../DataExchangeFormat/InternetMediaType.h"
+#include	"../../../Memory/SharedPtr.h"
 #include	"../URL.h"
 #include	"../HTTP/Status.h"
 
@@ -67,7 +68,29 @@ namespace	Stroika {
 // DO REP STUFF - SO CAN HAVE _WinHTTP and _LibCurl implemenations
 //	
 // Unclear about copyability - maybe if its a smartpr OK to copy - but would be copy-by-reference? Could be confusing! CONSIDER
+					class	ISession {
+						private:
+							NO_COPY_CONSTRUCTOR (ISession);
+							NO_ASSIGNMENT_OPERATOR (ISession);
+						
+						public:
+							ISession ();
+							virtual ~ISession ();
+						
+						public:
+							virtual	URL		GetURL () const							=	0;
+							virtual	void	SetURL (const URL& url)					=	0;
+							virtual	void	Close ()								=	0;
+							virtual	Response	SendAndRequest (const Request& r)	=	0;
+					};
+
 					class	Session {
+						private:
+							NO_COPY_CONSTRUCTOR (Session);
+							NO_ASSIGNMENT_OPERATOR (Session);
+						protected:
+							Session (const Memory::SharedPtr<ISession>& rep);
+
 						public:
 							nonvirtual	URL		GetURL () const;
 							nonvirtual	void	SetURL (const URL& url);
@@ -85,6 +108,9 @@ namespace	Stroika {
 							nonvirtual	Response	POST (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
 							nonvirtual	Response	Delete (const map<String,String>& extraHeaders = map<String,String> ());
 							nonvirtual	Response	Put (const map<String,String>& extraHeaders = map<String,String> ());
+
+						private:
+							Memory::SharedPtr<ISession>	fRep_;
 					};
 
 

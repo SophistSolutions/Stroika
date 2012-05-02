@@ -14,8 +14,42 @@ namespace	Stroika {
 	namespace	Foundation {
 		namespace	IO {
 			namespace	Network {
+				namespace	Transfer {
 
 
+					// class ISession
+					inline	ISession::ISession ()
+						{
+						}
+					inline	ISession::~ISession ()
+						{
+						}
+
+
+					// class Session
+					inline	Session::Session (const Memory::SharedPtr<ISession>& rep)
+						: fRep_ (rep)
+						{
+						}
+					inline	URL		Session::GetURL () const
+						{
+							return fRep_->GetURL ();
+						}
+					inline	void	Session::SetURL (const URL& url)
+						{
+							fRep_->SetURL (url);
+						}
+					inline	void	Session::Close ()
+						{
+							fRep_->Close ();
+						}
+					inline	Response	Session::SendAndRequest (const Request& r)
+						{
+							return fRep_->SendAndRequest (r);
+						}
+
+
+				}
 			}
 		}
 	}
