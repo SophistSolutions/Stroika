@@ -616,10 +616,10 @@ int	DateTime::Compare (const DateTime& rhs) const
 		}
 	}
 	Assert (not empty () and not rhs.empty ());
-	if (GetTimezone () == rhs.GetTimezone ()) {
+	if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == eUnknown_TZ)  or (rhs.GetTimezone () == eUnknown_TZ)) {
 		int	cmp	=	GetDate ().Compare (rhs.GetDate ());
 		if (cmp == 0) {
-			cmp	=	GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());
+			cmp	= GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());
 		}
 		return cmp;
 	}

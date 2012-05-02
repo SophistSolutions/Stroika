@@ -94,8 +94,8 @@ namespace	Stroika {
 					 * Most of the time applications will utilize localtime. But occasionally its useful to use differnt timezones, and our approach to this
 					 * is to simply convert everything to GMT.
 					 *
-					 * eUnknown_TZ - for the most part - is treated as if it were localtime. However - the "Kind" function retunrs Unknown in case your application wants to
-					 * treat it differently.
+					 * eUnknown_TZ - for the most part - is treated as if it were localtime (except with compare). However - the "Kind" function 
+					 * returns Unknown in case your application wants to treat it differently.
 					 */
 					enum Timezone {
 						eLocalTime_TZ,
@@ -246,8 +246,8 @@ namespace	Stroika {
 					// Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
 					// this comparison function - see the notes about 'empty' in the class description.
 					//
-					// Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered differnt. They
-					// will BOTH be converted to GMT, and compared as GMT.
+					// Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered different. If either one is
+					// unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
 					nonvirtual	int	Compare (const DateTime& rhs) const;
 
 				private:
