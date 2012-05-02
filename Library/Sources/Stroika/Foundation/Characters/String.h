@@ -48,6 +48,10 @@
  * TODO:
  *
  *
+ *		o	EITHER add "StartsWith" method, or document (via examples) how to use Match() to do StartsWith/EndsWith. It MUST be in the docString!
+ *			and test cases in the test suite...
+ *
+ *
  *		o	Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite documentation, and make clearer,a nd document the tricky bits loosely
  *			alluded to in the appropriate place if the API is truely DOABLE.
  *
