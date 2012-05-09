@@ -23,7 +23,7 @@ namespace	Stroika {
 							: fCurlCode_ (ccode)
 							{
 							}
-						inline	CURLcode	LibCurlException::GetCode () const
+						inline	LibCurlException::CURLcode	LibCurlException::GetCode () const
 							{
 								return fCurlCode_;
 							}

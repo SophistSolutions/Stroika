@@ -39,7 +39,6 @@ my $STATIC_LINK_GCCRUNTIME = 1;
 my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 
 
-
 sub	DoHelp_
 {
 	print("Usage:\n");
@@ -62,6 +61,11 @@ print(" >>> MUST ADD HAS_FEATURE\n");
 
 sub	ParseCommandLine_
 {
+###HACK - do this better - but for now - we can test...
+	if ("$^O" eq "linux" && -e '/usr/include/curl/curl.h') {
+		$useExtraCDefines[@useExtraCDefines] = "#define qHasFeature_libcurl 1";
+	}
+
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if (lc ($var) eq "-force" or lc ($var) eq "--force") {

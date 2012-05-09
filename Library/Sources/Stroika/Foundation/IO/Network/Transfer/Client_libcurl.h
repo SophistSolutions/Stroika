@@ -12,6 +12,7 @@
 #include	"../../../Configuration/Common.h"
 #include	"../../../Characters/String.h"
 #include	"../../../DataExchangeFormat/InternetMediaType.h"
+#include	"../../../Execution/StringException.h"
 #include	"../../../Memory/SharedPtr.h"
 #include	"../URL.h"
 #include	"../HTTP/Status.h"
@@ -21,7 +22,6 @@
 
 #if		qHasFeature_libcurl
 struct	curl_slist;
-typedef	int	CURLcode;
 #endif
 
 
@@ -40,7 +40,9 @@ namespace	Stroika {
 				namespace	Transfer {
 
 					#if		qHasFeature_libcurl
-						class	LibCurlException : public StringException {
+						class	LibCurlException : public Execution::StringException {
+							public:
+								typedef	int	CURLcode;
 							public:
 								LibCurlException (CURLcode ccode);
 
