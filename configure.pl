@@ -65,6 +65,9 @@ sub	ParseCommandLine_
 	if ("$^O" eq "linux" && -e '/usr/include/curl/curl.h') {
 		$useExtraCDefines[@useExtraCDefines] = "#define qHasFeature_libcurl 1";
 	}
+	if ("$^O" eq "cygwin") {
+		$useExtraCDefines[@useExtraCDefines] = "#define qHasFeature_WinHTTP 1";
+	}
 
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];

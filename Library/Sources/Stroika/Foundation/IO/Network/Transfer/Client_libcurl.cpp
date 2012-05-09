@@ -30,6 +30,7 @@ namespace	{
 			curl_global_init (CURL_GLOBAL_ALL);
 		}
 	};
+	ModuleInit_	sIniter_;
 }
 #endif
 
