@@ -40,7 +40,7 @@ namespace	{
 namespace	{
 	wstring	mkExceptMsg_ (LibCurlException::CURLcode ccode)
 		{
-			return String::FromUTF8 (curl_easy_strerror (static_cast<::CURLcode> (ccode))).As<wstring> ();
+			return String::FromUTF8 (curl_easy_strerror (static_cast<CURLcode> (ccode))).As<wstring> ();
 		}
 }
 
@@ -57,7 +57,7 @@ LibCurlException::LibCurlException (CURLcode ccode)
 
 void	LibCurlException::DoThrowIfError (CURLcode status)
 {
-	if (status != 0) {
+	if (status != CURLE_OK) {
 		Execution::DoThrow (LibCurlException (status));
 	}
 }
@@ -111,7 +111,7 @@ void	IConnection_LibCurl::SetURL (const URL& url) override
 void	IConnection_LibCurl::Close ()	override
 {
 	if (fCurlHandle_ != nullptr) {
-		LibCurlException::DoThrowIfError (::curl_easy_cleanup (fCurlHandle_));
+		::curl_easy_cleanup (fCurlHandle_);
 		fCurlHandle_ = nullptr;
 	}
 }
@@ -123,7 +123,7 @@ size_t	IConnection_LibCurl::ResponseWriteHandler_ (void* ptr, size_t size, size_
 
 size_t	IConnection_LibCurl::ResponseWriteHandler_ (const Byte* ptr, size_t nBytes)
 {
-	fResponseData_.insert (ptr, ptr + nBytes);
+	fResponseData_.insert (fResponseData_.end (), ptr, ptr + nBytes);
 	return nBytes;
 }
 
