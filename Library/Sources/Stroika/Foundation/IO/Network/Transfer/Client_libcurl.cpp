@@ -27,12 +27,52 @@ namespace	{
 	struct	ModuleInit_ {
 		ModuleInit_ ()
 		{
-			curl_global_init (CURL_GLOBAL_ALL);
+			::curl_global_init (CURL_GLOBAL_ALL);
 		}
 	};
 	ModuleInit_	sIniter_;
 }
 #endif
+
+
+
+
+
+#if		qHasFeature_libcurl
+class	Connection_LibCurl::Rep_ : public IConnection {
+	private:
+		NO_COPY_CONSTRUCTOR (Rep_);
+		NO_ASSIGNMENT_OPERATOR (Rep_);
+	public:
+		Rep_ ();
+		virtual ~Rep_ ();
+						
+	public:
+		virtual	URL			GetURL () const	override;
+		virtual	void		SetURL (const URL& url)	override;
+		virtual	void		Close ()	override;
+		virtual	Response	SendAndRequest (const Request& request)	override;
+
+	private:
+		nonvirtual	void	MakeHandleIfNeeded_ ();
+
+	private:
+		static		size_t	ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+		nonvirtual	size_t	ResponseWriteHandler_ (const Byte* ptr, size_t nBytes);
+
+	private:
+		static		size_t	ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+		nonvirtual	size_t	ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
+
+	private:
+		void*				fCurlHandle_;
+		string				fCURLCache_URL_;	// cuz of quirky memory management policies of libcurl
+		vector<Byte>		fResponseData_;
+		map<String,String>	fResponseHeaders_;
+		curl_slist*			fSavedHeaders_;
+};
+#endif
+
 
 
 
@@ -74,10 +114,10 @@ void	LibCurlException::DoThrowIfError (CURLcode status)
 #if		qHasFeature_libcurl
 /*
  ********************************************************************************
- ********************* Transfer::IConnection_LibCurl ****************************
+ ****************** Transfer::Connection_LibCurl::Rep_ **************************
  ********************************************************************************
  */
-IConnection_LibCurl::IConnection_LibCurl ()
+Connection_LibCurl::Rep_::Rep_ ()
 	: fCurlHandle_ (nullptr)
 	, fCURLCache_URL_ ()
 	, fResponseData_ ()
@@ -85,7 +125,7 @@ IConnection_LibCurl::IConnection_LibCurl ()
 {
 }
 
-IConnection_LibCurl::~IConnection_LibCurl ()
+Connection_LibCurl::Rep_::~Rep_ ()
 {
 	if (fCurlHandle_ != nullptr) {
 		curl_easy_cleanup (fCurlHandle_);
@@ -96,20 +136,20 @@ IConnection_LibCurl::~IConnection_LibCurl ()
 	}
 }
 
-URL		IConnection_LibCurl::GetURL () const override
+URL		Connection_LibCurl::Rep_::GetURL () const override
 {
 	// needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
 	return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
 }
 
-void	IConnection_LibCurl::SetURL (const URL& url) override
+void	Connection_LibCurl::Rep_::SetURL (const URL& url) override
 {
 	MakeHandleIfNeeded_ ();
 	fCURLCache_URL_ = String (url.GetURL ()).AsUTF8 ();
 	LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
 }
 
-void	IConnection_LibCurl::Close ()	override
+void	Connection_LibCurl::Rep_::Close ()	override
 {
 	if (fCurlHandle_ != nullptr) {
 		::curl_easy_cleanup (fCurlHandle_);
@@ -117,23 +157,23 @@ void	IConnection_LibCurl::Close ()	override
 	}
 }
 
-size_t	IConnection_LibCurl::ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+size_t	Connection_LibCurl::Rep_::ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
 	return reinterpret_cast<IConnection_LibCurl*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
 
-size_t	IConnection_LibCurl::ResponseWriteHandler_ (const Byte* ptr, size_t nBytes)
+size_t	Connection_LibCurl::Rep_::ResponseWriteHandler_ (const Byte* ptr, size_t nBytes)
 {
 	fResponseData_.insert (fResponseData_.end (), ptr, ptr + nBytes);
 	return nBytes;
 }
 
-size_t	IConnection_LibCurl::ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+size_t	Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
 	return reinterpret_cast<IConnection_LibCurl*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
 
-size_t	IConnection_LibCurl::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes)
+size_t	Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes)
 {
 	string tmp (reinterpret_cast<const char*> (ptr), nBytes);
 	string::size_type i = tmp.find (':');
@@ -152,7 +192,7 @@ size_t	IConnection_LibCurl::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t
 	return nBytes;
 }
 
-Response	IConnection_LibCurl::SendAndRequest (const Request& request)	override
+Response	Connection_LibCurl::Rep_::SendAndRequest (const Request& request)	override
 {
 	MakeHandleIfNeeded_ ();
 	fResponseData_.clear ();
@@ -187,7 +227,7 @@ Response	IConnection_LibCurl::SendAndRequest (const Request& request)	override
 	return response;
 }
 
-void	IConnection_LibCurl::MakeHandleIfNeeded_ ()
+void	Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
 {
 	if (fCurlHandle_ == nullptr) {
 		ThrowIfNull (fCurlHandle_ = ::curl_easy_init ());
@@ -209,14 +249,16 @@ void	IConnection_LibCurl::MakeHandleIfNeeded_ ()
 
 
 
+
+
 #if		qHasFeature_libcurl
 /*
  ********************************************************************************
  ********************* Transfer::IConnection_LibCurl ****************************
  ********************************************************************************
  */
-LibCurlConnection::LibCurlConnection ()
-	: Connection (Memory::SharedPtr<IConnection> (new IConnection_LibCurl ()))
+Connection_LibCurl::Connection_LibCurl ()
+	: Connection (Memory::SharedPtr<IConnection> (new Rep_ ()))
 {
 }
 #endif

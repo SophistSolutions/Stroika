@@ -20,9 +20,6 @@
 #include	"Client.h"
 
 
-#if		qHasFeature_libcurl
-struct	curl_slist;
-#endif
 
 
 
@@ -66,49 +63,20 @@ namespace	Stroika {
 							private:
 								CURLcode	fCurlCode_;
 						};
-
-
-						class	IConnection_LibCurl : public IConnection {
-							private:
-								NO_COPY_CONSTRUCTOR (IConnection_LibCurl);
-								NO_ASSIGNMENT_OPERATOR (IConnection_LibCurl);
-							public:
-								IConnection_LibCurl ();
-								virtual ~IConnection_LibCurl ();
-						
-							public:
-								virtual	URL			GetURL () const	override;
-								virtual	void		SetURL (const URL& url)	override;
-								virtual	void		Close ()	override;
-								virtual	Response	SendAndRequest (const Request& request)	override;
-
-							private:
-								nonvirtual	void	MakeHandleIfNeeded_ ();
-
-							private:
-								static		size_t	ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
-								nonvirtual	size_t	ResponseWriteHandler_ (const Byte* ptr, size_t nBytes);
-
-							private:
-								static		size_t	ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
-								nonvirtual	size_t	ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
-
-							private:
-								void*				fCurlHandle_;
-								string				fCURLCache_URL_;	// cuz of quirky memory management policies of libcurl
-								vector<Byte>		fResponseData_;
-								map<String,String>	fResponseHeaders_;
-								curl_slist*			fSavedHeaders_;
-						};
 					#endif
 
 
-					// Just object-slice the smart pointer to get a regular connection object - this is just a factory for
-					// LibCurl connection rep objects
-					class	LibCurlConnection : public Connection {
-						public:
-							LibCurlConnection ();
-					};
+					#if		qHasFeature_libcurl
+						// Just object-slice the smart pointer to get a regular connection object - this is just a factory for
+						// LibCurl connection rep objects
+						class	Connection_LibCurl : public Connection {
+							public:
+								Connection_LibCurl ();
+
+							private:
+								class	Rep_;
+						};
+					#endif
 
 				}
 			}
