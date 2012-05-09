@@ -17,17 +17,17 @@ namespace	Stroika {
 				namespace	Transfer {
 
 
-					// class ISession
-					inline	ISession::ISession ()
+					// class IConnection
+					inline	IConnection::IConnection ()
 						{
 						}
-					inline	ISession::~ISession ()
+					inline	IConnection::~IConnection ()
 						{
 						}
 
 
 					// class Session
-					inline	Session::Session (const Memory::SharedPtr<ISession>& rep)
+					inline	Session::Session (const Memory::SharedPtr<IConnection>& rep)
 						: fRep_ (rep)
 						{
 						}

@@ -59,23 +59,24 @@ namespace	Stroika {
 						Response ();
 
 						vector<Byte>		fData;	// usually empty, but provided for some methods like POST
-						InternetMediaType	fContentType;
 						map<String,String>	fHeaders;
 						HTTP::Status		fStatus;
+
+						nonvirtual	InternetMediaType	GetContentType () const;	// scans headers
 					};
 					
 
 // DO REP STUFF - SO CAN HAVE _WinHTTP and _LibCurl implemenations
 //	
 // Unclear about copyability - maybe if its a smartpr OK to copy - but would be copy-by-reference? Could be confusing! CONSIDER
-					class	ISession {
+					class	IConnection {
 						private:
-							NO_COPY_CONSTRUCTOR (ISession);
-							NO_ASSIGNMENT_OPERATOR (ISession);
+							NO_COPY_CONSTRUCTOR (IConnection);
+							NO_ASSIGNMENT_OPERATOR (IConnection);
 						
 						public:
-							ISession ();
-							virtual ~ISession ();
+							IConnection ();
+							virtual ~IConnection ();
 						
 						public:
 							virtual	URL		GetURL () const							=	0;
@@ -89,7 +90,7 @@ namespace	Stroika {
 							NO_COPY_CONSTRUCTOR (Session);
 							NO_ASSIGNMENT_OPERATOR (Session);
 						protected:
-							Session (const Memory::SharedPtr<ISession>& rep);
+							Session (const Memory::SharedPtr<IConnection>& rep);
 
 						public:
 							nonvirtual	URL		GetURL () const;
@@ -110,7 +111,7 @@ namespace	Stroika {
 							nonvirtual	Response	Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
 
 						private:
-							Memory::SharedPtr<ISession>	fRep_;
+							Memory::SharedPtr<IConnection>	fRep_;
 					};
 
 

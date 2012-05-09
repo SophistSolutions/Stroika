@@ -387,6 +387,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -834,6 +837,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1126,6 +1132,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
   </ItemGroup>
 </Project>
