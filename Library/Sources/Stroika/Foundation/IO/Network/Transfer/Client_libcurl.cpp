@@ -191,3 +191,18 @@ void	IConnection_LibCurl::MakeHandleIfNeeded_ ()
 }
 #endif
 
+
+
+
+
+#if		qHasFeature_libcurl
+/*
+ ********************************************************************************
+ ********************* Transfer::IConnection_LibCurl ****************************
+ ********************************************************************************
+ */
+LibCurlConnection::LibCurlConnection ()
+	: Connection (Memory::SharedPtr<IConnection> (new IConnection_LibCurl ()))
+{
+}
+#endif

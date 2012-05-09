@@ -26,19 +26,6 @@ using	namespace	Stroika::Foundation::IO::Network::Transfer;
 
 
 
-/*
- ********************************************************************************
- ******************************* Transfer::Fetch ********************************
- ********************************************************************************
- */
-vector<Byte>	Transfer::Fetch (const wstring& url)
-{
-	return vector<Byte> ();	//tmphack
-}
-
-
-
-
 
 
 /*
@@ -77,10 +64,10 @@ Response::Response ()
 
 /*
  ********************************************************************************
- ******************************* Transfer::Session ******************************
+ **************************** Transfer::Connection ******************************
  ********************************************************************************
  */
-Response	Session::Get (const map<String,String>& extraHeaders)
+Response	Connection::Get (const map<String,String>& extraHeaders)
 {
 	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
@@ -89,7 +76,7 @@ Response	Session::Get (const map<String,String>& extraHeaders)
 	return SendAndRequest (r);
 }
 
-Response	Session::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
+Response	Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
 {
 	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
@@ -100,7 +87,7 @@ Response	Session::Post (const vector<Byte>& data, const InternetMediaType& conte
 	return SendAndRequest (r);
 }
 
-Response	Session::Delete (const map<String,String>& extraHeaders)
+Response	Connection::Delete (const map<String,String>& extraHeaders)
 {
 	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
@@ -109,7 +96,7 @@ Response	Session::Delete (const map<String,String>& extraHeaders)
 	return SendAndRequest (r);
 }
 
-Response	Session::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
+Response	Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
 {
 	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;

@@ -28,7 +28,7 @@
  *		(o)		Redo response / src API using streams?
  *		(o)		Add Client side certs
  *		(o)		Add server-side-cert checking mechanism (review LIBCURL to see what makes sense)
- *		(o)		Add TIMEOUT property on Session object as background for requests - or maybe make it part of request object? (param to requests)?
+ *		(o)		Add TIMEOUT property on Connection object as background for requests - or maybe make it part of request object? (param to requests)?
  *
  */
 
@@ -42,9 +42,6 @@ namespace	Stroika {
 					using	Characters::String;
 					using	DataExchangeFormat::InternetMediaType;
 
-
-					// SUPER PRIMITIVE fetcher - must do MUCH better, much more elaborate!
-					vector<Byte>	Fetch (const wstring& url);
 
 					struct	Request {
 						Request ();
@@ -85,19 +82,19 @@ namespace	Stroika {
 							virtual	Response	SendAndRequest (const Request& r)		=	0;
 					};
 
-					class	Session {
+					class	Connection {
 						private:
-							NO_COPY_CONSTRUCTOR (Session);
-							NO_ASSIGNMENT_OPERATOR (Session);
+							NO_COPY_CONSTRUCTOR (Connection);
+							NO_ASSIGNMENT_OPERATOR (Connection);
 						protected:
-							Session (const Memory::SharedPtr<IConnection>& rep);
+							Connection (const Memory::SharedPtr<IConnection>& rep);
 
 						public:
 							nonvirtual	URL		GetURL () const;
 							nonvirtual	void	SetURL (const URL& url);
 
 						public:
-							// force closed session. Can still call Send again, but that autocreates new session
+							// force closed Connection. Can still call Send again, but that autocreates new Connection
 							nonvirtual	void	Close ();
 
 						public:
@@ -116,7 +113,7 @@ namespace	Stroika {
 
 
 
-					// Do ISession API - pure virutal, and then concreete subclasses for and _WinHTTP and _LibCurl
+					// Do IConnection API - pure virutal, and then concreete subclasses for and _WinHTTP and _LibCurl
 					// Uncear if winhttp and libcurl versions go in diff files? Could also do native socket impl?
 				}
 			}

@@ -26,24 +26,24 @@ namespace	Stroika {
 						}
 
 
-					// class Session
-					inline	Session::Session (const Memory::SharedPtr<IConnection>& rep)
+					// class Connection
+					inline	Connection::Connection (const Memory::SharedPtr<IConnection>& rep)
 						: fRep_ (rep)
 						{
 						}
-					inline	URL		Session::GetURL () const
+					inline	URL		Connection::GetURL () const
 						{
 							return fRep_->GetURL ();
 						}
-					inline	void	Session::SetURL (const URL& url)
+					inline	void	Connection::SetURL (const URL& url)
 						{
 							fRep_->SetURL (url);
 						}
-					inline	void	Session::Close ()
+					inline	void	Connection::Close ()
 						{
 							fRep_->Close ();
 						}
-					inline	Response	Session::SendAndRequest (const Request& r)
+					inline	Response	Connection::SendAndRequest (const Request& r)
 						{
 							return fRep_->SendAndRequest (r);
 						}
