@@ -35,14 +35,14 @@ namespace	Stroika {
 					the class library. This is because nearly all the parameters passed to Led functions are immediately
 					checked for validity, so mistakes are trapped as early as possible. If you pass bad values to a Led
 					function, you will very likely get a debugger trap at almost exactly the point in your calling code
-					where the error occured. This can make debugging code written using Led much easier.</p>
+					where the error occurred. This can make debugging code written using Led much easier.</p>
 						<p>Led provides four familes of 'assertion' macro functions. The are named 
 							<code><em>Assert</em></code>,
 							<code><em>Require</em></code>,
 							<code><em>Ensure</em></code>, and
 							<code><em>Verify</em></code>.
 						</p>
-						<p>The familily you will most often be interested in is <code><em>Require</em></code>s.
+						<p>The family you will most often be interested in is <code><em>Require</em></code>s.
 					This is because these are used to check parameters validity on entry to a function. So typically
 					when you see a <em>Require</em> fail, you will find that it is the calling function which is passing
 					invalid arguments to the function which triggered the requirement failure. The other reason <em>Requires</em>
