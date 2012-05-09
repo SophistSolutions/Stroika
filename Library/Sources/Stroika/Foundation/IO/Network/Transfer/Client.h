@@ -83,9 +83,6 @@ namespace	Stroika {
 					};
 
 					class	Connection {
-						private:
-							NO_COPY_CONSTRUCTOR (Connection);
-							NO_ASSIGNMENT_OPERATOR (Connection);
 						protected:
 							Connection (const Memory::SharedPtr<IConnection>& rep);
 
@@ -114,8 +111,11 @@ namespace	Stroika {
 
 
 
-					// Do IConnection API - pure virutal, and then concreete subclasses for and _WinHTTP and _LibCurl
-					// Uncear if winhttp and libcurl versions go in diff files? Could also do native socket impl?
+					/*
+					 * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
+					 * to construct an unconnected object.
+					 */
+					Connection	CreateConnection ();
 				}
 			}
 		}

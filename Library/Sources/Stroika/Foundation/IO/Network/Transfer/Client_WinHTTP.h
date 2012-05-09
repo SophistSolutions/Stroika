@@ -42,15 +42,15 @@ namespace	Stroika {
 					#if		qHasFeature_WinHTTP
 						// Just object-slice the smart pointer to get a regular connection object - this is just a factory for
 						// LibCurl connection rep objects
-						class	WinHTTPConnection : public Connection {
+						class	Connection_WinHTTP : public Connection {
 							public:
-								WinHTTPConnection ();
+								Connection_WinHTTP ();
 
 							private:
 								class	Rep_;
 						};
 
-						class	WinHTTPConnection::Rep_ : public IConnection {
+						class	Connection_WinHTTP::Rep_ : public IConnection {
 							private:
 								NO_COPY_CONSTRUCTOR (Rep_);
 								NO_ASSIGNMENT_OPERATOR (Rep_);

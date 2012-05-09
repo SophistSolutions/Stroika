@@ -77,16 +77,16 @@ namespace	{
 #if		qHasFeature_WinHTTP
 /*
  ********************************************************************************
- ***************** Transfer::WinHTTPConnection::Rep_ ****************************
+ ***************** Transfer::Connection_WinHTTP::Rep_ ***************************
  ********************************************************************************
  */
-WinHTTPConnection::Rep_::Rep_ ()
+Connection_WinHTTP::Rep_::Rep_ ()
 	: fSessionHandle_ (nullptr)
 	, fConnectionHandle_ (nullptr)
 {
 }
 
-WinHTTPConnection::Rep_::~Rep_ ()
+Connection_WinHTTP::Rep_::~Rep_ ()
 {
 	if (fConnectionHandle_ != nullptr) {
 		Verify (::WinHttpCloseHandle (fConnectionHandle_));
@@ -96,7 +96,7 @@ WinHTTPConnection::Rep_::~Rep_ ()
 	}
 }
 
-URL		WinHTTPConnection::Rep_::GetURL () const override
+URL		Connection_WinHTTP::Rep_::GetURL () const override
 {
 	// needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
 	AssertNotImplemented ();
@@ -104,13 +104,13 @@ URL		WinHTTPConnection::Rep_::GetURL () const override
 	return URL ();
 }
 
-void	WinHTTPConnection::Rep_::SetURL (const URL& url) override
+void	Connection_WinHTTP::Rep_::SetURL (const URL& url) override
 {
 	AssureHasHandle_ ();
 	AssertNotImplemented ();
 }
 
-void	WinHTTPConnection::Rep_::Close ()	override
+void	Connection_WinHTTP::Rep_::Close ()	override
 {
 	if (fConnectionHandle_ != nullptr) {
 		Verify (::WinHttpCloseHandle (fConnectionHandle_));
@@ -122,7 +122,7 @@ void	WinHTTPConnection::Rep_::Close ()	override
 	}
 }
 
-Response	WinHTTPConnection::Rep_::SendAndRequest (const Request& request)	override
+Response	Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)	override
 {
 	Close ();//tmphack
 	Response	response;
@@ -373,7 +373,7 @@ RetryWithNoCERTCheck:
 	return response;
 }
 
-void	WinHTTPConnection::Rep_::AssureHasHandle_ ()
+void	Connection_WinHTTP::Rep_::AssureHasHandle_ ()
 {
 }
 #endif
@@ -385,10 +385,10 @@ void	WinHTTPConnection::Rep_::AssureHasHandle_ ()
 #if		qHasFeature_WinHTTP
 /*
  ********************************************************************************
- *********************** Transfer::WinHTTPConnection ****************************
+ ********************** Transfer::Connection_WinHTTP ****************************
  ********************************************************************************
  */
-WinHTTPConnection::WinHTTPConnection ()
+Connection_WinHTTP::Connection_WinHTTP ()
 	: Connection (Memory::SharedPtr<IConnection> (new Rep_ ()))
 {
 }

@@ -16,6 +16,15 @@
 
 #include	"Client.h"
 
+#if		qHasFeature_libcurl
+#include	"Client_libcurl.h"
+#endif
+#if		qHasFeature_WinHTTP
+#include	"Client_WinHTTP.h"
+#endif
+
+
+
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Characters;
 using	namespace	Stroika::Foundation::IO;
@@ -113,3 +122,21 @@ Response	Connection::Options (const map<String,String>& extraHeaders)
 }
 
 
+
+
+
+
+/*
+ ********************************************************************************
+ ************************ Transfer::CreateConnection ****************************
+ ********************************************************************************
+ */
+Connection	Transfer::CreateConnection ()
+{
+#if		qHasFeature_libcurl
+	return Client_libcurl ();
+#endif
+#if		qHasFeature_WinHTTP
+	return Connection_WinHTTP ();
+#endif
+}
