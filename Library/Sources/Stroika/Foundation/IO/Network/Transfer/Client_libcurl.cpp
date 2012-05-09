@@ -77,7 +77,7 @@ void	LibCurlException::DoThrowIfError (CURLcode status)
  ********************************************************************************
  */
 IConnection_LibCurl::IConnection_LibCurl ()
-	: fCurlHandle_ (curl_easy_init ())
+	: fCurlHandle_ (nullptr)
 	, fCURLCache_URL_ ()
 	, fResponseData_ ()
 	, fSavedHeaders_ (nullptr)
@@ -161,7 +161,11 @@ Response	IConnection_LibCurl::SendAndRequest (const Request& request)	override
 	//curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
 	// grab initial headers and do POST/etc based on args in request...
-	curl_slist*	tmpH	=	curl_slist_append (nullptr, "Expect: ");	//tmphack - really iterate over requst headers - with a few exceptions...
+	curl_slist*	tmpH	=	nullptr;
+	for (map<String,String>::const_iterator i = request.fOverrideHeaders.begin (); i != request.fOverrideHeaders.end (); ++i) {
+		tmpH = curl_slist_append (tmpH, (i->first + L": " + i->second).c_str ());
+	}
+	AssertNotNull (fCurlHandle_);
 	LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));
 	if (fSavedHeaders_ != nullptr) {
 		curl_slist_free_all (fSavedHeaders_);
@@ -185,8 +189,17 @@ Response	IConnection_LibCurl::SendAndRequest (const Request& request)	override
 void	IConnection_LibCurl::MakeHandleIfNeeded_ ()
 {
 	if (fCurlHandle_ == nullptr) {
-		fCurlHandle_  = curl_easy_init ();
+		ThrowIfNull (fCurlHandle_ = ::curl_easy_init ());
+
+		/*
+		 * Now setup COMMON options we ALWAYS set.
+		 */
 		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
+
+		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, ResponseWriteHandler_));
+		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
+		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, ResponseHeaderWriteHandler_));
+		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
 	}
 }
 #endif
