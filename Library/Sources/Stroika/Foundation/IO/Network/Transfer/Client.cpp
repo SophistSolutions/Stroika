@@ -134,7 +134,7 @@ Response	Connection::Options (const map<String,String>& extraHeaders)
 Connection	Transfer::CreateConnection ()
 {
 #if		qHasFeature_libcurl
-	return Client_libcurl ();
+	return Connection_LibCurl ();
 #endif
 #if		qHasFeature_WinHTTP
 	return Connection_WinHTTP ();
