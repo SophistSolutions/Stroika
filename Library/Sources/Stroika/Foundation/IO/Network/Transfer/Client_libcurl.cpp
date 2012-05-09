@@ -38,9 +38,9 @@ namespace	{
 
 #if		qHasFeature_libcurl
 namespace	{
-	wstring	mkExceptMsg_ (CURLcode ccode)
+	wstring	mkExceptMsg_ (LibCurlException::CURLcode ccode)
 		{
-			return String::FromUTF8 (curl_easy_strerror(ccode)).As<wstring> ();
+			return String::FromUTF8 (curl_easy_strerror (static_cast<::CURLcode> (ccode))).As<wstring> ();
 		}
 }
 
@@ -97,8 +97,8 @@ IConnection_LibCurl::~IConnection_LibCurl ()
 
 URL		IConnection_LibCurl::GetURL () const override
 {
-	// needs work...
-	return fCURLCache_URL_;
+	// needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
+	return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
 }
 
 void	IConnection_LibCurl::SetURL (const URL& url) override

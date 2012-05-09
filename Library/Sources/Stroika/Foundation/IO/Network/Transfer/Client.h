@@ -79,10 +79,10 @@ namespace	Stroika {
 							virtual ~IConnection ();
 						
 						public:
-							virtual	URL		GetURL () const							=	0;
-							virtual	void	SetURL (const URL& url)					=	0;
-							virtual	void	Close ()								=	0;
-							virtual	Response	SendAndRequest (const Request& r)	=	0;
+							virtual	URL			GetURL () const							=	0;
+							virtual	void		SetURL (const URL& url)					=	0;
+							virtual	void		Close ()								=	0;
+							virtual	Response	SendAndRequest (const Request& r)		=	0;
 					};
 
 					class	Session {

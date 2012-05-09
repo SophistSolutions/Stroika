@@ -72,6 +72,9 @@ namespace	Stroika {
 								virtual	Response	SendAndRequest (const Request& request)	override;
 
 							private:
+								nonvirtual	void	MakeHandleIfNeeded_ ();
+
+							private:
 								static		size_t	ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
 								nonvirtual	size_t	ResponseWriteHandler_ (const Byte* ptr, size_t nBytes);
 
