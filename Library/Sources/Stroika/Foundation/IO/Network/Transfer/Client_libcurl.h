@@ -28,7 +28,8 @@ struct	curl_slist;
 
 /*
  * TODO:
- *		(o)		Very rough draft
+ *		(o)		Very rough draft. This code is completely untested, and really only about 1/2 written. Even the high level
+ *				usage (container) pattern is just a draft.
  *
  */
 
