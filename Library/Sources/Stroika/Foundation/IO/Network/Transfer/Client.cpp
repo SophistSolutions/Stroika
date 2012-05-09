@@ -65,7 +65,6 @@ Request::Request ()
  */
 Response::Response ()
 	: fData ()
-	, fContentType ()
 	, fHeaders ()
 	, fStatus ()
 {

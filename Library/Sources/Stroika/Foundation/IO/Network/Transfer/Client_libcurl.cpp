@@ -21,6 +21,8 @@ using	namespace	Stroika::Foundation::IO::Network::Transfer;
 
 
 
+
+
 #if		qHasFeature_libcurl
 namespace	{
 	struct	ModuleInit_ {
@@ -37,6 +39,27 @@ namespace	{
 
 #if		qHasFeature_libcurl
 
+/*
+ ********************************************************************************
+ ************************ Transfer::LibCurlException ****************************
+ ********************************************************************************
+ */
+void	LibCurlException::DoThrowIfError (CURLcode status)
+{
+	if (status != 0) {
+		Execution::DoThrow (LibCurlException (status));
+	}
+}
+#endif
+
+
+
+
+
+
+
+
+#if		qHasFeature_libcurl
 /*
  ********************************************************************************
  ********************* Transfer::IConnection_LibCurl ****************************
@@ -61,13 +84,13 @@ IConnection_LibCurl::~IConnection_LibCurl ()
 	}
 }
 
-URL		IConnection_LibCurl::GetURL () const	override
+URL		IConnection_LibCurl::GetURL () const override
 {
 	// needs work...
 	return fCURLCache_URL_;
 }
 
-void	IConnection_LibCurl::SetURL (const URL& url)	override
+void	IConnection_LibCurl::SetURL (const URL& url) override
 {
 	MakeHandleIfNeeded_ ();
 	fCURLCache_URL_ = url.xxx;
@@ -112,7 +135,7 @@ size_t	IConnection_LibCurl::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t
 		to = String::FromUTF8 (tmp.substr (i+1));
 	}
 	from = from.Trim ();
-	to = tp.Trim ();
+	to = to.Trim ();
 	fResponseHeaders_[from] = to;
 	return nBytes;
 }
@@ -144,11 +167,7 @@ Response	IConnection_LibCurl::SendAndRequest (const Request& request)	override
 	LibCurlException::DoThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
 	response.fStatus = resultCode;
 	response.fHeaders = fResponseHeaders_;
-
-//CURLcode curl_easy_getinfo(CURL *curl, CURLINFO info, ... );
-#if 0
-	InternetMediaType	fContentType;
-#endif
+	response.fData = fResponseData_;
 	return response;
 }
 
