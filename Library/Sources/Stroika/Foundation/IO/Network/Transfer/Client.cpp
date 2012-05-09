@@ -12,6 +12,7 @@
 
 #include	"../../../Characters/Format.h"
 #include	"../../../Execution/Exceptions.h"
+#include	"../HTTP/Methods.h"
 
 #include	"Client.h"
 
@@ -69,18 +70,16 @@ Response::Response ()
  */
 Response	Connection::Get (const map<String,String>& extraHeaders)
 {
-	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
-	r.fMethod = L"GET";
+	r.fMethod = HTTP::Methods::kGet;
 	r.fOverrideHeaders = extraHeaders;
 	return SendAndRequest (r);
 }
 
 Response	Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
 {
-	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
-	r.fMethod = L"POST";
+	r.fMethod = HTTP::Methods::kPost;
 	r.fOverrideHeaders = extraHeaders;
 	r.fData = data;
 	r.fContentType = contentType;
@@ -89,21 +88,27 @@ Response	Connection::Post (const vector<Byte>& data, const InternetMediaType& co
 
 Response	Connection::Delete (const map<String,String>& extraHeaders)
 {
-	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
-	r.fMethod = L"DELETE";
+	r.fMethod = HTTP::Methods::kDelete;
 	r.fOverrideHeaders = extraHeaders;
 	return SendAndRequest (r);
 }
 
 Response	Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders)
 {
-	///// TODO:  ADD HTTP::METHODS module (like with Headers) to enumerate common/basic METHODS GET/POST/ETC...
 	Request	r;
-	r.fMethod = L"POST";
+	r.fMethod = HTTP::Methods::kPut;
 	r.fOverrideHeaders = extraHeaders;
 	r.fData = data;
 	r.fContentType = contentType;
+	return SendAndRequest (r);
+}
+
+Response	Connection::Options (const map<String,String>& extraHeaders)
+{
+	Request	r;
+	r.fMethod = HTTP::Methods::kOptions;
+	r.fOverrideHeaders = extraHeaders;
 	return SendAndRequest (r);
 }
 

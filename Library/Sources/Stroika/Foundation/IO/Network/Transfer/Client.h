@@ -106,6 +106,7 @@ namespace	Stroika {
 							nonvirtual	Response	Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
 							nonvirtual	Response	Delete (const map<String,String>& extraHeaders = map<String,String> ());
 							nonvirtual	Response	Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String,String>& extraHeaders = map<String,String> ());
+							nonvirtual	Response	Options (const map<String,String>& extraHeaders = map<String,String> ());
 
 						private:
 							Memory::SharedPtr<IConnection>	fRep_;
