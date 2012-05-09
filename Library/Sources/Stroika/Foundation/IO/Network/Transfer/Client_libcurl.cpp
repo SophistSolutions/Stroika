@@ -22,7 +22,6 @@ using	namespace	Stroika::Foundation::IO::Network::Transfer;
 
 
 
-
 #if		qHasFeature_libcurl
 namespace	{
 	struct	ModuleInit_ {
@@ -38,12 +37,24 @@ namespace	{
 
 
 #if		qHasFeature_libcurl
+namespace	{
+	wstring	mkExceptMsg_ (CURLcode ccode)
+		{
+			return String::FromUTF8 (curl_easy_strerror(ccode)).As<wstring> ();
+		}
+}
 
 /*
  ********************************************************************************
  ************************ Transfer::LibCurlException ****************************
  ********************************************************************************
  */
+LibCurlException::LibCurlException (CURLcode ccode)
+	: StringException (mkExceptMsg_ (ccode))
+	, fCurlCode_ (ccode)
+{
+}
+
 void	LibCurlException::DoThrowIfError (CURLcode status)
 {
 	if (status != 0) {
@@ -93,7 +104,7 @@ URL		IConnection_LibCurl::GetURL () const override
 void	IConnection_LibCurl::SetURL (const URL& url) override
 {
 	MakeHandleIfNeeded_ ();
-	fCURLCache_URL_ = url.xxx;
+	fCURLCache_URL_ = String (url.GetURL ()).AsUTF8 ();
 	LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
 }
 

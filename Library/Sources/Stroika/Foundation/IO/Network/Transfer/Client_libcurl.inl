@@ -19,10 +19,6 @@ namespace	Stroika {
 
 					#if		qHasFeature_libcurl
 						// class LibCurlException
-						inline	LibCurlException::LibCurlException (CURLcode ccode)
-							: fCurlCode_ (ccode)
-							{
-							}
 						inline	LibCurlException::CURLcode	LibCurlException::GetCode () const
 							{
 								return fCurlCode_;
