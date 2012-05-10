@@ -226,11 +226,11 @@ namespace	Stroika {
 					*/
 						SharedPtr (const SharedPtr<T2>& from)
 							: fPtr_ (from.get ())
-							, fCountHolder (from._PEEK_CNT_PTR_ ())
+							, fCountHolder_ (from._PEEK_CNT_PTR_ ())
 							{
 								if (fPtr_ != nullptr) {
-									RequireNotNull (fCountHolder);
-									Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
+									RequireNotNull (fCountHolder_);
+									Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
 								}
 							}
 
@@ -307,7 +307,7 @@ namespace	Stroika {
 
 				private:
 					T*				fPtr_;
-					SharedPtrBase*	fCountHolder;
+					SharedPtrBase*	fCountHolder_;
 
 				public:
 					// Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)

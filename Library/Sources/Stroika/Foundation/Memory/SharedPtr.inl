@@ -48,46 +48,46 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr ()
 					: fPtr_ (nullptr)
-					, fCountHolder (nullptr)
+					, fCountHolder_ (nullptr)
 					{
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from)
 					: fPtr_ (from)
-					, fCountHolder (nullptr)
+					, fCountHolder_ (nullptr)
 					{
 						if (from != nullptr) {
-							fCountHolder = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
-							Assert (fCountHolder->fCount_DONT_ACCESS == 0);
-							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
+							fCountHolder_ = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
+							Assert (fCountHolder_->fCount_DONT_ACCESS == 0);
+							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (UsesSharedPtrBase, T* from)
 					: fPtr_ (from)
-					, fCountHolder (from)
+					, fCountHolder_ (from)
 					{
-						if (fCountHolder != nullptr) {
-							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
+						if (fCountHolder_ != nullptr) {
+							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, SharedPtrBase* useCounter)
 					: fPtr_ (from)
-					, fCountHolder (from == nullptr? nullptr: useCounter)
+					, fCountHolder_ (from == nullptr? nullptr: useCounter)
 					{
-						if (fCountHolder != nullptr) {
-							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
+						if (fCountHolder_ != nullptr) {
+							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T,T_TRAITS>& from)
 					: fPtr_ (from.fPtr_)
-					, fCountHolder (from.fCountHolder)
+					, fCountHolder_ (from.fCountHolder_)
 					{
 						if (fPtr_ != nullptr) {
-							RequireNotNull (fCountHolder);
-							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
+							RequireNotNull (fCountHolder_);
+							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
@@ -95,21 +95,21 @@ namespace	Stroika {
 					{
 						if (rhs.fPtr_ != fPtr_) {
 							if (fPtr_ != nullptr) {
-								AssertNotNull (fCountHolder);
-								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
-								if (Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0) {
-									fCountHolder->DO_DELETE_REF_CNT ();
+								AssertNotNull (fCountHolder_);
+								Assert (fCountHolder_->fCount_DONT_ACCESS > 0);
+								if (Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0) {
+									fCountHolder_->DO_DELETE_REF_CNT ();
 									delete fPtr_;
-									fCountHolder = nullptr;
+									fCountHolder_ = nullptr;
 									fPtr_ = nullptr;
 								}
 							}
 							fPtr_ = rhs.fPtr_;
-							fCountHolder = rhs.fCountHolder;
+							fCountHolder_ = rhs.fCountHolder_;
 							if (fPtr_ != nullptr) {
-								AssertNotNull (fCountHolder);
-								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
-								Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
+								AssertNotNull (fCountHolder_);
+								Assert (fCountHolder_->fCount_DONT_ACCESS > 0);
+								Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
 							}
 						}
 						return *this;
@@ -118,12 +118,12 @@ namespace	Stroika {
 				inline	SharedPtr<T,T_TRAITS>::~SharedPtr ()
 					{
 						if (fPtr_ != nullptr) {
-							AssertNotNull (fCountHolder);
-							Assert (fCountHolder->fCount_DONT_ACCESS > 0);
+							AssertNotNull (fCountHolder_);
+							Assert (fCountHolder_->fCount_DONT_ACCESS > 0);
 							if (
-								Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0
+								Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0
 								) {
-								fCountHolder->DO_DELETE_REF_CNT ();
+								fCountHolder_->DO_DELETE_REF_CNT ();
 								delete fPtr_;
 							}
 						}
@@ -137,8 +137,8 @@ namespace	Stroika {
 				inline	T&	SharedPtr<T,T_TRAITS>::GetRep () const
 					{
 						RequireNotNull (fPtr_);
-						AssertNotNull (fCountHolder);
-						Assert (fCountHolder->fCount_DONT_ACCESS >= 1);
+						AssertNotNull (fCountHolder_);
+						Assert (fCountHolder_->fCount_DONT_ACCESS >= 1);
 						return *fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
@@ -181,12 +181,12 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	size_t	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
 					{
-						return fCountHolder==nullptr? 0: fCountHolder->fCount_DONT_ACCESS;
+						return fCountHolder_==nullptr? 0: fCountHolder_->fCount_DONT_ACCESS;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	bool	SharedPtr<T,T_TRAITS>::IsUnique () const
 					{
-						return fCountHolder == nullptr? false: fCountHolder->fCount_DONT_ACCESS == 1;
+						return fCountHolder_ == nullptr? false: fCountHolder_->fCount_DONT_ACCESS == 1;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	bool	SharedPtr<T,T_TRAITS>::unique () const
@@ -239,7 +239,7 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				SharedPtrBase*		SharedPtr<T,T_TRAITS>::_PEEK_CNT_PTR_ () const
 					{
-						return fCountHolder;
+						return fCountHolder_;
 					}
 
 		}
