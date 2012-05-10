@@ -25,7 +25,9 @@ using	namespace	Stroika::Foundation::IO::Network::HTTP;
 using	namespace	Stroika::Foundation::IO::Network::Transfer;
 
 
+#if		qPlatform_Windows
 using	Stroika::Foundation::Execution::Platform::Windows::ThrowIfFalseGetLastError;
+#endif
 using	Stroika::Foundation::Memory::SmallStackBuffer;
 
 
