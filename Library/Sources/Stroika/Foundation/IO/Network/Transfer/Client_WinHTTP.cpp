@@ -49,7 +49,7 @@ namespace	{
 
 
 #if		qHasFeature_WinHTTP
-class	Connection_WinHTTP::Rep_ : public IConnection {
+class	Connection_WinHTTP::Rep_ : public _IRep {
 	private:
 		NO_COPY_CONSTRUCTOR (Rep_);
 		NO_ASSIGNMENT_OPERATOR (Rep_);
@@ -425,7 +425,7 @@ void	Connection_WinHTTP::Rep_::AssureHasHandle_ ()
  ********************************************************************************
  */
 Connection_WinHTTP::Connection_WinHTTP ()
-	: Connection (Memory::SharedPtr<IConnection> (new Rep_ ()))
+	: Connection (Memory::SharedPtr<_IRep> (new Rep_ ()))
 {
 }
 #endif

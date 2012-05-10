@@ -63,28 +63,29 @@ namespace	Stroika {
 					};
 					
 
-// DO REP STUFF - SO CAN HAVE _WinHTTP and _LibCurl implemenations
-//	
-// Unclear about copyability - maybe if its a smartpr OK to copy - but would be copy-by-reference? Could be confusing! CONSIDER
-					class	IConnection {
-						private:
-							NO_COPY_CONSTRUCTOR (IConnection);
-							NO_ASSIGNMENT_OPERATOR (IConnection);
-						
-						public:
-							IConnection ();
-							virtual ~IConnection ();
-						
-						public:
-							virtual	URL			GetURL () const							=	0;
-							virtual	void		SetURL (const URL& url)					=	0;
-							virtual	void		Close ()								=	0;
-							virtual	Response	SendAndRequest (const Request& r)		=	0;
-					};
-
+					// TODO:
+					//		Unclear about copyability - maybe if its a smartpr OK to copy - but would be copy-by-reference?
+					//		Could be confusing! CONSIDER
 					class	Connection {
 						protected:
-							Connection (const Memory::SharedPtr<IConnection>& rep);
+							class	_IRep {
+								private:
+									NO_COPY_CONSTRUCTOR (_IRep);
+									NO_ASSIGNMENT_OPERATOR (_IRep);
+						
+								public:
+									_IRep ();
+									virtual ~_IRep ();
+						
+								public:
+									virtual	URL			GetURL () const							=	0;
+									virtual	void		SetURL (const URL& url)					=	0;
+									virtual	void		Close ()								=	0;
+									virtual	Response	SendAndRequest (const Request& r)		=	0;
+							};
+
+						protected:
+							Connection (const Memory::SharedPtr<_IRep>& rep);
 
 						public:
 							nonvirtual	URL		GetURL () const;
@@ -106,7 +107,7 @@ namespace	Stroika {
 							nonvirtual	Response	Options (const map<String,String>& extraHeaders = map<String,String> ());
 
 						private:
-							Memory::SharedPtr<IConnection>	fRep_;
+							Memory::SharedPtr<_IRep>	fRep_;
 					};
 
 

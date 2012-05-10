@@ -40,7 +40,7 @@ namespace	{
 
 
 #if		qHasFeature_libcurl
-class	Connection_LibCurl::Rep_ : public IConnection {
+class	Connection_LibCurl::Rep_ : public _IRep {
 	private:
 		NO_COPY_CONSTRUCTOR (Rep_);
 		NO_ASSIGNMENT_OPERATOR (Rep_);
@@ -259,7 +259,7 @@ void	Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************************************************************************
  */
 Connection_LibCurl::Connection_LibCurl ()
-	: Connection (Memory::SharedPtr<IConnection> (new Rep_ ()))
+	: Connection (Memory::SharedPtr<_IRep> (new Rep_ ()))
 {
 }
 #endif
