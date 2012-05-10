@@ -46,15 +46,15 @@ namespace	Stroika {
 
 		//	class	SharedPtr<T,T_TRAITS>
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr ():
-					fPtr (nullptr),
-					fCountHolder (nullptr)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr ()
+					: fPtr_ (nullptr)
+					, fCountHolder (nullptr)
 					{
 					}
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from):
-					fPtr (from),
-					fCountHolder (nullptr)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from)
+					: fPtr_ (from)
+					, fCountHolder (nullptr)
 					{
 						if (from != nullptr) {
 							fCountHolder = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
@@ -63,29 +63,29 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (UsesSharedPtrBase, T* from):
-					fPtr (from),
-					fCountHolder (from)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (UsesSharedPtrBase, T* from)
+					: fPtr_ (from)
+					, fCountHolder (from)
 					{
 						if (fCountHolder != nullptr) {
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, SharedPtrBase* useCounter):
-					fPtr (from),
-					fCountHolder (from == nullptr? nullptr: useCounter)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, SharedPtrBase* useCounter)
+					: fPtr_ (from)
+					, fCountHolder (from == nullptr? nullptr: useCounter)
 					{
 						if (fCountHolder != nullptr) {
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T,T_TRAITS>& from):
-					fPtr (from.fPtr),
-					fCountHolder (from.fCountHolder)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T,T_TRAITS>& from)
+					: fPtr_ (from.fPtr_)
+					, fCountHolder (from.fCountHolder)
 					{
-						if (fPtr != nullptr) {
+						if (fPtr_ != nullptr) {
 							RequireNotNull (fCountHolder);
 							Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 						}
@@ -93,20 +93,20 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>& SharedPtr<T,T_TRAITS>::operator= (const SharedPtr<T,T_TRAITS>& rhs)
 					{
-						if (rhs.fPtr != fPtr) {
-							if (fPtr != nullptr) {
+						if (rhs.fPtr_ != fPtr_) {
+							if (fPtr_ != nullptr) {
 								AssertNotNull (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 								if (Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0) {
 									fCountHolder->DO_DELETE_REF_CNT ();
-									delete fPtr;
+									delete fPtr_;
 									fCountHolder = nullptr;
-									fPtr = nullptr;
+									fPtr_ = nullptr;
 								}
 							}
-							fPtr = rhs.fPtr;
+							fPtr_ = rhs.fPtr_;
 							fCountHolder = rhs.fCountHolder;
-							if (fPtr != nullptr) {
+							if (fPtr_ != nullptr) {
 								AssertNotNull (fCountHolder);
 								Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 								Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
@@ -117,29 +117,29 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::~SharedPtr ()
 					{
-						if (fPtr != nullptr) {
+						if (fPtr_ != nullptr) {
 							AssertNotNull (fCountHolder);
 							Assert (fCountHolder->fCount_DONT_ACCESS > 0);
 							if (
 								Execution::AtomicDecrement (&fCountHolder->fCount_DONT_ACCESS) == 0
 								) {
 								fCountHolder->DO_DELETE_REF_CNT ();
-								delete fPtr;
+								delete fPtr_;
 							}
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	bool	SharedPtr<T,T_TRAITS>::IsNull () const
 					{
-						return fPtr == nullptr;
+						return fPtr_ == nullptr;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	T&	SharedPtr<T,T_TRAITS>::GetRep () const
 					{
-						RequireNotNull (fPtr);
+						RequireNotNull (fPtr_);
 						AssertNotNull (fCountHolder);
 						Assert (fCountHolder->fCount_DONT_ACCESS >= 1);
-						return *fPtr;
+						return *fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	T* SharedPtr<T,T_TRAITS>::operator-> () const
@@ -154,12 +154,12 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::operator T* () const
 					{
-						return fPtr;
+						return fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	T*	SharedPtr<T,T_TRAITS>::get () const
 					{
-						return (fPtr);
+						return (fPtr_);
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	void	SharedPtr<T,T_TRAITS>::release ()
@@ -174,7 +174,7 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	void	SharedPtr<T,T_TRAITS>::reset (T* p)
 					{
-						if (fPtr != p) {
+						if (fPtr_ != p) {
 							*this = SharedPtr<T,T_TRAITS> (p);
 						}
 					}
@@ -200,7 +200,7 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr < rhs.fPtr;
+						return fPtr_ < rhs.fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator<= (const SharedPtr<T,T_TRAITS>& rhs) const
@@ -208,7 +208,7 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr <= rhs.fPtr;
+						return fPtr_ <= rhs.fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator> (const SharedPtr<T,T_TRAITS>& rhs) const
@@ -216,7 +216,7 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr > rhs.fPtr;
+						return fPtr_ > rhs.fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator>= (const SharedPtr<T,T_TRAITS>& rhs) const
@@ -224,17 +224,17 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr >= rhs.fPtr;
+						return fPtr_ >= rhs.fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator== (const SharedPtr<T,T_TRAITS>& rhs) const
 					{
-						return fPtr == rhs.fPtr;
+						return fPtr_ == rhs.fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator!= (const SharedPtr<T,T_TRAITS>& rhs) const
 					{
-						return fPtr != rhs.fPtr;
+						return fPtr_ != rhs.fPtr_;
 					}
 			template	<typename T, typename T_TRAITS>
 				SharedPtrBase*		SharedPtr<T,T_TRAITS>::_PEEK_CNT_PTR_ () const

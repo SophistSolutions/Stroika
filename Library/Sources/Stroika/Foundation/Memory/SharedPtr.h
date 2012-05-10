@@ -221,14 +221,14 @@ namespace	Stroika {
 					@METHOD:		SharedPtr::SharedPtr
 					@DESCRIPTION:	<p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
 								to the base class. There isn't any way to express this in template requirements, but this template
-								will fail to compile (error assigning to its fPtr member in the CTOR) if its ever used to
+								will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
 								assign inappropriate pointer combinations.</p>
 					*/
 						SharedPtr (const SharedPtr<T2>& from)
-							: fPtr (from.get ())
+							: fPtr_ (from.get ())
 							, fCountHolder (from._PEEK_CNT_PTR_ ())
 							{
-								if (fPtr != nullptr) {
+								if (fPtr_ != nullptr) {
 									RequireNotNull (fCountHolder);
 									Execution::AtomicIncrement (&fCountHolder->fCount_DONT_ACCESS);
 								}
@@ -306,7 +306,7 @@ namespace	Stroika {
 							}
 
 				private:
-					T*				fPtr;
+					T*				fPtr_;
 					SharedPtrBase*	fCountHolder;
 
 				public:
