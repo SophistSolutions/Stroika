@@ -58,11 +58,11 @@ class	Connection_LibCurl::Rep_ : public IConnection {
 		nonvirtual	void	MakeHandleIfNeeded_ ();
 
 	private:
-		static		size_t	S_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+		static		size_t	s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
 		nonvirtual	size_t	ResponseWriteHandler_ (const Byte* ptr, size_t nBytes);
 
 	private:
-		static		size_t	S_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+		static		size_t	s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
 		nonvirtual	size_t	ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
 
 	private:
@@ -158,7 +158,7 @@ void	Connection_LibCurl::Rep_::Close ()	override
 	}
 }
 
-size_t	Connection_LibCurl::Rep_::S_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+size_t	Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
 	return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
@@ -169,7 +169,7 @@ size_t	Connection_LibCurl::Rep_::ResponseWriteHandler_ (const Byte* ptr, size_t 
 	return nBytes;
 }
 
-size_t	Connection_LibCurl::Rep_::S_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+size_t	Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
 	return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
@@ -238,9 +238,9 @@ void	Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
 		 */
 		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
 
-		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, S_ResponseWriteHandler_));
+		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
 		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
-		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, S_ResponseHeaderWriteHandler_));
+		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, s_ResponseHeaderWriteHandler_));
 		LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
 	}
 }
