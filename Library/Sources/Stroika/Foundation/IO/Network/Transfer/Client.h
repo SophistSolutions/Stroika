@@ -24,6 +24,10 @@
 
 /*
  * TODO:
+ *
+ *		(o)		Fixup Requqest/Response code to just be driven off fHeaders  list - and have Get/Set ContentType, etc - and other fields - 
+ *				which map to that list. MAYBE move request/repsonse stuff to HTTP module- so re-usable in framework code which does webserver??
+ *
  *		(o)		Probably princiapply a wrapper on CURL - but also support wrapper on WinHTTP
  *		(o)		Redo response / src API using streams?
  *		(o)		Add Client side certs
