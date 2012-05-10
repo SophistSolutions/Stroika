@@ -6,6 +6,8 @@
 
 #include	"../../../StroikaPreComp.h"
 
+#include	"../../../Execution/StringException.h"
+
 #include	"Client.h"
 
 
