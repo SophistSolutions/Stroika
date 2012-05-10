@@ -32,19 +32,6 @@ using	Stroika::Foundation::Memory::SmallStackBuffer;
 
 
 
-#if		qHasFeature_WinHTTP
-namespace	{
-	struct	ModuleInit_ {
-		ModuleInit_ ()
-		{
-		}
-	};
-	ModuleInit_	sIniter_;
-}
-#endif
-
-
-
 
 
 

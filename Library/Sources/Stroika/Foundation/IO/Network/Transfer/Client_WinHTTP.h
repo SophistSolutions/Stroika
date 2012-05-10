@@ -6,17 +6,6 @@
 
 #include	"../../../StroikaPreComp.h"
 
-#include	<map>
-#include	<string>
-
-#include	"../../../Configuration/Common.h"
-#include	"../../../Characters/String.h"
-#include	"../../../DataExchangeFormat/InternetMediaType.h"
-#include	"../../../Execution/StringException.h"
-#include	"../../../Memory/SharedPtr.h"
-#include	"../URL.h"
-#include	"../HTTP/Status.h"
-
 #include	"Client.h"
 
 
