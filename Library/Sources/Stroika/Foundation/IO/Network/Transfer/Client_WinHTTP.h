@@ -49,28 +49,6 @@ namespace	Stroika {
 							private:
 								class	Rep_;
 						};
-
-						class	Connection_WinHTTP::Rep_ : public IConnection {
-							private:
-								NO_COPY_CONSTRUCTOR (Rep_);
-								NO_ASSIGNMENT_OPERATOR (Rep_);
-							public:
-								Rep_ ();
-								virtual ~Rep_ ();
-						
-							public:
-								virtual	URL			GetURL () const	override;
-								virtual	void		SetURL (const URL& url)	override;
-								virtual	void		Close ()	override;
-								virtual	Response	SendAndRequest (const Request& request)	override;
-
-							private:
-								nonvirtual	void	AssureHasHandle_ ();
-							
-							private:
-								void*		fSessionHandle_;
-								void*		fConnectionHandle_;
-						};
 					#endif
 				}
 			}
