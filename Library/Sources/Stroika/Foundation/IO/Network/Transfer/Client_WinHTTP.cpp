@@ -10,7 +10,9 @@
 
 #include	"../../../Characters/Format.h"
 #include	"../../../Execution/Exceptions.h"
+#if		qPlatform_Windows
 #include	"../../../Execution/Platform/Windows/Exception.h"
+#endif
 #include	"../HTTP/Headers.h"
 
 #include	"Client_WinHTTP.h"
