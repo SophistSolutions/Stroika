@@ -160,12 +160,34 @@ namespace	Stroika {
 			};
 
 
+			/*
+			 */
+			template	<typename	T>
+				struct	SharedPtr_Default_Traits {
+					typedef	T	TTYPE;
+				};
 
 
 
 			/*
-			@CLASS:			SharedPtr<T>
-			@DESCRIPTION:	<p>A very simple reference counted pointer implementation. Alas - there doesn't seem to
+			@CLASS:			SharedPtr<T,T_TRAITS>
+			@DESCRIPTION:	<p>SharedPtr<T> is a simple utility class - very much akin to the C++11 class
+				std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
+
+					<li>There is no std::weak_ptr - or at least if there is - we must document it clearly how/why via extra sharedPTR tmeplate arg(to be worked out)</li>
+					<li>There is an extra template T_TRAITS that allows for solving special problems that come up with shared_ptr<> - namely recovering the
+						'shared' version of 'T' when only given a plain copy of 'T'
+					</li>
+
+					Otherwise, the intention is that they should operate very similarly, and SharedPtr<T> should work with most classes that expect shared_ptr<T> (so long
+				as they are templated, and not looking for the particular type name 'shared_ptr').
+
+			
+			(much more to discuss - details of T_TRAITs and the WHY for these differences)
+			
+			
+			OLD DOCS:
+			<p>A very simple reference counted pointer implementation. Alas - there doesn't seem to
 				be anything in STL which provides this functionality! std::auto_ptr is closest, but no cigar.
 				For one thing, std::auto_ptr doesn't work with std::vector.</p>
 					<p>This implementation would be slightly more efficient, and slightly less flexible, if we assumed
@@ -182,15 +204,18 @@ namespace	Stroika {
 						<li>@'SharedPtr<T>::reset'</li>
 					</ul>
 			*/
-			template	<typename	T>	class	SharedPtr {
+			template	<typename	T, typename T_TRAITS = SharedPtr_Default_Traits<T>>	class	SharedPtr {
+				public:
+					typedef	T_TRAITS	TRAITS;
 				public:
 					SharedPtr ();
 					explicit SharedPtr (T* from);
 					enum UsesSharedPtrBase { eUsesSharedPtrBase };
 					explicit SharedPtr (UsesSharedPtrBase, T* from);
 					explicit SharedPtr (T* from, SharedPtrBase* useCounter);
-					SharedPtr (const SharedPtr<T>& from);
+					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
+//TODO: UNCLEAR how to handle T2TRAITS. This probably isnt safe (unless we are very careful) going across TRAITSTYPES
 					template <typename T2>
 					/*
 					@METHOD:		SharedPtr::SharedPtr
@@ -199,9 +224,9 @@ namespace	Stroika {
 								will fail to compile (error assigning to its fPtr member in the CTOR) if its ever used to
 								assign inappropriate pointer combinations.</p>
 					*/
-						SharedPtr (const SharedPtr<T2>& from):
-							fPtr (from.get ()),
-							fCountHolder (from._PEEK_CNT_PTR_ ())
+						SharedPtr (const SharedPtr<T2>& from)
+							: fPtr (from.get ())
+							, fCountHolder (from._PEEK_CNT_PTR_ ())
 							{
 								if (fPtr != nullptr) {
 									RequireNotNull (fCountHolder);
@@ -210,44 +235,44 @@ namespace	Stroika {
 							}
 
 				public:
-					nonvirtual		SharedPtr<T>& operator= (const SharedPtr<T>& rhs);
+					nonvirtual		SharedPtr<T,T_TRAITS>& operator= (const SharedPtr<T,T_TRAITS>& rhs);
 				public:
 					~SharedPtr ();
 
 				public:
 					nonvirtual	bool		IsNull () const;
 					/*
-					@METHOD:		SharedPtr<T>::GetRep
+					@METHOD:		SharedPtr<T,T_TRAITS>::GetRep
 					@DESCRIPTION:	<p>Requires that the pointer is non-nullptr.</p>
 					*/
 					nonvirtual	T&			GetRep () const;
 
 				public:
 					/*
-					@METHOD:		SharedPtr<T>::operator->
+					@METHOD:		SharedPtr<T,T_TRAITS>::operator->
 					@DESCRIPTION:	<p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
 					*/
 					nonvirtual	T* operator-> () const;
 					/*
-					@METHOD:		SharedPtr<T>::operator*
+					@METHOD:		SharedPtr<T,T_TRAITS>::operator*
 					@DESCRIPTION:	<p></p>
 					*/
 					nonvirtual	T& operator* () const;
 					/*
-					@METHOD:		SharedPtr<T>::operator T*
+					@METHOD:		SharedPtr<T,T_TRAITS>::operator T*
 					@DESCRIPTION:	<p>Note - this CAN return nullptr</p>
 					*/
 					nonvirtual	operator T* () const;
 
 				public:
 					/*
-					@METHOD:		SharedPtr<T>::get
+					@METHOD:		SharedPtr<T,T_TRAITS>::get
 					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
 								asserts about it being non-null.</p>
 					*/
 					nonvirtual	T*		get () const;
 					/*
-					@METHOD:		SharedPtr<T>::release
+					@METHOD:		SharedPtr<T,T_TRAITS>::release
 					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
 								pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
 								<br>
@@ -257,13 +282,13 @@ namespace	Stroika {
 					*/
 					nonvirtual	void	release ();
 					/*
-					@METHOD:		SharedPtr<T>::clear
-					@DESCRIPTION:	<p>Synonymn for SharedPtr<T>::release ()
+					@METHOD:		SharedPtr<T,T_TRAITS>::clear
+					@DESCRIPTION:	<p>Synonymn for SharedPtr<T,T_TRAITS>::release ()
 								</p>
 					*/
 					nonvirtual	void	clear ();
 					/*
-					@METHOD:		SharedPtr<T>::reset
+					@METHOD:		SharedPtr<T,T_TRAITS>::reset
 					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
 								pre-existing pointer value. Unreference any previous value. Note - if there were more than one references to the underlying object, its not destroyed.</p>
 					*/
@@ -280,7 +305,7 @@ namespace	Stroika {
 								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
 							}
 
-				protected:
+				private:
 					T*				fPtr;
 					SharedPtrBase*	fCountHolder;
 
@@ -290,19 +315,19 @@ namespace	Stroika {
 					// Alias for IsUnique()
 					nonvirtual	bool	unique () const;
 					/*
-					@METHOD:		SharedPtr<T>::CurrentRefCount
+					@METHOD:		SharedPtr<T,T_TRAITS>::CurrentRefCount
 					@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
 					so not its awlays available (it has no cost to keep available).</p>
 					*/
 					nonvirtual	size_t	CurrentRefCount () const;
 
 				public:
-					nonvirtual	bool	operator< (const SharedPtr<T>& rhs) const;
-					nonvirtual	bool	operator<= (const SharedPtr<T>& rhs) const;
-					nonvirtual	bool	operator> (const SharedPtr<T>& rhs) const;
-					nonvirtual	bool	operator>= (const SharedPtr<T>& rhs) const;
-					nonvirtual	bool	operator== (const SharedPtr<T>& rhs) const;
-					nonvirtual	bool	operator!= (const SharedPtr<T>& rhs) const;
+					nonvirtual	bool	operator< (const SharedPtr<T,T_TRAITS>& rhs) const;
+					nonvirtual	bool	operator<= (const SharedPtr<T,T_TRAITS>& rhs) const;
+					nonvirtual	bool	operator> (const SharedPtr<T,T_TRAITS>& rhs) const;
+					nonvirtual	bool	operator>= (const SharedPtr<T,T_TRAITS>& rhs) const;
+					nonvirtual	bool	operator== (const SharedPtr<T,T_TRAITS>& rhs) const;
+					nonvirtual	bool	operator!= (const SharedPtr<T,T_TRAITS>& rhs) const;
 
 				public:
 					nonvirtual	SharedPtrBase*		_PEEK_CNT_PTR_ () const;
@@ -314,6 +339,8 @@ namespace	Stroika {
 		namespace	Execution {
 			template	<typename	T>
 				void	ThrowIfNull (const Memory::SharedPtr<T>& p);
+			template	<typename	T, typename T_TRAITS>
+				void	ThrowIfNull (const Memory::SharedPtr<T, T_TRAITS>& p);
 		}
 
 	}
