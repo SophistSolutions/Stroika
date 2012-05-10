@@ -3,13 +3,6 @@
  */
 #include	"../../../StroikaPreComp.h"
 
-#if	qPlatform_Windows
-	#include	<atlbase.h>
-
-	#include	<Windows.h>
-	#include	<URLMon.h>
-#endif
-
 #include	"../../../Characters/Format.h"
 #include	"../../../Execution/Exceptions.h"
 #include	"../HTTP/Methods.h"
