@@ -13,6 +13,10 @@
 
 
 
+// TODO: MOST OF DOCS IN THIS FILE OBSOLETE - REDO
+
+
+
 /*
  * GETTING RID OF SharedPtrBase/UsesSharedPtrBase
  *
@@ -178,6 +182,12 @@ namespace	Stroika {
 						
 						public:
 							Envelope (TTYPE* ptr, ReferenceCountObjectType* countHolder);
+							template <typename T2>
+								Envelope (const typename SharedPtr_Default_Traits<T2>::Envelope& from)
+									: fPtr_ (from.GetPtr ())
+									, fCountHolder_ (from.fCountHolder_)
+								{
+								}
 							TTYPE*	GetPtr () const 
 								{
 									return fPtr_;
@@ -215,6 +225,11 @@ namespace	Stroika {
 
 
 
+
+// MOVE SharedPtrBase/SharedPtr_SharedPtrBase_Traits to new file
+// SharedPtrBase (dont like name but need a name).
+// Document clearly that htis isnt NEEDED BY OR USED BY SharedPtr<> but CAN OPTIONALLY be used to
+// get better size (avoid extra pointer) - and better re-constitute semantics
 
 			// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
 			// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
@@ -330,7 +345,9 @@ namespace	Stroika {
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
 //TODO: UNCLEAR how to handle T2TRAITS. This probably isnt safe (unless we are very careful) going across TRAITSTYPES
-					template <typename T2>
+// OK - now I get it - but must document clearly...
+//    issue si thsi passes throug anything but the final match is on the Envelope part - that wont match if the undelrying traits dont supprot moving the counter from one to the other
+					template <typename T2, typename T2_TRAITS>
 						/*
 						@METHOD:		SharedPtr::SharedPtr
 						@DESCRIPTION:	<p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
@@ -338,7 +355,7 @@ namespace	Stroika {
 									will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
 									assign inappropriate pointer combinations.</p>
 						*/
-						SharedPtr (const SharedPtr<T2>& from);
+						SharedPtr (const SharedPtr<T2, T2_TRAITS>& from);
 
 
 				public:
@@ -447,6 +464,10 @@ namespace	Stroika {
 
 				private:
 					typename	T_TRAITS::Envelope	fEnvelope_;
+
+				private:
+					template	<typename T2, typename T2_TRAITS>
+						friend	class	SharedPtr;
 			};
 
 		}

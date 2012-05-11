@@ -91,8 +91,8 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-					template <typename T2>
-						SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T2>& from)
+					template <typename T2, typename T2_TRAITS>
+						SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from)
 							: fEnvelope_ (from.fEnvelope_)
 							{
 								if (fEnvelope_.GetPtr () != nullptr) {
