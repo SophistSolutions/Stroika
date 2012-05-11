@@ -100,6 +100,15 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
+					template <typename T2>
+						SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T2>& from)
+							: fEnvelope_ (from.fEnvelope_)
+							{
+								if (fEnvelope_.GetPtr () != nullptr) {
+									fEnvelope_.Increment ();
+								}
+							}
+			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>& SharedPtr<T,T_TRAITS>::operator= (const SharedPtr<T,T_TRAITS>& rhs)
 					{
 						if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
@@ -175,6 +184,18 @@ namespace	Stroika {
 							*this = SharedPtr<T,T_TRAITS> (p);
 						}
 					}
+
+			template	<typename T, typename T_TRAITS>
+					template <typename T2>
+					/*
+					@METHOD:		SharedPtr::Dynamic_Cast
+					@DESCRIPTION:	<p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast - thats a reserved word.</p>
+					*/
+						SharedPtr<T2> SharedPtr<T,T_TRAITS>::Dynamic_Cast ()
+							{
+								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_._PEEK_CNT_PTR_ ());
+							}
+
 			template	<typename T, typename T_TRAITS>
 				inline	size_t	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
 					{

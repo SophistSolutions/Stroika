@@ -318,22 +318,19 @@ struct	SharedPtrBase {
 									will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
 									assign inappropriate pointer combinations.</p>
 						*/
-						SharedPtr (const SharedPtr<T2>& from)
-							: fEnvelope_ (from.fEnvelope_)
-							{
-								if (fEnvelope_.GetPtr () != nullptr) {
-									fEnvelope_.Increment ();
-								}
-							}
+						SharedPtr (const SharedPtr<T2>& from);
 
 
 				public:
 					nonvirtual		SharedPtr<T,T_TRAITS>& operator= (const SharedPtr<T,T_TRAITS>& rhs);
+
 				public:
 					~SharedPtr ();
 
 				public:
 					nonvirtual	bool		IsNull () const;
+
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::GetRep
 					@DESCRIPTION:	<p>Requires that the pointer is non-nullptr.</p>
@@ -346,11 +343,15 @@ struct	SharedPtrBase {
 					@DESCRIPTION:	<p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
 					*/
 					nonvirtual	T* operator-> () const;
+
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::operator*
 					@DESCRIPTION:	<p></p>
 					*/
 					nonvirtual	T& operator* () const;
+
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::operator T*
 					@DESCRIPTION:	<p>Note - this CAN return nullptr</p>
@@ -364,6 +365,7 @@ struct	SharedPtrBase {
 								asserts about it being non-null.</p>
 					*/
 					nonvirtual	T*		get () const;
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::release
 					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
@@ -374,12 +376,16 @@ struct	SharedPtrBase {
 								</p>
 					*/
 					nonvirtual	void	release ();
+
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::clear
 					@DESCRIPTION:	<p>Synonymn for SharedPtr<T,T_TRAITS>::release ()
 								</p>
 					*/
 					nonvirtual	void	clear ();
+
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::reset
 					@DESCRIPTION:	<p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
@@ -393,10 +399,7 @@ struct	SharedPtrBase {
 					@METHOD:		SharedPtr::Dynamic_Cast
 					@DESCRIPTION:	<p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast - thats a reserved word.</p>
 					*/
-						SharedPtr<T2> Dynamic_Cast ()
-							{
-								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_._PEEK_CNT_PTR_ ());
-							}
+						SharedPtr<T2> Dynamic_Cast ();
 
 				public:
 					// Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
