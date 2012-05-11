@@ -10,3 +10,4 @@
 [10]	Containers::Private::LinkedList
 [11]	Containers::Tally
 [12]	Signals
+[13] Memory
