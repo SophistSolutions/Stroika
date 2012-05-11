@@ -1,13 +1,14 @@
-[1]	Cryptography
-[2]	Streams::JSON
-[3]	Execution::Threads
-[4]	Execution::Exceptions
-[5]	Characters::Strings
-[6]	DataX::XML::SaxParser
-[7]	Time::Date
-[8]	Containers::Private::Array
-[9]	Containers::Bag
-[10]	Containers::Private::LinkedList
-[11]	Containers::Tally
-[12]	Signals
-[13] Memory
+[1]	Foundation::Memory
+[2]	Foundation::Streams::JSON
+[3]	Foundation::Execution::Threads
+[4]	Foundation::Execution::Exceptions
+[5]	Foundation::Characters::Strings
+[6]	Foundation::DataX::XML::SaxParser
+[7]	Foundation::Time::Date
+[8]	Foundation::Containers::Private::Array
+[9]	Foundation::Containers::Bag
+[10]	Foundation::Containers::Private::LinkedList
+[11]	Foundation::Containers::Tally
+[12]	Foundation::Signals
+[13]	Foundation::Cryptography
+
