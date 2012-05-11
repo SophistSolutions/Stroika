@@ -44,6 +44,22 @@ namespace	Stroika {
 
 
 
+
+		//	class	SharedPtr_Default_Traits<T>
+		template	<typename	T>
+			SharedPtr_Default_Traits<T>::Envelope::Envelope (TTYPE* ptr, SharedPtrBase* countHolder)
+				: fPtr_ (ptr)
+				, fCountHolder_ (countHolder)
+				{
+					if (fPtr_ != nullptr and countHolder == nullptr) {
+						fCountHolder_ = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
+					}
+				}
+
+
+
+
+
 		//	class	SharedPtr<T,T_TRAITS>
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr ()
@@ -55,7 +71,6 @@ namespace	Stroika {
 					: fEnvelope_ (from, nullptr)
 					{
 						if (from != nullptr) {
-							fEnvelope_.fCountHolder_ = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
 							Assert (fEnvelope_.CurrentRefCount () == 0);
 							fEnvelope_.Increment ();
 						}
@@ -72,13 +87,13 @@ namespace	Stroika {
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, SharedPtrBase* useCounter)
 					: fEnvelope_ (from, from == nullptr? nullptr: useCounter)
 					{
-						if (fEnvelope_.fCountHolder_ != nullptr) {
+						if (from != nullptr) {
 							fEnvelope_.Increment ();
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T,T_TRAITS>& from)
-					: fEnvelope_ (from.fEnvelope_.GetPtr (), from.fEnvelope_.fCountHolder_)
+					: fEnvelope_ (from.fEnvelope_)
 					{
 						if (fEnvelope_.GetPtr () != nullptr) {
 							fEnvelope_.Increment ();
@@ -94,8 +109,7 @@ namespace	Stroika {
 									fEnvelope_.SetPtr (nullptr);
 								}
 							}
-							fEnvelope_.SetPtr (rhs.fEnvelope_.GetPtr ());
-							fEnvelope_.fCountHolder_ = rhs.fEnvelope_.fCountHolder_;
+							fEnvelope_ = rhs.fEnvelope_;
 							if (fEnvelope_.GetPtr () != nullptr) {
 								Assert (fEnvelope_.CurrentRefCount () > 0);
 								fEnvelope_.Increment ();
@@ -218,11 +232,6 @@ namespace	Stroika {
 				bool	SharedPtr<T,T_TRAITS>::operator!= (const SharedPtr<T,T_TRAITS>& rhs) const
 					{
 						return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
-					}
-			template	<typename T, typename T_TRAITS>
-				SharedPtrBase*		SharedPtr<T,T_TRAITS>::_PEEK_CNT_PTR_ () const
-					{
-						return fEnvelope_.fCountHolder_;
 					}
 
 		}

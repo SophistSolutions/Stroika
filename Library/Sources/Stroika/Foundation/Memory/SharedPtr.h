@@ -160,6 +160,9 @@ struct	SharedPtrBase {
 };
 
 
+
+
+
 			/*
 			 */
 			template	<typename	T>
@@ -167,56 +170,57 @@ struct	SharedPtrBase {
 					typedef	uint32_t	ReferenceCountType;
 					typedef	T			TTYPE;
 
+					typedef	SharedPtrBase	ReferenceCountObjectType;
 					struct	Envelope {
-					private:
-						TTYPE*				fPtr_;
-					public:
-						SharedPtrBase*		fCountHolder_;
-					public:
-
-						Envelope (TTYPE* ptr, SharedPtrBase* countHolder)
-							: fPtr_ (ptr)
-							, fCountHolder_ (countHolder)
-							{
-							}
-						TTYPE*	GetPtr () const 
-							{
-								return fPtr_;
-							}
-						void	SetPtr (TTYPE* p)
-							{
-								fPtr_ = p;
-							}
-						ReferenceCountType	CurrentRefCount () const
-							{
-								return fCountHolder_==nullptr? 0: fCountHolder_->fCount_DONT_ACCESS;
-							}
-						void	Increment ()
-							{
-								RequireNotNull (fCountHolder_);
-								Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
-							}
-						bool	Decrement ()
-							{
-								Require (CurrentRefCount () > 0);
-								if (Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0) {
-									fCountHolder_->DO_DELETE_REF_CNT ();
-									fCountHolder_ = nullptr;
-									return true;
+						private:
+							TTYPE*						fPtr_;
+							ReferenceCountObjectType*	fCountHolder_;
+						
+						public:
+							Envelope (TTYPE* ptr, ReferenceCountObjectType* countHolder);
+							TTYPE*	GetPtr () const 
+								{
+									return fPtr_;
 								}
-								return false;
-							}
-
+							void	SetPtr (TTYPE* p)
+								{
+									fPtr_ = p;
+								}
+							ReferenceCountType	CurrentRefCount () const
+								{
+									return fCountHolder_==nullptr? 0: fCountHolder_->fCount_DONT_ACCESS;
+								}
+							void	Increment ()
+								{
+									RequireNotNull (fCountHolder_);
+									Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+								}
+							bool	Decrement ()
+								{
+									Require (CurrentRefCount () > 0);
+									if (Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0) {
+										fCountHolder_->DO_DELETE_REF_CNT ();
+										fCountHolder_ = nullptr;
+										return true;
+									}
+									return false;
+								}
+							ReferenceCountObjectType*		_PEEK_CNT_PTR_ () const
+								{
+									return fCountHolder_;
+								}
 					};
 				};
+
 
 
 
 			// ASSUME TTYPE INHERITS FROM SharedPtrBase
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	uint32_t	ReferenceCountType;
-					typedef	T			TTYPE;
+					typedef	uint32_t		ReferenceCountType;
+					typedef	T				TTYPE;
+					typedef	SharedPtrBase	ReferenceCountObjectType;
 
 					struct	Envelope {
 						TTYPE*		fPtr;
@@ -249,6 +253,10 @@ struct	SharedPtrBase {
 									return true;
 								}
 								return false;
+							}
+						ReferenceCountObjectType*	_PEEK_CNT_PTR_ () const
+							{
+								return fPtr;
 							}
 					};
 				};
@@ -301,18 +309,17 @@ struct	SharedPtrBase {
 					explicit SharedPtr (T* from, SharedPtrBase* useCounter);
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
-
 //TODO: UNCLEAR how to handle T2TRAITS. This probably isnt safe (unless we are very careful) going across TRAITSTYPES
 					template <typename T2>
-					/*
-					@METHOD:		SharedPtr::SharedPtr
-					@DESCRIPTION:	<p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
-								to the base class. There isn't any way to express this in template requirements, but this template
-								will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
-								assign inappropriate pointer combinations.</p>
-					*/
+						/*
+						@METHOD:		SharedPtr::SharedPtr
+						@DESCRIPTION:	<p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
+									to the base class. There isn't any way to express this in template requirements, but this template
+									will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
+									assign inappropriate pointer combinations.</p>
+						*/
 						SharedPtr (const SharedPtr<T2>& from)
-							: fEnvelope_ (from.get (), from._PEEK_CNT_PTR_ ())
+							: fEnvelope_ (from.fEnvelope_)
 							{
 								if (fEnvelope_.GetPtr () != nullptr) {
 									fEnvelope_.Increment ();
@@ -388,7 +395,7 @@ struct	SharedPtrBase {
 					*/
 						SharedPtr<T2> Dynamic_Cast ()
 							{
-								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
+								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_._PEEK_CNT_PTR_ ());
 							}
 
 				public:
@@ -410,9 +417,6 @@ struct	SharedPtrBase {
 					nonvirtual	bool	operator>= (const SharedPtr<T,T_TRAITS>& rhs) const;
 					nonvirtual	bool	operator== (const SharedPtr<T,T_TRAITS>& rhs) const;
 					nonvirtual	bool	operator!= (const SharedPtr<T,T_TRAITS>& rhs) const;
-
-				public:
-					nonvirtual	SharedPtrBase*		_PEEK_CNT_PTR_ () const;
 
 				private:
 					typename	T_TRAITS::Envelope	fEnvelope_;
