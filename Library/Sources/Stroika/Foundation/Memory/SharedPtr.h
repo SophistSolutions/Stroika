@@ -138,33 +138,119 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-			// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
-			// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
-			// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
-			// a layer of code, and then re-constitute the SharedPtr<> part later.
-			struct	SharedPtrBase {
-				// we really want to treat this fCount_ as PRIVATE!!! DONT ACCESS IN SUBCLASSES - but it needs
-				// access from the SharedPtr<> template
-				private:
-				public:
-					size_t	fCount_DONT_ACCESS;
+// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
+// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
+// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
+// a layer of code, and then re-constitute the SharedPtr<> part later.
+struct	SharedPtrBase {
+	// we really want to treat this fCount_ as PRIVATE!!! DONT ACCESS IN SUBCLASSES - but it needs
+	// access from the SharedPtr<> template
+	private:
+	public:
+		size_t	fCount_DONT_ACCESS;
 
-				public:
-					SharedPtrBase ();
-					virtual ~SharedPtrBase ();
+	public:
+		SharedPtrBase ();
+		virtual ~SharedPtrBase ();
 
-				public:
-					// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
-					// to ignore (cuz the actual object will get deleted too)
-					virtual	void	DO_DELETE_REF_CNT () = 0;
-			};
+	public:
+		// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
+		// to ignore (cuz the actual object will get deleted too)
+		virtual	void	DO_DELETE_REF_CNT () = 0;
+};
 
 
 			/*
 			 */
 			template	<typename	T>
 				struct	SharedPtr_Default_Traits {
-					typedef	T	TTYPE;
+					typedef	uint32_t	ReferenceCountType;
+					typedef	T			TTYPE;
+
+					struct	Envelope {
+					private:
+						TTYPE*				fPtr_;
+					public:
+						SharedPtrBase*		fCountHolder_;
+					public:
+
+						Envelope (TTYPE* ptr, SharedPtrBase* countHolder)
+							: fPtr_ (ptr)
+							, fCountHolder_ (countHolder)
+							{
+							}
+						TTYPE*	GetPtr () const 
+							{
+								return fPtr_;
+							}
+						void	SetPtr (TTYPE* p)
+							{
+								fPtr_ = p;
+							}
+						ReferenceCountType	CurrentRefCount () const
+							{
+								return fCountHolder_==nullptr? 0: fCountHolder_->fCount_DONT_ACCESS;
+							}
+						void	Increment ()
+							{
+								RequireNotNull (fCountHolder_);
+								Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+							}
+						bool	Decrement ()
+							{
+								Require (CurrentRefCount () > 0);
+								if (Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0) {
+									fCountHolder_->DO_DELETE_REF_CNT ();
+									fCountHolder_ = nullptr;
+									return true;
+								}
+								return false;
+							}
+
+					};
+				};
+
+
+
+			// ASSUME TTYPE INHERITS FROM SharedPtrBase
+			template	<typename	T>
+				struct	SharedPtr_SharedPtrBase_Traits {
+					typedef	uint32_t	ReferenceCountType;
+					typedef	T			TTYPE;
+
+					struct	Envelope {
+						TTYPE*		fPtr;
+
+						Envelope (TTYPE* ptr)
+							: fPtr (ptr)
+							{
+							}
+						TTYPE*	GetPtr () const 	
+							{
+								return fPtr;
+							}
+						void	SetPtr (TTYPE* p)
+							{
+								fPtr = p;
+							}
+						ReferenceCountType	CurrentRefCount () const
+							{
+								return fPtr==nullptr? 0: fPtr->fCount_DONT_ACCESS;
+							}
+						void	Increment ()
+							{
+								RequireNotNull (fPtr);
+								Execution::AtomicIncrement (&fPtr->fCount_DONT_ACCESS);
+							}
+						bool	Decrement ()
+							{
+								Require (CurrentRefCount () > 0);
+								if (Execution::AtomicDecrement (&fPtr->fCount_DONT_ACCESS) == 0) {
+									return true;
+								}
+								return false;
+							}
+					};
 				};
 
 
@@ -215,6 +301,7 @@ namespace	Stroika {
 					explicit SharedPtr (T* from, SharedPtrBase* useCounter);
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
+
 //TODO: UNCLEAR how to handle T2TRAITS. This probably isnt safe (unless we are very careful) going across TRAITSTYPES
 					template <typename T2>
 					/*
@@ -225,14 +312,13 @@ namespace	Stroika {
 								assign inappropriate pointer combinations.</p>
 					*/
 						SharedPtr (const SharedPtr<T2>& from)
-							: fPtr_ (from.get ())
-							, fCountHolder_ (from._PEEK_CNT_PTR_ ())
+							: fEnvelope_ (from.get (), from._PEEK_CNT_PTR_ ())
 							{
-								if (fPtr_ != nullptr) {
-									RequireNotNull (fCountHolder_);
-									Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+								if (fEnvelope_.GetPtr () != nullptr) {
+									fEnvelope_.Increment ();
 								}
 							}
+
 
 				public:
 					nonvirtual		SharedPtr<T,T_TRAITS>& operator= (const SharedPtr<T,T_TRAITS>& rhs);
@@ -305,10 +391,6 @@ namespace	Stroika {
 								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), _PEEK_CNT_PTR_ ());
 							}
 
-				private:
-					T*				fPtr_;
-					SharedPtrBase*	fCountHolder_;
-
 				public:
 					// Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
 					nonvirtual	bool	IsUnique () const;
@@ -331,6 +413,9 @@ namespace	Stroika {
 
 				public:
 					nonvirtual	SharedPtrBase*		_PEEK_CNT_PTR_ () const;
+
+				private:
+					typename	T_TRAITS::Envelope	fEnvelope_;
 			};
 
 		}

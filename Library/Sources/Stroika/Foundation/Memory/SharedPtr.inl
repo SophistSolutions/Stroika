@@ -47,69 +47,58 @@ namespace	Stroika {
 		//	class	SharedPtr<T,T_TRAITS>
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr ()
-					: fPtr_ (nullptr)
-					, fCountHolder_ (nullptr)
+					: fEnvelope_ (nullptr, nullptr)
 					{
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from)
-					: fPtr_ (from)
-					, fCountHolder_ (nullptr)
+					: fEnvelope_ (from, nullptr)
 					{
 						if (from != nullptr) {
-							fCountHolder_ = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
-							Assert (fCountHolder_->fCount_DONT_ACCESS == 0);
-							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+							fEnvelope_.fCountHolder_ = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
+							Assert (fEnvelope_.CurrentRefCount () == 0);
+							fEnvelope_.Increment ();
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (UsesSharedPtrBase, T* from)
-					: fPtr_ (from)
-					, fCountHolder_ (from)
+					: fEnvelope_ (from, from)
 					{
-						if (fCountHolder_ != nullptr) {
-							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+						if (from != nullptr) {
+							fEnvelope_.Increment ();
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, SharedPtrBase* useCounter)
-					: fPtr_ (from)
-					, fCountHolder_ (from == nullptr? nullptr: useCounter)
+					: fEnvelope_ (from, from == nullptr? nullptr: useCounter)
 					{
-						if (fCountHolder_ != nullptr) {
-							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+						if (fEnvelope_.fCountHolder_ != nullptr) {
+							fEnvelope_.Increment ();
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T,T_TRAITS>& from)
-					: fPtr_ (from.fPtr_)
-					, fCountHolder_ (from.fCountHolder_)
+					: fEnvelope_ (from.fEnvelope_.GetPtr (), from.fEnvelope_.fCountHolder_)
 					{
-						if (fPtr_ != nullptr) {
-							RequireNotNull (fCountHolder_);
-							Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+						if (fEnvelope_.GetPtr () != nullptr) {
+							fEnvelope_.Increment ();
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>& SharedPtr<T,T_TRAITS>::operator= (const SharedPtr<T,T_TRAITS>& rhs)
 					{
-						if (rhs.fPtr_ != fPtr_) {
-							if (fPtr_ != nullptr) {
-								AssertNotNull (fCountHolder_);
-								Assert (fCountHolder_->fCount_DONT_ACCESS > 0);
-								if (Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0) {
-									fCountHolder_->DO_DELETE_REF_CNT ();
-									delete fPtr_;
-									fCountHolder_ = nullptr;
-									fPtr_ = nullptr;
+						if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
+							if (fEnvelope_.GetPtr () != nullptr) {
+								if (fEnvelope_.Decrement ()) {
+									delete fEnvelope_.GetPtr ();
+									fEnvelope_.SetPtr (nullptr);
 								}
 							}
-							fPtr_ = rhs.fPtr_;
-							fCountHolder_ = rhs.fCountHolder_;
-							if (fPtr_ != nullptr) {
-								AssertNotNull (fCountHolder_);
-								Assert (fCountHolder_->fCount_DONT_ACCESS > 0);
-								Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+							fEnvelope_.SetPtr (rhs.fEnvelope_.GetPtr ());
+							fEnvelope_.fCountHolder_ = rhs.fEnvelope_.fCountHolder_;
+							if (fEnvelope_.GetPtr () != nullptr) {
+								Assert (fEnvelope_.CurrentRefCount () > 0);
+								fEnvelope_.Increment ();
 							}
 						}
 						return *this;
@@ -117,29 +106,23 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::~SharedPtr ()
 					{
-						if (fPtr_ != nullptr) {
-							AssertNotNull (fCountHolder_);
-							Assert (fCountHolder_->fCount_DONT_ACCESS > 0);
-							if (
-								Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0
-								) {
-								fCountHolder_->DO_DELETE_REF_CNT ();
-								delete fPtr_;
+						if (fEnvelope_.GetPtr () != nullptr) {
+							if (fEnvelope_.Decrement ()) {
+								delete fEnvelope_.GetPtr ();
 							}
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	bool	SharedPtr<T,T_TRAITS>::IsNull () const
 					{
-						return fPtr_ == nullptr;
+						return fEnvelope_.GetPtr () == nullptr;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	T&	SharedPtr<T,T_TRAITS>::GetRep () const
 					{
-						RequireNotNull (fPtr_);
-						AssertNotNull (fCountHolder_);
-						Assert (fCountHolder_->fCount_DONT_ACCESS >= 1);
-						return *fPtr_;
+						RequireNotNull (fEnvelope_.GetPtr ());
+						Assert (fEnvelope_.CurrentRefCount () > 0);
+						return *fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	T* SharedPtr<T,T_TRAITS>::operator-> () const
@@ -154,12 +137,12 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::operator T* () const
 					{
-						return fPtr_;
+						return fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	T*	SharedPtr<T,T_TRAITS>::get () const
 					{
-						return (fPtr_);
+						return (fEnvelope_.GetPtr ());
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	void	SharedPtr<T,T_TRAITS>::release ()
@@ -174,19 +157,19 @@ namespace	Stroika {
 			template	<typename T, typename T_TRAITS>
 				inline	void	SharedPtr<T,T_TRAITS>::reset (T* p)
 					{
-						if (fPtr_ != p) {
+						if (fEnvelope_.GetPtr () != p) {
 							*this = SharedPtr<T,T_TRAITS> (p);
 						}
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	size_t	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
 					{
-						return fCountHolder_==nullptr? 0: fCountHolder_->fCount_DONT_ACCESS;
+						return fEnvelope_.CurrentRefCount ();
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	bool	SharedPtr<T,T_TRAITS>::IsUnique () const
 					{
-						return fCountHolder_ == nullptr? false: fCountHolder_->fCount_DONT_ACCESS == 1;
+						return fEnvelope_.CurrentRefCount () == 1;
 					}
 			template	<typename T, typename T_TRAITS>
 				inline	bool	SharedPtr<T,T_TRAITS>::unique () const
@@ -200,7 +183,7 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr_ < rhs.fPtr_;
+						return fEnvelope_.GetPtr () < rhs.fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator<= (const SharedPtr<T,T_TRAITS>& rhs) const
@@ -208,7 +191,7 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr_ <= rhs.fPtr_;
+						return fEnvelope_.GetPtr () <= rhs.fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator> (const SharedPtr<T,T_TRAITS>& rhs) const
@@ -216,7 +199,7 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr_ > rhs.fPtr_;
+						return fEnvelope_.GetPtr () > rhs.fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator>= (const SharedPtr<T,T_TRAITS>& rhs) const
@@ -224,22 +207,22 @@ namespace	Stroika {
 						// not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
 						// this does the same thing...
 						//		-- LGP 2009-01-11
-						return fPtr_ >= rhs.fPtr_;
+						return fEnvelope_.GetPtr () >= rhs.fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator== (const SharedPtr<T,T_TRAITS>& rhs) const
 					{
-						return fPtr_ == rhs.fPtr_;
+						return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				bool	SharedPtr<T,T_TRAITS>::operator!= (const SharedPtr<T,T_TRAITS>& rhs) const
 					{
-						return fPtr_ != rhs.fPtr_;
+						return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
 					}
 			template	<typename T, typename T_TRAITS>
 				SharedPtrBase*		SharedPtr<T,T_TRAITS>::_PEEK_CNT_PTR_ () const
 					{
-						return fCountHolder_;
+						return fEnvelope_.fCountHolder_;
 					}
 
 		}
@@ -247,11 +230,18 @@ namespace	Stroika {
 
 
 		namespace	Execution {
+			template	<typename T>
+				inline	void	ThrowIfNull (const Memory::SharedPtr<T>& p)
+					{
+						if (p.get () == nullptr) {
+							Execution::DoThrow (bad_alloc (), "ThrowIfNull (SharedPtr<T> ()) - throwing bad_alloc ()");
+						}
+					}
 			template	<typename T, typename T_TRAITS>
 				inline	void	ThrowIfNull (const Memory::SharedPtr<T,T_TRAITS>& p)
 					{
 						if (p.get () == nullptr) {
-							Execution::DoThrow (bad_alloc (), "ThrowIfNull (SharedPtr<typename T> ()) - throwing bad_alloc ()");
+							Execution::DoThrow (bad_alloc (), "ThrowIfNull (SharedPtr<T,T_TRAITS> ()) - throwing bad_alloc ()");
 						}
 					}
 		}
