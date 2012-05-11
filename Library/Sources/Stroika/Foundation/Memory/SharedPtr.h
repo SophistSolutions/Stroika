@@ -9,6 +9,8 @@
 #include	"../Configuration/Common.h"
 #include	"../Execution/AtomicOperations.h"
 #include	"../Execution/Exceptions.h"
+#include	"BlockAllocated.h"
+
 
 
 /*
@@ -138,39 +140,37 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
-// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
-// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
-// a layer of code, and then re-constitute the SharedPtr<> part later.
-struct	SharedPtrBase {
-	// we really want to treat this fCount_ as PRIVATE!!! DONT ACCESS IN SUBCLASSES - but it needs
-	// access from the SharedPtr<> template
-	private:
-	public:
-		size_t	fCount_DONT_ACCESS;
-
-	public:
-		SharedPtrBase ();
-		virtual ~SharedPtrBase ();
-
-	public:
-		// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
-		// to ignore (cuz the actual object will get deleted too)
-		virtual	void	DO_DELETE_REF_CNT () = 0;
-};
+///TMPHACK
+// cannot use
+//			uint32_t	fCount;
+// cuz of assert about sizeof (void*) verus sizeof ReferenceCountObjectType
+///		-- LGP 2012-05-10
+//ISSUE IS:
+//				Assert (sizeof (T) >= sizeof (void*));	//	cuz we overwrite first sizeof(void*) for link
 
 
-
+			namespace	Private {
+				struct	ReferenceCountObjectType {
+					//uint32_t	fCount;
+					size_t	fCount;
+					ReferenceCountObjectType ():
+						fCount (0)
+						{
+						}
+					DECLARE_USE_BLOCK_ALLOCATION(ReferenceCountObjectType);
+				};
+			}
 
 
 			/*
 			 */
 			template	<typename	T>
 				struct	SharedPtr_Default_Traits {
-					typedef	uint32_t	ReferenceCountType;
+					//typedef	uint32_t	ReferenceCountType;
+					typedef	size_t	ReferenceCountType;
 					typedef	T			TTYPE;
 
-					typedef	SharedPtrBase	ReferenceCountObjectType;
+					typedef	Private::ReferenceCountObjectType	ReferenceCountObjectType;
 					struct	Envelope {
 						private:
 							TTYPE*						fPtr_;
@@ -188,24 +188,24 @@ struct	SharedPtrBase {
 								}
 							ReferenceCountType	CurrentRefCount () const
 								{
-									return fCountHolder_==nullptr? 0: fCountHolder_->fCount_DONT_ACCESS;
+									return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
 								}
 							void	Increment ()
 								{
 									RequireNotNull (fCountHolder_);
-									Execution::AtomicIncrement (&fCountHolder_->fCount_DONT_ACCESS);
+									Execution::AtomicIncrement (&fCountHolder_->fCount);
 								}
 							bool	Decrement ()
 								{
 									Require (CurrentRefCount () > 0);
-									if (Execution::AtomicDecrement (&fCountHolder_->fCount_DONT_ACCESS) == 0) {
-										fCountHolder_->DO_DELETE_REF_CNT ();
+									if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
+										delete fCountHolder_;
 										fCountHolder_ = nullptr;
 										return true;
 									}
 									return false;
 								}
-							ReferenceCountObjectType*		_PEEK_CNT_PTR_ () const
+							ReferenceCountObjectType*		GetCounterPointer () const
 								{
 									return fCountHolder_;
 								}
@@ -214,6 +214,28 @@ struct	SharedPtrBase {
 
 
 
+
+
+			// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
+			// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
+			// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
+			// a layer of code, and then re-constitute the SharedPtr<> part later.
+			struct	SharedPtrBase {
+				// we really want to treat this fCount_ as PRIVATE!!! DONT ACCESS IN SUBCLASSES - but it needs
+				// access from the SharedPtr<> template
+				private:
+				public:
+					size_t	fCount_DONT_ACCESS;
+
+				public:
+					SharedPtrBase ();
+					virtual ~SharedPtrBase ();
+
+				public:
+					// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
+					// to ignore (cuz the actual object will get deleted too)
+					virtual	void	DO_DELETE_REF_CNT () = 0;
+			};
 
 			// ASSUME TTYPE INHERITS FROM SharedPtrBase
 			template	<typename	T>
@@ -254,7 +276,7 @@ struct	SharedPtrBase {
 								}
 								return false;
 							}
-						ReferenceCountObjectType*	_PEEK_CNT_PTR_ () const
+						ReferenceCountObjectType*	GetCounterPointer () const
 							{
 								return fPtr;
 							}
@@ -304,9 +326,7 @@ struct	SharedPtrBase {
 				public:
 					SharedPtr ();
 					explicit SharedPtr (T* from);
-					enum UsesSharedPtrBase { eUsesSharedPtrBase };
-					explicit SharedPtr (UsesSharedPtrBase, T* from);
-					explicit SharedPtr (T* from, SharedPtrBase* useCounter);
+					explicit SharedPtr (T* from, typename T_TRAITS::ReferenceCountObjectType* useCounter);
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
 //TODO: UNCLEAR how to handle T2TRAITS. This probably isnt safe (unless we are very careful) going across TRAITSTYPES
@@ -404,8 +424,12 @@ struct	SharedPtrBase {
 				public:
 					// Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
 					nonvirtual	bool	IsUnique () const;
+
+				public:
 					// Alias for IsUnique()
 					nonvirtual	bool	unique () const;
+
+				public:
 					/*
 					@METHOD:		SharedPtr<T,T_TRAITS>::CurrentRefCount
 					@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context

@@ -12,7 +12,6 @@
  */
 #include	"../Execution/AtomicOperations.h"
 
-#include	"BlockAllocated.h"
 
 namespace	Stroika {
 	namespace	Foundation {
@@ -47,12 +46,12 @@ namespace	Stroika {
 
 		//	class	SharedPtr_Default_Traits<T>
 		template	<typename	T>
-			SharedPtr_Default_Traits<T>::Envelope::Envelope (TTYPE* ptr, SharedPtrBase* countHolder)
+			SharedPtr_Default_Traits<T>::Envelope::Envelope (TTYPE* ptr, ReferenceCountObjectType* countHolder)
 				: fPtr_ (ptr)
 				, fCountHolder_ (countHolder)
 				{
 					if (fPtr_ != nullptr and countHolder == nullptr) {
-						fCountHolder_ = DEBUG_NEW SharedPtrNS::Private::SimpleSharedPtrBase ();
+						fCountHolder_ = new ReferenceCountObjectType ();
 					}
 				}
 
@@ -76,15 +75,7 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (UsesSharedPtrBase, T* from)
-					: fEnvelope_ (from, from)
-					{
-						if (from != nullptr) {
-							fEnvelope_.Increment ();
-						}
-					}
-			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, SharedPtrBase* useCounter)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, typename T_TRAITS::ReferenceCountObjectType* useCounter)
 					: fEnvelope_ (from, from == nullptr? nullptr: useCounter)
 					{
 						if (from != nullptr) {
@@ -184,18 +175,12 @@ namespace	Stroika {
 							*this = SharedPtr<T,T_TRAITS> (p);
 						}
 					}
-
 			template	<typename T, typename T_TRAITS>
 					template <typename T2>
-					/*
-					@METHOD:		SharedPtr::Dynamic_Cast
-					@DESCRIPTION:	<p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast - thats a reserved word.</p>
-					*/
 						SharedPtr<T2> SharedPtr<T,T_TRAITS>::Dynamic_Cast ()
 							{
-								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_._PEEK_CNT_PTR_ ());
+								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ());
 							}
-
 			template	<typename T, typename T_TRAITS>
 				inline	size_t	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
 					{

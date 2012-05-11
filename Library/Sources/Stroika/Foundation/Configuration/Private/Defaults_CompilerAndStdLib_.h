@@ -122,7 +122,6 @@
 		#endif
 
 
-
 		#ifndef	qCompilerAndStdLib_Bug_constexprPreDeclareTemplate
 			#if		defined (__GNUC__)
 				#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ == 5))
@@ -137,19 +136,6 @@
 		#endif
 
 
-
-		#ifndef	qCompilerAndStdLib_Bug_template_template_linkbug
-			#if		defined (__GNUC__)
-				#if		__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 7))
-					// not SURE but retyrn with this version
-					#define	qCompilerAndStdLib_Bug_template_template_linkbug	1
-				#else
-					#define	qCompilerAndStdLib_Bug_template_template_linkbug	0
-				#endif
-			#else
-				#define	qCompilerAndStdLib_Bug_template_template_linkbug	0
-			#endif
-		#endif
 
 
 
