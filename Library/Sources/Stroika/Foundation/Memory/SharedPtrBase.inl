@@ -45,8 +45,53 @@ namespace	Stroika {
 				}
 
 
-		}
 
+
+
+		//	class	SharedPtr_SharedPtrBase_Traits<T>::Envelope
+			template	<typename	T>
+				inline	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Envelope (TTYPE* ptr)
+						: fPtr (ptr)
+					{
+					}
+			template	<typename	T>
+				inline	typename SharedPtr_SharedPtrBase_Traits<T>::TTYPE*	SharedPtr_SharedPtrBase_Traits<T>::Envelope::GetPtr () const 	
+					{
+						return fPtr;
+					}
+			template	<typename	T>
+				inline	void	SharedPtr_SharedPtrBase_Traits<T>::Envelope::SetPtr (typename SharedPtr_SharedPtrBase_Traits<T>::TTYPE* p)
+					{
+						fPtr = p;
+					}
+			template	<typename	T>
+				inline	typename SharedPtr_SharedPtrBase_Traits<T>::ReferenceCountType	SharedPtr_SharedPtrBase_Traits<T>::Envelope::CurrentRefCount () const
+					{
+						return fPtr==nullptr? 0: fPtr->fCount_DONT_ACCESS;
+					}
+			template	<typename	T>
+				inline	void	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Increment ()
+					{
+						RequireNotNull (fPtr);
+						Execution::AtomicIncrement (&fPtr->fCount_DONT_ACCESS);
+					}
+			template	<typename	T>
+				inline	bool	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Decrement ()
+					{
+						Require (CurrentRefCount () > 0);
+						if (Execution::AtomicDecrement (&fPtr->fCount_DONT_ACCESS) == 0) {
+							return true;
+						}
+						return false;
+					}
+			template	<typename	T>
+				inline	typename	SharedPtr_SharedPtrBase_Traits<T>::ReferenceCountObjectType*	SharedPtr_SharedPtrBase_Traits<T>::Envelope::GetCounterPointer () const
+					{
+						return fPtr;
+					}
+
+
+		}
 
 
 	}

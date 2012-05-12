@@ -142,8 +142,6 @@ namespace	Stroika {
 
 
 
-
-
 // MOVE SharedPtrBase/SharedPtr_SharedPtrBase_Traits to new file
 // SharedPtrBase (dont like name but need a name).
 // Document clearly that htis isnt NEEDED BY OR USED BY SharedPtr<> but CAN OPTIONALLY be used to
@@ -170,7 +168,10 @@ namespace	Stroika {
 					virtual	void	DO_DELETE_REF_CNT () = 0;
 			};
 
-			// ASSUME TTYPE INHERITS FROM SharedPtrBase
+
+
+
+			// this is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
 					typedef	uint32_t		ReferenceCountType;
@@ -180,39 +181,13 @@ namespace	Stroika {
 					struct	Envelope {
 						TTYPE*		fPtr;
 
-						Envelope (TTYPE* ptr)
-							: fPtr (ptr)
-							{
-							}
-						TTYPE*	GetPtr () const 	
-							{
-								return fPtr;
-							}
-						void	SetPtr (TTYPE* p)
-							{
-								fPtr = p;
-							}
-						ReferenceCountType	CurrentRefCount () const
-							{
-								return fPtr==nullptr? 0: fPtr->fCount_DONT_ACCESS;
-							}
-						void	Increment ()
-							{
-								RequireNotNull (fPtr);
-								Execution::AtomicIncrement (&fPtr->fCount_DONT_ACCESS);
-							}
-						bool	Decrement ()
-							{
-								Require (CurrentRefCount () > 0);
-								if (Execution::AtomicDecrement (&fPtr->fCount_DONT_ACCESS) == 0) {
-									return true;
-								}
-								return false;
-							}
-						ReferenceCountObjectType*	GetCounterPointer () const
-							{
-								return fPtr;
-							}
+						Envelope (TTYPE* ptr);
+						TTYPE*	GetPtr () const;
+						void	SetPtr (TTYPE* p);
+						ReferenceCountType	CurrentRefCount () const;
+						void	Increment ();
+						bool	Decrement ();
+						ReferenceCountObjectType*	GetCounterPointer () const;
 					};
 				};
 
