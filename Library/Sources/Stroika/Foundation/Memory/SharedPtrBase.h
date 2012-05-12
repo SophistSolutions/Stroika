@@ -141,7 +141,6 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-
 // MOVE SharedPtrBase/SharedPtr_SharedPtrBase_Traits to new file
 // SharedPtrBase (dont like name but need a name).
 // Document clearly that htis isnt NEEDED BY OR USED BY SharedPtr<> but CAN OPTIONALLY be used to
@@ -152,43 +151,46 @@ namespace	Stroika {
 			// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
 			struct	SharedPtrBase {
-				// we really want to treat this fCount_ as PRIVATE!!! DONT ACCESS IN SUBCLASSES - but it needs
-				// access from the SharedPtr<> template
 				private:
-				public:
-					size_t	fCount_DONT_ACCESS;
+public://fix to lose this with friends -- LGP 2012-05-11
+					Private::ReferenceCountType	fCount;
 
 				public:
 					SharedPtrBase ();
 					virtual ~SharedPtrBase ();
-
-				public:
-					// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
-					// to ignore (cuz the actual object will get deleted too)
-					virtual	void	DO_DELETE_REF_CNT ();
 			};
 
+
+
+			namespace	Private {
+				template	<typename	T>
+					struct	SharedPtrBase_Envelope_ {
+						T*		fPtr;
+
+						SharedPtrBase_Envelope_ (T* ptr, T* ptr2);
+						template <typename T2>
+							SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from)
+								: fPtr (from.fPtr)
+							{
+							}
+						T*		GetPtr () const;
+						void	SetPtr (T* p);
+						ReferenceCountType	CurrentRefCount () const;
+						void	Increment ();
+						bool	Decrement ();
+						SharedPtrBase*	GetCounterPointer () const;
+					};
+			}
 
 
 
 			// this is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	uint32_t		ReferenceCountType;
-					typedef	T				TTYPE;
-					typedef	SharedPtrBase	ReferenceCountObjectType;
-
-					struct	Envelope {
-						TTYPE*		fPtr;
-
-						Envelope (TTYPE* ptr, TTYPE* ptr2);
-						TTYPE*	GetPtr () const;
-						void	SetPtr (TTYPE* p);
-						ReferenceCountType	CurrentRefCount () const;
-						void	Increment ();
-						bool	Decrement ();
-						ReferenceCountObjectType*	GetCounterPointer () const;
-					};
+					typedef	Private::ReferenceCountType			ReferenceCountType;
+					typedef	SharedPtrBase						ReferenceCountObjectType;
+					typedef	T									TTYPE;
+					typedef	Private::SharedPtrBase_Envelope_<T>	Envelope;
 				};
 
 

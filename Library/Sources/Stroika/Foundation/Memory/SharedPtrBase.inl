@@ -37,7 +37,7 @@ namespace	Stroika {
 
 		//	class	SharedPtrBase
 			inline	SharedPtrBase::SharedPtrBase ():
-				fCount_DONT_ACCESS (0)
+				fCount (0)
 				{
 				}
 			inline	SharedPtrBase::~SharedPtrBase ()
@@ -48,45 +48,45 @@ namespace	Stroika {
 
 
 
-		//	class	SharedPtr_SharedPtrBase_Traits<T>::Envelope
+		//	class	Private::SharedPtrBase_Envelope_<T>
 			template	<typename	T>
-				inline	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Envelope (TTYPE* ptr, TTYPE* ptr2)
+				inline	Private::SharedPtrBase_Envelope_<T>::SharedPtrBase_Envelope_ (T* ptr, T* ptr2)
 						: fPtr (ptr)
 					{
 						Require (ptr == ptr2);
 					}
 			template	<typename	T>
-				inline	typename SharedPtr_SharedPtrBase_Traits<T>::TTYPE*	SharedPtr_SharedPtrBase_Traits<T>::Envelope::GetPtr () const 	
+				inline	T*	Private::SharedPtrBase_Envelope_<T>::GetPtr () const 	
 					{
 						return fPtr;
 					}
 			template	<typename	T>
-				inline	void	SharedPtr_SharedPtrBase_Traits<T>::Envelope::SetPtr (typename SharedPtr_SharedPtrBase_Traits<T>::TTYPE* p)
+				inline	void	Private::SharedPtrBase_Envelope_<T>::SetPtr (T* p)
 					{
 						fPtr = p;
 					}
 			template	<typename	T>
-				inline	typename SharedPtr_SharedPtrBase_Traits<T>::ReferenceCountType	SharedPtr_SharedPtrBase_Traits<T>::Envelope::CurrentRefCount () const
+				inline	typename Private::ReferenceCountType	Private::SharedPtrBase_Envelope_<T>::CurrentRefCount () const
 					{
-						return fPtr==nullptr? 0: fPtr->fCount_DONT_ACCESS;
+						return fPtr==nullptr? 0: fPtr->fCount;
 					}
 			template	<typename	T>
-				inline	void	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Increment ()
+				inline	void	Private::SharedPtrBase_Envelope_<T>::Increment ()
 					{
 						RequireNotNull (fPtr);
-						Execution::AtomicIncrement (&fPtr->fCount_DONT_ACCESS);
+						Execution::AtomicIncrement (&fPtr->fCount);
 					}
 			template	<typename	T>
-				inline	bool	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Decrement ()
+				inline	bool	Private::SharedPtrBase_Envelope_<T>::Decrement ()
 					{
 						Require (CurrentRefCount () > 0);
-						if (Execution::AtomicDecrement (&fPtr->fCount_DONT_ACCESS) == 0) {
+						if (Execution::AtomicDecrement (&fPtr->fCount) == 0) {
 							return true;
 						}
 						return false;
 					}
 			template	<typename	T>
-				inline	typename	SharedPtr_SharedPtrBase_Traits<T>::ReferenceCountObjectType*	SharedPtr_SharedPtrBase_Traits<T>::Envelope::GetCounterPointer () const
+				inline	typename	SharedPtrBase*	Private::SharedPtrBase_Envelope_<T>::GetCounterPointer () const
 					{
 						return fPtr;
 					}
