@@ -3,13 +3,9 @@
  */
 #include	"Stroika/Foundation/StroikaPreComp.h"
 
-#include	<iostream>
-#include	<sstream>
-
-#include	"Stroika/Foundation/Memory/SharedPtr.h"
-
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
+#include	"Stroika/Foundation/Memory/SharedPtr.h"
 
 #include	"../TestHarness/SimpleClass.h"
 #include	"../TestHarness/TestHarness.h"

@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)Common.o\
 	$(ObjDir)MemoryAllocator.o\
 	$(ObjDir)SharedPtr.o\
+	$(ObjDir)SharedPtrBase.o\
 	$(ObjDir)VariantValue.o\
 
 
