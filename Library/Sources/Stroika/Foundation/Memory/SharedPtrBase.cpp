@@ -8,27 +8,9 @@
 
 
 
-
-
 using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Memory;
-
-
-
-
-
-/*
- ********************************************************************************
- ****************************** SimpleSharedPtrBase *****************************
- ********************************************************************************
- */
-void	SharedPtrNS::Private::SimpleSharedPtrBase::DO_DELETE_REF_CNT ()
-{
-	delete this;
-}
-
-
 
 
 

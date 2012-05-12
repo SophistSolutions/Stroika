@@ -7,8 +7,6 @@
 #include	"../StroikaPreComp.h"
 
 #include	"../Configuration/Common.h"
-#include	"../Execution/AtomicOperations.h"
-#include	"../Execution/Exceptions.h"
 
 
 

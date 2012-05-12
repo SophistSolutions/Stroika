@@ -18,19 +18,6 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-			namespace	SharedPtrNS {
-				namespace	Private {
-					struct	SimpleSharedPtrBase : SharedPtrBase {
-						public:
-							virtual	void	DO_DELETE_REF_CNT ();
-
-						public:
-							DECLARE_USE_BLOCK_ALLOCATION(SimpleSharedPtrBase);
-					};
-				}
-			}
-
-
 
 
 
