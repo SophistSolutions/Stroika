@@ -153,27 +153,27 @@ namespace	Stroika {
 
 
 			namespace	Private {
+				namespace	SharedPtr_Default_Traits_Helpers_ {
+					/*
+					 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) -
+					 * if we use one smaller than sizeof(void*) we cannot use BlockAllocation<> code - 
+					 * which currently requires sizeof (T) >= sizeof (void*)
+					 */
+					typedef	size_t	ReferenceCountType_;
 
-				/*
-				 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) - if we use one smaller than sizeof(void*) we cannot
-				 * use BlockAllocation<> code - which currently requires sizeof (T) >= sizeof (void*)
-				 */
-				typedef	size_t	ReferenceCountType_;
 
+					/*
+					 * Stuff FOR SharedPtr_Default_Traits<T>.
+					 *
+					 * Note - I TRIED making these nested types inside SharedPtr_Default_Traits<T> but that created problems
+					 * with nested class templates inside other nested class templates with overloaded template CTOR for
+					 * inner envelope class. Not sure if it was compiler bug or my misunderstanding. Anyhow - this is OK.
+					 */
+					struct	ReferenceCounterContainerType_;
 
-
-				/*
-				 * Stuff FOR SharedPtr_Default_Traits<T>.
-				 *
-				 * Note - I TRIED making these nested types inside SharedPtr_Default_Traits<T> but that created problems with nested class
-				 * templates inside other nested class templates with overloaded template CTOR for inner envelope class. Not sure if it was
-				 * compiler bug or my misunderstanding. Anyhow - this is OK.
-				 */
-				struct	SharedPtr_Default_ReferenceCountObjectType_;
-
-				template	<typename	T>
-					class	SharedPtr_Default_Envelope_;
-
+					template	<typename	T>
+						class	Envelope_;
+				}
 			}
 
 
@@ -181,16 +181,14 @@ namespace	Stroika {
 
 
 			/*
-			 * Default 'TRAITS' object controlling how SharedPtr<T> works.
+			 * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works.
 			 */
 			template	<typename	T>
 				struct	SharedPtr_Default_Traits {
-					typedef	Private::SharedPtr_Default_ReferenceCountObjectType_	ReferenceCountObjectType;
-					typedef	Private::ReferenceCountType_							ReferenceCountType;
-					typedef	Private::SharedPtr_Default_Envelope_<T>					Envelope;
-					typedef	T														TTYPE;
+					typedef	Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_				ReferenceCountType;
+					typedef	Private::SharedPtr_Default_Traits_Helpers_::ReferenceCounterContainerType_	ReferenceCounterContainerType;
+					typedef	Private::SharedPtr_Default_Traits_Helpers_::Envelope_<T>					Envelope;
 				};
-
 
 
 
@@ -236,7 +234,7 @@ namespace	Stroika {
 				public:
 					SharedPtr ();
 					explicit SharedPtr (T* from);
-					explicit SharedPtr (T* from, typename T_TRAITS::ReferenceCountObjectType* useCounter);
+					explicit SharedPtr (T* from, typename T_TRAITS::ReferenceCounterContainerType* useCounter);
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
 //TODO: UNCLEAR how to handle T2TRAITS. This probably isnt safe (unless we are very careful) going across TRAITSTYPES

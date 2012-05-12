@@ -141,6 +141,15 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+
+			namespace	Private {
+				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+					// 32 bits of counter should be enough for any reasonable applicaiton
+					typedef	uint32_t	ReferenceCountType_;
+				}
+			}
+
+
 // MOVE SharedPtrBase/SharedPtr_SharedPtrBase_Traits to new file
 // SharedPtrBase (dont like name but need a name).
 // Document clearly that htis isnt NEEDED BY OR USED BY SharedPtr<> but CAN OPTIONALLY be used to
@@ -153,7 +162,7 @@ namespace	Stroika {
 			struct	SharedPtrBase {
 				private:
 public://fix to lose this with friends -- LGP 2012-05-11
-					Private::ReferenceCountType_	fCount;
+					Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount;
 
 				public:
 					SharedPtrBase ();
@@ -163,32 +172,46 @@ public://fix to lose this with friends -- LGP 2012-05-11
 
 
 			namespace	Private {
-				template	<typename	T>
-					struct	SharedPtrBase_Envelope_ {
-						T*		fPtr;
+				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+					template	<typename	T>
+						struct	SharedPtrBase_Envelope_ {
+							T*		fPtr;
 
-						SharedPtrBase_Envelope_ (T* ptr, T* ptr2);
-						template <typename T2>
-							SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from);
+							SharedPtrBase_Envelope_ (T* ptr, T* ptr2);
+							template <typename T2>
+								SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from);
 
-						T*					GetPtr () const;
-						void				SetPtr (T* p);
-						ReferenceCountType_	CurrentRefCount () const;
-						void				Increment ();
-						bool				Decrement ();
-						SharedPtrBase*		GetCounterPointer () const;
-					};
+							T*					GetPtr () const;
+							void				SetPtr (T* p);
+							ReferenceCountType_	CurrentRefCount () const;
+							void				Increment ();
+							bool				Decrement ();
+							SharedPtrBase*		GetCounterPointer () const;
+						};
+				}
 			}
 
 
 
-			// this is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase
+			/*
+			 * SharedPtr_SharedPtrBase_Traits is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase.
+			 *
+			 *	Example usage:
+			 *
+			 *		class	VeryFancyObj : SharedPtrBase {
+			 *		};
+			 *
+			 *		typedef	SharedPtr<VeryFancyObj,SharedPtr_SharedPtrBase_TraitsVeryFancyObj>>	VeryFancySmartPointer;
+			 *
+			 *		THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION, you can ALWAYS safely create
+			 *		a VeryFancySmartPointer from an already existing VeryFancyObj - just by wrapping/construciting the smart pointer (because the reference count is
+			 *		already in the base wrapped data type).
+			 */
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	Private::ReferenceCountType_		ReferenceCountType;
-					typedef	SharedPtrBase						ReferenceCountObjectType;
-					typedef	T									TTYPE;
-					typedef	Private::SharedPtrBase_Envelope_<T>	Envelope;
+					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_			ReferenceCountType;
+					typedef	SharedPtrBase																ReferenceCounterContainerType;
+					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>	Envelope;
 				};
 
 

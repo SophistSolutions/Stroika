@@ -18,73 +18,81 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+
 			namespace	Private {
-
-				struct	SharedPtr_Default_ReferenceCountObjectType_ {
-					ReferenceCountType_	fCount;
-					SharedPtr_Default_ReferenceCountObjectType_ ():
-						fCount (0)
-						{
-						}
-					DECLARE_USE_BLOCK_ALLOCATION(SharedPtr_Default_ReferenceCountObjectType_);
-				};
+				namespace	SharedPtr_Default_Traits_Helpers_ {
 
 
-				template	<typename	T>
-					class	SharedPtr_Default_Envelope_ {
-						private:
-							T*									fPtr_;
-							SharedPtr_Default_ReferenceCountObjectType_*	fCountHolder_;
-						public:
-							inline	SharedPtr_Default_Envelope_ (T* ptr, SharedPtr_Default_ReferenceCountObjectType_* countHolder)
-								: fPtr_ (ptr)
-								, fCountHolder_ (countHolder)
-								{
-									if (fPtr_ != nullptr and countHolder == nullptr) {
-										fCountHolder_ = new SharedPtr_Default_ReferenceCountObjectType_ ();
-									}
-								}
-							template <typename T2>
-								inline	SharedPtr_Default_Envelope_ (const SharedPtr_Default_Envelope_<T2>& from)
-									: fPtr_ (from.GetPtr ())
-									, fCountHolder_ (from.fCountHolder_)
-								{
-								}
-							inline	T*		GetPtr () const 
-								{
-									return fPtr_;
-								}
-							inline	void	SetPtr (T* p)
-								{
-									fPtr_ = p;
-								}
-							inline	ReferenceCountType_	CurrentRefCount () const
-								{
-									return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
-								}
-							inline	void	Increment ()
-								{
-									RequireNotNull (fCountHolder_);
-									Execution::AtomicIncrement (&fCountHolder_->fCount);
-								}
-							inline	bool	Decrement ()
-								{
-									Require (CurrentRefCount () > 0);
-									if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
-										delete fCountHolder_;
-										fCountHolder_ = nullptr;
-										return true;
-									}
-									return false;
-								}
-							inline	SharedPtr_Default_ReferenceCountObjectType_*	GetCounterPointer () const
-								{
-									return fCountHolder_;
-								}
-						private:
-							template	<typename T2>
-								friend	class	SharedPtr_Default_Envelope_;
+
+					struct	ReferenceCounterContainerType_ {
+						ReferenceCountType_	fCount;
+						ReferenceCounterContainerType_ ():
+							fCount (0)
+							{
+							}
+						DECLARE_USE_BLOCK_ALLOCATION(ReferenceCounterContainerType_);
 					};
+
+
+
+
+
+					template	<typename	T>
+						class	Envelope_ {
+							private:
+								T*								fPtr_;
+								ReferenceCounterContainerType_*	fCountHolder_;
+							public:
+								Envelope_ (T* ptr, ReferenceCounterContainerType_* countHolder)
+									: fPtr_ (ptr)
+									, fCountHolder_ (countHolder)
+									{
+										if (fPtr_ != nullptr and countHolder == nullptr) {
+											fCountHolder_ = new ReferenceCounterContainerType_ ();
+										}
+									}
+								template <typename T2>
+									inline	Envelope_ (const Envelope_<T2>& from)
+										: fPtr_ (from.GetPtr ())
+										, fCountHolder_ (from.fCountHolder_)
+									{
+									}
+								inline	T*		GetPtr () const 
+									{
+										return fPtr_;
+									}
+								inline	void	SetPtr (T* p)
+									{
+										fPtr_ = p;
+									}
+								inline	ReferenceCountType_	CurrentRefCount () const
+									{
+										return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
+									}
+								inline	void	Increment ()
+									{
+										RequireNotNull (fCountHolder_);
+										Execution::AtomicIncrement (&fCountHolder_->fCount);
+									}
+								inline	bool	Decrement ()
+									{
+										Require (CurrentRefCount () > 0);
+										if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
+											delete fCountHolder_;
+											fCountHolder_ = nullptr;
+											return true;
+										}
+										return false;
+									}
+								inline	ReferenceCounterContainerType_*	GetCounterPointer () const
+									{
+										return fCountHolder_;
+									}
+							private:
+								template	<typename T2>
+									friend	class	Envelope_;
+						};
+				}
 			}
 			
 
@@ -110,7 +118,7 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, typename T_TRAITS::ReferenceCountObjectType* useCounter)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, typename T_TRAITS::ReferenceCounterContainerType* useCounter)
 					: fEnvelope_ (from, from == nullptr? nullptr: useCounter)
 					{
 						if (from != nullptr) {
@@ -211,11 +219,11 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
-					template <typename T2>
-						SharedPtr<T2> SharedPtr<T,T_TRAITS>::Dynamic_Cast ()
-							{
-								return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ());
-							}
+				template <typename T2>
+					SharedPtr<T2> SharedPtr<T,T_TRAITS>::Dynamic_Cast ()
+						{
+							return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ());
+						}
 			template	<typename T, typename T_TRAITS>
 				inline	size_t	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
 					{
@@ -276,6 +284,7 @@ namespace	Stroika {
 					}
 
 		}
+
 
 
 
