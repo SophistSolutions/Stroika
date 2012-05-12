@@ -165,7 +165,7 @@ namespace	Stroika {
 				public:
 					// called to delete the 'SharedPtrBase'. But - if this gets mixed into another object, just override
 					// to ignore (cuz the actual object will get deleted too)
-					virtual	void	DO_DELETE_REF_CNT () = 0;
+					virtual	void	DO_DELETE_REF_CNT ();
 			};
 
 
@@ -181,7 +181,7 @@ namespace	Stroika {
 					struct	Envelope {
 						TTYPE*		fPtr;
 
-						Envelope (TTYPE* ptr);
+						Envelope (TTYPE* ptr, TTYPE* ptr2);
 						TTYPE*	GetPtr () const;
 						void	SetPtr (TTYPE* p);
 						ReferenceCountType	CurrentRefCount () const;

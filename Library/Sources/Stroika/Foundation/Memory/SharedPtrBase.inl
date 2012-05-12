@@ -50,9 +50,10 @@ namespace	Stroika {
 
 		//	class	SharedPtr_SharedPtrBase_Traits<T>::Envelope
 			template	<typename	T>
-				inline	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Envelope (TTYPE* ptr)
+				inline	SharedPtr_SharedPtrBase_Traits<T>::Envelope::Envelope (TTYPE* ptr, TTYPE* ptr2)
 						: fPtr (ptr)
 					{
+						Require (ptr == ptr2);
 					}
 			template	<typename	T>
 				inline	typename SharedPtr_SharedPtrBase_Traits<T>::TTYPE*	SharedPtr_SharedPtrBase_Traits<T>::Envelope::GetPtr () const 	
