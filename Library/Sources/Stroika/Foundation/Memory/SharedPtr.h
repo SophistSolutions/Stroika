@@ -144,18 +144,11 @@ namespace	Stroika {
 		namespace	Memory {
 
 
-///TMPHACK
-// cannot use
-//			uint32_t	fCount;
-// cuz of assert about sizeof (void*) verus sizeof ReferenceCountObjectType
-///		-- LGP 2012-05-10
-//ISSUE IS:
-//				Assert (sizeof (T) >= sizeof (void*));	//	cuz we overwrite first sizeof(void*) for link
-
 
 			namespace	Private {
+				typedef	size_t	ReferenceCountType;
+
 				struct	ReferenceCountObjectType {
-					//uint32_t	fCount;
 					size_t	fCount;
 					ReferenceCountObjectType ():
 						fCount (0)
@@ -163,40 +156,36 @@ namespace	Stroika {
 						}
 					DECLARE_USE_BLOCK_ALLOCATION(ReferenceCountObjectType);
 				};
-			}
 
-
-			/*
-			 */
-			template	<typename	T>
-				struct	SharedPtr_Default_Traits {
-					//typedef	uint32_t	ReferenceCountType;
-					typedef	size_t	ReferenceCountType;
-					typedef	T			TTYPE;
-
-					typedef	Private::ReferenceCountObjectType	ReferenceCountObjectType;
-					struct	Envelope {
+				template	<typename	T>
+					class	Envelope {
 						private:
-							TTYPE*						fPtr_;
-							ReferenceCountObjectType*	fCountHolder_;
-						
+							T*									fPtr_;
+							Private::ReferenceCountObjectType*	fCountHolder_;
 						public:
-							Envelope (TTYPE* ptr, ReferenceCountObjectType* countHolder);
+							Envelope (T* ptr, Private::ReferenceCountObjectType* countHolder)
+								: fPtr_ (ptr)
+								, fCountHolder_ (countHolder)
+								{
+									if (fPtr_ != nullptr and countHolder == nullptr) {
+										fCountHolder_ = new Private::ReferenceCountObjectType ();
+									}
+								}
 							template <typename T2>
-								Envelope (const typename SharedPtr_Default_Traits<T2>::Envelope& from)
+								Envelope (const Envelope<T2>& from)
 									: fPtr_ (from.GetPtr ())
 									, fCountHolder_ (from.fCountHolder_)
 								{
 								}
-							TTYPE*	GetPtr () const 
+							T*	GetPtr () const 
 								{
 									return fPtr_;
 								}
-							void	SetPtr (TTYPE* p)
+							void	SetPtr (T* p)
 								{
 									fPtr_ = p;
 								}
-							ReferenceCountType	CurrentRefCount () const
+							Private::ReferenceCountType	CurrentRefCount () const
 								{
 									return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
 								}
@@ -215,11 +204,26 @@ namespace	Stroika {
 									}
 									return false;
 								}
-							ReferenceCountObjectType*		GetCounterPointer () const
+							Private::ReferenceCountObjectType*		GetCounterPointer () const
 								{
 									return fCountHolder_;
 								}
+						private:
+							template	<typename T2>
+								friend	class	Envelope;
 					};
+			}
+
+
+
+			/*
+			 */
+			template	<typename	T>
+				struct	SharedPtr_Default_Traits {
+					typedef	Private::ReferenceCountObjectType	ReferenceCountObjectType;
+					typedef	Private::ReferenceCountType			ReferenceCountType;
+					typedef	Private::Envelope<T>				Envelope;
+					typedef	T									TTYPE;
 				};
 
 

@@ -44,19 +44,6 @@ namespace	Stroika {
 
 
 
-		//	class	SharedPtr_Default_Traits<T>
-		template	<typename	T>
-			SharedPtr_Default_Traits<T>::Envelope::Envelope (TTYPE* ptr, ReferenceCountObjectType* countHolder)
-				: fPtr_ (ptr)
-				, fCountHolder_ (countHolder)
-				{
-					if (fPtr_ != nullptr and countHolder == nullptr) {
-						fCountHolder_ = new ReferenceCountObjectType ();
-					}
-				}
-
-
-
 
 
 		//	class	SharedPtr<T,T_TRAITS>
