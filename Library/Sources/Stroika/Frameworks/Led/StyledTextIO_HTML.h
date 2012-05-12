@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 #ifndef	__StyledTextIO_HTML_h__
 #define	__StyledTextIO_HTML_h__	1

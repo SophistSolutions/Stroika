@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 #ifndef	__WordProcessor_h__
 #define	__WordProcessor_h__	1
@@ -18,7 +18,7 @@
  */
 
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 #if		qMacOS
 	#include	<ColorPicker.h>

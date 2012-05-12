@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 #ifndef	____Led_GDI_h___
 #define	____Led_GDI_h___	1
