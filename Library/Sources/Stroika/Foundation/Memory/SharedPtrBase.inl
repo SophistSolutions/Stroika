@@ -53,7 +53,8 @@ namespace	Stroika {
 				inline	Private::SharedPtrBase_Envelope_<T>::SharedPtrBase_Envelope_ (T* ptr, T* ptr2)
 						: fPtr (ptr)
 					{
-						Require (ptr == ptr2);
+						// Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
+						Require (ptr == ptr2 or ptr2 == nullptr);
 					}
 			template	<typename	T>
 				template <typename T2>
