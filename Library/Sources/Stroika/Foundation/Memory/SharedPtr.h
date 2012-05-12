@@ -216,6 +216,8 @@ namespace	Stroika {
 
 
 
+
+
 			/*
 			 */
 			template	<typename	T>
