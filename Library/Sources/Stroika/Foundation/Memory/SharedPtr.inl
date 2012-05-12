@@ -20,37 +20,37 @@ namespace	Stroika {
 
 			namespace	Private {
 
-				struct	ReferenceCountObjectType {
-					ReferenceCountType	fCount;
-					ReferenceCountObjectType ():
+				struct	SharedPtr_Default_ReferenceCountObjectType_ {
+					ReferenceCountType_	fCount;
+					SharedPtr_Default_ReferenceCountObjectType_ ():
 						fCount (0)
 						{
 						}
-					DECLARE_USE_BLOCK_ALLOCATION(ReferenceCountObjectType);
+					DECLARE_USE_BLOCK_ALLOCATION(SharedPtr_Default_ReferenceCountObjectType_);
 				};
 
 
 				template	<typename	T>
-					class	Envelope {
+					class	SharedPtr_Default_Envelope_ {
 						private:
 							T*									fPtr_;
-							Private::ReferenceCountObjectType*	fCountHolder_;
+							SharedPtr_Default_ReferenceCountObjectType_*	fCountHolder_;
 						public:
-							inline	Envelope (T* ptr, Private::ReferenceCountObjectType* countHolder)
+							inline	SharedPtr_Default_Envelope_ (T* ptr, SharedPtr_Default_ReferenceCountObjectType_* countHolder)
 								: fPtr_ (ptr)
 								, fCountHolder_ (countHolder)
 								{
 									if (fPtr_ != nullptr and countHolder == nullptr) {
-										fCountHolder_ = new Private::ReferenceCountObjectType ();
+										fCountHolder_ = new SharedPtr_Default_ReferenceCountObjectType_ ();
 									}
 								}
 							template <typename T2>
-								inline	Envelope (const Envelope<T2>& from)
+								inline	SharedPtr_Default_Envelope_ (const SharedPtr_Default_Envelope_<T2>& from)
 									: fPtr_ (from.GetPtr ())
 									, fCountHolder_ (from.fCountHolder_)
 								{
 								}
-							inline	T*	GetPtr () const 
+							inline	T*		GetPtr () const 
 								{
 									return fPtr_;
 								}
@@ -58,7 +58,7 @@ namespace	Stroika {
 								{
 									fPtr_ = p;
 								}
-							inline	Private::ReferenceCountType	CurrentRefCount () const
+							inline	ReferenceCountType_	CurrentRefCount () const
 								{
 									return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
 								}
@@ -77,16 +77,20 @@ namespace	Stroika {
 									}
 									return false;
 								}
-							inline	Private::ReferenceCountObjectType*		GetCounterPointer () const
+							inline	SharedPtr_Default_ReferenceCountObjectType_*	GetCounterPointer () const
 								{
 									return fCountHolder_;
 								}
 						private:
 							template	<typename T2>
-								friend	class	Envelope;
+								friend	class	SharedPtr_Default_Envelope_;
 					};
 			}
 			
+
+
+
+
 
 
 

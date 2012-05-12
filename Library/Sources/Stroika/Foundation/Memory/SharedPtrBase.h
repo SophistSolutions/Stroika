@@ -153,7 +153,7 @@ namespace	Stroika {
 			struct	SharedPtrBase {
 				private:
 public://fix to lose this with friends -- LGP 2012-05-11
-					Private::ReferenceCountType	fCount;
+					Private::ReferenceCountType_	fCount;
 
 				public:
 					SharedPtrBase ();
@@ -169,16 +169,14 @@ public://fix to lose this with friends -- LGP 2012-05-11
 
 						SharedPtrBase_Envelope_ (T* ptr, T* ptr2);
 						template <typename T2>
-							SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from)
-								: fPtr (from.fPtr)
-							{
-							}
-						T*		GetPtr () const;
-						void	SetPtr (T* p);
-						ReferenceCountType	CurrentRefCount () const;
-						void	Increment ();
-						bool	Decrement ();
-						SharedPtrBase*	GetCounterPointer () const;
+							SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from);
+
+						T*					GetPtr () const;
+						void				SetPtr (T* p);
+						ReferenceCountType_	CurrentRefCount () const;
+						void				Increment ();
+						bool				Decrement ();
+						SharedPtrBase*		GetCounterPointer () const;
 					};
 			}
 
@@ -187,7 +185,7 @@ public://fix to lose this with friends -- LGP 2012-05-11
 			// this is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	Private::ReferenceCountType			ReferenceCountType;
+					typedef	Private::ReferenceCountType_		ReferenceCountType;
 					typedef	SharedPtrBase						ReferenceCountObjectType;
 					typedef	T									TTYPE;
 					typedef	Private::SharedPtrBase_Envelope_<T>	Envelope;

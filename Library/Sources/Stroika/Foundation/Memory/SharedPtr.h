@@ -17,6 +17,12 @@
 // SAME FOR SharedPtrBase file!!!
 
 
+// NOTE - SharedPtr<T> MAYBE roughly equiv to shared_ptr<T> except for the bit about weak_ptr. The advantage of
+// SharedPtr - is that you can do SharedPtr<T,TTRAITS> - and do fancier stuff that way...
+
+// I guess another weakness is I havent' supported && move operations yet either!
+
+
 
 /*
  * GETTING RID OF SharedPtrBase/UsesSharedPtrBase
@@ -152,12 +158,22 @@ namespace	Stroika {
 				 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) - if we use one smaller than sizeof(void*) we cannot
 				 * use BlockAllocation<> code - which currently requires sizeof (T) >= sizeof (void*)
 				 */
-				typedef	size_t	ReferenceCountType;
+				typedef	size_t	ReferenceCountType_;
 
-				struct	ReferenceCountObjectType;
+
+
+				/*
+				 * Stuff FOR SharedPtr_Default_Traits<T>.
+				 *
+				 * Note - I TRIED making these nested types inside SharedPtr_Default_Traits<T> but that created problems with nested class
+				 * templates inside other nested class templates with overloaded template CTOR for inner envelope class. Not sure if it was
+				 * compiler bug or my misunderstanding. Anyhow - this is OK.
+				 */
+				struct	SharedPtr_Default_ReferenceCountObjectType_;
 
 				template	<typename	T>
-					class	Envelope;
+					class	SharedPtr_Default_Envelope_;
+
 			}
 
 
@@ -165,13 +181,14 @@ namespace	Stroika {
 
 
 			/*
+			 * Default 'TRAITS' object controlling how SharedPtr<T> works.
 			 */
 			template	<typename	T>
 				struct	SharedPtr_Default_Traits {
-					typedef	Private::ReferenceCountObjectType	ReferenceCountObjectType;
-					typedef	Private::ReferenceCountType			ReferenceCountType;
-					typedef	Private::Envelope<T>				Envelope;
-					typedef	T									TTYPE;
+					typedef	Private::SharedPtr_Default_ReferenceCountObjectType_	ReferenceCountObjectType;
+					typedef	Private::ReferenceCountType_							ReferenceCountType;
+					typedef	Private::SharedPtr_Default_Envelope_<T>					Envelope;
+					typedef	T														TTYPE;
 				};
 
 

@@ -56,6 +56,12 @@ namespace	Stroika {
 						Require (ptr == ptr2);
 					}
 			template	<typename	T>
+				template <typename T2>
+					Private::SharedPtrBase_Envelope_<T>::SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from)
+						: fPtr (from.fPtr)
+					{
+					}
+			template	<typename	T>
 				inline	T*	Private::SharedPtrBase_Envelope_<T>::GetPtr () const 	
 					{
 						return fPtr;
@@ -66,7 +72,7 @@ namespace	Stroika {
 						fPtr = p;
 					}
 			template	<typename	T>
-				inline	typename Private::ReferenceCountType	Private::SharedPtrBase_Envelope_<T>::CurrentRefCount () const
+				inline	typename Private::ReferenceCountType_	Private::SharedPtrBase_Envelope_<T>::CurrentRefCount () const
 					{
 						return fPtr==nullptr? 0: fPtr->fCount;
 					}
