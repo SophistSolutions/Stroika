@@ -24,7 +24,8 @@
  *						applications. Maybe I'm missing something. Ask around a bit...
  *						FOR THE MOST PART.
  *
- *						There are specific (rare) cases where weak_ptr IS important, and I wnat to find (TODO) SOME way to implemnet athat (e.g. PHRDB:: shared DB stuff).
+ *						There are specific (rare) cases where weak_ptr IS important, and I wnat to find (TODO)
+ *						SOME way to implemnet athat (e.g. PHRDB:: shared DB stuff).
  *
  *			(o)		BETTER DOCUMENT - USE ShaerdPtrBase stuff in other module
  *
@@ -73,7 +74,8 @@ namespace	Stroika {
 
 
 			/*
-			 * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works.
+			 * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works. This typically will not be used directly,
+			 * but just part of using @SharedPtr<T>
 			 */
 			template	<typename	T>
 				struct	SharedPtr_Default_Traits {
@@ -87,7 +89,7 @@ namespace	Stroika {
 
 			/*
 			@CLASS:			SharedPtr<T,T_TRAITS>
-			@DESCRIPTION:	
+			@DESCRIPTION:
 					<p>This class is for keeping track of a data structure with reference counts,
 				and disposing of that structure when the reference count drops to zero.
 				Copying one of these Shared<T> just increments the referce count,
@@ -106,6 +108,16 @@ namespace	Stroika {
 					<p>This class can be enourmously useful in implementing letter/envelope -
 				type data structures - see String, or Shapes, for examples.
 				</p>
+
+					<p>Example Usage</p>
+
+				<code>
+					{
+						SharedPtr<int>	p (new int ());
+						*p = 3;
+						// 'when 'p' goes out of scope - the int will be automatically deleted
+					}
+				</code>
 			
 					<p>SharedPtr<T> is a simple utility class - very much akin to the C++11 class
 				std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
@@ -221,7 +233,8 @@ namespace	Stroika {
 					template <typename T2>
 					/*
 					@METHOD:		SharedPtr::Dynamic_Cast
-					@DESCRIPTION:	<p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast - thats a reserved word.</p>
+					@DESCRIPTION:	<p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
+								thats a reserved word.</p>
 					*/
 						SharedPtr<T2> Dynamic_Cast ();
 

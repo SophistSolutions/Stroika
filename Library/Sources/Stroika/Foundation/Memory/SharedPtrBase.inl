@@ -37,7 +37,7 @@ namespace	Stroika {
 
 		//	class	SharedPtrBase
 			inline	SharedPtrBase::SharedPtrBase ():
-				fCount (0)
+				fCount_ (0)
 				{
 				}
 			inline	SharedPtrBase::~SharedPtrBase ()
@@ -75,19 +75,19 @@ namespace	Stroika {
 			template	<typename	T>
 				inline	typename Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::CurrentRefCount () const
 					{
-						return fPtr==nullptr? 0: fPtr->fCount;
+						return fPtr==nullptr? 0: fPtr->fCount_;
 					}
 			template	<typename	T>
 				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::Increment ()
 					{
 						RequireNotNull (fPtr);
-						Execution::AtomicIncrement (&fPtr->fCount);
+						Execution::AtomicIncrement (&fPtr->fCount_);
 					}
 			template	<typename	T>
 				inline	bool	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::Decrement ()
 					{
 						Require (CurrentRefCount () > 0);
-						if (Execution::AtomicDecrement (&fPtr->fCount) == 0) {
+						if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
 							return true;
 						}
 						return false;

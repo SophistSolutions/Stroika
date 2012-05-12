@@ -12,7 +12,11 @@
 
 
 
-
+/*
+ *	TODO:
+ *			(o)		Cleanup documentation, especially about the purpose/point, and how to use.
+ *
+ */
 
 
 
@@ -87,6 +91,10 @@ namespace	Stroika {
 					// 32 bits of counter should be enough for any reasonable applicaiton
 					typedef	uint32_t	ReferenceCountType_;
 				}
+				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+					template	<typename	T>
+						struct	SharedPtrBase_Envelope_;
+				}
 			}
 
 
@@ -97,12 +105,16 @@ namespace	Stroika {
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
 			struct	SharedPtrBase {
 				private:
-public://fix to lose this with friends -- LGP 2012-05-11
-					Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount;
+//public://fix to lose this with friends -- LGP 2012-05-11
+					Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
 
 				public:
 					SharedPtrBase ();
 					virtual ~SharedPtrBase ();
+
+			private:
+					template	<typename	T>
+						friend	struct	SharedPtrBase_Envelope_;
 			};
 
 
