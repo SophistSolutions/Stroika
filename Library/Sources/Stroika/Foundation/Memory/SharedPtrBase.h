@@ -93,7 +93,7 @@ namespace	Stroika {
 				}
 				namespace	SharedPtrBase_Default_Traits_Helpers_ {
 					template	<typename	T>
-						struct	SharedPtrBase_Envelope_;
+						struct	Envelope_;
 				}
 			}
 
@@ -114,7 +114,7 @@ namespace	Stroika {
 
 			private:
 					template	<typename	T>
-						friend	struct	SharedPtrBase_Envelope_;
+						friend	struct	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_;
 			};
 
 
@@ -122,12 +122,12 @@ namespace	Stroika {
 			namespace	Private {
 				namespace	SharedPtrBase_Default_Traits_Helpers_ {
 					template	<typename	T>
-						struct	SharedPtrBase_Envelope_ {
+						struct	Envelope_ {
 							T*		fPtr;
 
-							SharedPtrBase_Envelope_ (T* ptr, T* ptr2);
+							Envelope_ (T* ptr, T* ptr2);
 							template <typename T2>
-								SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from);
+								Envelope_ (const Envelope_<T2>& from);
 
 							T*					GetPtr () const;
 							void				SetPtr (T* p);
@@ -157,9 +157,9 @@ namespace	Stroika {
 			 */
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_			ReferenceCountType;
-					typedef	SharedPtrBase																ReferenceCounterContainerType;
-					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>	Envelope;
+					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_		ReferenceCountType;
+					typedef	SharedPtrBase															ReferenceCounterContainerType;
+					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>			Envelope;
 				};
 
 

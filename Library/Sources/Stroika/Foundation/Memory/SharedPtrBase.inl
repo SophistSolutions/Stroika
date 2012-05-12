@@ -35,9 +35,9 @@ namespace	Stroika {
 
 
 
-		//	class	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>
+		//	class	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>
 			template	<typename	T>
-				inline	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::SharedPtrBase_Envelope_ (T* ptr, T* ptr2)
+				inline	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Envelope_ (T* ptr, T* ptr2)
 						: fPtr (ptr)
 					{
 						// Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
@@ -45,33 +45,33 @@ namespace	Stroika {
 					}
 			template	<typename	T>
 				template <typename T2>
-					Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::SharedPtrBase_Envelope_ (const SharedPtrBase_Envelope_<T2>& from)
+					Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Envelope_ (const Envelope_<T2>& from)
 						: fPtr (from.fPtr)
 					{
 					}
 			template	<typename	T>
-				inline	T*	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::GetPtr () const 	
+				inline	T*	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::GetPtr () const 	
 					{
 						return fPtr;
 					}
 			template	<typename	T>
-				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::SetPtr (T* p)
+				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::SetPtr (T* p)
 					{
 						fPtr = p;
 					}
 			template	<typename	T>
-				inline	typename Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::CurrentRefCount () const
+				inline	typename Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::CurrentRefCount () const
 					{
 						return fPtr==nullptr? 0: fPtr->fCount_;
 					}
 			template	<typename	T>
-				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::Increment ()
+				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Increment ()
 					{
 						RequireNotNull (fPtr);
 						Execution::AtomicIncrement (&fPtr->fCount_);
 					}
 			template	<typename	T>
-				inline	bool	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::Decrement ()
+				inline	bool	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Decrement ()
 					{
 						Require (CurrentRefCount () > 0);
 						if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
@@ -80,7 +80,7 @@ namespace	Stroika {
 						return false;
 					}
 			template	<typename	T>
-				inline	Memory::SharedPtrBase*	Private::SharedPtrBase_Default_Traits_Helpers_::SharedPtrBase_Envelope_<T>::GetCounterPointer () const
+				inline	Memory::SharedPtrBase*	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::GetCounterPointer () const
 					{
 						return fPtr;
 					}
