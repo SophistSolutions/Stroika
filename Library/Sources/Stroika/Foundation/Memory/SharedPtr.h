@@ -27,6 +27,8 @@
  *
  *			(o)		BETTER DOCUMENT - USE ShaerdPtrBase stuff in other module
  *
+ *			(o)		And document the issue wtih Also - Thread::Cretae() issue - but htat has a workaround...
+ *
  *
  */
 
