@@ -14,6 +14,7 @@
 
 
 // TODO: MOST OF DOCS IN THIS FILE OBSOLETE - REDO
+// SAME FOR SharedPtrBase file!!!
 
 
 
@@ -146,72 +147,17 @@ namespace	Stroika {
 
 
 			namespace	Private {
+
+				/*
+				 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) - if we use one smaller than sizeof(void*) we cannot
+				 * use BlockAllocation<> code - which currently requires sizeof (T) >= sizeof (void*)
+				 */
 				typedef	size_t	ReferenceCountType;
 
-				struct	ReferenceCountObjectType {
-					size_t	fCount;
-					ReferenceCountObjectType ():
-						fCount (0)
-						{
-						}
-					DECLARE_USE_BLOCK_ALLOCATION(ReferenceCountObjectType);
-				};
+				struct	ReferenceCountObjectType;
 
 				template	<typename	T>
-					class	Envelope {
-						private:
-							T*									fPtr_;
-							Private::ReferenceCountObjectType*	fCountHolder_;
-						public:
-							Envelope (T* ptr, Private::ReferenceCountObjectType* countHolder)
-								: fPtr_ (ptr)
-								, fCountHolder_ (countHolder)
-								{
-									if (fPtr_ != nullptr and countHolder == nullptr) {
-										fCountHolder_ = new Private::ReferenceCountObjectType ();
-									}
-								}
-							template <typename T2>
-								Envelope (const Envelope<T2>& from)
-									: fPtr_ (from.GetPtr ())
-									, fCountHolder_ (from.fCountHolder_)
-								{
-								}
-							T*	GetPtr () const 
-								{
-									return fPtr_;
-								}
-							void	SetPtr (T* p)
-								{
-									fPtr_ = p;
-								}
-							Private::ReferenceCountType	CurrentRefCount () const
-								{
-									return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
-								}
-							void	Increment ()
-								{
-									RequireNotNull (fCountHolder_);
-									Execution::AtomicIncrement (&fCountHolder_->fCount);
-								}
-							bool	Decrement ()
-								{
-									Require (CurrentRefCount () > 0);
-									if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
-										delete fCountHolder_;
-										fCountHolder_ = nullptr;
-										return true;
-									}
-									return false;
-								}
-							Private::ReferenceCountObjectType*		GetCounterPointer () const
-								{
-									return fCountHolder_;
-								}
-						private:
-							template	<typename T2>
-								friend	class	Envelope;
-					};
+					class	Envelope;
 			}
 
 

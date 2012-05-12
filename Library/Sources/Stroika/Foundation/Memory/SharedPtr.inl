@@ -18,7 +18,77 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+			namespace	Private {
+
+				struct	ReferenceCountObjectType {
+					ReferenceCountType	fCount;
+					ReferenceCountObjectType ():
+						fCount (0)
+						{
+						}
+					DECLARE_USE_BLOCK_ALLOCATION(ReferenceCountObjectType);
+				};
+
+
+				template	<typename	T>
+					class	Envelope {
+						private:
+							T*									fPtr_;
+							Private::ReferenceCountObjectType*	fCountHolder_;
+						public:
+							inline	Envelope (T* ptr, Private::ReferenceCountObjectType* countHolder)
+								: fPtr_ (ptr)
+								, fCountHolder_ (countHolder)
+								{
+									if (fPtr_ != nullptr and countHolder == nullptr) {
+										fCountHolder_ = new Private::ReferenceCountObjectType ();
+									}
+								}
+							template <typename T2>
+								inline	Envelope (const Envelope<T2>& from)
+									: fPtr_ (from.GetPtr ())
+									, fCountHolder_ (from.fCountHolder_)
+								{
+								}
+							inline	T*	GetPtr () const 
+								{
+									return fPtr_;
+								}
+							inline	void	SetPtr (T* p)
+								{
+									fPtr_ = p;
+								}
+							inline	Private::ReferenceCountType	CurrentRefCount () const
+								{
+									return fCountHolder_==nullptr? 0: fCountHolder_->fCount;
+								}
+							inline	void	Increment ()
+								{
+									RequireNotNull (fCountHolder_);
+									Execution::AtomicIncrement (&fCountHolder_->fCount);
+								}
+							inline	bool	Decrement ()
+								{
+									Require (CurrentRefCount () > 0);
+									if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
+										delete fCountHolder_;
+										fCountHolder_ = nullptr;
+										return true;
+									}
+									return false;
+								}
+							inline	Private::ReferenceCountObjectType*		GetCounterPointer () const
+								{
+									return fCountHolder_;
+								}
+						private:
+							template	<typename T2>
+								friend	class	Envelope;
+					};
+			}
 			
+
+
 
 		//	class	SharedPtr<T,T_TRAITS>
 			template	<typename T, typename T_TRAITS>
