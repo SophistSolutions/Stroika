@@ -92,7 +92,7 @@ namespace	Stroika {
 						return false;
 					}
 			template	<typename	T>
-				inline	typename	SharedPtrBase*	Private::SharedPtrBase_Envelope_<T>::GetCounterPointer () const
+				inline	Memory::SharedPtrBase*	Private::SharedPtrBase_Envelope_<T>::GetCounterPointer () const
 					{
 						return fPtr;
 					}
