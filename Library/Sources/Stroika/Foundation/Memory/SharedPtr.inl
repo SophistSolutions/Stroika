@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include	"../Execution/AtomicOperations.h"
+#include	"BlockAllocated.h"
 
 
 namespace	Stroika {

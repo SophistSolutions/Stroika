@@ -10,25 +10,13 @@
 
 
 
-// TODO: MOST OF DOCS IN THIS FILE OBSOLETE - REDO
+
+
+
 
 
 
 /*
- * GETTING RID OF SharedPtrBase/UsesSharedPtrBase
- *
- *		(o)	I'm not happy with the design of SharedPtrBase/UsesSharedPtrBase. In practice - its awkward to use.
- *
- *			But there is one fairly import use of smart pointers it seems hard to avoid.
- *
- *			Consider a letter/envelope pair DB (envelope) and DBRep. Consider that there are LOTS of subclasses of DBRep, and the API
- *			is rich. Consider that there are many modules - which use the class DB (such as Import/Export).
- *
- *			DB is a simple envelope that uses SharedPtr<DBrep>.
- *
- *			How - in a subclass of DBRep - I want to call some API - such as Export - with DB (this). That would be BAD - as it would
- *			create a shared pointer out of this, and delete it when DB goes out of scope.
- *
  *			It is principally to solve THIS problem - that SharedPtrBase/UsesSharedPtrBase still exists for. There is as common base class
  *			(so you can always find the shared reference count).
  *
@@ -88,54 +76,6 @@
  *
  */
 
-
-
-/*
- * Description:
- *
- *	...
- *
- * TODO:
- *		+	CAREFULLY writeup differences between this class and shared_ptr<>
- *			+	I DONT BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
- *				applications. Maybe I'm missing something. Ask around a bit...
- *			+	SEE GETTING RID OF SharedPtrBase/UsesSharedPtrBase ABOVE...
- *
- *
-				Then - we COULD get rid of SharedPtr<> altoegher and just not use the weak_ptr stuff if its a bad idea. I'm undecided on that
-				later point. More thought required
-						--	LGP 2011-09-09
- *
- *
- */
-
-
-/*
- * Description:
- *		<<<<OBSOLETE/WRONG - FROM OLD STROIKA SHARED CLASS - JUSTPLACE HOLDER DOC TIL WE CAN WRITE GOOD STUFF>>>>>
- *
- *             This class is for keeping track of a data structure with reference counts,
- *     and disposing of that structure when the reference count drops to zero.
- *     Copying one of these Shared<T> just increments the referce count,
- *     and destroying/overwriting one decrements it.
- *
- *             You can have a ptr having a nullptr value, and it can be copied.
- *     (Implementation detail - the reference count itself is NEVER nil except upon
- *     failure of alloction of memory in ctor and then only valid op on class is
- *     destruction). You can access the value with GetPointer () but this is not
- *     advised - only if it may be legitimately nullptr do you want to do this.
- *     Generaly just use ptr-> to access the data, and this will do the
- *     RequireNotNull (POINTER) for you.
- *
- *             This class can be enourmously useful in implementing letter/envelope -
- *     type data structures - see String, or Shapes, for examples.
- *
- *
- * TODO:
- *
- *
- */
-
 namespace	Stroika {	
 	namespace	Foundation {
 		namespace	Memory {
@@ -150,10 +90,6 @@ namespace	Stroika {
 			}
 
 
-// MOVE SharedPtrBase/SharedPtr_SharedPtrBase_Traits to new file
-// SharedPtrBase (dont like name but need a name).
-// Document clearly that htis isnt NEEDED BY OR USED BY SharedPtr<> but CAN OPTIONALLY be used to
-// get better size (avoid extra pointer) - and better re-constitute semantics
 
 			// An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
 			// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
