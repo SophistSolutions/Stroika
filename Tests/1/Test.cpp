@@ -35,11 +35,7 @@ namespace	{
 	{
 		SharedPtr<T1>	t1 (new T1 ());
 		SharedPtr<T2>	t2 (new T2 ());
-
-		// tricky - uses special CTOR, but other way should fail
-#if 1
 		t1 = t2;
-#endif
 	}
 }
 
