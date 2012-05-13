@@ -114,7 +114,8 @@ namespace	Stroika {
 					: fEnvelope_ (from, nullptr)
 					{
 						if (from != nullptr) {
-							Assert (fEnvelope_.CurrentRefCount () == 0);
+							// NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
+							// in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
 							fEnvelope_.Increment ();
 						}
 					}

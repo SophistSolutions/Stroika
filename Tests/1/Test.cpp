@@ -31,8 +31,18 @@ namespace	{
 			struct	T2 : T1 {
 			};
 			SharedPtr<T1>	t1 (new T1 ());
+			VerifyTestResult (t1.IsUnique ());
+			VerifyTestResult (t1.CurrentRefCount () == 1);
 			SharedPtr<T2>	t2 (new T2 ());
+			VerifyTestResult (t2.IsUnique ());
+			VerifyTestResult (t2.CurrentRefCount () == 1);
+			VerifyTestResult (t1 != t2);
 			t1 = t2;
+			VerifyTestResult (not t1.IsUnique ());
+			VerifyTestResult (t1.CurrentRefCount () == 2);
+			VerifyTestResult (not t2.IsUnique ());
+			VerifyTestResult (t2.CurrentRefCount () == 2);
+			VerifyTestResult (t1 == t2);
 		}
 	void	Test2 ()
 		{
@@ -40,7 +50,6 @@ namespace	{
 				string x;
 			};
 			typedef	SharedPtr<TTT,SharedPtr_SharedPtrBase_Traits<TTT>>	TTT_SP;
-
 
 			TTT_SP	t1 (new TTT ());
 			TTT_SP	t2 (new TTT ());
