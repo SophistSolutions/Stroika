@@ -399,6 +399,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -858,6 +861,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1161,6 +1167,9 @@
       <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.inl">
       <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>

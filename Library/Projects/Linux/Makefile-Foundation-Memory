@@ -15,6 +15,7 @@ Objs	=	\
 	$(ObjDir)SharedPtr.o\
 	$(ObjDir)SharedPtrBase.o\
 	$(ObjDir)VariantValue.o\
+	$(ObjDir)WeakPtr.o\
 
 
 all:	$(Objs)

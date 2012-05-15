@@ -137,6 +137,11 @@
 
 
 
+		#ifndef	qCompilerAndStdLib_Supports_TemplateUsingEquals
+			// Unclear if my usage is right, and what compiler purports to support it. Definetely not msvc 2010
+			#define	qCompilerAndStdLib_Supports_TemplateUsingEquals	0
+		#endif
+
 
 
 		/*
