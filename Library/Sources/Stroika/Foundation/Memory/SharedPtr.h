@@ -252,7 +252,11 @@ namespace	Stroika {
 					@DESCRIPTION:	<p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
 					so not its awlays available (it has no cost to keep available).</p>
 					*/
-					nonvirtual	size_t	CurrentRefCount () const;
+					typename T_TRAITS::ReferenceCountType	CurrentRefCount () const;
+
+				public:
+					// Alias for CurrentRefCount()
+					typename T_TRAITS::ReferenceCountType	use_count () const;
 
 				public:
 					nonvirtual	bool	operator< (const SharedPtr<T,T_TRAITS>& rhs) const;
