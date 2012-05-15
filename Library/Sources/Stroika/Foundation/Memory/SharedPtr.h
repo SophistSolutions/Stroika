@@ -141,16 +141,28 @@ namespace	Stroika {
 					template	<typename	T>
 						class	Envelope_;
 				}
-			}
 
-			namespace	Private {
+
+				struct	SharedPtrBase_;
 				namespace	SharedPtrBase_Default_Traits_Helpers_ {
 					// 32 bits of counter should be enough for any reasonable applicaiton
 					typedef	uint32_t	ReferenceCountType_;
-				}
-				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+
 					template	<typename	T>
-						struct	Envelope_;
+						struct	Envelope_ {
+							T*		fPtr;
+
+							Envelope_ (T* ptr, T* ptr2);
+							template <typename T2>
+								Envelope_ (const Envelope_<T2>& from);
+
+							T*					GetPtr () const;
+							void				SetPtr (T* p);
+							ReferenceCountType_	CurrentRefCount () const;
+							void				Increment ();
+							bool				Decrement ();
+							Private::SharedPtrBase_*		GetCounterPointer () const;
+						};
 				}
 
 				struct	SharedPtrBase_ {
@@ -165,6 +177,7 @@ namespace	Stroika {
 						template	<typename	T>
 							friend	struct	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_;
 				};
+
 			}
 
 
@@ -376,26 +389,6 @@ namespace	Stroika {
 
 
 
-			namespace	Private {
-				namespace	SharedPtrBase_Default_Traits_Helpers_ {
-					template	<typename	T>
-						struct	Envelope_ {
-							T*		fPtr;
-
-							Envelope_ (T* ptr, T* ptr2);
-							template <typename T2>
-								Envelope_ (const Envelope_<T2>& from);
-
-							T*					GetPtr () const;
-							void				SetPtr (T* p);
-							ReferenceCountType_	CurrentRefCount () const;
-							void				Increment ();
-							bool				Decrement ();
-							Private::SharedPtrBase_*		GetCounterPointer () const;
-						};
-				}
-			}
-
 
 
 
@@ -436,12 +429,10 @@ namespace	Stroika {
 				struct	enable_shared_from_this : Private::SharedPtrBase_ {
 					SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this() 
 						{
-//not sure why needed (or if needed) - retst/clarify!!! - didnt compile at one point on msvc
-T*	fred	=	(T*)this;
-							return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (fred));
+enable_shared_from_this* tmp = (enable_shared_from_this*)this;//debug why needed on msvc - try on linux
+							return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (tmp));
 						}
 				};
-
 
 
 		}
