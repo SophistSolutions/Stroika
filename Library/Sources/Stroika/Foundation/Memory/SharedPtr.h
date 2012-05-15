@@ -403,7 +403,7 @@ namespace	Stroika {
 			 *		typedef	SharedPtr<VeryFancyObj,SharedPtr_SharedPtrBase_TraitsVeryFancyObj>>	VeryFancySmartPointer;
 			 *
 			 *		THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION, you can ALWAYS safely create
-			 *		a VeryFancySmartPointer from an already existing VeryFancyObj - just by wrapping/construciting the smart pointer (because the reference count is
+			 *		a VeryFancySmartPointer from an already existing VeryFancyObj - just by wrapping/constructing the smart pointer (because the reference count is
 			 *		already in the base wrapped data type).
 			 */
 			template	<typename	T>
@@ -427,10 +427,21 @@ namespace	Stroika {
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
 			template	<typename	T>
 				struct	enable_shared_from_this : Private::SharedPtrBase_ {
-					SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this() 
+					SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this () 
 						{
-enable_shared_from_this* tmp = (enable_shared_from_this*)this;//debug why needed on msvc - try on linux
-							return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (tmp));
+							/*
+							 * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
+							 * the ONLY legal way to use this enable_shared_from_this is:
+							 *
+							 * 		struct	TTT : Memory::enable_shared_from_this<TTT> {
+							 *			string x;
+							 *			....
+							 *		};
+							 *
+							 *	and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
+							 */
+							T*	tStarThis	=	static_cast<T*> (this);
+							return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (tStarThis));
 						}
 				};
 
