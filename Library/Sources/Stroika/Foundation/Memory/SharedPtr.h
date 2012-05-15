@@ -434,8 +434,9 @@ namespace	Stroika {
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
 			template	<typename	T>
 				struct	enable_shared_from_this : Private::SharedPtrBase_ {
-					typename	SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this() 
+					SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this() 
 						{
+//not sure why needed (or if needed) - retst/clarify!!! - didnt compile at one point on msvc
 T*	fred	=	(T*)this;
 							return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (fred));
 						}
