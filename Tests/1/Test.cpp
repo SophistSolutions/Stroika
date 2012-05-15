@@ -46,7 +46,7 @@ namespace	{
 		}
 	void	Test2 ()
 		{
-			struct	TTT : SharedPtrBase {
+			struct	TTT : Memory::enable_shared_from_this<TTT> {
 				string x;
 			};
 			typedef	SharedPtr<TTT,SharedPtr_SharedPtrBase_Traits<TTT>>	TTT_SP;
@@ -54,6 +54,12 @@ namespace	{
 			TTT_SP	t1 (new TTT ());
 			TTT_SP	t2 (new TTT ());
 			t1 = t2;
+			VerifyTestResult (t1.CurrentRefCount () == 2);
+			TTT_SP	t3 (t1.get ());
+			VerifyTestResult (t1.CurrentRefCount () == 3);
+
+			TTT_SP	t4	=	t1.get()->shared_from_this ();
+			VerifyTestResult (t1.CurrentRefCount () == 4);
 		}
 }
 
@@ -62,7 +68,8 @@ namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-		    Test1();
+		    Test1 ();
+			Test2 ();
 		}
 }
 

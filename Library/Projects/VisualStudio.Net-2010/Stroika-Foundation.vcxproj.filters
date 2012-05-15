@@ -396,9 +396,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -858,9 +855,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
@@ -1165,9 +1159,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl">
       <Filter>Sources\IO\Network\Transfer</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.inl">
       <Filter>Sources\Memory</Filter>

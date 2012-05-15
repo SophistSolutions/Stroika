@@ -306,7 +306,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
@@ -479,7 +478,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.h" />
@@ -591,7 +589,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtrBase.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\WeakPtr.inl" />
