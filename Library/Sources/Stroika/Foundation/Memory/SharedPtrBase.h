@@ -105,7 +105,6 @@ namespace	Stroika {
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
 			struct	SharedPtrBase {
 				private:
-//public://fix to lose this with friends -- LGP 2012-05-11
 					Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
 
 				public:
@@ -116,6 +115,15 @@ namespace	Stroika {
 					template	<typename	T>
 						friend	struct	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_;
 			};
+
+
+			template	<typename	T>
+				struct	enable_shared_from_this : SharedPtrBase {
+					typename	SharedPtr<T> shared_from_this()
+						{
+							return (SharedPtr<T> (this));
+						}
+				};
 
 
 
