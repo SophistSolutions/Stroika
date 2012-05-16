@@ -49,10 +49,12 @@ class	Connection_LibCurl::Rep_ : public _IRep {
 		virtual ~Rep_ ();
 						
 	public:
-		virtual	URL			GetURL () const	override;
-		virtual	void		SetURL (const URL& url)	override;
-		virtual	void		Close ()	override;
-		virtual	Response	SendAndRequest (const Request& request)	override;
+		virtual	DurationSecondsType	GetTimeout () const override;
+		virtual	void				SetTimeout (DurationSecondsType timeout) override;
+		virtual	URL					GetURL () const	override;
+		virtual	void				SetURL (const URL& url)	override;
+		virtual	void				Close ()	override;
+		virtual	Response			SendAndRequest (const Request& request)	override;
 
 	private:
 		nonvirtual	void	MakeHandleIfNeeded_ ();
@@ -135,6 +137,19 @@ Connection_LibCurl::Rep_::~Rep_ ()
 		curl_slist_free_all (fSavedHeaders_);
 		fSavedHeaders_ = nullptr;
 	}
+}
+
+DurationSecondsType	Connection_LibCurl::Rep_::GetTimeout () const override
+{
+	AssertNotImplemented ();
+	return 0;
+}
+
+void	Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout) override
+{
+	MakeHandleIfNeeded_ ();
+	LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
+	LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
 URL		Connection_LibCurl::Rep_::GetURL () const override

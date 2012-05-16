@@ -45,6 +45,7 @@ namespace	Stroika {
 
 					using	Characters::String;
 					using	DataExchangeFormat::InternetMediaType;
+					using	Time::DurationSecondsType;
 
 
 					struct	Request {
@@ -82,14 +83,22 @@ namespace	Stroika {
 									virtual ~_IRep ();
 						
 								public:
-									virtual	URL			GetURL () const							=	0;
-									virtual	void		SetURL (const URL& url)					=	0;
-									virtual	void		Close ()								=	0;
-									virtual	Response	SendAndRequest (const Request& r)		=	0;
+									virtual	URL					GetURL () const								=	0;
+									virtual	void				SetURL (const URL& url)						=	0;
+									virtual	DurationSecondsType	GetTimeout () const							=	0;
+									virtual	void				SetTimeout (DurationSecondsType timeout)	=	0;
+									virtual	void				Close ()									=	0;
+									virtual	Response			SendAndRequest (const Request& r)			=	0;
 							};
 
 						protected:
 							Connection (const Memory::SharedPtr<_IRep>& rep);
+
+						public:
+							// SendAndRequest should timeout after this amount of time. Note - the initial SendAndRequest may do
+							// much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
+							nonvirtual	DurationSecondsType		GetTimeout () const;
+							nonvirtual	void					SetTimeout (DurationSecondsType timeout);
 
 						public:
 							nonvirtual	URL		GetURL () const;

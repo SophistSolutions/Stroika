@@ -45,10 +45,12 @@ class	Connection_WinHTTP::Rep_ : public _IRep {
 		virtual ~Rep_ ();
 						
 	public:
-		virtual	URL			GetURL () const	override;
-		virtual	void		SetURL (const URL& url)	override;
-		virtual	void		Close ()	override;
-		virtual	Response	SendAndRequest (const Request& request)	override;
+		virtual	DurationSecondsType	GetTimeout () const override;
+		virtual	void				SetTimeout (DurationSecondsType timeout) override;
+		virtual	URL					GetURL () const	override;
+		virtual	void				SetURL (const URL& url)	override;
+		virtual	void				Close ()	override;
+		virtual	Response			SendAndRequest (const Request& request)	override;
 
 	private:
 		nonvirtual	void	AssureHasHandle_ ();
@@ -117,6 +119,17 @@ Connection_WinHTTP::Rep_::~Rep_ ()
 	if (fSessionHandle_ != nullptr) {
 		Verify (::WinHttpCloseHandle (fSessionHandle_));
 	}
+}
+
+DurationSecondsType	Connection_WinHTTP::Rep_::GetTimeout () const override
+{
+	AssertNotImplemented ();
+	return 0;
+}
+
+void	Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout) override
+{
+	AssertNotImplemented ();
 }
 
 URL		Connection_WinHTTP::Rep_::GetURL () const override
