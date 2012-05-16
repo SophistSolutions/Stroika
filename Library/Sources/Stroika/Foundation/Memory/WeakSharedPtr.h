@@ -56,16 +56,20 @@ namespace	Stroika {
 						list<WeakSharedPtrRep<T,BASE_SharedPtr_TRAITS>*>	fWeakPtrs;
 
 						WeakSharedPtrEnvelope_ (T* ptr, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* countHolder)
-							: Envelope (ptr, countHolder)
+							: BASE_SharedPtr_TRAITS::Envelope (ptr, countHolder)
 							{
 							}
 						template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
 							inline	WeakSharedPtrEnvelope_ (const WeakSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from)
-								: Envelope (from)
+								: BASE_SharedPtr_TRAITS::Envelope (from)
 							{
 							}
 						inline	bool	Decrement ()
 							{
+								// DO LOCK HERE AND THEN INERITED
+								// MUST ADD AUTOCRITICALSECTION - where critsection owned by US.
+								return BASE_SharedPtr_TRAITS::Envelope::Decrement ();
+
 	#if 0
 								/// break Decrement () stuff into 2 parts - and hook/override so if deelting - walk fWeakPtrs list and clear them...
 								Require (CurrentRefCount () > 0);
@@ -76,6 +80,11 @@ namespace	Stroika {
 								}
 	#endif
 								return false;
+							}
+						inline	void	DoDeleteCounter ()
+							{
+								BASE_SharedPtr_TRAITS::Envelope::DoDeleteCounter ();
+								// AND DO MORE HERE - notify...
 							}
 
 					};
