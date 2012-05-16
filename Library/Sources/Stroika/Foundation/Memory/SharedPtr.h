@@ -144,13 +144,13 @@ namespace	Stroika {
 						class	Envelope_;
 				}
 
-				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+				namespace	enable_shared_from_this_Traits_Helpers_ {
 					// 32 bits of counter should be enough for any reasonable application
 					typedef	uint32_t	ReferenceCountType_;
 
 					// This is used to wrap/combine the shared pointer with the counter.
 					template	<typename	T>
-						struct	Envelope_;
+						class	Envelope_;
 				}
 
 			}
@@ -379,9 +379,9 @@ namespace	Stroika {
 			 */
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_		ReferenceCountType;
+					typedef	Private::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_	ReferenceCountType;
 					typedef	enable_shared_from_this<T>												ReferenceCounterContainerType;
-					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>			Envelope;
+					typedef	Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>			Envelope;
 				};
 
 
@@ -413,7 +413,7 @@ namespace	Stroika {
 			template	<typename	T>
 				class	enable_shared_from_this {
 					private:
-						Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
+						Private::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_	fCount_;
 
 					public:
 						enable_shared_from_this ();
@@ -423,7 +423,7 @@ namespace	Stroika {
 						SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this ();
 
 					private:
-						friend	struct	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>;
+						friend	class	Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
 				};
 
 

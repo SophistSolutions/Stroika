@@ -92,56 +92,59 @@ namespace	Stroika {
 			
 
 			namespace	Private {
-				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+				namespace	enable_shared_from_this_Traits_Helpers_ {
 
 					template	<typename	T>
-						struct	Envelope_ {
-							T*		fPtr;
-
-							Envelope_ (T* ptr, T* ptr2)
-									: fPtr (ptr)
-								{
-									// Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
-									Require (ptr == ptr2 or ptr2 == nullptr);
-								}
-							template <typename T2>
-								Envelope_ (const Envelope_<T2>& from)
-										: fPtr (from.fPtr)
+						class	Envelope_ {
+							private:
+								T*		fPtr;
+							public:
+								Envelope_ (T* ptr, T* ptr2)
+										: fPtr (ptr)
 									{
+										// Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
+										Require (ptr == ptr2 or ptr2 == nullptr);
 									}
-							T*	GetPtr () const
-								{
-									return fPtr;
-								}
-							void	SetPtr (T* p)
-								{
-									fPtr = p;
-								}
-							ReferenceCountType_	CurrentRefCount () const
-								{
-									return fPtr==nullptr? 0: fPtr->fCount_;
-								}
-							void	Increment ()
-								{
-									RequireNotNull (fPtr);
-									Execution::AtomicIncrement (&fPtr->fCount_);
-								}
-							bool	Decrement ()
-								{
-									Require (CurrentRefCount () > 0);
-									if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
-										return true;
+								template <typename T2>
+									Envelope_ (const Envelope_<T2>& from)
+											: fPtr (from.fPtr)
+										{
+										}
+								T*	GetPtr () const
+									{
+										return fPtr;
 									}
-									return false;
-								}
-							enable_shared_from_this<T>*	GetCounterPointer () const
-								{
-									return fPtr;
-								}
+								void	SetPtr (T* p)
+									{
+										fPtr = p;
+									}
+								ReferenceCountType_	CurrentRefCount () const
+									{
+										return fPtr==nullptr? 0: fPtr->fCount_;
+									}
+								void	Increment ()
+									{
+										RequireNotNull (fPtr);
+										Execution::AtomicIncrement (&fPtr->fCount_);
+									}
+								bool	Decrement ()
+									{
+										Require (CurrentRefCount () > 0);
+										if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
+											return true;
+										}
+										return false;
+									}
+								enable_shared_from_this<T>*	GetCounterPointer () const
+									{
+										return fPtr;
+									}
 						};
 
 				}
 			}
+
+
 
 
 
