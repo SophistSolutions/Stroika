@@ -224,8 +224,6 @@ namespace	Stroika {
 			*/
 			template	<typename	T, typename T_TRAITS = SharedPtr_Default_Traits<T>>	class	SharedPtr {
 				public:
-					typedef	T_TRAITS	TRAITS;
-				public:
 					SharedPtr ();
 					explicit SharedPtr (T* from);
 					explicit SharedPtr (T* from, typename T_TRAITS::ReferenceCounterContainerType* useCounter);

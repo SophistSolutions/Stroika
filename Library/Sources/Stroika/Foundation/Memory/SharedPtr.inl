@@ -98,21 +98,50 @@ namespace	Stroika {
 						struct	Envelope_ {
 							T*		fPtr;
 
-							Envelope_ (T* ptr, T* ptr2);
+							Envelope_ (T* ptr, T* ptr2)
+									: fPtr (ptr)
+								{
+									// Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
+									Require (ptr == ptr2 or ptr2 == nullptr);
+								}
 							template <typename T2>
-								Envelope_ (const Envelope_<T2>& from);
-
-							T*								GetPtr () const;
-							void							SetPtr (T* p);
-							ReferenceCountType_				CurrentRefCount () const;
-							void							Increment ();
-							bool							Decrement ();
-							enable_shared_from_this<T>*		GetCounterPointer () const;
+								Envelope_ (const Envelope_<T2>& from)
+										: fPtr (from.fPtr)
+									{
+									}
+							T*	GetPtr () const
+								{
+									return fPtr;
+								}
+							void	SetPtr (T* p)
+								{
+									fPtr = p;
+								}
+							ReferenceCountType_	CurrentRefCount () const
+								{
+									return fPtr==nullptr? 0: fPtr->fCount_;
+								}
+							void	Increment ()
+								{
+									RequireNotNull (fPtr);
+									Execution::AtomicIncrement (&fPtr->fCount_);
+								}
+							bool	Decrement ()
+								{
+									Require (CurrentRefCount () > 0);
+									if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
+										return true;
+									}
+									return false;
+								}
+							enable_shared_from_this<T>*	GetCounterPointer () const
+								{
+									return fPtr;
+								}
 						};
 
 				}
 			}
-
 
 
 
@@ -307,59 +336,6 @@ namespace	Stroika {
 
 
 
-
-
-
-
-		//	class	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>
-			template	<typename	T>
-				inline	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Envelope_ (T* ptr, T* ptr2)
-						: fPtr (ptr)
-					{
-						// Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
-						Require (ptr == ptr2 or ptr2 == nullptr);
-					}
-			template	<typename	T>
-				template <typename T2>
-					Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Envelope_ (const Envelope_<T2>& from)
-						: fPtr (from.fPtr)
-					{
-					}
-			template	<typename	T>
-				inline	T*	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::GetPtr () const 	
-					{
-						return fPtr;
-					}
-			template	<typename	T>
-				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::SetPtr (T* p)
-					{
-						fPtr = p;
-					}
-			template	<typename	T>
-				inline	typename Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::CurrentRefCount () const
-					{
-						return fPtr==nullptr? 0: fPtr->fCount_;
-					}
-			template	<typename	T>
-				inline	void	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Increment ()
-					{
-						RequireNotNull (fPtr);
-						Execution::AtomicIncrement (&fPtr->fCount_);
-					}
-			template	<typename	T>
-				inline	bool	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::Decrement ()
-					{
-						Require (CurrentRefCount () > 0);
-						if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
-							return true;
-						}
-						return false;
-					}
-			template	<typename	T>
-				inline	enable_shared_from_this<T>*	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::GetCounterPointer () const
-					{
-						return fPtr;
-					}
 
 
 
