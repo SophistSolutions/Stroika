@@ -23,8 +23,6 @@ namespace	Stroika {
 			namespace	Private {
 				namespace	SharedPtr_Default_Traits_Helpers_ {
 
-
-
 					struct	ReferenceCounterContainerType_ {
 						ReferenceCountType_	fCount;
 						ReferenceCounterContainerType_ ():
@@ -33,10 +31,6 @@ namespace	Stroika {
 							}
 						DECLARE_USE_BLOCK_ALLOCATION(ReferenceCounterContainerType_);
 					};
-
-
-
-
 
 					template	<typename	T>
 						class	Envelope_ {
@@ -97,6 +91,27 @@ namespace	Stroika {
 			}
 			
 
+			namespace	Private {
+				namespace	SharedPtrBase_Default_Traits_Helpers_ {
+
+					template	<typename	T>
+						struct	Envelope_ {
+							T*		fPtr;
+
+							Envelope_ (T* ptr, T* ptr2);
+							template <typename T2>
+								Envelope_ (const Envelope_<T2>& from);
+
+							T*								GetPtr () const;
+							void							SetPtr (T* p);
+							ReferenceCountType_				CurrentRefCount () const;
+							void							Increment ();
+							bool							Decrement ();
+							enable_shared_from_this<T>*		GetCounterPointer () const;
+						};
+
+				}
+			}
 
 
 
@@ -293,16 +308,6 @@ namespace	Stroika {
 
 
 
-		//	class	Private::SharedPtrBase_
-			inline	Private::SharedPtrBase_::SharedPtrBase_ ():
-				fCount_ (0)
-				{
-				}
-			inline	Private::SharedPtrBase_::~SharedPtrBase_ ()
-				{
-				}
-
-
 
 
 
@@ -351,7 +356,7 @@ namespace	Stroika {
 						return false;
 					}
 			template	<typename	T>
-				inline	Memory::Private::SharedPtrBase_*	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::GetCounterPointer () const
+				inline	enable_shared_from_this<T>*	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>::GetCounterPointer () const
 					{
 						return fPtr;
 					}
@@ -359,6 +364,15 @@ namespace	Stroika {
 
 
 			//	class	enable_shared_from_this<T>
+			template	<typename	T>
+				inline	enable_shared_from_this<T>::enable_shared_from_this ():
+					fCount_ (0)
+					{
+					}
+			template	<typename	T>
+				inline	enable_shared_from_this<T>::~enable_shared_from_this ()
+					{
+					}
 			template	<typename	T>
 				SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> enable_shared_from_this<T>::shared_from_this () 
 					{

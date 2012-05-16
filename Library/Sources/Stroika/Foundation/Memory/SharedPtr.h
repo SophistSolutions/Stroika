@@ -118,8 +118,12 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+			template	<typename	T>
+				class	enable_shared_from_this;
+
 
 			namespace	Private {
+
 				namespace	SharedPtr_Default_Traits_Helpers_ {
 					/*
 					 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) -
@@ -128,59 +132,28 @@ namespace	Stroika {
 					 */
 					typedef	size_t	ReferenceCountType_;
 
-
 					/*
-					 * Stuff FOR SharedPtr_Default_Traits<T>.
-					 *
 					 * Note - I TRIED making these nested types inside SharedPtr_Default_Traits<T> but that created problems
 					 * with nested class templates inside other nested class templates with overloaded template CTOR for
 					 * inner envelope class. Not sure if it was compiler bug or my misunderstanding. Anyhow - this is OK.
 					 */
 					struct	ReferenceCounterContainerType_;
 
+					// This is used to wrap/combine the shared pointer with the counter.
 					template	<typename	T>
 						class	Envelope_;
 				}
 
-
-				struct	SharedPtrBase_;
 				namespace	SharedPtrBase_Default_Traits_Helpers_ {
-					// 32 bits of counter should be enough for any reasonable applicaiton
+					// 32 bits of counter should be enough for any reasonable application
 					typedef	uint32_t	ReferenceCountType_;
 
+					// This is used to wrap/combine the shared pointer with the counter.
 					template	<typename	T>
-						struct	Envelope_ {
-							T*		fPtr;
-
-							Envelope_ (T* ptr, T* ptr2);
-							template <typename T2>
-								Envelope_ (const Envelope_<T2>& from);
-
-							T*					GetPtr () const;
-							void				SetPtr (T* p);
-							ReferenceCountType_	CurrentRefCount () const;
-							void				Increment ();
-							bool				Decrement ();
-							Private::SharedPtrBase_*		GetCounterPointer () const;
-						};
+						struct	Envelope_;
 				}
 
-				struct	SharedPtrBase_ {
-					private:
-						SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
-
-					public:
-						SharedPtrBase_ ();
-						virtual ~SharedPtrBase_ ();
-
-					private:
-						template	<typename	T>
-							friend	struct	SharedPtrBase_Default_Traits_Helpers_::Envelope_;
-				};
-
 			}
-
-
 
 
 
@@ -409,7 +382,7 @@ namespace	Stroika {
 			template	<typename	T>
 				struct	SharedPtr_SharedPtrBase_Traits {
 					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::ReferenceCountType_		ReferenceCountType;
-					typedef	Private::SharedPtrBase_													ReferenceCounterContainerType;
+					typedef	enable_shared_from_this<T>												ReferenceCounterContainerType;
 					typedef	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>			Envelope;
 				};
 
@@ -425,10 +398,34 @@ namespace	Stroika {
 			// from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
 			// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
+
+			/*
+			 * To enable the shared_from_this () functionality - and allow recovery of the SharedPtr<T> from the T* itself, its necessary to
+			 * combine the T type with the SharedPtr<T> infrastructure.
+			 *
+			 * To use, just inherit your type from enable_shared_from_this<>:
+			 *
+			 *		struct	TTT : Memory::enable_shared_from_this<TTT> {
+			 *			string x;
+			 *		};
+			 *		typedef	SharedPtr<TTT,SharedPtr_SharedPtrBase_Traits<TTT>>	TTT_SP;
+			 *
+			 *
+			 */
 			template	<typename	T>
-				class	enable_shared_from_this : public Private::SharedPtrBase_ {
+				class	enable_shared_from_this {
+					private:
+						Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
+
+					public:
+						enable_shared_from_this ();
+						virtual ~enable_shared_from_this ();
+
 					public:
 						SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this ();
+
+					private:
+						friend	struct	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_<T>;
 				};
 
 
