@@ -6,7 +6,7 @@
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
 #include	"Stroika/Foundation/Memory/SharedPtr.h"
-#include	"Stroika/Foundation/Memory/SharedPtrBase.h"
+#include	"Stroika/Foundation/Memory/WeakSharedPtr.h"
 
 #include	"../TestHarness/SimpleClass.h"
 #include	"../TestHarness/TestHarness.h"
@@ -60,6 +60,15 @@ namespace	{
 			TTT_SP	t4	=	t1.get()->shared_from_this ();
 			VerifyTestResult (t1.CurrentRefCount () == 4);
 		}
+	void	Test3 ()
+		{
+			WeakCapableSharedPtr<int>	t1 (new int ());
+#if 0
+			//NYI - fails to link
+			WeakSharedPtr<int>			wt1 (t1);
+			VerifyTestResult (wt1.Lock ().get () == t1.get ());
+#endif
+		}
 }
 
 
@@ -69,6 +78,7 @@ namespace	{
 		{
 		    Test1 ();
 			Test2 ();
+			Test3 ();
 		}
 }
 

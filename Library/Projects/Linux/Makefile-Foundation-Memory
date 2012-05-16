@@ -14,7 +14,7 @@ Objs	=	\
 	$(ObjDir)MemoryAllocator.o\
 	$(ObjDir)SharedPtr.o\
 	$(ObjDir)VariantValue.o\
-	$(ObjDir)WeakPtr.o\
+	$(ObjDir)WeakSharedPtr.o\
 
 
 all:	$(Objs)

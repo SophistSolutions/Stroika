@@ -3,7 +3,7 @@
  */
 #include	"../StroikaPreComp.h"
 
-#include	"WeakPtr.h"
+#include	"WeakSharedPtr.h"
 
 
 
