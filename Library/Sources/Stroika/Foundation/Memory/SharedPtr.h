@@ -158,7 +158,6 @@ namespace	Stroika {
 
 
 
-
 			/*
 			 * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works. This typically will not be used directly,
 			 * but just part of using @SharedPtr<T>
@@ -168,6 +167,29 @@ namespace	Stroika {
 					typedef	Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_				ReferenceCountType;
 					typedef	Private::SharedPtr_Default_Traits_Helpers_::ReferenceCounterContainerType_	ReferenceCounterContainerType;
 					typedef	Private::SharedPtr_Default_Traits_Helpers_::Envelope_<T>					Envelope;
+				};
+
+
+
+			/*
+			 * SharedPtrFromThis_Traits is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase.
+			 *
+			 *	Example usage:
+			 *
+			 *		class	VeryFancyObj : SharedPtrBase {
+			 *		};
+			 *
+			 *		typedef	SharedPtr<VeryFancyObj,SharedPtrFromThis_TraitsVeryFancyObj>>	VeryFancySmartPointer;
+			 *
+			 *		THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION, you can ALWAYS safely create
+			 *		a VeryFancySmartPointer from an already existing VeryFancyObj - just by wrapping/constructing the smart pointer (because the reference count is
+			 *		already in the base wrapped data type).
+			 */
+			template	<typename	T>
+				struct	SharedPtrFromThis_Traits {
+					typedef	Private::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_	ReferenceCountType;
+					typedef	enable_shared_from_this<T>												ReferenceCounterContainerType;
+					typedef	Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>			Envelope;
 				};
 
 
@@ -363,30 +385,7 @@ namespace	Stroika {
 
 
 
-			/*
-			 * SharedPtr_SharedPtrBase_Traits is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase.
-			 *
-			 *	Example usage:
-			 *
-			 *		class	VeryFancyObj : SharedPtrBase {
-			 *		};
-			 *
-			 *		typedef	SharedPtr<VeryFancyObj,SharedPtr_SharedPtrBase_TraitsVeryFancyObj>>	VeryFancySmartPointer;
-			 *
-			 *		THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION, you can ALWAYS safely create
-			 *		a VeryFancySmartPointer from an already existing VeryFancyObj - just by wrapping/constructing the smart pointer (because the reference count is
-			 *		already in the base wrapped data type).
-			 */
-			template	<typename	T>
-				struct	SharedPtr_SharedPtrBase_Traits {
-					typedef	Private::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_	ReferenceCountType;
-					typedef	enable_shared_from_this<T>												ReferenceCounterContainerType;
-					typedef	Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>			Envelope;
-				};
 
-
-//I THINK WE CAN ADD PARTIAL SPECIALIZATION SO IF T SUBCLASES FROM enable_shared_from_this (or is equal to type enable_shared_from_this<T>) THEN
-// we get differnt defaulttraits?
 
 
 
@@ -406,7 +405,7 @@ namespace	Stroika {
 			 *		struct	TTT : Memory::enable_shared_from_this<TTT> {
 			 *			string x;
 			 *		};
-			 *		typedef	SharedPtr<TTT,SharedPtr_SharedPtrBase_Traits<TTT>>	TTT_SP;
+			 *		typedef	SharedPtr<TTT,SharedPtrFromThis_Traits<TTT>>	TTT_SP;
 			 *
 			 *
 			 */
@@ -420,11 +419,26 @@ namespace	Stroika {
 						virtual ~enable_shared_from_this ();
 
 					public:
-						SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this ();
+						SharedPtr<T,SharedPtrFromThis_Traits<T>> shared_from_this ();
 
 					private:
 						friend	class	Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
 				};
+
+
+
+
+			/*
+			 * SO FAR FAILED - attempts at getting partial specialization to work. Reason todo that is so that 
+			 *
+			 * then SharedPtr<T> will be the same as SharedPtr<T,SharedPtrFromThis_Traits<T>>
+			 */
+			#if		0
+				template	<typename	T>
+					struct	SharedPtr_Default_Traits<enable_shared_from_this<T>> :  SharedPtrFromThis_Traits<T> {
+					};
+			#endif
+
 
 
 		}

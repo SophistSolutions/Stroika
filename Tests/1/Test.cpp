@@ -49,7 +49,7 @@ namespace	{
 			struct	TTT : Memory::enable_shared_from_this<TTT> {
 				string x;
 			};
-			typedef	SharedPtr<TTT,SharedPtr_SharedPtrBase_Traits<TTT>>	TTT_SP;
+			typedef	SharedPtr<TTT,SharedPtrFromThis_Traits<TTT>>	TTT_SP;
 
 			TTT_SP	t1 (new TTT ());
 			TTT_SP	t2 (new TTT ());

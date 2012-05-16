@@ -353,7 +353,7 @@ namespace	Stroika {
 					{
 					}
 			template	<typename	T>
-				SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> enable_shared_from_this<T>::shared_from_this () 
+				SharedPtr<T,SharedPtrFromThis_Traits<T>> enable_shared_from_this<T>::shared_from_this () 
 					{
 						/*
 							* The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
@@ -367,7 +367,7 @@ namespace	Stroika {
 							*	and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
 							*/
 						T*	tStarThis	=	static_cast<T*> (this);
-						return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (tStarThis));
+						return (SharedPtr<T,SharedPtrFromThis_Traits<T>> (tStarThis));
 					}
 
 
