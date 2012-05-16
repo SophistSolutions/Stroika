@@ -57,7 +57,6 @@ namespace	{
 			VerifyTestResult (t1.CurrentRefCount () == 2);
 			TTT_SP	t3 (t1.get ());
 			VerifyTestResult (t1.CurrentRefCount () == 3);
-
 			TTT_SP	t4	=	t1.get()->shared_from_this ();
 			VerifyTestResult (t1.CurrentRefCount () == 4);
 		}

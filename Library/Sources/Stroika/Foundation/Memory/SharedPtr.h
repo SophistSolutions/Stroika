@@ -167,7 +167,7 @@ namespace	Stroika {
 
 				struct	SharedPtrBase_ {
 					private:
-						Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
+						SharedPtr_Default_Traits_Helpers_::ReferenceCountType_	fCount_;
 
 					public:
 						SharedPtrBase_ ();
@@ -175,7 +175,7 @@ namespace	Stroika {
 
 					private:
 						template	<typename	T>
-							friend	struct	Private::SharedPtrBase_Default_Traits_Helpers_::Envelope_;
+							friend	struct	SharedPtrBase_Default_Traits_Helpers_::Envelope_;
 				};
 
 			}
@@ -426,23 +426,9 @@ namespace	Stroika {
 			// This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
 			// a layer of code, and then re-constitute the SharedPtr<> part later.
 			template	<typename	T>
-				struct	enable_shared_from_this : Private::SharedPtrBase_ {
-					SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this () 
-						{
-							/*
-							 * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
-							 * the ONLY legal way to use this enable_shared_from_this is:
-							 *
-							 * 		struct	TTT : Memory::enable_shared_from_this<TTT> {
-							 *			string x;
-							 *			....
-							 *		};
-							 *
-							 *	and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
-							 */
-							T*	tStarThis	=	static_cast<T*> (this);
-							return (SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> (tStarThis));
-						}
+				class	enable_shared_from_this : public Private::SharedPtrBase_ {
+					public:
+						SharedPtr<T,SharedPtr_SharedPtrBase_Traits<T>> shared_from_this ();
 				};
 
 
