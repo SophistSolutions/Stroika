@@ -63,9 +63,9 @@ namespace	{
 	void	Test3 ()
 		{
 			WeakCapableSharedPtr<int>	t1 (new int ());
-#if 0
 			//NYI - fails to link
 			WeakSharedPtr<int>			wt1 (t1);
+#if 0
 			VerifyTestResult (wt1.Lock ().get () == t1.get ());
 #endif
 		}
