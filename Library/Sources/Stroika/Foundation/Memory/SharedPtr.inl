@@ -19,14 +19,24 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+			/*
+			 * IMPLEMENTATION NOTES:
+			 *
+			 *		We have Decrement() return a boolean and if it returns true to delete in the caller because otehrwise the PRIVATE
+			 *	stuff (if you use SharedRep<> of a private type) - generates erorrs. At least it causes problems on Visual Studio.Net 2010.
+			 *	I'm not sure if this is MY bug or a compiler  bug. Anyhow - this is fine for now...
+			 *			-- LGP 2012-05-15
+			 *
+			 */
+
 
 			namespace	Private {
 				namespace	SharedPtr_Default_Traits_Helpers_ {
 
 					struct	ReferenceCounterContainerType_ {
 						ReferenceCountType_	fCount;
-						ReferenceCounterContainerType_ ():
-							fCount (0)
+						ReferenceCounterContainerType_ ()
+							: fCount (0)
 							{
 							}
 						DECLARE_USE_BLOCK_ALLOCATION(ReferenceCounterContainerType_);
@@ -73,11 +83,15 @@ namespace	Stroika {
 									{
 										Require (CurrentRefCount () > 0);
 										if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
-											delete fCountHolder_;
-											fCountHolder_ = nullptr;
+											DoDeleteCounter ();
 											return true;
 										}
 										return false;
+									}
+								inline	void	DoDeleteCounter ()
+									{
+										delete fCountHolder_;
+										fCountHolder_ = nullptr;
 									}
 								inline	ReferenceCounterContainerType_*	GetCounterPointer () const
 									{
@@ -131,9 +145,13 @@ namespace	Stroika {
 									{
 										Require (CurrentRefCount () > 0);
 										if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
+											DoDeleteCounter ();
 											return true;
 										}
 										return false;
+									}
+								inline	void	DoDeleteCounter ()
+									{
 									}
 								enable_shared_from_this<T>*	GetCounterPointer () const
 									{

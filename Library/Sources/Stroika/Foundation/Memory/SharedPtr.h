@@ -15,6 +15,8 @@
 /*
  *		TODO:
  *
+ *			(o)		CLEAR DOCS!!! - once we have stuff stable... 			
+ *
  *			(o)		 supported && move operations!
  *
  *			(o)		CAREFULLY writeup differences between this class and shared_ptr<>
