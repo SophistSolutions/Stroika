@@ -193,6 +193,14 @@ namespace	Stroika {
 						}
 					}
 			template	<typename T, typename T_TRAITS>
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (typename const T_TRAITS::Envelope& from)
+					: fEnvelope_ (from)
+					{
+						if (fEnvelope_.GetPtr () != nullptr) {
+							fEnvelope_.Increment ();
+						}
+					}
+			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const SharedPtr<T,T_TRAITS>& from)
 					: fEnvelope_ (from.fEnvelope_)
 					{

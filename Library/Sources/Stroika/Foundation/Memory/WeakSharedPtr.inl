@@ -16,6 +16,68 @@ namespace	Stroika {
 		namespace	Memory {
 
 
+			// class	Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrEnvelope_ (T* ptr, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* countHolder)
+					: BASE_SharedPtr_TRAITS::Envelope (ptr, countHolder)
+					, fWeakSharedPtrs ()
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
+					inline	Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrEnvelope_ (const WeakSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from)
+						: BASE_SharedPtr_TRAITS::Envelope (from)
+						, fWeakSharedPtrs ()
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	bool	Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::Decrement ()
+					{
+						Execution::AutoCriticalSection critSec (sCriticalSection);
+						return BASE_SharedPtr_TRAITS::Envelope::Decrement ();
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				void	Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::DoDeleteCounter ()
+					{
+						/*
+							* NOTE - this function is ALWAYS and ONLY called from inside Decrement() and so therefore always within the critical section.
+							*/
+						// Assert (sCriticalSection.IsLocked ());		-- would do if there was such an API - maybe it should be added?
+						BASE_SharedPtr_TRAITS::Envelope::DoDeleteCounter ();
+						for (list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs.begin (); i != fWeakSharedPtrs.end (); ++i) {
+							i->fSharedPtrEnvelope = nullptr;
+						}
+					}
+			template <typename T, typename BASE_SharedPtr_TRAITS> 
+				Execution::CriticalSection Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection;
+
+
+
+
+
+
+
+			// class	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ ()
+					: fSharedPtrEnvelope (nullptr)
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::Lock ()
+					{
+						Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection);
+						if (fSharedPtrEnvelope == nullptr) {
+							return SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> ();
+						}
+						return SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> (*fSharedPtrEnvelope);
+					}
+
+
+
+
+
+
 			// class	WeakSharedPtr<T,BASE_SharedPtr_TRAITS>
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				inline	WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakSharedPtr ()
@@ -24,7 +86,7 @@ namespace	Stroika {
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakSharedPtr (const WeakSharedPtr<T,BASE_SharedPtr_TRAITS>& from)
-					: fRep_ ()
+					: fRep_ (from)
 					{
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
@@ -41,9 +103,46 @@ namespace	Stroika {
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				typename WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::SharedPtrType	WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::Lock () const
 					{
-						AssertNotImplemented ();
-						return WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::SharedPtrType ();
+						if (fRep_.IsNull ()) {
+							return WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::SharedPtrType ();
+						}
+						return fRep_->Lock ();
 					}
+
+
+
+
+
+
+
+			// class	WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr ()
+					: SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> ()
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (T* from)
+					: SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> (from)
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (T* from, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* useCounter)
+					: SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> (from, useCounter)
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (const WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>& from)
+					: SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> (from)
+					{
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				template <typename T2, typename T2_TRAITS>
+					inline	WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (const WeakCapableSharedPtr<T2, T2_TRAITS>& from)
+						: SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>> (from)
+						{
+						}
+
 
 
 		}

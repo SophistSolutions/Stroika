@@ -250,7 +250,9 @@ namespace	Stroika {
 				public:
 					SharedPtr ();
 					explicit SharedPtr (T* from);
+// MAYBE LOSE THIS??? - INSTEAD - JUST USE TRAITSENV ONE?
 					explicit SharedPtr (T* from, typename T_TRAITS::ReferenceCounterContainerType* useCounter);
+					explicit SharedPtr (typename const T_TRAITS::Envelope& from);
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
 					template <typename T2, typename T2_TRAITS>
