@@ -71,7 +71,7 @@ namespace	Stroika {
 					{
 						Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection);
 						if (fSharedPtrEnvelope != nullptr) {
-							list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>::iterator i = std::find (fSharedPtrEnvelope->fWeakSharedPtrs.begin (), fSharedPtrEnvelope->fWeakSharedPtrs.end (), this);
+							typename list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>::iterator i = std::find (fSharedPtrEnvelope->fWeakSharedPtrs.begin (), fSharedPtrEnvelope->fWeakSharedPtrs.end (), this);
 							Assert (i != fSharedPtrEnvelope->fWeakSharedPtrs.end ());		// cannot be missing without bug or memory corruption
 							fSharedPtrEnvelope->fWeakSharedPtrs.erase (i);
 						}
