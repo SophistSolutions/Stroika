@@ -250,7 +250,7 @@ namespace	Stroika {
 				public:
 					SharedPtr ();
 					explicit SharedPtr (T* from);
-					explicit SharedPtr (typename const T_TRAITS::Envelope& from);
+					explicit SharedPtr (const typename T_TRAITS::Envelope& from);
 					SharedPtr (const SharedPtr<T,T_TRAITS>& from);
 
 					template <typename T2, typename T2_TRAITS>

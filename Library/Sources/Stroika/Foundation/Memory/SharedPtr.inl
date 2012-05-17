@@ -184,18 +184,8 @@ namespace	Stroika {
 							fEnvelope_.Increment ();
 						}
 					}
-#if 0
 			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, typename T_TRAITS::ReferenceCounterContainerType* useCounter)
-					: fEnvelope_ (from, from == nullptr? nullptr: useCounter)
-					{
-						if (from != nullptr) {
-							fEnvelope_.Increment ();
-						}
-					}
-#endif
-			template	<typename T, typename T_TRAITS>
-				inline	SharedPtr<T,T_TRAITS>::SharedPtr (typename const T_TRAITS::Envelope& from)
+				inline	SharedPtr<T,T_TRAITS>::SharedPtr (const typename T_TRAITS::Envelope& from)
 					: fEnvelope_ (from)
 					{
 						if (fEnvelope_.GetPtr () != nullptr) {
