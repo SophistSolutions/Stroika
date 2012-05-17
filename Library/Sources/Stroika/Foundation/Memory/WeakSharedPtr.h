@@ -21,8 +21,8 @@
 
 /// Must store
 //                      list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>   fWeakSharedPtrs;
-// in ReferenceCounterContainerType - NOT WeakSharedPtrEnvelope_  - because we have envelopes that come and go - and its the ReferenceCounterContainerType
-// that persists... as sharedptrs come and go.
+// in ReferenceCounterContainerType - NOT WeakSharedPtrEnvelope_  - because we have envelopes
+// that come and go - and its the ReferenceCounterContainerType that persists... as sharedptrs come and go.
 //
 // THAT MAY NOT BE EASY, but if I can do it - it will probably work...
 //
@@ -42,13 +42,14 @@
 /*
  * Implementation Strategy:
  *
- *      Basically - the plan is for the SharedPtr (subtype) to maintain a list of WeakPtrs, and then when a SharedPtr refcount goes to zero -
- *      walk that list and zero-out all the pointers from the WeakSharedPtr back to the SharedPtr. A little careful locking, the the rest is
- *      easy!
+ *      Basically - the plan is for the SharedPtr (subtype) to maintain a list of WeakPtrs, and then
+ *      when a SharedPtr refcount goes to zero - walk that list and zero-out all the pointers from the
+ *      WeakSharedPtr back to the SharedPtr. A little careful locking, the the rest is easy!
  *
- *      One key to this is that there is no cost, and no 'weak ptr' functionality builtin to the SharedPtr class, unless you explicitly want it
- *      (by using WeakCapableSharedPtr<>). This COULD be viewed as an advantage (avoid cost of maintaining weak list, and avoid possible bugs due
- *      to accidental weakptr usage) or a weakness (you need a separate concept of WeakCapableSharedPtr).
+ *      One key to this is that there is no cost, and no 'weak ptr' functionality builtin to the SharedPtr class,
+ *      unless you explicitly want it (by using WeakCapableSharedPtr<>). This COULD be viewed as an advantage
+ *      (avoid cost of maintaining weak list, and avoid possible bugs due to accidental weakptr usage) or
+ *      a weakness (you need a separate concept of WeakCapableSharedPtr).
  */
 
 
@@ -163,7 +164,9 @@ namespace   Stroika {
             public:
                         WeakCapableSharedPtr ();
                         explicit WeakCapableSharedPtr (T* from);
-                        explicit WeakCapableSharedPtr (T* from, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* useCounter);
+                        explicit WeakCapableSharedPtr (T* from,
+                                typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* useCounter
+                                                      );
                         WeakCapableSharedPtr (const WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>& from);
                         template <typename T2, typename T2_TRAITS>
                         WeakCapableSharedPtr (const WeakCapableSharedPtr<T2, T2_TRAITS>& from);
