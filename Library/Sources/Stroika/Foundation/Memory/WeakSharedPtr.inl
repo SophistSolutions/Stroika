@@ -33,18 +33,20 @@ namespace	Stroika {
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				inline	bool	Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::Decrement ()
 					{
-						Execution::AutoCriticalSection critSec (sCriticalSection);
+						Execution::AutoCriticalSection critSec (sCriticalSection);	// critical section is IN CASE we need to delete counter
+																					// - must make sure to grab crit section before so WeakPtr class not in middle of a
+																					// lock()
 						return BASE_SharedPtr_TRAITS::Envelope::Decrement ();
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				void	Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::DoDeleteCounter ()
 					{
 						/*
-							* NOTE - this function is ALWAYS and ONLY called from inside Decrement() and so therefore always within the critical section.
-							*/
+						 * NOTE - this function is ALWAYS and ONLY called from inside Decrement() and so therefore always within the critical section.
+						 */
 						// Assert (sCriticalSection.IsLocked ());		-- would do if there was such an API - maybe it should be added?
 						BASE_SharedPtr_TRAITS::Envelope::DoDeleteCounter ();
-						for (list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs.begin (); i != fWeakSharedPtrs.end (); ++i) {
+						for (typename list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs.begin (); i != fWeakSharedPtrs.end (); ++i) {
 							i->fSharedPtrEnvelope = nullptr;
 						}
 					}
@@ -59,7 +61,7 @@ namespace	Stroika {
 			// class	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (SharedPtrType shared)
-					: fSharedPtrEnvelope (&shared.fEnvelope_)
+					: fSharedPtrEnvelope (shared.PeekAtEnvelope ())
 					{
 						Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection);
 						fSharedPtrEnvelope->fWeakSharedPtrs.push_back (this);

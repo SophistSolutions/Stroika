@@ -376,7 +376,7 @@ namespace	Stroika {
 
 
 				public:
-					nonvirtual	typename	T_TRAITS::Envelope*	PeekAtEnvelope ();
+					nonvirtual	typename	T_TRAITS::Envelope*	PeekAtEnvelope () const;
 
 				private:
 					typename	T_TRAITS::Envelope	fEnvelope_;
