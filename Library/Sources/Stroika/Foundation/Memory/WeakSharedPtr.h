@@ -17,6 +17,16 @@
 
 
 
+/////////////SERIOUS DESIGN FLAW 
+
+/// Must store
+//						list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>	fWeakSharedPtrs;
+// in ReferenceCounterContainerType - NOT WeakSharedPtrEnvelope_  - because we have envelopes that come and go - and its the ReferenceCounterContainerType
+// that persists... as sharedptrs come and go.
+//
+// THAT MAY NOT BE EASY, but if I can do it - it will probably work...
+//
+
 
 
 /*
@@ -98,10 +108,11 @@ namespace	Stroika {
 							typedef	SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	SharedPtrType;
 							WeakSharedPtrRep_ (const SharedPtrType& shared);
 							~WeakSharedPtrRep_ ();
-							WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>*	fSharedPtrEnvelope;
+WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>*	fSharedPtrEnvelope;
 							SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	Lock ();
 					};
 			}
+
 
 
 
@@ -129,6 +140,7 @@ TODO: DOCS...
 					private:
 						SharedPtr<Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>>	fRep_;
 				};
+
 
 
 
