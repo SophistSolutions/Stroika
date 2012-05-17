@@ -1,49 +1,49 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_Process_h_
-#define	_Stroika_Foundation_Execution_Process_h_	1
+#ifndef _Stroika_Foundation_Execution_Process_h_
+#define _Stroika_Foundation_Execution_Process_h_    1
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#if			qPlatform_Windows
-	#include	<process.h>
-#elif	qPlatform_POSIX
-	#include	<sys/types.h>
-	#include	<unistd.h>
+#if         qPlatform_Windows
+#include    <process.h>
+#elif   qPlatform_POSIX
+#include    <sys/types.h>
+#include    <unistd.h>
 #endif
 
-#include	"../Configuration/Common.h"
-#include	"../Memory/SharedPtr.h"
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedPtr.h"
 
-#include	"CriticalSection.h"
-#include	"Exceptions.h"
+#include    "CriticalSection.h"
+#include    "Exceptions.h"
 
 
-#if		!defined (qHas_pid_t)
-#error	"qHas_pid_t must  be defined in StroikaConfig.h"
+#if     !defined (qHas_pid_t)
+#error  "qHas_pid_t must  be defined in StroikaConfig.h"
 #endif
 
 
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Execution {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Execution {
 
-			#if		!qHas_pid_t
-				#if		qPlatform_Windows
-					typedef	DWORD	pid_t;
-				#else
-					typedef	int	pid_t;
-				#endif
-			#endif
-			
-			pid_t	GetCurrentProcessID ();
+#if     !qHas_pid_t
+#if     qPlatform_Windows
+            typedef DWORD   pid_t;
+#else
+            typedef int pid_t;
+#endif
+#endif
 
-		}
-	}
+            pid_t   GetCurrentProcessID ();
+
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Execution_Process_h_*/
+#endif  /*_Stroika_Foundation_Execution_Process_h_*/
 
 
 
@@ -54,4 +54,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"Process.inl"
+#include    "Process.inl"

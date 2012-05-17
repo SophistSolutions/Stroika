@@ -1,218 +1,218 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Framework_WebServer_HTTPResponse_h_
-#define	_Stroika_Framework_WebServer_HTTPResponse_h_	1
+#ifndef _Stroika_Framework_WebServer_HTTPResponse_h_
+#define _Stroika_Framework_WebServer_HTTPResponse_h_    1
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#include	<string>
-#include	<map>
-#include	<vector>
+#include    <string>
+#include    <map>
+#include    <vector>
 
-#include	"../../Foundation/Characters/CodePage.h"
-#include	"../../Foundation/Characters/String.h"
-#include	"../../Foundation/Configuration/Common.h"
-#include	"../../Foundation/DataExchangeFormat/InternetMediaType.h"
-#include	"../../Foundation/Memory/SharedPtr.h"
-#include	"../../Foundation/IO/Network/Socket.h"
-#include	"../../Foundation/IO/Network/HTTP/Status.h"
-#include	"../../Foundation/Streams/BinaryOutputStream.h"
-#include	"../../Foundation/Streams/BufferedBinaryOutputStream.h"
+#include    "../../Foundation/Characters/CodePage.h"
+#include    "../../Foundation/Characters/String.h"
+#include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/DataExchangeFormat/InternetMediaType.h"
+#include    "../../Foundation/Memory/SharedPtr.h"
+#include    "../../Foundation/IO/Network/Socket.h"
+#include    "../../Foundation/IO/Network/HTTP/Status.h"
+#include    "../../Foundation/Streams/BinaryOutputStream.h"
+#include    "../../Foundation/Streams/BufferedBinaryOutputStream.h"
 
 
 
 
 /*
  * TODO:
- *		(o)		REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
- *				INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
+ *      (o)     REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
+ *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
  *
- *		(o)		Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
- *				to right codepage.
+ *      (o)     Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
+ *              to right codepage.
  *
- *		(o)		Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
- *				usage.
+ *      (o)     Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
+ *              usage.
  *
- *		(o)		eExact_CSP is UNTESTED, and should have CHECKING code - so if a user writes a differnt amount, we detect and assert out.
- *				But that can be deferered because it probably works fine for the the case where its used properly.
+ *      (o)     eExact_CSP is UNTESTED, and should have CHECKING code - so if a user writes a differnt amount, we detect and assert out.
+ *              But that can be deferered because it probably works fine for the the case where its used properly.
  */
 
-namespace	Stroika {	
-	namespace	Frameworks {
-		namespace	WebServer {
+namespace   Stroika {
+    namespace   Frameworks {
+        namespace   WebServer {
 
-			using	namespace	Stroika::Foundation;
-			using	namespace	Stroika::Foundation::IO::Network::HTTP;
-			
-			using	Characters::String;
-			using	DataExchangeFormat::InternetMediaType;
+            using   namespace   Stroika::Foundation;
+            using   namespace   Stroika::Foundation::IO::Network::HTTP;
+
+            using   Characters::String;
+            using   DataExchangeFormat::InternetMediaType;
 
 
-			/*
-			 * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
-			 */
-			struct	HTTPResponse {
-				public:
-					HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
+            /*
+             * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
+             */
+            struct  HTTPResponse {
+            public:
+                HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
 
-					// Reponse must be completed (OK to Abort ()) before being destroyed
-					~HTTPResponse ();
+                // Reponse must be completed (OK to Abort ()) before being destroyed
+                ~HTTPResponse ();
 
-				private:
-					NO_DEFAULT_CONSTRUCTOR (HTTPResponse);
-					NO_COPY_CONSTRUCTOR (HTTPResponse);
-					NO_ASSIGNMENT_OPERATOR (HTTPResponse);
+            private:
+                NO_DEFAULT_CONSTRUCTOR (HTTPResponse);
+                NO_COPY_CONSTRUCTOR (HTTPResponse);
+                NO_ASSIGNMENT_OPERATOR (HTTPResponse);
 
-				public:
-					/*
-					 * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
-					 * with the characterset appended.
-					 *
-					 * SetContentType () requires GetState () == eInProgress
-					 */
-					nonvirtual	InternetMediaType	GetContentType () const;
-					nonvirtual	void				SetContentType (const InternetMediaType& contentType);
+            public:
+                /*
+                 * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
+                 * with the characterset appended.
+                 *
+                 * SetContentType () requires GetState () == eInProgress
+                 */
+                nonvirtual  InternetMediaType   GetContentType () const;
+                nonvirtual  void                SetContentType (const InternetMediaType& contentType);
 
-				public:
-					/*
-					 * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
-					 * For ContentTypes
-					 *		o	text/*
-					 *		o	application/json
-					 *	and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
-					 *			"text/html; charset=UTF-8"
-					 *
-					 * SetCodePage () 
-					 *		REQUIRES:
-					 *			GetState () == eInProgress
-					 *			TotalBytesWritten == 0
-					 */
-					nonvirtual	Characters::CodePage	GetCodePage () const;
-					nonvirtual	void					SetCodePage (Characters::CodePage codePage);
+            public:
+                /*
+                 * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
+                 * For ContentTypes
+                 *      o   text/*
+                 *      o   application/json
+                 *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
+                 *          "text/html; charset=UTF-8"
+                 *
+                 * SetCodePage ()
+                 *      REQUIRES:
+                 *          GetState () == eInProgress
+                 *          TotalBytesWritten == 0
+                 */
+                nonvirtual  Characters::CodePage    GetCodePage () const;
+                nonvirtual  void                    SetCodePage (Characters::CodePage codePage);
 
-				public:
-					enum State { 
-						eInProgress,				// A newly constructed Response starts out InProgress
-						eInProgressHeaderSentState,	// It then transitions to 'header sent' state
-						eCompleted					// and finally to Completed
-					};
-					nonvirtual	State	GetState () const;
+            public:
+                enum State {
+                    eInProgress,                // A newly constructed Response starts out InProgress
+                    eInProgressHeaderSentState, // It then transitions to 'header sent' state
+                    eCompleted                  // and finally to Completed
+                };
+                nonvirtual  State   GetState () const;
 
-				public:
-					enum ContentSizePolicy { 
-						eAutoCompute_CSP,
-						eExact_CSP,
-						eNone_CSP
-					};
-					nonvirtual	ContentSizePolicy	GetContentSizePolicy () const;
-					/*
-					 * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
-					 * its argument is Exact_CSP.
-					 *
-					 * Also - SetContentSizePolicy () requires GetState () == eInProgress
-					 */
-					nonvirtual	void				SetContentSizePolicy (ContentSizePolicy csp);
-					nonvirtual	void				SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
+            public:
+                enum ContentSizePolicy {
+                    eAutoCompute_CSP,
+                    eExact_CSP,
+                    eNone_CSP
+                };
+                nonvirtual  ContentSizePolicy   GetContentSizePolicy () const;
+                /*
+                 * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
+                 * its argument is Exact_CSP.
+                 *
+                 * Also - SetContentSizePolicy () requires GetState () == eInProgress
+                 */
+                nonvirtual  void                SetContentSizePolicy (ContentSizePolicy csp);
+                nonvirtual  void                SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
 
-				public:
-					/*
-					 * This begins sending the parts of the message which have already been accumulated to the client.
-					 * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
-					 * if we are NOT in automatic-include-Content-Length mode (NYI).
-					 *
-					 * This does NOT End the repsonse, and it CAN be called arbitrarily many times (even after the response has completed - though
-					 * its pointless then).
-					 */
-					nonvirtual	void	Flush ();
+            public:
+                /*
+                 * This begins sending the parts of the message which have already been accumulated to the client.
+                 * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
+                 * if we are NOT in automatic-include-Content-Length mode (NYI).
+                 *
+                 * This does NOT End the repsonse, and it CAN be called arbitrarily many times (even after the response has completed - though
+                 * its pointless then).
+                 */
+                nonvirtual  void    Flush ();
 
-					/*
-					 * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
-					 * any aspect of it. The state must be eInProgress or eInProgressHeaderSentState and it sets the state to eCompleted.
-					 */
-					nonvirtual	void	End ();
+                /*
+                 * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
+                 * any aspect of it. The state must be eInProgress or eInProgressHeaderSentState and it sets the state to eCompleted.
+                 */
+                nonvirtual  void    End ();
 
-					/*
-					 * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
-					 * unsent data, and closing the associated socket.
-					 */
-					nonvirtual	void	Abort ();
+                /*
+                 * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
+                 * unsent data, and closing the associated socket.
+                 */
+                nonvirtual  void    Abort ();
 
-					/*
-					 * Only legal to call if state is eInProgress. It sets the state to eCompleted.
-					 */
-					nonvirtual	void	Redirect (const String& url);
+                /*
+                 * Only legal to call if state is eInProgress. It sets the state to eCompleted.
+                 */
+                nonvirtual  void    Redirect (const String& url);
 
-				public:
-					nonvirtual	void	write (const Byte* start, const Byte* end);
-					nonvirtual	void	write (const wchar_t* e);
-					nonvirtual	void	write (const wchar_t* s, const wchar_t* e);
-					nonvirtual	void	write (const wstring& e);
-					nonvirtual	void	printf (const wchar_t* format, ...);
-					nonvirtual	void	writeln (const wchar_t* e);
-					nonvirtual	void	writeln (const wstring& e);
+            public:
+                nonvirtual  void    write (const Byte* start, const Byte* end);
+                nonvirtual  void    write (const wchar_t* e);
+                nonvirtual  void    write (const wchar_t* s, const wchar_t* e);
+                nonvirtual  void    write (const wstring& e);
+                nonvirtual  void    printf (const wchar_t* format, ...);
+                nonvirtual  void    writeln (const wchar_t* e);
+                nonvirtual  void    writeln (const wstring& e);
 
-				public:
-					virtual		void	clear ();
-					nonvirtual	bool	empty () const;
+            public:
+                virtual     void    clear ();
+                nonvirtual  bool    empty () const;
 
 // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
-				public:
-					nonvirtual	const vector<Byte>&	GetBytes () const;
+            public:
+                nonvirtual  const vector<Byte>& GetBytes () const;
 
-				public:
-					/*
-					 * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
-					 */
-					nonvirtual	Status	GetStatus () const;
-					/*
-					 * It is only legal to call SetStatus with state == eInProgress.
-					 *
-					 * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
-					 * be automatically generated based on the status.
-					 */
-					nonvirtual	void	SetStatus (Status newStatus, const String& overrideReason = wstring ());
+            public:
+                /*
+                 * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
+                 */
+                nonvirtual  Status  GetStatus () const;
+                /*
+                 * It is only legal to call SetStatus with state == eInProgress.
+                 *
+                 * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
+                 * be automatically generated based on the status.
+                 */
+                nonvirtual  void    SetStatus (Status newStatus, const String& overrideReason = wstring ());
 
 
-				public:
-					// 
-					/*
-					 *	Add the given 'non-special' header to the list of headers to be associated with this reponse.
-					 *	Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
-					 *	that cannot be specified here include:
-					 *		o	IO::Network::HTTP::HeaderName::kContentLength
-					 *
-					 * It is legal to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
-					 */
-					nonvirtual	void	AddHeader (String headerName, String value);
-					nonvirtual	void	ClearHeader ();
-					nonvirtual	void	ClearHeader (String headerName);
-					nonvirtual	map<String,String>	GetSpecialHeaders () const;
-					/*
-					 * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
-					 * Connection: close, Content-Type, etc.
-					 */
-					nonvirtual	map<String,String>	GetEffectiveHeaders () const;
+            public:
+                //
+                /*
+                 *  Add the given 'non-special' header to the list of headers to be associated with this reponse.
+                 *  Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
+                 *  that cannot be specified here include:
+                 *      o   IO::Network::HTTP::HeaderName::kContentLength
+                 *
+                 * It is legal to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
+                 */
+                nonvirtual  void    AddHeader (String headerName, String value);
+                nonvirtual  void    ClearHeader ();
+                nonvirtual  void    ClearHeader (String headerName);
+                nonvirtual  map<String, String>  GetSpecialHeaders () const;
+                /*
+                 * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
+                 * Connection: close, Content-Type, etc.
+                 */
+                nonvirtual  map<String, String>  GetEffectiveHeaders () const;
 
-				private:
-					IO::Network::Socket						fSocket_;
-					State									fState_;
-					Status									fStatus_;
-					String									fStatusOverrideReason_;
-					Streams::BinaryOutputStream&			fUnderlyingOutStream_;
-					Streams::BufferedBinaryOutputStream		fUseOutStream_;
-					map<String,String>						fHeaders_;
-					InternetMediaType						fContentType_;
-					Characters::CodePage					fCodePage_;
-					vector<Byte>							fBytes_;
-					ContentSizePolicy						fContentSizePolicy_;
-					uint64_t								fContentSize_;			// only  maintained for some policies
-			};
+            private:
+                IO::Network::Socket                     fSocket_;
+                State                                   fState_;
+                Status                                  fStatus_;
+                String                                  fStatusOverrideReason_;
+                Streams::BinaryOutputStream&            fUnderlyingOutStream_;
+                Streams::BufferedBinaryOutputStream     fUseOutStream_;
+                map<String, String>                      fHeaders_;
+                InternetMediaType                       fContentType_;
+                Characters::CodePage                    fCodePage_;
+                vector<Byte>                            fBytes_;
+                ContentSizePolicy                       fContentSizePolicy_;
+                uint64_t                                fContentSize_;          // only  maintained for some policies
+            };
 
-		}
-	}
+        }
+    }
 }
-#endif	/*_Stroika_Framework_WebServer_HTTPResponse_h_*/
+#endif  /*_Stroika_Framework_WebServer_HTTPResponse_h_*/
 
 
 
@@ -222,4 +222,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"HTTPResponse.inl"
+#include    "HTTPResponse.inl"

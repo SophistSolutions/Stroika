@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#include	"WaitAbandonedException.h"
+#include    "WaitAbandonedException.h"
 
 
-using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Execution;
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Execution;
 
 
 
@@ -18,6 +18,5 @@ using	namespace	Stroika::Foundation::Execution;
  ********************************************************************************
  */
 WaitAbandonedException::WaitAbandonedException ()
-	: StringException (L"WAIT on object abandoned because the owning thread terminated")
-{
+    : StringException (L"WAIT on object abandoned because the owning thread terminated") {
 }

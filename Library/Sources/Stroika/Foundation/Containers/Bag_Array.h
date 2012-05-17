@@ -1,37 +1,37 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Containers_Bag_Array_h_
-#define	_Stroika_Foundation_Containers_Bag_Array_h_
+#ifndef _Stroika_Foundation_Containers_Bag_Array_h_
+#define _Stroika_Foundation_Containers_Bag_Array_h_
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#include	"Bag.h"
+#include    "Bag.h"
 
 
 
-namespace	Stroika {
-	namespace	Foundation {
-		namespace	Containers {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Containers {
 
-            template	<class T>	class	Bag_ArrayRep;
-            template	<class T>	class	Bag_Array : public Bag<T> {
-                public:
-                    Bag_Array ();
-                    Bag_Array (const Bag<T>& bag);
-                    Bag_Array (const Bag_Array<T>& bag);
-                    Bag_Array (const T* items, size_t size);
+            template    <class T>   class   Bag_ArrayRep;
+            template    <class T>   class   Bag_Array : public Bag<T> {
+            public:
+                Bag_Array ();
+                Bag_Array (const Bag<T>& bag);
+                Bag_Array (const Bag_Array<T>& bag);
+                Bag_Array (const T* items, size_t size);
 
-                    nonvirtual	Bag_Array<T>& operator= (const Bag_Array<T>& bag);
+                nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 
-                    nonvirtual	size_t	GetSlotsAlloced () const;
-                    nonvirtual	void	SetSlotsAlloced (size_t slotsAlloced);
+                nonvirtual  size_t  GetSlotsAlloced () const;
+                nonvirtual  void    SetSlotsAlloced (size_t slotsAlloced);
 
-                private:
-                    nonvirtual	const Bag_ArrayRep<T>*	GetRep () const;
-                    nonvirtual	Bag_ArrayRep<T>*		GetRep ();
+            private:
+                nonvirtual  const Bag_ArrayRep<T>*  GetRep () const;
+                nonvirtual  Bag_ArrayRep<T>*        GetRep ();
             };
-		}
+        }
     }
 }
 
@@ -39,7 +39,7 @@ namespace	Stroika {
 
 
 
-#endif	/*_Stroika_Foundation_Containers_Bag_Array_h_ */
+#endif  /*_Stroika_Foundation_Containers_Bag_Array_h_ */
 
 
 /*
@@ -48,7 +48,7 @@ namespace	Stroika {
  ********************************************************************************
  */
 
- #include "Bag_Array.inl"
+#include "Bag_Array.inl"
 
 
 

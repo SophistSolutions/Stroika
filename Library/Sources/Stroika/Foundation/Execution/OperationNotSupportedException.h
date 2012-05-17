@@ -1,35 +1,35 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_OperationNotSupportedException_h_
-#define	_Stroika_Foundation_Execution_OperationNotSupportedException_h_	1
+#ifndef _Stroika_Foundation_Execution_OperationNotSupportedException_h_
+#define _Stroika_Foundation_Execution_OperationNotSupportedException_h_ 1
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#include	"../Characters/String.h"
+#include    "../Characters/String.h"
 
-#include	"StringException.h"
+#include    "StringException.h"
 
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Execution {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Execution {
 
-			using	Characters::String;
+            using   Characters::String;
 
-			class	OperationNotSupportedException : public StringException {
-				public:
-					OperationNotSupportedException ();
-					OperationNotSupportedException (const String& operationName);
+            class   OperationNotSupportedException : public StringException {
+            public:
+                OperationNotSupportedException ();
+                OperationNotSupportedException (const String& operationName);
 
-				public:
-					nonvirtual	Characters::String	GetOperationName () const;
+            public:
+                nonvirtual  Characters::String  GetOperationName () const;
 
-				private:
-					String	fOperationName_;
-			};
+            private:
+                String  fOperationName_;
+            };
 
-		}
-	}
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Execution_OperationNotSupportedException_h_*/
+#endif  /*_Stroika_Foundation_Execution_OperationNotSupportedException_h_*/

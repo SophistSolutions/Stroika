@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include	"../../Foundation/StroikaPreComp.h"
+#include    "../../Foundation/StroikaPreComp.h"
 
-#include	"TextInteractorMixins.h"
+#include    "TextInteractorMixins.h"
 
 
 

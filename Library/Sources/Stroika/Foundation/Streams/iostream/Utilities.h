@@ -1,45 +1,45 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Streams_iostream_Utilities_h_
-#define	_Stroika_Foundation_Streams_iostream_Utilities_h_	1
+#ifndef _Stroika_Foundation_Streams_iostream_Utilities_h_
+#define _Stroika_Foundation_Streams_iostream_Utilities_h_   1
 
-#include	"../../StroikaPreComp.h"
+#include    "../../StroikaPreComp.h"
 
-#include	<iostream>
+#include    <iostream>
 
-#include	"../../Characters/TString.h"
+#include    "../../Characters/TString.h"
 
 
 /*
  * TODO:
- *		o	While we have a lot of code that is iostream based, and before the Stroika stream stuff matures, many of these
- *			utiltiies maybe handy. I'm not sure we will want them long-term however.
+ *      o   While we have a lot of code that is iostream based, and before the Stroika stream stuff matures, many of these
+ *          utiltiies maybe handy. I'm not sure we will want them long-term however.
  */
 
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Streams {
-			namespace	iostream {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Streams {
+            namespace   iostream {
 
 
-				using	Characters::TString;
+                using   Characters::TString;
 
-				wstring	ReadTextStream (istream& in);
-				wstring	ReadTextStream (wistream& in);
+                wstring ReadTextStream (istream& in);
+                wstring ReadTextStream (wistream& in);
 
-				#if 0
-				void	WriteString (ostream& out, const wstring& s);
-				wstring	ReadString (istream& in);
-				#endif
+#if 0
+                void    WriteString (ostream& out, const wstring& s);
+                wstring ReadString (istream& in);
+#endif
 
-				vector<Byte>	ReadBytes (istream& in);
-				void			WriteBytes (ostream& out, const vector<Byte>& s);
+                vector<Byte>    ReadBytes (istream& in);
+                void            WriteBytes (ostream& out, const vector<Byte>& s);
 
 
-			}
-		}
-	}
+            }
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Streams_iostream_Utilities_h_*/
+#endif  /*_Stroika_Foundation_Streams_iostream_Utilities_h_*/

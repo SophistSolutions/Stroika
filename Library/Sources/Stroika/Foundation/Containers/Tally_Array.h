@@ -1,49 +1,49 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Containers_Tally_Array_h_
-#define	_Stroika_Foundation_Containers_Tally_Array_h_	1
+#ifndef _Stroika_Foundation_Containers_Tally_Array_h_
+#define _Stroika_Foundation_Containers_Tally_Array_h_   1
 
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
 
-#include	"Tally.h"
+#include    "Tally.h"
 
 
 
-namespace	Stroika {
-	namespace	Foundation {
-		namespace	Containers {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Containers {
 
-			template	<typename T>	class	Tally_ArrayRep;
-			template	<typename T>	class	Tally_Array : public Tally<T> {
-				public:
-					Tally_Array ();
-					Tally_Array (const Tally<T>& src);
-					Tally_Array (const Tally_Array<T>& src);
-					Tally_Array (const T* items, size_t size);
+            template    <typename T>    class   Tally_ArrayRep;
+            template    <typename T>    class   Tally_Array : public Tally<T> {
+            public:
+                Tally_Array ();
+                Tally_Array (const Tally<T>& src);
+                Tally_Array (const Tally_Array<T>& src);
+                Tally_Array (const T* items, size_t size);
 
-					nonvirtual	Tally_Array<T>& operator= (const Tally_Array<T>& src);
+                nonvirtual  Tally_Array<T>& operator= (const Tally_Array<T>& src);
 
-					nonvirtual	size_t	GetSlotsAlloced () const;
-					nonvirtual	void	SetSlotsAlloced (size_t slotsAlloced);
+                nonvirtual  size_t  GetSlotsAlloced () const;
+                nonvirtual  void    SetSlotsAlloced (size_t slotsAlloced);
 
-				private:
-					nonvirtual	const Tally_ArrayRep<T>*	GetRep () const;
-					nonvirtual	Tally_ArrayRep<T>*			GetRep ();
-			};
+            private:
+                nonvirtual  const Tally_ArrayRep<T>*    GetRep () const;
+                nonvirtual  Tally_ArrayRep<T>*          GetRep ();
+            };
 
 
-		}
-	}
+        }
+    }
 }
 
 
 
 
 
-#endif	/*_Stroika_Foundation_Containers_Tally_Array_h_*/
+#endif  /*_Stroika_Foundation_Containers_Tally_Array_h_*/
 
 
 

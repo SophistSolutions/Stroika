@@ -1,60 +1,60 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Characters_TChar_h_
-#define	_Stroika_Foundation_Characters_TChar_h_	1
+#ifndef _Stroika_Foundation_Characters_TChar_h_
+#define _Stroika_Foundation_Characters_TChar_h_ 1
 
 /*
-@MODULE:	CodePage
+@MODULE:    CodePage
 @DESCRIPTION:
-		<p>This module is designed to provide mappings between wide UNICODE and various other code pages
-	and UNICODE encodings.</p>
+        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
+    and UNICODE encodings.</p>
  */
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#include	<cstdlib>
+#include    <cstdlib>
 
-#if		qPlatform_Windows
-	#include	<tchar.h>
+#if     qPlatform_Windows
+#include    <tchar.h>
 #endif
 
-#include	"../Configuration/Common.h"
+#include    "../Configuration/Common.h"
 
 
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Characters {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Characters {
 
 
-			/*
-			@CONFIGVAR:		qTargetPlatformSDKUseswchar_t
-			@DESCRIPTION:	<p>defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)</p>
-			 */
-			#if		!defined (qTargetPlatformSDKUseswchar_t)
-				#error "qTargetPlatformSDKUseswchar_t should normally be defined indirectly by StroikaConfig.h"
-			#endif
+            /*
+            @CONFIGVAR:     qTargetPlatformSDKUseswchar_t
+            @DESCRIPTION:   <p>defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)</p>
+             */
+#if     !defined (qTargetPlatformSDKUseswchar_t)
+#error "qTargetPlatformSDKUseswchar_t should normally be defined indirectly by StroikaConfig.h"
+#endif
 
 
-			#if		qTargetPlatformSDKUseswchar_t
-				typedef	wchar_t	TChar;
-			#else
-				typedef	char	TChar;
-			#endif
+#if     qTargetPlatformSDKUseswchar_t
+            typedef wchar_t TChar;
+#else
+            typedef char    TChar;
+#endif
 
 
-			// MACRO to wrap strings to get const TChar*
-			#if		qTargetPlatformSDKUseswchar_t
-				#define TSTR(x)    _TEXT(x)
-			#else
-				#define TSTR(x)    x
-			#endif
+            // MACRO to wrap strings to get const TChar*
+#if     qTargetPlatformSDKUseswchar_t
+#define TSTR(x)    _TEXT(x)
+#else
+#define TSTR(x)    x
+#endif
 
-		}
-	}
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Characters_TChar_h_*/
+#endif  /*_Stroika_Foundation_Characters_TChar_h_*/
 
 
 

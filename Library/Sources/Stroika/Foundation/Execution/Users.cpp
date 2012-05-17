@@ -1,29 +1,29 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#if		qPlatform_Windows
-#include	<Windows.h>
+#if     qPlatform_Windows
+#include    <Windows.h>
 #endif
 
-#include	"../Characters/TChar.h"
-#if		qPlatform_Windows
-	#include	"../Execution/Platform/Windows/Exception.h"
+#include    "../Characters/TChar.h"
+#if     qPlatform_Windows
+#include    "../Execution/Platform/Windows/Exception.h"
 #endif
-#include	"../Memory/SmallStackBuffer.h"
+#include    "../Memory/SmallStackBuffer.h"
 
-#if		qPlatform_POSIX
-#include	"Platform/POSIX/Users.h"
+#if     qPlatform_POSIX
+#include    "Platform/POSIX/Users.h"
 #endif
 
-#include	"Users.h"
+#include    "Users.h"
 
 
-using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Execution;
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Execution;
 
-using	Characters::String;
+using   Characters::String;
 
 
 
@@ -33,23 +33,22 @@ using	Characters::String;
  ************************ Execution::GetCurrentUserName *************************
  ********************************************************************************
  */
-String	Execution::GetCurrentUserName (UserNameFormat format)
-{
-	#if		qPlatform_Windows && 0
-		EXTENDED_NAME_FORMAT	useFormat	=	NameDisplay;
-		ULONG					sz			=	0;
-		::GetUserNameEx (useFormat, nullptr, &sz);
-		Memory::SmallStackBuffer<Characters::TChar>	buf (sz + 1);
-		Execution::ThrowIfFalseGetLastError (::GetUserNameEx (useFormat, buf, &sz));
-		return String::FromTString (buf);
-	#elif	qPlatform_Windows
-		ULONG					sz			=	0;
-		::GetUserName (nullptr, &sz);
-		Memory::SmallStackBuffer<Characters::TChar>	buf (sz + 1);
-		Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
-		return String::FromTString (buf);
-	#elif	qPlatform_POSIX
-		return Platform::POSIX::uid_t2UserName (Platform::POSIX::GetUID ());
-	#else
-	#endif
+String  Execution::GetCurrentUserName (UserNameFormat format) {
+#if     qPlatform_Windows && 0
+    EXTENDED_NAME_FORMAT    useFormat   =   NameDisplay;
+    ULONG                   sz          =   0;
+    ::GetUserNameEx (useFormat, nullptr, &sz);
+    Memory::SmallStackBuffer<Characters::TChar> buf (sz + 1);
+    Execution::ThrowIfFalseGetLastError (::GetUserNameEx (useFormat, buf, &sz));
+    return String::FromTString (buf);
+#elif   qPlatform_Windows
+    ULONG                   sz          =   0;
+    ::GetUserName (nullptr, &sz);
+    Memory::SmallStackBuffer<Characters::TChar> buf (sz + 1);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
+    return String::FromTString (buf);
+#elif   qPlatform_POSIX
+    return Platform::POSIX::uid_t2UserName (Platform::POSIX::GetUID ());
+#else
+#endif
 }

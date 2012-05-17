@@ -1,29 +1,29 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_Module_h_
-#define	_Stroika_Foundation_Execution_Module_h_	1
+#ifndef _Stroika_Foundation_Execution_Module_h_
+#define _Stroika_Foundation_Execution_Module_h_ 1
 
-#include	"../StroikaPreComp.h"
+#include    "../StroikaPreComp.h"
 
-#include	"../Characters/TString.h"
-#include	"../Configuration/Common.h"
+#include    "../Characters/TString.h"
+#include    "../Configuration/Common.h"
 
 
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Execution {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Execution {
 
-			using	Characters::TString;
+            using   Characters::TString;
 
-			TString	GetEXEDir ();
-			TString	GetEXEPath ();
+            TString GetEXEDir ();
+            TString GetEXEPath ();
 
-		}
-	}
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Execution_Module_h_*/
+#endif  /*_Stroika_Foundation_Execution_Module_h_*/
 
 
 

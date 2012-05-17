@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Time_Duration_inl_
-#define	_Stroika_Foundation_Time_Duration_inl_	1
+#ifndef _Stroika_Foundation_Time_Duration_inl_
+#define _Stroika_Foundation_Time_Duration_inl_  1
 
 
 /*
@@ -12,43 +12,37 @@
  */
 #include "../Execution/Exceptions.h"
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Time {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Time {
 
-				inline	bool operator<= (const Duration& lhs, const Duration& rhs)
-					{
-						return lhs.Compare (rhs) <= 0;
-					}
-				inline	bool operator< (const Duration& lhs, const Duration& rhs)
-					{
-						return lhs.Compare (rhs) < 0;
-					}
-				inline	bool operator> (const Duration& lhs, const Duration& rhs)
-					{
-						return lhs.Compare (rhs) > 0;
-					}
-				inline	bool operator== (const Duration& lhs, const Duration& rhs)
-					{
-						return lhs.Compare (rhs) == 0;
-					}
-				inline	bool operator!= (const Duration& lhs, const Duration& rhs)
-					{
-						return lhs.Compare (rhs) != 0;
-					}
+            inline  bool operator<= (const Duration& lhs, const Duration& rhs) {
+                return lhs.Compare (rhs) <= 0;
+            }
+            inline  bool operator< (const Duration& lhs, const Duration& rhs) {
+                return lhs.Compare (rhs) < 0;
+            }
+            inline  bool operator> (const Duration& lhs, const Duration& rhs) {
+                return lhs.Compare (rhs) > 0;
+            }
+            inline  bool operator== (const Duration& lhs, const Duration& rhs) {
+                return lhs.Compare (rhs) == 0;
+            }
+            inline  bool operator!= (const Duration& lhs, const Duration& rhs) {
+                return lhs.Compare (rhs) != 0;
+            }
 
 
-		}
+        }
 
-		namespace	Execution {
-			template	<>
-				inline	void	_NoReturn_	DoThrow (const Time::Duration::FormatException& e2Throw)
-					{
-						DbgTrace (L"Throwing Duration::FormatException");
-						throw e2Throw;
-					}
-		}
+        namespace   Execution {
+            template    <>
+            inline  void    _NoReturn_  DoThrow (const Time::Duration::FormatException& e2Throw) {
+                DbgTrace (L"Throwing Duration::FormatException");
+                throw e2Throw;
+            }
+        }
 
-	}
+    }
 }
-#endif	/*_Stroika_Foundation_Time_Duration_inl_*/
+#endif  /*_Stroika_Foundation_Time_Duration_inl_*/

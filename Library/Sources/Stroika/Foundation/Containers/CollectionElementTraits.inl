@@ -4,19 +4,19 @@
 #ifndef _Stroika_Foundation_Containers_CollectionElementTraits_inl_
 #define _Stroika_Foundation_Containers_CollectionElementTraits_inl_
 
-#include	"../Debug/Assertions.h"
+#include    "../Debug/Assertions.h"
 
 
 
 
-namespace	Stroika {
-	namespace	Foundation {
-		namespace	Containers {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Containers {
 
 
 
-		}
-	}
+        }
+    }
 }
 
 #endif /* _Stroika_Foundation_Containers_CollectionElementTraits_inl_ */

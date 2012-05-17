@@ -1,51 +1,51 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Execution_Platform_Windows_Resources_h_
-#define	_Stroika_Foundation_Execution_Platform_Windows_Resources_h_	1
+#ifndef _Stroika_Foundation_Execution_Platform_Windows_Resources_h_
+#define _Stroika_Foundation_Execution_Platform_Windows_Resources_h_ 1
 
-#include	"../../../StroikaPreComp.h"
+#include    "../../../StroikaPreComp.h"
 
-#if		qPlatform_Windows
-	#include	<Windows.h>
+#if     qPlatform_Windows
+#include    <Windows.h>
 #else
-	#error "WINDOWS REQUIRED FOR THIS MODULE"
+#error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include	<vector>
+#include    <vector>
 
-#include	"../../../Configuration/Common.h"
+#include    "../../../Configuration/Common.h"
 
 
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Execution {
-			namespace	Platform {
-				namespace	Windows {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Execution {
+            namespace   Platform {
+                namespace   Windows {
 
-				using	namespace	Stroika::Foundation::Configuration;
+                    using   namespace   Stroika::Foundation::Configuration;
 
-				class	ResourceAccessor {
-					public:
-						ResourceAccessor (HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType);
+                    class   ResourceAccessor {
+                    public:
+                        ResourceAccessor (HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType);
 
-					public:
-						nonvirtual	bool			GetFound () const;
-						nonvirtual	const Byte*		GetDataStart () const;
-						nonvirtual	const Byte*		GetDataEnd () const;
-						nonvirtual	vector<Byte>	GetData () const;
+                    public:
+                        nonvirtual  bool            GetFound () const;
+                        nonvirtual  const Byte*     GetDataStart () const;
+                        nonvirtual  const Byte*     GetDataEnd () const;
+                        nonvirtual  vector<Byte>    GetData () const;
 
-					private:
-						const Byte*	fDataStart;
-						const Byte*	fDataEnd;
-				};
+                    private:
+                        const Byte* fDataStart;
+                        const Byte* fDataEnd;
+                    };
 
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Execution_Platform_Windows_Resources_h_*/
+#endif  /*_Stroika_Foundation_Execution_Platform_Windows_Resources_h_*/
 
 
 
@@ -58,4 +58,4 @@ namespace	Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include	"ResourceAccessor.inl"
+#include    "ResourceAccessor.inl"

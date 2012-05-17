@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef	_Stroika_Foundation_Memory_Optional_inl_
-#define	_Stroika_Foundation_Memory_Optional_inl_	1
+#ifndef _Stroika_Foundation_Memory_Optional_inl_
+#define _Stroika_Foundation_Memory_Optional_inl_    1
 
 
 /*
@@ -10,115 +10,98 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace	Stroika {	
-	namespace	Foundation {
-		namespace	Memory {
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Memory {
 
-			//	class	Optional::Optional<T>
-			template	<typename T>
-				inline	Optional<T>::Optional ()
-					: fValue_ (nullptr)
-					{
-					}
-			template	<typename T>
-				inline	Optional<T>::Optional (const T& from)
-					: fValue_ (new T (from))
-					{
-					}
-			template	<typename T>
-				inline	Optional<T>::Optional (const Optional<T>& from)
-					: fValue_ (from.fValue_)
-					{
-					}
-			template	<typename T>
-				inline	void	Optional<T>::clear ()
-					{
-						fValue_.clear ();
-					}
-			template	<typename T>
-				inline	const T*	Optional<T>::get () const
-					{
-						return fValue_.IsNull ()? nullptr : fValue_.get ();
-					}
-			template	<typename T>
-				inline	bool	Optional<T>::empty () const
-					{
-						return fValue_.IsNull ();
-					}
-			template	<typename T>
-				inline	const T* Optional<T>::operator-> () const
-					{
-						Require (not empty ())
-						return &fValue_.GetRep ();
-					}
-			template	<typename T>
-				inline	T* Optional<T>::operator-> ()
-					{
-						Require (not empty ())
-						return &fValue_.GetRep ();
-					}
-			template	<typename T>
-				inline	const T& Optional<T>::operator* () const
-					{
-						Require (not empty ())
-						return fValue_.GetRep ();
-					}
-			template	<typename T>
-				inline	T& Optional<T>::operator* ()
-					{
-						Require (not empty ())
-						return fValue_.GetRep ();
-					}
-			template	<typename T>
-				inline	Optional<T>::operator T () const
-					{
-						Require (not empty ())
-						return *fValue_;
-					}
-			template	<typename T>
-				bool	Optional<T>::operator< (const Optional<T>& rhs) const
-					{
-						if (fValue_.IsNull ()) {
-							return rhs.fValue_.IsNull ()? false: true;	// arbitrary choice - but assume if lhs is empty thats less than any T value
-						}
-						if (rhs.fValue_.IsNull ()) {
-							return false;
-						}
-						return *fValue_ < rhs.fValue_;
-					}
-			template	<typename T>
-				bool	Optional<T>::operator<= (const Optional<T>& rhs) const
-					{
-						return *this < rhs or *this == rhs;
-					}
-			template	<typename T>
-				inline	bool	Optional<T>::operator> (const Optional<T>& rhs) const
-					{
-						return rhs < *this;
-					}
-			template	<typename T>
-				bool	Optional<T>::operator>= (const Optional<T>& rhs) const
-					{
-						return *this > rhs or *this == rhs;
-					}
-			template	<typename T>
-				bool	Optional<T>::operator== (const Optional<T>& rhs) const
-					{
-						if (fValue_.IsNull ()) {
-							return rhs.fValue_.IsNull ();
-						}
-						if (rhs.fValue_.IsNull ()) {
-							return false;
-						}
-						return *fValue_ == *rhs.fValue_;
-					}
-			template	<typename T>
-				inline	bool	Optional<T>::operator!= (const Optional<T>& rhs) const
-					{
-						return not (*this == rhs);
-					}
+            //  class   Optional::Optional<T>
+            template    <typename T>
+            inline  Optional<T>::Optional ()
+                : fValue_ (nullptr) {
+            }
+            template    <typename T>
+            inline  Optional<T>::Optional (const T& from)
+                : fValue_ (new T (from)) {
+            }
+            template    <typename T>
+            inline  Optional<T>::Optional (const Optional<T>& from)
+                : fValue_ (from.fValue_) {
+            }
+            template    <typename T>
+            inline  void    Optional<T>::clear () {
+                fValue_.clear ();
+            }
+            template    <typename T>
+            inline  const T*    Optional<T>::get () const {
+                return fValue_.IsNull () ? nullptr : fValue_.get ();
+            }
+            template    <typename T>
+            inline  bool    Optional<T>::empty () const {
+                return fValue_.IsNull ();
+            }
+            template    <typename T>
+            inline  const T* Optional<T>::operator-> () const {
+                Require (not empty ())
+                return &fValue_.GetRep ();
+            }
+            template    <typename T>
+            inline  T* Optional<T>::operator-> () {
+                Require (not empty ())
+                return &fValue_.GetRep ();
+            }
+            template    <typename T>
+            inline  const T& Optional<T>::operator* () const {
+                Require (not empty ())
+                return fValue_.GetRep ();
+            }
+            template    <typename T>
+            inline  T& Optional<T>::operator* () {
+                Require (not empty ())
+                return fValue_.GetRep ();
+            }
+            template    <typename T>
+            inline  Optional<T>::operator T () const {
+                Require (not empty ())
+                return *fValue_;
+            }
+            template    <typename T>
+            bool    Optional<T>::operator< (const Optional<T>& rhs) const {
+                if (fValue_.IsNull ()) {
+                    return rhs.fValue_.IsNull () ? false : true; // arbitrary choice - but assume if lhs is empty thats less than any T value
+                }
+                if (rhs.fValue_.IsNull ()) {
+                    return false;
+                }
+                return *fValue_ < rhs.fValue_;
+            }
+            template    <typename T>
+            bool    Optional<T>::operator<= (const Optional<T>& rhs) const {
+                return *this < rhs or * this == rhs;
+            }
+            template    <typename T>
+            inline  bool    Optional<T>::operator> (const Optional<T>& rhs) const {
+                return rhs < *this;
+            }
+            template    <typename T>
+            bool    Optional<T>::operator>= (const Optional<T>& rhs) const {
+                return *this > rhs or * this == rhs;
+            }
+            template    <typename T>
+            bool    Optional<T>::operator== (const Optional<T>& rhs) const {
+                if (fValue_.IsNull ()) {
+                    return rhs.fValue_.IsNull ();
+                }
+                if (rhs.fValue_.IsNull ()) {
+                    return false;
+                }
+                return *fValue_ == *rhs.fValue_;
+            }
+            template    <typename T>
+            inline  bool    Optional<T>::operator!= (const Optional<T>& rhs) const {
+                return not (*this == rhs);
+            }
 
-		}
-	}
+        }
+    }
 }
-#endif	/*_Stroika_Foundation_Memory_Optional_inl_*/
+#endif  /*_Stroika_Foundation_Memory_Optional_inl_*/
