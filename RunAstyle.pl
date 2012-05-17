@@ -19,6 +19,7 @@ $aStyleArgs .= "--pad-oper ";
 $aStyleArgs .= "--break-closing-brackets ";
 $aStyleArgs .= "--keep-one-line-blocks ";
 $aStyleArgs .= "--indent=spaces ";
+$aStyleArgs .= "--preserve-date ";
 
 $aStyleArgs .= "--align-pointer=type ";
 $aStyleArgs .= "--align-reference=type ";

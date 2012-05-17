@@ -133,8 +133,8 @@ namespace   Stroika {
 
             public:
                         /*
-                         * This is how you get a 'SharedPtr' from ....
-                         */
+                            * This is how you get a 'SharedPtr' from ....
+                            */
                         nonvirtual  SharedPtrType   Lock () const;
 
             private:
