@@ -11,6 +11,14 @@
 #include	"../Configuration/Common.h"
 
 
+/*
+ * TODO:
+ *
+ *		o	See if Valgrind works well tracking leaks. If so - even on windows - see about just losing DEBUG_NEW code!
+ *			(maybe http://code.google.com/p/drmemory/ - or http://www.codersnotes.com/sleepy
+ */
+
+
 
 /*
 @CONFIGVAR:		qMSVisualStudioCRTMemoryDebug
