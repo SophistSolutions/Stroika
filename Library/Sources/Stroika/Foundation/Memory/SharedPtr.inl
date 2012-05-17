@@ -289,8 +289,7 @@ namespace	Stroika {
 				template <typename T2>
 					SharedPtr<T2> SharedPtr<T,T_TRAITS>::Dynamic_Cast ()
 						{
-							//return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ());
-							return SharedPtr<T2> (SharedPtr_Default_Traits<T2>::Envelope (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ()));
+							return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ()));
 						}
 			template	<typename T, typename T_TRAITS>
 				inline	typename T_TRAITS::ReferenceCountType	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
