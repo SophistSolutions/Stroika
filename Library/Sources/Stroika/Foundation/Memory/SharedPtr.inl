@@ -178,12 +178,13 @@ namespace	Stroika {
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from)
 					: fEnvelope_ (from, nullptr)
 					{
-						if (from != nullptr) {
+						if (fEnvelope_.GetPtr () != nullptr) {
 							// NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
 							// in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
 							fEnvelope_.Increment ();
 						}
 					}
+#if 0
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (T* from, typename T_TRAITS::ReferenceCounterContainerType* useCounter)
 					: fEnvelope_ (from, from == nullptr? nullptr: useCounter)
@@ -192,6 +193,7 @@ namespace	Stroika {
 							fEnvelope_.Increment ();
 						}
 					}
+#endif
 			template	<typename T, typename T_TRAITS>
 				inline	SharedPtr<T,T_TRAITS>::SharedPtr (typename const T_TRAITS::Envelope& from)
 					: fEnvelope_ (from)
@@ -297,7 +299,8 @@ namespace	Stroika {
 				template <typename T2>
 					SharedPtr<T2> SharedPtr<T,T_TRAITS>::Dynamic_Cast ()
 						{
-							return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ());
+							//return SharedPtr<T2> (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ());
+							return SharedPtr<T2> (SharedPtr_Default_Traits<T2>::Envelope (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ()));
 						}
 			template	<typename T, typename T_TRAITS>
 				inline	typename T_TRAITS::ReferenceCountType	SharedPtr<T,T_TRAITS>::CurrentRefCount () const
