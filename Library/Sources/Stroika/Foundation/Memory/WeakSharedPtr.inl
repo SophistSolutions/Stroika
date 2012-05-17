@@ -60,9 +60,10 @@ namespace	Stroika {
 
 			// class	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
-				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (SharedPtrType shared)
-					: fSharedPtrEnvelope (shared.PeekAtEnvelope ())
+				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (const SharedPtrType& shared)
+					: fSharedPtrEnvelope (SharedPtrType (shared).PeekAtEnvelope ())
 					{
+//NOT RIGHT - CANNOT STORE fSharedPtrEnvelope!!!! - SERIOUS BUG!!!! - DESIGN FLAW!!!!
 						Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection);
 						fSharedPtrEnvelope->fWeakSharedPtrs.push_back (this);
 					}

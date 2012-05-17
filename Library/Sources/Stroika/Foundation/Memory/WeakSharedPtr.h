@@ -96,9 +96,7 @@ namespace	Stroika {
 							NO_ASSIGNMENT_OPERATOR (WeakSharedPtrRep_);
 						public:
 							typedef	SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	SharedPtrType;
-// a number of hacks to fix - SB the const variety...
-//WeakSharedPtrRep_ (const SharedPtrType& shared);
-WeakSharedPtrRep_ (SharedPtrType shared);
+							WeakSharedPtrRep_ (const SharedPtrType& shared);
 							~WeakSharedPtrRep_ ();
 							WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>*	fSharedPtrEnvelope;
 							SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	Lock ();
