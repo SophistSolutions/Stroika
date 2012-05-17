@@ -125,7 +125,6 @@ namespace   Stroika {
 
 
             namespace   Private {
-
                 namespace   SharedPtr_Default_Traits_Helpers_ {
                     /*
                      * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) -
@@ -133,28 +132,23 @@ namespace   Stroika {
                      * which currently requires sizeof (T) >= sizeof (void*)
                      */
                     typedef size_t  ReferenceCountType_;
-
                     /*
                      * Note - I TRIED making these nested types inside SharedPtr_Default_Traits<T> but that created problems
                      * with nested class templates inside other nested class templates with overloaded template CTOR for
                      * inner envelope class. Not sure if it was compiler bug or my misunderstanding. Anyhow - this is OK.
                      */
                     struct  ReferenceCounterContainerType_;
-
                     // This is used to wrap/combine the shared pointer with the counter.
                     template    <typename   T>
                     class   Envelope_;
                 }
-
                 namespace   enable_shared_from_this_Traits_Helpers_ {
                     // 32 bits of counter should be enough for any reasonable application
                     typedef uint32_t    ReferenceCountType_;
-
                     // This is used to wrap/combine the shared pointer with the counter.
                     template    <typename   T>
                     class   Envelope_;
                 }
-
             }
 
 
