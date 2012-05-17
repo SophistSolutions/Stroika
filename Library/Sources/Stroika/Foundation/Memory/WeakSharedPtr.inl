@@ -56,12 +56,23 @@ namespace	Stroika {
 
 
 
-
 			// class	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
-				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ ()
-					: fSharedPtrEnvelope (nullptr)
+				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (SharedPtrType shared)
+					: fSharedPtrEnvelope (&shared.fEnvelope_)
 					{
+						Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection);
+						fSharedPtrEnvelope->fWeakSharedPtrs.push_back (this);
+					}
+			template	<typename T, typename BASE_SharedPtr_TRAITS>
+				inline	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::~WeakSharedPtrRep_ ()
+					{
+						Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>::sCriticalSection);
+						if (fSharedPtrEnvelope != nullptr) {
+							list<WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>*>::iterator i = std::find (fSharedPtrEnvelope->fWeakSharedPtrs.begin (), fSharedPtrEnvelope->fWeakSharedPtrs.end (), this);
+							Assert (i != fSharedPtrEnvelope->fWeakSharedPtrs.end ());		// cannot be missing without bug or memory corruption
+							fSharedPtrEnvelope->fWeakSharedPtrs.erase (i);
+						}
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 				SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>::Lock ()
@@ -91,7 +102,7 @@ namespace	Stroika {
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
 					WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakSharedPtr (const SharedPtrType& from)
-						: fRep_ ()
+						: fRep_ (DEBUG_NEW Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS> (from))
 					{
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>

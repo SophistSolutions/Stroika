@@ -90,8 +90,16 @@ namespace	Stroika {
 			namespace	Private {
 				template	<typename T, typename BASE_SharedPtr_TRAITS>
 					class	WeakSharedPtrRep_ {
+						private:
+							NO_DEFAULT_CONSTRUCTOR (WeakSharedPtrRep_);
+							NO_COPY_CONSTRUCTOR (WeakSharedPtrRep_);
+							NO_ASSIGNMENT_OPERATOR (WeakSharedPtrRep_);
 						public:
-							WeakSharedPtrRep_ ();
+							typedef	SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	SharedPtrType;
+// a number of hacks to fix - SB the const variety...
+//WeakSharedPtrRep_ (const SharedPtrType& shared);
+WeakSharedPtrRep_ (SharedPtrType shared);
+							~WeakSharedPtrRep_ ();
 							WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>*	fSharedPtrEnvelope;
 							SharedPtr<T,WeakSharedPtrCapableSharedPtrTraits<T,BASE_SharedPtr_TRAITS>>	Lock ();
 					};
