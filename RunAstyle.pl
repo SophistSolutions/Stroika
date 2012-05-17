@@ -7,7 +7,8 @@ my $aStyleArgs = "";
 
 #$aStyleArgs .= "--style=stroustrup ";
 #$aStyleArgs .= "--style=whitesmith ";
-$aStyleArgs .= "--style=kr ";
+#$aStyleArgs .= "--style=kr ";
+$aStyleArgs .= "--style=java ";
 
 $aStyleArgs .= "--convert-tabs ";
 $aStyleArgs .= "--indent-namespaces ";
