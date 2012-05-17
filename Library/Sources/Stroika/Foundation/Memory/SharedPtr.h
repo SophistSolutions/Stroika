@@ -374,8 +374,11 @@ namespace	Stroika {
 					nonvirtual	bool	operator== (const SharedPtr<T,T_TRAITS>& rhs) const;
 					nonvirtual	bool	operator!= (const SharedPtr<T,T_TRAITS>& rhs) const;
 
+
+				public:
+					nonvirtual	typename	T_TRAITS::Envelope*	PeekAtEnvelope ();
+
 				private:
-public://tmphack
 					typename	T_TRAITS::Envelope	fEnvelope_;
 
 				private:

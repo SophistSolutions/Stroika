@@ -101,8 +101,8 @@ namespace	Stroika {
 					{
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
-					WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakSharedPtr (const SharedPtrType& from)
-						: fRep_ (DEBUG_NEW Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS> (from))
+				WeakSharedPtr<T,BASE_SharedPtr_TRAITS>::WeakSharedPtr (const SharedPtrType& from)
+					: fRep_ (DEBUG_NEW Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS> (from))
 					{
 					}
 			template	<typename T, typename BASE_SharedPtr_TRAITS>
