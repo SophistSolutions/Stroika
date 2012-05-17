@@ -389,7 +389,7 @@ namespace	Stroika {
 							*
 							*	and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
 							*/
-						T*	tStarThis	=	static_cast<T*> (this);
+						T*	tStarThis	=	dynamic_cast<T*> (this);
 						return (SharedPtr<T,SharedPtrFromThis_Traits<T>> (tStarThis));
 					}
 
