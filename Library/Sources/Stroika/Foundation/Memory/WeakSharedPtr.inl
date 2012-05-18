@@ -66,7 +66,7 @@ namespace   Stroika {
 
             // class    Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            inline  Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (const SharedPtrType& shared)
+            Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (const SharedPtrType& shared)
                 : fSharedPtrEnvelope (shared.PeekAtEnvelope ())
             {
                 Execution::AutoCriticalSection critSec (WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
@@ -76,7 +76,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            inline  Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::~WeakSharedPtrRep_ ()
+            Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::~WeakSharedPtrRep_ ()
             {
                 Execution::AutoCriticalSection critSec (WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
                 if (fSharedPtrEnvelope.GetPtr () != nullptr) {
@@ -110,12 +110,12 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakSharedPtr (const WeakSharedPtr<T, BASE_SharedPtr_TRAITS>& from)
+            inline WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakSharedPtr (const WeakSharedPtr<T, BASE_SharedPtr_TRAITS>& from)
                 : fRep_ (from)
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakSharedPtr (const SharedPtrType& from)
+            inline WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakSharedPtr (const SharedPtrType& from)
                 : fRep_ (DEBUG_NEW Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS> (from))
             {
             }

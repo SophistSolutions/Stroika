@@ -22,6 +22,10 @@
  *
  *          o   Test  a bit more, and assure reasonably solid.
  *
+ *          o   MEMLEAK
+ *
+ *          o   Test WeakSharedPtr<> mechanism also works with SharedFromThis<> pointers!!!
+ *
  *          o   Docs.
  *
  */
@@ -150,7 +154,7 @@ namespace   Stroika {
             template    <typename T, typename BASE_SharedPtr_TRAITS = SharedPtr_Default_Traits<T>>
         class   WeakCapableSharedPtr : public SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> {
             private:
-                typedef SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> inherited;
+                        typedef SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> inherited;
             public:
                         WeakCapableSharedPtr ();
                         explicit WeakCapableSharedPtr (T* from);

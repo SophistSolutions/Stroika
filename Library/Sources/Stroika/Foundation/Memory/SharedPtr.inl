@@ -64,8 +64,8 @@ namespace   Stroika {
                             : fPtr_ (newP)
                             , fCountHolder_ (from.fCountHolder_) {
                             Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
-                                                                        // actual ptr cannot change, and this assert check automatically converts pointers to
-                                                                        // a common base pointer type
+                            // actual ptr cannot change, and this assert check automatically converts pointers to
+                            // a common base pointer type
                         }
                         inline  T*      GetPtr () const {
                             return fPtr_;
@@ -121,8 +121,8 @@ namespace   Stroika {
                         inline  Envelope_ (const Envelope_<T2>& from, T* newP)
                             : fPtr_ (newP) {
                             Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
-                                                                        // actual ptr cannot change, and this assert check automatically converts pointers to
-                                                                        // a common base pointer type
+                            // actual ptr cannot change, and this assert check automatically converts pointers to
+                            // a common base pointer type
                         }
                         T*  GetPtr () const {
                             return fPtr_;
