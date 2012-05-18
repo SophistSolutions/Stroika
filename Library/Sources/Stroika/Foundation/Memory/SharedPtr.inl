@@ -22,11 +22,11 @@ namespace   Stroika {
             /*
              * IMPLEMENTATION NOTES:
              *
-             *      We have Decrement() return a boolean and if it returns true to delete in the caller because otehrwise the PRIVATE
-             *  stuff (if you use SharedRep<> of a private type) - generates erorrs. At least it causes problems on Visual Studio.Net 2010.
-             *  I'm not sure if this is MY bug or a compiler  bug. Anyhow - this is fine for now...
+             *      We have Decrement() return a boolean and if it returns true to delete in the
+             *  caller because otehrwise the PRIVATE stuff (if you use SharedRep<> of a private type) -
+             *  generates erorrs. At least it causes problems on Visual Studio.Net 2010. I'm not
+             *  sure if this is MY bug or a compiler  bug. Anyhow - this is fine for now...
              *          -- LGP 2012-05-15
-             *
              */
 
 
@@ -349,7 +349,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            typename    const T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const
+            const typename T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const
             {
                 return fEnvelope_;
             }
@@ -361,8 +361,8 @@ namespace   Stroika {
 
             //  class   enable_shared_from_this<T>
             template    <typename   T>
-            inline  enable_shared_from_this<T>::enable_shared_from_this ():
-                fCount_ (0)
+            inline  enable_shared_from_this<T>::enable_shared_from_this ()
+                : fCount_ (0)
             {
             }
             template    <typename   T>

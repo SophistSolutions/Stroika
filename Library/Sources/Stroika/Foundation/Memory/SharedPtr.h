@@ -369,7 +369,7 @@ namespace   Stroika {
 
 
             public:
-                        nonvirtual  typename    const T_TRAITS::Envelope& PeekAtEnvelope () const;
+                        nonvirtual  const typename T_TRAITS::Envelope& PeekAtEnvelope () const;
 
             private:
                         typename    T_TRAITS::Envelope  fEnvelope_;
