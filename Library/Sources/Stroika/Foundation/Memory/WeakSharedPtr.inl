@@ -18,8 +18,8 @@ namespace   Stroika {
 
             // class    Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrEnvelope_ (T* ptr, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* countHolder)
-                : BASE_SharedPtr_TRAITS::Envelope (ptr, countHolder)
+            Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrEnvelope_ (T* ptr)
+                : BASE_SharedPtr_TRAITS::Envelope (ptr)
                 , fWeakSharedPtrs ()
             {
             }
@@ -132,28 +132,23 @@ namespace   Stroika {
             // class    WeakCapableSharedPtr<T,BASE_SharedPtr_TRAITS>
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr ()
-                : SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> ()
+                : inherited ()
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (T* from)
-                : SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (from)
-            {
-            }
-            template    <typename T, typename BASE_SharedPtr_TRAITS>
-            inline  WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (T* from, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* useCounter)
-                : SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (from, useCounter)
+                : inherited (from)
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (const WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>& from)
-                : SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (from)
+                : inherited (from)
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             template <typename T2, typename T2_TRAITS>
             inline  WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakCapableSharedPtr (const WeakCapableSharedPtr<T2, T2_TRAITS>& from)
-                : SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (from)
+                : inherited (from)
             {
             }
 

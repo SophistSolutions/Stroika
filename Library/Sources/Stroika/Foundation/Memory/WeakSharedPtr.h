@@ -74,7 +74,7 @@ namespace   Stroika {
                 struct  WeakSharedPtrEnvelope_ : BASE_SharedPtr_TRAITS::Envelope {
                     static  Execution::CriticalSection                  sCriticalSection;
                     list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>   fWeakSharedPtrs;
-                    WeakSharedPtrEnvelope_ (T* ptr, typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* countHolder);
+                    WeakSharedPtrEnvelope_ (T* ptr);
                     template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
                     WeakSharedPtrEnvelope_ (const WeakSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from);
                     bool    Decrement ();
@@ -161,12 +161,11 @@ namespace   Stroika {
              */
             template    <typename T, typename BASE_SharedPtr_TRAITS = SharedPtr_Default_Traits<T>>
         class   WeakCapableSharedPtr : public SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> {
+            private:
+                typedef SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> inherited;
             public:
                         WeakCapableSharedPtr ();
                         explicit WeakCapableSharedPtr (T* from);
-                        explicit WeakCapableSharedPtr (T* from,
-                                typename BASE_SharedPtr_TRAITS::ReferenceCounterContainerType* useCounter
-                                                      );
                         WeakCapableSharedPtr (const WeakCapableSharedPtr<T, BASE_SharedPtr_TRAITS>& from);
                         template <typename T2, typename T2_TRAITS>
                         WeakCapableSharedPtr (const WeakCapableSharedPtr<T2, T2_TRAITS>& from);

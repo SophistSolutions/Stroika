@@ -47,16 +47,21 @@ namespace   Stroika {
                         T*                              fPtr_;
                         ReferenceCounterContainerType_* fCountHolder_;
                     public:
-                        Envelope_ (T* ptr, ReferenceCounterContainerType_* countHolder)
+                        Envelope_ (T* ptr)
                             : fPtr_ (ptr)
-                            , fCountHolder_ (countHolder) {
-                            if (fPtr_ != nullptr and countHolder == nullptr) {
+                            , fCountHolder_ (nullptr) {
+                            if (fPtr_ != nullptr) {
                                 fCountHolder_ = new ReferenceCounterContainerType_ ();
                             }
                         }
                         template <typename T2>
                         inline  Envelope_ (const Envelope_<T2>& from)
                             : fPtr_ (from.GetPtr ())
+                            , fCountHolder_ (from.fCountHolder_) {
+                        }
+                        template <typename T2>
+                        inline  Envelope_ (const Envelope_<T2>& from, T* newP)
+                            : fPtr_ (newP)
                             , fCountHolder_ (from.fCountHolder_) {
                         }
                         inline  T*      GetPtr () const {
@@ -103,14 +108,16 @@ namespace   Stroika {
                     private:
                         T*      fPtr;
                     public:
-                        Envelope_ (T* ptr, T* ptr2)
+                        Envelope_ (T* ptr)
                             : fPtr (ptr) {
-                            // Either they must be the same, or hte ptr2 (counter object) must be null - telling us to make a new one...
-                            Require (ptr == ptr2 or ptr2 == nullptr);
                         }
                         template <typename T2>
                         Envelope_ (const Envelope_<T2>& from)
                             : fPtr (from.fPtr) {
+                        }
+                        template <typename T2>
+                        inline  Envelope_ (const Envelope_<T2>& from, T* newP)
+                            : fPtr_ (newP) {
                         }
                         T*  GetPtr () const {
                             return fPtr;
@@ -152,12 +159,12 @@ namespace   Stroika {
             //  class   SharedPtr<T,T_TRAITS>
             template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr ()
-                : fEnvelope_ (nullptr, nullptr)
+                : fEnvelope_ (nullptr)
             {
             }
             template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr (T* from)
-                : fEnvelope_ (from, nullptr)
+                : fEnvelope_ (from)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
@@ -270,7 +277,7 @@ namespace   Stroika {
             template <typename T2>
             SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast ()
             {
-                return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ()));
+                return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (fEnvelope_, dynamic_cast<T2*> (get ())));
             }
             template    <typename T, typename T_TRAITS>
             inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::CurrentRefCount () const
