@@ -336,7 +336,7 @@ namespace   Stroika {
                         @DESCRIPTION:   <p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
                                     thats a reserved word.</p>
                         */
-                        SharedPtr<T2> Dynamic_Cast ();
+                        nonvirtual  SharedPtr<T2> Dynamic_Cast ();
 
             public:
                         // Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)

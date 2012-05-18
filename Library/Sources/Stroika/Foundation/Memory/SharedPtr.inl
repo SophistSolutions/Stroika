@@ -83,7 +83,6 @@ namespace   Stroika {
                         inline  bool    Decrement () {
                             Require (CurrentRefCount () > 0);
                             if (Execution::AtomicDecrement (&fCountHolder_->fCount) == 0) {
-                                DoDeleteCounter ();
                                 return true;
                             }
                             return false;
@@ -141,7 +140,6 @@ namespace   Stroika {
                         bool    Decrement () {
                             Require (CurrentRefCount () > 0);
                             if (Execution::AtomicDecrement (&fPtr_->fCount_) == 0) {
-                                DoDeleteCounter ();
                                 return true;
                             }
                             return false;
@@ -209,6 +207,7 @@ namespace   Stroika {
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
                     if (fEnvelope_.GetPtr () != nullptr) {
                         if (fEnvelope_.Decrement ()) {
+                            fEnvelope_.DoDeleteCounter ();
                             delete fEnvelope_.GetPtr ();
                             fEnvelope_.SetPtr (nullptr);
                         }
@@ -226,6 +225,7 @@ namespace   Stroika {
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     if (fEnvelope_.Decrement ()) {
+                        fEnvelope_.DoDeleteCounter ();
                         delete fEnvelope_.GetPtr ();
                     }
                 }

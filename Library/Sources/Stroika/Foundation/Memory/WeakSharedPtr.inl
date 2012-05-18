@@ -48,8 +48,9 @@ namespace   Stroika {
                  */
                 // Assert (sCriticalSection.IsLocked ());       -- would do if there was such an API - maybe it should be added?
                 BASE_SharedPtr_TRAITS::Envelope::DoDeleteCounter ();
-                for (typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs.begin (); i != fWeakSharedPtrs.end (); ++i) {
-                    i->fSharedPtrEnvelope = nullptr;
+                for (typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs->begin (); i != fWeakSharedPtrs->end (); ++i) {
+// NOT SURE RIGHT - DOCUMENT ANYHOW
+                    (*i)->fSharedPtrEnvelope.SetPtr (nullptr);
                 }
                 delete fWeakSharedPtrs;
                 fWeakSharedPtrs = nullptr;
