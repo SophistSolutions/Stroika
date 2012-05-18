@@ -63,8 +63,12 @@ namespace	{
 	void	Test3 ()
 		{
 			WeakCapableSharedPtr<int>	t1 (new int ());
-#if 0
+
+
+//Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>  testRep;
+
 			WeakSharedPtr<int>			wt1 (t1);
+#if 0
 			VerifyTestResult (wt1.Lock ().get () == t1.get ());
 #endif
 		}

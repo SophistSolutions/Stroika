@@ -65,30 +65,25 @@ namespace   Stroika {
             // class    Private::WeakSharedPtrRep_<T,BASE_SharedPtr_TRAITS>
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (const SharedPtrType& shared)
-                : fSharedPtrEnvelope (SharedPtrType (shared).PeekAtEnvelope ())
+                : fSharedPtrEnvelope (shared.PeekAtEnvelope ())
             {
 //NOT RIGHT - CANNOT STORE fSharedPtrEnvelope!!!! - SERIOUS BUG!!!! - DESIGN FLAW!!!!
                 Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
-                fSharedPtrEnvelope->fWeakSharedPtrs->push_back (this);
+                fSharedPtrEnvelope.fWeakSharedPtrs->push_back (this);
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::~WeakSharedPtrRep_ ()
             {
                 Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
-                if (fSharedPtrEnvelope != nullptr) {
-                    typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = std::find (fSharedPtrEnvelope->fWeakSharedPtrs->begin (), fSharedPtrEnvelope->fWeakSharedPtrs->end (), this);
-                    Assert (i != fSharedPtrEnvelope->fWeakSharedPtrs->end ());       // cannot be missing without bug or memory corruption
-                    fSharedPtrEnvelope->fWeakSharedPtrs->erase (i);
-                }
+                typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = std::find (fSharedPtrEnvelope.fWeakSharedPtrs->begin (), fSharedPtrEnvelope.fWeakSharedPtrs->end (), this);
+                Assert (i != fSharedPtrEnvelope.fWeakSharedPtrs->end ());       // cannot be missing without bug or memory corruption
+                fSharedPtrEnvelope.fWeakSharedPtrs->erase (i);
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::Lock ()
             {
                 Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
-                if (fSharedPtrEnvelope == nullptr) {
-                    return SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> ();
-                }
-                return SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (*fSharedPtrEnvelope);
+                return SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (fSharedPtrEnvelope);
             }
 
 

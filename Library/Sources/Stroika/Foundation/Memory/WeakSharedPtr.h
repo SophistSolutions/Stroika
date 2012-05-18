@@ -109,7 +109,7 @@ namespace   Stroika {
                     typedef SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   SharedPtrType;
                     WeakSharedPtrRep_ (const SharedPtrType& shared);
                     ~WeakSharedPtrRep_ ();
-                    WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>*    fSharedPtrEnvelope;
+                    WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>    fSharedPtrEnvelope;
                     SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   Lock ();
                 };
             }
