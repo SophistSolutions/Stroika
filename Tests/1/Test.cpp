@@ -60,16 +60,24 @@ namespace	{
 			TTT_SP	t4	=	t1.get()->shared_from_this ();
 			VerifyTestResult (t1.CurrentRefCount () == 4);
 		}
-	void	Test3 ()
+	void	Test3_WeakPtrs ()
 		{
-			WeakCapableSharedPtr<int>	t1 (new int ());
-
-
-//Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>  testRep;
-
-			WeakSharedPtr<int>			wt1 (t1);
+            {
+			    WeakCapableSharedPtr<int>	t1 (new int ());
+			    WeakSharedPtr<int>			wt1 (t1);
+			    VerifyTestResult (wt1.Lock ().get () == t1.get ());
+            }
 #if 0
-			VerifyTestResult (wt1.Lock ().get () == t1.get ());
+// not working yet...
+            {
+			    WeakSharedPtr<int>			wt1;
+                {
+			        WeakCapableSharedPtr<int>	t1 (new int ());
+                    wt1 = WeakSharedPtr<int> (t1);
+			        VerifyTestResult (wt1.Lock ().get () == t1.get ());
+                }
+                VerifyTestResult (wt1.Lock ().get () == nullptr);
+            }
 #endif
 		}
 }
@@ -81,7 +89,7 @@ namespace	{
 		{
 		    Test1 ();
 			Test2 ();
-			Test3 ();
+			Test3_WeakPtrs ();
 		}
 }
 
