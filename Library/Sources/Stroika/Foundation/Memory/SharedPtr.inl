@@ -63,6 +63,9 @@ namespace   Stroika {
                         inline  Envelope_ (const Envelope_<T2>& from, T* newP)
                             : fPtr_ (newP)
                             , fCountHolder_ (from.fCountHolder_) {
+                            Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
+                                                                        // actual ptr cannot change, and this assert check automatically converts pointers to
+                                                                        // a common base pointer type
                         }
                         inline  T*      GetPtr () const {
                             return fPtr_;
@@ -106,35 +109,38 @@ namespace   Stroika {
                     template    <typename   T>
                     class   Envelope_ {
                     private:
-                        T*      fPtr;
+                        T*      fPtr_;
                     public:
                         Envelope_ (T* ptr)
-                            : fPtr (ptr) {
+                            : fPtr_ (ptr) {
                         }
                         template <typename T2>
                         Envelope_ (const Envelope_<T2>& from)
-                            : fPtr (from.fPtr) {
+                            : fPtr_ (from.fPtr_) {
                         }
                         template <typename T2>
                         inline  Envelope_ (const Envelope_<T2>& from, T* newP)
                             : fPtr_ (newP) {
+                            Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
+                                                                        // actual ptr cannot change, and this assert check automatically converts pointers to
+                                                                        // a common base pointer type
                         }
                         T*  GetPtr () const {
-                            return fPtr;
+                            return fPtr_;
                         }
                         void    SetPtr (T* p) {
-                            fPtr = p;
+                            fPtr_ = p;
                         }
                         ReferenceCountType_ CurrentRefCount () const {
-                            return fPtr == nullptr ? 0 : fPtr->fCount_;
+                            return fPtr_ == nullptr ? 0 : fPtr_->fCount_;
                         }
                         void    Increment () {
-                            RequireNotNull (fPtr);
-                            Execution::AtomicIncrement (&fPtr->fCount_);
+                            RequireNotNull (fPtr_);
+                            Execution::AtomicIncrement (&fPtr_->fCount_);
                         }
                         bool    Decrement () {
                             Require (CurrentRefCount () > 0);
-                            if (Execution::AtomicDecrement (&fPtr->fCount_) == 0) {
+                            if (Execution::AtomicDecrement (&fPtr_->fCount_) == 0) {
                                 DoDeleteCounter ();
                                 return true;
                             }
@@ -143,7 +149,7 @@ namespace   Stroika {
                         inline  void    DoDeleteCounter () {
                         }
                         enable_shared_from_this<T>* GetCounterPointer () const {
-                            return fPtr;
+                            return fPtr_;
                         }
                     };
 
