@@ -72,8 +72,8 @@ namespace   Stroika {
                  */
                 template    <typename T, typename BASE_SharedPtr_TRAITS>
                 struct  WeakSharedPtrEnvelope_ : BASE_SharedPtr_TRAITS::Envelope {
-                    static  Execution::CriticalSection                  sCriticalSection;
-                    list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>   fWeakSharedPtrs;
+                    static  Execution::CriticalSection                      sCriticalSection;
+                    list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>*     fWeakSharedPtrs;
                     WeakSharedPtrEnvelope_ (T* ptr);
                     template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
                     WeakSharedPtrEnvelope_ (const WeakSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from);
