@@ -67,8 +67,6 @@ namespace	{
 			    WeakSharedPtr<int>			wt1 (t1);
 			    VerifyTestResult (wt1.Lock ().get () == t1.get ());
             }
-#if 0
-// not working yet...
             {
 			    WeakSharedPtr<int>			wt1;
                 {
@@ -78,7 +76,6 @@ namespace	{
                 }
                 VerifyTestResult (wt1.Lock ().get () == nullptr);
             }
-#endif
 		}
 }
 
