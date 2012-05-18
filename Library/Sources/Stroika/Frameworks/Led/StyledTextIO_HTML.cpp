@@ -40,7 +40,8 @@ namespace   Stroika {
             namespace {
 
 
-                bool    ParseStringToInt_ (const string& s, int* t) {
+                bool    ParseStringToInt_ (const string& s, int* t)
+                {
                     int l   =   0;
                     if (::sscanf (s.c_str (), "%d", &l) < 1) {
                         return false;
@@ -51,14 +52,16 @@ namespace   Stroika {
                     }
                 }
 
-                inline  bool    IsASCIISpace (Led_tChar c) {
+                inline  bool    IsASCIISpace (Led_tChar c)
+                {
                     return isascii (c) and isspace (c);
                 }
 
 
 
 #if     qStaticInitializerOfPairOfStringStringInternalCompilerBug
-                static  vector<pair<string, string> >    _mk_Color_Name_Table () {
+                static  vector<pair<string, string> >    _mk_Color_Name_Table ()
+                {
                     static  pair<string, string> kColorNameTable [] = {
                         pair<string, string> ("black",   "000000"),
                         pair<string, string> ("silver",  "C0C0C0"),
@@ -104,7 +107,8 @@ namespace   Stroika {
 
 
 
-                static  inline  char    NumToHexChar (unsigned i) {
+                static  inline  char    NumToHexChar (unsigned i)
+                {
                     Require (i <= 15);
                     if (i <= 9) {
                         return i + '0';
@@ -113,7 +117,8 @@ namespace   Stroika {
                         return i - 10 + 'a';
                     }
                 }
-                static  inline  unsigned short  HexCharToNum (char c) {
+                static  inline  unsigned short  HexCharToNum (char c)
+                {
                     if (c >= '0' and c <= '9') {
                         return c - '0';
                     }
@@ -127,7 +132,8 @@ namespace   Stroika {
                         return 0;
                     }
                 }
-                static  inline  bool    ParseColorString (string colorStr, Led_Color* color) {
+                static  inline  bool    ParseColorString (string colorStr, Led_Color* color)
+                {
 #if     qStaticInitializerOfPairOfStringStringInternalCompilerBug
                     for (vector<pair<string, string> >::const_iterator i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
                         if (Led_CasedStringsEqual (colorStr, i->first)) {
@@ -169,7 +175,8 @@ namespace   Stroika {
                 fHeadTag (),
                 fStartBodyTag (),
                 fUnknownHeaderTags (),
-                fTitle () {
+                fTitle ()
+            {
             }
 
             HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[]   =    {
@@ -473,7 +480,8 @@ namespace   Stroika {
             const size_t        HTMLInfo::kDefaultEntityRefMapTable_Count   =   NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
 
 
-            int HTMLInfo::HTMLFontSizeToRealFontSize (int size) {
+            int HTMLInfo::HTMLFontSizeToRealFontSize (int size)
+            {
                 size = Led_Min (size, 7);
                 size = Led_Max (size, 1);
                 switch (size) {
@@ -505,7 +513,8 @@ namespace   Stroika {
                 return (12);
             }
 
-            int HTMLInfo::RealFontSizeToHTMLFontSize (int size) {
+            int HTMLInfo::RealFontSizeToHTMLFontSize (int size)
+            {
                 if (size <= 7) {
                     return 1;
                 }
@@ -561,14 +570,16 @@ namespace   Stroika {
                 fTableRowOpen (false),
                 fTableCellOpen (false),
                 fHiddenTextMode (false),
-                fHiddenTextAccumulation () {
+                fHiddenTextAccumulation ()
+            {
                 if (fSaveHTMLInfoInto != nullptr) {
                     *fSaveHTMLInfoInto = HTMLInfo ();   // reset to default values before reading...
                 }
                 fFontStack.push_back (TextImager::GetStaticDefaultFont ());
             }
 
-            void    StyledTextIOReader_HTML::Read () {
+            void    StyledTextIOReader_HTML::Read ()
+            {
                 while (true) {
                     size_t  lastWroteBefore =   GetSrcStream ().current_offset ();
                     switch (ScanTilNextHTMLThingy ()) {
@@ -608,7 +619,8 @@ namespace   Stroika {
                 }
             }
 
-            bool    StyledTextIOReader_HTML::QuickLookAppearsToBeRightFormat () {
+            bool    StyledTextIOReader_HTML::QuickLookAppearsToBeRightFormat ()
+            {
                 SrcStreamSeekSaver  savePos (GetSrcStream ());
 
 Again:
@@ -671,7 +683,8 @@ Again:
                 next call of this function, or til the death of this object. Typically, it is assumed, a static table will be used
                 so the lifetime will be the end of the process.</p>
             */
-            const vector<StyledTextIOReader_HTML::EntityRefMapEntry>&   StyledTextIOReader_HTML::GetEntityRefMapTable () const {
+            const vector<StyledTextIOReader_HTML::EntityRefMapEntry>&   StyledTextIOReader_HTML::GetEntityRefMapTable () const
+            {
                 typedef vector<StyledTextIOReader_HTML::EntityRefMapEntry>  ELTV;
                 static  bool    sFirstTime  =   true;
                 static  ELTV    sResult;
@@ -682,7 +695,8 @@ Again:
                 return sResult;
             }
 
-            StyledTextIOReader_HTML::ThingyType StyledTextIOReader_HTML::ScanTilNextHTMLThingy () {
+            StyledTextIOReader_HTML::ThingyType StyledTextIOReader_HTML::ScanTilNextHTMLThingy ()
+            {
                 try {
                     // Looks like infinite loop but is not - cuz PeekNextChar () at EOF
                     for (char c = PeekNextChar (); ; c = PeekNextChar ()) {
@@ -717,7 +731,8 @@ Again:
                 return (eEOF); // not reached
             }
 
-            void    StyledTextIOReader_HTML::ScanTilAfterHTMLThingy (ThingyType thingy) {
+            void    StyledTextIOReader_HTML::ScanTilAfterHTMLThingy (ThingyType thingy)
+            {
                 Require (thingy != eEOF);
                 switch (thingy) {
                     case    eEntityRef: {
@@ -770,7 +785,8 @@ Again:
                 }
             }
 
-            bool    StyledTextIOReader_HTML::LookingAt (const char* text) const {
+            bool    StyledTextIOReader_HTML::LookingAt (const char* text) const
+            {
                 bool    result  =   true;
                 const char* p = text;
                 for (; *p != '\0';) {
@@ -792,7 +808,8 @@ Again:
                 return result;
             }
 
-            Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text) {
+            Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
+            {
 #if     qWideCharacters
                 Memory::SmallStackBuffer<Led_tChar> wBuf (text.length () + 1);
                 size_t  charsRead   =   0;
@@ -806,7 +823,8 @@ Again:
 #endif
             }
 
-            void    StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bool skipNLCheck) {
+            void    StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bool skipNLCheck)
+            {
                 if (fComingTextIsTitle) {
                     if (fSaveHTMLInfoInto != nullptr) {
                         fSaveHTMLInfoInto->fTitle += Led_tString (text, nBytes);
@@ -858,7 +876,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingy (StyledTextIOReader_HTML::ThingyType thingy, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingy (StyledTextIOReader_HTML::ThingyType thingy, const char* text, size_t nBytes)
+            {
                 switch (thingy) {
                     case    eEntityRef:
                         HandleHTMLThingy_EntityReference (text, nBytes);
@@ -873,7 +892,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text, size_t nBytes)
+            {
                 RequireNotNull (text);
                 Require (nBytes >= 1);
 
@@ -929,7 +949,8 @@ Again:
                 EmitText (MapInputTextToTString (string (text, nBytes)));
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingy_Tag (const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingy_Tag (const char* text, size_t nBytes)
+            {
                 RequireNotNull (text);
 
                 char    tagBuf[1024];
@@ -992,7 +1013,8 @@ Again:
                 else                                            {   HandleHTMLThingyTagUnknown (isStartTag, text, nBytes);  }
             }
 
-            void    StyledTextIOReader_HTML::ExtractHTMLTagIntoTagNameBuf (const char* text, size_t nBytes, char* tagBuf, size_t tagBufSize, bool* isStartTag) {
+            void    StyledTextIOReader_HTML::ExtractHTMLTagIntoTagNameBuf (const char* text, size_t nBytes, char* tagBuf, size_t tagBufSize, bool* isStartTag)
+            {
                 RequireNotNull (text);
                 RequireNotNull (tagBuf);
                 RequireNotNull (isStartTag);
@@ -1027,7 +1049,8 @@ Again:
                 }
             }
 
-            Led_IncrementalFontSpecification    StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes) {
+            Led_IncrementalFontSpecification    StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes)
+            {
                 Led_IncrementalFontSpecification    f;
                 string  fullCSSString (text, text + nBytes);
                 string  itemValue;
@@ -1081,11 +1104,13 @@ Again:
                 return f;
             }
 
-            void    StyledTextIOReader_HTML::ApplyCSSStyleAttributeToCurrentFontStack (const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::ApplyCSSStyleAttributeToCurrentFontStack (const char* text, size_t nBytes)
+            {
                 fFontStack.back ().MergeIn (ExtractFontSpecFromCSSStyleAttribute (text, nBytes));
             }
 
-            void    StyledTextIOReader_HTML::GrabAndApplyCSSStyleFromTagText (const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::GrabAndApplyCSSStyleFromTagText (const char* text, size_t nBytes)
+            {
                 if (nBytes >= 11) { // speed check - smallest tag case would be "<a style=a>"
                     string  tagText (text, nBytes);
                     string  tagValue;
@@ -1095,13 +1120,15 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_BANG_doctype (bool /*start*/, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_BANG_doctype (bool /*start*/, const char* text, size_t nBytes)
+            {
                 if (fSaveHTMLInfoInto != nullptr) {
                     fSaveHTMLInfoInto->fDocTypeTag = string (text, nBytes);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* text, size_t nBytes)
+            {
 #if     qThrowAwayMostUnknownHTMLTags
                 if (start) {
                     string  tagText (text, nBytes);
@@ -1142,7 +1169,8 @@ Again:
 #endif
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_b (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_b (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1151,7 +1179,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_basefont (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_basefont (bool start, const char* text, size_t nBytes)
+            {
                 if (start) {
                     // we don't bother restoring old value for this on a close. Should we keep a stack??? - LGP 961014
                     string  tagText (text, nBytes);
@@ -1167,7 +1196,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_body (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_body (bool start, const char* text, size_t nBytes)
+            {
                 if (start and fSaveHTMLInfoInto != nullptr) {
                     fSaveHTMLInfoInto->fStartBodyTag = string (text, nBytes);
                 }
@@ -1177,14 +1207,16 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_big (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_big (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     SetHTMLFontSize (fHTMLFontSize + 1);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_blockquote (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_blockquote (bool start, const char* text, size_t nBytes)
+            {
                 // NB: This ignores the other attributes, like centering, etc...
 
                 // Probably should add a routine to only force a break UNLESS we just emitted a NL. This is really sloppy.
@@ -1198,7 +1230,8 @@ Again:
                 fNormalizeInputWhitespace = not start;
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_br (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_br (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 // This tag should only HAVE a start version (no </br>).
                 if (start) {
                     if (fComingTextIsTitle or fHiddenTextMode) {
@@ -1210,13 +1243,15 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_code (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_code (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 // by default, handle this same as 'tt' - or 'teletype'
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_comment (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_comment (bool start, const char* text, size_t nBytes)
+            {
                 HandleHTMLThingyTagUnknown (start, text, nBytes);
 
                 // ALSO, should handle NEWLINES in this context. Note this won't work if tags are nested, which
@@ -1224,13 +1259,15 @@ Again:
                 fNormalizeInputWhitespace = not start;
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_dir (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_dir (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 // According to HTML 4.0 spec, these are now deprecated, but should be treated just as a UL, when encountered.
                 HandleHTMLThingyTag_ul (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_div (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_div (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 BasicFontStackOperation (start);
                 if (start) {
@@ -1258,12 +1295,14 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_em (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_em (bool start, const char* text, size_t nBytes)
+            {
                 // by default, handle this same as italics
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_i (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* text, size_t nBytes)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     // try to parse out SIZE= field and/or FACE=
@@ -1334,19 +1373,22 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_head (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_head (bool start, const char* text, size_t nBytes)
+            {
                 if (start and fSaveHTMLInfoInto != nullptr) {
                     fSaveHTMLInfoInto->fHeadTag = string (text, nBytes);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_html (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_html (bool start, const char* text, size_t nBytes)
+            {
                 if (start and fSaveHTMLInfoInto != nullptr) {
                     fSaveHTMLInfoInto->fHTMLTag = string (text, nBytes);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_hr (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_hr (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 // emit it unchanged (since we don't support these), but also emit a line-break as well so
                 // looks more readable
@@ -1362,7 +1404,8 @@ Again:
                 EmitForcedLineBreak ();
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_hN (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_hN (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 if (start) {
                     EmitForcedLineBreak ();
@@ -1409,7 +1452,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_i (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_i (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1418,11 +1462,13 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_img (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_img (bool start, const char* text, size_t nBytes)
+            {
                 HandleHTMLThingyTagUnknown (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_li (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_li (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 BasicFontStackOperation (start);
                 if (start) {
@@ -1435,13 +1481,15 @@ Again:
                 fLIOpen = start;
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_listing (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_listing (bool start, const char* text, size_t nBytes)
+            {
                 // by default, handle this same as 'tt' - or 'teletype'
                 EndParaIfOpen ();
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_ol (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_ol (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 // emit it unchanged (since we don't support these), but also emit a line-break as well so
                 // looks more readable
@@ -1449,7 +1497,8 @@ Again:
                 EmitForcedLineBreak ();
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_p (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_p (bool start, const char* text, size_t nBytes)
+            {
                 if (start) {
                     StartPara ();
                     if (start) {
@@ -1478,7 +1527,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_plaintext (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_plaintext (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 // by default, handle this same as 'tt' - or 'teletype'
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
@@ -1490,7 +1540,8 @@ Again:
                 // ALSO should disable other tag processing, but this ISNT implemented here... LGP 961003
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_pre (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_pre (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 // by default, handle this same as 'tt' - or 'teletype'
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
@@ -1500,32 +1551,37 @@ Again:
                 fNormalizeInputWhitespace = not start;
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_s (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_s (bool start, const char* text, size_t nBytes)
+            {
                 HandleHTMLThingyTag_strike (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_samp (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_samp (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     SetHTMLFontSize (2);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_small (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_small (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     SetHTMLFontSize (fHTMLFontSize - 1);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_span (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_span (bool start, const char* text, size_t nBytes)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     GrabAndApplyCSSStyleFromTagText (text, nBytes);
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_strike (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_strike (bool start, const char* text, size_t nBytes)
+            {
 #if     qWindows
                 BasicFontStackOperation (start);
                 if (start) {
@@ -1540,12 +1596,14 @@ Again:
 #endif
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_strong (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_strong (bool start, const char* text, size_t nBytes)
+            {
                 // by default, handle this same as 'b' - BOLD
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_b (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_sub (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_sub (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1554,7 +1612,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_sup (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_sup (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1563,7 +1622,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_table (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_table (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 GetSinkStream ().Flush ();
                 fLastCharSpace = true;
                 /*
@@ -1605,7 +1665,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_td (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_td (bool start, const char* text, size_t nBytes)
+            {
                 // Ignore td calls if not in a table or row.
                 if (fTableOpenCount > 0 and fTableRowOpen) {
                     GetSinkStream ().Flush ();
@@ -1632,7 +1693,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_th (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_th (bool start, const char* text, size_t nBytes)
+            {
                 // Treat a th as identical to a td element (maybe later force text to bold too)
                 HandleHTMLThingyTag_td (start, text, nBytes);
                 if (start) {
@@ -1641,11 +1703,13 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_title (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_title (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 fComingTextIsTitle = start;
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_tr (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_tr (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 // Ignore (largely) tr calls if not in a table.
                 if (fTableOpenCount > 0) {
                     GetSinkStream ().Flush ();
@@ -1673,7 +1737,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (bool start, const char* text, size_t nBytes)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1683,7 +1748,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_u (bool start, const char* /*text*/, size_t /*nBytes*/) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_u (bool start, const char* /*text*/, size_t /*nBytes*/)
+            {
                 BasicFontStackOperation (start);
                 if (start) {
                     Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1692,7 +1758,8 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_ul (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_ul (bool start, const char* text, size_t nBytes)
+            {
                 EndParaIfOpen ();
                 if (start) {
                     fULNestingCount++;
@@ -1711,17 +1778,20 @@ Again:
                 }
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_var (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_var (bool start, const char* text, size_t nBytes)
+            {
                 // by default, handle this same as 'tt' - or 'teletype'
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_xmp (bool start, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTag_xmp (bool start, const char* text, size_t nBytes)
+            {
                 // by default, handle this same as 'tt' - or 'teletype'
                 StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
             }
 
-            void    StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown (bool /*start*/, const char* text, size_t nBytes) {
+            void    StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown (bool /*start*/, const char* text, size_t nBytes)
+            {
 #if     qThrowAwayMostUnknownHTMLTags
                 Led_Arg_Unused (text);
                 Led_Arg_Unused (nBytes);
@@ -1730,11 +1800,13 @@ Again:
 #endif
             }
 
-            void    StyledTextIOReader_HTML::EmitForcedLineBreak () {
+            void    StyledTextIOReader_HTML::EmitForcedLineBreak ()
+            {
                 EmitText (LED_TCHAR_OF ("\n"), 1, true);
             }
 
-            void    StyledTextIOReader_HTML::BasicFontStackOperation (bool start) {
+            void    StyledTextIOReader_HTML::BasicFontStackOperation (bool start)
+            {
                 if (start) {
                     fFontStack.push_back (fFontStack.back ());
                 }
@@ -1747,7 +1819,8 @@ Again:
                 }
             }
 
-            bool    StyledTextIOReader_HTML::ParseHTMLTagArgOut (const string& tagText, const string& attrName, string* attrValue) {
+            bool    StyledTextIOReader_HTML::ParseHTMLTagArgOut (const string& tagText, const string& attrName, string* attrValue)
+            {
                 /*
                  *  Really primitive, half-assed implementation. But good enuf for my current usage.
                  *      --LGP 961014
@@ -1824,7 +1897,8 @@ Again:
                 return false;
             }
 
-            bool    StyledTextIOReader_HTML::ParseCSSTagArgOut (const string& text, const string& attrName, string* attrValue) {
+            bool    StyledTextIOReader_HTML::ParseCSSTagArgOut (const string& text, const string& attrName, string* attrValue)
+            {
                 size_t  len =   text.length ();
 
                 for (size_t i = 0; i < len; i++) {
@@ -1883,13 +1957,15 @@ Again:
                 return false;
             }
 
-            void    StyledTextIOReader_HTML::StartPara () {
+            void    StyledTextIOReader_HTML::StartPara ()
+            {
                 EndParaIfOpen ();
                 Assert (not fInAPara);
                 fInAPara = true;
             }
 
-            void    StyledTextIOReader_HTML::EndParaIfOpen () {
+            void    StyledTextIOReader_HTML::EndParaIfOpen ()
+            {
                 if (fInAPara) {
                     EmitForcedLineBreak ();
                     fInAPara = false;
@@ -1899,7 +1975,8 @@ Again:
                 Ensure (not fInAPara);
             }
 
-            void    StyledTextIOReader_HTML::SetHTMLFontSize (int to) {
+            void    StyledTextIOReader_HTML::SetHTMLFontSize (int to)
+            {
                 fHTMLFontSize = Led_Min (to, 7);
                 fHTMLFontSize = Led_Max (fHTMLFontSize, 1);
                 Led_FontSpecification   fsp =   fFontStack.back ();
@@ -1917,11 +1994,13 @@ Again:
              ********************************************************************************
              */
 
-            size_t  StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const {
+            size_t  StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const
+            {
                 return GetSrcStream ().current_offset ();
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StyledTextIOWriter_HTML::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const {
+            SimpleEmbeddedObjectStyleMarker*    StyledTextIOWriter_HTML::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
+            {
                 size_t  offset  =   GetCurSrcOffset ();
                 vector<SimpleEmbeddedObjectStyleMarker*>    embeddingsList  =   GetSrcStream ().CollectAllEmbeddingMarkersInRange (offset - 1, offset);
                 Assert (embeddingsList.size () <= 1);   // cuz we gave a range of one, and can only have a single
@@ -1946,10 +2025,12 @@ Again:
                 StyledTextIOWriter (srcStream, sinkStream),
                 fGetHTMLInfoFrom (getHTMLInfoFrom),
                 fStyleRunSummary (),
-                fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ()) {
+                fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ())
+            {
             }
 
-            StyledTextIOWriter_HTML::~StyledTextIOWriter_HTML () {
+            StyledTextIOWriter_HTML::~StyledTextIOWriter_HTML ()
+            {
             }
 
             /*
@@ -1960,7 +2041,8 @@ Again:
                 next call of this function, or til the death of this object. Typically, it is assumed, a static table will be used
                 so the lifetime will be the end of the process.</p>
             */
-            const vector<StyledTextIOWriter_HTML::EntityRefMapEntry>&   StyledTextIOWriter_HTML::GetEntityRefMapTable () const {
+            const vector<StyledTextIOWriter_HTML::EntityRefMapEntry>&   StyledTextIOWriter_HTML::GetEntityRefMapTable () const
+            {
                 static  bool    sFirstTime  =   true;
                 static  vector<StyledTextIOReader_HTML::EntityRefMapEntry>  sResult;
                 if (sFirstTime) {
@@ -1984,7 +2066,8 @@ Again:
                 return sResult;
             }
 
-            void    StyledTextIOWriter_HTML::Write () {
+            void    StyledTextIOWriter_HTML::Write ()
+            {
                 WriterContext   writerContext (*this);
                 WriteHeader (writerContext);
                 WriteBody (writerContext);
@@ -1992,7 +2075,8 @@ Again:
                 write ("\r\n");
             }
 
-            void    StyledTextIOWriter_HTML::WriteHeader (WriterContext& writerContext) {
+            void    StyledTextIOWriter_HTML::WriteHeader (WriterContext& writerContext)
+            {
                 if (fGetHTMLInfoFrom != nullptr and fGetHTMLInfoFrom->fDocTypeTag.length () != 0) {
                     write (fGetHTMLInfoFrom->fDocTypeTag);
                 }
@@ -2030,7 +2114,8 @@ Again:
                 write ("\r\n");
             }
 
-            void    StyledTextIOWriter_HTML::WriteBody (WriterContext& writerContext) {
+            void    StyledTextIOWriter_HTML::WriteBody (WriterContext& writerContext)
+            {
                 AssureStyleRunSummaryBuilt (writerContext);
 
                 if (fGetHTMLInfoFrom == nullptr or fGetHTMLInfoFrom->fStartBodyTag.length () == 0) {
@@ -2046,7 +2131,8 @@ Again:
 
             }
 
-            void    StyledTextIOWriter_HTML::WriteInnerBody (WriterContext& writerContext) {
+            void    StyledTextIOWriter_HTML::WriteInnerBody (WriterContext& writerContext)
+            {
                 AssureStyleRunSummaryBuilt (writerContext);
 
                 write ("\r\n");
@@ -2066,7 +2152,8 @@ Again:
                 write ("\r\n");
             }
 
-            void    StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, Led_tChar c) {
+            void    StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, Led_tChar c)
+            {
                 ListStyle       listStyle   =   eListStyle_None;
                 unsigned char   indentLevel =   0;
                 writerContext.GetSrcStream ().GetListStyleInfo (&listStyle, &indentLevel);
@@ -2234,7 +2321,8 @@ Again:
                         @'StyledTextIOWriter_HTML::WriteInnerBody' to write each cells contents.
                         </p>
             */
-            void    StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table* table) {
+            void    StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table* table)
+            {
                 RequireNotNull (table);
                 write ("\r\n");
 
@@ -2281,7 +2369,8 @@ Again:
                         so that later closing tags will be implicitly closed.</p>
                             <p>See also @'StyledTextIOWriter_HTML::WriteCloseTag'.</p>
             */
-            void    StyledTextIOWriter_HTML::WriteOpenTag (WriterContext& writerContext, const string& tagName, const string& tagExtras) {
+            void    StyledTextIOWriter_HTML::WriteOpenTag (WriterContext& writerContext, const string& tagName, const string& tagExtras)
+            {
                 Require (not tagName.empty ());
                 Require (tagName[0] != '<');        // just the name - not the surrounding brackets...
                 Require (tagName[0] != '/');
@@ -2301,7 +2390,8 @@ Again:
                         Helper in case we saved exact text from input document.</p>
                             <p>See also @'StyledTextIOWriter_HTML::WriteOpenTag'.</p>
             */
-            void    StyledTextIOWriter_HTML::WriteOpenTagSpecial (WriterContext& writerContext, const string& tagName, const string& tagFullText) {
+            void    StyledTextIOWriter_HTML::WriteOpenTagSpecial (WriterContext& writerContext, const string& tagName, const string& tagFullText)
+            {
                 Require (not tagName.empty ());
                 Require (tagName[0] != '<');        // just the name - not the surrounding brackets...
                 Require (tagName[0] != '/');
@@ -2315,7 +2405,8 @@ Again:
                         tags from the tag stack (and emits their closing tag HTML).</p>
                             <p>See also @'StyledTextIOWriter_HTML::WriteOpenTag'.</p>
             */
-            void    StyledTextIOWriter_HTML::WriteCloseTag (WriterContext& writerContext, const string& tagName) {
+            void    StyledTextIOWriter_HTML::WriteCloseTag (WriterContext& writerContext, const string& tagName)
+            {
                 // Walk up the stack and see how many tags need to be closed
                 size_t  countToPop  =   0;
                 for (vector<string>::reverse_iterator i = writerContext.fTagStack.rbegin (); i != writerContext.fTagStack.rend (); ++i) {
@@ -2335,7 +2426,8 @@ Again:
                         handled that way.</p>
                             <p>See also @'StyledTextIOWriter_HTML::WriteOpenTag'.</p>
             */
-            void    StyledTextIOWriter_HTML::WriteOpenCloseTag (WriterContext& /*writerContext*/, const string& tagName, const string& tagExtras) {
+            void    StyledTextIOWriter_HTML::WriteOpenCloseTag (WriterContext& /*writerContext*/, const string& tagName, const string& tagExtras)
+            {
                 Require (not tagName.empty ());
                 Require (tagName[0] != '<');        // just the name - not the surrounding brackets...
                 Require (tagName[0] != '/');
@@ -2354,7 +2446,8 @@ Again:
             @DESCRIPTION:   <p>See if there is an open tag on the stack with the given name.</p>
                             <p>See also @'StyledTextIOWriter_HTML::WriteOpenTag'.</p>
             */
-            bool    StyledTextIOWriter_HTML::IsTagOnStack (WriterContext& writerContext, const string& tagName) {
+            bool    StyledTextIOWriter_HTML::IsTagOnStack (WriterContext& writerContext, const string& tagName)
+            {
                 for (vector<string>::const_iterator i = writerContext.fTagStack.begin (); i != writerContext.fTagStack.end (); ++i) {
                     if (*i == tagName) {    // XML - and our writer - are case sensative
                         return true;
@@ -2363,7 +2456,8 @@ Again:
                 return false;
             }
 
-            static  inline  string  PrintColorString (Led_Color color) {
+            static  inline  string  PrintColorString (Led_Color color)
+            {
                 unsigned    short   red     =   color.GetRed () >> 8;
                 unsigned    short   greeen  =   color.GetGreen () >> 8;
                 unsigned    short   blue    =   color.GetBlue () >> 8;
@@ -2398,7 +2492,8 @@ Again:
                 return result;
             }
 
-            void    StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, bool skipDoingOpenTags) {
+            void    StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, bool skipDoingOpenTags)
+            {
                 // Close off old
                 bool    fontTagChanged  =   newOne.GetFontName () != writerContext.fLastEmittedISR.GetFontName () or newOne.GetPointSize () != writerContext.fLastEmittedISR.GetPointSize () or newOne.GetTextColor () != writerContext.fLastEmittedISR.GetTextColor ();
                 if (fontTagChanged and IsTagOnStack (writerContext, "span")) {
@@ -2482,14 +2577,16 @@ Again:
                 }
             }
 
-            void    StyledTextIOWriter_HTML::AssureStyleRunSummaryBuilt (WriterContext& writerContext) {
+            void    StyledTextIOWriter_HTML::AssureStyleRunSummaryBuilt (WriterContext& writerContext)
+            {
                 if (fStyleRunSummary.empty ()) {
                     size_t  totalTextLength =   writerContext.GetSrcStream ().GetTotalTextLength ();
                     fStyleRunSummary = vector<StandardStyledTextImager::InfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
                 }
             }
 
-            string  StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text) {
+            string  StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
+            {
                 // Try to write out non-ascii characters (maybe should only do non- ANSI/ISOLATIN1? chars this way?)
                 // as entities - which are interpreted as UNICODE chars
                 string  result;
@@ -2508,7 +2605,8 @@ Again:
                 return result;
             }
 
-            string  StyledTextIOWriter_HTML::MapOutputTextFromTString (const Led_tString& text) {
+            string  StyledTextIOWriter_HTML::MapOutputTextFromTString (const Led_tString& text)
+            {
 #if     qWideCharacters
                 return MapOutputTextFromWString (text);
 #else

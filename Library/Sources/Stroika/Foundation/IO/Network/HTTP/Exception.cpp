@@ -16,7 +16,8 @@ using   namespace   Stroika::Foundation::IO::Network::HTTP;
 
 
 namespace   {
-    wstring mkCanBeEmptyReason_ (Status status, const wstring& reason) {
+    wstring mkCanBeEmptyReason_ (Status status, const wstring& reason)
+    {
         //http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
         wstring effectiveReason =   reason;
         if (effectiveReason.empty ()) {
@@ -58,7 +59,8 @@ namespace   {
         }
         return effectiveReason;
     }
-    wstring mkReason_ (Status status, const wstring& reason) {
+    wstring mkReason_ (Status status, const wstring& reason)
+    {
         wstring effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
         if (effectiveReason.empty ()) {
             return Format (L"HTTP exception: status %d", status);
@@ -67,7 +69,8 @@ namespace   {
             return effectiveReason;
         }
     }
-    wstring mkExceptionMessage (Status status, const wstring& reason) {
+    wstring mkExceptionMessage (Status status, const wstring& reason)
+    {
         wstring effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
         if (effectiveReason.empty ()) {
             return Format (L"HTTP exception: status %d", status);
@@ -82,14 +85,17 @@ namespace   {
 Exception::Exception (Status status, const wstring& reason)
     : StringException (mkExceptionMessage (status, reason))
     , fStatus_ (status)
-    , fReason_ (reason) {
+    , fReason_ (reason)
+{
 }
 
-wstring Exception::GetReason () const {
+wstring Exception::GetReason () const
+{
     return mkReason_ (fStatus_, fReason_);
 }
 
-wstring Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound) {
+wstring Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
+{
     if (forceAlwaysFound) {
         return mkReason_ (s, wstring ());
     }
@@ -98,7 +104,8 @@ wstring Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound) {
     }
 }
 
-void    Exception::DoThrowIfError (Status status, const wstring& reason) {
+void    Exception::DoThrowIfError (Status status, const wstring& reason)
+{
     if (IsHTTPStatusOK (status)) {
         // OK - ignore
     }
@@ -108,7 +115,8 @@ void    Exception::DoThrowIfError (Status status, const wstring& reason) {
     }
 }
 
-void    Exception::DoThrowIfError (const wstring& status, const wstring& reason) {
+void    Exception::DoThrowIfError (const wstring& status, const wstring& reason)
+{
     // Look for ill-formated, number, but ignore any trailing crap after the first three digits (in case some extension allows 404.3 etc,
     // which I think I've seen someplace)
     wstring ss  =   status;

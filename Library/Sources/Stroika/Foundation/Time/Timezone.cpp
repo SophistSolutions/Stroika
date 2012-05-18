@@ -20,7 +20,8 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
-bool    Time::IsDaylightSavingsTime () {
+bool    Time::IsDaylightSavingsTime ()
+{
     static  bool    sCalledOnce_ = false;
     if (not sCalledOnce_) {
 #pragma warning (push)
@@ -35,7 +36,8 @@ bool    Time::IsDaylightSavingsTime () {
 #pragma warning (pop)
 }
 
-bool    Time::IsDaylightSavingsTime (const DateTime& d) {
+bool    Time::IsDaylightSavingsTime (const DateTime& d)
+{
     struct  tm  asTM    =   d.As<struct tm> ();
     asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
     // THINK this is true - not totally clear - docs on mktime () don't specify unambiguously that this should work...
@@ -50,7 +52,8 @@ bool    Time::IsDaylightSavingsTime (const DateTime& d) {
 
 
 
-time_t  Time::GetLocaltimeToGMTOffset (bool applyDST) {
+time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
+{
 #if     0
     // WRONG - but COULD use this API - but not sure needed
 #if     qPlatform_Windows

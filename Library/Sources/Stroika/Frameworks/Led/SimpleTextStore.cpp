@@ -50,29 +50,34 @@ namespace   Stroika {
                 MarkerOwner*    fOwner;
                 bool            fIsPreRemoved;
             };
-            MarkerOwner*    SimpleTextStoreMarkerHook::GetOwner () const {
+            MarkerOwner*    SimpleTextStoreMarkerHook::GetOwner () const
+            {
                 return fOwner;
             }
 
-            size_t      SimpleTextStoreMarkerHook::GetStart () const {
+            size_t      SimpleTextStoreMarkerHook::GetStart () const
+            {
                 Assert (fStart < 0x8000000);        // a really big number - we don't have enough memory to trigger
                 // this - only point is to test of accidental cast of negnum to
                 // size_t.
                 return fStart;
             }
 
-            size_t          SimpleTextStoreMarkerHook::GetEnd () const {
+            size_t          SimpleTextStoreMarkerHook::GetEnd () const
+            {
                 Assert (fStart < 0x8000000);    // See GetStart/GetEnd
                 Assert (fLength < 0x8000000);   // See GetStart/GetEnd
                 return fStart + fLength;
             }
 
-            size_t          SimpleTextStoreMarkerHook::GetLength () const {
+            size_t          SimpleTextStoreMarkerHook::GetLength () const
+            {
                 Assert (fLength < 0x8000000);   // See GetStart
                 return fLength;
             }
 
-            void            SimpleTextStoreMarkerHook::GetStartEnd (size_t* start, size_t* end)  const {
+            void            SimpleTextStoreMarkerHook::GetStartEnd (size_t* start, size_t* end)  const
+            {
                 Assert (fStart < 0x8000000);    // See GetStart
                 Assert (fLength < 0x8000000);   //     ''
                 RequireNotNull (start);
@@ -85,7 +90,8 @@ namespace   Stroika {
 #if     qStaticInlineFunctionsInDebugModeNoInliningArentTreatedAsStatic
 #define OurStuff    SimpleTextStore_OurStuff
 #endif
-            static  inline  SimpleTextStoreMarkerHook*  OurStuff (const Marker* marker) {
+            static  inline  SimpleTextStoreMarkerHook*  OurStuff (const Marker* marker)
+            {
                 AssertNotNull (marker);
                 AssertNotNull ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook);
                 AssertMember ((SimpleTextStoreMarkerHook*)marker->fTextStoreHook, SimpleTextStoreMarkerHook);
@@ -106,12 +112,14 @@ namespace   Stroika {
                 TextStore (),
                 fLength (0),
                 fBuffer (nullptr),
-                fMarkers () {
+                fMarkers ()
+            {
                 fBuffer = new Led_tChar[0];
                 AssertNotNull (fBuffer);
             }
 
-            SimpleTextStore::~SimpleTextStore () {
+            SimpleTextStore::~SimpleTextStore ()
+            {
                 Require (GetMarkerOwners ().size () == 1);  // Really this should properly be checked in the TextStore::DTOR - and it is.
                 // But if this test fails, other tests within THIS DTOR will likely also fail. And
                 // those can be confusing. This diagnostic should clearly indicate to users that they've
@@ -126,11 +134,13 @@ namespace   Stroika {
             @METHOD:        SimpleTextStore::ConstructNewTextStore
             @DESCRIPTION:   <p>See @'TextStore::ConstructNewTextStore' ().</p>
             */
-            TextStore*  SimpleTextStore::ConstructNewTextStore () const {
+            TextStore*  SimpleTextStore::ConstructNewTextStore () const
+            {
                 return new SimpleTextStore ();
             }
 
-            void    SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw () {
+            void    SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ()
+            {
                 // Note that it IS NOT an error to call CopyOut for multibyte characters and split them. This is one of the few
                 // API routines where that is so...
                 RequireNotNull (buffer);
@@ -139,7 +149,8 @@ namespace   Stroika {
                 (void)::memcpy (buffer, &fBuffer[from], count * sizeof (Led_tChar));
             }
 
-            void    SimpleTextStore::ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) {
+            void    SimpleTextStore::ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)
+            {
                 Assert (from <= to);
 #if     qMultiByteCharacters
                 Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
@@ -162,7 +173,8 @@ namespace   Stroika {
                 Invariant ();
             }
 
-            void    SimpleTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany, size_t after) {
+            void    SimpleTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany, size_t after)
+            {
                 Invariant ();
                 size_t  newBufSize  =   howMany + fLength;
                 Led_tChar*  newBuf      =   new Led_tChar [newBufSize];
@@ -195,7 +207,8 @@ namespace   Stroika {
                 Invariant ();
             }
 
-            void    SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after) {
+            void    SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
+            {
                 Assert (after >= 0);
                 Assert (howMany + after <= fLength);
                 Invariant ();
@@ -247,7 +260,8 @@ namespace   Stroika {
                 Invariant ();
             }
 
-            void    SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner) {
+            void    SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner)
+            {
                 RequireNotNull (marker);
                 RequireNotNull (owner);
 #if     !qVirtualBaseMixinCallDuringCTORBug
@@ -285,7 +299,8 @@ namespace   Stroika {
                 Invariant ();
             }
 
-            void    SimpleTextStore::RemoveMarkers (Marker* const markerArray[], size_t markerCount) {
+            void    SimpleTextStore::RemoveMarkers (Marker* const markerArray[], size_t markerCount)
+            {
                 Assert (markerCount == 0 or markerArray != nullptr);
                 for (size_t i = 0; i < markerCount; i++) {
                     Marker* marker  =   markerArray [i];
@@ -309,13 +324,15 @@ namespace   Stroika {
                 }
             }
 
-            void    SimpleTextStore::PreRemoveMarker (Marker* marker) {
+            void    SimpleTextStore::PreRemoveMarker (Marker* marker)
+            {
                 RequireNotNull (marker);
                 Require (not OurStuff (marker)->fIsPreRemoved);
                 OurStuff (marker)->fIsPreRemoved = true;
             }
 
-            void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) throw () {
+            void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) throw ()
+            {
                 Assert (start >= 0);
                 Assert (end >= 0);
                 Assert (start <= end);
@@ -333,7 +350,8 @@ namespace   Stroika {
                 }
             }
 
-            void    SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const {
+            void    SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
+            {
                 RequireNotNull (owner); // though it can be TextStore::kAnyMarkerOwner.
                 for (vector<Marker*>::const_iterator i = fMarkers.begin (); i != fMarkers.end (); i++) {
                     Marker* m   =   *i;
@@ -349,7 +367,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    SimpleTextStore::Invariant_ () const {
+            void    SimpleTextStore::Invariant_ () const
+            {
                 TextStore::Invariant_ ();
                 for (size_t i = 0; i < fMarkers.size (); i++) {
                     Marker* mi  =   fMarkers[i];

@@ -95,7 +95,8 @@ namespace   {
 
     Byte    sAllocatorBuf_[sizeof (_USE_ALLOCATOR_)];       // BSS until intiailized in Memory::Private::INIT::INIT ()
 
-    inline  _USE_ALLOCATOR_&    GetAllocator_ () {
+    inline  _USE_ALLOCATOR_&    GetAllocator_ ()
+    {
         return *reinterpret_cast<_USE_ALLOCATOR_*> (&sAllocatorBuf_);
     }
 }
@@ -110,14 +111,16 @@ namespace   {
  *************************** Memory::Private::INIT ******************************
  ********************************************************************************
  */
-Memory::Private::INIT::INIT () {
+Memory::Private::INIT::INIT ()
+{
 #if     qOverrideOpNewDeleteForAccounting
     sInitialized  = true;
     new (&sAllocatorBuf_) _USE_ALLOCATOR_ ();
 #endif
 }
 
-Memory::Private::INIT::~INIT () {
+Memory::Private::INIT::~INIT ()
+{
 #if     qOverrideOpNewDeleteForAccounting
     sInitialized = false;
 #if     qOverrideOpNew_EXTRA_LEAK_DETECTION
@@ -141,14 +144,16 @@ Memory::Private::INIT::~INIT () {
  */
 #pragma warning (push)
 #pragma warning (4: 4290)
-void*   operator new (size_t size) throw (std::bad_alloc) {
+void*   operator new (size_t size) throw (std::bad_alloc)
+{
     // not perfrect - cuz doesn't call 'new handler' and if uninitialized - doesn't do null-->bad_alloc () mapping,
     // but should be VERY RARELY called uninitilized (just very early in app startup).
     //  -- LGP 2009-05-29
     return sInitialized ? GetAllocator_ ().Allocate (size) : malloc (size);
 }
 
-void*   operator new[] (size_t size) throw (std::bad_alloc) {
+void*   operator new[] (size_t size) throw (std::bad_alloc)
+{
     // not perfrect - cuz doesn't call 'new handler' and if uninitialized - doesn't do null-->bad_alloc () mapping,
     // but should be VERY RARELY called uninitilized (just very early in app startup).
     //  -- LGP 2009-05-29
@@ -156,7 +161,8 @@ void*   operator new[] (size_t size) throw (std::bad_alloc) {
 }
 #pragma warning (pop)
 
-void    operator delete (void* pUserData) {
+void    operator delete (void* pUserData)
+{
     if (pUserData != nullptr) {
         if (sInitialized) {
             GetAllocator_ ().Deallocate (pUserData);
@@ -167,7 +173,8 @@ void    operator delete (void* pUserData) {
     }
 }
 
-void    operator delete[] (void* pUserData) {
+void    operator delete[] (void* pUserData)
+{
     if (pUserData != nullptr) {
         if (sInitialized) {
             GetAllocator_ ().Deallocate (pUserData);
@@ -190,7 +197,8 @@ void    operator delete[] (void* pUserData) {
  ******************* Memory::GetGlobalAllocationStatistics **********************
  ********************************************************************************
  */
-Memory::GlobalAllocationStatistics  Memory::GetGlobalAllocationStatistics () {
+Memory::GlobalAllocationStatistics  Memory::GetGlobalAllocationStatistics ()
+{
     GlobalAllocationStatistics  s;
 #if     qPlatform_Windows
     HANDLE  hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
@@ -244,7 +252,8 @@ namespace   {
     _CrtMemState    sLastSnapshot;
 }
 #endif
-void    Memory::LeakChecker::ForceCheckpoint () {
+void    Memory::LeakChecker::ForceCheckpoint ()
+{
 #if     qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
     sLastSnapshot = GetAllocator_ ().GetSnapshot ();
 #elif   qMSVisualStudioCRTMemoryDebug
@@ -254,7 +263,8 @@ void    Memory::LeakChecker::ForceCheckpoint () {
 #endif
 }
 
-void    Memory::LeakChecker::DumpLeaksSinceLastCheckpoint () {
+void    Memory::LeakChecker::DumpLeaksSinceLastCheckpoint ()
+{
     TraceContextBumper  ctx (TSTR ("LeakChecker::DumpLeaksSinceLastCheckpoint"));
 #if     qOverrideOpNewDeleteForAccounting && qOverrideOpNew_EXTRA_LEAK_DETECTION
     GetAllocator_ ().DUMPCurMemStats (sLastSnapshot);

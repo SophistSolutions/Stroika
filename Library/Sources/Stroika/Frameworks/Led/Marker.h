@@ -439,9 +439,11 @@ namespace   Stroika {
              */
 //  class   MarkerOwner;
             inline  MarkerOwner::MarkerOwner ():
-                fTextStoreHook (nullptr) {
+                fTextStoreHook (nullptr)
+            {
             }
-            inline  MarkerOwner::~MarkerOwner () {
+            inline  MarkerOwner::~MarkerOwner ()
+            {
             }
             /*
             @METHOD:        MarkerOwner::GetTextStore
@@ -449,7 +451,8 @@ namespace   Stroika {
                 PeekAtTextStore () didn't return nullptr, and then returns its result dereferences. Use this for
                 clarity sake when you are sure the markerowner must have an associated TextStore.</p>
             */
-            inline  TextStore&  MarkerOwner::GetTextStore () const {
+            inline  TextStore&  MarkerOwner::GetTextStore () const
+            {
                 TextStore*  ts  =   PeekAtTextStore ();
                 EnsureNotNull (ts);
                 return *ts;
@@ -459,7 +462,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>This method is called by a TextStore when text is being updated for all registered MarkerOwners
                 (see @'TextStore::AddMarkerOwner'). You can throw an exception to prevent text from being updated.</p>
             */
-            inline  void    MarkerOwner::AboutToUpdateText (const UpdateInfo& /*updateInfo*/) {
+            inline  void    MarkerOwner::AboutToUpdateText (const UpdateInfo& /*updateInfo*/)
+            {
             }
             /*
             @METHOD:        MarkerOwner::EarlyDidUpdateText
@@ -468,7 +472,8 @@ namespace   Stroika {
                 in some rare cases - you can tell if your getting a callback between your AboutToUpdate() call and your DidUpdateText () call - so you can
                 tell if the text is truely updated yet.</p>
             */
-            inline  void    MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) throw () {
+            inline  void    MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) throw ()
+            {
             }
             /*
             @METHOD:        MarkerOwner::DidUpdateText
@@ -476,7 +481,8 @@ namespace   Stroika {
                 some appropriate data structures based on the change. NB: an exception <em>cannot</em> be raised by this method, or
                 any overrides of it.</p>
             */
-            inline  void    MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) throw () {
+            inline  void    MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) throw ()
+            {
             }
 
 
@@ -485,9 +491,11 @@ namespace   Stroika {
 
 //  class   Marker;
             inline  Marker::Marker ():
-                fTextStoreHook (nullptr) {
+                fTextStoreHook (nullptr)
+            {
             }
-            inline  Marker::~Marker () {
+            inline  Marker::~Marker ()
+            {
             }
             /*
             @METHOD:        Marker::AboutToUpdateText
@@ -495,7 +503,8 @@ namespace   Stroika {
                 if you want todo something special when the text marked by this particular marker is changed. You can throw
                 from this method to prevent the update from actually taking place.</p>
             */
-            inline  void    Marker::AboutToUpdateText (const UpdateInfo& /*updateInfo*/) {
+            inline  void    Marker::AboutToUpdateText (const UpdateInfo& /*updateInfo*/)
+            {
             }
             /*
             @METHOD:        Marker::DidUpdateText
@@ -504,7 +513,8 @@ namespace   Stroika {
                 from this routine. Use @'Marker::AboutToUpdateText' to preflight, and assure any DidUpdateText method calls will
                 work without a hitch.</p>
             */
-            inline  void    Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/)    throw () {
+            inline  void    Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/)    throw ()
+            {
             }
             /*
             @METHOD:        Marker::GetStart
@@ -512,7 +522,8 @@ namespace   Stroika {
                     <p>It is illegal to call this
                 if the marker is not currently added to a @'TextStore'.</p>
             */
-            inline  size_t  Marker::GetStart () const {
+            inline  size_t  Marker::GetStart () const
+            {
                 AssertNotNull (fTextStoreHook);
                 return (fTextStoreHook->GetStart ());
             }
@@ -522,7 +533,8 @@ namespace   Stroika {
                     <p>It is illegal to call this
                 if the marker is not currently added to a @'TextStore'.</p>
             */
-            inline  size_t  Marker::GetEnd () const {
+            inline  size_t  Marker::GetEnd () const
+            {
                 AssertNotNull (fTextStoreHook);
                 return (fTextStoreHook->GetEnd ());
             }
@@ -531,7 +543,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Return the length - in @'Led_tChar's - of the marker span. This value can be zero. But if it
                 ever goes to zero, Led will never re-inflate the marker. You must reset its bounds manually via @'Marker::SetRange' ().</p>
             */
-            inline  size_t  Marker::GetLength () const {
+            inline  size_t  Marker::GetLength () const
+            {
                 AssertNotNull (fTextStoreHook);
                 return (fTextStoreHook->GetLength ());
             }
@@ -541,7 +554,8 @@ namespace   Stroika {
                 marker hasn't yet been added to a @'TextStore'. It just returns nullptr in that case. Note, it can return nullptr anyhow,
                 as that is a valid value to specify in @'TextStore::AddMarker' ().</p>
             */
-            inline  MarkerOwner*    Marker::GetOwner () const {
+            inline  MarkerOwner*    Marker::GetOwner () const
+            {
                 // fTextStoreHook CAN be nullptr here if we don't yet have a marker owner!
                 return (fTextStoreHook == nullptr ? nullptr : fTextStoreHook->GetOwner ());
             }
@@ -550,7 +564,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Return the start and end position of the marker. You must set its bounds
                 via @'Marker::SetRange' ().</p>
             */
-            inline  void    Marker::GetRange (size_t* start, size_t* end) const {
+            inline  void    Marker::GetRange (size_t* start, size_t* end) const
+            {
                 RequireNotNull (start);
                 RequireNotNull (end);
                 RequireNotNull (fTextStoreHook);
@@ -561,9 +576,11 @@ namespace   Stroika {
 
 
 //  class   MarkerOwner::HookData;
-            inline  MarkerOwner::HookData::HookData () {
+            inline  MarkerOwner::HookData::HookData ()
+            {
             }
-            inline  MarkerOwner::HookData::~HookData () {
+            inline  MarkerOwner::HookData::~HookData ()
+            {
             }
 
 
@@ -576,9 +593,11 @@ namespace   Stroika {
                 fTextInserted (withWhat),
                 fTextLength (withWhatCharCount),
                 fTextModified (textModified),
-                fRealContentUpdate (realContentUpdate) {
+                fRealContentUpdate (realContentUpdate)
+            {
             }
-            inline  size_t  MarkerOwner::UpdateInfo::GetResultingRHS () const {
+            inline  size_t  MarkerOwner::UpdateInfo::GetResultingRHS () const
+            {
                 return fTextModified ? (fReplaceFrom + fTextLength) : fReplaceTo;
             }
 
@@ -587,9 +606,11 @@ namespace   Stroika {
 
 
 //  class   Marker::HookData;
-            inline  Marker::HookData::HookData () {
+            inline  Marker::HookData::HookData ()
+            {
             }
-            inline  Marker::HookData::~HookData () {
+            inline  Marker::HookData::~HookData ()
+            {
             }
 
 
@@ -602,10 +623,12 @@ namespace   Stroika {
 //  class   MarkerMortuary<MARKER>;
             template    <typename   MARKER>
             inline  MarkerMortuary<MARKER>::MarkerMortuary ():
-                fMarkersToBeDeleted () {
+                fMarkersToBeDeleted ()
+            {
             }
             template    <typename   MARKER>
-            inline  MarkerMortuary<MARKER>::~MarkerMortuary () {
+            inline  MarkerMortuary<MARKER>::~MarkerMortuary ()
+            {
                 Assert (fMarkersToBeDeleted.size () == 0);      // these better be deleted by now!
             }
             template    <typename   MARKER>
@@ -623,7 +646,8 @@ namespace   Stroika {
                     <p>NB:  It is illegal to accumulate a marker for deletion twice (detected error). And greatly
                 discouraged using it afterwards.</p>
             */
-            inline  void    MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m) {
+            inline  void    MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m)
+            {
                 RequireNotNull (m);
                 Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
 #if     qDebug
@@ -648,7 +672,8 @@ namespace   Stroika {
             @METHOD:        MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion
             @DESCRIPTION:   <p>Like @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion', but its OK to add a marker more than once.</p>
             */
-            void    MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m) {
+            void    MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m)
+            {
                 RequireNotNull (m);
                 if (IndexOf (fMarkersToBeDeleted, m) == kBadIndex) {
                     AccumulateMarkerForDeletion (m);
@@ -660,7 +685,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Call anytime, but preferably after we've finished doing a bunch of marker deletions.
                 See @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' for more information.</p>
             */
-            void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () throw () {
+            void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () throw ()
+            {
                 if (fMarkersToBeDeleted.size () != 0) {
                     MarkerOwner*    owner       =   static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
                     AssertNotNull (owner);
@@ -682,7 +708,8 @@ namespace   Stroika {
             @METHOD:        MarkerMortuary<MARKER>::IsEmpty
             @DESCRIPTION:   <p>Mostly used for assertions. Checks all accumulated markers have been finalized.</p>
             */
-            inline  bool    MarkerMortuary<MARKER>::IsEmpty () const throw () {
+            inline  bool    MarkerMortuary<MARKER>::IsEmpty () const throw ()
+            {
                 return fMarkersToBeDeleted.size () == 0;
             }
 
@@ -698,7 +725,8 @@ namespace   Stroika {
                         is considered legitimate containment if the marker start positions are equal, but <em>not</em>
                         if the marker end positions are equal</p>
             */
-            inline  bool    Contains (const Marker& containedMarker, const Marker& containerMarker) {
+            inline  bool    Contains (const Marker& containedMarker, const Marker& containerMarker)
+            {
                 size_t  containerStart;
                 size_t  containerEnd;
                 containerMarker.GetRange (&containerStart, &containerEnd);
@@ -708,20 +736,23 @@ namespace   Stroika {
                 containedMarker.GetRange (&containedStart, &containedEnd);
                 return ( (containedStart >= containerStart) and (containerEnd >= containedEnd) );
             }
-            inline  bool    Contains (size_t containedMarkerStart, size_t containedMarkerEnd, const Marker& containerMarker) {
+            inline  bool    Contains (size_t containedMarkerStart, size_t containedMarkerEnd, const Marker& containerMarker)
+            {
                 Assert (containedMarkerStart <= containedMarkerEnd);
                 size_t  containerStart;
                 size_t  containerEnd;
                 containerMarker.GetRange (&containerStart, &containerEnd);
                 return ( (containedMarkerStart >= containerStart) and (containerEnd >= containedMarkerEnd) );
             }
-            inline  bool    Contains (const Marker& marker, size_t charPos) {
+            inline  bool    Contains (const Marker& marker, size_t charPos)
+            {
                 size_t  start;
                 size_t  end;
                 marker.GetRange (&start, &end);
                 return (charPos >= start and charPos < end);
             }
-            inline  bool    Contains (size_t containedMarkerStart, size_t containedMarkerEnd, size_t charPos) {
+            inline  bool    Contains (size_t containedMarkerStart, size_t containedMarkerEnd, size_t charPos)
+            {
                 return (charPos >= containedMarkerStart and charPos < containedMarkerEnd);
             }
 
@@ -730,16 +761,20 @@ namespace   Stroika {
 
 
 //  class   TempMarker
-            inline  size_t  TempMarker::GetStart () const {
+            inline  size_t  TempMarker::GetStart () const
+            {
                 return fMarker.GetStart ();
             }
-            inline  size_t  TempMarker::GetEnd () const {
+            inline  size_t  TempMarker::GetEnd () const
+            {
                 return fMarker.GetEnd ();
             }
-            inline  size_t  TempMarker::GetLength () const {
+            inline  size_t  TempMarker::GetLength () const
+            {
                 return fMarker.GetLength ();
             }
-            inline  void    TempMarker::GetLocation (size_t* start, size_t* end) const {
+            inline  void    TempMarker::GetLocation (size_t* start, size_t* end) const
+            {
                 fMarker.GetRange (start, end);
             }
 
@@ -753,7 +788,8 @@ namespace   Stroika {
             TemporaryMarkerSlideDown<MARKER>::TemporaryMarkerSlideDown (TextStore& ts, const vector<MARKER*>& m, ptrdiff_t slideBy):
                 fTextStore (ts),
                 fMarkers (m),
-                fSlideBy (slideBy) {
+                fSlideBy (slideBy)
+            {
                 for (typename vector<MARKER*>::iterator i = fMarkers.begin (); i != fMarkers.end (); ++i) {
                     size_t  start   =   0;
                     size_t  end     =   0;
@@ -762,7 +798,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER>
-            TemporaryMarkerSlideDown<MARKER>::~TemporaryMarkerSlideDown () {
+            TemporaryMarkerSlideDown<MARKER>::~TemporaryMarkerSlideDown ()
+            {
                 for (typename vector<MARKER*>::iterator i = fMarkers.begin (); i != fMarkers.end (); ++i) {
                     size_t  start   =   0;
                     size_t  end     =   0;

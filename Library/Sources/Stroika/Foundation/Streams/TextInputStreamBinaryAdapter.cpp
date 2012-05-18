@@ -24,10 +24,12 @@ using   namespace   Stroika::Foundation::Streams;
  ********************************************************************************
  */
 TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (BinaryInputStream& src)
-    : fSource_ (src) {
+    : fSource_ (src)
+{
 }
 
-size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* intoEnd) override {
+size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* intoEnd) override
+{
     Memory::SmallStackBuffer<Byte>  buf (intoEnd - intoStart);
     size_t  n   =   fSource_.Read (buf.begin (), buf.end ());
     size_t  outN    =   0;
@@ -39,11 +41,13 @@ size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* in
     return outN;
 }
 
-Streams::SeekOffsetType TextInputStreamBinaryAdapter::_GetOffset () const override {
+Streams::SeekOffsetType TextInputStreamBinaryAdapter::_GetOffset () const override
+{
     AssertNotImplemented ();
     return 0;
 }
 
-void    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override {
+void    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
     AssertNotImplemented ();
 }

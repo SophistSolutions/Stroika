@@ -56,7 +56,8 @@ using   namespace   Stroika::Foundation::IO;
  ********************** iostream::OpenInputFileStream ***************************
  ********************************************************************************
  */
-ifstream&   Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode mode) {
+ifstream&   Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode mode)
+{
     RequireNotNull (ifStream);
     try {
         ifStream->open (fileName.c_str (), mode | ios_base::in);
@@ -75,7 +76,8 @@ ifstream&   Streams::iostream::OpenInputFileStream (ifstream* ifStream, const TS
     CATCH_REBIND_FILENAMES_HELPER_(fileName);
 }
 
-ifstream&   Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const TString& fileName, ios_base::openmode mode) {
+ifstream&   Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const TString& fileName, ios_base::openmode mode)
+{
     OpenInputFileStream (&tmpIFStream, fileName, mode);
     return tmpIFStream;
 }
@@ -91,7 +93,8 @@ ifstream&   Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const
  ****************** StreamUtils::OpenOutputFileStream ***************************
  ********************************************************************************
  */
-ofstream&   Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode mode) {
+ofstream&   Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode mode)
+{
     RequireNotNull (ofStream);
     try {
         ofStream->open (fileName.c_str (), mode | ios_base::out);
@@ -110,7 +113,8 @@ ofstream&   Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const T
     CATCH_REBIND_FILENAMES_HELPER_(fileName);
 }
 
-ofstream&   Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const TString& fileName, ios_base::openmode mode) {
+ofstream&   Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const TString& fileName, ios_base::openmode mode)
+{
     OpenOutputFileStream (&tmpOfStream, fileName, mode);
     return tmpOfStream;
 }

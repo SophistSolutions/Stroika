@@ -16,11 +16,14 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            inline  BinaryOutputStream::BinaryOutputStream () {
+            inline  BinaryOutputStream::BinaryOutputStream ()
+            {
             }
-            inline  BinaryOutputStream::~BinaryOutputStream () {
+            inline  BinaryOutputStream::~BinaryOutputStream ()
+            {
             }
-            inline  void    BinaryOutputStream::Write (const Byte* start, const Byte* end) {
+            inline  void    BinaryOutputStream::Write (const Byte* start, const Byte* end)
+            {
                 RequireNotNull (start);
                 Require ((end - start) >= 1);
                 _Write (start, end);

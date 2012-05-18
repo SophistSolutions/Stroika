@@ -19,39 +19,49 @@ namespace   Stroika {
 
             //  class   InternetMediaType
             inline  InternetMediaType::InternetMediaType (const String& ct)
-                : fType_ (ct) {
+                : fType_ (ct)
+            {
             }
-            inline  bool InternetMediaType::empty () const {
+            inline  bool InternetMediaType::empty () const
+            {
                 return fType_.empty ();
             }
-            inline  void InternetMediaType::clear () {
+            inline  void InternetMediaType::clear ()
+            {
                 fType_.clear ();
             }
-            inline  bool    InternetMediaType::IsA (const InternetMediaType& moreGeneralType) const {
+            inline  bool    InternetMediaType::IsA (const InternetMediaType& moreGeneralType) const
+            {
                 return IsSubTypeOfOrEqualTo (*this, moreGeneralType);
             }
-            inline  bool InternetMediaType::operator< (const InternetMediaType& rhs) const {
+            inline  bool InternetMediaType::operator< (const InternetMediaType& rhs) const
+            {
                 return fType_ < rhs.fType_;
             }
-            inline  bool InternetMediaType::operator== (const InternetMediaType& rhs) const {
+            inline  bool InternetMediaType::operator== (const InternetMediaType& rhs) const
+            {
                 return fType_ == rhs.fType_;
             }
-            inline  bool InternetMediaType::operator!= (const InternetMediaType& rhs) const {
+            inline  bool InternetMediaType::operator!= (const InternetMediaType& rhs) const
+            {
                 return fType_ != rhs.fType_;
             }
 
             template    <>
-            inline  String  InternetMediaType::As () const {
+            inline  String  InternetMediaType::As () const
+            {
                 return fType_;
             }
             template    <>
-            inline  wstring InternetMediaType::As () const {
+            inline  wstring InternetMediaType::As () const
+            {
                 return fType_.As<wstring> ();
             }
 
 
             template    <typename CONTAINER>
-            bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny) {
+            bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny)
+            {
                 for (typename CONTAINER::const_iterator i = types.begin (); i != types.end (); ++i) {
                     if (i->IsA (type2SeeIfMatchesAny)) {
                         return true;

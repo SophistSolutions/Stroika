@@ -115,7 +115,8 @@ namespace   Stroika {
 
 #if     qTestMyWriteMemoizedUniscribeDirFunction || qBuildMemoizedBiDiLevelProc
             namespace {
-                InitialUNISCRIBEDir GetInitialUNISCRIBEDir (wchar_t c) {
+                InitialUNISCRIBEDir GetInitialUNISCRIBEDir (wchar_t c)
+                {
                     FriBidiCharType ct  =   fribidi_get_type (c);
                     if (FRIBIDI_IS_LETTER (ct)) {
                         if (FRIBIDI_DIR_TO_LEVEL (ct) & 1) {
@@ -137,7 +138,8 @@ namespace   Stroika {
 #if     qBuildMemoizedBiDiLevelProc
             namespace {
                 template    <class FUNCTION>
-                void    WriteMemoizedUniscribeDirProc (FUNCTION function, const string& origFunctionName, const string& functionName) {
+                void    WriteMemoizedUniscribeDirProc (FUNCTION function, const string& origFunctionName, const string& functionName)
+                {
                     ofstream    outStream ("IsXXXProc.txt");
 
                     outStream << "/*\n";
@@ -271,17 +273,20 @@ namespace   Stroika {
              ******************************** TextLayoutBlock *******************************
              ********************************************************************************
              */
-            TextLayoutBlock::TextLayoutBlock () {
+            TextLayoutBlock::TextLayoutBlock ()
+            {
             }
 
-            TextLayoutBlock::~TextLayoutBlock () {
+            TextLayoutBlock::~TextLayoutBlock ()
+            {
             }
 
             /*
             @METHOD:        TextLayoutBlock::GetCharacterDirection
             @DESCRIPTION:
             */
-            TextDirection   TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) const {
+            TextDirection   TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) const
+            {
                 vector<ScriptRunElt>    runs        =   GetScriptRuns ();
                 for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
                     if ((*i).fRealStart <= realCharOffset and realCharOffset < (*i).fRealEnd) {
@@ -296,7 +301,8 @@ namespace   Stroika {
             @METHOD:        TextLayoutBlock::MapRealOffsetToVirtual
             @DESCRIPTION:
             */
-            size_t  TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const {
+            size_t  TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const
+            {
                 Assert (false); //NYI
                 return 0;
             }
@@ -305,7 +311,8 @@ namespace   Stroika {
             @METHOD:        TextLayoutBlock::MapVirtualOffsetToReal
             @DESCRIPTION:
             */
-            size_t  TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const {
+            size_t  TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const
+            {
                 Require (i < GetTextLength ());
                 vector<ScriptRunElt>    runs        =   GetScriptRuns ();
                 for (vector<ScriptRunElt>::const_iterator runIt = runs.begin (); runIt != runs.end (); ++runIt) {
@@ -328,21 +335,24 @@ namespace   Stroika {
                 return 0;
             }
 
-            void    TextLayoutBlock::CopyOutRealText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const {
+            void    TextLayoutBlock::CopyOutRealText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
+            {
                 const Led_tChar*    s   =   nullptr;
                 const Led_tChar*    e   =   nullptr;
                 PeekAtRealText (scriptRunElt, &s, &e);
                 copy (s, e, buf);
             }
 
-            void    TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const {
+            void    TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
+            {
                 const Led_tChar*    s   =   nullptr;
                 const Led_tChar*    e   =   nullptr;
                 PeekAtVirtualText (scriptRunElt, &s, &e);
                 copy (s, e, buf);
             }
 
-            void    TextLayoutBlock::PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock::PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 PeekAtRealText_ (startText, endText);
@@ -352,21 +362,24 @@ namespace   Stroika {
                 *endText = *startText + len;
             }
 
-            Led_tString TextLayoutBlock::GetRealText () const {
+            Led_tString TextLayoutBlock::GetRealText () const
+            {
                 const Led_tChar*    s   =   nullptr;
                 const Led_tChar*    e   =   nullptr;
                 PeekAtRealText_ (&s, &e);
                 return Led_tString (s, e);
             }
 
-            Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) const {
+            Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) const
+            {
                 const Led_tChar*    s   =   nullptr;
                 const Led_tChar*    e   =   nullptr;
                 PeekAtRealText (scriptRunElt, &s, &e);
                 return Led_tString (s, e);
             }
 
-            void    TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 PeekAtVirtualText_ (startText, endText);
@@ -376,14 +389,16 @@ namespace   Stroika {
                 *endText = *startText + len;
             }
 
-            Led_tString TextLayoutBlock::GetVirtualText () const {
+            Led_tString TextLayoutBlock::GetVirtualText () const
+            {
                 const Led_tChar*    s   =   nullptr;
                 const Led_tChar*    e   =   nullptr;
                 PeekAtVirtualText_ (&s, &e);
                 return Led_tString (s, e);
             }
 
-            Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) const {
+            Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) const
+            {
                 const Led_tChar*    s   =   nullptr;
                 const Led_tChar*    e   =   nullptr;
                 PeekAtVirtualText (scriptRunElt, &s, &e);
@@ -391,7 +406,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    TextLayoutBlock::Invariant_ () const {
+            void    TextLayoutBlock::Invariant_ () const
+            {
                 size_t  len =   GetTextLength ();
 
                 vector<ScriptRunElt>    scriptRuns  =   GetScriptRuns ();
@@ -441,7 +457,8 @@ namespace   Stroika {
             }
 #endif
 
-            bool    operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs) {
+            bool    operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
+            {
                 if (lhs.GetTextLength () != rhs.GetTextLength ()) {
                     return false;
                 }
@@ -480,7 +497,8 @@ namespace   Stroika {
                 fTextLength (0),
                 fRealText (0),
                 fVirtualText (0),
-                fScriptRuns () {
+                fScriptRuns ()
+            {
                 Construct (realText, realTextEnd, nullptr);
             }
 
@@ -489,11 +507,13 @@ namespace   Stroika {
                 fTextLength (0),
                 fRealText (0),
                 fVirtualText (0),
-                fScriptRuns () {
+                fScriptRuns ()
+            {
                 Construct (realText, realTextEnd, &initialDirection);
             }
 
-            void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, const TextDirection* initialDirection) {
+            void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, const TextDirection* initialDirection)
+            {
 #if     !qWideCharacters
                 Led_Arg_Unused (initialDirection);
 #endif
@@ -574,7 +594,8 @@ namespace   Stroika {
             }
 
 #if     qTryToUseUNISCRIBEForTextRuns
-            bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDirection) {
+            bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDirection)
+            {
                 if (sUniscribeDLL.IsAvail () and fTextLength > 0) {
                     /*
                      *  See SPR#1224 for why we pass along zeroed scriptControl/scriptState.
@@ -742,7 +763,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseFriBidi
-            void    TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirection) {
+            void    TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirection)
+            {
 #if     !qWideCharacters
 #error "Not implemented - only support FriBidi for UNICODE version of Led right now"
 #endif
@@ -820,7 +842,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseICUBidi
-            void    TextLayoutBlock_Basic::Construct_ICU (const TextDirection* initialDirection) {
+            void    TextLayoutBlock_Basic::Construct_ICU (const TextDirection* initialDirection)
+            {
                 //TMPHACK...to start testing...
                 UErrorCode  err =    U_ZERO_ERROR;
                 UBiDi*      para    =   ubidi_openSized (textLength, 0, &err);
@@ -829,7 +852,8 @@ namespace   Stroika {
             }
 #endif
 
-            void    TextLayoutBlock_Basic::Construct_Default () {
+            void    TextLayoutBlock_Basic::Construct_Default ()
+            {
                 // Only do something for UNICODE/wide-chars - otherwise - just copy the chars by value...
                 copy (static_cast<Led_tChar*> (fRealText), static_cast<Led_tChar*> (fRealText) + fTextLength, static_cast<Led_tChar*> (fVirtualText));
                 if (fTextLength != 0) {
@@ -843,21 +867,24 @@ namespace   Stroika {
                 }
             }
 
-            void    TextLayoutBlock_Basic::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock_Basic::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 *startText = fRealText;
                 *endText = fRealText + fTextLength;
             }
 
-            void    TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 *startText = fVirtualText;
                 *endText = fVirtualText + fTextLength;
             }
 
-            vector<TextLayoutBlock::ScriptRunElt>   TextLayoutBlock_Basic::GetScriptRuns () const {
+            vector<TextLayoutBlock::ScriptRunElt>   TextLayoutBlock_Basic::GetScriptRuns () const
+            {
                 return fScriptRuns;
             }
 
@@ -874,7 +901,8 @@ namespace   Stroika {
              */
             TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from):
                 inherited (),
-                fRep () {
+                fRep ()
+            {
                 /*
                  *  Compute size - and then copy all the data into a continguous block of RAM.
                  */
@@ -913,24 +941,28 @@ namespace   Stroika {
 
             TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock_Copy& from):
                 inherited (from),
-                fRep (from.fRep) {
+                fRep (from.fRep)
+            {
             }
 
-            void    TextLayoutBlock_Copy::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock_Copy::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 *startText = fRep->fRealText;
                 *endText = fRep->fRealText + fRep->fTextLength;
             }
 
-            void    TextLayoutBlock_Copy::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock_Copy::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 *startText = fRep->fVirtualText;
                 *endText = fRep->fVirtualText + fRep->fTextLength;
             }
 
-            vector<TextLayoutBlock_Copy::ScriptRunElt>  TextLayoutBlock_Copy::GetScriptRuns () const {
+            vector<TextLayoutBlock_Copy::ScriptRunElt>  TextLayoutBlock_Copy::GetScriptRuns () const
+            {
                 return vector<ScriptRunElt> (fRep->fScriptRuns, fRep->fScriptRunsEnd);
             }
 
@@ -943,7 +975,8 @@ namespace   Stroika {
              ************************ TextLayoutBlock_Copy::BlockRep ************************
              ********************************************************************************
              */
-            void    TextLayoutBlock_Copy::BlockRep::operator delete (void* p) {
+            void    TextLayoutBlock_Copy::BlockRep::operator delete (void* p)
+            {
                 // Because we allocate using new Byte[] in TextLayoutBlock_Copy::CTOR (see SPR#1596)
                 delete[] (reinterpret_cast<char*> (p));
             }
@@ -965,7 +998,8 @@ namespace   Stroika {
                 fStart (start),
                 fEnd (end),
                 fScriptRuns (),
-                fRealText (end - start) {
+                fRealText (end - start)
+            {
                 vector<ScriptRunElt>    origRuns        =   fSubsetOf.GetScriptRuns ();
                 size_t                  offsetSoFar     =   0;
                 size_t                  subsetLen       =   fEnd - fStart;
@@ -1002,14 +1036,16 @@ namespace   Stroika {
                 Invariant ();
             }
 
-            void    TextLayoutBlock_VirtualSubset::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock_VirtualSubset::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 *startText = fRealText;
                 *endText = *startText + (fEnd - fStart);
             }
 
-            void    TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const {
+            void    TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
+            {
                 RequireNotNull (startText);
                 RequireNotNull (endText);
                 fSubsetOf.PeekAtVirtualText_ (startText, endText);
@@ -1019,7 +1055,8 @@ namespace   Stroika {
                 *endText = *startText + (fEnd - fStart);
             }
 
-            vector<TextLayoutBlock::ScriptRunElt>   TextLayoutBlock_VirtualSubset::GetScriptRuns () const {
+            vector<TextLayoutBlock::ScriptRunElt>   TextLayoutBlock_VirtualSubset::GetScriptRuns () const
+            {
                 return fScriptRuns;
             }
 
@@ -1041,7 +1078,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 // Hack for SPR#1236
-            InitialUNISCRIBEDir myGetInitialUNISCRIBEDir (wchar_t c) {
+            InitialUNISCRIBEDir myGetInitialUNISCRIBEDir (wchar_t c)
+            {
                 if (65 <= c && c <= 90) {
                     return eLTRChar;
                 }

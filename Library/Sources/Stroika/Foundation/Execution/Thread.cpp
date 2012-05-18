@@ -95,7 +95,8 @@ namespace   {
         typedef NTSTATUS (__stdcall* pfnNtQueryInformationThread) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
     }
 #endif
-    DWORD   MyGetThreadId_ (HANDLE thread) {
+    DWORD   MyGetThreadId_ (HANDLE thread)
+    {
 #if     (_WIN32_WINNT >= 0x0502)
         return ::GetThreadId (thread);
 #else
@@ -147,10 +148,12 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
     , fThreadDone_ ()
 #endif
     , fRefCountBumpedEvent_ ()
-    , fRunnable (runnable) {
+    , fRunnable (runnable)
+{
 }
 
-void    Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr) {
+void    Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
+{
     TraceContextBumper ctx (TSTR ("Thread::Rep_::DoCreate"));
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
@@ -183,7 +186,8 @@ void    Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr) {
     }
 }
 
-Thread::Rep_::~Rep_ () {
+Thread::Rep_::~Rep_ ()
+{
     Assert (fStatus != eRunning);
 #if     qUseThreads_StdCPlusPlus
     // In case thread ran and terminated without any ever waiting for it.
@@ -207,7 +211,8 @@ Thread::Rep_::~Rep_ () {
 #endif
 }
 
-void    Thread::Rep_::Run () override {
+void    Thread::Rep_::Run () override
+{
     fRunnable->Run ();
 }
 
@@ -316,7 +321,8 @@ void    Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept {
 }
 
 #if         qUseThreads_WindowsNative
-unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter) {
+unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter)
+{
     RequireNotNull (lpParameter);
     /*
      * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
@@ -328,7 +334,8 @@ unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter) {
 }
 #endif
 
-void    Thread::Rep_::NotifyOfAbort () {
+void    Thread::Rep_::NotifyOfAbort ()
+{
     Require (fStatus == eAborting or fStatus == eCompleted);
     //TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbort"));
     // CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
@@ -347,7 +354,8 @@ void    Thread::Rep_::NotifyOfAbort () {
 #endif
 }
 
-Thread::IDType  Thread::Rep_::GetID () const {
+Thread::IDType  Thread::Rep_::GetID () const
+{
 #if     qUseThreads_StdCPlusPlus
     return fThread_.get_id ();
 #elif   qUseThreads_WindowsNative
@@ -358,7 +366,8 @@ Thread::IDType  Thread::Rep_::GetID () const {
 #endif
 }
 
-Thread::NativeHandleType    Thread::Rep_::GetNativeHandle () {
+Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
+{
 #if     qUseThreads_StdCPlusPlus
     return fThread_.native_handle ();
 #elif   qUseThreads_WindowsNative
@@ -370,7 +379,8 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle () {
 }
 
 #if     qPlatform_POSIX
-void    Thread::Rep_::AbortProc_ (SignalIDType signal) {
+void    Thread::Rep_::AbortProc_ (SignalIDType signal)
+{
     TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
     s_Aborting = true;
     /*
@@ -380,7 +390,8 @@ void    Thread::Rep_::AbortProc_ (SignalIDType signal) {
     Verify (::siginterrupt (signal, true) == 0);
 }
 #elif           qUseThreads_WindowsNative
-void    CALLBACK    Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter) {
+void    CALLBACK    Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
+{
     TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (rep->fStatus == eAborting || rep->fStatus == eCompleted);
@@ -411,33 +422,39 @@ SignalIDType        Thread::sSignalUsedForThreadAbort_  =   SIGUSR2;
 #endif
 
 Thread::Thread ()
-    : fRep_ () {
+    : fRep_ ()
+{
 }
 
 Thread::Thread (void (*fun2CallOnce) ())
-    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce)))) {
+    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce))))
+{
     Rep_::DoCreate (&fRep_);
 }
 
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce, arg)))) {
+    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce, arg))))
+{
     Rep_::DoCreate (&fRep_);
 }
 
 Thread::Thread (const SharedPtr<IRunnable>& runnable)
-    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (runnable))) {
+    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (runnable)))
+{
     Rep_::DoCreate (&fRep_);
 }
 
 #if         qUseThreads_WindowsNative
-void    Thread::SetThreadPriority (int nPriority) {
+void    Thread::SetThreadPriority (int nPriority)
+{
     RequireNotNull (fRep_);
     Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
 }
 #endif
 
 #if     qPlatform_POSIX
-void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber) {
+void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
+{
     Execution::AutoCriticalSection critSec (sHandlerInstalled_);
     if (sHandlerInstalled_) {
         if (sHandlerInstalled_) {
@@ -454,7 +471,8 @@ void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber) {
 }
 #endif
 
-void    Thread::SetThreadName (const wstring& threadName) {
+void    Thread::SetThreadName (const wstring& threadName)
+{
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
         TraceContextBumper  ctx (TSTR ("Execution::Thread::SetThreadName"));
@@ -483,7 +501,8 @@ void    Thread::SetThreadName (const wstring& threadName) {
     }
 }
 
-void    Thread::Start () {
+void    Thread::Start ()
+{
     RequireNotNull (fRep_);
 #if         qUseThreads_WindowsNative
     Assert (fRep_->fThread_ != INVALID_HANDLE_VALUE);
@@ -492,7 +511,8 @@ void    Thread::Start () {
     fRep_->fOK2StartEvent_.Set ();
 }
 
-void    Thread::Abort () {
+void    Thread::Abort ()
+{
     Debug::TraceContextBumper ctx (TSTR ("Thread::Abort"));
     if (fRep_.IsNull ()) {
         // then its effectively already stopped.
@@ -533,7 +553,8 @@ void    Thread::Abort () {
     }
 }
 
-void    Thread::Abort_Forced_Unsafe () {
+void    Thread::Abort_Forced_Unsafe ()
+{
     if (fRep_.IsNull ()) {
         // then its effectively already stopped.
         return;
@@ -560,7 +581,8 @@ void    Thread::Abort_Forced_Unsafe () {
 #endif
 }
 
-void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout) {
+void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+{
     Time::DurationSecondsType   endTime =   Time::GetTickCount () + timeout;
     // as abort may need to be resent (since there could be a race and we may need to force wakeup again)
     while (true) {
@@ -586,7 +608,8 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout) {
     }
 }
 
-void    Thread::WaitForDone (Time::DurationSecondsType timeout) const {
+void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
+{
     Debug::TraceContextBumper ctx (TSTR ("Thread::WaitForDone"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     if (fRep_.IsNull ()) {
@@ -635,7 +658,8 @@ Again:
 }
 
 #if     qPlatform_Windows
-void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const {
+void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
+{
     if (fRep_.IsNull ()) {
         // then its effectively already done.
         return;
@@ -658,7 +682,8 @@ void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsT
 #endif
 
 #if     qPlatform_Windows
-void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const {
+void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
+{
     DurationSecondsType timeoutAt   =   Time::GetTickCount () + timeout;
     // CRUDDY impl - but decent enuf for first draft
     while (GetStatus () != Thread::eCompleted) {
@@ -671,7 +696,8 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
 }
 #endif
 
-Thread::Status  Thread::GetStatus_ () const {
+Thread::Status  Thread::GetStatus_ () const
+{
     Require (not fRep_.IsNull ());
     if (fRep_.IsNull ()) {
         return eNull;
@@ -691,7 +717,8 @@ Thread::Status  Thread::GetStatus_ () const {
  **************************** Execution::FormatThreadID *************************
  ********************************************************************************
  */
-wstring Execution::FormatThreadID (Thread::IDType threadID) {
+wstring Execution::FormatThreadID (Thread::IDType threadID)
+{
     // it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
 #if     qUseThreads_StdCPlusPlus
     Assert (sizeof (threadID) >= sizeof (int));
@@ -732,7 +759,8 @@ wstring Execution::FormatThreadID (Thread::IDType threadID) {
  ************************* Execution::CheckForThreadAborting ********************
  ********************************************************************************
  */
-void    Execution::CheckForThreadAborting () {
+void    Execution::CheckForThreadAborting ()
+{
 #if     qUseTLSForSAbortingFlag
     if (s_Aborting) {
         Execution::DoThrow (ThreadAbortException ());

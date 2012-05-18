@@ -81,11 +81,13 @@ namespace   Stroika {
              ********************************************************************************
              */
 //  class   WordWrappedTextInteractor
-            inline  void    WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode) {
+            inline  void    WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 SetTopRowInWindow (newTopRow);
             }
-            inline  void    WordWrappedTextInteractor::SetTopRowInWindow (RowReference row, UpdateMode updateMode) {
+            inline  void    WordWrappedTextInteractor::SetTopRowInWindow (RowReference row, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 SetTopRowInWindow (row);
             }

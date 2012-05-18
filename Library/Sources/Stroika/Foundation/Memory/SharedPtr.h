@@ -155,8 +155,8 @@ namespace   Stroika {
 
 
             /*
-             * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works. This typically will not be used directly,
-             * but just part of using @SharedPtr<T>
+             * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works. This typically will
+             * not be used directly, but just part of using @SharedPtr<T>
              */
             template    <typename   T>
             struct  SharedPtr_Default_Traits {
@@ -168,7 +168,8 @@ namespace   Stroika {
 
 
             /*
-             * SharedPtrFromThis_Traits is the TRAITS object to use with SharedPtr, and T must already inherit from SharedPtrBase.
+             * SharedPtrFromThis_Traits is the TRAITS object to use with SharedPtr, and T must already
+             * inherit from SharedPtrBase.
              *
              *  Example usage:
              *
@@ -177,9 +178,10 @@ namespace   Stroika {
              *
              *      typedef SharedPtr<VeryFancyObj,SharedPtrFromThis_TraitsVeryFancyObj>>   VeryFancySmartPointer;
              *
-             *      THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION, you can ALWAYS safely create
-             *      a VeryFancySmartPointer from an already existing VeryFancyObj - just by wrapping/constructing the smart pointer (because the reference count is
-             *      already in the base wrapped data type).
+             *      THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION,
+             *      you can ALWAYS safely create a VeryFancySmartPointer from an already existing VeryFancyObj -
+             *      just by wrapping/constructing the smart pointer (because the reference count is already in
+             *      the base wrapped data type).
              */
             template    <typename   T>
             struct  SharedPtrFromThis_Traits {
@@ -226,21 +228,25 @@ namespace   Stroika {
                     <p>SharedPtr<T> is a simple utility class - very much akin to the C++11 class
                 std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
 
-                    <li>There is no std::weak_ptr - or at least if there is - we must document it clearly how/why via extra sharedPTR tmeplate arg(to be worked out)</li>
-                    <li>There is an extra template T_TRAITS that allows for solving special problems that come up with shared_ptr<> - namely recovering the
+                    <li>There is no std::weak_ptr - or at least if there is - we must document it clearly
+                        how/why via extra sharedPTR tmeplate arg(to be worked out)</li>
+                    <li>There is an extra template T_TRAITS that allows for solving special problems that
+                        come up with shared_ptr<> - namely recovering the
                         'shared' version of 'T' when only given a plain copy of 'T'
                     </li>
 
-                    Otherwise, the intention is that they should operate very similarly, and SharedPtr<T> should work with most classes that expect shared_ptr<T> (so long
-                as they are templated, and not looking for the particular type name 'shared_ptr').
+                    Otherwise, the intention is that they should operate very similarly, and SharedPtr<T>
+                    should work with most classes that expect shared_ptr<T> (so long
+                    as they are templated, and not looking for the particular type name 'shared_ptr').
 
-                    <p>TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small - neglecting the weak_ptr stuff.</p>
-
+                    <p>TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
+                    neglecting the weak_ptr stuff.</p>
 
                     <p>See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage</p>
 
             */
-            template    <typename   T, typename T_TRAITS = SharedPtr_Default_Traits<T>> class   SharedPtr {
+            template    <typename   T, typename T_TRAITS = SharedPtr_Default_Traits<T>>
+                    class   SharedPtr {
             public:
                         SharedPtr ();
                         explicit SharedPtr (T* from);
@@ -269,8 +275,8 @@ namespace   Stroika {
             public:
                         /*
                         @METHOD:        SharedPtr<T,T_TRAITS>::GetRep
-                        @DESCRIPTION:   <p>Requires that the pointer is non-nullptr. You can call SharedPtr<T,T_TRAITS>::get () which whill return null without asserting if
-                                    the pointer is allowed to be null.</p>
+                        @DESCRIPTION:   <p>Requires that the pointer is non-nullptr. You can call SharedPtr<T,T_TRAITS>::get ()
+                            which whill return null without asserting if the pointer is allowed to be null.</p>
                         */
                         nonvirtual  T&          GetRep () const;
 
@@ -351,8 +357,9 @@ namespace   Stroika {
             public:
                         /*
                         @METHOD:        SharedPtr<T,T_TRAITS>::CurrentRefCount
-                        @DESCRIPTION:   <p>I used to keep this available only for debugging, but I've found a few cases where its handy outside the debugging context
-                        so not its awlays available (it has no cost to keep available).</p>
+                        @DESCRIPTION:   <p>I used to keep this available only for debugging, but I've found a few
+                        cases where its handy outside the debugging context so not its awlays available (it has
+                        no cost to keep available).</p>
                         */
                         typename T_TRAITS::ReferenceCountType   CurrentRefCount () const;
 

@@ -66,7 +66,8 @@ namespace   {
 }
 
 
-Private::MODULE_INIT::MODULE_INIT () {
+Private::MODULE_INIT::MODULE_INIT ()
+{
     Assert (sEmitTraceCritSec == nullptr);
     sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
 #if     qDefaultTracingOn
@@ -80,7 +81,8 @@ Private::MODULE_INIT::MODULE_INIT () {
 #endif
 }
 
-Private::MODULE_INIT::~MODULE_INIT () {
+Private::MODULE_INIT::~MODULE_INIT ()
+{
     delete sEmitTraceCritSec;
     sEmitTraceCritSec = nullptr;
 #if     qTraceToFile
@@ -101,7 +103,8 @@ Private::MODULE_INIT::~MODULE_INIT () {
 
 
 namespace   {
-    inline  CriticalSection&    GetCritSection_ () {
+    inline  CriticalSection&    GetCritSection_ ()
+    {
         // this is a 'false' or 'apparent' memory leak, but we allocate the object this way because in C++ things
         // can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
         // someone might do a trace message.
@@ -115,7 +118,8 @@ namespace   {
 
 #if     qTraceToFile
 namespace   {
-    TString mkTraceFileName_ () {
+    TString mkTraceFileName_ ()
+    {
         // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
         // (could fix of course, but I'm not sure desirable - reasonable defaults)
         //
@@ -147,7 +151,8 @@ namespace   {
     }
 }
 
-TString Emitter::GetTraceFileName () const {
+TString Emitter::GetTraceFileName () const
+{
     static  TString sTraceFileName_ =   mkTraceFileName_ ();
     return sTraceFileName_;
 }
@@ -156,7 +161,8 @@ TString Emitter::GetTraceFileName () const {
 
 #if     qTraceToFile
 namespace   {
-    void    Emit2File_ (const char* text) {
+    void    Emit2File_ (const char* text)
+    {
         RequireNotNull (text);
         RequireNotNull (sTraceFile);
         try {
@@ -169,7 +175,8 @@ namespace   {
             Assert (false);
         }
     }
-    void    Emit2File_ (const wchar_t* text) {
+    void    Emit2File_ (const wchar_t* text)
+    {
         RequireNotNull (text);
         Emit2File_ (WideStringToUTF8 (text).c_str ());
     }
@@ -192,7 +199,8 @@ Emitter::Emitter ()
 //  , fLastNCharBuf_WCHAR_ ()
     , fLastNCharBuf_WCHARFlag_ (false)
     , fLastNCharBuf_Token_ (0)
-    , fLastNCharBuf_WriteTickcount_ (0.0f) {
+    , fLastNCharBuf_WriteTickcount_ (0.0f)
+{
 }
 
 /*
@@ -201,7 +209,8 @@ Emitter::Emitter ()
              @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
              @'DbgTrace'.</p>
 */
-void    Emitter::EmitTraceMessage (const char* format, ...) {
+void    Emitter::EmitTraceMessage (const char* format, ...)
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -216,7 +225,8 @@ void    Emitter::EmitTraceMessage (const char* format, ...) {
     }
 }
 
-void    Emitter::EmitTraceMessage (const wchar_t* format, ...) {
+void    Emitter::EmitTraceMessage (const wchar_t* format, ...)
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -231,7 +241,8 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) {
     }
 }
 
-Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) {
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...)
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -247,7 +258,8 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
 }
 
-Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) {
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...)
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -270,7 +282,8 @@ namespace   {
 }
 
 template    <typename   CHARTYPE>
-Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e) {
+Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
+{
     AutoCriticalSection critSec (GetCritSection_ ());
     FlushBufferedCharacters_ ();
     static  Time::DurationSecondsType   sStartOfTime    =   0.0;
@@ -337,7 +350,8 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
     return fLastNCharBuf_Token_;
 }
 
-void    Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p) {
+void    Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
+{
     Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
 #if     __STDC_WANT_SECURE_LIB__
@@ -348,7 +362,8 @@ void    Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p) {
     fLastNCharBuf_WCHARFlag_ = false;
 }
 
-void    Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p) {
+void    Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
+{
     Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
 #if     __STDC_WANT_SECURE_LIB__
@@ -359,7 +374,8 @@ void    Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p) {
     fLastNCharBuf_WCHARFlag_ = true;
 }
 
-void    Emitter::FlushBufferedCharacters_ () {
+void    Emitter::FlushBufferedCharacters_ ()
+{
     if (fLastNCharBufCharCount_ != 0) {
         if (fLastNCharBuf_WCHARFlag_) {
             DoEmit_ (fLastNCharBuf_WCHAR_);
@@ -371,7 +387,8 @@ void    Emitter::FlushBufferedCharacters_ () {
     }
 }
 
-bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token) {
+bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
+{
     AutoCriticalSection critSec (GetCritSection_ ());
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
@@ -384,7 +401,8 @@ bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWrite
     return false;   // assume old behavior for now
 }
 
-void    Emitter::DoEmit_ (const char* p) {
+void    Emitter::DoEmit_ (const char* p)
+{
 #if     qPlatform_Windows
     ::OutputDebugStringA (p);
 #endif
@@ -393,7 +411,8 @@ void    Emitter::DoEmit_ (const char* p) {
 #endif
 }
 
-void    Emitter::DoEmit_ (const wchar_t* p) {
+void    Emitter::DoEmit_ (const wchar_t* p)
+{
 #if     qPlatform_Windows
     ::OutputDebugStringW (p);
 #endif
@@ -402,7 +421,8 @@ void    Emitter::DoEmit_ (const wchar_t* p) {
 #endif
 }
 
-void    Emitter::DoEmit_ (const char* p, const char* e) {
+void    Emitter::DoEmit_ (const char* p, const char* e)
+{
     size_t  len =   e - p;
     Memory::SmallStackBuffer<char>  buf (len + 1);
     memcpy (buf.begin (), p, len);
@@ -410,7 +430,8 @@ void    Emitter::DoEmit_ (const char* p, const char* e) {
     DoEmit_ (buf.begin ());
 }
 
-void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) {
+void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e)
+{
     size_t  len =   e - p;
     Memory::SmallStackBuffer<wchar_t>   buf (len + 1);
     memcpy (buf.begin (), p, len * sizeof (wchar_t));
@@ -439,7 +460,8 @@ namespace   {
     // However - we want to throw away any entries in the list with a ZERO count - since these are a
     // waste of memory (and appear to a leak detector as a memory leak)!!!
     //      -- LGP 2009-05-27
-    inline  unsigned int    GetCount_ () {
+    inline  unsigned int    GetCount_ ()
+    {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         AutoCriticalSection critSec (GetCritSection_ ());
         map<Thread::IDType, unsigned int>::const_iterator    i   =   sCounts->find (threadID);
@@ -449,7 +471,8 @@ namespace   {
         Assert (i != sCounts->end ());
         return i->second;
     }
-    inline  void    IncCount_ () {
+    inline  void    IncCount_ ()
+    {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         AutoCriticalSection critSec (GetCritSection_ ());
         map<Thread::IDType, unsigned int>::iterator  i   =   sCounts->find (threadID);
@@ -461,7 +484,8 @@ namespace   {
             i->second++;
         }
     }
-    inline  void    DecrCount_ () {
+    inline  void    DecrCount_ ()
+    {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         AutoCriticalSection critSec (GetCritSection_ ());
         map<Thread::IDType, unsigned int>::iterator  i   =   sCounts->find (threadID);
@@ -486,19 +510,23 @@ TraceContextBumper::TraceContextBumper (const TChar* contextName)
 }
 #endif
 
-unsigned int    TraceContextBumper::GetCount () {
+unsigned int    TraceContextBumper::GetCount ()
+{
     return GetCount_ ();
 }
-void    TraceContextBumper::IncCount () {
+void    TraceContextBumper::IncCount ()
+{
     IncCount_ ();
 }
-void    TraceContextBumper::DecrCount () {
+void    TraceContextBumper::DecrCount ()
+{
     DecrCount_ ();
 }
 #endif
 
 #if     qDefaultTracingOn
-TraceContextBumper::~TraceContextBumper () {
+TraceContextBumper::~TraceContextBumper ()
+{
     DecrCount ();
     if (fDoEndMarker) {
         AutoCriticalSection critSec (GetCritSection_ ());

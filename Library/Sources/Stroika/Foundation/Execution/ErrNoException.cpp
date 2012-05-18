@@ -34,10 +34,12 @@ using   Debug::TraceContextBumper;
  */
 errno_ErrorException::errno_ErrorException (errno_t e)
     : StringException (TString2Wide (LookupMessage (e)))
-    , fError (e) {
+    , fError (e)
+{
 }
 
-TString errno_ErrorException::LookupMessage (errno_t e) {
+TString errno_ErrorException::LookupMessage (errno_t e)
+{
     TChar   buf[2048];
     buf[0] = '\0';
 #if     qPlatform_Windows
@@ -66,7 +68,8 @@ TString errno_ErrorException::LookupMessage (errno_t e) {
     return buf;
 }
 
-void    _NoReturn_  errno_ErrorException::DoThrow (errno_t error) {
+void    _NoReturn_  errno_ErrorException::DoThrow (errno_t error)
+{
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
     switch (error) {
         case    ENOMEM: {

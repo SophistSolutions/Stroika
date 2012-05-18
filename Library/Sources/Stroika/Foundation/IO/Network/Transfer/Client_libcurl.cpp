@@ -81,7 +81,8 @@ private:
 
 #if     qHasFeature_libcurl
 namespace   {
-    wstring mkExceptMsg_ (LibCurlException::CURLcode ccode) {
+    wstring mkExceptMsg_ (LibCurlException::CURLcode ccode)
+    {
         return String::FromUTF8 (curl_easy_strerror (static_cast<CURLcode> (ccode))).As<wstring> ();
     }
 }
@@ -93,10 +94,12 @@ namespace   {
  */
 LibCurlException::LibCurlException (CURLcode ccode)
     : StringException (mkExceptMsg_ (ccode))
-    , fCurlCode_ (ccode) {
+    , fCurlCode_ (ccode)
+{
 }
 
-void    LibCurlException::DoThrowIfError (CURLcode status) {
+void    LibCurlException::DoThrowIfError (CURLcode status)
+{
     if (status != CURLE_OK) {
         Execution::DoThrow (LibCurlException (status));
     }
@@ -120,10 +123,12 @@ Connection_LibCurl::Rep_::Rep_ ()
     : fCurlHandle_ (nullptr)
     , fCURLCache_URL_ ()
     , fResponseData_ ()
-    , fSavedHeaders_ (nullptr) {
+    , fSavedHeaders_ (nullptr)
+{
 }
 
-Connection_LibCurl::Rep_::~Rep_ () {
+Connection_LibCurl::Rep_::~Rep_ ()
+{
     if (fCurlHandle_ != nullptr) {
         curl_easy_cleanup (fCurlHandle_);
     }
@@ -133,49 +138,58 @@ Connection_LibCurl::Rep_::~Rep_ () {
     }
 }
 
-DurationSecondsType Connection_LibCurl::Rep_::GetTimeout () const override {
+DurationSecondsType Connection_LibCurl::Rep_::GetTimeout () const override
+{
     AssertNotImplemented ();
     return 0;
 }
 
-void    Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout) override {
+void    Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout) override
+{
     MakeHandleIfNeeded_ ();
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
-URL     Connection_LibCurl::Rep_::GetURL () const override {
+URL     Connection_LibCurl::Rep_::GetURL () const override
+{
     // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
     return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
 }
 
-void    Connection_LibCurl::Rep_::SetURL (const URL& url) override {
+void    Connection_LibCurl::Rep_::SetURL (const URL& url) override
+{
     MakeHandleIfNeeded_ ();
     fCURLCache_URL_ = String (url.GetURL ()).AsUTF8 ();
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
 }
 
-void    Connection_LibCurl::Rep_::Close ()  override {
+void    Connection_LibCurl::Rep_::Close ()  override
+{
     if (fCurlHandle_ != nullptr) {
         ::curl_easy_cleanup (fCurlHandle_);
         fCurlHandle_ = nullptr;
     }
 }
 
-size_t  Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP) {
+size_t  Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+{
     return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
 
-size_t  Connection_LibCurl::Rep_::ResponseWriteHandler_ (const Byte* ptr, size_t nBytes) {
+size_t  Connection_LibCurl::Rep_::ResponseWriteHandler_ (const Byte* ptr, size_t nBytes)
+{
     fResponseData_.insert (fResponseData_.end (), ptr, ptr + nBytes);
     return nBytes;
 }
 
-size_t  Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP) {
+size_t  Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+{
     return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
 
-size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes) {
+size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes)
+{
     string tmp (reinterpret_cast<const char*> (ptr), nBytes);
     string::size_type i = tmp.find (':');
     String  from;
@@ -193,7 +207,8 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
     return nBytes;
 }
 
-Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)   override {
+Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)   override
+{
     MakeHandleIfNeeded_ ();
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
@@ -227,7 +242,8 @@ Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)   
     return response;
 }
 
-void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ () {
+void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
+{
     if (fCurlHandle_ == nullptr) {
         ThrowIfNull (fCurlHandle_ = ::curl_easy_init ());
 
@@ -257,6 +273,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ () {
  ********************************************************************************
  */
 Connection_LibCurl::Connection_LibCurl ()
-    : Connection (Memory::SharedPtr<_IRep> (DEBUG_NEW Rep_ ())) {
+    : Connection (Memory::SharedPtr<_IRep> (DEBUG_NEW Rep_ ()))
+{
 }
 #endif

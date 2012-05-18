@@ -27,13 +27,15 @@ namespace   Stroika {
                 T               fVal;
                 DECLARE_USE_BLOCK_ALLOCATION(TValRep);
             };
-            inline  VariantValue::Type  VariantValue::GetType () const {
+            inline  VariantValue::Type  VariantValue::GetType () const
+            {
                 if (fVal.IsNull ()) {
                     return eNull;
                 }
                 return fVal->GetType ();
             }
-            inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs) {
+            inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs)
+            {
                 return not (lhs == rhs);
             }
 

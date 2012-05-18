@@ -34,7 +34,8 @@ using   namespace   Time;
  ********************************************************************************
  */
 Duration::FormatException::FormatException ()
-    : StringException (L"Invalid Duration Format") {
+    : StringException (L"Invalid Duration Format")
+{
 }
 
 
@@ -66,51 +67,62 @@ const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
 };
 
 Duration::Duration ()
-    : fDurationRep () {
+    : fDurationRep ()
+{
 }
 
 Duration::Duration (const wstring& durationStr)
-    : fDurationRep (WideStringToASCII (durationStr)) {
+    : fDurationRep (WideStringToASCII (durationStr))
+{
     (void)ParseTime_ (fDurationRep);    // call for the side-effect of throw if bad format src string
 }
 
 Duration::Duration (int32_t duration)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration))) {
+    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
 }
 
 Duration::Duration (int64_t duration)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration))) {
+    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
 }
 
 Duration::Duration (double duration)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration))) {
+    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
 }
 
-void    Duration::clear () {
+void    Duration::clear ()
+{
     fDurationRep.clear ();
 }
 
-bool    Duration::empty () const {
+bool    Duration::empty () const
+{
     return fDurationRep.empty ();
 }
 
 template    <>
-time_t  Duration::As () const {
+time_t  Duration::As () const
+{
     return static_cast<time_t> (ParseTime_ (fDurationRep));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 template    <>
-double  Duration::As () const {
+double  Duration::As () const
+{
     return ParseTime_ (fDurationRep);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 template    <>
-wstring Duration::As () const {
+wstring Duration::As () const
+{
     return ASCIIStringToWide (fDurationRep);
 }
 
 namespace   {
-    string::const_iterator  SkipWhitespace_ (string::const_iterator i, string::const_iterator end) {
+    string::const_iterator  SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
+    {
         // GNU LIBC code (header) says that whitespace is allowed (though I've found no external docs to support this).
         // Still - no harm in accepting this - so long as we don't ever generate it...
         while (i != end and isspace (*i)) {
@@ -118,7 +130,8 @@ namespace   {
         }
         return i;
     }
-    string::const_iterator  FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end) {
+    string::const_iterator  FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
+    {
         while (i != end and (isdigit (*i) or * i == '.')) {
             ++i;
         }
@@ -133,7 +146,8 @@ namespace   {
     const   time_t  kSecondsPerYear     =   kSecondsPerDay * 365;
 }
 
-wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const {
+wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
+{
     /*
      *  TODO:
      *          o   Fix feeble attempt at rounding. We more or less round correctly for seconds, but not other units.
@@ -235,7 +249,8 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const {
     return result;
 }
 
-Duration    Duration::operator- () const {
+Duration    Duration::operator- () const
+{
     wstring tmp =   As<wstring> ();
     if (tmp.empty ()) {
         return *this;
@@ -248,7 +263,8 @@ Duration    Duration::operator- () const {
     }
 }
 
-int Duration::Compare (const Duration& rhs) const {
+int Duration::Compare (const Duration& rhs) const
+{
     Duration::InternalNumericFormatType_    n   =   As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
     if (n < 0) {
         return -1;
@@ -259,7 +275,8 @@ int Duration::Compare (const Duration& rhs) const {
     return 0;
 }
 
-Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s) {
+Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
+{
     if (s.empty ()) {
         return 0;
     }
@@ -318,7 +335,8 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s) {
     return isNeg ? -curVal : curVal;
 }
 
-string  Duration::UnParseTime_ (InternalNumericFormatType_ t) {
+string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
+{
     bool                        isNeg       =   (t < 0);
     InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
     string  result  =   "P";

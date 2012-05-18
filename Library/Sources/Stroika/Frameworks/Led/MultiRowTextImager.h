@@ -450,18 +450,22 @@ namespace   Stroika {
 // defined out of order cuz used earlier
             inline  MultiRowTextImager::RowReference::RowReference (PartitionMarker* partitionMarker, size_t subRow):
                 fPartitionMarker (partitionMarker),
-                fSubRow (subRow) {
+                fSubRow (subRow)
+            {
             }
-            inline  void    MultiRowTextImager::InvalidateTotalRowsInWindow () {
+            inline  void    MultiRowTextImager::InvalidateTotalRowsInWindow ()
+            {
                 fTotalRowsInWindow = 0; // zero is sentinal meaning invalid
             }
-            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetTopRowReferenceInWindow () const {
+            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetTopRowReferenceInWindow () const
+            {
                 RequireNotNull (PeekAtTextStore ());    //  Must associate textstore before we can ask for row-references
                 EnsureNotNull (fTopLinePartitionMarkerInWindow);
                 const_cast<MultiRowTextImager*>(this)->ReValidateSubRowInTopLineInWindow ();
                 return (RowReference (fTopLinePartitionMarkerInWindow, fSubRowInTopLineInWindow));
             }
-            inline  size_t  MultiRowTextImager::GetTotalRowsInWindow_ () const {
+            inline  size_t  MultiRowTextImager::GetTotalRowsInWindow_ () const
+            {
                 if (fTotalRowsInWindow == 0) {  // cached value invalid
                     fTotalRowsInWindow = ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ());
                 }
@@ -479,9 +483,11 @@ namespace   Stroika {
                 fInterlineSpace (0),
                 fRowCountCache (0),
                 fRowStartArray (nullptr),
-                fRowHeightArray (nullptr) {
+                fRowHeightArray (nullptr)
+            {
             }
-            inline  MultiRowTextImager::PartitionElementCacheInfo::Rep::~Rep () {
+            inline  MultiRowTextImager::PartitionElementCacheInfo::Rep::~Rep ()
+            {
                 if (fRowCountCache > kPackRowStartCount + 1) {
                     delete[] fRowStartArray;
                 }
@@ -493,7 +499,8 @@ namespace   Stroika {
 
 //  class   MultiRowTextImager::PartitionElementCacheInfo
             inline  MultiRowTextImager::PartitionElementCacheInfo::PartitionElementCacheInfo ():
-                fRep (new Rep ()) {
+                fRep (new Rep ())
+            {
             }
             /*
             @METHOD:        MultiRowTextImager::PartitionElementCacheInfo::GetInterLineSpace
@@ -502,11 +509,13 @@ namespace   Stroika {
                 MultiRowTextImager::CalculateInterLineSpace () method. They are not set directly.
                 </p>
             */
-            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::GetInterLineSpace () const {
+            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::GetInterLineSpace () const
+            {
                 Assert (fRep->fInterlineSpace != Led_Distance (-1));
                 return (fRep->fInterlineSpace);
             }
-            inline  void    MultiRowTextImager::PartitionElementCacheInfo::SetInterLineSpace (Led_Distance interlineSpace) {
+            inline  void    MultiRowTextImager::PartitionElementCacheInfo::SetInterLineSpace (Led_Distance interlineSpace)
+            {
                 Assert (interlineSpace != Led_Distance (-1));
                 fRep->fInterlineSpace = interlineSpace;
             }
@@ -516,7 +525,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Return the cached height of the given partition element. This is the sum of the
                 pixel height computed in FillCache () for the actual text, and the interline space (see GetInterLineSpace ()).</p>
             */
-            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::GetPixelHeight () const {
+            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::GetPixelHeight () const
+            {
                 return (fRep->fPixelHeightCache + GetInterLineSpace ());
             }
             /*
@@ -525,7 +535,8 @@ namespace   Stroika {
                 MultiRowTextImager::FillCache (), and specified indirectly via calls (from inside FillCache)
                 to MultiRowTextImager::MultiRowPartitionMarker::IncrementRowCountAndFixCacheBuffers ().</p>
             */
-            inline  size_t  MultiRowTextImager::PartitionElementCacheInfo::GetRowCount () const {
+            inline  size_t  MultiRowTextImager::PartitionElementCacheInfo::GetRowCount () const
+            {
                 Assert (fRep->fRowCountCache >= 1); // even for empty lines we have 1 row (by definition)
                 return (fRep->fRowCountCache);
             }
@@ -535,7 +546,8 @@ namespace   Stroika {
                 MultiRowTextImager::FillCache (), and specified indirectly via calls (from inside FillCache)
                 to MultiRowTextImager::MultiRowPartitionMarker::IncrementRowCountAndFixCacheBuffers ().</p>
             */
-            inline  size_t  MultiRowTextImager::PartitionElementCacheInfo::PeekRowCount () const {
+            inline  size_t  MultiRowTextImager::PartitionElementCacheInfo::PeekRowCount () const
+            {
                 return (fRep->fRowCountCache);
             }
             /*
@@ -543,7 +555,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Return the last valid row index (may invoke FillCache if cached result not
                 already available).</p>
             */
-            inline  size_t      MultiRowTextImager::PartitionElementCacheInfo::GetLastRow () const {
+            inline  size_t      MultiRowTextImager::PartitionElementCacheInfo::GetLastRow () const
+            {
                 return GetRowCount () - 1;
             }
             /*
@@ -552,7 +565,8 @@ namespace   Stroika {
                 The internal representation of these things is somewhat obscure for data size reasons, so there is some
                 unpacking to be done.</p>
             */
-            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowHeight (size_t i) const {
+            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowHeight (size_t i) const
+            {
                 Assert (i < fRep->fRowCountCache);  // MFC Hint - when this assert fails, look closely at your
                 // stack-trace - often its cuz some other assert failed in the context
                 // of a FillCache, and so the cache info isn't completely filled in
@@ -572,7 +586,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight
             @DESCRIPTION:   <p>Set the height of a given row. This is typically just done within FillCache().</p>
             */
-            inline  void            MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight (size_t i, Led_Distance rowHeight) {
+            inline  void            MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight (size_t i, Led_Distance rowHeight)
+            {
                 Assert (i < fRep->fRowCountCache);
                 Assert (sizeof (RowHeight_) > 1 or rowHeight <= 0xff);      // be sure value fits..
                 Assert (sizeof (RowHeight_) > 2 or rowHeight <= 0xffff);    // be sure value fits.
@@ -594,7 +609,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Return the partition element relative offset of the start of a given row. So for the
                 first row, this is always zero.</p>
             */
-            inline  size_t          MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowStart (size_t i) const {
+            inline  size_t          MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowStart (size_t i) const
+            {
                 Assert (i < fRep->fRowCountCache);
 
                 if (i == 0) {
@@ -619,7 +635,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Set the partition element relative offset of the start of a given row. So for the
                 first row, this is MUST BE zero. This is typically just called during FillCache ().</p>
             */
-            inline  void            MultiRowTextImager::PartitionElementCacheInfo::SetRowStart (size_t i, size_t rowStart) {
+            inline  void            MultiRowTextImager::PartitionElementCacheInfo::SetRowStart (size_t i, size_t rowStart)
+            {
                 Assert (i < fRep->fRowCountCache);
 
                 if (i == 0) {
@@ -643,13 +660,16 @@ namespace   Stroika {
                     }
                 }
             }
-            inline  size_t  MultiRowTextImager::PartitionElementCacheInfo::GetLineRelativeRowStartPosition (size_t ithRow) const {
+            inline  size_t  MultiRowTextImager::PartitionElementCacheInfo::GetLineRelativeRowStartPosition (size_t ithRow) const
+            {
                 return (PeekAtRowStart (ithRow));
             }
-            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::GetRowHeight (size_t ithRow) const {
+            inline  Led_Distance    MultiRowTextImager::PartitionElementCacheInfo::GetRowHeight (size_t ithRow) const
+            {
                 return (PeekAtRowHeight (ithRow));
             }
-            inline  size_t      MultiRowTextImager::PartitionElementCacheInfo::LineRelativePositionInWhichRow (size_t charPos) const {
+            inline  size_t      MultiRowTextImager::PartitionElementCacheInfo::LineRelativePositionInWhichRow (size_t charPos) const
+            {
                 //  ZERO based charPos - ie zero is just before first byte in first row
                 //  Require (charPos >= 0); // yes I know this is a degenerate test - just for doc purposes...
                 //  Assert (charPos < OURLENGTH);
@@ -679,17 +699,21 @@ namespace   Stroika {
 //  class   MultiRowTextImager::RowReference
             inline  MultiRowTextImager::RowReference::RowReference (const RowReference& from):
                 fPartitionMarker (from.fPartitionMarker),
-                fSubRow (from.fSubRow) {
+                fSubRow (from.fSubRow)
+            {
             }
-            inline  MultiRowTextImager::RowReference&   MultiRowTextImager::RowReference::operator= (const MultiRowTextImager::RowReference& rhs) {
+            inline  MultiRowTextImager::RowReference&   MultiRowTextImager::RowReference::operator= (const MultiRowTextImager::RowReference& rhs)
+            {
                 fPartitionMarker = rhs.fPartitionMarker;
                 fSubRow = rhs.fSubRow;
                 return (*this);
             }
-            inline  MultiRowTextImager::PartitionMarker*    MultiRowTextImager::RowReference::GetPartitionMarker () const {
+            inline  MultiRowTextImager::PartitionMarker*    MultiRowTextImager::RowReference::GetPartitionMarker () const
+            {
                 return (fPartitionMarker);
             }
-            inline  size_t  MultiRowTextImager::RowReference::GetSubRow () const {
+            inline  size_t  MultiRowTextImager::RowReference::GetSubRow () const
+            {
                 return (fSubRow);
             }
 
@@ -703,7 +727,8 @@ namespace   Stroika {
                 is a valid next row. And false if <code>adjustMeInPlace</code> was already on the last row.</p>
                     <p>See also @'MultiRowTextImager::GetPreviousRowReference'.</p>
             */
-            inline  bool    MultiRowTextImager::GetNextRowReference (RowReference* adjustMeInPlace) const {
+            inline  bool    MultiRowTextImager::GetNextRowReference (RowReference* adjustMeInPlace) const
+            {
                 RequireNotNull (adjustMeInPlace);
                 PartitionMarker*            cur     =   adjustMeInPlace->GetPartitionMarker ();
                 size_t                      subRow  =   adjustMeInPlace->GetSubRow ();
@@ -731,7 +756,8 @@ namespace   Stroika {
                 is a valid previous row. And false if <code>adjustMeInPlace</code> was already on the first row.</p>
                     <p>See also @'MultiRowTextImager::GetNextRowReference'.</p>
             */
-            inline  bool    MultiRowTextImager::GetPreviousRowReference (RowReference* adjustMeInPlace) const {
+            inline  bool    MultiRowTextImager::GetPreviousRowReference (RowReference* adjustMeInPlace) const
+            {
                 AssertNotNull (adjustMeInPlace);
                 PartitionMarker*    cur     =   adjustMeInPlace->GetPartitionMarker ();
                 size_t              subRow  =   adjustMeInPlace->GetSubRow ();
@@ -760,7 +786,8 @@ namespace   Stroika {
                 It calls @'MultiRowTextImager::GetIthRowReferenceFromHere' todo its work (which returns a bool rather than asserting).</p>
                     <p>See also @'MultiRowTextImager::GetNextRowReference', @'MultiRowTextImager::GetPreviousRowReference'.</p>
             */
-            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetIthRowReferenceFromHere (RowReference fromHere, long ith) const {
+            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetIthRowReferenceFromHere (RowReference fromHere, long ith) const
+            {
                 bool    result  =   GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
                 return (fromHere);
@@ -771,7 +798,8 @@ namespace   Stroika {
                 a valid row number.</p>
                     <p>It calls @'MultiRowTextImager::GetIthRowReferenceFromHere' todo its work (which returns a bool rather than asserting).</p>
             */
-            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetIthRowReference (size_t ith) const {
+            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetIthRowReference (size_t ith) const
+            {
                 RowReference    fromHere (GetFirstPartitionMarker (), 0);
                 bool    result  =   GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
@@ -782,20 +810,23 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Gets the length of the given row (in @'Led_tChar's).</p>
                     <p>See also  @'MultiRowTextImager::GetStartOfRow' and @'MultiRowTextImager::GetEndOfRow'.</p>
             */
-            inline  size_t  MultiRowTextImager::GetRowLength (RowReference row) const {
+            inline  size_t  MultiRowTextImager::GetRowLength (RowReference row) const
+            {
                 return (GetEndOfRow (row) - GetStartOfRow (row));
             }
             /*
             @METHOD:        MultiRowTextImager::GetLastRowReferenceInWindow
             @DESCRIPTION:   <p>Returns the last row-reference in the window (end of window).</p>
             */
-            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetLastRowReferenceInWindow () const {
+            inline  MultiRowTextImager::RowReference    MultiRowTextImager::GetLastRowReferenceInWindow () const
+            {
                 RowReference    row =   GetTopRowReferenceInWindow ();
                 Assert (GetTotalRowsInWindow_ () >= 1);
                 (void)GetIthRowReferenceFromHere (&row, GetTotalRowsInWindow_ () - 1);
                 return (row);
             }
-            inline  void    MultiRowTextImager::SetTopRowInWindow_ (RowReference row) {
+            inline  void    MultiRowTextImager::SetTopRowInWindow_ (RowReference row)
+            {
                 fTopLinePartitionMarkerInWindow = row.GetPartitionMarker ();
                 fSubRowInTopLineInWindow = row.GetSubRow ();
                 AssertNotNull (fTopLinePartitionMarkerInWindow);
@@ -805,7 +836,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::GetRowHeight
             @DESCRIPTION:   <p>Returns the height (in standard GDI units, usually pixels) of the given row reference.</p>
             */
-            inline  Led_Distance    MultiRowTextImager::GetRowHeight (RowReference row) const {
+            inline  Led_Distance    MultiRowTextImager::GetRowHeight (RowReference row) const
+            {
                 AssertNotNull (row.GetPartitionMarker ());
                 return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());
             }
@@ -816,12 +848,14 @@ namespace   Stroika {
 
 
 
-            inline  bool    operator== (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs) {
+            inline  bool    operator== (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs)
+            {
                 return (lhs.GetPartitionMarker () == rhs.GetPartitionMarker () and
                         lhs.GetSubRow () == rhs.GetSubRow ()
                        );
             }
-            inline  bool    operator!= (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs) {
+            inline  bool    operator!= (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs)
+            {
                 return (lhs.GetPartitionMarker () != rhs.GetPartitionMarker () or
                         lhs.GetSubRow () != rhs.GetSubRow ()
                        );

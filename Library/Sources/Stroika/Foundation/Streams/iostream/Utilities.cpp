@@ -32,7 +32,8 @@ using   namespace   Stroika::Foundation::Streams::iostream;
  ********************* Streams::iostream::ReadTextStream ************************
  ********************************************************************************
  */
-wstring Streams::iostream::ReadTextStream (istream& in) {
+wstring Streams::iostream::ReadTextStream (istream& in)
+{
     streamoff   start   =   in.tellg ();
     in.seekg (0, ios_base::end);
     streamoff   end     =   in.tellg ();
@@ -50,7 +51,8 @@ wstring Streams::iostream::ReadTextStream (istream& in) {
     return Characters::MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
 }
 
-wstring Streams::iostream::ReadTextStream (wistream& in) {
+wstring Streams::iostream::ReadTextStream (wistream& in)
+{
     streamoff   start   =   in.tellg ();
     in.seekg (0, ios_base::end);
     streamoff   end     =   in.tellg ();
@@ -79,7 +81,8 @@ wstring Streams::iostream::ReadTextStream (wistream& in) {
  ********************* Streams::iostream::WriteString ***************************
  ********************************************************************************
  */
-void    Streams::iostream::WriteString (ostream& out, const wstring& s) {
+void    Streams::iostream::WriteString (ostream& out, const wstring& s)
+{
     string  s1 = WideStringToNarrow (s, kCodePage_UTF8);
     out << s1.size ();
     out << ' ';
@@ -96,7 +99,8 @@ void    Streams::iostream::WriteString (ostream& out, const wstring& s) {
  ********************** Streams::iostream::ReadString ***************************
  ********************************************************************************
  */
-wstring Streams::iostream::ReadString (istream& in) {
+wstring Streams::iostream::ReadString (istream& in)
+{
     int strlen;
     in >> strlen;
     in.get ();  // throw away character between size and string
@@ -121,7 +125,8 @@ wstring Streams::iostream::ReadString (istream& in) {
  *********************** Streams::iostream::ReadBytes ***************************
  ********************************************************************************
  */
-vector<Byte>    Streams::iostream::ReadBytes (istream& in) {
+vector<Byte>    Streams::iostream::ReadBytes (istream& in)
+{
     streamoff   start   =   in.tellg ();
     in.seekg (0, ios_base::end);
     streamoff   end     =   in.tellg ();
@@ -150,7 +155,8 @@ vector<Byte>    Streams::iostream::ReadBytes (istream& in) {
  ********************** Streams::iostream::WriteBytes ***************************
  ********************************************************************************
  */
-void    Streams::iostream::WriteBytes (ostream& out, const vector<Byte>& s) {
+void    Streams::iostream::WriteBytes (ostream& out, const vector<Byte>& s)
+{
     out.write (reinterpret_cast<const char*> (Containers::Start (s)), s.size ());
 }
 

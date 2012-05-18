@@ -17,7 +17,8 @@ namespace   Stroika {
 
 
                 inline  SocketStream::SocketStream (Socket sd)
-                    : fSD_ (sd) {
+                    : fSD_ (sd)
+                {
                 }
 
             }

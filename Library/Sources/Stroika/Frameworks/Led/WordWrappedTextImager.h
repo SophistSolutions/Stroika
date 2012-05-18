@@ -160,9 +160,11 @@ namespace   Stroika {
 //  class   WordWrappedTextImager
             inline  WordWrappedTextImager::WordWrappedTextImager ():
                 TextImager (),
-                MultiRowTextImager () { //,
+                MultiRowTextImager ()   //,
+            {
             }
-            inline  WordWrappedTextImager::~WordWrappedTextImager () {
+            inline  WordWrappedTextImager::~WordWrappedTextImager ()
+            {
             }
 
 
@@ -177,17 +179,20 @@ namespace   Stroika {
                         (@'TrivialWordWrappedImager<TEXTSTORE,IMAGER>')</p>
             */
             TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t):
-                TrivialImager<TEXTSTORE, IMAGER> (t) {
+                TrivialImager<TEXTSTORE, IMAGER> (t)
+            {
             }
             template    <typename TEXTSTORE, typename   IMAGER>
             TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText):
-                TrivialImager<TEXTSTORE, IMAGER> (t) {
+                TrivialImager<TEXTSTORE, IMAGER> (t)
+            {
                 SnagAttributesFromTablet ();
                 SetWindowRect (bounds);
                 GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            void    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const {
+            void    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
+            {
                 Ensure (GetWindowRect ().GetWidth () >= 1);
                 if (lhs != nullptr) {
                     *lhs = 0;
@@ -206,7 +211,8 @@ namespace   Stroika {
             @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::GetHeight
             @DESCRIPTION:   <p>Returns the height - in pixels - of the text in the imager.</p>
             */
-            Led_Distance    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const {
+            Led_Distance    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
+            {
                 return GetHeightOfRows (0, GetRowCount ());
             }
 

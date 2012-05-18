@@ -25,10 +25,12 @@ using   namespace   Stroika::Foundation::Streams::iostream;
  ********************************************************************************
  */
 BinaryInputStreamFromIStreamAdapter::BinaryInputStreamFromIStreamAdapter (std::istream& originalStream)
-    : fOriginalStream_ (originalStream) {
+    : fOriginalStream_ (originalStream)
+{
 }
 
-size_t  BinaryInputStreamFromIStreamAdapter::_Read (Byte* intoStart, Byte* intoEnd) {
+size_t  BinaryInputStreamFromIStreamAdapter::_Read (Byte* intoStart, Byte* intoEnd)
+{
     RequireNotNull (intoStart);
     RequireNotNull (intoEnd);
     Require (intoStart < intoEnd);
@@ -47,12 +49,14 @@ size_t  BinaryInputStreamFromIStreamAdapter::_Read (Byte* intoStart, Byte* intoE
     return n;
 }
 
-Streams::SeekOffsetType BinaryInputStreamFromIStreamAdapter::_GetOffset () const override {
+Streams::SeekOffsetType BinaryInputStreamFromIStreamAdapter::_GetOffset () const override
+{
     // instead of tellg () - avoids issue with EOF where fail bit set???
     return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
 }
 
-void    BinaryInputStreamFromIStreamAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override {
+void    BinaryInputStreamFromIStreamAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
     switch (whence) {
         case    FromStart_W:
             fOriginalStream_.seekg (offset, ios::beg);

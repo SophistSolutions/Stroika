@@ -36,7 +36,8 @@ namespace   Stroika {
 
                 extern  CriticalSection*    sCritSection_;
 
-                inline  CriticalSection&    GetCritSection_ () {
+                inline  CriticalSection&    GetCritSection_ ()
+                {
                     AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
                     return *sCritSection_;
                 }
@@ -47,7 +48,8 @@ namespace   Stroika {
             namespace   Private {
                 // This must be included here to keep genclass happy, since the .cc file will not be included
                 // in the genclassed .cc file....
-                inline  void**  GetMem_Util_ (const size_t sz) {
+                inline  void**  GetMem_Util_ (const size_t sz)
+                {
                     Assert (sz >= sizeof (void*));  //  cuz we overwrite first sizeof(void*) for link
 
                     /*
@@ -107,7 +109,8 @@ namespace   Stroika {
 #endif
 
 #if     qAllowBlockAllocation
-            template    <typename   T>  inline  void*   BlockAllocated<T>::GetNextLink_ () {
+            template    <typename   T>  inline  void*   BlockAllocated<T>::GetNextLink_ ()
+            {
                 using   namespace   Private;
 
 #if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
@@ -148,7 +151,8 @@ namespace   Stroika {
 #pragma pop
 #endif
             }
-            template    <typename   T>  inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink) {
+            template    <typename   T>  inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink)
+            {
                 using   namespace   Private;
 
 #if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
@@ -187,7 +191,8 @@ namespace   Stroika {
 #endif
             }
 #endif
-            template    <typename   T>  inline  void*   BlockAllocated<T>::operator new (size_t n) {
+            template    <typename   T>  inline  void*   BlockAllocated<T>::operator new (size_t n)
+            {
 #if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 #pragma push
 #pragma warn -8008
@@ -217,7 +222,8 @@ namespace   Stroika {
                 return ::operator new (n);
 #endif
             }
-            template    <typename   T>  inline  void    BlockAllocated<T>::operator delete (void* p) {
+            template    <typename   T>  inline  void    BlockAllocated<T>::operator delete (void* p)
+            {
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
                     Execution::AutoCriticalSection  critSec (Private::GetCritSection_ ());
@@ -229,7 +235,8 @@ namespace   Stroika {
 #endif
             }
 #if     qAllowBlockAllocation
-            template    <typename   T>  void    BlockAllocated<T>::GetMem_ () {
+            template    <typename   T>  void    BlockAllocated<T>::GetMem_ ()
+            {
                 using   namespace   Private;
 #if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 #pragma push

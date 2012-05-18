@@ -34,7 +34,8 @@ using   namespace   Stroika::Foundation::Memory;
  ************************************* Format ***********************************
  ********************************************************************************
  */
-string  Characters::FormatV (const char* format, va_list argsList) {
+string  Characters::FormatV (const char* format, va_list argsList)
+{
     RequireNotNull (format);
     Memory::SmallStackBuffer<char, 10* 1024> msgBuf (10 * 1024);
 #if     __STDC_WANT_SECURE_LIB__
@@ -50,7 +51,8 @@ string  Characters::FormatV (const char* format, va_list argsList) {
     return string (msgBuf);
 }
 
-string  Characters::Format (const char* format, ...) {
+string  Characters::Format (const char* format, ...)
+{
     va_list     argsList;
     va_start (argsList, format);
     string  tmp = FormatV (format, argsList);
@@ -58,7 +60,8 @@ string  Characters::Format (const char* format, ...) {
     return tmp;
 }
 
-wstring Characters::FormatV (const wchar_t* format, va_list argsList) {
+wstring Characters::FormatV (const wchar_t* format, va_list argsList)
+{
     RequireNotNull (format);
     Memory::SmallStackBuffer<wchar_t, 10* 1024>  msgBuf (10 * 1024);
     const   wchar_t*    useFormat   =   format;
@@ -122,7 +125,8 @@ wstring Characters::FormatV (const wchar_t* format, va_list argsList) {
     return wstring (msgBuf);
 }
 
-wstring Characters::Format (const wchar_t* format, ...) {
+wstring Characters::Format (const wchar_t* format, ...)
+{
     va_list     argsList;
     va_start (argsList, format);
     wstring tmp = FormatV (format, argsList);
@@ -141,11 +145,13 @@ wstring Characters::Format (const wchar_t* format, ...) {
  ****************************** HexString2Int ***********************************
  ********************************************************************************
  */
-int Characters::HexString2Int (const string& s) {
+int Characters::HexString2Int (const string& s)
+{
     return ::strtol (s.c_str (), nullptr, 16);
 }
 
-int Characters::HexString2Int (const wstring& s) {
+int Characters::HexString2Int (const wstring& s)
+{
     // http://msdn.microsoft.com/en-us/library/w4z2wdyc(v=vs.80).aspx
     // http://pubs.opengroup.org/onlinepubs/009695399/functions/wcstol.html
     return ::wcstol (s.c_str (), nullptr, 16);
@@ -160,11 +166,13 @@ int Characters::HexString2Int (const wstring& s) {
  ********************************* String2Int ***********************************
  ********************************************************************************
  */
-int Characters::String2Int (const string& s) {
+int Characters::String2Int (const string& s)
+{
     return ::atol (s.c_str ());
 }
 
-int Characters::String2Int (const wstring& s) {
+int Characters::String2Int (const wstring& s)
+{
 #if     defined (_MSC_VER)
     return ::_wtol (s.c_str ());
 #else
@@ -184,12 +192,14 @@ int Characters::String2Int (const wstring& s) {
  ********************************* String2Float *********************************
  ********************************************************************************
  */
-double  Characters::String2Float (const wstring& s) {
+double  Characters::String2Float (const wstring& s)
+{
     static  const   double  kBADVAL =   static_cast<double> (Math::nan ());
     return String2Float (s, kBADVAL);
 }
 
-double  Characters::String2Float (const wstring& s, double returnValIfInvalidString) {
+double  Characters::String2Float (const wstring& s, double returnValIfInvalidString)
+{
     double  num =   returnValIfInvalidString;
 #pragma warning (push)
 #pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
@@ -211,7 +221,8 @@ double  Characters::String2Float (const wstring& s, double returnValIfInvalidStr
  ********************************* Float2String *********************************
  ********************************************************************************
  */
-wstring Characters::Float2String (double f, unsigned int precision) {
+wstring Characters::Float2String (double f, unsigned int precision)
+{
     if (std::isnan (f)) {
         return wstring ();
     }

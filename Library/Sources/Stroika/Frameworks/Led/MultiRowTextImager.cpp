@@ -46,34 +46,41 @@ namespace   Stroika {
                 fPMCacheMgr (),
                 fTopLinePartitionMarkerInWindow (nullptr),
                 fSubRowInTopLineInWindow (0),
-                fTotalRowsInWindow (0) {            // value must be computed
+                fTotalRowsInWindow (0)              // value must be computed
+            {
             }
 
-            MultiRowTextImager::~MultiRowTextImager () {
+            MultiRowTextImager::~MultiRowTextImager ()
+            {
                 Assert (fTopLinePartitionMarkerInWindow == nullptr);
             }
 
-            void    MultiRowTextImager::HookLosingTextStore () {
+            void    MultiRowTextImager::HookLosingTextStore ()
+            {
                 inherited::HookLosingTextStore ();
                 HookLosingTextStore_ ();
             }
 
-            void    MultiRowTextImager::HookLosingTextStore_ () {
+            void    MultiRowTextImager::HookLosingTextStore_ ()
+            {
                 SetPartition (PartitionPtr ());
             }
 
-            void    MultiRowTextImager::HookGainedNewTextStore () {
+            void    MultiRowTextImager::HookGainedNewTextStore ()
+            {
                 inherited::HookGainedNewTextStore ();
                 HookGainedNewTextStore_ ();
             }
 
-            void    MultiRowTextImager::HookGainedNewTextStore_ () {
+            void    MultiRowTextImager::HookGainedNewTextStore_ ()
+            {
                 if (GetPartition ().IsNull ()) {
                     SetPartition (MakeDefaultPartition ());
                 }
             }
 
-            void    MultiRowTextImager::SetPartition (const PartitionPtr& partitionPtr) {
+            void    MultiRowTextImager::SetPartition (const PartitionPtr& partitionPtr)
+            {
 #if     qAutoPtr_NoResetMethodBug
                 fPMCacheMgr = auto_ptr<PMInfoCacheMgr> (nullptr);
 #else
@@ -98,19 +105,23 @@ namespace   Stroika {
                 }
             }
 
-            PartitioningTextImager::PartitionPtr    MultiRowTextImager::MakeDefaultPartition () const {
+            PartitioningTextImager::PartitionPtr    MultiRowTextImager::MakeDefaultPartition () const
+            {
                 return PartitionPtr (new LineBasedPartition (GetTextStore ()));
             }
 
-            MultiRowTextImager::PartitionElementCacheInfo   MultiRowTextImager::GetPartitionElementCacheInfo (Partition::PartitionMarker* pm) const {
+            MultiRowTextImager::PartitionElementCacheInfo   MultiRowTextImager::GetPartitionElementCacheInfo (Partition::PartitionMarker* pm) const
+            {
                 return fPMCacheMgr->GetPartitionElementCacheInfo (pm);
             }
 
-            MultiRowTextImager::PartitionElementCacheInfo   MultiRowTextImager::GetPartitionElementCacheInfo (MultiRowTextImager::RowReference row) const {
+            MultiRowTextImager::PartitionElementCacheInfo   MultiRowTextImager::GetPartitionElementCacheInfo (MultiRowTextImager::RowReference row) const
+            {
                 return GetPartitionElementCacheInfo (row.GetPartitionMarker ());
             }
 
-            bool    MultiRowTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, long ith) const {
+            bool    MultiRowTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, long ith) const
+            {
                 for (; ith > 0; ith--) {
                     if (not GetNextRowReference (adjustMeInPlace)) {
                         return false;
@@ -124,7 +135,8 @@ namespace   Stroika {
                 return true;
             }
 
-            size_t  MultiRowTextImager::GetRowNumber (RowReference rowRef) const {
+            size_t  MultiRowTextImager::GetRowNumber (RowReference rowRef) const
+            {
                 // NB: This routine is VERY EXPENSIVE, if the text above the given row has not yet been wrapped, since
                 // it forces a wrap. This is meant only to be a convenient code-saver in implementing rownumber based
                 // APIs - even though their use is discouraged...
@@ -141,7 +153,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Count the # of rows from one rowreference to the other (order doesn't matter)
                 <p>See also @'MultiRowTextImager::CountRowDifferenceLimited'</p>
             */
-            size_t  MultiRowTextImager::CountRowDifference (RowReference lhs, RowReference rhs) const {
+            size_t  MultiRowTextImager::CountRowDifference (RowReference lhs, RowReference rhs) const
+            {
                 /*
                  *  See which row reference comes before the other, and then can from one TO the
                  *  other. Sadly - this forces the wrapping of all that text in between.
@@ -177,7 +190,8 @@ namespace   Stroika {
                         be a pig performance dog - since it tends to force a word-wrap.</p>
                             <p>See also @'MultiRowTextImager::CountRowDifference'</p>
             */
-            size_t  MultiRowTextImager::CountRowDifferenceLimited (RowReference lhs, RowReference rhs, size_t limit) const {
+            size_t  MultiRowTextImager::CountRowDifferenceLimited (RowReference lhs, RowReference rhs, size_t limit) const
+            {
                 /*
                  *  See which row reference comes before the other, and then can from one TO the
                  *  other. Sadly - this forces the wrapping of all that text in between.
@@ -207,21 +221,25 @@ namespace   Stroika {
                 return (rowsGoneBy);
             }
 
-            size_t  MultiRowTextImager::GetTopRowInWindow () const {
+            size_t  MultiRowTextImager::GetTopRowInWindow () const
+            {
                 // NB: Use of this function is discouraged as it is inefficent in the presence of word-wrapping
                 return (GetRowNumber (GetTopRowReferenceInWindow ()));
             }
 
-            size_t  MultiRowTextImager::GetTotalRowsInWindow () const {
+            size_t  MultiRowTextImager::GetTotalRowsInWindow () const
+            {
                 return GetTotalRowsInWindow_ ();
             }
 
-            size_t  MultiRowTextImager::GetLastRowInWindow () const {
+            size_t  MultiRowTextImager::GetLastRowInWindow () const
+            {
                 // NB: Use of this function is discouraged as it is inefficent in the presence of word-wrapping
                 return (GetRowNumber (GetLastRowReferenceInWindow ()));
             }
 
-            void    MultiRowTextImager::SetTopRowInWindow (size_t newTopRow) {
+            void    MultiRowTextImager::SetTopRowInWindow (size_t newTopRow)
+            {
                 // NB: Use of this function is discouraged as it is inefficent in the presence of word-wrapping
 #if     0
                 Assert (newTopRow <= GetRowCount ());       // We require this, but don't call since would cause word-wrapping of entire text...
@@ -235,7 +253,8 @@ namespace   Stroika {
                 // as well check we have our definitions straight...
             }
 
-            void    MultiRowTextImager::AssureWholeWindowUsedIfNeeded () {
+            void    MultiRowTextImager::AssureWholeWindowUsedIfNeeded ()
+            {
                 SetTopRowInWindow (GetTopRowReferenceInWindow ());
             }
 
@@ -243,7 +262,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::GetMarkerPositionOfStartOfWindow
             @DESCRIPTION:   <p>Efficient implemenation of @'TextImager::GetMarkerPositionOfStartOfWindow'</p>
             */
-            size_t  MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const {
+            size_t  MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const
+            {
                 return (GetStartOfRow (GetTopRowReferenceInWindow ()));
             }
 
@@ -251,15 +271,18 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::GetMarkerPositionOfEndOfWindow
             @DESCRIPTION:   <p>Efficient implemenation of @'TextImager::GetMarkerPositionOfEndOfWindow'</p>
             */
-            size_t  MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const {
+            size_t  MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const
+            {
                 return GetEndOfRow (GetLastRowReferenceInWindow ());
             }
 
-            size_t      MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const {
+            size_t      MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
+            {
                 return GetStartOfRow (GetLastRowReferenceInWindow ());
             }
 
-            long    MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const {
+            long    MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
+            {
                 Assert (long (GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
                 size_t          pos         =   long (GetMarkerPositionOfStartOfWindow ()) + deltaChars;
                 RowReference    targetRow   =   GetRowReferenceContainingPosition (pos);
@@ -267,12 +290,14 @@ namespace   Stroika {
                 return (deltaChars >= 0) ? rowDiff : -long(rowDiff);
             }
 
-            long    MultiRowTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const {
+            long    MultiRowTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const
+            {
                 RowReference    row = GetIthRowReferenceFromHere (GetTopRowReferenceInWindow (), deltaRows);
                 return (long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ()));
             }
 
-            void    MultiRowTextImager::ScrollByIfRoom (long downByRows) {
+            void    MultiRowTextImager::ScrollByIfRoom (long downByRows)
+            {
                 RowReference    newTopRow   =   GetTopRowReferenceInWindow ();
                 (void)GetIthRowReferenceFromHere (&newTopRow, downByRows);              // ignore result cuz we did say - IF-ROOM!
                 SetTopRowInWindow (newTopRow);
@@ -282,7 +307,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::ScrollSoShowing
             @DESCRIPTION:   <p>Implement @'TextImager::ScrollSoShowing' API.</p>
             */
-            void    MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos) {
+            void    MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos)
+            {
                 Assert (markerPos <= GetLength ());             // Allow any marker position (not just character?)
                 Assert (fTotalRowsInWindow == 0 or fTotalRowsInWindow == ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ()));
 
@@ -421,7 +447,8 @@ namespace   Stroika {
                 ScrollSoShowingHHelper (markerPos, andTryToShowMarkerPos);
             }
 
-            void    MultiRowTextImager::SetTopRowInWindow (RowReference row) {
+            void    MultiRowTextImager::SetTopRowInWindow (RowReference row)
+            {
                 if (GetForceAllRowsShowing ()) {
                     row = AdjustPotentialTopRowReferenceSoWholeWindowUsed (row);
                 }
@@ -442,7 +469,8 @@ namespace   Stroika {
                         ofscreen imaging (to reduce flicker). Note that if the 'printing' argument is set- this overrides the offscreen bitmaps
                         flag, and prevents offscreen drawing.</p>
             */
-            void    MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing) {
+            void    MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
+            {
                 Invariant ();
 
                 Led_Rect    rowsLeftToDrawRect  =   GetWindowRect ();
@@ -572,7 +600,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::DrawPartitionElement
             @DESCRIPTION:   <p></p>
             */
-            void    MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn) {
+            void    MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
+            {
                 RequireNotNull (pm);
                 RequireNotNull (remainingDrawArea);
                 RequireNotNull (rowsDrawn);
@@ -679,22 +708,26 @@ namespace   Stroika {
                 }
             }
 
-            Led_Rect    MultiRowTextImager::GetCharLocation (size_t afterPosition)  const {
+            Led_Rect    MultiRowTextImager::GetCharLocation (size_t afterPosition)  const
+            {
                 return (GetCharLocationRowRelative (afterPosition, RowReference (GetFirstPartitionMarker (), 0)));
             }
 
-            Led_Rect    MultiRowTextImager::GetCharWindowLocation (size_t afterPosition)    const {
+            Led_Rect    MultiRowTextImager::GetCharWindowLocation (size_t afterPosition)    const
+            {
                 Led_Point   windowOrigin    =   GetWindowRect ().GetOrigin () - Led_Point (0, GetHScrollPos ());
                 return (windowOrigin +
                         GetCharLocationRowRelative (afterPosition, GetTopRowReferenceInWindow (), GetTotalRowsInWindow_ ())
                        );
             }
 
-            size_t  MultiRowTextImager::GetCharAtLocation (const Led_Point& where) const {
+            size_t  MultiRowTextImager::GetCharAtLocation (const Led_Point& where) const
+            {
                 return (GetCharAtLocationRowRelative (where, RowReference (GetFirstPartitionMarker (), 0)));
             }
 
-            size_t  MultiRowTextImager::GetCharAtWindowLocation (const Led_Point& where) const {
+            size_t  MultiRowTextImager::GetCharAtWindowLocation (const Led_Point& where) const
+            {
                 Led_Point   windowOrigin    =   GetWindowRect ().GetOrigin () - Led_Point (0, GetHScrollPos ());
                 return (GetCharAtLocationRowRelative (where - windowOrigin,
                                                       GetTopRowReferenceInWindow (),
@@ -703,44 +736,52 @@ namespace   Stroika {
                        );
             }
 
-            size_t  MultiRowTextImager::GetStartOfRow (size_t rowNumber) const {
+            size_t  MultiRowTextImager::GetStartOfRow (size_t rowNumber) const
+            {
                 // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
                 // Routines using RowReferences often perform MUCH better
                 return (GetStartOfRow (GetIthRowReference (rowNumber)));
             }
 
-            size_t  MultiRowTextImager::GetStartOfRowContainingPosition (size_t charPosition) const {
+            size_t  MultiRowTextImager::GetStartOfRowContainingPosition (size_t charPosition) const
+            {
                 return (GetStartOfRow (GetRowReferenceContainingPosition (charPosition)));
             }
 
-            size_t  MultiRowTextImager::GetEndOfRow (size_t rowNumber) const {
+            size_t  MultiRowTextImager::GetEndOfRow (size_t rowNumber) const
+            {
                 // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
                 // Routines using RowReferences often perform MUCH better
                 return (GetEndOfRow (GetIthRowReference (rowNumber)));
             }
 
-            size_t  MultiRowTextImager::GetEndOfRowContainingPosition (size_t charPosition) const {
+            size_t  MultiRowTextImager::GetEndOfRowContainingPosition (size_t charPosition) const
+            {
                 return (GetEndOfRow (GetRowReferenceContainingPosition (charPosition)));
             }
 
-            size_t  MultiRowTextImager::GetRealEndOfRow (size_t rowNumber) const {
+            size_t  MultiRowTextImager::GetRealEndOfRow (size_t rowNumber) const
+            {
                 // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
                 // Routines using RowReferences often perform MUCH better
                 return (GetRealEndOfRow (GetIthRowReference (rowNumber)));
             }
 
-            size_t  MultiRowTextImager::GetRealEndOfRowContainingPosition (size_t charPosition) const {
+            size_t  MultiRowTextImager::GetRealEndOfRowContainingPosition (size_t charPosition) const
+            {
                 return (GetRealEndOfRow (GetRowReferenceContainingPosition (charPosition)));
             }
 
-            size_t  MultiRowTextImager::GetStartOfRow (RowReference row) const {
+            size_t  MultiRowTextImager::GetStartOfRow (RowReference row) const
+            {
                 PartitionMarker*    cur     =   row.GetPartitionMarker ();
                 size_t              subRow  =   row.GetSubRow ();
                 AssertNotNull (cur);
                 return (cur->GetStart () + (subRow == 0 ? 0 : GetPartitionElementCacheInfo (cur).GetLineRelativeRowStartPosition (subRow)));
             }
 
-            size_t  MultiRowTextImager::GetEndOfRow (RowReference row) const {
+            size_t  MultiRowTextImager::GetEndOfRow (RowReference row) const
+            {
                 PartitionMarker*    cur     =   row.GetPartitionMarker ();
                 size_t              subRow  =   row.GetSubRow ();
                 AssertNotNull (cur);
@@ -772,7 +813,8 @@ namespace   Stroika {
                 }
             }
 
-            size_t  MultiRowTextImager::GetRealEndOfRow (RowReference row) const {
+            size_t  MultiRowTextImager::GetRealEndOfRow (RowReference row) const
+            {
                 PartitionMarker*    cur     =   row.GetPartitionMarker ();
                 size_t              subRow  =   row.GetSubRow ();
                 AssertNotNull (cur);
@@ -787,7 +829,8 @@ namespace   Stroika {
                 }
             }
 
-            MultiRowTextImager::RowReference    MultiRowTextImager::GetRowReferenceContainingPosition (size_t charPosition) const {
+            MultiRowTextImager::RowReference    MultiRowTextImager::GetRowReferenceContainingPosition (size_t charPosition) const
+            {
                 Require (charPosition <= GetEnd ());
                 PartitionMarker*    pm  =   GetPartitionMarkerContainingPosition (charPosition);
                 AssertNotNull (pm);
@@ -802,13 +845,15 @@ namespace   Stroika {
                 return (RowReference (pm, pmCacheInfo.LineRelativePositionInWhichRow (charPosition - pmStart)));
             }
 
-            size_t  MultiRowTextImager::GetRowContainingPosition (size_t charPosition) const {
+            size_t  MultiRowTextImager::GetRowContainingPosition (size_t charPosition) const
+            {
                 // Warning: GetRowReferenceContainingPosition () in preference, since
                 // it doesn't require call to pm->GetRowCount () - forcing a word-wrap...
                 return (GetRowNumber (GetRowReferenceContainingPosition (charPosition)));
             }
 
-            size_t  MultiRowTextImager::GetRowCount () const {
+            size_t  MultiRowTextImager::GetRowCount () const
+            {
                 // NB: This is an expensive routine because it forces a word-wrap on all the text!
                 size_t  rowCount    =   0;
                 for (PartitionMarker* cur = GetFirstPartitionMarker (); cur != nullptr; cur = cur->GetNext ()) {
@@ -819,11 +864,13 @@ namespace   Stroika {
                 return (rowCount);
             }
 
-            Led_Rect    MultiRowTextImager::GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const {
+            Led_Rect    MultiRowTextImager::GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const
+            {
                 return GetCharLocationRowRelative (afterPosition, GetRowReferenceContainingPosition (positionOfTopRow), maxRowsToCheck);
             }
 
-            Led_Distance    MultiRowTextImager::GetRowHeight (size_t rowNumber) const {
+            Led_Distance    MultiRowTextImager::GetRowHeight (size_t rowNumber) const
+            {
                 // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
                 // Routines using RowReferences often perform MUCH better
                 return (GetRowHeight (GetIthRowReference (rowNumber)));
@@ -833,7 +880,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition
             @DESCRIPTION:   <p>Override/implement @'TextImager::GetRowRelativeBaselineOfRowContainingPosition'.</p>
             */
-            Led_Distance    MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const {
+            Led_Distance    MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const
+            {
                 RowReference    thisRow     =   GetRowReferenceContainingPosition (charPosition);
                 size_t          startOfRow  =   GetStartOfRow (thisRow);
                 size_t          endOfRow    =   GetEndOfRow (thisRow);
@@ -841,7 +889,8 @@ namespace   Stroika {
             }
 
             void    MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                    size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const {
+                    size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const
+            {
                 AssertNotNull (expandedFromMarkerPos);
                 AssertNotNull (expandedToMarkerPos);
                 Assert (fromMarkerPos <= toMarkerPos);
@@ -895,11 +944,13 @@ namespace   Stroika {
                 (*expandedToMarkerPos) = GetEnd ();
             }
 
-            Led_Distance    MultiRowTextImager::GetHeightOfRows (size_t startingRow, size_t rowCount)   const {
+            Led_Distance    MultiRowTextImager::GetHeightOfRows (size_t startingRow, size_t rowCount)   const
+            {
                 return (GetHeightOfRows (GetIthRowReference (startingRow), rowCount));
             }
 
-            Led_Distance    MultiRowTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const {
+            Led_Distance    MultiRowTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const
+            {
                 Led_Distance    height  =   0;
                 for (RowReference curRow = startingRow; rowCount > 0; rowCount--) {
                     PartitionMarker*            curPM   =   curRow.GetPartitionMarker ();
@@ -913,7 +964,8 @@ namespace   Stroika {
                 return (height);
             }
 
-            void    MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
 //maynot need this addtion either - since done in PMInfoCache guy...
 #if 1
                 /*
@@ -940,7 +992,8 @@ namespace   Stroika {
                 InvalidateScrollBarParameters ();           // even if we don't change the top row, we might change enuf about the text to change sbar
             }
 
-            void    MultiRowTextImager::SetWindowRect (const Led_Rect& windowRect) {
+            void    MultiRowTextImager::SetWindowRect (const Led_Rect& windowRect)
+            {
                 /*
                  *  NB: We only check that the 'heightChanged' because thats all that can affect the number of rows
                  *  shown on the screen. Someone pointed out that the WIDTH of the window rect changing can ALSO
@@ -965,7 +1018,8 @@ namespace   Stroika {
                         Invalidate cached row-height/etc information for the entire imager. Invalidate rows
                         in a window cached values, etc.</p>
             */
-            void    MultiRowTextImager::InvalidateAllCaches () {
+            void    MultiRowTextImager::InvalidateAllCaches ()
+            {
                 inherited::InvalidateAllCaches ();
                 if (not GetPartition ().IsNull ()) {        // careful that we aren't changing text metrics while we have no textstore attached!!!
                     if (fPMCacheMgr.get () != nullptr) {
@@ -978,7 +1032,8 @@ namespace   Stroika {
                 }
             }
 
-            MultiRowTextImager::RowReference    MultiRowTextImager::AdjustPotentialTopRowReferenceSoWholeWindowUsed (const RowReference& potentialTopRow) {
+            MultiRowTextImager::RowReference    MultiRowTextImager::AdjustPotentialTopRowReferenceSoWholeWindowUsed (const RowReference& potentialTopRow)
+            {
                 /*
                  *  This check is always safe, but probably not a worthwhile optimization, except that it avoids
                  *  some problems about initializing the top-row-reference before we've got a valid
@@ -1048,7 +1103,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    MultiRowTextImager::PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow) {
+            bool    MultiRowTextImager::PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow)
+            {
                 if (markerPos < GetStartOfRow (newTopRow)) {
                     return false;
                 }
@@ -1059,7 +1115,8 @@ namespace   Stroika {
                 return (markerPos < GetRealEndOfRow (lastRow));
             }
 
-            void    MultiRowTextImager::ReValidateSubRowInTopLineInWindow () {
+            void    MultiRowTextImager::ReValidateSubRowInTopLineInWindow ()
+            {
                 AssertNotNull (fTopLinePartitionMarkerInWindow);
 
                 // don't bother calling GetRowCount () if fSubRowInTopLineInWindow is already ZERO - avoid possible word-wrap
@@ -1088,7 +1145,8 @@ namespace   Stroika {
                 }
             }
 
-            size_t  MultiRowTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const {
+            size_t  MultiRowTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const
+            {
                 /*
                  *  For now, we don't show partial rows at the bottom. We
                  *  might want to reconsider this.
@@ -1135,7 +1193,8 @@ namespace   Stroika {
                         given character cell. Compute the vertical position relative to the given argument 'topRow' and check and most
                         'maxRowsToCheck' before just returning a large 'off-the-end' value result</p>
             */
-            Led_Rect    MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck)   const {
+            Led_Rect    MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck)   const
+            {
                 // MUST FIGURE OUT WHAT TODO HERE BETTER - 10000 not good enough answer always...
                 const   Led_Rect    kMagicBeforeRect    =   Led_Rect (-10000, 0, 0, 0);
                 const   Led_Rect    kMagicAfterRect     =   Led_Rect (10000, 0, 0, 0);
@@ -1201,7 +1260,8 @@ namespace   Stroika {
                 return (kMagicAfterRect);
             }
 
-            size_t      MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck) const {
+            size_t      MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck) const
+            {
                 /*
                  *  Not 100% sure how to deal with points outside our range. For now - we just
                  *  return topMost/bottomMost marker positions. That seems to work decently - at least
@@ -1261,7 +1321,8 @@ namespace   Stroika {
                 return (GetEnd ());
             }
 
-            Led_Distance    MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker* /*pm*/) const {
+            Led_Distance    MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker* /*pm*/) const
+            {
                 return (0); // no interline space by default
             }
 
@@ -1270,7 +1331,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Override @'TextImager::ContainsMappedDisplayCharacters' to hide '\n' characters.
                 See @'qDefaultLedSoftLineBreakChar'.</p>
             */
-            bool    MultiRowTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const {
+            bool    MultiRowTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const
+            {
                 return
                     ContainsMappedDisplayCharacters_HelperForChar (text, nTChars, '\n') or
                     inherited::ContainsMappedDisplayCharacters (text, nTChars)
@@ -1281,7 +1343,8 @@ namespace   Stroika {
             @METHOD:        MultiRowTextImager::RemoveMappedDisplayCharacters
             @DESCRIPTION:   <p>Override @'TextImager::RemoveMappedDisplayCharacters' to hide '\n' characters.</p>
             */
-            size_t  MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const {
+            size_t  MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const
+            {
                 size_t  newLen  =   inherited::RemoveMappedDisplayCharacters (copyText, nTChars);
                 Assert (newLen <= nTChars);
                 size_t  newerLen    =   RemoveMappedDisplayCharacters_HelperForChar (copyText, newLen, '\n');
@@ -1301,11 +1364,13 @@ namespace   Stroika {
              ******************* MultiRowTextImager::PartitionElementCacheInfo **************
              ********************************************************************************
              */
-            void    MultiRowTextImager::PartitionElementCacheInfo::Clear () {
+            void    MultiRowTextImager::PartitionElementCacheInfo::Clear ()
+            {
                 fRep = Memory::SharedPtr<Rep> (new Rep ());
             }
 
-            void    MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight) {
+            void    MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight)
+            {
                 fRep->fRowCountCache++;
 
                 // If rowStart array not big enough then allocate it from the heap...
@@ -1365,7 +1430,8 @@ namespace   Stroika {
                 fCurFillCachePM (nullptr),
                 fCurFillCacheInfo (),
                 fImager (imager),
-                fMyMarker () {
+                fMyMarker ()
+            {
 // REDO this class to make IT a MarkerOwner - and use THAT markerowner for MyMarker. Then - store an additional MyMarker for EACH marker
 // added to cache (just around the PM its used to wrap). Then remove ONLY that PM from the cache in its DIDUpdate.
                 PartitionPtr    part    =   imager.GetPartition ();
@@ -1380,14 +1446,16 @@ namespace   Stroika {
                 ts.AddMarker (fMyMarker.get (), 0, ts.GetLength () + 1, part);
             }
 
-            MultiRowTextImager::PMInfoCacheMgr::~PMInfoCacheMgr () {
+            MultiRowTextImager::PMInfoCacheMgr::~PMInfoCacheMgr ()
+            {
                 PartitionPtr    part    =   fImager.GetPartition ();
                 part->RemovePartitionWatcher (this);
                 TextStore&  ts  =   part->GetTextStore ();
                 ts.RemoveMarker (fMyMarker.get ());
             }
 
-            MultiRowTextImager::PartitionElementCacheInfo   MultiRowTextImager::PMInfoCacheMgr::GetPartitionElementCacheInfo (Partition::PartitionMarker* pm) const {
+            MultiRowTextImager::PartitionElementCacheInfo   MultiRowTextImager::PMInfoCacheMgr::GetPartitionElementCacheInfo (Partition::PartitionMarker* pm) const
+            {
                 if (pm == fCurFillCachePM) {
                     return fCurFillCacheInfo;   // allow recursive call to get PMCacheInfo (so far) DURING context of call to FillCache()
                 }
@@ -1428,15 +1496,18 @@ namespace   Stroika {
                 return i->second;
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::ClearCache () {
+            void    MultiRowTextImager::PMInfoCacheMgr::ClearCache ()
+            {
                 fPMCache.clear ();
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const throw () {
+            void    MultiRowTextImager::PMInfoCacheMgr::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const throw ()
+            {
                 *infoRecord = pm;
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::DidSplit (void* infoRecord) const throw () {
+            void    MultiRowTextImager::PMInfoCacheMgr::DidSplit (void* infoRecord) const throw ()
+            {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
                 typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
                 MAP_CACHE::iterator i   =   fPMCache.find (pm);
@@ -1452,7 +1523,8 @@ namespace   Stroika {
 #endif
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw () {
+            void    MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()
+            {
                 *infoRecord = pm;
 
                 PartitionMarker*    newTopLine  =   nullptr;
@@ -1508,7 +1580,8 @@ namespace   Stroika {
 #endif
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::DidCoalece (void* infoRecord) const throw () {
+            void    MultiRowTextImager::PMInfoCacheMgr::DidCoalece (void* infoRecord) const throw ()
+            {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
                 typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
                 MAP_CACHE::iterator i   =   fPMCache.find (pm);
@@ -1518,7 +1591,8 @@ namespace   Stroika {
                 fImager.InvalidateTotalRowsInWindow ();
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::MyMarkerDidUpdateCallback () {
+            void    MultiRowTextImager::PMInfoCacheMgr::MyMarkerDidUpdateCallback ()
+            {
                 fPMCache.clear ();
 
                 /*
@@ -1547,10 +1621,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             MultiRowTextImager::PMInfoCacheMgr::MyMarker::MyMarker (PMInfoCacheMgr& pmInfoCacheMgr):
-                fPMInfoCacheMgr (pmInfoCacheMgr) {
+                fPMInfoCacheMgr (pmInfoCacheMgr)
+            {
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 inherited::DidUpdateText (updateInfo);
                 fPMInfoCacheMgr.MyMarkerDidUpdateCallback ();
             }

@@ -54,11 +54,13 @@ namespace   Stroika {
                 fPartitionMarkerCount (0),
 #endif
                 fPartitionMarkerFirst (nullptr),
-                fPartitionMarkerLast (nullptr) {
+                fPartitionMarkerLast (nullptr)
+            {
                 fTextStore.AddMarkerOwner (this);
             }
 
-            Partition::~Partition () {
+            Partition::~Partition ()
+            {
                 // This was commented out as of 20000119 - not sure why... If it causes trouble maybe
                 // OK to just force empty here/now. But understand if so/why...
                 Assert (fMarkersToBeDeleted.IsEmpty ());        // these better be deleted by now!
@@ -103,7 +105,8 @@ namespace   Stroika {
                 of the other class methods without having called it. These errors will be detected (in debug builds)
                 where possible.</p>
              */
-            void    Partition::FinalConstruct () {
+            void    Partition::FinalConstruct ()
+            {
 #if     qDebug
                 Require (not fFinalConstructCalled);
                 fFinalConstructCalled = true;
@@ -119,7 +122,8 @@ namespace   Stroika {
                 Assert (fPartitionMarkerLast == pm);
             }
 
-            TextStore*  Partition::PeekAtTextStore () const {
+            TextStore*  Partition::PeekAtTextStore () const
+            {
                 return &fTextStore;
             }
 
@@ -129,7 +133,8 @@ namespace   Stroika {
                 Note, the use of 'charPosition' rather than markerpos is to disambiguiate the case where we are at the boundary
                 between two partition elements.</p>
             */
-            PartitionMarker*        Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const {
+            PartitionMarker*        Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const
+            {
                 Require (fFinalConstructCalled);
                 Require (charPosition <= GetEnd () + 1);    // cuz last PM contains bogus char past end of buffer
 
@@ -175,7 +180,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Method which is called to construct new partition elements. Override this if you subclass
                 @'PartitioningTextImager', and want to provide your own subtype of @'PartitioningTextImager::PartitionMarker'.</p>
             */
-            PartitionMarker*    Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe) {
+            PartitionMarker*    Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe)
+            {
                 Require (fFinalConstructCalled);
                 return (new PartitionMarker (*this, insertAfterMe));
             }
@@ -189,7 +195,8 @@ namespace   Stroika {
                 are at the end of the range</p>
                     <p>This method is typically called by Partition subclasses OVERRIDE of @'Partition::UpdatePartitions'.</p>
             */
-            void    Partition::Split (PartitionMarker* pm, size_t at) {
+            void    Partition::Split (PartitionMarker* pm, size_t at)
+            {
                 Require (fFinalConstructCalled);
                 RequireNotNull (pm);
                 Require (pm->GetStart () < at);
@@ -263,7 +270,8 @@ namespace   Stroika {
                 @'Partition::AccumulateMarkerForDeletion'.</p>
                     <p>This method is typically called by Partition subclasses OVERRIDE of @'Partition::UpdatePartitions'.</p>
             */
-            void    Partition::Coalece (PartitionMarker* pm) {
+            void    Partition::Coalece (PartitionMarker* pm)
+            {
                 Require (fFinalConstructCalled);
                 AssertNotNull (pm);
                 vector<void*>   watcherInfos;
@@ -307,7 +315,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Wrap @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' - and make sure our cache
                 isn't pointing to a deleted marker.</p>
             */
-            void    Partition::AccumulateMarkerForDeletion (PartitionMarker* m) {
+            void    Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
+            {
                 Require (fFinalConstructCalled);
                 AssertNotNull (m);
                 Assert (&m->GetOwner () == this);
@@ -317,7 +326,8 @@ namespace   Stroika {
                 }
             }
 
-            void    Partition::AboutToUpdateText (const UpdateInfo& updateInfo) {
+            void    Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
+            {
                 Require (fFinalConstructCalled);
                 Assert (fMarkersToBeDeleted.IsEmpty ());        // would be bad to do a replace with any of these not
                 // yet finalized since they would then appear in the
@@ -326,7 +336,8 @@ namespace   Stroika {
                 inherited::AboutToUpdateText (updateInfo);
             }
 
-            void    Partition::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    Partition::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 Require (fFinalConstructCalled);
                 fMarkersToBeDeleted.FinalizeMarkerDeletions ();
                 inherited::DidUpdateText (updateInfo);
@@ -334,7 +345,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    Partition::Invariant_ () const {
+            void    Partition::Invariant_ () const
+            {
                 Require (fFinalConstructCalled);
                 size_t  lastCharDrawn   =   0;
                 Assert (fPartitionMarkerCount != 0);
@@ -385,7 +397,8 @@ namespace   Stroika {
             {
             }
 
-            PartitioningTextImager::~PartitioningTextImager () {
+            PartitioningTextImager::~PartitioningTextImager ()
+            {
                 Require (fPartition.IsNull ());
             }
 
@@ -396,7 +409,8 @@ namespace   Stroika {
                     <p>The method is virtual, in case you need to hook partition changes by updating
                 other derived/cached information. But if overridding, be sure to always call the inherited version.</p>
             */
-            void    PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr) {
+            void    PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr)
+            {
 #if     qCacheTextMeasurementsForPM
 #if     qAutoPtr_NoResetMethodBug
                 fMeasureTextCache = auto_ptr<MeasureTextCache> (nullptr);
@@ -421,7 +435,8 @@ namespace   Stroika {
             @METHOD:        PartitioningTextImager::InvalidateAllCaches
             @DESCRIPTION:   <p>Hook the @'TextImager::InvalidateAllCaches' message to free some additional caches.</p>
             */
-            void        PartitioningTextImager::InvalidateAllCaches () {
+            void        PartitioningTextImager::InvalidateAllCaches ()
+            {
                 inherited::InvalidateAllCaches ();
                 if (fMeasureTextCache.get () != nullptr) {
                     fMeasureTextCache->ClearAll ();
@@ -435,11 +450,13 @@ namespace   Stroika {
                         user setting, or - by default - simply computed from the text direction of the first row of the
                         paragraph.</p>
             */
-            TextDirection   PartitioningTextImager::GetPrimaryPartitionTextDirection (size_t rowContainingCharPosition) const {
+            TextDirection   PartitioningTextImager::GetPrimaryPartitionTextDirection (size_t rowContainingCharPosition) const
+            {
                 return GetTextDirection (GetStartOfPartitionContainingPosition (rowContainingCharPosition));
             }
 
-            TextLayoutBlock_Copy    PartitioningTextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const {
+            TextLayoutBlock_Copy    PartitioningTextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const
+            {
                 if (rowStart == GetStartOfPartitionContainingPosition (rowStart)) {
                     return inherited::GetTextLayoutBlock (rowStart, rowEnd);
                 }
@@ -455,7 +472,8 @@ namespace   Stroika {
             @METHOD:        PartitioningTextImager::GetTextDirection
             @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetTextDirection'</p>
             */
-            TextDirection   PartitioningTextImager::GetTextDirection (size_t charPosition)  const {
+            TextDirection   PartitioningTextImager::GetTextDirection (size_t charPosition)  const
+            {
                 size_t  startOfRow  =   GetStartOfRowContainingPosition (charPosition);
                 size_t  endOfRow    =   GetEndOfRowContainingPosition (startOfRow);
                 if (charPosition == endOfRow) {
@@ -476,7 +494,8 @@ namespace   Stroika {
                         the start of the row. So - we just always goto the starts and ends of rows. Since
                         @'PartitioningTextImager::CalcSegmentSize_CACHING' caches these values - this isn't a great cost.</p>
             */
-            Led_Distance    PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const {
+            Led_Distance    PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
+            {
 #if     !qCacheTextMeasurementsForPM || qDebug
                 size_t  referenceValue  =   CalcSegmentSize_REFERENCE (from, to);
 #endif
@@ -497,7 +516,8 @@ namespace   Stroika {
                         each time as a check that the cache has not somehow (undetected) become invalid (say cuz a font changed
                         and we weren't notified?).</p>
             */
-            Led_Distance    PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const {
+            Led_Distance    PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const
+            {
                 Require (from <= to);
 
                 if (from == to) {
@@ -528,7 +548,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Caching implementation of @'PartitioningTextImager::CalcSegmentSize'. Values checked by
                         calls to related @'PartitioningTextImager::CalcSegmentSize_REFERENCE'.</p>
             */
-            Led_Distance    PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const {
+            Led_Distance    PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const
+            {
                 Require (from <= to);
 
                 if (from == to) {
@@ -569,7 +590,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>The 'rowStart' argument MUST start a row, and rowEnd must END that same row. 'distanceVector' must be a
                         non-null array whose  size is set to at least (rowEnd-rowStart) elements.</p>
             */
-            void    PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const {
+            void    PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const
+            {
                 Require (rowStart == GetStartOfRowContainingPosition (rowStart));   // must already be a rowstart
                 Require (rowEnd == GetEndOfRowContainingPosition (rowStart));       // ""
                 RequireNotNull (distanceVector);
@@ -589,7 +611,8 @@ namespace   Stroika {
             @METHOD:        PartitioningTextImager::GetRowRelativeCharLoc
             @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharLoc'</p>
             */
-            void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const {
+            void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const
+            {
                 Require (charLoc <= GetEnd ());
                 RequireNotNull (lhs);
                 RequireNotNull (rhs);
@@ -669,7 +692,8 @@ namespace   Stroika {
             @METHOD:        PartitioningTextImager::GetRowRelativeCharAtLoc
             @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharAtLoc'</p>
             */
-            size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const {
+            size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const
+            {
                 Require (rowStart == GetStartOfRowContainingPosition (rowStart));
 
                 /*
@@ -769,7 +793,8 @@ namespace   Stroika {
                 So, if startSoFar==0, then it is assumed we are starting at the beginning of the charLocations array, but if startSoFar != 0,
                 we assume we can (and must) snag our starting width from what is already in the array at charLocations[startSoFar-1].</p>
             */
-            size_t  PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const {
+            size_t  PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const
+            {
                 RequireNotNull (charLocations);
                 size_t          lastTabIndex    =   0;
                 Led_Coordinate  tabAdjust       =   0;
@@ -786,7 +811,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    PartitioningTextImager::Invariant_ () const {
+            void    PartitioningTextImager::Invariant_ () const
+            {
                 if (not fPartition.IsNull ()) {
                     fPartition->Invariant ();
                     Assert (fPartition->PeekAtTextStore () == PeekAtTextStore ());
@@ -806,31 +832,36 @@ namespace   Stroika {
              */
             PartitioningTextImager::MeasureTextCache::MeasureTextCache (const PartitionPtr& partition):
                 fPartition (partition),
-                fCache (1) {
+                fCache (1)
+            {
                 Assert (not partition.IsNull ());
                 fPartition->AddPartitionWatcher (this);
                 TextStore&  ts  =   partition->GetTextStore ();
                 ts.AddMarkerOwner (this);
             }
 
-            PartitioningTextImager::MeasureTextCache::~MeasureTextCache () {
+            PartitioningTextImager::MeasureTextCache::~MeasureTextCache ()
+            {
                 fPartition->RemovePartitionWatcher (this);
                 TextStore&  ts  =   fPartition->GetTextStore ();
                 ts.RemoveMarkerOwner (this);
             }
 
-            const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImager::MeasureTextCache::CompleteCacheUpdate (CacheElt* cacheElt, PartitionMarker* pm, size_t rowStart) const {
+            const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImager::MeasureTextCache::CompleteCacheUpdate (CacheElt* cacheElt, PartitionMarker* pm, size_t rowStart) const
+            {
                 RequireNotNull (cacheElt);
                 cacheElt->fValidFor.fPM = pm;
                 cacheElt->fValidFor.fRowStartingAt = rowStart;
                 return cacheElt;
             }
 
-            void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const throw () {
+            void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const throw ()
+            {
                 *infoRecord = pm;
             }
 
-            void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const throw () {
+            void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const throw ()
+            {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
                 for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
                     if ((*i).fValidFor.fPM == pm) {
@@ -839,13 +870,15 @@ namespace   Stroika {
                 }
             }
 
-            void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw () {
+            void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()
+            {
                 RequireNotNull (infoRecord);
                 RequireNotNull (pm);
                 *infoRecord = pm;
             }
 
-            void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const throw () {
+            void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const throw ()
+            {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
                 for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
                     if ((*i).fValidFor.fPM == pm) {
@@ -854,11 +887,13 @@ namespace   Stroika {
                 }
             }
 
-            TextStore*  PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const {
+            TextStore*  PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
+            {
                 return fPartition->PeekAtTextStore ();
             }
 
-            void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 {
                     size_t  cacheSize   =   1;
                     size_t  bufLen      =   GetTextStore ().GetLength ();
@@ -907,7 +942,8 @@ namespace   Stroika {
              ********************************** PartitionMarker *****************************
              ********************************************************************************
              */
-            void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 inherited::DidUpdateText (updateInfo);
                 GetOwner ().UpdatePartitions (this, updateInfo);
             }

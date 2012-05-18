@@ -92,16 +92,19 @@ ThreadPool::ThreadPool (unsigned int nThreads)
     , fAborted_ (false)
     , fThreads_ ()
     , fTasks_ ()
-    , fTasksAdded_ () {
+    , fTasksAdded_ ()
+{
     SetPoolSize (nThreads);
 }
 
-unsigned int    ThreadPool::GetPoolSize () const {
+unsigned int    ThreadPool::GetPoolSize () const
+{
     AutoCriticalSection critSection (fCriticalSection_);
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
-void    ThreadPool::SetPoolSize (unsigned int poolSize) {
+void    ThreadPool::SetPoolSize (unsigned int poolSize)
+{
     Debug::TraceContextBumper ctx (TSTR ("ThreadPool::SetPoolSize"));
     Require (not fAborted_);
     AutoCriticalSection critSection (fCriticalSection_);
@@ -122,7 +125,8 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize) {
     }
 }
 
-void    ThreadPool::AddTask (const TaskType& task) {
+void    ThreadPool::AddTask (const TaskType& task)
+{
     //Debug::TraceContextBumper ctx (TSTR ("ThreadPool::AddTask"));
     Require (not fAborted_);
     {
@@ -134,7 +138,8 @@ void    ThreadPool::AddTask (const TaskType& task) {
     fTasksAdded_.Set ();
 }
 
-void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout) {
+void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
+{
     Debug::TraceContextBumper ctx (TSTR ("ThreadPool::AbortTask"));
     {
         // First see if its in the Q
@@ -177,7 +182,8 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     }
 }
 
-bool    ThreadPool::IsPresent (const TaskType& task) const {
+bool    ThreadPool::IsPresent (const TaskType& task) const
+{
     {
         // First see if its in the Q
         AutoCriticalSection critSection (fCriticalSection_);
@@ -190,7 +196,8 @@ bool    ThreadPool::IsPresent (const TaskType& task) const {
     return IsRunning (task);
 }
 
-bool    ThreadPool::IsRunning (const TaskType& task) const {
+bool    ThreadPool::IsRunning (const TaskType& task) const
+{
     Require (not task.IsNull ());
     {
         AutoCriticalSection critSection (fCriticalSection_);
@@ -206,7 +213,8 @@ bool    ThreadPool::IsRunning (const TaskType& task) const {
     return false;
 }
 
-void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const {
+void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
+{
     Debug::TraceContextBumper ctx (TSTR ("ThreadPool::WaitForTask"));
     // Inefficient / VERY SLOPPY impl
     Time::DurationSecondsType   endAt   =   timeout + Time::GetTickCount ();
@@ -222,7 +230,8 @@ void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType
     }
 }
 
-vector<ThreadPool::TaskType>    ThreadPool::GetTasks () const {
+vector<ThreadPool::TaskType>    ThreadPool::GetTasks () const
+{
     vector<ThreadPool::TaskType>    result;
     {
         AutoCriticalSection critSection (fCriticalSection_);
@@ -240,7 +249,8 @@ vector<ThreadPool::TaskType>    ThreadPool::GetTasks () const {
     return result;
 }
 
-vector<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const {
+vector<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
+{
     vector<ThreadPool::TaskType>    result;
     {
         AutoCriticalSection critSection (fCriticalSection_);
@@ -257,7 +267,8 @@ vector<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const {
     return result;
 }
 
-size_t  ThreadPool::GetTasksCount () const {
+size_t  ThreadPool::GetTasksCount () const
+{
     size_t  count   =   0;
     {
         // First see if its in the Q
@@ -275,7 +286,8 @@ size_t  ThreadPool::GetTasksCount () const {
     return count;
 }
 
-void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const {
+void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
+{
     Debug::TraceContextBumper ctx (TSTR ("ThreadPool::WaitForDone"));
     Require (fAborted_);
     {
@@ -291,7 +303,8 @@ void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const {
     }
 }
 
-void    ThreadPool::Abort () {
+void    ThreadPool::Abort ()
+{
     Debug::TraceContextBumper ctx (TSTR ("ThreadPool::Abort"));
     fAborted_ = true;
     {
@@ -304,13 +317,15 @@ void    ThreadPool::Abort () {
     }
 }
 
-void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout) {
+void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+{
     Abort ();
     WaitForDone (timeout);
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
-void    ThreadPool::WaitForNextTask_ (TaskType* result) {
+void    ThreadPool::WaitForNextTask_ (TaskType* result)
+{
     RequireNotNull (result);
     if (fAborted_) {
         Execution::DoThrow (ThreadAbortException ());
@@ -334,7 +349,8 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result) {
     }
 }
 
-Thread      ThreadPool::mkThread_ () {
+Thread      ThreadPool::mkThread_ ()
+{
     Thread  t   =   Thread (SharedPtr<IRunnable> (DEBUG_NEW ThreadPool::MyRunnable_ (*this)));      // ADD MY THREADOBJ
     static  int sThreadNum_ =   1;  // race condition for updating this number, but who cares - its purely cosmetic...
     t.SetThreadName (Characters::Format (L"Thread Pool Entry %d", sThreadNum_++));

@@ -18,10 +18,12 @@ namespace   Stroika {
 
 
                     //  class   Exception
-                    inline  Status  Exception::GetStatus () const {
+                    inline  Status  Exception::GetStatus () const
+                    {
                         return fStatus_;
                     }
-                    inline  bool    Exception::IsHTTPStatusOK (Status status) {
+                    inline  bool    Exception::IsHTTPStatusOK (Status status)
+                    {
                         return 200 <= status and status <= 299;
                     }
 

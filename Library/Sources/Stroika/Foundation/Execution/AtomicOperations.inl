@@ -34,7 +34,8 @@ namespace   Stroika {
 
 
 
-            inline  int32_t AtomicIncrement (volatile int32_t* p) {
+            inline  int32_t AtomicIncrement (volatile int32_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, 1) + 1;
@@ -49,7 +50,8 @@ namespace   Stroika {
                 AssertNotImplemented ();
 #endif
             }
-            inline  uint32_t    AtomicIncrement (volatile uint32_t* p) {
+            inline  uint32_t    AtomicIncrement (volatile uint32_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, 1) + 1;
@@ -65,7 +67,8 @@ namespace   Stroika {
 #endif
             }
 #if     qCompilerAndStdLib_Supports_stdatomic || qPlatform_Win64
-            inline  int64_t AtomicIncrement (volatile int64_t* p) {
+            inline  int64_t AtomicIncrement (volatile int64_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, 1) + 1;
@@ -78,7 +81,8 @@ namespace   Stroika {
                 return ::InterlockedIncrement64 (p);
 #endif
             }
-            inline  uint64_t    AtomicIncrement (volatile uint64_t* p) {
+            inline  uint64_t    AtomicIncrement (volatile uint64_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, 1) + 1;
@@ -93,7 +97,8 @@ namespace   Stroika {
             }
 #endif
 
-            inline  int32_t AtomicDecrement (volatile int32_t* p) {
+            inline  int32_t AtomicDecrement (volatile int32_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, 1) - 1;
@@ -109,7 +114,8 @@ namespace   Stroika {
 #endif
             }
 #if     qCompilerAndStdLib_Supports_stdatomic || qPlatform_Win64
-            inline  int64_t AtomicDecrement (volatile int64_t* p) {
+            inline  int64_t AtomicDecrement (volatile int64_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, 1) - 1;
@@ -122,7 +128,8 @@ namespace   Stroika {
                 return ::InterlockedDecrement64 (p);
 #endif
             }
-            inline  uint64_t    AtomicDecrement (volatile uint64_t* p) {
+            inline  uint64_t    AtomicDecrement (volatile uint64_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, 1) - 1;
@@ -136,7 +143,8 @@ namespace   Stroika {
 #endif
             }
 #endif
-            inline  uint32_t    AtomicDecrement (volatile uint32_t* p) {
+            inline  uint32_t    AtomicDecrement (volatile uint32_t* p)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, 1) - 1;
@@ -152,7 +160,8 @@ namespace   Stroika {
 #endif
             }
 
-            inline  int32_t AtomicAdd (volatile int32_t* p, int32_t arg) {
+            inline  int32_t AtomicAdd (volatile int32_t* p, int32_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, 1) + arg;
@@ -168,7 +177,8 @@ namespace   Stroika {
 #endif
             }
 #if     qCompilerAndStdLib_Supports_stdatomic || qPlatform_Win64
-            inline  int64_t AtomicAdd (volatile int64_t* p, int64_t arg) {
+            inline  int64_t AtomicAdd (volatile int64_t* p, int64_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, arg) + arg;
@@ -182,7 +192,8 @@ namespace   Stroika {
 #endif
             }
 #endif
-            inline  uint32_t    AtomicAdd (volatile uint32_t* p, uint32_t arg) {
+            inline  uint32_t    AtomicAdd (volatile uint32_t* p, uint32_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, arg) + arg;
@@ -198,7 +209,8 @@ namespace   Stroika {
 #endif
             }
 #if     qCompilerAndStdLib_Supports_stdatomic || qPlatform_Win64
-            inline  uint64_t    AtomicAdd (volatile uint64_t* p, uint64_t arg) {
+            inline  uint64_t    AtomicAdd (volatile uint64_t* p, uint64_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_add (p, arg) + arg;
@@ -213,7 +225,8 @@ namespace   Stroika {
             }
 #endif
 
-            inline  int32_t AtomicSubtract (volatile int32_t* p, int32_t arg) {
+            inline  int32_t AtomicSubtract (volatile int32_t* p, int32_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, arg) - arg;
@@ -229,7 +242,8 @@ namespace   Stroika {
 #endif
             }
 #if     qCompilerAndStdLib_Supports_stdatomic || qPlatform_Win64
-            inline  int64_t AtomicSubtract (volatile int64_t* p, int64_t arg) {
+            inline  int64_t AtomicSubtract (volatile int64_t* p, int64_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, arg) - arg;
@@ -243,7 +257,8 @@ namespace   Stroika {
 #endif
             }
 #endif
-            inline  uint32_t    AtomicSubtract (volatile uint32_t* p, uint32_t arg) {
+            inline  uint32_t    AtomicSubtract (volatile uint32_t* p, uint32_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, arg) - arg;
@@ -259,7 +274,8 @@ namespace   Stroika {
 #endif
             }
 #if     qCompilerAndStdLib_Supports_stdatomic || qPlatform_Win64
-            inline  uint64_t    AtomicSubtract (volatile uint64_t* p, uint64_t arg) {
+            inline  uint64_t    AtomicSubtract (volatile uint64_t* p, uint64_t arg)
+            {
                 RequireNotNull (p);
 #if     qDoGCCHackAroundMyBuggyStdcIml
                 return __sync_fetch_and_sub (p, arg) - arg;

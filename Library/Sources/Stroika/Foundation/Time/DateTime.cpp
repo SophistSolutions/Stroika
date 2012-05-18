@@ -37,7 +37,8 @@ using   Debug::TraceContextBumper;
 
 #if     qPlatform_Windows
 namespace   {
-    TimeOfDay   mkTimeOfDay_ (const SYSTEMTIME& sysTime) {
+    TimeOfDay   mkTimeOfDay_ (const SYSTEMTIME& sysTime)
+    {
         WORD    hour = max (sysTime.wHour, static_cast<WORD> (0));
         hour = min (hour, static_cast<WORD> (23));
         WORD    minute = max (sysTime.wMinute, static_cast<WORD> (0));
@@ -46,7 +47,8 @@ namespace   {
         secs = min (secs, static_cast<WORD> (59));
         return TimeOfDay ((hour * 60 + minute) * 60 + secs);
     }
-    Date    mkDate_ (const SYSTEMTIME& sysTime) {
+    Date    mkDate_ (const SYSTEMTIME& sysTime)
+    {
         return Date (Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay));
     }
 }
@@ -56,7 +58,8 @@ namespace   {
 
 namespace   {
 #if     qPlatform_Windows
-    SYSTEMTIME  toSysTime_ (TimeOfDay tod) {
+    SYSTEMTIME  toSysTime_ (TimeOfDay tod)
+    {
         SYSTEMTIME  t;
         memset (&t, 0, sizeof (t));
         if (not tod.empty ()) {
@@ -83,7 +86,8 @@ namespace   {
 
 namespace   {
 #if     qPlatform_Windows
-    SYSTEMTIME toSYSTEM_ (const Date& date) {
+    SYSTEMTIME toSYSTEM_ (const Date& date)
+    {
         SYSTEMTIME  st;
         memset (&st, 0, sizeof (st));
         MonthOfYear m   =   eEmptyMonthOfYear;
@@ -126,7 +130,8 @@ const   DateTime    DateTime::kMax  =   DateTime (kMax_, kMaxT_);       //  uncl
 DateTime::DateTime (time_t unixTime, Timezone tz)
     : fTimezone_ (tz)
     , fDate_ ()
-    , fTimeOfDay_ () {
+    , fTimeOfDay_ ()
+{
     struct  tm  tmTime;
     memset (&tmTime, 0, sizeof (tmTime));
 #if qPlatform_Windows
@@ -141,14 +146,16 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
 DateTime::DateTime (const tm& tmTime, Timezone tz)
     : fTimezone_ (tz)
     , fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
-    , fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec) {
+    , fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
+{
 }
 
 #if     qPlatform_POSIX
 DateTime::DateTime (const timespec& tmTime, Timezone tz)
     : fTimezone_ (tz)
     , fDate_ ()
-    , fTimeOfDay_ () {
+    , fTimeOfDay_ ()
+{
     time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_nsec because we currently don't support fractional seconds in DateTime
     struct  tm  tmTimeData;
     memset (&tmTimeData, 0, sizeof (tmTimeData));
@@ -165,13 +172,15 @@ DateTime::DateTime (const timespec& tmTime, Timezone tz)
 DateTime::DateTime (const SYSTEMTIME& sysTime, Timezone tz)
     : fTimezone_ (tz)
     , fDate_ (mkDate_ (sysTime))
-    , fTimeOfDay_ (mkTimeOfDay_ (sysTime)) {
+    , fTimeOfDay_ (mkTimeOfDay_ (sysTime))
+{
 }
 
 DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
     : fTimezone_ (tz)
     , fDate_ ()
-    , fTimeOfDay_ () {
+    , fTimeOfDay_ ()
+{
     SYSTEMTIME sysTime;
     (void)::memset (&sysTime, 0, sizeof (sysTime));
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
@@ -181,7 +190,8 @@ DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
 }
 #endif
 
-DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf) {
+DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
+{
     if (rep.empty ()) {
         return Date ();
     }
@@ -259,7 +269,8 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf) {
     }
 }
 
-DateTime    DateTime::Parse (const wstring& rep, const locale& l) {
+DateTime    DateTime::Parse (const wstring& rep, const locale& l)
+{
     if (rep.empty ()) {
         return Date ();
     }
@@ -282,7 +293,8 @@ DateTime    DateTime::Parse (const wstring& rep, const locale& l) {
 }
 
 #if     qPlatform_Windows
-DateTime    DateTime::Parse (const wstring& rep, LCID lcid) {
+DateTime    DateTime::Parse (const wstring& rep, LCID lcid)
+{
     if (rep.empty ()) {
         return Date ();
     }
@@ -303,7 +315,8 @@ DateTime    DateTime::Parse (const wstring& rep, LCID lcid) {
 }
 #endif
 
-DateTime    DateTime::AsLocalTime () const {
+DateTime    DateTime::AsLocalTime () const
+{
     if (GetTimezone () == eUTC_TZ) {
         DateTime    tmp =   AddSeconds (-GetLocaltimeToGMTOffset ());
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eLocalTime_TZ);
@@ -314,7 +327,8 @@ DateTime    DateTime::AsLocalTime () const {
     }
 }
 
-DateTime    DateTime::AsUTC () const {
+DateTime    DateTime::AsUTC () const
+{
     if (GetTimezone () == eUTC_TZ) {
         return *this;
     }
@@ -324,7 +338,8 @@ DateTime    DateTime::AsUTC () const {
     }
 }
 
-DateTime    DateTime::Now () {
+DateTime    DateTime::Now ()
+{
 #if     qPlatform_Windows
     SYSTEMTIME  st;
     memset (&st, 0, sizeof (st));
@@ -340,7 +355,8 @@ DateTime    DateTime::Now () {
 #endif
 }
 
-wstring DateTime::Format (PrintFormat pf) const {
+wstring DateTime::Format (PrintFormat pf) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -392,7 +408,8 @@ wstring DateTime::Format (PrintFormat pf) const {
     }
 }
 
-wstring DateTime::Format (const locale& l) const {
+wstring DateTime::Format (const locale& l) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -408,7 +425,8 @@ wstring DateTime::Format (const locale& l) const {
 }
 
 #if     qPlatform_Windows
-wstring DateTime::Format (LCID lcid) const {
+wstring DateTime::Format (LCID lcid) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -424,7 +442,8 @@ wstring DateTime::Format (LCID lcid) const {
 }
 #endif
 
-Date::JulianRepType DateTime::DaysSince () const {
+Date::JulianRepType DateTime::DaysSince () const
+{
     int r   =   DayDifference (GetToday (), As<Date> ());
     if (r < 0) {
         return 0;
@@ -436,7 +455,8 @@ Date::JulianRepType DateTime::DaysSince () const {
 
 #if     qPlatform_Windows
 namespace   {
-    time_t  OLD_GetUNIXEpochTime_ (const DateTime& dt) {
+    time_t  OLD_GetUNIXEpochTime_ (const DateTime& dt)
+    {
         SYSTEMTIME  st  =   dt.As<SYSTEMTIME> ();
         struct tm tm;
         memset(&tm, 0, sizeof(tm));
@@ -453,7 +473,8 @@ namespace   {
 
 
 template    <>
-time_t  DateTime::As () const {
+time_t  DateTime::As () const
+{
     struct tm tm;
     memset(&tm, 0, sizeof(tm));
     tm.tm_year = fDate_.GetYear () - 1900;
@@ -478,7 +499,8 @@ time_t  DateTime::As () const {
 }
 
 template    <>
-tm  DateTime::As () const {
+tm  DateTime::As () const
+{
     struct tm tm;
     memset(&tm, 0, sizeof(tm));
     tm.tm_year = fDate_.GetYear () - 1900;
@@ -501,7 +523,8 @@ tm  DateTime::As () const {
 
 #if     qPlatform_POSIX
 template    <>
-timespec    DateTime::As () const {
+timespec    DateTime::As () const
+{
     timespec    tspec;
     tspec.tv_sec = As<time_t> ();
     tspec.tv_nsec = 0;                  // IGNORE tv_nsec because we currently don't support fractional seconds in DateTime
@@ -511,7 +534,8 @@ timespec    DateTime::As () const {
 
 #if     qPlatform_Windows
 template    <>
-SYSTEMTIME  DateTime::As () const {
+SYSTEMTIME  DateTime::As () const
+{
     // CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
     SYSTEMTIME  d   =   toSYSTEM_ (fDate_);
     SYSTEMTIME  t   =   toSysTime_ (fTimeOfDay_);
@@ -524,25 +548,30 @@ SYSTEMTIME  DateTime::As () const {
 }
 #endif
 
-void    DateTime::SetDate (const Date& d) {
+void    DateTime::SetDate (const Date& d)
+{
     fDate_ = d;
 }
 
-void        DateTime::SetTimeOfDay (const TimeOfDay& tod) {
+void        DateTime::SetTimeOfDay (const TimeOfDay& tod)
+{
     fTimeOfDay_ = tod;
 }
 
-DateTime    DateTime::Add (const Duration& d) const {
+DateTime    DateTime::Add (const Duration& d) const
+{
     return AddSeconds (d.As<time_t> ());
 }
 
-DateTime    DateTime::AddDays (int days) const {
+DateTime    DateTime::AddDays (int days) const
+{
     Date    d   =   GetDate ();
     d = d.AddDays (days);
     return DateTime (d, GetTimeOfDay (), GetTimezone ());
 }
 
-DateTime    DateTime::AddSeconds (time_t seconds) const {
+DateTime    DateTime::AddSeconds (time_t seconds) const
+{
     /* TODO - SHOULD BE MORE CAREFUL ABOUT OVERFLOW */
     time_t  n   =   GetTimeOfDay ().GetAsSecondsCount ();
     n += seconds;
@@ -566,7 +595,8 @@ DateTime    DateTime::AddSeconds (time_t seconds) const {
     return DateTime (GetDate ().AddDays (dayDiff), TimeOfDay (static_cast<uint32_t> (n)), GetTimezone ());
 }
 
-Duration    DateTime::Difference (const DateTime& rhs) const {
+Duration    DateTime::Difference (const DateTime& rhs) const
+{
     if (GetTimezone () == rhs.GetTimezone ()) {
         return Duration (As<time_t> () - rhs.As<time_t> ());
     }
@@ -575,7 +605,8 @@ Duration    DateTime::Difference (const DateTime& rhs) const {
     }
 }
 
-int DateTime::Compare (const DateTime& rhs) const {
+int DateTime::Compare (const DateTime& rhs) const
+{
     if (empty ()) {
         return rhs.empty () ? 0 : -1;
     }
@@ -598,16 +629,19 @@ int DateTime::Compare (const DateTime& rhs) const {
 }
 
 // Define in .cpp file to avoid #include Duration in DateTime.h
-Duration Time::operator- (const DateTime& lhs, const DateTime& rhs) {
+Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
+{
     return lhs.Difference (rhs);
 }
 
 // Define in .cpp file to avoid #include Duration in DateTime.h
-DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs) {
+DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)
+{
     return lhs.Add (rhs);
 }
 
 // Define in .cpp file to avoid #include Duration in DateTime.h
-DateTime Time::operator- (const DateTime& lhs, const Duration& rhs) {
+DateTime Time::operator- (const DateTime& lhs, const Duration& rhs)
+{
     return lhs.Add (-rhs);
 }

@@ -13,7 +13,8 @@
 namespace   Stroika {
     namespace   Foundation {
 
-        inline  wstring DataExchangeFormat::BadFormatException::GetDetails () const {
+        inline  wstring DataExchangeFormat::BadFormatException::GetDetails () const
+        {
             return fDetails_;
         }
 

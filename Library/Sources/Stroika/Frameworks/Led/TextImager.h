@@ -1063,13 +1063,16 @@ namespace   Stroika {
 // class TextImager::SimpleTabStopList
             inline  TextImager::SimpleTabStopList::SimpleTabStopList (Led_TWIPS twipsPerTabStop):
                 TabStopList (),
-                fTWIPSPerTabStop (twipsPerTabStop) {
+                fTWIPSPerTabStop (twipsPerTabStop)
+            {
                 Require (twipsPerTabStop > 0);
             }
-            inline  Led_TWIPS   TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const {
+            inline  Led_TWIPS   TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
+            {
                 return Led_TWIPS (static_cast<long> ((i + 1) * fTWIPSPerTabStop));
             }
-            inline  Led_TWIPS   TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const {
+            inline  Led_TWIPS   TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const
+            {
                 Assert (fTWIPSPerTabStop > 0);
                 size_t  idx =   afterPos / fTWIPSPerTabStop;
                 Led_TWIPS   result  =   Led_TWIPS (static_cast<long> ((idx + 1) * fTWIPSPerTabStop));
@@ -1083,10 +1086,12 @@ namespace   Stroika {
 //  class   TextImager::GoalColumnRecomputerControlContext
             inline  TextImager::GoalColumnRecomputerControlContext::GoalColumnRecomputerControlContext (TextImager& imager, bool supressRecompute):
                 fTextImager (imager),
-                fSavedSupressRecompute (imager.fSupressGoalColumnRecompute) {
+                fSavedSupressRecompute (imager.fSupressGoalColumnRecompute)
+            {
                 imager.fSupressGoalColumnRecompute = supressRecompute;
             }
-            inline  TextImager::GoalColumnRecomputerControlContext::~GoalColumnRecomputerControlContext () {
+            inline  TextImager::GoalColumnRecomputerControlContext::~GoalColumnRecomputerControlContext ()
+            {
                 fTextImager.fSupressGoalColumnRecompute = fSavedSupressRecompute;
             }
 
@@ -1096,28 +1101,33 @@ namespace   Stroika {
             inline  TextImager::StandardTabStopList::StandardTabStopList ():
                 TabStopList (),
                 fDefaultTabWidth (720),     //  default to 1/2 inch - RTF spec default
-                fTabStops () {
+                fTabStops ()
+            {
                 Assert (fDefaultTabWidth > 0);
             }
             inline  TextImager::StandardTabStopList::StandardTabStopList (Led_TWIPS eachWidth):
                 TabStopList (),
                 fDefaultTabWidth (eachWidth),
-                fTabStops () {
+                fTabStops ()
+            {
                 Require (fDefaultTabWidth > 0);
             }
             inline  TextImager::StandardTabStopList::StandardTabStopList (const vector<Led_TWIPS>& tabstops):
                 TabStopList (),
                 fDefaultTabWidth (720),     //  default to 1/2 inch - RTF spec default
-                fTabStops (tabstops) {
+                fTabStops (tabstops)
+            {
                 Assert (fDefaultTabWidth > 0);
             }
             inline  TextImager::StandardTabStopList::StandardTabStopList (const vector<Led_TWIPS>& tabstops, Led_TWIPS afterTabsWidth):
                 TabStopList (),
                 fDefaultTabWidth (afterTabsWidth),
-                fTabStops (tabstops) {
+                fTabStops (tabstops)
+            {
                 Require (fDefaultTabWidth > 0);
             }
-            inline  Led_TWIPS   TextImager::StandardTabStopList::ComputeIthTab (size_t i) const {
+            inline  Led_TWIPS   TextImager::StandardTabStopList::ComputeIthTab (size_t i) const
+            {
                 Led_TWIPS   r   =   Led_TWIPS (0);
                 size_t      smallI  =   min (i + 1, fTabStops.size ());
                 for (size_t j = 0; j < smallI; ++j) {
@@ -1128,7 +1138,8 @@ namespace   Stroika {
                 }
                 return r;
             }
-            inline  Led_TWIPS   TextImager::StandardTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const {
+            inline  Led_TWIPS   TextImager::StandardTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const
+            {
                 // Instead if walking all tabstops til we find the right one - GUESS where the right one is (division) and then
                 // walk back and forth if/as needed to narrow it down. This will guess perfectly if there are no user-defined tabstops.
                 size_t      guessIdx    =   afterPos / fDefaultTabWidth;
@@ -1161,16 +1172,19 @@ namespace   Stroika {
 #pragma pop
 #endif
             }
-            inline  bool    TextImager::StandardTabStopList::operator== (const StandardTabStopList& rhs) const {
+            inline  bool    TextImager::StandardTabStopList::operator== (const StandardTabStopList& rhs) const
+            {
                 return fDefaultTabWidth == rhs.fDefaultTabWidth and fTabStops == rhs.fTabStops;
             }
-            inline  bool    TextImager::StandardTabStopList::operator!= (const StandardTabStopList& rhs) const {
+            inline  bool    TextImager::StandardTabStopList::operator!= (const StandardTabStopList& rhs) const
+            {
                 return not (*this == rhs);
             }
 
 
 
-            inline  void    TextImager::SetWindowRect_ (const Led_Rect& windowRect) {
+            inline  void    TextImager::SetWindowRect_ (const Led_Rect& windowRect)
+            {
                 fWindowRect = windowRect;
             }
             /*
@@ -1183,14 +1197,16 @@ namespace   Stroika {
                         like printing where it makes sense).</p>
                             <p>Call @'TextImager::SetForceAllRowsShowing' () to set the value.</p>
             */
-            inline  bool    TextImager::GetForceAllRowsShowing () const {
+            inline  bool    TextImager::GetForceAllRowsShowing () const
+            {
                 return (fForceAllRowsShowing);
             }
             /*
             @METHOD:        TextImager::SetForceAllRowsShowing
             @DESCRIPTION:   <p>See @'TextImager::GetForceAllRowsShowing'.</p>
             */
-            inline  void    TextImager::SetForceAllRowsShowing (bool forceAllRowsShowing) {
+            inline  void    TextImager::SetForceAllRowsShowing (bool forceAllRowsShowing)
+            {
                 if (forceAllRowsShowing != fForceAllRowsShowing) {
                     fForceAllRowsShowing = forceAllRowsShowing;
                     AssureWholeWindowUsedIfNeeded ();
@@ -1207,14 +1223,16 @@ namespace   Stroika {
                             <p>This value defaults to true (temporarily defaulting to @'qUseOffscreenBitmapsToReduceFlicker).</p>
                             <p>See @'TextImager::SetImageUsingOffscreenBitmaps'.</p>
             */
-            inline  bool    TextImager::GetImageUsingOffscreenBitmaps () const {
+            inline  bool    TextImager::GetImageUsingOffscreenBitmaps () const
+            {
                 return fImageUsingOffscreenBitmaps;
             }
             /*
             @METHOD:        TextImager::SetImageUsingOffscreenBitmaps
             @DESCRIPTION:   <p>See @'TextImager::GetForceAllRowsShowing'.</p>
             */
-            inline  void    TextImager::SetImageUsingOffscreenBitmaps (bool imageUsingOffscreenBitmaps) {
+            inline  void    TextImager::SetImageUsingOffscreenBitmaps (bool imageUsingOffscreenBitmaps)
+            {
                 if (imageUsingOffscreenBitmaps != fImageUsingOffscreenBitmaps) {
                     fImageUsingOffscreenBitmaps = imageUsingOffscreenBitmaps;
                     // add some hook function in the future if there is a need for subclasses to know this has changed...
@@ -1226,27 +1244,32 @@ namespace   Stroika {
                         no horizontal scrolling has taken place. Call @'TextImager::SetHScrollPos ()' to set where you have
                         horizontally scrolled to.</p>
             */
-            inline  Led_Coordinate  TextImager::GetHScrollPos () const {
+            inline  Led_Coordinate  TextImager::GetHScrollPos () const
+            {
                 return (fHScrollPos);
             }
-            inline  void    TextImager::SetHScrollPos_ (Led_Coordinate hScrollPos) {
+            inline  void    TextImager::SetHScrollPos_ (Led_Coordinate hScrollPos)
+            {
                 fHScrollPos = hScrollPos;
             }
             /*
             @METHOD:        TextImager::GetSelectionGoalColumn
             @DESCRIPTION:   <p></p>
             */
-            inline  Led_TWIPS   TextImager::GetSelectionGoalColumn () const {
+            inline  Led_TWIPS   TextImager::GetSelectionGoalColumn () const
+            {
                 return (fSelectionGoalColumn);
             }
             /*
             @METHOD:        TextImager::SetSelectionGoalColumn
             @DESCRIPTION:   <p></p>
             */
-            inline  void    TextImager::SetSelectionGoalColumn (Led_TWIPS selectionGoalColumn) {
+            inline  void    TextImager::SetSelectionGoalColumn (Led_TWIPS selectionGoalColumn)
+            {
                 fSelectionGoalColumn = selectionGoalColumn;
             }
-            inline  void    TextImager::InvalidateScrollBarParameters () {
+            inline  void    TextImager::InvalidateScrollBarParameters ()
+            {
                 // typically you would OVERRIDE this to update your scrollbar position, and perhaps
                 // hilight state (if you have a scrollbar). Typically only used in TextInteractor subclasses.
             }
@@ -1262,17 +1285,20 @@ namespace   Stroika {
                         in case someone prefers the more standard windows style.</p>
                             <p>See also @'TextImager::SetUseSelectEOLBOLRowHilightStyle'.</p>
             */
-            inline  bool    TextImager::GetUseSelectEOLBOLRowHilightStyle () const {
+            inline  bool    TextImager::GetUseSelectEOLBOLRowHilightStyle () const
+            {
                 return fUseEOLBOLRowHilightStyle;
             }
             /*
             @METHOD:        TextImager::SetUseSelectEOLBOLRowHilightStyle
             @DESCRIPTION:   <p>See also @'TextImager::GetUseSelectEOLBOLRowHilightStyle'.</p>
             */
-            inline  void    TextImager::SetUseSelectEOLBOLRowHilightStyle (bool useEOLBOLRowHilightStyle) {
+            inline  void    TextImager::SetUseSelectEOLBOLRowHilightStyle (bool useEOLBOLRowHilightStyle)
+            {
                 fUseEOLBOLRowHilightStyle = useEOLBOLRowHilightStyle;
             }
-            inline  bool    TextImager::GetSelectionShown () const {
+            inline  bool    TextImager::GetSelectionShown () const
+            {
                 return (fSelectionShown);
             }
             /*
@@ -1285,7 +1311,8 @@ namespace   Stroika {
                         editor view takes up the entire window.</p>
                             <p>See @'TextImager' for more information about Windows/Scrolling. See also @'TextImager::SetWindowRect'.</p>
             */
-            inline  Led_Rect    TextImager::GetWindowRect () const {
+            inline  Led_Rect    TextImager::GetWindowRect () const
+            {
                 return (fWindowRect);
             }
             /*
@@ -1293,7 +1320,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the default font used to image new text. The exact meaning and use of this
                 default font will depend some on the particular TextImager subclass you are using.</p>
             */
-            inline  Led_FontSpecification   TextImager::GetDefaultFont () const {
+            inline  Led_FontSpecification   TextImager::GetDefaultFont () const
+            {
                 return (fDefaultFont);
             }
             /*
@@ -1301,7 +1329,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the number of tChars within the given row (by row index). This method's use is discouraged
                         when word-wrapping is present, because it forces word-wrapping up to the given row # in the buffer.</p>
             */
-            inline  size_t  TextImager::GetRowLength (size_t rowNumber) const {
+            inline  size_t  TextImager::GetRowLength (size_t rowNumber) const
+            {
                 return (GetEndOfRow (rowNumber) - GetStartOfRow (rowNumber));
             }
             /*
@@ -1316,7 +1345,8 @@ namespace   Stroika {
                                 </ul>
                             </p>
             */
-            inline  Led_Color*  TextImager::GetDefaultTextColor (DefaultColorIndex dci) const {
+            inline  Led_Color*  TextImager::GetDefaultTextColor (DefaultColorIndex dci) const
+            {
                 Require (dci < eMaxDefaultColorIndex);
                 return fDefaultColorIndex[dci];
             }
@@ -1332,7 +1362,8 @@ namespace   Stroika {
                                 </ul>
                             </p>
             */
-            inline  Led_Color   TextImager::GetEffectiveDefaultTextColor (DefaultColorIndex dci) const {
+            inline  Led_Color   TextImager::GetEffectiveDefaultTextColor (DefaultColorIndex dci) const
+            {
                 Require (dci < eMaxDefaultColorIndex);
                 if (fDefaultColorIndex[dci] == nullptr) {
                     switch (dci) {
@@ -1365,7 +1396,8 @@ namespace   Stroika {
                                 </ul>
                             </p>
             */
-            inline  void    TextImager::ClearDefaultTextColor (DefaultColorIndex dci) {
+            inline  void    TextImager::ClearDefaultTextColor (DefaultColorIndex dci)
+            {
                 Require (dci < eMaxDefaultColorIndex);
                 delete fDefaultColorIndex[dci];
                 fDefaultColorIndex[dci] = nullptr;
@@ -1385,7 +1417,8 @@ namespace   Stroika {
                                 </ul>
                             </p>
             */
-            inline  void    TextImager::SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor) {
+            inline  void    TextImager::SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor)
+            {
                 Require (dci < eMaxDefaultColorIndex);
                 ClearDefaultTextColor (dci);
                 if (dci == eDefaultTextColor) {
@@ -1402,7 +1435,8 @@ namespace   Stroika {
                         word-wrapping (row numbers would). And yet this code doesn't assume use of MultiRowTextImager, or any of its data structures (so
                         these APIs can be used in things like TextInteractor).</p>
             */
-            inline  size_t  TextImager::GetStartOfNextRowFromRowContainingPosition (size_t charPosition) const {
+            inline  size_t  TextImager::GetStartOfNextRowFromRowContainingPosition (size_t charPosition) const
+            {
                 // Use startOfRow positions as 'tokens' for RowReferences...
                 size_t  rowEnd  =   FindNextCharacter (GetEndOfRowContainingPosition (charPosition));
                 return GetStartOfRowContainingPosition (rowEnd);
@@ -1414,7 +1448,8 @@ namespace   Stroika {
                             <p>See the docs for @'TextImager::GetStartOfNextRowFromRowContainingPosition' for
                         insight into how to use this API.</p>
             */
-            inline  size_t  TextImager::GetStartOfPrevRowFromRowContainingPosition (size_t charPosition) const {
+            inline  size_t  TextImager::GetStartOfPrevRowFromRowContainingPosition (size_t charPosition) const
+            {
                 // Use startOfRow positions as 'tokens' for RowReferences...
                 size_t  rowStart    =   GetStartOfRowContainingPosition (charPosition);
                 if (rowStart > 0) {
@@ -1426,7 +1461,8 @@ namespace   Stroika {
 
 
 //  class   TextImager::FontCacheInfoUpdater
-            inline  TextImager::FontCacheInfoUpdater::~FontCacheInfoUpdater () {
+            inline  TextImager::FontCacheInfoUpdater::~FontCacheInfoUpdater ()
+            {
 #if     qWindows
                 if (fRestoreObject != nullptr) {
                     Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
@@ -1436,7 +1472,8 @@ namespace   Stroika {
                 }
 #endif
             }
-            inline  Led_FontMetrics     TextImager::FontCacheInfoUpdater::GetMetrics () const {
+            inline  Led_FontMetrics     TextImager::FontCacheInfoUpdater::GetMetrics () const
+            {
                 return fImager->fCachedFontInfo;
             }
 
@@ -1454,7 +1491,8 @@ namespace   Stroika {
                 IMAGER (),
                 fTablet (t),
                 fTextStore (),
-                fBackgroundTransparent (false) {
+                fBackgroundTransparent (false)
+            {
                 SpecifyTextStore (&fTextStore);
             }
             template    <typename TEXTSTORE, typename   IMAGER>
@@ -1462,33 +1500,40 @@ namespace   Stroika {
                 IMAGER (),
                 fTablet (t),
                 fTextStore (),
-                fBackgroundTransparent (false) {
+                fBackgroundTransparent (false)
+            {
                 SpecifyTextStore (&fTextStore);
                 SnagAttributesFromTablet ();
                 SetWindowRect (bounds);
                 fTextStore.Replace (0, 0, initialText.c_str (), initialText.length ());
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            TrivialImager<TEXTSTORE, IMAGER>::~TrivialImager () {
+            TrivialImager<TEXTSTORE, IMAGER>::~TrivialImager ()
+            {
                 SpecifyTextStore (nullptr);
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            void    TrivialImager<TEXTSTORE, IMAGER>::Draw (bool printing) {
+            void    TrivialImager<TEXTSTORE, IMAGER>::Draw (bool printing)
+            {
                 Draw (GetWindowRect (), printing);
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            void    TrivialImager<TEXTSTORE, IMAGER>::Draw (const Led_Rect& subsetToDraw, bool printing) {
+            void    TrivialImager<TEXTSTORE, IMAGER>::Draw (const Led_Rect& subsetToDraw, bool printing)
+            {
                 IMAGER::Draw (subsetToDraw, printing);
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            Led_Tablet  TrivialImager<TEXTSTORE, IMAGER>::AcquireTablet () const {
+            Led_Tablet  TrivialImager<TEXTSTORE, IMAGER>::AcquireTablet () const
+            {
                 return fTablet;
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            void    TrivialImager<TEXTSTORE, IMAGER>::ReleaseTablet (Led_Tablet /*tablet*/) const {
+            void    TrivialImager<TEXTSTORE, IMAGER>::ReleaseTablet (Led_Tablet /*tablet*/) const
+            {
             }
             template    <typename TEXTSTORE, typename   IMAGER>
-            void    TrivialImager<TEXTSTORE, IMAGER>::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) {
+            void    TrivialImager<TEXTSTORE, IMAGER>::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+            {
                 if (not fBackgroundTransparent) {
                     inherited::EraseBackground (tablet, subsetToDraw, printing);
                 }
@@ -1503,7 +1548,8 @@ namespace   Stroika {
                         (@'qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR')- its generally best to be THE final
                         CTOR.</p>
             */
-            void    TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet () {
+            void    TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
+            {
 #if     qMacOS
                 // Should probably do something similar?
 #elif   qWindows
@@ -1523,7 +1569,8 @@ namespace   Stroika {
             @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor
             @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
             */
-            inline  Led_Color   TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const {
+            inline  Led_Color   TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
+            {
                 return GetEffectiveDefaultTextColor (eDefaultBackgroundColor);
             }
             template    <typename TEXTSTORE, typename   IMAGER>
@@ -1533,7 +1580,8 @@ namespace   Stroika {
                             <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundTransparent',
                         @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor'.</p>
             */
-            inline  void    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Led_Color c) {
+            inline  void    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Led_Color c)
+            {
                 SetDefaultTextColor (eDefaultBackgroundColor, c);
             }
             template    <typename TEXTSTORE, typename   IMAGER>
@@ -1541,7 +1589,8 @@ namespace   Stroika {
             @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent
             @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundTransparent'.</p>
             */
-            inline  bool    TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundTransparent () const {
+            inline  bool    TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundTransparent () const
+            {
                 return fBackgroundTransparent;
             }
             template    <typename TEXTSTORE, typename   IMAGER>
@@ -1555,7 +1604,8 @@ namespace   Stroika {
                             <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent',
                         @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
             */
-            inline  void    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundTransparent (bool transparent) {
+            inline  void    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundTransparent (bool transparent)
+            {
                 fBackgroundTransparent = transparent;
             }
 

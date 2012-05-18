@@ -94,7 +94,8 @@ namespace   Stroika {
              */
             EmbeddedObjectCreatorRegistry*  EmbeddedObjectCreatorRegistry::sThe =   nullptr;
 
-            void    EmbeddedObjectCreatorRegistry::AddStandardTypes () {
+            void    EmbeddedObjectCreatorRegistry::AddStandardTypes ()
+            {
 #if     qMacOS || qWindows
                 AddAssoc (StandardMacPictureStyleMarker::kClipFormat, StandardMacPictureStyleMarker::kEmbeddingTag, &StandardMacPictureStyleMarker::mk, &StandardMacPictureStyleMarker::mk);
                 AddAssoc (StandardDIBStyleMarker::kClipFormat, StandardDIBStyleMarker::kEmbeddingTag, &StandardDIBStyleMarker::mk, &StandardDIBStyleMarker::mk);
@@ -112,7 +113,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    EmbeddedObjectCreatorRegistry::Lookup (const char* embeddingTag, Assoc* result) const {
+            bool    EmbeddedObjectCreatorRegistry::Lookup (const char* embeddingTag, Assoc* result) const
+            {
                 RequireNotNull (embeddingTag);
                 RequireNotNull (result);
                 const vector<EmbeddedObjectCreatorRegistry::Assoc>& types   =   GetAssocList ();
@@ -142,20 +144,24 @@ namespace   Stroika {
             SimpleEmbeddedObjectStyleMarker::CommandNames   SimpleEmbeddedObjectStyleMarker::sCommandNames      =       SimpleEmbeddedObjectStyleMarker::MakeDefaultCommandNames ();
 
             SimpleEmbeddedObjectStyleMarker::SimpleEmbeddedObjectStyleMarker ():
-                inherited () {
+                inherited ()
+            {
             }
 
-            int SimpleEmbeddedObjectStyleMarker::GetPriority () const {
+            int SimpleEmbeddedObjectStyleMarker::GetPriority () const
+            {
                 return eEmbeddedObjectPriority;
             }
 
-            Led_Distance    SimpleEmbeddedObjectStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const {
+            Led_Distance    SimpleEmbeddedObjectStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+            {
                 // Baseline for embeddings should be very bottom of the embedding (less the bottom margin)
                 Require (from + 1 == to);
                 return (MeasureSegmentHeight (imager, runElement, from, to) - 1 * kDefaultEmbeddingMargin.v);
             }
 
-            void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw () {
+            void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw ()
+            {
                 RequireNotNull (GetOwner ());
                 RequireNotNull (GetOwner ()->PeekAtTextStore ());
                 size_t  newLength   =   GetLength ();
@@ -177,14 +183,16 @@ namespace   Stroika {
             @METHOD:        SimpleEmbeddedObjectStyleMarker::HandleClick
             @DESCRIPTION:   <p>Called when a user clicks on the given embedding. 'clickedAt' is relative to the embedding itself.</p>
             */
-            bool    SimpleEmbeddedObjectStyleMarker::HandleClick (Led_Point /*clickedAt*/, unsigned clickCount) {
+            bool    SimpleEmbeddedObjectStyleMarker::HandleClick (Led_Point /*clickedAt*/, unsigned clickCount)
+            {
                 if (clickCount == 2) {
                     return HandleOpen ();
                 }
                 return true;
             }
 
-            bool    SimpleEmbeddedObjectStyleMarker::HandleOpen () {
+            bool    SimpleEmbeddedObjectStyleMarker::HandleOpen ()
+            {
                 return true;
             }
 
@@ -194,7 +202,8 @@ namespace   Stroika {
                         See also @'SimpleEmbeddedObjectStyleMarker::IsCmdEnabled' (), @'SimpleEmbeddedObjectStyleMarker::GetCmdText' (),
                         and @'SimpleEmbeddedObjectStyleMarker::DoCommand' () which also must be supported for each of those commands.</p>
             */
-            vector<SimpleEmbeddedObjectStyleMarker::PrivateCmdNumber>   SimpleEmbeddedObjectStyleMarker::GetCmdNumbers () const {
+            vector<SimpleEmbeddedObjectStyleMarker::PrivateCmdNumber>   SimpleEmbeddedObjectStyleMarker::GetCmdNumbers () const
+            {
                 return vector<PrivateCmdNumber> ();
             }
 
@@ -203,7 +212,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>For all commands specified in overrides of @'SimpleEmbeddedObjectStyleMarker::GetCmdNumbers' (ie all private commands
                         supported) return whether or not that command is currently enabled.</p>
             */
-            bool    SimpleEmbeddedObjectStyleMarker::IsCmdEnabled (PrivateCmdNumber /*cmd*/) const {
+            bool    SimpleEmbeddedObjectStyleMarker::IsCmdEnabled (PrivateCmdNumber /*cmd*/) const
+            {
                 return false;   // default to disabled - subclasses OVERRIDE SimpleEmbeddedObjectStyleMarker::GetCmdNumbers () && SimpleEmbeddedObjectStyleMarker::IsCmdEnabled ()
             }
 
@@ -212,7 +222,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>For all commands specified in overrides of @'SimpleEmbeddedObjectStyleMarker::GetCmdNumbers' (ie all private commands
                         supported) return the command name text.</p>
             */
-            Led_SDK_String  SimpleEmbeddedObjectStyleMarker::GetCmdText (PrivateCmdNumber cmd) {
+            Led_SDK_String  SimpleEmbeddedObjectStyleMarker::GetCmdText (PrivateCmdNumber cmd)
+            {
                 switch (cmd) {
                     case    eOpenCmdNum:
                         return GetCommandNames ().fOpenCommandName;
@@ -230,7 +241,8 @@ namespace   Stroika {
                         @'SimpleEmbeddedObjectStyleMarker::HandleOpen' (). For other command numbers, the subclasser must handle the
                         commands themselves.</p>
             */
-            void    SimpleEmbeddedObjectStyleMarker::DoCommand (PrivateCmdNumber cmd) {
+            void    SimpleEmbeddedObjectStyleMarker::DoCommand (PrivateCmdNumber cmd)
+            {
                 switch (cmd) {
                     case    eOpenCmdNum:
                         HandleOpen ();
@@ -241,7 +253,8 @@ namespace   Stroika {
                 }
             }
 
-            SimpleEmbeddedObjectStyleMarker::CommandNames   SimpleEmbeddedObjectStyleMarker::MakeDefaultCommandNames () {
+            SimpleEmbeddedObjectStyleMarker::CommandNames   SimpleEmbeddedObjectStyleMarker::MakeDefaultCommandNames ()
+            {
                 SimpleEmbeddedObjectStyleMarker::CommandNames   cmdNames;
                 cmdNames.fOpenCommandName       =   Led_SDK_TCHAROF ("Open Embedding");
                 return cmdNames;
@@ -296,7 +309,8 @@ namespace   Stroika {
                 memcpy (locker.GetPointer (), pictData, picSize);
             }
 
-            StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker () {
+            StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
+            {
                 AssertNotNull (fPictureHandle);
 #if     qMacOS
                 ::DisposeHandle (Handle (fPictureHandle));
@@ -305,13 +319,15 @@ namespace   Stroika {
 #endif
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureStyleMarker::mk (const char* embeddingTag, const void* data, size_t len) {
+            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+            {
                 Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
                 Led_Arg_Unused (embeddingTag);
                 return (new StandardMacPictureStyleMarker ((Led_Picture*)data, len));
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureStyleMarker::mk (ReaderFlavorPackage& flavorPackage) {
+            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
+            {
                 size_t  length      =   flavorPackage.GetFlavorSize (kClipFormat);
                 Memory::SmallStackBuffer<Led_tChar> buf (length);
                 length = flavorPackage.ReadFlavorData (kClipFormat, length, buf);
@@ -321,7 +337,8 @@ namespace   Stroika {
             void    StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                               ) {
+                                                               )
+            {
                 Assert (from + 1 == to);
                 Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
                 Led_Arg_Unused (from);
@@ -337,7 +354,8 @@ namespace   Stroika {
             void    StandardMacPictureStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                       ) const {
+                                                                       ) const
+            {
                 Assert (from + 1 == to);
                 RequireNotNull (text);
                 /*
@@ -358,7 +376,8 @@ namespace   Stroika {
                 distanceResults[0] = Led_GetMacPictWidth ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.h;
             }
 
-            Led_Distance    StandardMacPictureStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardMacPictureStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 Assert (from + 1 == to);
                 Led_Arg_Unused (from);
                 Led_Arg_Unused (to);
@@ -366,17 +385,20 @@ namespace   Stroika {
                 return (Led_GetMacPictHeight ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.v);
             }
 
-            void    StandardMacPictureStyleMarker::Write (SinkStream& sink) {
+            void    StandardMacPictureStyleMarker::Write (SinkStream& sink)
+            {
                 Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) GetPictureHandle ());
                 sink.write (locker.GetPointer (), GetPictureByteSize ());
             }
 
-            void    StandardMacPictureStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    StandardMacPictureStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) GetPictureHandle ());
                 flavorPackage.AddFlavorData (kClipFormat, GetPictureByteSize (), (Led_Picture*)locker.GetPointer ());
             }
 
-            const char* StandardMacPictureStyleMarker::GetTag () const {
+            const char* StandardMacPictureStyleMarker::GetTag () const
+            {
                 return kEmbeddingTag;
             }
 #endif
@@ -413,7 +435,8 @@ namespace   Stroika {
 
             StandardDIBStyleMarker::StandardDIBStyleMarker (const Led_DIB* pictData):
                 SimpleEmbeddedObjectStyleMarker (),
-                fDIBData (nullptr) {
+                fDIBData (nullptr)
+            {
 #if     qMacOS
                 RequireNotNull (sUnsupportedFormatPict);    // see class declaration for descriptio
 #endif
@@ -421,12 +444,14 @@ namespace   Stroika {
                 fDIBData = Led_CloneDIB (pictData);
             }
 
-            StandardDIBStyleMarker::~StandardDIBStyleMarker () {
+            StandardDIBStyleMarker::~StandardDIBStyleMarker ()
+            {
                 AssertNotNull (fDIBData);
                 delete fDIBData;
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardDIBStyleMarker::mk (const char* embeddingTag, const void* data, size_t len) {
+            SimpleEmbeddedObjectStyleMarker*    StandardDIBStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+            {
                 Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
                 Led_Arg_Unused (embeddingTag);
                 if (len < 40) {
@@ -451,7 +476,8 @@ namespace   Stroika {
                 return (new StandardDIBStyleMarker ((Led_DIB*)data));
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardDIBStyleMarker::mk (ReaderFlavorPackage& flavorPackage) {
+            SimpleEmbeddedObjectStyleMarker*    StandardDIBStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
+            {
                 size_t  length      =   flavorPackage.GetFlavorSize (kClipFormat);
                 Memory::SmallStackBuffer<Led_tChar> buf (length);
                 length = flavorPackage.ReadFlavorData (kClipFormat, length, buf);
@@ -461,7 +487,8 @@ namespace   Stroika {
             void    StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                        ) {
+                                                        )
+            {
                 Assert (from + 1 == to);
                 Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
                 Led_Arg_Unused (from);
@@ -476,7 +503,8 @@ namespace   Stroika {
             void    StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                ) const {
+                                                                ) const
+            {
                 Assert (from + 1 == to);
                 RequireNotNull (text);
                 /*
@@ -496,26 +524,30 @@ namespace   Stroika {
                 distanceResults[0] = Led_GetDIBImageSize (GetDIBData ()).h + 2 * kDefaultEmbeddingMargin.h;
             }
 
-            Led_Distance    StandardDIBStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardDIBStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 Assert (from + 1 == to);
                 Led_Arg_Unused (from);
                 Led_Arg_Unused (to);
                 return (Led_GetDIBImageSize (GetDIBData ()).v + 2 * kDefaultEmbeddingMargin.v);
             }
 
-            void    StandardDIBStyleMarker::Write (SinkStream& sink) {
+            void    StandardDIBStyleMarker::Write (SinkStream& sink)
+            {
                 const Led_DIB*  dib =   GetDIBData ();
                 size_t  dibSize =   Led_GetDIBImageByteCount (dib);
                 sink.write (dib, dibSize);
             }
 
-            void    StandardDIBStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    StandardDIBStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 const Led_DIB*  dib =   GetDIBData ();
                 size_t  dibSize =   Led_GetDIBImageByteCount (dib);
                 flavorPackage.AddFlavorData (kClipFormat, dibSize, dib);
             }
 
-            const char* StandardDIBStyleMarker::GetTag () const {
+            const char* StandardDIBStyleMarker::GetTag () const
+            {
                 return kEmbeddingTag;
             }
 
@@ -557,7 +589,8 @@ namespace   Stroika {
 
             StandardURLStyleMarker::StandardURLStyleMarker (const Led_URLD& urlData):
                 SimpleEmbeddedObjectStyleMarker (),
-                fURLData (urlData) {
+                fURLData (urlData)
+            {
 #if     !qURLStyleMarkerNewDisplayMode
 #if     qMacOS || qWindows
                 RequireNotNull (sURLPict);  // If this is ever triggered, see class declaration where we delcare this field
@@ -565,16 +598,19 @@ namespace   Stroika {
 #endif
             }
 
-            StandardURLStyleMarker::~StandardURLStyleMarker () {
+            StandardURLStyleMarker::~StandardURLStyleMarker ()
+            {
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len) {
+            SimpleEmbeddedObjectStyleMarker*    StandardURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+            {
                 Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
                 Led_Arg_Unused (embeddingTag);
                 return (new StandardURLStyleMarker (Led_URLD (data, len)));
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage) {
+            SimpleEmbeddedObjectStyleMarker*    StandardURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
+            {
                 /*
                  *  First try URLD format, and then Win32URL format.
                  */
@@ -603,7 +639,8 @@ namespace   Stroika {
             void    StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                        ) {
+                                                        )
+            {
                 RequireNotNull (imager);
 
 #if     qURLStyleMarkerNewDisplayMode
@@ -730,7 +767,8 @@ namespace   Stroika {
             void    StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                ) const {
+                                                                ) const
+            {
                 Assert (from + 1 == to);
                 RequireNotNull (text);
                 /*
@@ -831,7 +869,8 @@ namespace   Stroika {
 #endif
             }
 
-            Led_Distance    StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const {
+            Led_Distance    StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+            {
                 Assert (from + 1 == to);
                 Led_Arg_Unused (from);
                 Led_Arg_Unused (to);
@@ -852,11 +891,13 @@ namespace   Stroika {
 #endif
             }
 
-            void    StandardURLStyleMarker::Write (SinkStream& sink) {
+            void    StandardURLStyleMarker::Write (SinkStream& sink)
+            {
                 sink.write (fURLData.PeekAtURLD (), fURLData.GetURLDLength ());
             }
 
-            void    StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 flavorPackage.AddFlavorData (kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
 #if     qWindows
                 size_t  len =   fURLData.GetURLLength () + 1;
@@ -867,23 +908,27 @@ namespace   Stroika {
 #endif
             }
 
-            const char* StandardURLStyleMarker::GetTag () const {
+            const char* StandardURLStyleMarker::GetTag () const
+            {
                 return kEmbeddingTag;
             }
 
-            bool    StandardURLStyleMarker::HandleOpen () {
+            bool    StandardURLStyleMarker::HandleOpen ()
+            {
                 Led_URLManager::Get ().Open (fURLData.GetURL ());
                 return false;   // indicate double click 'eaten'
 //  return (HandleOpenURL (fURLData.PeekAtURLD ()));
             }
 
-            vector<StandardURLStyleMarker::PrivateCmdNumber>    StandardURLStyleMarker::GetCmdNumbers () const {
+            vector<StandardURLStyleMarker::PrivateCmdNumber>    StandardURLStyleMarker::GetCmdNumbers () const
+            {
                 vector<PrivateCmdNumber>    x;
                 x.push_back (eOpenCmdNum);
                 return x;
             }
 
-            bool    StandardURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const {
+            bool    StandardURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const
+            {
                 switch (cmd) {
                     case    eOpenCmdNum:
                         return true;
@@ -892,15 +937,18 @@ namespace   Stroika {
                 }
             }
 
-            const Led_URLD& StandardURLStyleMarker::GetURLData () const {
+            const Led_URLD& StandardURLStyleMarker::GetURLData () const
+            {
                 return fURLData;
             }
 
-            void    StandardURLStyleMarker::SetURLData (const Led_URLD& urlData) {
+            void    StandardURLStyleMarker::SetURLData (const Led_URLD& urlData)
+            {
                 fURLData = urlData;
             }
 
-            Led_tString StandardURLStyleMarker::GetDisplayString () const {
+            Led_tString StandardURLStyleMarker::GetDisplayString () const
+            {
                 string  displayText =   fURLData.GetTitle ();
                 if (displayText.empty ()) {
                     displayText = fURLData.GetURL ();
@@ -917,7 +965,8 @@ namespace   Stroika {
                 return Led_ANSIString2tString (displayText);
             }
 
-            Led_FontSpecification   StandardURLStyleMarker::GetDisplayFont (const RunElement& runElement) const {
+            Led_FontSpecification   StandardURLStyleMarker::GetDisplayFont (const RunElement& runElement) const
+            {
                 Led_FontSpecification   fsp;
                 if (dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (runElement.fMarker) != nullptr) {
                     StandardStyledTextImager::StandardStyleMarker*  sm  =   dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (runElement.fMarker);
@@ -976,7 +1025,8 @@ namespace   Stroika {
 #if     qWindows
                 fPictureSize (0),
 #endif
-                fURLData (urlData) {
+                fURLData (urlData)
+            {
                 RequireNotNull (pictData);
 #if     qMacOS
                 fPictureHandle = (StandardMacPictureStyleMarker::PictureHandle)Led_DoNewHandle (picSize);
@@ -991,7 +1041,8 @@ namespace   Stroika {
                 }
             }
 
-            StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker () {
+            StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker ()
+            {
                 AssertNotNull (fPictureHandle);
 #if     qMacOS
                 ::DisposeHandle (Handle (fPictureHandle));
@@ -1000,7 +1051,8 @@ namespace   Stroika {
 #endif
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len) {
+            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+            {
                 Require (memcmp (embeddingTag, kOld1EmbeddingTag, sizeof (kOld1EmbeddingTag)) == 0 or memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
 
                 if (memcmp (embeddingTag, kOld1EmbeddingTag, sizeof (kOld1EmbeddingTag)) == 0) {
@@ -1037,7 +1089,8 @@ namespace   Stroika {
                 }
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureWithURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage) {
+            SimpleEmbeddedObjectStyleMarker*    StandardMacPictureWithURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
+            {
                 size_t  pictLength      =   flavorPackage.GetFlavorSize (kPICTClipFormat);
                 Memory::SmallStackBuffer<char> buf1 (pictLength);
                 pictLength = flavorPackage.ReadFlavorData (kPICTClipFormat, pictLength, buf1);
@@ -1052,7 +1105,8 @@ namespace   Stroika {
             void    StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                                      ) {
+                                                                      )
+            {
                 Assert (from + 1 == to);
                 Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
                 Led_Arg_Unused (from);
@@ -1068,7 +1122,8 @@ namespace   Stroika {
             void    StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                              ) const {
+                                                                              ) const
+            {
                 Assert (from + 1 == to);
                 RequireNotNull (text);
                 /*
@@ -1089,7 +1144,8 @@ namespace   Stroika {
                 distanceResults[0] = Led_GetMacPictWidth ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.h;
             }
 
-            Led_Distance    StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 Assert (from + 1 == to);
                 Led_Arg_Unused (from);
                 Led_Arg_Unused (to);
@@ -1097,7 +1153,8 @@ namespace   Stroika {
                 return (Led_GetMacPictHeight ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.v);
             }
 
-            void    StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink) {
+            void    StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink)
+            {
                 {
                     uint32_t    picSize =   GetPictureByteSize ();
                     Led_ULONGToBuf (picSize, &picSize);
@@ -1109,24 +1166,28 @@ namespace   Stroika {
                 sink.write (fURLData.PeekAtURLD (), fURLData.GetURLDLength ());
             }
 
-            void    StandardMacPictureWithURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    StandardMacPictureWithURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) GetPictureHandle ());
                 flavorPackage.AddFlavorData (StandardMacPictureStyleMarker::kClipFormat, GetPictureByteSize (), (Led_Picture*)locker.GetPointer ());
                 flavorPackage.AddFlavorData (StandardURLStyleMarker::kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
             }
 
-            bool    StandardMacPictureWithURLStyleMarker::HandleOpen () {
+            bool    StandardMacPictureWithURLStyleMarker::HandleOpen ()
+            {
                 Led_URLManager::Get ().Open (fURLData.GetURL ());
                 return false;   // indicate double click 'eaten'
             }
 
-            vector<StandardMacPictureWithURLStyleMarker::PrivateCmdNumber>  StandardMacPictureWithURLStyleMarker::GetCmdNumbers () const {
+            vector<StandardMacPictureWithURLStyleMarker::PrivateCmdNumber>  StandardMacPictureWithURLStyleMarker::GetCmdNumbers () const
+            {
                 vector<PrivateCmdNumber>    x;
                 x.push_back (eOpenCmdNum);
                 return x;
             }
 
-            bool    StandardMacPictureWithURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const {
+            bool    StandardMacPictureWithURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const
+            {
                 switch (cmd) {
                     case    eOpenCmdNum:
                         return true;
@@ -1135,15 +1196,18 @@ namespace   Stroika {
                 }
             }
 
-            const Led_URLD& StandardMacPictureWithURLStyleMarker::GetURLData () const {
+            const Led_URLD& StandardMacPictureWithURLStyleMarker::GetURLData () const
+            {
                 return fURLData;
             }
 
-            void    StandardMacPictureWithURLStyleMarker::SetURLData (const Led_URLD& urlData) {
+            void    StandardMacPictureWithURLStyleMarker::SetURLData (const Led_URLD& urlData)
+            {
                 fURLData = urlData;
             }
 
-            const char* StandardMacPictureWithURLStyleMarker::GetTag () const {
+            const char* StandardMacPictureWithURLStyleMarker::GetTag () const
+            {
                 return kEmbeddingTag;
             }
 #endif
@@ -1174,7 +1238,8 @@ namespace   Stroika {
             StandardDIBWithURLStyleMarker::StandardDIBWithURLStyleMarker (const Led_DIB* dibData, const Led_URLD& urlData):
                 SimpleEmbeddedObjectStyleMarker (),
                 fDIBData (nullptr),
-                fURLData (urlData) {
+                fURLData (urlData)
+            {
 #if     qMacOS
                 RequireNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);    // see class declaration for descriptio
 #endif
@@ -1182,12 +1247,14 @@ namespace   Stroika {
                 fDIBData = Led_CloneDIB (dibData);
             }
 
-            StandardDIBWithURLStyleMarker::~StandardDIBWithURLStyleMarker () {
+            StandardDIBWithURLStyleMarker::~StandardDIBWithURLStyleMarker ()
+            {
                 AssertNotNull (fDIBData);
                 delete fDIBData;
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardDIBWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len) {
+            SimpleEmbeddedObjectStyleMarker*    StandardDIBWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+            {
                 Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
                 Led_Arg_Unused (embeddingTag);
 
@@ -1215,7 +1282,8 @@ namespace   Stroika {
                 return new StandardDIBWithURLStyleMarker (picBuf, Led_URLD (url, urlSize));
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StandardDIBWithURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage) {
+            SimpleEmbeddedObjectStyleMarker*    StandardDIBWithURLStyleMarker::mk (ReaderFlavorPackage& flavorPackage)
+            {
                 size_t  length      =   flavorPackage.GetFlavorSize (StandardDIBStyleMarker::kClipFormat);
                 Memory::SmallStackBuffer<char> buf (length);
                 length = flavorPackage.ReadFlavorData (StandardDIBStyleMarker::kClipFormat, length, buf);
@@ -1249,7 +1317,8 @@ namespace   Stroika {
             void    StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                               ) {
+                                                               )
+            {
                 Assert (from + 1 == to);
                 Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
                 Led_Arg_Unused (from);
@@ -1264,7 +1333,8 @@ namespace   Stroika {
             void    StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                       ) const {
+                                                                       ) const
+            {
                 Assert (from + 1 == to);
                 RequireNotNull (text);
                 /*
@@ -1284,14 +1354,16 @@ namespace   Stroika {
                 distanceResults[0] = Led_GetDIBImageSize (GetDIBData ()).h + 2 * kDefaultEmbeddingMargin.h;
             }
 
-            Led_Distance    StandardDIBWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardDIBWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 Assert (from + 1 == to);
                 Led_Arg_Unused (from);
                 Led_Arg_Unused (to);
                 return (Led_GetDIBImageSize (GetDIBData ()).v + 2 * kDefaultEmbeddingMargin.v);
             }
 
-            void    StandardDIBWithURLStyleMarker::Write (SinkStream& sink) {
+            void    StandardDIBWithURLStyleMarker::Write (SinkStream& sink)
+            {
                 const Led_DIB*  dib =   GetDIBData ();
                 {
                     uint32_t    dibSize =   Led_GetDIBImageByteCount (dib);
@@ -1303,25 +1375,29 @@ namespace   Stroika {
                 sink.write (fURLData.PeekAtURLD (), fURLData.GetURLDLength ());
             }
 
-            void    StandardDIBWithURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    StandardDIBWithURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 const Led_DIB*  dib =   GetDIBData ();
                 size_t  dibSize =   Led_GetDIBImageByteCount (dib);
                 flavorPackage.AddFlavorData (StandardDIBStyleMarker::kClipFormat, dibSize, dib);
                 flavorPackage.AddFlavorData (StandardURLStyleMarker::kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
             }
 
-            bool    StandardDIBWithURLStyleMarker::HandleOpen () {
+            bool    StandardDIBWithURLStyleMarker::HandleOpen ()
+            {
                 Led_URLManager::Get ().Open (fURLData.GetURL ());
                 return false;   // indicate double click 'eaten'
             }
 
-            vector<StandardDIBWithURLStyleMarker::PrivateCmdNumber> StandardDIBWithURLStyleMarker::GetCmdNumbers () const {
+            vector<StandardDIBWithURLStyleMarker::PrivateCmdNumber> StandardDIBWithURLStyleMarker::GetCmdNumbers () const
+            {
                 vector<PrivateCmdNumber>    x;
                 x.push_back (eOpenCmdNum);
                 return x;
             }
 
-            bool    StandardDIBWithURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const {
+            bool    StandardDIBWithURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const
+            {
                 switch (cmd) {
                     case    eOpenCmdNum:
                         return true;
@@ -1330,15 +1406,18 @@ namespace   Stroika {
                 }
             }
 
-            const Led_URLD& StandardDIBWithURLStyleMarker::GetURLData () const {
+            const Led_URLD& StandardDIBWithURLStyleMarker::GetURLData () const
+            {
                 return fURLData;
             }
 
-            void    StandardDIBWithURLStyleMarker::SetURLData (const Led_URLD& urlData) {
+            void    StandardDIBWithURLStyleMarker::SetURLData (const Led_URLD& urlData)
+            {
                 fURLData = urlData;
             }
 
-            const char* StandardDIBWithURLStyleMarker::GetTag () const {
+            const char* StandardDIBWithURLStyleMarker::GetTag () const
+            {
                 return kEmbeddingTag;
             }
 
@@ -1372,7 +1451,8 @@ namespace   Stroika {
                 fLength (nBytes),
                 fFormat (format),
                 //fEmbeddingTag (),
-                fDisplayDIB () {
+                fDisplayDIB ()
+            {
                 memcpy (fEmbeddingTag, embeddingTag, sizeof (fEmbeddingTag));
 #if     qMacOS || qWindows
                 RequireNotNull (sUnknownPict);  // If this is ever triggered, see class declaration where we delcare this field
@@ -1391,7 +1471,8 @@ namespace   Stroika {
                 fShownSize = CalcDefaultShownSize ();
             }
 
-            StandardUnknownTypeStyleMarker::~StandardUnknownTypeStyleMarker () {
+            StandardUnknownTypeStyleMarker::~StandardUnknownTypeStyleMarker ()
+            {
                 delete[] (char*)fData;
             }
 
@@ -1403,7 +1484,8 @@ namespace   Stroika {
                         TextInteractors/TextImagers are notified to adjust any caching of size information they may have. This can be avoided
                         by setting this value BEFORE adding the embedding to the TextStore.</p>
             */
-            void    StandardUnknownTypeStyleMarker::SetShownSize (Led_TWIPS_Point size) {
+            void    StandardUnknownTypeStyleMarker::SetShownSize (Led_TWIPS_Point size)
+            {
                 fShownSize = size;
             }
 
@@ -1413,7 +1495,8 @@ namespace   Stroika {
                             <p>Generates a reasonable default size (based on sUnknownPict size) for the embedding. Used unless
                         overridden by calls to @'StandardUnknownTypeStyleMarker::SetShownSize'.</p>
             */
-            Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcDefaultShownSize () {
+            Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcDefaultShownSize ()
+            {
                 if (fDisplayDIB.get () != nullptr) {
                     Led_Size    pixelSize   =    Led_GetDIBImageSize (fDisplayDIB.get ());
                     return Led_TWIPS_Point (Led_CvtScreenPixelsToTWIPSV (pixelSize.v), Led_CvtScreenPixelsToTWIPSH (pixelSize.h));
@@ -1421,7 +1504,8 @@ namespace   Stroika {
                 return CalcStaticDefaultShownSize ();
             }
 
-            Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize () {
+            Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
+            {
 #if     qMacOS
                 RequireNotNull (sUnknownPict);
                 Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) sUnknownPict);
@@ -1439,7 +1523,8 @@ namespace   Stroika {
             void    StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                                ) {
+                                                                )
+            {
                 Assert (from + 1 == to);
                 Require (text.PeekAtVirtualText () [0] == kEmbeddingSentinalChar);
                 Led_Arg_Unused (from);
@@ -1469,7 +1554,8 @@ namespace   Stroika {
             void    StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                        ) const {
+                                                                        ) const
+            {
                 Assert (from + 1 == to);
                 RequireNotNull (text);
                 /*
@@ -1495,7 +1581,8 @@ namespace   Stroika {
                 distanceResults[0] = tablet->CvtFromTWIPSH (fShownSize.h) + 2 * kDefaultEmbeddingMargin.h;
             }
 
-            Led_Distance    StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 Assert (from + 1 == to);
                 Led_Arg_Unused (from);
                 Led_Arg_Unused (to);
@@ -1508,15 +1595,18 @@ namespace   Stroika {
                 return tablet->CvtFromTWIPSV (fShownSize.v) + 2 * kDefaultEmbeddingMargin.v;
             }
 
-            void    StandardUnknownTypeStyleMarker::Write (SinkStream& sink) {
+            void    StandardUnknownTypeStyleMarker::Write (SinkStream& sink)
+            {
                 sink.write (fData, fLength);
             }
 
-            void    StandardUnknownTypeStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    StandardUnknownTypeStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 flavorPackage.AddFlavorData (fFormat, fLength, fData);
             }
 
-            const char* StandardUnknownTypeStyleMarker::GetTag () const {
+            const char* StandardUnknownTypeStyleMarker::GetTag () const
+            {
                 return fEmbeddingTag;
             }
 
@@ -1531,7 +1621,8 @@ namespace   Stroika {
              ************************ InsertEmbeddingForExistingSentinal ********************
              ********************************************************************************
              */
-            void    InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding) {
+            void    InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding)
+            {
                 RequireNotNull (embedding);
                 RequireNotNull (ownerForEmbedding);
                 TextStore::SimpleUpdater    updater (textStore, insertAt, insertAt + 1);
@@ -1545,7 +1636,8 @@ namespace   Stroika {
              ********************************* AddEmbedding *********************************
              ********************************************************************************
              */
-            void    AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding) {
+            void    AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding)
+            {
                 RequireNotNull (embedding);
                 RequireNotNull (ownerForEmbedding);
                 textStore.Replace (insertAt, insertAt, &kEmbeddingSentinalChar, 1);
@@ -1568,7 +1660,8 @@ namespace   Stroika {
                                                    Led_Tablet tablet, Led_Color foreColor, Led_Color backColor, const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                                    const Led_Size& imageSize,
                                                    const Led_Size& margin
-                                                  ) throw () {
+                                                  ) throw ()
+            {
                 RequireNotNull (pictureHandle);
 
                 Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle)pictureHandle);
@@ -1659,7 +1752,8 @@ namespace   Stroika {
                                             const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                             const Led_Size& imageSize,
                                             const Led_Size& margin
-                                           ) throw () {
+                                           ) throw ()
+            {
                 RequireNotNull (dib);
                 RequireNotNull (tablet);
                 Led_Arg_Unused (foreColor);
@@ -1730,7 +1824,8 @@ namespace   Stroika {
             }
 
 #if     qMacOS
-            static  PixMap**    MakePixMapFromDIB (const Led_DIB* dib) {
+            static  PixMap**    MakePixMapFromDIB (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
 
                 Led_Size    dibImageSize    =   Led_GetDIBImageSize (dib);

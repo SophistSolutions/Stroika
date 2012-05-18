@@ -48,7 +48,8 @@ using   namespace   Stroika::Foundation::Execution::Platform::Windows;
 
 
 namespace {
-    inline  TString Win32Error2String_ (DWORD win32Err) {
+    inline  TString Win32Error2String_ (DWORD win32Err)
+    {
         switch (win32Err) {
             case    ERROR_NOT_ENOUGH_MEMORY:
                 return TSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
@@ -120,7 +121,8 @@ namespace {
  *********************** Platform::Windows::Exception ***************************
  ********************************************************************************
  */
-void    Execution::Platform::Windows::Exception::DoThrow (DWORD error) {
+void    Execution::Platform::Windows::Exception::DoThrow (DWORD error)
+{
     switch (error) {
         case    ERROR_SUCCESS: {
                 DbgTrace ("Platform::Windows::Exception::DoThrow (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
@@ -155,7 +157,8 @@ void    Execution::Platform::Windows::Exception::DoThrow (DWORD error) {
     }
 }
 
-TString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw) {
+TString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)
+{
     return Win32Error2String_ (dw);
 }
 
@@ -169,7 +172,8 @@ TString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw) {
  ***************************** ThrowIfShellExecError ****************************
  ********************************************************************************
  */
-void    Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r) {
+void    Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
+{
     int errCode =   reinterpret_cast<int> (r);
     if (errCode <= 32) {
         DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
@@ -229,13 +233,15 @@ namespace   {
      *  We treat these largely like ASSERTION errors, but then translate them into a THROW of an exception - since that is
      *  probably more often the right thing todo.
      */
-    void    invalid_parameter_handler_ (const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved) {
+    void    invalid_parameter_handler_ (const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved)
+    {
         TraceContextBumper  trcCtx (TSTR ("invalid_parameter_handler"));
         DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
         Assert (false);
         Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));
     }
 }
-void    Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter () {
+void    Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ()
+{
     (void)_set_invalid_parameter_handler (invalid_parameter_handler_);
 }

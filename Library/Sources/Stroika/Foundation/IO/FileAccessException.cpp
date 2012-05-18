@@ -20,7 +20,8 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode) {
+    wstring mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode)
+    {
         wstring message;
         if ((fileAccessMode & eRead_FAM) and (fileAccessMode & eWrite_FAM)) {
             message = L"Cannot read from or write to file";
@@ -43,6 +44,7 @@ namespace   {
 FileAccessException::FileAccessException (const TString& fileName, FileAccessMode fileAccessMode)
     : StringException (mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
-    , fFileAccessMode_ (fileAccessMode) {
+    , fFileAccessMode_ (fileAccessMode)
+{
 }
 

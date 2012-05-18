@@ -1120,7 +1120,8 @@ namespace   Stroika {
 
 #if     !qWideCharacters
 //  class   RTFIO::SingleByteCharsetToCharsetMappingTable
-            inline  char    RTFIO::SingleByteCharsetToCharsetMappingTable::Map (char inChar) {
+            inline  char    RTFIO::SingleByteCharsetToCharsetMappingTable::Map (char inChar)
+            {
                 return (fMappingTable[(unsigned char)inChar]);
             }
 #endif
@@ -1131,7 +1132,8 @@ namespace   Stroika {
 
 //  class   RTFIO::StringNControlWordAtom
 #if     !qFriendDeclarationsDontWorkWithNestedClassesBug && !qUseMapForControlWordMap
-            inline  bool    operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs) {
+            inline  bool    operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
+            {
                 return lhs.first < rhs.first;
             }
 #endif
@@ -1143,7 +1145,8 @@ namespace   Stroika {
             inline  RTFIO::ControlWord::ControlWord ():
                 fWord (eMinControlAtom),
                 fHasArg (false),
-                fValue (0) {
+                fValue (0)
+            {
             }
 
 
@@ -1152,17 +1155,21 @@ namespace   Stroika {
 
 
 //  class   RTFInfo
-            inline  Led_TWIPS   RTFInfo::GetStaticDefaultTabStopWidth () {
+            inline  Led_TWIPS   RTFInfo::GetStaticDefaultTabStopWidth ()
+            {
                 return Led_TWIPS (720); //  default to 1/2 inch - RTF spec default
             }
-            inline  Led_TWIPS   RTFInfo::GetDefaultTabStop () const {
+            inline  Led_TWIPS   RTFInfo::GetDefaultTabStop () const
+            {
                 return fDefaultTabStop;
             }
-            inline  Led_TWIPS_Point RTFInfo::GetStaticDefaultPaperSize () {
+            inline  Led_TWIPS_Point RTFInfo::GetStaticDefaultPaperSize ()
+            {
                 // From RTFSpec 1.4
                 return Led_TWIPS_Point (Led_TWIPS (11 * 1440), Led_TWIPS (static_cast<long> (8.5 * 1440)));
             }
-            inline  void    RTFInfo::GetStaticDefaultMargins (Led_TWIPS* t, Led_TWIPS* l, Led_TWIPS* b, Led_TWIPS* r) {
+            inline  void    RTFInfo::GetStaticDefaultMargins (Led_TWIPS* t, Led_TWIPS* l, Led_TWIPS* b, Led_TWIPS* r)
+            {
                 RequireNotNull (t);
                 RequireNotNull (l);
                 RequireNotNull (b);
@@ -1178,10 +1185,12 @@ namespace   Stroika {
                 fDefaultMarginTop (0),
                 fDefaultMarginLeft (0),
                 fDefaultMarginBottom (0),
-                fDefaultMarginRight (0) {
+                fDefaultMarginRight (0)
+            {
                 GetStaticDefaultMargins (&fDefaultMarginTop, &fDefaultMarginLeft, &fDefaultMarginBottom, &fDefaultMarginRight);
             }
-            inline  Led_TWIPS   RTFInfo::GetEffectiveDrawingWidth () const {
+            inline  Led_TWIPS   RTFInfo::GetEffectiveDrawingWidth () const
+            {
                 Led_TWIPS   subtract    =   Led_TWIPS (fDefaultMarginLeft + fDefaultMarginRight);
                 Ensure (fDefaultPaperSize.h > subtract);
                 return Led_TWIPS (fDefaultPaperSize.h - subtract);
@@ -1192,7 +1201,8 @@ namespace   Stroika {
 
 
 //  class   StyledTextIOReader_RTF
-            inline  Led_tChar   StyledTextIOReader_RTF::GetDefaultUnsupportedCharacterChar () const {
+            inline  Led_tChar   StyledTextIOReader_RTF::GetDefaultUnsupportedCharacterChar () const
+            {
                 return fDefaultUnsupportedCharacterChar;
             }
 
@@ -1201,28 +1211,35 @@ namespace   Stroika {
 
 
 //  class   StyledTextIOReader_RTF::ReaderContext
-            inline  StyledTextIOReader_RTF&     StyledTextIOReader_RTF::ReaderContext::GetReader () const {
+            inline  StyledTextIOReader_RTF&     StyledTextIOReader_RTF::ReaderContext::GetReader () const
+            {
                 return fReader;
             }
-            inline  CodePage    StyledTextIOReader_RTF::ReaderContext::GetCurrentInputCharSetEncoding () const {
+            inline  CodePage    StyledTextIOReader_RTF::ReaderContext::GetCurrentInputCharSetEncoding () const
+            {
                 return fCurrentInputCharSetEncoding;
             }
 #if     !qWideCharacters
-            inline  CodePage    StyledTextIOReader_RTF::ReaderContext::GetCurrentOutputCharSetEncoding () const {
+            inline  CodePage    StyledTextIOReader_RTF::ReaderContext::GetCurrentOutputCharSetEncoding () const
+            {
                 return fCurrentOutputCharSetEncoding;
             }
 #endif
-            inline  StyledTextIOReader_RTF::ReaderContext::Destination_&    StyledTextIOReader_RTF::ReaderContext::GetDestination () const {
+            inline  StyledTextIOReader_RTF::ReaderContext::Destination_&    StyledTextIOReader_RTF::ReaderContext::GetDestination () const
+            {
                 EnsureNotNull (fCurrentDestination);
                 return (*fCurrentDestination);
             }
-            inline  void            StyledTextIOReader_RTF::ReaderContext::SetDestination (Destination_* destination) {
+            inline  void            StyledTextIOReader_RTF::ReaderContext::SetDestination (Destination_* destination)
+            {
                 fCurrentDestination = destination;
             }
-            inline  StyledTextIOReader_RTF::ReaderContext::GroupContext*    StyledTextIOReader_RTF::ReaderContext::GetCurrentGroupContext () const {
+            inline  StyledTextIOReader_RTF::ReaderContext::GroupContext*    StyledTextIOReader_RTF::ReaderContext::GetCurrentGroupContext () const
+            {
                 return fCurrentGroup;   // Can be nullptr
             }
-            inline  StyledTextIOReader_RTF::ReaderContext::GroupContext*    StyledTextIOReader_RTF::ReaderContext::GetParentGroupContext () const {
+            inline  StyledTextIOReader_RTF::ReaderContext::GroupContext*    StyledTextIOReader_RTF::ReaderContext::GetParentGroupContext () const
+            {
                 // Can return nullptr
                 if (fCurrentGroup != nullptr) {
                     return fCurrentGroup->fParentGroup;
@@ -1233,9 +1250,11 @@ namespace   Stroika {
 
 
 //  class   StyledTextIOReader_RTF::ReaderContext::Destination_
-            inline  StyledTextIOReader_RTF::ReaderContext::Destination_::Destination_ () {
+            inline  StyledTextIOReader_RTF::ReaderContext::Destination_::Destination_ ()
+            {
             }
-            inline  StyledTextIOReader_RTF::ReaderContext::Destination_::~Destination_ () {
+            inline  StyledTextIOReader_RTF::ReaderContext::Destination_::~Destination_ ()
+            {
             }
             inline  StyledTextIOReader_RTF::ReaderContext::Destination_::Context::Context ():
                 fFontSpec (),
@@ -1250,7 +1269,8 @@ namespace   Stroika {
                 fFirstIndent (Led_TWIPS (0)),
                 fLeftMargin (Led_TWIPS (0)),
                 fRightMargin (Led_TWIPS (0)),
-                fTextHidden (false) {
+                fTextHidden (false)
+            {
             }
 
 
@@ -1266,7 +1286,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Get the font which is used for RTF \plain directives. This can be set
                 via @'StyledTextIOReader_RTF::SetPlainFont'</p>
             */
-            inline  Led_FontSpecification   StyledTextIOReader_RTF::GetPlainFont () const {
+            inline  Led_FontSpecification   StyledTextIOReader_RTF::GetPlainFont () const
+            {
                 return fPlainFont;
             }
             /*
@@ -1274,10 +1295,12 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Set the font which is used for RTF \plain directives. See
                 @'StyledTextIOReader_RTF::GetPlainFont'</p>
             */
-            inline  void    StyledTextIOReader_RTF::SetPlainFont (const Led_FontSpecification& fsp) {
+            inline  void    StyledTextIOReader_RTF::SetPlainFont (const Led_FontSpecification& fsp)
+            {
                 fPlainFont = fsp;
             }
-            inline  void    StyledTextIOReader_RTF::CheckIfAboutToStartBody (ReaderContext& readerContext) {
+            inline  void    StyledTextIOReader_RTF::CheckIfAboutToStartBody (ReaderContext& readerContext)
+            {
                 if (not readerContext.fStartedBodyYet) {
                     AboutToStartBody (readerContext);
                     Assert (readerContext.fStartedBodyYet);
@@ -1287,7 +1310,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader_RTF::LookupColor
             @DESCRIPTION:   <p>Lookup the given font index in the color table. Deal moderately gracefully with error conditions.</p>
             */
-            inline  Led_Color   StyledTextIOReader_RTF::LookupColor (ReaderContext& readerContext, size_t index) const {
+            inline  Led_Color   StyledTextIOReader_RTF::LookupColor (ReaderContext& readerContext, size_t index) const
+            {
                 if (readerContext.fColorTable == nullptr) {
                     HandleBadlyFormattedInput ();       // Cannot have a \cfN without having specified a color table
                     return Led_Color::kBlack;
@@ -1316,7 +1340,8 @@ namespace   Stroika {
                 fNextHidableTextChangeAt (size_t (-1)),
                 fHidableTextRegionOpen (false),
                 fIthHidableTextRun (0),
-                fCharsToSkip (0) {
+                fCharsToSkip (0)
+            {
             }
             inline  StyledTextIOWriter_RTF::WriterContext::WriterContext (WriterContext& parentContext, SrcStream& srcStream):
                 fWriter (parentContext.fWriter),
@@ -1328,26 +1353,32 @@ namespace   Stroika {
                 fNextHidableTextChangeAt (size_t (-1)),
                 fHidableTextRegionOpen (false),
                 fIthHidableTextRun (0),
-                fCharsToSkip (0) {
+                fCharsToSkip (0)
+            {
             }
-            inline  StyledTextIOWriter_RTF&     StyledTextIOWriter_RTF::WriterContext::GetWriter () const {
+            inline  StyledTextIOWriter_RTF&     StyledTextIOWriter_RTF::WriterContext::GetWriter () const
+            {
                 return fWriter;
             }
-            inline  StyledTextIOWriter_RTF::SrcStream&      StyledTextIOWriter_RTF::WriterContext::GetSrcStream () const {
+            inline  StyledTextIOWriter_RTF::SrcStream&      StyledTextIOWriter_RTF::WriterContext::GetSrcStream () const
+            {
                 return fSrcStream;
             }
-            inline  StyledTextIOWriter_RTF::SinkStream&     StyledTextIOWriter_RTF::WriterContext::GetSinkStream () const {
+            inline  StyledTextIOWriter_RTF::SinkStream&     StyledTextIOWriter_RTF::WriterContext::GetSinkStream () const
+            {
                 return fWriter.GetSinkStream ();
             }
 
 
 
 //  class   StyledTextIOWriter_RTF
-            inline  CodePage    StyledTextIOWriter_RTF::GetCurrentOutputCharSetEncoding () const {
+            inline  CodePage    StyledTextIOWriter_RTF::GetCurrentOutputCharSetEncoding () const
+            {
                 return fCurrentOutputCharSetEncoding;
             }
 #if     !qWideCharacters
-            inline  CodePage    StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const {
+            inline  CodePage    StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const
+            {
                 return fCurrentInputCharSetEncoding;
             }
 #endif

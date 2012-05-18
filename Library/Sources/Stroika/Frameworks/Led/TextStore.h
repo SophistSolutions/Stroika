@@ -595,7 +595,8 @@ namespace   Stroika {
                 fTextStore (ts),
                 fMarkerSink (),
                 fUpdateInfo (updateInfo),
-                fCanceled (false) {
+                fCanceled (false)
+            {
                 // Note that we EXPAND the list of markers we will notify to be sure markers just next to a change
                 // are given a crack at it (CollectAllMarkersInRange_OrSurroundings)
                 ts.CollectAllMarkersInRangeInto_OrSurroundings (updateInfo.fReplaceFrom, updateInfo.fReplaceTo, kAnyMarkerOwner, fMarkerSink);
@@ -605,18 +606,21 @@ namespace   Stroika {
                 fTextStore (ts),
                 fMarkerSink (),
                 fUpdateInfo (from, to, LED_TCHAR_OF (""), 0, false, realContentUpdate),
-                fCanceled (false) {
+                fCanceled (false)
+            {
                 // Note that we EXPAND the list of markers we will notify to be sure markers just next to a change
                 // are given a crack at it (CollectAllMarkersInRange_OrSurroundings)
                 ts.CollectAllMarkersInRangeInto_OrSurroundings (from, to, kAnyMarkerOwner, fMarkerSink);
                 ts.DoAboutToUpdateCalls (fUpdateInfo, fMarkerSink.fMarkers.begin (), fMarkerSink.fMarkers.end ());
             }
-            inline  TextStore::SimpleUpdater::~SimpleUpdater () {
+            inline  TextStore::SimpleUpdater::~SimpleUpdater ()
+            {
                 if (not fCanceled) {
                     fTextStore.DoDidUpdateCalls (fUpdateInfo, fMarkerSink.fMarkers.begin (), fMarkerSink.fMarkers.end ());
                 }
             }
-            inline  void    TextStore::SimpleUpdater::Cancel () {
+            inline  void    TextStore::SimpleUpdater::Cancel ()
+            {
                 fCanceled = true;
             }
 
@@ -631,14 +635,16 @@ namespace   Stroika {
                 fMatchString (searchString),
                 fWrapSearch (wrap),
                 fWholeWordSearch (wholeWord),
-                fCaseSensativeSearch (caseSensative) {
+                fCaseSensativeSearch (caseSensative)
+            {
             }
 
 
 //  class   TextStore::VectorMarkerSink
             inline  TextStore::VectorMarkerSink::VectorMarkerSink (vector<Marker*>* markers):
                 MarkerSink (),
-                fMarkers (markers) {
+                fMarkers (markers)
+            {
                 RequireNotNull (fMarkers);
             }
 
@@ -647,7 +653,8 @@ namespace   Stroika {
 //  class   TextStore::SmallStackBufferMarkerSink
             inline  TextStore::SmallStackBufferMarkerSink::SmallStackBufferMarkerSink ():
                 MarkerSink (),
-                fMarkers (0) {
+                fMarkers (0)
+            {
             }
 
 
@@ -657,7 +664,8 @@ namespace   Stroika {
             inline  TextStore::TextStore ():
                 MarkerOwner (),
                 fMarkerOwners (),
-                fTextBreaker () {
+                fTextBreaker ()
+            {
                 fMarkerOwners.push_back (this);
             }
             /*
@@ -667,7 +675,8 @@ namespace   Stroika {
                     <p>NB: It is illegal to add a @'MarkerOwner' to more than one @'TextStore' at a time, or to the same one
                 multiple times.</p>
             */
-            inline  void    TextStore::AddMarkerOwner (MarkerOwner* owner) {
+            inline  void    TextStore::AddMarkerOwner (MarkerOwner* owner)
+            {
                 RequireNotNull (owner);
 #if     !qVirtualBaseMixinCallDuringCTORBug
                 Require (owner->PeekAtTextStore () == this);
@@ -681,7 +690,8 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Unregister the given MarkerOwner which was previously registed with AddMarkerOwner ().</p>
             */
-            inline  void    TextStore::RemoveMarkerOwner (MarkerOwner* owner) {
+            inline  void    TextStore::RemoveMarkerOwner (MarkerOwner* owner)
+            {
                 RequireNotNull (owner);
 #if     !qVirtualBaseMixinCallDuringCTORBug
                 Require (owner->PeekAtTextStore () == this);
@@ -695,14 +705,16 @@ namespace   Stroika {
             @DESCRIPTION:
                         <p>Returns the list of all MarkerOwners registered for notification of changes to the text.</p>
             */
-            inline  const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const throw () {
+            inline  const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const throw ()
+            {
                 return fMarkerOwners;
             }
             /*
             @METHOD:        TextStore::RemoveMarker
             @DESCRIPTION:   <p>Remove the given marker from the text.</p>
             */
-            inline  void    TextStore::RemoveMarker (Marker* marker) {
+            inline  void    TextStore::RemoveMarker (Marker* marker)
+            {
                 RemoveMarkers (&marker, 1);
             }
             /*
@@ -710,14 +722,16 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the marker position of the beginning of the
                         text buffer (always 0).</p>
             */
-            inline  size_t  TextStore::GetStart () {
+            inline  size_t  TextStore::GetStart ()
+            {
                 return (0);
             }
             /*
             @METHOD:        TextStore::GetEnd
             @DESCRIPTION:   <p>Returns the marker position of the end of the text buffer.</p>
             */
-            inline  size_t  TextStore::GetEnd () const {
+            inline  size_t  TextStore::GetEnd () const
+            {
                 return (GetLength ());
             }
             /*
@@ -733,7 +747,8 @@ namespace   Stroika {
                         and helper fuctions to allow you to fill an array with the all the matching Markers.</p>
                             <p>NB: this has changed somewhat since Led22 - see SPR#0489.</p>
             */
-            inline  vector<Marker*> TextStore::CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner) const {
+            inline  vector<Marker*> TextStore::CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner) const
+            {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 vector<Marker*>     list;
@@ -741,23 +756,27 @@ namespace   Stroika {
                 CollectAllMarkersInRangeInto (from, to, owner, vml);
                 return (list);
             }
-            inline  void    TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const {
+            inline  void    TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
+            {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 CollectAllMarkersInRangeInto ((from > 0) ? (from - 1) : from, min (to + 1, GetEnd () + 1), owner, output);
             }
-            inline  void    TextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const {
+            inline  void    TextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
+            {
                 RequireNotNull (markerList);
                 markerList->clear ();
                 VectorMarkerSink    vml (markerList);
                 CollectAllMarkersInRangeInto (from, to, owner, vml);
             }
-            inline  vector<Marker*> TextStore::CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner) const {
+            inline  vector<Marker*> TextStore::CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner) const
+            {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 return CollectAllMarkersInRange ((from > 0) ? (from - 1) : from, min (to + 1, GetEnd () + 1), owner);
             }
-            inline  void    TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const {
+            inline  void    TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
+            {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 RequireNotNull (markerList);
@@ -766,10 +785,12 @@ namespace   Stroika {
             }
 #if     qSingleByteCharacters || qWideCharacters
             // qMultiByteCharacters Code in C file - COMPLEX/SLOW
-            inline  size_t  TextStore::CharacterToTCharIndex (size_t i) {
+            inline  size_t  TextStore::CharacterToTCharIndex (size_t i)
+            {
                 return (i);
             }
-            inline  size_t  TextStore::TCharToCharacterIndex (size_t i) {
+            inline  size_t  TextStore::TCharToCharacterIndex (size_t i)
+            {
                 return (i);
             }
 #endif
@@ -778,7 +799,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the end-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerEnd'.</p>
             */
-            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) throw () {
+            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) throw ()
+            {
                 SetMarkerRange (marker, start, marker->GetEnd ());
             }
             /*
@@ -786,7 +808,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the start-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) throw () {
+            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) throw ()
+            {
                 SetMarkerRange (marker, marker->GetStart (), end);
             }
             /*
@@ -795,14 +818,17 @@ namespace   Stroika {
                         Similar to @'TextStore::SetMarkerEnd' except that it takes a length, not an end-point.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) throw () {
+            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) throw ()
+            {
                 size_t  start   =   marker->GetStart ();
                 SetMarkerRange (marker, start, start + length);
             }
-            inline  size_t  TextStore::GetLineLength (size_t lineNumber) const {
+            inline  size_t  TextStore::GetLineLength (size_t lineNumber) const
+            {
                 return (GetStartOfLine (lineNumber) - GetEndOfLine (lineNumber));
             }
-            inline  size_t  TextStore::FindNextCharacter (size_t afterPos) const {
+            inline  size_t  TextStore::FindNextCharacter (size_t afterPos) const
+            {
                 if (afterPos >= GetEnd ()) {
                     return (GetEnd ());
                 }
@@ -825,7 +851,8 @@ namespace   Stroika {
                             <p>If none is associated with the TextStore right now - and default one is built and returned.</p>
                             <p>See also See @'TextStore::SetTextBreaker'.</p>
             */
-            inline  Foundation::Memory::SharedPtr<TextBreaks>   TextStore::GetTextBreaker () const {
+            inline  Foundation::Memory::SharedPtr<TextBreaks>   TextStore::GetTextBreaker () const
+            {
                 if (fTextBreaker.IsNull ()) {
                     fTextBreaker = Foundation::Memory::SharedPtr<TextBreaks> (new TextBreaks_DefaultImpl ());
                 }
@@ -835,16 +862,19 @@ namespace   Stroika {
             @METHOD:        TextStore::SetTextBreaker
             @DESCRIPTION:   <p>See @'TextStore::GetTextBreaker'.</p>
             */
-            inline  void    TextStore::SetTextBreaker (const Foundation::Memory::SharedPtr<TextBreaks>& textBreaker) {
+            inline  void    TextStore::SetTextBreaker (const Foundation::Memory::SharedPtr<TextBreaks>& textBreaker)
+            {
                 fTextBreaker = textBreaker;
             }
-            inline  void    TextStore::Invariant () const {
+            inline  void    TextStore::Invariant () const
+            {
 #if     qDebug && qHeavyDebugging
                 Invariant_ ();
 #endif
             }
 #if     qMultiByteCharacters
-            inline  void    TextStore::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const {
+            inline  void    TextStore::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
+            {
 #if     qDebug
                 /*
                  *  We know that line (not row) breaks are a good syncronization point to look back and scan to make
@@ -862,7 +892,8 @@ namespace   Stroika {
 #endif
             }
 #endif
-            inline  bool    TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to) {
+            inline  bool    TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to)
+            {
                 Require (mStart <= mEnd);
                 Require (from <= to);
 
@@ -923,7 +954,8 @@ namespace   Stroika {
                         overlap. And we make no such special treatment of the second argument.</p>
                             <p>See SPR#0745 for more details. Also, SPR#0489, and SPR#420.</p>
             */
-            inline  bool    TextStore::Overlap (const Marker& m, size_t from, size_t to) {
+            inline  bool    TextStore::Overlap (const Marker& m, size_t from, size_t to)
+            {
                 Require (from <= to);
 
                 size_t  start;
@@ -987,10 +1019,12 @@ namespace   Stroika {
 //  class   MarkerOfATypeMarkerSink
             template    <typename   T>
             inline  MarkerOfATypeMarkerSink<T>::MarkerOfATypeMarkerSink ():
-                fResult (nullptr) {
+                fResult (nullptr)
+            {
             }
             template    <typename   T>
-            void    MarkerOfATypeMarkerSink<T>::Append (Marker* m) {
+            void    MarkerOfATypeMarkerSink<T>::Append (Marker* m)
+            {
                 RequireNotNull (m);
                 T*  tMarker =   dynamic_cast<T*>(m);
                 if (tMarker != nullptr) {
@@ -1005,10 +1039,12 @@ namespace   Stroika {
 //  class   MarkersOfATypeMarkerSink2Vector
             template    <typename   T>
             inline  MarkersOfATypeMarkerSink2Vector<T>::MarkersOfATypeMarkerSink2Vector ():
-                fResult () {
+                fResult ()
+            {
             }
             template    <typename   T>
-            void    MarkersOfATypeMarkerSink2Vector<T>::Append (Marker* m) {
+            void    MarkersOfATypeMarkerSink2Vector<T>::Append (Marker* m)
+            {
                 RequireNotNull (m);
                 T*  tMarker =   dynamic_cast<T*>(m);
                 if (tMarker != nullptr) {
@@ -1022,10 +1058,12 @@ namespace   Stroika {
 //  class   MarkersOfATypeMarkerSink2SmallStackBuffer
             template    <typename   T>
             inline  MarkersOfATypeMarkerSink2SmallStackBuffer<T>::MarkersOfATypeMarkerSink2SmallStackBuffer ():
-                fResult () {
+                fResult ()
+            {
             }
             template    <typename   T>
-            void    MarkersOfATypeMarkerSink2SmallStackBuffer<T>::Append (Marker* m) {
+            void    MarkersOfATypeMarkerSink2SmallStackBuffer<T>::Append (Marker* m)
+            {
                 RequireNotNull (m);
                 T*  tMarker =   dynamic_cast<T*>(m);
                 if (tMarker != nullptr) {

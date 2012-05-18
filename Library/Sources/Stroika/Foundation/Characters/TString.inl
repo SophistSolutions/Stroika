@@ -19,22 +19,26 @@ namespace   Stroika {
 
 
 
-            inline  wstring NarrowSDKStringToWide (const string& s) {
+            inline  wstring NarrowSDKStringToWide (const string& s)
+            {
                 return NarrowStringToWide (s, GetDefaultSDKCodePage ());
             }
-            inline  string  WideStringToNarrowSDKString (const wstring& ws) {
+            inline  string  WideStringToNarrowSDKString (const wstring& ws)
+            {
                 return WideStringToNarrow (ws, GetDefaultSDKCodePage ());
             }
 
 
-            inline  string  TString2NarrowSDK (const TString& s) {
+            inline  string  TString2NarrowSDK (const TString& s)
+            {
 #if     qTargetPlatformSDKUseswchar_t
                 return WideStringToNarrowSDKString (s);
 #else
                 return s;
 #endif
             }
-            inline  TString NarrowSDK2TString (const string& s) {
+            inline  TString NarrowSDK2TString (const string& s)
+            {
 #if     qTargetPlatformSDKUseswchar_t
                 return NarrowSDKStringToWide (s);
 #else
@@ -44,24 +48,28 @@ namespace   Stroika {
 
 
 
-            inline  wstring TString2Wide (const TString& s) {
+            inline  wstring TString2Wide (const TString& s)
+            {
 #if     qTargetPlatformSDKUseswchar_t
                 return s;
 #else
                 return NarrowSDKStringToWide (s);
 #endif
             }
-            inline  TString Wide2TString (const wstring& s) {
+            inline  TString Wide2TString (const wstring& s)
+            {
 #if     qTargetPlatformSDKUseswchar_t
                 return s;
 #else
                 return WideStringToNarrowSDKString (s);
 #endif
             }
-            inline  TString ToTString (const string& s) {
+            inline  TString ToTString (const string& s)
+            {
                 return NarrowSDK2TString (s);
             }
-            inline  TString ToTString (const wstring& s) {
+            inline  TString ToTString (const wstring& s)
+            {
                 return Wide2TString (s);
             }
         }

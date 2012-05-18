@@ -152,7 +152,8 @@ AGAIN:
  ********************************************************************************
  */
 
-Socket::_Rep::~_Rep () {
+Socket::_Rep::~_Rep ()
+{
 }
 
 
@@ -171,32 +172,39 @@ const   String  Socket::BindProperties::kANYHOST;
 
 
 Socket::Socket ()
-    : fRep_ () {
+    : fRep_ ()
+{
 }
 
 Socket::Socket (const Memory::SharedPtr<_Rep>& rep)
-    : fRep_ (rep) {
+    : fRep_ (rep)
+{
 }
 
 Socket::Socket (const Socket& s)
-    : fRep_ (s.fRep_) {
+    : fRep_ (s.fRep_)
+{
 }
 
 Socket::Socket (NativeSocket sd)
-    : fRep_ (SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd))) {
+    : fRep_ (SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)))
+{
 }
 
-Socket::~Socket () {
+Socket::~Socket ()
+{
 }
 
-const Socket& Socket::operator= (const Socket& s) {
+const Socket& Socket::operator= (const Socket& s)
+{
     if (fRep_ != s.fRep_) {
         fRep_ = s.fRep_;
     }
     return *this;
 }
 
-void    Socket::Bind (const BindProperties& bindProperties) {
+void    Socket::Bind (const BindProperties& bindProperties)
+{
     // Should this throw if already has something bound - already non-null!???
     if (not fRep_.IsNull () and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE) {
         throw Execution::StringException (L"Cannot bind an already bound socket");
@@ -245,23 +253,28 @@ void    Socket::Bind (const BindProperties& bindProperties) {
     fRep_  = SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
 }
 
-void    Socket::Listen (unsigned int backlog) {
+void    Socket::Listen (unsigned int backlog)
+{
     fRep_->Listen (backlog);
 }
 
-Socket  Socket::Accept () {
+Socket  Socket::Accept ()
+{
     return fRep_->Accept ();
 }
 
-size_t  Socket::Read (Byte* intoStart, Byte* intoEnd) {
+size_t  Socket::Read (Byte* intoStart, Byte* intoEnd)
+{
     return fRep_->Read (intoStart, intoEnd);
 }
 
-void    Socket::Write (const Byte* start, const Byte* end) {
+void    Socket::Write (const Byte* start, const Byte* end)
+{
     fRep_->Write (start, end);
 }
 
-void    Socket::Close () {
+void    Socket::Close ()
+{
     // not importnat to null-out, but may as well...
     fRep_->Close ();
     fRep_.clear ();

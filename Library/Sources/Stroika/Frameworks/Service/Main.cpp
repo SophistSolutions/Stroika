@@ -54,40 +54,48 @@ using   namespace   Stroika::Frameworks::Service;
  */
 Main::IRep::IRep ()
     : fStopping_ (false)
-    , fMustReReadConfig (false) {
+    , fMustReReadConfig (false)
+{
 }
 
-Main::IRep::~IRep () {
+Main::IRep::~IRep ()
+{
 }
 
-void    Main::IRep::OnStartRequest () {
+void    Main::IRep::OnStartRequest ()
+{
     // This procedure ends when the entire service process ends...
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::OnStartRequest"));
     MainLoop ();
 }
 
-void    Main::IRep::OnStopRequest () {
+void    Main::IRep::OnStopRequest ()
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::OnStopRequest"));
     // default to using thread stuff to send us a signal to abort...
     fStopping_ = true;
 }
 
-void    Main::IRep::OnReReadConfigurationRequest () {
+void    Main::IRep::OnReReadConfigurationRequest ()
+{
     fMustReReadConfig = true;
 }
 
-String  Main::IRep::GetServiceStatusMessage () const {
+String  Main::IRep::GetServiceStatusMessage () const
+{
     return String ();
 }
 
 #if     qPlatform_POSIX
-String  Main::IRep::GetPIDFileName () const {
+String  Main::IRep::GetPIDFileName () const
+{
     return L"/tmp/" + GetServiceDescription ().fName + L".pid";
 }
 #endif
 
 #if     qPlatform_POSIX
-void    Main::IRep::SignalHandler (int signum) {
+void    Main::IRep::SignalHandler (int signum)
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::SignalHandler"));
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
@@ -131,7 +139,8 @@ const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Contin
 
 Memory::SharedPtr<Main::IRep>   Main::_sRep;
 
-Main::Main (Memory::SharedPtr<IRep> rep) {
+Main::Main (Memory::SharedPtr<IRep> rep)
+{
     Ensure  (_sRep.IsNull ());
     _sRep = rep;
 #if     qPlatform_POSIX
@@ -140,13 +149,15 @@ Main::Main (Memory::SharedPtr<IRep> rep) {
 }
 
 #if     qPlatform_POSIX
-void    Main::SetupSignalHanlders_ () {
+void    Main::SetupSignalHanlders_ ()
+{
     Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler);
     Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler);
 }
 #endif
 
-Main::State Main::GetState () const {
+Main::State Main::GetState () const
+{
 #if     qPlatform_POSIX
     if (GetServicePID () != 0) {
         return eRunning;
@@ -156,7 +167,8 @@ Main::State Main::GetState () const {
 }
 
 #if     qPlatform_POSIX
-pid_t   Main::GetServicePID () const {
+pid_t   Main::GetServicePID () const
+{
     ifstream    in (_sRep->GetPIDFileName ().AsTString ().c_str ());
     if (in) {
         pid_t   n = 0;
@@ -167,7 +179,8 @@ pid_t   Main::GetServicePID () const {
 }
 #endif
 
-String      Main::GetServiceStatusMessage () const {
+String      Main::GetServiceStatusMessage () const
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
     const   wchar_t kTAB[]  =   L"    ";    // use spaces instead of tab so formatting independent of tabstop settings
     ServiceDescription  svd =   GetServiceDescription ();
@@ -197,7 +210,8 @@ String      Main::GetServiceStatusMessage () const {
     return tmp.str ();
 }
 
-void    Main::RunAsService () {
+void    Main::RunAsService ()
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     // VERY PRIMITIVE IMPL - WE NEED LOCKING on tmpfile stuff - add good tempfile supprot to fileuitls or use existing...
 
@@ -223,7 +237,8 @@ void    Main::RunAsService () {
     }
 }
 
-void    Main::_Start (Time::DurationSecondsType timeout) {
+void    Main::_Start (Time::DurationSecondsType timeout)
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
@@ -278,7 +293,8 @@ void    Main::_Start (Time::DurationSecondsType timeout) {
     }
 }
 
-void    Main::_Stop (Time::DurationSecondsType timeout) {
+void    Main::_Stop (Time::DurationSecondsType timeout)
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Stop"));
     DbgTrace ("(timeout = %f)", timeout);
 
@@ -295,7 +311,8 @@ void    Main::_Stop (Time::DurationSecondsType timeout) {
     }
 }
 
-void    Main::Kill () {
+void    Main::Kill ()
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
     Stop ();
     // Send signal to server to stop
@@ -306,7 +323,8 @@ void    Main::Kill () {
 #endif
 }
 
-void    Main::_Restart (Time::DurationSecondsType timeout) {
+void    Main::_Restart (Time::DurationSecondsType timeout)
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
     DbgTrace ("(timeout = %f)", timeout);
 
@@ -319,7 +337,8 @@ void    Main::_Restart (Time::DurationSecondsType timeout) {
     Start (endAt - Time::GetTickCount ());
 }
 
-bool    Main::_IsServiceFailed () {
+bool    Main::_IsServiceFailed ()
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
 #if     qPlatform_POSIX
     pid_t   servicePID  =   GetServicePID ();
@@ -330,7 +349,8 @@ bool    Main::_IsServiceFailed () {
     return false;
 }
 
-void    Main::_CleanupDeadService () {
+void    Main::_CleanupDeadService ()
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
 #if     qPlatform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
@@ -338,7 +358,8 @@ void    Main::_CleanupDeadService () {
 #endif
 }
 
-bool    Main::_IsServiceActuallyRunning () {
+bool    Main::_IsServiceActuallyRunning ()
+{
 #if     qPlatform_POSIX
     pid_t   servicePID  =   GetServicePID ();
     if (servicePID > 0) {
@@ -349,7 +370,8 @@ bool    Main::_IsServiceActuallyRunning () {
     return false;
 }
 
-void    Main::ReReadConfiguration () {
+void    Main::ReReadConfiguration ()
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
     // SEND APPROPRIATE SIGNAL
 #if     qPlatform_POSIX
@@ -359,25 +381,30 @@ void    Main::ReReadConfiguration () {
 #endif
 }
 
-void    Main::Pause () {
+void    Main::Pause ()
+{
     AssertNotImplemented ();
 }
 
-void    Main::Continue () {
+void    Main::Continue ()
+{
     AssertNotImplemented ();
 }
 
-Main::ServiceDescription    Main::GetServiceDescription () const {
+Main::ServiceDescription    Main::GetServiceDescription () const
+{
     return _sRep->GetServiceDescription ();
 }
 
 #if     qPlatform_POSIX
-void    Main::SignalHandler (int signum) {
+void    Main::SignalHandler (int signum)
+{
     _sRep->SignalHandler (signum);
 }
 #endif
 
-bool    Main::_HandleStandardCommandLineArgument (const String& arg) {
+bool    Main::_HandleStandardCommandLineArgument (const String& arg)
+{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_HandleStandardCommandLineArgument"));
     if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRunAsService)) {
         RunAsService ();

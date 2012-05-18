@@ -20,7 +20,8 @@ namespace   Stroika {
             namespace   Platform {
                 namespace   Windows {
 
-                    inline  void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult) {
+                    inline  void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
+                    {
                         RequireNotNull (intoResult);
                         Require (wsStart <= wsEnd);
                         size_t  wsLen   =   (wsEnd - wsStart);
@@ -31,7 +32,8 @@ namespace   Stroika {
                         }
                     }
 
-                    inline  void    NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult) {
+                    inline  void    NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+                    {
                         RequireNotNull (intoResult);
                         Require (sStart <= sEnd);
                         size_t  sLen    =   (sEnd - sStart);
@@ -43,7 +45,8 @@ namespace   Stroika {
                     }
 
 
-                    inline  wstring BSTR2wstring (BSTR b) {
+                    inline  wstring BSTR2wstring (BSTR b)
+                    {
                         if (b == nullptr) {
                             return wstring ();
                         }
@@ -52,7 +55,8 @@ namespace   Stroika {
                         }
                     }
 
-                    inline  CodePage    Win32CharSetToCodePage (unsigned char lfCharSet) {
+                    inline  CodePage    Win32CharSetToCodePage (unsigned char lfCharSet)
+                    {
                         // See MSFT info article Q165478. No routine to map from these charset values - just this table... Sigh...
                         // LGP 2001-04-30
 
@@ -204,7 +208,8 @@ namespace   Stroika {
                         }
                     }
 
-                    inline  CodePage    Win32PrimaryLangIDToCodePage (USHORT languageIdenifier) {
+                    inline  CodePage    Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
+                    {
                         /*
                          *  I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesnt provide their own
                          *  mapping routines! Anyhow - I got a start on this from some UNISCRIBE sample code, and have since
@@ -256,7 +261,8 @@ namespace   Stroika {
 
                     //  class   PlatformCodePageConverter
                     inline  PlatformCodePageConverter::PlatformCodePageConverter (int codePage)
-                        : fCodePage (codePage) {
+                        : fCodePage (codePage)
+                    {
                     }
 
 

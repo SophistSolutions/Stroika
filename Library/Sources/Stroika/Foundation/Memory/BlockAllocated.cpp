@@ -28,12 +28,14 @@ using   Execution::CriticalSection;
 CriticalSection*    Private::sCritSection_  =   nullptr;
 
 
-ActualModuleInit::ActualModuleInit () {
+ActualModuleInit::ActualModuleInit ()
+{
     Require (sCritSection_ == nullptr);
     sCritSection_ = DEBUG_NEW CriticalSection ();
 }
 
-ActualModuleInit::~ActualModuleInit () {
+ActualModuleInit::~ActualModuleInit ()
+{
     RequireNotNull (sCritSection_);
     delete sCritSection_;
     sCritSection_ = nullptr;

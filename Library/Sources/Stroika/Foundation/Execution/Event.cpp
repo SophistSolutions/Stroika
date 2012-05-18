@@ -27,7 +27,8 @@ using   namespace   Stroika::Foundation::Execution;
 #if     qTrack_ThreadUtils_HandleCounts
 uint32_t    Event::sCurAllocatedHandleCount     =   0;
 #endif
-void    Event::Wait (Time::DurationSecondsType timeout) {
+void    Event::Wait (Time::DurationSecondsType timeout)
+{
     //Debug::TraceContextBumper ctx (TSTR ("Event::Wait"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     CheckForThreadAborting ();

@@ -400,7 +400,8 @@ namespace   Stroika {
             inline  Partition::PartitionMarker::PartitionMarker (Partition& owner, PartitionMarker* insertAfterMe):
                 inherited (),
                 fPrevious (insertAfterMe),
-                fNext (insertAfterMe == nullptr ? nullptr : insertAfterMe->fNext) {
+                fNext (insertAfterMe == nullptr ? nullptr : insertAfterMe->fNext)
+            {
                 if (insertAfterMe == nullptr) {
                     owner.fPartitionMarkerFirst = this;
                 }
@@ -424,18 +425,22 @@ namespace   Stroika {
                 @'Marker::GetOwner()' method. Use that if the owner could be nullptr. But note that the owner will never
                 be nullptr if the marker has been added (and not yet removed) from the TextStore.</p>
             */
-            inline  Partition&  Partition::PartitionMarker::GetOwner () const {
+            inline  Partition&  Partition::PartitionMarker::GetOwner () const
+            {
                 EnsureNotNull (inherited::GetOwner ());
                 EnsureMember (inherited::GetOwner (), Partition);
                 return *(dynamic_cast<Partition*> (inherited::GetOwner ()));
             }
-            inline  Partition::PartitionMarker* Partition::PartitionMarker::GetPrevious () const {
+            inline  Partition::PartitionMarker* Partition::PartitionMarker::GetPrevious () const
+            {
                 return fPrevious;
             }
-            inline  Partition::PartitionMarker* Partition::PartitionMarker::GetNext () const {
+            inline  Partition::PartitionMarker* Partition::PartitionMarker::GetNext () const
+            {
                 return fNext;
             }
-            inline  void    Partition::Invariant () const {
+            inline  void    Partition::Invariant () const
+            {
 #if     qDebug && qHeavyDebugging
                 Invariant_ ();
 #endif
@@ -449,21 +454,25 @@ namespace   Stroika {
             @METHOD:        Partition::GetEnd
             @DESCRIPTION:   <p>Return the associated @'TextStore::GetEnd' ().</p>
             */
-            inline  size_t  Partition::GetEnd () const {
+            inline  size_t  Partition::GetEnd () const
+            {
                 return (fTextStore.GetEnd ());
             }
             /*
             @METHOD:        Partition::CopyOut
             @DESCRIPTION:   <p>Calls the associated @'TextStore::CopyOut' ().</p>
             */
-            inline  void    Partition::CopyOut (size_t from, size_t byteCount, Led_tChar* buffer) const {
+            inline  void    Partition::CopyOut (size_t from, size_t byteCount, Led_tChar* buffer) const
+            {
                 GetTextStore ().CopyOut (from, byteCount, buffer);
             }
-            inline  Partition::PartitionMarker* Partition::GetFirstPartitionMarker () const {
+            inline  Partition::PartitionMarker* Partition::GetFirstPartitionMarker () const
+            {
                 RequireNotNull (fPartitionMarkerFirst);
                 return fPartitionMarkerFirst;
             }
-            inline  Partition::PartitionMarker* Partition::GetLastPartitionMarker () const {
+            inline  Partition::PartitionMarker* Partition::GetLastPartitionMarker () const
+            {
                 RequireNotNull (fPartitionMarkerLast);
                 return fPartitionMarkerLast;
             }
@@ -472,7 +481,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Associate the given @'Partition::PartitionWatcher' with this Partition. Use
                 @'Partition::RemovePartitionWatcher' to remove the callback / association.</p>
             */
-            inline  void    Partition::AddPartitionWatcher (PartitionWatcher* watcher) {
+            inline  void    Partition::AddPartitionWatcher (PartitionWatcher* watcher)
+            {
                 fPartitionWatchers.push_back (watcher);
             }
             /*
@@ -480,21 +490,24 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Remove the given @'Partition::PartitionWatcher' from being associated with this @'Partition'.
                 Balances calls from @'Partition::AddPartitionWatcher'.</p>
             */
-            inline  void    Partition::RemovePartitionWatcher (PartitionWatcher* watcher) {
+            inline  void    Partition::RemovePartitionWatcher (PartitionWatcher* watcher)
+            {
                 vector<PartitionWatcher*>::iterator it  =   find (fPartitionWatchers.begin (), fPartitionWatchers.end (), watcher);
                 Assert (it != fPartitionWatchers.end ());   // Be forgiving about not finding in list, in light of exception handling - but give warning...
                 if (it != fPartitionWatchers.end ()) {
                     fPartitionWatchers.erase (it);
                 }
             }
-            inline  void    Partition::DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const throw () {
+            inline  void    Partition::DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const throw ()
+            {
                 for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     void*   info;
                     (*it)->AboutToSplit (pm, at, &info);
                     infos->push_back (info);
                 }
             }
-            inline  void    Partition::DoDidSplitCalls (const vector<void*>& infos) const throw () {
+            inline  void    Partition::DoDidSplitCalls (const vector<void*>& infos) const throw ()
+            {
                 Assert (infos.size () == fPartitionWatchers.size ());
                 vector<void*>::const_iterator infoIt = infos.begin ();
                 for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
@@ -502,14 +515,16 @@ namespace   Stroika {
                     ++infoIt;
                 }
             }
-            inline  void    Partition::DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const throw () {
+            inline  void    Partition::DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const throw ()
+            {
                 for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     void*   info;
                     (*it)->AboutToCoalece (pm, &info);
                     infos->push_back (info);
                 }
             }
-            inline  void    Partition::DoDidCoaleceCalls (const vector<void*>& infos) const throw () {
+            inline  void    Partition::DoDidCoaleceCalls (const vector<void*>& infos) const throw ()
+            {
                 Assert (infos.size () == fPartitionWatchers.size ());
                 vector<void*>::const_iterator infoIt = infos.begin ();
                 for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
@@ -522,10 +537,12 @@ namespace   Stroika {
 
 
 //  class   PartitioningTextImager;
-            inline  PartitioningTextImager::PartitionPtr    PartitioningTextImager::GetPartition () const {
+            inline  PartitioningTextImager::PartitionPtr    PartitioningTextImager::GetPartition () const
+            {
                 return fPartition;
             }
-            inline  Partition::PartitionMarker* PartitioningTextImager::GetFirstPartitionMarker () const {
+            inline  Partition::PartitionMarker* PartitioningTextImager::GetFirstPartitionMarker () const
+            {
                 Require (not fPartition.IsNull ());     // perhaps you've forgotten to call SpecifyTextStore or SetPartition ()?
                 return fPartition->GetFirstPartitionMarker ();
             }
@@ -535,14 +552,16 @@ namespace   Stroika {
                 Note, the use of 'charPosition' rather than markerpos is to disambiguiate the case where we are at the boundary
                 between two partition elements.</p>
             */
-            inline  Partition::PartitionMarker*     PartitioningTextImager::GetPartitionMarkerContainingPosition (size_t charPosition) const {
+            inline  Partition::PartitionMarker*     PartitioningTextImager::GetPartitionMarkerContainingPosition (size_t charPosition) const
+            {
                 return fPartition->GetPartitionMarkerContainingPosition (charPosition);
             }
             /*
             @METHOD:        PartitioningTextImager::GetStartOfPartitionContainingPosition
             @DESCRIPTION:   <p>Simple wrapper on @'PartitioningTextImager::GetPartitionMarkerContainingPosition'.</p>
             */
-            inline  size_t      PartitioningTextImager::GetStartOfPartitionContainingPosition (size_t charPosition) const {
+            inline  size_t      PartitioningTextImager::GetStartOfPartitionContainingPosition (size_t charPosition) const
+            {
                 return GetPartitionMarkerContainingPosition (charPosition)->GetStart ();
             }
             /*
@@ -550,10 +569,12 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Simple wrapper on @'PartitioningTextImager::GetPartitionMarkerContainingPosition'. Returns marker position
                 AFTER end of partition (same as START position of following partition - if any).</p>
             */
-            inline  size_t      PartitioningTextImager::GetEndOfPartitionContainingPosition (size_t charPosition) const {
+            inline  size_t      PartitioningTextImager::GetEndOfPartitionContainingPosition (size_t charPosition) const
+            {
                 return GetPartitionMarkerContainingPosition (charPosition)->GetEnd ();
             }
-            inline  void    PartitioningTextImager::Invariant () const {
+            inline  void    PartitioningTextImager::Invariant () const
+            {
 #if     qDebug && qHeavyDebugging
                 Invariant_ ();
 #endif
@@ -563,14 +584,17 @@ namespace   Stroika {
 
 #if     qCacheTextMeasurementsForPM
 //  class   PartitioningTextImager::MeasureTextCache
-            inline  void    PartitioningTextImager::MeasureTextCache::ClearAll () {
+            inline  void    PartitioningTextImager::MeasureTextCache::ClearAll ()
+            {
                 fCache.ClearCache ();
             }
-            inline  const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImager::MeasureTextCache::LookupPM (PartitionMarker* pm, size_t rowStart) const {
+            inline  const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImager::MeasureTextCache::LookupPM (PartitionMarker* pm, size_t rowStart) const
+            {
                 RequireNotNull (pm);
                 return fCache.LookupElement (CacheElt::COMPARE_ITEM (pm, rowStart));
             }
-            inline  PartitioningTextImager::MeasureTextCache::CacheElt* PartitioningTextImager::MeasureTextCache::PrepareCacheUpdate (PartitionMarker* pm) const {
+            inline  PartitioningTextImager::MeasureTextCache::CacheElt* PartitioningTextImager::MeasureTextCache::PrepareCacheUpdate (PartitionMarker* pm) const
+            {
                 RequireNotNull (pm);
                 Led_Arg_Unused (pm);
                 // Safe to pass changing CacheElt::COMPARE_ITEM () because use HASH_TABLE_SIZE==1 for fCache
@@ -581,7 +605,8 @@ namespace   Stroika {
 //  class   PartitioningTextImager::MeasureTextCache::CacheElt
             inline  PartitioningTextImager::MeasureTextCache::CacheElt::CacheElt ():
                 fValidFor (nullptr, 0),
-                fMeasurementsCache (0) {
+                fMeasurementsCache (0)
+            {
             }
 #endif
 

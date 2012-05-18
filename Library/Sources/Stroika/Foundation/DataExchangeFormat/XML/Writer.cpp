@@ -24,7 +24,8 @@ using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
  ****************************** QuoteForXMLAttribute ****************************
  ********************************************************************************
  */
-string  XML::QuoteForXMLAttribute (const string& s) {
+string  XML::QuoteForXMLAttribute (const string& s)
+{
     string  r;
     r.reserve (s.size () * 6 / 5);  // wild guess about good estimate
     for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
@@ -53,7 +54,8 @@ string  XML::QuoteForXMLAttribute (const string& s) {
     return r;
 }
 
-string  XML::QuoteForXMLAttribute (const wstring& s) {
+string  XML::QuoteForXMLAttribute (const wstring& s)
+{
     string  r;
     r.reserve (s.size () * 7 / 5);  // wild guess about good estimate
     for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
@@ -89,18 +91,21 @@ string  XML::QuoteForXMLAttribute (const wstring& s) {
     return r;
 }
 
-string  XML::QuoteForXMLAttribute (const String& s) {
+string  XML::QuoteForXMLAttribute (const String& s)
+{
     return QuoteForXMLAttribute (s.As<wstring> ());
 }
 
-string  XML::QuoteForXMLAttribute (const Memory::Optional<String>& s) {
+string  XML::QuoteForXMLAttribute (const Memory::Optional<String>& s)
+{
     if (s.empty ()) {
         return string ();
     }
     return QuoteForXMLAttribute (*s);
 }
 
-wstring XML::QuoteForXMLAttributeW (const wstring& s) {
+wstring XML::QuoteForXMLAttributeW (const wstring& s)
+{
     string  tmp =   QuoteForXMLAttribute (s);
     return NarrowSDKStringToWide (tmp);
 }
@@ -115,7 +120,8 @@ wstring XML::QuoteForXMLAttributeW (const wstring& s) {
  ******************************** QuoteForXML ***********************************
  ********************************************************************************
  */
-string  XML::QuoteForXML (const string& s) {
+string  XML::QuoteForXML (const string& s)
+{
     string  r;
     r.reserve (s.size () * 6 / 5);  // wild guess about good estimate
     for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
@@ -153,7 +159,8 @@ string  XML::QuoteForXML (const string& s) {
     return r;
 }
 
-string  XML::QuoteForXML (const wstring& s) {
+string  XML::QuoteForXML (const wstring& s)
+{
     string  r;
     r.reserve (s.size () * 7 / 5);  // wild guess about good estimate
     for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
@@ -198,16 +205,19 @@ string  XML::QuoteForXML (const wstring& s) {
     return r;
 }
 
-wstring XML::QuoteForXMLW (const wstring& s) {
+wstring XML::QuoteForXMLW (const wstring& s)
+{
     string  tmp =   QuoteForXML (s);
     return NarrowSDKStringToWide (tmp);
 }
 
-string  XML::QuoteForXML (const String& s) {
+string  XML::QuoteForXML (const String& s)
+{
     return QuoteForXML (s.As<wstring> ());
 }
 
-string  XML::QuoteForXML (const Memory::Optional<String>& s) {
+string  XML::QuoteForXML (const Memory::Optional<String>& s)
+{
     if (s.empty ()) {
         return string ();
     }
@@ -226,16 +236,19 @@ string  XML::QuoteForXML (const Memory::Optional<String>& s) {
  */
 Indenter::Indenter (const String& indentText)
     : fTabS_ (indentText.AsUTF8<string> ())
-    , fTabW_ (indentText.As<wstring> ()) {
+    , fTabW_ (indentText.As<wstring> ())
+{
 }
 
-void    Indenter::Indent (unsigned indentLevel, ostream& out) const {
+void    Indenter::Indent (unsigned indentLevel, ostream& out) const
+{
     for (unsigned int i = 0; i < indentLevel; ++i) {
         out << fTabS_;
     }
 }
 
-void    Indenter::Indent (unsigned int indentLevel, wostream& out) const {
+void    Indenter::Indent (unsigned int indentLevel, wostream& out) const
+{
     for (unsigned int i = 0; i < indentLevel; ++i) {
         out << fTabW_;
     }
@@ -250,7 +263,8 @@ void    Indenter::Indent (unsigned int indentLevel, wostream& out) const {
 
 
 
-string  XML::Format4XML (bool v) {
+string  XML::Format4XML (bool v)
+{
     return v ? "true" : "false";
 }
 

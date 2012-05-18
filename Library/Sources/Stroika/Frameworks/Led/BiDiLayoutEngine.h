@@ -307,25 +307,29 @@ namespace   Stroika {
              */
 
 //  class   TextLayoutBlock;
-            inline  const Led_tChar*    TextLayoutBlock::PeekAtRealText () const {
+            inline  const Led_tChar*    TextLayoutBlock::PeekAtRealText () const
+            {
                 const   Led_tChar*  s   =   nullptr;
                 const   Led_tChar*  e   =   nullptr;
                 PeekAtRealText_ (&s, &e);
                 return s;
             }
-            inline  const Led_tChar*    TextLayoutBlock::PeekAtVirtualText () const {
+            inline  const Led_tChar*    TextLayoutBlock::PeekAtVirtualText () const
+            {
                 const   Led_tChar*  s   =   nullptr;
                 const   Led_tChar*  e   =   nullptr;
                 PeekAtVirtualText_ (&s, &e);
                 return s;
             }
-            inline  size_t              TextLayoutBlock::GetTextLength () const {
+            inline  size_t              TextLayoutBlock::GetTextLength () const
+            {
                 const   Led_tChar*  s   =   nullptr;
                 const   Led_tChar*  e   =   nullptr;
                 PeekAtVirtualText_ (&s, &e);
                 return e - s;
             }
-            inline  void    TextLayoutBlock::Invariant () const {
+            inline  void    TextLayoutBlock::Invariant () const
+            {
 #if     qDebug
                 Invariant_ ();
 #endif
@@ -335,7 +339,8 @@ namespace   Stroika {
 
 
 // class    TextLayoutBlock::ScriptRunElt
-            inline  bool TextLayoutBlock::ScriptRunElt::operator== (const ScriptRunElt& rhs) const {
+            inline  bool TextLayoutBlock::ScriptRunElt::operator== (const ScriptRunElt& rhs) const
+            {
                 return (fDirection == rhs.fDirection and
                         fRealStart == rhs.fRealStart and
                         fRealEnd == rhs.fRealEnd and
@@ -343,7 +348,8 @@ namespace   Stroika {
                         fVirtualEnd == rhs.fVirtualEnd
                        );
             }
-            inline  bool TextLayoutBlock::ScriptRunElt::operator!= (const ScriptRunElt& rhs) const {
+            inline  bool TextLayoutBlock::ScriptRunElt::operator!= (const ScriptRunElt& rhs) const
+            {
                 return not (*this == rhs);
             }
 

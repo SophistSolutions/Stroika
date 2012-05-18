@@ -47,7 +47,8 @@ namespace   Stroika {
             };
 #if     qUseThreads_WindowsNative
             template    <>
-            inline  CRITICAL_SECTION&   CriticalSection::As () {
+            inline  CRITICAL_SECTION&   CriticalSection::As ()
+            {
                 return fCritSec;
             }
 #endif

@@ -46,7 +46,8 @@ namespace   Stroika {
 
 
             //  TOLOWER
-            inline  char    TOLOWER (char c) {
+            inline  char    TOLOWER (char c)
+            {
 #if     qUseASCIIRangeSpeedHack
                 if ('A' <= c and c <= 'Z') {
                     Ensure (std::tolower (c) == ((c - 'A') + 'a'));
@@ -63,7 +64,8 @@ namespace   Stroika {
                 return std::tolower (c);
 #endif
             }
-            inline  wchar_t TOLOWER (wchar_t c) {
+            inline  wchar_t TOLOWER (wchar_t c)
+            {
 #if     qUseASCIIRangeSpeedHack
                 if ('A' <= c and c <= 'Z') {
                     Ensure (towlower (c) == ((c - 'A') + 'a'));
@@ -82,7 +84,8 @@ namespace   Stroika {
             }
 
             //  TOUPPER
-            inline  char    TOUPPER (char c) {
+            inline  char    TOUPPER (char c)
+            {
 #if     qUseASCIIRangeSpeedHack
                 if ('a' <= c and c <= 'z') {
                     Ensure (std::toupper (c) == ((c - 'a') + 'A'));
@@ -99,7 +102,8 @@ namespace   Stroika {
                 return std::toupper (c);
 #endif
             }
-            inline  wchar_t TOUPPER (wchar_t c) {
+            inline  wchar_t TOUPPER (wchar_t c)
+            {
 #if     qUseASCIIRangeSpeedHack
                 if ('a' <= c and c <= 'z') {
                     Ensure (towupper (c) == ((c - 'a') + 'A'));
@@ -119,7 +123,8 @@ namespace   Stroika {
 
 
             //  ISSPACE
-            inline  bool    ISSPACE (char c) {
+            inline  bool    ISSPACE (char c)
+            {
 #if     qUseASCIIRangeSpeedHack
                 if (0 < c and c <= 127) {
                     //  space, tab, carriage return, newline, vertical tab or form feed
@@ -137,7 +142,8 @@ namespace   Stroika {
                 return isspace (c);
 #endif
             }
-            inline  bool    ISSPACE (wchar_t c) {
+            inline  bool    ISSPACE (wchar_t c)
+            {
 #if     qUseASCIIRangeSpeedHack
                 if (0 < c and c <= 127) {
                     //  space, tab, carriage return, newline, vertical tab or form feed
@@ -158,24 +164,28 @@ namespace   Stroika {
 
 
             //  tolower
-            inline  wstring tolower (const wstring& s) {
+            inline  wstring tolower (const wstring& s)
+            {
                 wstring r   =   s;
                 tolower (&r);
                 return r;
             }
-            inline  string  tolower (const string& s) {
+            inline  string  tolower (const string& s)
+            {
                 string  r   =   s;
                 tolower (&r);
                 return r;
             }
 
             //  toupper
-            inline  wstring toupper (const wstring& s) {
+            inline  wstring toupper (const wstring& s)
+            {
                 wstring r   =   s;
                 toupper (&r);
                 return r;
             }
-            inline  string  toupper (const string& s) {
+            inline  string  toupper (const string& s)
+            {
                 string  r   =   s;
                 toupper (&r);
                 return r;
@@ -187,13 +197,15 @@ namespace   Stroika {
 
 
 
-            inline  bool    StartsWith (const string& l, const string& prefix) {
+            inline  bool    StartsWith (const string& l, const string& prefix)
+            {
                 if (l.length () < prefix.length ()) {
                     return false;
                 }
                 return l.substr (0, prefix.length ()) == prefix;
             }
-            inline  bool    StartsWith (const wchar_t* l, const wchar_t* prefix, StringCompareOptions co) {
+            inline  bool    StartsWith (const wchar_t* l, const wchar_t* prefix, StringCompareOptions co)
+            {
                 // This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
                 RequireNotNull (l);
                 RequireNotNull (prefix);
@@ -207,7 +219,8 @@ namespace   Stroika {
                 Assert (false);
                 return false; // not reached
             }
-            inline  bool    StartsWith (const wstring& l, const wstring& prefix, StringCompareOptions co) {
+            inline  bool    StartsWith (const wstring& l, const wstring& prefix, StringCompareOptions co)
+            {
                 // This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
                 size_t  prefixLen   =   prefix.length ();
                 if (l.length () < prefixLen) {
@@ -225,7 +238,8 @@ namespace   Stroika {
 
 
 
-            inline  bool    EndsWith (const wstring& l, const wstring& suffix, StringCompareOptions co) {
+            inline  bool    EndsWith (const wstring& l, const wstring& suffix, StringCompareOptions co)
+            {
                 // This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
                 size_t  lLen        =   l.length ();
                 size_t  suffixLen   =   suffix.length ();
@@ -247,20 +261,24 @@ namespace   Stroika {
 
 
             // class    CaseInsensativeLess
-            inline  bool CaseInsensativeLess::operator()(const wstring& _Left, const wstring& _Right) const {
+            inline  bool CaseInsensativeLess::operator()(const wstring& _Left, const wstring& _Right) const
+            {
                 return wcscasecmp (_Left.c_str (), _Right.c_str ()) < 0;
             }
 
 
 
 
-            inline  bool    StringsCILess (const wstring& l, const wstring& r) {
+            inline  bool    StringsCILess (const wstring& l, const wstring& r)
+            {
                 return ::wcscasecmp (l.c_str (), r.c_str ()) < 0;
             }
-            inline  bool    StringsCIEqual (const wstring& l, const wstring& r) {
+            inline  bool    StringsCIEqual (const wstring& l, const wstring& r)
+            {
                 return ::wcscasecmp (l.c_str (), r.c_str ()) == 0;
             }
-            inline  int     StringsCICmp (const wstring& l, const wstring& r) {
+            inline  int     StringsCICmp (const wstring& l, const wstring& r)
+            {
                 return ::wcscasecmp (l.c_str (), r.c_str ());
             }
 
@@ -268,7 +286,8 @@ namespace   Stroika {
 
 
             template    <typename TCHAR>
-            basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text) {
+            basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text)
+            {
                 std::locale loc1;   // default locale
                 const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
                 typename basic_string<TCHAR>::const_iterator i = text.begin ();
@@ -277,7 +296,8 @@ namespace   Stroika {
                 return basic_string<TCHAR> (i, text.end ());
             }
             template    <typename TCHAR>
-            basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text) {
+            basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
+            {
                 std::locale loc1;   // default locale
                 const ctype<TCHAR>& ct = use_facet<ctype<TCHAR> >(loc1);
                 typename basic_string<TCHAR>::const_iterator i = text.end ();
@@ -286,19 +306,22 @@ namespace   Stroika {
                 return basic_string<TCHAR> (text.begin (), i);
             }
             template    <typename TCHAR>
-            inline  basic_string<TCHAR> Trim (const basic_string<TCHAR>& text) {
+            inline  basic_string<TCHAR> Trim (const basic_string<TCHAR>& text)
+            {
                 return LTrim (RTrim (text));
             }
 
 
 
             template    <>
-            inline  size_t  Length (const char* p) {
+            inline  size_t  Length (const char* p)
+            {
                 RequireNotNull (p);
                 return ::strlen (p);
             }
             template    <>
-            inline  size_t  Length (const wchar_t* p) {
+            inline  size_t  Length (const wchar_t* p)
+            {
                 RequireNotNull (p);
                 return ::wcslen (p);
             }

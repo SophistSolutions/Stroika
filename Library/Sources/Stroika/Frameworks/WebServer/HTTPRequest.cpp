@@ -36,5 +36,6 @@ HTTPRequest::HTTPRequest (Streams::BinaryInputStream& inStream)
     , fInputTextStream (fInputStream)
     , fHTTPVersion ()
     , fURL ()
-    , fHeaders () {
+    , fHeaders ()
+{
 }

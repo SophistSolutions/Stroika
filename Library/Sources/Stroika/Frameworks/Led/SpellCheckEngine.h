@@ -180,7 +180,8 @@ namespace   Stroika {
              */
 
 // class SpellCheckEngine
-            inline  SpellCheckEngine::SpellCheckEngine () {
+            inline  SpellCheckEngine::SpellCheckEngine ()
+            {
             }
             /*
             @METHOD:        SpellCheckEngine::LookupWord
@@ -193,10 +194,12 @@ namespace   Stroika {
                         are ignored like possibly all upper case words, punctuation, numbers, and others algorithmicly checked
                         words.</p>
             */
-            inline  bool    SpellCheckEngine::LookupWord (const Led_tString& checkWord, Led_tString* matchedWordResult) {
+            inline  bool    SpellCheckEngine::LookupWord (const Led_tString& checkWord, Led_tString* matchedWordResult)
+            {
                 return LookupWord_ (checkWord, matchedWordResult);
             }
-            inline  void    SpellCheckEngine::Invariant () const {
+            inline  void    SpellCheckEngine::Invariant () const
+            {
 #if     qDebug
                 Invariant_ ();
 #endif
@@ -204,9 +207,11 @@ namespace   Stroika {
 
 
 // class SpellCheckEngine::UDInterface
-            inline  SpellCheckEngine::UDInterface::UDInterface () {
+            inline  SpellCheckEngine::UDInterface::UDInterface ()
+            {
             }
-            inline  SpellCheckEngine::UDInterface::~UDInterface () {
+            inline  SpellCheckEngine::UDInterface::~UDInterface ()
+            {
             }
 
 

@@ -90,10 +90,12 @@ namespace   Stroika {
 
             namespace {
                 // Only these chars count as whitespce for smart cut/n/paste
-                inline  bool    IsSmartSpace (Led_tChar c) {
+                inline  bool    IsSmartSpace (Led_tChar c)
+                {
                     return (c == ' ' or c == '\t');
                 }
-                inline  bool    IsShouldBeSepWithWhitespaceWordChar (Led_tChar c) {
+                inline  bool    IsShouldBeSepWithWhitespaceWordChar (Led_tChar c)
+                {
                     // iswalnum vectors to GetStringTypeW (CT_CTYPE1) and then checks for C1_ALPHA, which
                     // matches all alphabetic, numeric, AND Idiogram characters. I THINK the right thing to use
                     // is to directly call GetStringTypeW (CT_CTYPE2, and check for C2_SEGMENTSEPARATOR, or something
@@ -274,7 +276,8 @@ SecondTry: {
              ************************* TextInteractor::DialogSupport ************************
              ********************************************************************************
              */
-            void    TextInteractor::DialogSupport::DisplayFindDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/, bool* /*pressedOK*/) {
+            void    TextInteractor::DialogSupport::DisplayFindDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/, bool* /*pressedOK*/)
+            {
                 /*
                  *  You may want to use code something like this in your OVERRIDE:
                  *
@@ -297,12 +300,14 @@ SecondTry: {
                 Assert (false); // to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
             }
 
-            TextInteractor::DialogSupport::ReplaceButtonPressed TextInteractor::DialogSupport::DisplayReplaceDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, Led_tString* /*replaceText*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/) {
+            TextInteractor::DialogSupport::ReplaceButtonPressed TextInteractor::DialogSupport::DisplayReplaceDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, Led_tString* /*replaceText*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/)
+            {
                 Assert (false); // to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
                 return eReplaceButton_Cancel;
             }
 
-            void    TextInteractor::DialogSupport::DisplaySpellCheckDialog (SpellCheckDialogCallback& /*callback*/) {
+            void    TextInteractor::DialogSupport::DisplaySpellCheckDialog (SpellCheckDialogCallback& /*callback*/)
+            {
                 Assert (false); // to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
             }
 
@@ -322,7 +327,8 @@ SecondTry: {
                 fSelStart (ti.GetSelectionStart ()),
                 fSelEnd (ti.GetSelectionEnd ()),
                 fBefore (nullptr),
-                fCommandComplete (false) {
+                fCommandComplete (false)
+            {
                 if (allowSmartCNPExpansion) {
                     ti.OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (&fSelStart, &fSelEnd);
                 }
@@ -338,7 +344,8 @@ SecondTry: {
                 fSelStart (regionAndSelStart),
                 fSelEnd (regionAndSelEnd),
                 fBefore (nullptr),
-                fCommandComplete (false) {
+                fCommandComplete (false)
+            {
                 if (allowSmartCNPExpansion) {
                     ti.OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (&fSelStart, &fSelEnd);
                 }
@@ -354,7 +361,8 @@ SecondTry: {
                 fSelStart (regionStart),
                 fSelEnd (regionEnd),
                 fBefore (nullptr),
-                fCommandComplete (false) {
+                fCommandComplete (false)
+            {
                 if (allowSmartCNPExpansion) {
                     ti.OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (&fSelStart, &fSelEnd);
                 }
@@ -363,7 +371,8 @@ SecondTry: {
                 }
             }
 
-            TextInteractor::UndoableContextHelper::~UndoableContextHelper () {
+            TextInteractor::UndoableContextHelper::~UndoableContextHelper ()
+            {
                 if (not fCommandComplete) {
                     delete fBefore;
                 }
@@ -383,7 +392,8 @@ SecondTry: {
                         is not performed).
                         </p>
             */
-            void    TextInteractor::UndoableContextHelper::CommandComplete () {
+            void    TextInteractor::UndoableContextHelper::CommandComplete ()
+            {
                 fTextInteractor.ScrollToSelection ();
                 if (fTextInteractor.GetCommandHandler () != nullptr) {
                     if (GetSimplePlainTextInsertOptimization ()) {
@@ -396,7 +406,8 @@ SecondTry: {
                 fCommandComplete = true;
             }
 
-            void    TextInteractor::UndoableContextHelper::CommandComplete (size_t endOfInsert) {
+            void    TextInteractor::UndoableContextHelper::CommandComplete (size_t endOfInsert)
+            {
                 fTextInteractor.ScrollToSelection ();
                 if (fTextInteractor.GetCommandHandler () != nullptr) {
                     if (GetSimplePlainTextInsertOptimization ()) {
@@ -428,25 +439,30 @@ SecondTry: {
                 fWithWhatCharCount (0),
                 fBoundingUpdateMarker (),
                 fBoundingUpdateHeight (0),
-                fStableTypingRegionHeight (0) {
+                fStableTypingRegionHeight (0)
+            {
             }
 
-            TextInteractor::PreReplaceInfo::~PreReplaceInfo () {
+            TextInteractor::PreReplaceInfo::~PreReplaceInfo ()
+            {
                 if (fTextInteractor != nullptr) {
                     fTextInteractor->GetTextStore ().RemoveMarker (&fBoundingUpdateMarker);
                     fTextInteractor = nullptr;
                 }
             }
 
-            TextInteractor::UpdateMode  TextInteractor::PreReplaceInfo::GetUpdateMode () const {
+            TextInteractor::UpdateMode  TextInteractor::PreReplaceInfo::GetUpdateMode () const
+            {
                 return fUpdateMode;
             }
 
-            size_t  TextInteractor::PreReplaceInfo::GetFrom () const {
+            size_t  TextInteractor::PreReplaceInfo::GetFrom () const
+            {
                 return fFrom;
             }
 
-            size_t  TextInteractor::PreReplaceInfo::GetTo () const {
+            size_t  TextInteractor::PreReplaceInfo::GetTo () const
+            {
                 return fTo;
             }
 
@@ -506,13 +522,15 @@ SecondTry: {
                 fScrollBarType[v] = eScrollBarNever;
             }
 
-            TextInteractor::~TextInteractor () {
+            TextInteractor::~TextInteractor ()
+            {
                 Assert (fCommandHandler == nullptr);    // must be set to nullptr before we are destroyed...
                 // just sanity check - no real reason...
                 Assert (fSpellCheckEngine == nullptr);  // DITTO
             }
 
-            TextInteractor::CommandNames    TextInteractor::MakeDefaultCommandNames () {
+            TextInteractor::CommandNames    TextInteractor::MakeDefaultCommandNames ()
+            {
                 TextInteractor::CommandNames    cmdNames;
                 cmdNames.fTypingCommandName                 =   Led_SDK_TCHAROF ("Typing");
                 cmdNames.fCutCommandName                    =   Led_SDK_TCHAROF ("Cut");
@@ -536,7 +554,8 @@ SecondTry: {
             @DESCRIPTION:   <p>
                         </p>
             */
-            bool    TextInteractor::OnUpdateCommand (CommandUpdater* enabler) {
+            bool    TextInteractor::OnUpdateCommand (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 switch (enabler->GetCmdID ()) {
                     case    kSelectAll_CmdID:
@@ -579,7 +598,8 @@ SecondTry: {
             @DESCRIPTION:   <p>
                         </p>
             */
-            bool    TextInteractor::OnPerformCommand (CommandNumber commandNumber) {
+            bool    TextInteractor::OnPerformCommand (CommandNumber commandNumber)
+            {
                 switch (commandNumber) {
                     case    kSelectAll_CmdID:
                         {   OnSelectAllCommand ();      return true;    }
@@ -615,7 +635,8 @@ SecondTry: {
                 return false;
             }
 
-            void    TextInteractor::OnUpdateCutCopyClearCommand (CommandUpdater* enabler) {
+            void    TextInteractor::OnUpdateCutCopyClearCommand (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 size_t  start;
                 size_t  end;
@@ -623,13 +644,15 @@ SecondTry: {
                 enabler->SetEnabled (start != end);
             }
 
-            void    TextInteractor::OnUpdatePasteCommand (CommandUpdater* enabler) {
+            void    TextInteractor::OnUpdatePasteCommand (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 //tmphack
                 enabler->SetEnabled (true);
             }
 
-            void    TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler) {
+            void    TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 if (GetCommandHandler () == nullptr) {
                     enabler->SetEnabled (false);
@@ -650,12 +673,14 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnUpdateSelectTextCommand (CommandUpdater* enabler) {
+            void    TextInteractor::OnUpdateSelectTextCommand (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 enabler->SetEnabled (true);
             }
 
-            void    TextInteractor::OnPerformSelectTextCommand (CommandNumber commandNumber) {
+            void    TextInteractor::OnPerformSelectTextCommand (CommandNumber commandNumber)
+            {
                 // Note: these are intentionally made not undoable, since they don't modify data
                 size_t  oldSelStart =   GetSelectionStart ();
                 size_t  oldSelEnd   =   GetSelectionEnd ();
@@ -721,7 +746,8 @@ SecondTry: {
                 vector<Led_tString> MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents);
             }
 
-            void    TextInteractor::OnFindCommand () {
+            void    TextInteractor::OnFindCommand ()
+            {
                 SearchParameters    parameters  =   GetSearchParameters ();
                 bool                pressedOK   =   false;
                 GetDialogSupport ().DisplayFindDialog (&parameters.fMatchString, parameters.fRecentFindStrings, &parameters.fWrapSearch, &parameters.fWholeWordSearch, &parameters.fCaseSensativeSearch, &pressedOK);
@@ -732,7 +758,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnReplaceCommand () {
+            void    TextInteractor::OnReplaceCommand ()
+            {
                 SearchParameters    parameters  =   GetSearchParameters ();
                 ReplaceParameters   rParameters =   GetReplaceParameters ();
                 DialogSupport::ReplaceButtonPressed pressed =   GetDialogSupport ().DisplayReplaceDialog (&parameters.fMatchString, parameters.fRecentFindStrings, &rParameters.fReplaceWith, &parameters.fWrapSearch, &parameters.fWholeWordSearch, &parameters.fCaseSensativeSearch);
@@ -755,13 +782,15 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnReplaceAgainCommand () {
+            void    TextInteractor::OnReplaceAgainCommand ()
+            {
                 SearchParameters    parameters  =   GetSearchParameters ();
                 ReplaceParameters   rParameters =   GetReplaceParameters ();
                 OnDoReplaceCommand (parameters, rParameters.fReplaceWith);
             }
 
-            void    TextInteractor::OnDoReplaceCommand (const SearchParameters& searchFor, const Led_tString& replaceWith) {
+            void    TextInteractor::OnDoReplaceCommand (const SearchParameters& searchFor, const Led_tString& replaceWith)
+            {
                 BreakInGroupedCommands ();
                 // search for last text entered into find dialog (could have been a find again).
                 size_t  origSelStart    =   GetSelectionStart ();
@@ -785,7 +814,8 @@ SecondTry: {
                 BreakInGroupedCommands ();
             }
 
-            void    TextInteractor::OnDoReplaceAllCommand (const SearchParameters& searchFor, const Led_tString& replaceWith) {
+            void    TextInteractor::OnDoReplaceAllCommand (const SearchParameters& searchFor, const Led_tString& replaceWith)
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 BreakInGroupedCommands ();
                 size_t  startAt =   0;
@@ -810,7 +840,8 @@ SecondTry: {
                 BreakInGroupedCommands ();
             }
 
-            void    TextInteractor::OnDoReplaceAllInSelectionCommand (const SearchParameters& searchFor, const Led_tString& replaceWith) {
+            void    TextInteractor::OnDoReplaceAllInSelectionCommand (const SearchParameters& searchFor, const Led_tString& replaceWith)
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 BreakInGroupedCommands ();
                 size_t  startAt =   GetSelectionStart ();
@@ -837,7 +868,8 @@ SecondTry: {
                 BreakInGroupedCommands ();
             }
 
-            void    TextInteractor::OnFindAgainCommand () {
+            void    TextInteractor::OnFindAgainCommand ()
+            {
                 TextStore::SearchParameters parameters  =   GetSearchParameters ();
 
                 // search for last text entered into find dialog (could have been a find again).
@@ -853,7 +885,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnEnterFindString () {
+            void    TextInteractor::OnEnterFindString ()
+            {
                 SearchParameters    parameters  =   GetSearchParameters ();
 
                 size_t  selStart    =   GetSelectionStart ();
@@ -867,7 +900,8 @@ SecondTry: {
                 SetSearchParameters (parameters);
             }
 
-            void    TextInteractor::OnUpdateFindCommands (CommandUpdater* enabler) {
+            void    TextInteractor::OnUpdateFindCommands (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 if (enabler->GetCmdID () == kFind_CmdID) {
                     enabler->SetEnabled (true);
@@ -886,23 +920,28 @@ SecondTry: {
                 }
             }
 
-            TextInteractor::SearchParameters    TextInteractor::GetSearchParameters () const {
+            TextInteractor::SearchParameters    TextInteractor::GetSearchParameters () const
+            {
                 return sSearchParameters;
             }
 
-            void    TextInteractor::SetSearchParameters (const SearchParameters& sp) {
+            void    TextInteractor::SetSearchParameters (const SearchParameters& sp)
+            {
                 sSearchParameters = sp;
             }
 
-            TextInteractor::ReplaceParameters   TextInteractor::GetReplaceParameters () const {
+            TextInteractor::ReplaceParameters   TextInteractor::GetReplaceParameters () const
+            {
                 return sReplaceParameters;
             }
 
-            void    TextInteractor::SetReplaceParameters (const ReplaceParameters& rp) {
+            void    TextInteractor::SetReplaceParameters (const ReplaceParameters& rp)
+            {
                 sReplaceParameters = rp;
             }
 
-            vector<Led_tString> TextInteractor::MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents) {
+            vector<Led_tString> TextInteractor::MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents)
+            {
                 const   unsigned    int kMaxEntries =   20;
                 vector<Led_tString> result  =   oldRecents;
                 // See if the given string appears in the list. If so - erase it (so it only appears once). Prepend the new string
@@ -918,7 +957,8 @@ SecondTry: {
                 return result;
             }
 
-            void    TextInteractor::OnSpellCheckCommand () {
+            void    TextInteractor::OnSpellCheckCommand ()
+            {
                 if (GetSpellCheckEngine () == nullptr) {
                     Led_BeepNotify ();
                 }
@@ -928,7 +968,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnUpdateSpellCheckCommand (CommandUpdater* enabler) {
+            void    TextInteractor::OnUpdateSpellCheckCommand (CommandUpdater* enabler)
+            {
                 RequireNotNull (enabler);
                 enabler->SetEnabled (GetSpellCheckEngine () != nullptr);
             }
@@ -941,7 +982,8 @@ SecondTry: {
                             <p>This should <em>not</em> be set directly. Instead, instantiate a @'TextInteractor::TemporarilySetUpdateMode' object on
                         the stack.</p>
             */
-            void    TextInteractor::SetDefaultUpdateMode (UpdateMode defaultUpdateMode) {
+            void    TextInteractor::SetDefaultUpdateMode (UpdateMode defaultUpdateMode)
+            {
                 if (defaultUpdateMode != eDefaultUpdate) {  // setting update mode to 'eDefaultUpdate' is synonomous with a NO-OP
                     fDefaultUpdateMode = defaultUpdateMode;
                 }
@@ -959,7 +1001,8 @@ SecondTry: {
                         It may still see significant revision at some point as part of SPR #1040.
                         </p>
             */
-            bool    TextInteractor::LooksLikeSmartPastableText (const Led_tChar* text, size_t /*nTextTChars*/, SmartCNPInfo* smartCNPInfo) const {
+            bool    TextInteractor::LooksLikeSmartPastableText (const Led_tChar* text, size_t /*nTextTChars*/, SmartCNPInfo* smartCNPInfo) const
+            {
                 RequireNotNull (text);
                 RequireNotNull (smartCNPInfo);
                 Led_Arg_Unused (text);
@@ -1009,7 +1052,8 @@ SecondTry: {
                         it finished is always assumed to be the result of a call to @'TextImager::GetSelectionEnd'. And the start
                         is given by the 'selStart' argument.</p>
             */
-            void    TextInteractor::OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t selStart, const SmartCNPInfo& smartCNPInfo) {
+            void    TextInteractor::OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t selStart, const SmartCNPInfo& smartCNPInfo)
+            {
                 size_t  selEnd  =   GetSelectionEnd ();
 
                 Require (0 <= selStart);
@@ -1064,7 +1108,8 @@ SecondTry: {
             @METHOD:        TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes
             @DESCRIPTION:   <p>See @'TextInteractor::GetSmartCutAndPasteMode'.</p>
             */
-            void    TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (size_t* selStart, size_t* selEnd) {
+            void    TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (size_t* selStart, size_t* selEnd)
+            {
                 RequireNotNull (selStart);
                 RequireNotNull (selEnd);
                 Require (0 <= *selStart);
@@ -1158,11 +1203,13 @@ SecondTry: {
             @DESCRIPTION:   <p>See TextInteractor::GetSelectionShown. Typically this method isn't called directly by user code, but
                 from within the class library wrappers (e.g. Led_MFC) on gain/lose focus events.</p>
             */
-            void    TextInteractor::SetSelectionShown (bool shown) {
+            void    TextInteractor::SetSelectionShown (bool shown)
+            {
                 SetSelectionShown (shown, eDefaultUpdate);
             }
 
-            void    TextInteractor::SetSelectionShown (bool shown, UpdateMode updateMode) {
+            void    TextInteractor::SetSelectionShown (bool shown, UpdateMode updateMode)
+            {
                 if (GetSelectionShown () != shown) {
                     TextImager::SetSelectionShown (shown);
                     Refresh (GetSelectionStart (), GetSelectionEnd (), updateMode);
@@ -1173,7 +1220,8 @@ SecondTry: {
             @METHOD:        TextInteractor::SetSelection
             @DESCRIPTION:   <p>See @'TextInteractor::GetSelection'.</p>
             */
-            void    TextInteractor::SetSelection (size_t start, size_t end) {
+            void    TextInteractor::SetSelection (size_t start, size_t end)
+            {
                 Assert (end <= GetEnd ());
 #if     qMultiByteCharacters
                 Assert_CharPosDoesNotSplitCharacter (start);
@@ -1249,7 +1297,8 @@ SecondTry: {
                 RecomputeSelectionGoalColumn ();
             }
 
-            void    TextInteractor::SetSelection (size_t start, size_t end, UpdateMode updateMode) {
+            void    TextInteractor::SetSelection (size_t start, size_t end, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
                 tim->SetSelection (start, end);
@@ -1266,7 +1315,8 @@ SecondTry: {
                 possible. And uses the flag to pick which side of the selection to use if only part of it can be made visible in the
                 current window at once.</p>
             */
-            void    TextInteractor::ScrollToSelection (UpdateMode updateMode, bool forceShowSelectionEndpoint) {
+            void    TextInteractor::ScrollToSelection (UpdateMode updateMode, bool forceShowSelectionEndpoint)
+            {
                 size_t  selStart    =   GetSelectionStart ();
                 size_t  selEnd      =   GetSelectionEnd ();
 
@@ -1320,23 +1370,27 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::HookLosingTextStore () {
+            void    TextInteractor::HookLosingTextStore ()
+            {
                 HookLosingTextStore_ ();
                 TextImager::HookLosingTextStore ();
             }
 
-            void    TextInteractor::HookLosingTextStore_ () {
+            void    TextInteractor::HookLosingTextStore_ ()
+            {
                 AbortReplace (fTmpPreReplaceInfo);
                 fExternalizer.clear ();
                 fInternalizer.clear ();
             }
 
-            void    TextInteractor::HookGainedNewTextStore () {
+            void    TextInteractor::HookGainedNewTextStore ()
+            {
                 HookGainedNewTextStore_ ();
                 TextImager::HookGainedNewTextStore ();
             }
 
-            void    TextInteractor::HookGainedNewTextStore_ () {
+            void    TextInteractor::HookGainedNewTextStore_ ()
+            {
                 if (fExternalizer.IsNull ()) {
                     SetExternalizer (MakeDefaultExternalizer ());
                 }
@@ -1359,7 +1413,8 @@ SecondTry: {
                     <p>This is not a GREAT line to have drawn for the API boundary. But its a start.</p>
                     <p>LGP 960303</p>
             */
-            bool    TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) {
+            bool    TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor)
+            {
                 RequireNotNull (dragAnchor);
                 switch (clickCount) {
                     case    1: {
@@ -1424,7 +1479,8 @@ SecondTry: {
             @METHOD:        TextInteractor::UpdateClickCount
             @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection.</p>
             */
-            void    TextInteractor::UpdateClickCount (float clickAtTime, const Led_Point& clickAtLocation) {
+            void    TextInteractor::UpdateClickCount (float clickAtTime, const Led_Point& clickAtLocation)
+            {
                 if (ClickTimesAreCloseForDoubleClick (clickAtTime) and PointsAreCloseForDoubleClick (clickAtLocation)) {
                     IncrementCurClickCount (clickAtTime);
                 }
@@ -1438,7 +1494,8 @@ SecondTry: {
             @METHOD:        TextInteractor::ClickTimesAreCloseForDoubleClick
             @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection. See also @'TextInteractor::UpdateClickCount' ().</p>
             */
-            bool    TextInteractor::ClickTimesAreCloseForDoubleClick (float thisClick) {
+            bool    TextInteractor::ClickTimesAreCloseForDoubleClick (float thisClick)
+            {
                 return (fLastClickedAt + Led_GetDoubleClickTime () >=  thisClick);
             }
 
@@ -1446,7 +1503,8 @@ SecondTry: {
             @METHOD:        TextInteractor::PointsAreCloseForDoubleClick
             @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection. See also @'TextInteractor::UpdateClickCount' ().</p>
             */
-            bool    TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p) {
+            bool    TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p)
+            {
                 const Led_Coordinate        kMultiClickDistance = 4;
                 Led_Coordinate  hDelta = p.h - fLastMouseDownAt.h;
                 if (hDelta < 0) {
@@ -1464,7 +1522,8 @@ SecondTry: {
             @DESCRIPTION:   <p>Helper to share code among implementations. Call this while mouse is down to handle autoscrolling,
                 and selection updating.</p>
             */
-            void    TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor) {
+            void    TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor)
+            {
 #if     qDynamiclyChooseAutoScrollIncrement
                 float   now =   Led_GetTickCount ();
                 static  float   sLastTimeThrough    =   0.0f;
@@ -1532,7 +1591,8 @@ SecondTry: {
                         <p>By default this calls calls @'TextInteractor::WhileTrackingConstrainSelection_ForWholeWords',
                     for double clicks and @'TextInteractor::WhileTrackingConstrainSelection_ForWholeRows' for 3 or more clicks.</p>
             */
-            void    TextInteractor::WhileTrackingConstrainSelection (size_t* selStart, size_t* selEnd) {
+            void    TextInteractor::WhileTrackingConstrainSelection (size_t* selStart, size_t* selEnd)
+            {
                 RequireNotNull (selStart);
                 RequireNotNull (selEnd);
                 Require (GetCurClickCount () > 0);
@@ -1559,7 +1619,8 @@ SecondTry: {
             @METHOD:        TextInteractor::WhileTrackingConstrainSelection_ForWholeWords
             @DESCRIPTION:   <p>See @'TextInteractor::WhileTrackingConstrainSelection'</p>
             */
-            void    TextInteractor::WhileTrackingConstrainSelection_ForWholeWords (size_t* selStart, size_t* selEnd) {
+            void    TextInteractor::WhileTrackingConstrainSelection_ForWholeWords (size_t* selStart, size_t* selEnd)
+            {
                 RequireNotNull (selStart);
                 RequireNotNull (selEnd);
 
@@ -1589,7 +1650,8 @@ SecondTry: {
             @METHOD:        TextInteractor::WhileTrackingConstrainSelection_ForWholeRows
             @DESCRIPTION:   <p>See @'TextInteractor::WhileTrackingConstrainSelection'</p>
             */
-            void    TextInteractor::WhileTrackingConstrainSelection_ForWholeRows (size_t* selStart, size_t* selEnd) {
+            void    TextInteractor::WhileTrackingConstrainSelection_ForWholeRows (size_t* selStart, size_t* selEnd)
+            {
                 RequireNotNull (selStart);
                 RequireNotNull (selEnd);
                 Require (*selStart <= *selEnd);
@@ -1614,7 +1676,8 @@ SecondTry: {
                 just just following. If we are clicking towards the end of the character - we probably
                 wanted to click just <em>before</em> the next character. Note this works for BIDI characters.</p>
             */
-            size_t  TextInteractor::GetCharAtClickLocation (const Led_Point& where) const {
+            size_t  TextInteractor::GetCharAtClickLocation (const Led_Point& where) const
+            {
                 size_t  clickedOnChar       =   GetCharAtWindowLocation (where);
                 size_t  endOfClickedRow     =   GetEndOfRowContainingPosition (clickedOnChar);
 
@@ -1653,12 +1716,14 @@ SecondTry: {
                 return (clickedOnChar);
             }
 
-            void    TextInteractor::Draw (const Led_Rect& /*subsetToDraw*/, bool /*printing*/) {
+            void    TextInteractor::Draw (const Led_Rect& /*subsetToDraw*/, bool /*printing*/)
+            {
                 NoteWindowPartiallyUpdated ();
                 // don't call cuz there is none defined - pure virtual...TextImager::Draw (subsetToDraw, printing);
             }
 
-            void    TextInteractor::DrawBefore (const Led_Rect& /*subsetToDraw*/, bool /*printing*/) {
+            void    TextInteractor::DrawBefore (const Led_Rect& /*subsetToDraw*/, bool /*printing*/)
+            {
                 // LGP 2003-03-20 - not 100% sure this is necessary or a good idea - but done to keep backward
                 // compat with old behavior. Once new idle code in place - test without this. See SPR#1366.
                 if (not fScrollBarParamsValid) {
@@ -1666,7 +1731,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::DrawAfter (const Led_Rect& /*subsetToDraw*/, bool printing) {
+            void    TextInteractor::DrawAfter (const Led_Rect& /*subsetToDraw*/, bool printing)
+            {
                 if (GetUseSecondaryHilight () and not GetSelectionShown () and not printing) {
                     Led_Region  r;
                     GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
@@ -1676,51 +1742,59 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode) {
+            void    TextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
                 tim->SetTopRowInWindow (newTopRow);
             }
 
-            void    TextInteractor::ScrollByIfRoom (long downBy, UpdateMode updateMode) {
+            void    TextInteractor::ScrollByIfRoom (long downBy, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
                 tim->ScrollByIfRoom (downBy);
             }
 
-            void    TextInteractor::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos, UpdateMode updateMode) {
+            void    TextInteractor::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 2-arg version. Direct call would select overloaded version from this class!
                 tim->ScrollSoShowing (markerPos, andTryToShowMarkerPos);
             }
 
-            void    TextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode) {
+            void    TextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
                 tim->SetDefaultFont (defaultFont);
                 Refresh ();
             }
 
-            void    TextInteractor::SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode) {
+            void    TextInteractor::SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
                 tim->SetWindowRect (windowRect);
             }
 
-            void    TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos) {
+            void    TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos)
+            {
                 PreScrollInfo   preScrollInfo;
                 PreScrollHelper (eDefaultUpdate, &preScrollInfo);
                 TextImager::SetHScrollPos (hScrollPos);
                 PostScrollHelper (preScrollInfo);
             }
 
-            void    TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode) {
+            void    TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode)
+            {
                 TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
                 TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
                 tim->SetHScrollPos (hScrollPos);
             }
 
-            void    TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo) {
+            void    TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo)
+            {
                 UpdateMode  realUpdateMode = RealUpdateMode (updateMode);
                 preScrollInfo->fUpdateMode = realUpdateMode;
                 if (realUpdateMode != eNoUpdate) {
@@ -1740,7 +1814,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo) {
+            void    TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
+            {
                 /*
                  *  Only if we scrolled do we need to refresh screen.
                  */
@@ -1847,7 +1922,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode) {
+            void    TextInteractor::Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode)
+            {
                 if (from != to or withWhatCharCount != 0) {
                     Assert (fDoingUpdateModeReplaceOn == nullptr);
                     fDoingUpdateModeReplaceOn = this;
@@ -1867,7 +1943,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) {
+            void    TextInteractor::AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo)
+            {
                 TextImager::AboutToUpdateText (updateInfo);
                 if (fDoingUpdateModeReplaceOn != this) {
                     //  Sometimes a textstore sends notifications about updates beyond the end of the text (e.g. when setting
@@ -1877,7 +1954,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 TextImager::DidUpdateText (updateInfo);
                 if (fDoingUpdateModeReplaceOn != this) {
                     try {
@@ -1889,7 +1967,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo) {
+            void    TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo)
+            {
                 RequireNotNull (preReplaceInfo);
 
                 if (preReplaceInfo->fTextInteractor != nullptr) {// used as flag to indicate cleaned up state (marker removed)
@@ -2001,7 +2080,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo) {
+            void    TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo)
+            {
                 UpdateMode  updateMode  =   preReplaceInfo.fUpdateMode;
                 if (updateMode != eNoUpdate) {
                     size_t from                 =   preReplaceInfo.fFrom;
@@ -2062,7 +2142,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::AbortReplace (PreReplaceInfo& preReplaceInfo) {
+            void    TextInteractor::AbortReplace (PreReplaceInfo& preReplaceInfo)
+            {
                 if (preReplaceInfo.fTextInteractor != nullptr) {
                     // remove marker, and set to nullptr to indicate cleaned up.
                     preReplaceInfo.fTextInteractor->GetTextStore ().RemoveMarker (&preReplaceInfo.fBoundingUpdateMarker);
@@ -2074,7 +2155,8 @@ SecondTry: {
                     size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
                     size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
                     size_t* expandedFrom, size_t* expandedTo
-                                                                   ) {
+                                                                   )
+            {
                 RequireNotNull (expandedFrom);
                 RequireNotNull (expandedTo);
 
@@ -2121,7 +2203,8 @@ SecondTry: {
                 *expandedTo = expandedToMarkerPos;
             }
 
-            void    TextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode) {
+            void    TextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode)
+            {
                 BreakInGroupedCommandsIfDifferentCommand (GetCommandNames ().fTypingCommandName);
                 InteractiveModeUpdater  iuMode (*this);
                 UndoableContextHelper   undoContext (*this, GetCommandNames ().fTypingCommandName, withWhatCharCount == 0);
@@ -2143,7 +2226,8 @@ SecondTry: {
             void    TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount,
                     bool updateCursorPosition, bool validateTextForCharsetConformance,
                     UpdateMode updateMode
-                                                        ) {
+                                                        )
+            {
                 // Assert selection bounardaries valid Led_tChar boundaries
 #if     qMultiByteCharacters
                 Assert_CharPosDoesNotSplitCharacter (from);
@@ -2199,7 +2283,8 @@ SecondTry: {
                     </p>The boolean return value must be true if any changes were made that could affect undo processing (i.e. that could affect
                 what infomration must be saved for proper undo processing).</p>
             */
-            bool    TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCharCount*/) {
+            bool    TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCharCount*/)
+            {
                 return false;
             }
 
@@ -2215,7 +2300,8 @@ SecondTry: {
                     <p>We then preserve the ACTUAL selection at the time this was called in the resulting 'beforeRep' object.</p>
                     <p>NB: new in Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>
             */
-            void    TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) {
+            void    TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+            {
                 Require (regionStart <= regionEnd);
                 Require (selStart <= selEnd);
                 RequireNotNull (beforeRep);
@@ -2247,7 +2333,8 @@ SecondTry: {
                         beforeRep argument given this function and an afterRep computed herein.</p>
                             <p>NB: As of Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>
             */
-            void    TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName) {
+            void    TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName)
+            {
                 RequireNotNull (beforeRep);
                 RequireNotNull (*beforeRep);            // This shouldn't be called if there was a problem creating beforeRep (exception)
                 RequireNotNull (fCommandHandler);
@@ -2270,7 +2357,8 @@ SecondTry: {
             @DESCRIPTION:   <p>Utility function for optimized undo support - keeping smaller objects in the undo buffer, and trying re-use/tweek
                         an existing one in the common case of multiple consecutive characters typed.</p>
             */
-            void    TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName) {
+            void    TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName)
+            {
                 RequireNotNull (beforeRep);
                 RequireNotNull (*beforeRep);            // This shouldn't be called if there was a problem creating beforeRep (exception)
                 RequireNotNull (fCommandHandler);
@@ -2303,7 +2391,8 @@ SecondTry: {
             void    TextInteractor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
                     InteractiveReplaceCommand::SavedTextRep** afterRep,
                     size_t startOfInsert, const Led_SDK_String& cmdName
-                                                                  ) {
+                                                                  )
+            {
                 RequireNotNull (beforeRep);
                 RequireNotNull (afterRep);
                 RequireNotNull (fCommandHandler);
@@ -2326,7 +2415,8 @@ SecondTry: {
                 }
             }
 
-            InteractiveReplaceCommand::SavedTextRep*    TextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) {
+            InteractiveReplaceCommand::SavedTextRep*    TextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+            {
                 if (regionStart == regionEnd) {
                     // optimization, cuz these are smaller
                     return new InteractiveReplaceCommand::PlainTextRep (selStart, selEnd, nullptr, 0);
@@ -2336,7 +2426,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnUndoCommand () {
+            void    TextInteractor::OnUndoCommand ()
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 if (GetCommandHandler () != nullptr and GetCommandHandler ()->CanUndo ()) {
                     GetCommandHandler ()->DoUndo (*this);
@@ -2347,7 +2438,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::OnRedoCommand () {
+            void    TextInteractor::OnRedoCommand ()
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 if (GetCommandHandler () != nullptr and GetCommandHandler ()->CanRedo ()) {
                     GetCommandHandler ()->DoRedo (*this);
@@ -2358,7 +2450,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::Refresh (size_t from, size_t to, UpdateMode updateMode) const {
+            void    TextInteractor::Refresh (size_t from, size_t to, UpdateMode updateMode) const
+            {
                 Require (from <= to);
                 updateMode = RealUpdateMode (updateMode);
                 if ((updateMode != eNoUpdate) and (from != to)) {
@@ -2375,7 +2468,8 @@ SecondTry: {
                 }
             }
 
-            void    TextInteractor::Refresh (const Marker* range, UpdateMode updateMode) const {
+            void    TextInteractor::Refresh (const Marker* range, UpdateMode updateMode) const
+            {
                 RequireNotNull (range);
                 updateMode = RealUpdateMode (updateMode);
                 if (updateMode != eNoUpdate) {
@@ -2392,7 +2486,8 @@ SecondTry: {
             @DESCRIPTION:   <p>Helper routine for handling cursoring done by user.</p>
              */
             void    TextInteractor::DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
-                    UpdateMode updateMode, bool scrollToSelection) {
+                    UpdateMode updateMode, bool scrollToSelection)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
 
                 size_t  oldStartSel     =   GetSelectionStart ();
@@ -2563,7 +2658,8 @@ SkipNavigation:
                 }
             }
 
-            void    TextInteractor::OnCutCommand () {
+            void    TextInteractor::OnCutCommand ()
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 BreakInGroupedCommands ();
                 if (GetSelectionStart () != GetSelectionEnd ()) {
@@ -2577,7 +2673,8 @@ SkipNavigation:
                 BreakInGroupedCommands ();
             }
 
-            void    TextInteractor::OnCopyCommand () {
+            void    TextInteractor::OnCopyCommand ()
+            {
                 size_t  start   =   GetSelectionStart ();
                 size_t  end     =   GetSelectionEnd ();
                 Assert (start <= end);
@@ -2597,7 +2694,8 @@ SkipNavigation:
                 }
             }
 
-            void    TextInteractor::OnPasteCommand () {
+            void    TextInteractor::OnPasteCommand ()
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 BreakInGroupedCommands ();
 
@@ -2618,7 +2716,8 @@ SkipNavigation:
                 BreakInGroupedCommands ();
             }
 
-            void    TextInteractor::OnClearCommand () {
+            void    TextInteractor::OnClearCommand ()
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 BreakInGroupedCommands ();
                 UndoableContextHelper   undoContext (*this, GetCommandNames ().fClearCommandName, true);
@@ -2642,7 +2741,8 @@ SkipNavigation:
                             @'TextInteractor::OnPasteCommand_After'
                             .</p>
              */
-            bool    TextInteractor::OnCopyCommand_Before () {
+            bool    TextInteractor::OnCopyCommand_Before ()
+            {
                 return true;
             }
 
@@ -2651,7 +2751,8 @@ SkipNavigation:
             @ACCESS:        protected
             @DESCRIPTION:   <p>See also @'TextInteractor::OnCopyCommand_Before'.</p>
              */
-            void    TextInteractor::OnCopyCommand_After () {
+            void    TextInteractor::OnCopyCommand_After ()
+            {
             }
 
             /*
@@ -2659,12 +2760,14 @@ SkipNavigation:
             @ACCESS:        protected
             @DESCRIPTION:   <p></p>
              */
-            void    TextInteractor::OnCopyCommand_CopyFlavors () {
+            void    TextInteractor::OnCopyCommand_CopyFlavors ()
+            {
                 WriterClipboardFlavorPackage    writer;
                 ExternalizeFlavors (writer);
             }
 
-            bool    TextInteractor::ShouldEnablePasteCommand () const {
+            bool    TextInteractor::ShouldEnablePasteCommand () const
+            {
                 return (Led_ClipboardObjectAcquire::FormatAvailable_TEXT ());
             }
 
@@ -2680,7 +2783,8 @@ SkipNavigation:
                             @'TextInteractor::OnCopyCommand_After'
                             .</p>
              */
-            bool    TextInteractor::OnPasteCommand_Before () {
+            bool    TextInteractor::OnPasteCommand_Before ()
+            {
                 return true;
             }
 
@@ -2689,7 +2793,8 @@ SkipNavigation:
             @ACCESS:        protected
             @DESCRIPTION:   <p>See also @'TextInteractor::OnPasteCommand_Before'.</p>
              */
-            void    TextInteractor::OnPasteCommand_After () {
+            void    TextInteractor::OnPasteCommand_After ()
+            {
             }
 
             /*
@@ -2697,7 +2802,8 @@ SkipNavigation:
             @ACCESS:        protected
             @DESCRIPTION:   <p></p>
              */
-            void    TextInteractor::OnPasteCommand_PasteBestFlavor () {
+            void    TextInteractor::OnPasteCommand_PasteBestFlavor ()
+            {
 #if     qWindows && 0
                 // A little debugging hack for windows - sometimes helpful to turn this on
                 // to peek in the debugger at what is on the clipboard - LGP 960430
@@ -2727,7 +2833,8 @@ SkipNavigation:
             @ACCESS:        protected
             @DESCRIPTION:   <p></p>
              */
-            void    TextInteractor::OnPasteCommand_PasteFlavor_Specific (Led_ClipFormat format) {
+            void    TextInteractor::OnPasteCommand_PasteFlavor_Specific (Led_ClipFormat format)
+            {
                 ReaderClipboardFlavorPackage    clipData;
                 SmartCNPInfo                    smartCNPInfo;
                 bool                            doSmartCNP      =   PasteLooksLikeSmartCNP (&smartCNPInfo);
@@ -2744,7 +2851,8 @@ SkipNavigation:
             @ACCESS:        protected
             @DESCRIPTION:   <p></p>
              */
-            bool    TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const {
+            bool    TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
+            {
                 RequireNotNull (scnpInfo);
                 ReaderClipboardFlavorPackage    clipData;
                 bool                            doSmartCNP  =   GetSmartCutAndPasteMode () and clipData.GetFlavorAvailable_TEXT ();
@@ -2784,11 +2892,13 @@ SkipNavigation:
             @DESCRIPTION:   <p>Command to implement the "Select All" UI. Trivial implementation, but nearly all UI's want it, so why
                         write it each time?</p>
             */
-            void    TextInteractor::OnSelectAllCommand () {
+            void    TextInteractor::OnSelectAllCommand ()
+            {
                 SetSelection (0, GetLength ());
             }
 
-            bool    TextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const {
+            bool    TextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const
+            {
                 //   Led_ClipFormat  textFormat  =   kTEXTClipFormat;
 #if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
                 if (clipFormat == CF_TEXT) {
@@ -2800,7 +2910,8 @@ SkipNavigation:
 
             void    TextInteractor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
                     bool updateCursorPosition, bool autoScroll, UpdateMode updateMode
-                                                          ) {
+                                                          )
+            {
                 size_t  start   =   GetSelectionStart ();
                 size_t  end     =   GetSelectionEnd ();
 
@@ -2846,7 +2957,8 @@ SkipNavigation:
              */
             void    TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format,
                     bool updateCursorPosition, bool autoScroll, UpdateMode updateMode
-                                                               ) {
+                                                               )
+            {
                 size_t  start   =   GetSelectionStart ();
                 size_t  end     =   GetSelectionEnd ();
 
@@ -2903,7 +3015,8 @@ SkipNavigation:
                 to make a different subclass, which supports different style and file formats from the (simple) default.</p>
                     <p>By default, this creates a @'FlavorPackageInternalizer'.</p>
             */
-            Memory::SharedPtr<FlavorPackageInternalizer>    TextInteractor::MakeDefaultInternalizer () {
+            Memory::SharedPtr<FlavorPackageInternalizer>    TextInteractor::MakeDefaultInternalizer ()
+            {
                 return Memory::SharedPtr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
             }
 
@@ -2911,7 +3024,8 @@ SkipNavigation:
             @METHOD:        TextInteractor::HookInternalizerChanged
             @DESCRIPTION:   <p>Called by @'TextInteractor::SetInternalizer' whenever there is a new internalizer specified.</p>
             */
-            void    TextInteractor::HookInternalizerChanged () {
+            void    TextInteractor::HookInternalizerChanged ()
+            {
             }
 
             /*
@@ -2919,7 +3033,8 @@ SkipNavigation:
             @DESCRIPTION:   <p>Use the associated externalizer (see @'TextInteractor::SetExternalizer')  to call
                         ExternalizeFlavors applied to the current selection.</p>
             */
-            void    TextInteractor::ExternalizeFlavors (WriterFlavorPackage& flavorPackage) {
+            void    TextInteractor::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+            {
                 fExternalizer->ExternalizeFlavors (flavorPackage, GetSelectionStart (), GetSelectionEnd ());
             }
 
@@ -2928,7 +3043,8 @@ SkipNavigation:
             @DESCRIPTION:   <p>Use the associated externalizer (see @'TextInteractor::SetExternalizer')  to call
                         ExternalizeBestFlavor applied to the current selection.</p>
             */
-            void    TextInteractor::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage) {
+            void    TextInteractor::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage)
+            {
                 fExternalizer->ExternalizeBestFlavor (flavorPackage, GetSelectionStart (), GetSelectionEnd ());
             }
 
@@ -2938,7 +3054,8 @@ SkipNavigation:
                 to make a different subclass, which supports different style and file formats from the (simple) default.</p>
                     <p>By default, this creates a @'FlavorPackageExternalizer'.</p>
             */
-            Memory::SharedPtr<FlavorPackageExternalizer>    TextInteractor::MakeDefaultExternalizer () {
+            Memory::SharedPtr<FlavorPackageExternalizer>    TextInteractor::MakeDefaultExternalizer ()
+            {
                 return Memory::SharedPtr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
             }
 
@@ -2946,7 +3063,8 @@ SkipNavigation:
             @METHOD:        TextInteractor::HookExternalizerChanged
             @DESCRIPTION:   <p>Called by @'TextInteractor::SetExternalizer' whenever there is a new externalizer specified.</p>
             */
-            void    TextInteractor::HookExternalizerChanged () {
+            void    TextInteractor::HookExternalizerChanged ()
+            {
             }
 
             /*
@@ -2955,7 +3073,8 @@ SkipNavigation:
                     NOT throw anything, and just beep or something. BEWARE then when calling this that it may or
                     may not throw, and may or may not return.</p>
             */
-            void    TextInteractor::OnBadUserInput () {
+            void    TextInteractor::OnBadUserInput ()
+            {
                 // you may want to OVERRIDE this to do a staged alert, or to throw an exception???
                 //Led_BeepNotify ();
                 throw BadUserInput ();  // default catcher should call Led_BeepNotify ()
@@ -2980,7 +3099,8 @@ SkipNavigation:
                         which is now obsolete.</p>
                             <p>See also 'TextInteractor::GetScrollBarType' and @'TextInteractor::InvalidateScrollBarParameters'.</p>
             */
-            void    TextInteractor::SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType) {
+            void    TextInteractor::SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType)
+            {
                 if (GetScrollBarType (vh) != scrollBarType) {
                     InvalidateScrollBarParameters ();
                     SetScrollBarType_ (vh, scrollBarType);
@@ -2992,7 +3112,8 @@ SkipNavigation:
             @DESCRIPTION:   <p>Mark the contents of the scrollbars as invalid. Someone, sometime later soon will call
                 @'TextInteractor::UpdateScrollBars' to fix them up again.</p>
             */
-            void    TextInteractor::InvalidateScrollBarParameters () {
+            void    TextInteractor::InvalidateScrollBarParameters ()
+            {
                 InvalidateScrollBarParameters_ ();
             }
 
@@ -3003,7 +3124,8 @@ SkipNavigation:
                 This is usually taken care of in any class library wrapper code, such as @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'
                 or @'Led_Win32_Helper<BASE_INTERACTOR>'.</p>
             */
-            void    TextInteractor::UpdateScrollBars () {
+            void    TextInteractor::UpdateScrollBars ()
+            {
                 UpdateScrollBars_ ();
             }
 
@@ -3011,7 +3133,8 @@ SkipNavigation:
             @METHOD:        TextInteractor::SetCaretShown
             @DESCRIPTION:   <p>See also @'TextInteractor::GetCaretShownSituation' and @'TextInteractor::GetCaretShown'.</p>
             */
-            void    TextInteractor::SetCaretShown (bool shown) {
+            void    TextInteractor::SetCaretShown (bool shown)
+            {
                 if (GetCaretShown () != shown) {
                     fCaretShown = shown;
                     InvalidateCaretState ();
@@ -3033,7 +3156,8 @@ SkipNavigation:
                         considered to decide if you should display the caret. You also - typically - need
                         to have an empty selection. This virtual method does that particular check.</p>
             */
-            bool    TextInteractor::GetCaretShownSituation () const {
+            bool    TextInteractor::GetCaretShownSituation () const
+            {
                 size_t  selStart    =   0;
                 size_t  selEnd      =   0;
                 GetSelection (&selStart, &selEnd);
@@ -3044,7 +3168,8 @@ SkipNavigation:
             @METHOD:        TextInteractor::SetCaretShownAfterPos
             @DESCRIPTION:   <p>See @'TextInteractor::GetCaretShownAfterPos' for meaning of this flag.</p>
              */
-            void    TextInteractor::SetCaretShownAfterPos (bool shownAfterPos) {
+            void    TextInteractor::SetCaretShownAfterPos (bool shownAfterPos)
+            {
                 if (GetCaretShownAfterPos () != shownAfterPos) {
                     InvalidateCaretState ();    // before and after so we draw/erase in new and old places
                     fCaretShownAfterPos = shownAfterPos;
@@ -3068,7 +3193,8 @@ SkipNavigation:
                         the same choice as chosen by the first question.
                             </p>
              */
-            Led_Rect    TextInteractor::CalculateCaretRect () const {
+            Led_Rect    TextInteractor::CalculateCaretRect () const
+            {
                 size_t  selEnd  =   GetSelectionEnd ();
                 if (GetSelectionStart () == selEnd) {
                     bool        showAfter   =   GetCaretShownAfterPos ();
@@ -3132,7 +3258,8 @@ SkipNavigation:
                 }
             }
 
-            void    TextInteractor::InvalidateCaretState () {
+            void    TextInteractor::InvalidateCaretState ()
+            {
                 if (IsWholeWindowInvalid ()) {
                     return;
                 }
@@ -3149,7 +3276,8 @@ SkipNavigation:
                         particular key sequences (e.g. LedLineIt! overrides this to map shift-tab when there is a selection
                         to an indent command rather than an insertion of text).</p>
              */
-            void    TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/, bool controlPressed, bool /*altKeyPressed*/) {
+            void    TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/, bool controlPressed, bool /*altKeyPressed*/)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
 
 #if     qMultiByteCharacters
@@ -3200,7 +3328,8 @@ SkipNavigation:
             }
 
 #if     qMultiByteCharacters
-            bool    TextInteractor::HandledMByteCharTyping (char theChar) {
+            bool    TextInteractor::HandledMByteCharTyping (char theChar)
+            {
                 if (fMultiByteInputCharBuf[0] == '\0' and Led_IsLeadByte (theChar)) {
                     /*
                      *  If we get a first-byte - then don't process it yet. Just save it up for the
@@ -3241,7 +3370,8 @@ SkipNavigation:
 #endif
 
 #if     qMacOS || qXWindows
-            float       TextInteractor::GetTickCountBetweenBlinks () {
+            float       TextInteractor::GetTickCountBetweenBlinks ()
+            {
 #if     qMacOS
                 return (::GetCaretTime () / 60.0);
 #elif   qXWindows
@@ -3250,7 +3380,8 @@ SkipNavigation:
             }
 #endif
 
-            bool    TextInteractor::DelaySomeForScrollBarClick () {
+            bool    TextInteractor::DelaySomeForScrollBarClick ()
+            {
                 const   float   kDelayAfterFirstTicks   =   0.20f;      // maybe should use ::GetDblClickTime()???
                 const   float   kDelayAfterOtherTicks   =   0.02f;      // This delay is so on really fast computers, text doesn't scroll too quickly
                 const   int     kTimesForFirstClick     =   2;

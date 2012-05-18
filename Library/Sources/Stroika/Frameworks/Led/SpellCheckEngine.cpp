@@ -24,7 +24,8 @@ namespace   Stroika {
              ******************************** SpellCheckEngine ******************************
              ********************************************************************************
              */
-            SpellCheckEngine::~SpellCheckEngine () {
+            SpellCheckEngine::~SpellCheckEngine ()
+            {
             }
 
 #if     qDebug
@@ -33,7 +34,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Default implementaiton for calls to @'SpellCheckEngine::Invariant'. Overridden in subclasses
                     to check validity of SpellCheck engine.</p>
             */
-            void    SpellCheckEngine::Invariant_ () const {
+            void    SpellCheckEngine::Invariant_ () const
+            {
             }
 #endif
 

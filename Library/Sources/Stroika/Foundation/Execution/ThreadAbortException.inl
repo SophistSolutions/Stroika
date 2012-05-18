@@ -16,7 +16,8 @@ namespace   Stroika {
 
 
             // class    ThreadAbortException
-            inline  ThreadAbortException::ThreadAbortException () {
+            inline  ThreadAbortException::ThreadAbortException ()
+            {
             }
 
 

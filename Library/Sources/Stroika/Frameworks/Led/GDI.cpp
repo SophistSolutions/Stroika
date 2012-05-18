@@ -84,7 +84,8 @@ static  const wchar_t   kHiInArabic[]   =   L"\xfe7d\xfe8d\xfe91\xfea3\xfead\xfe
 
 
 #if     qWindows
-inline  bool operator== (PALETTEENTRY lhs, COLORREF rhs) {
+inline  bool operator== (PALETTEENTRY lhs, COLORREF rhs)
+{
     return RGB (lhs.peRed, lhs.peGreen, lhs.peBlue) == rhs;
 }
 #endif
@@ -114,7 +115,8 @@ namespace   Stroika {
 #endif                                                                              // Should be a better way to check for 32bit GDI!!!
             // LGP 950504
 #if     qWorkAroundWin95UNICODECharImagingBugs
-            inline  bool    _IsWin95Helper_ () {
+            inline  bool    _IsWin95Helper_ ()
+            {
                 OSVERSIONINFO   osvi;
                 GetVersionEx (&osvi);
                 return (
@@ -134,7 +136,8 @@ namespace   Stroika {
 #if     qMacOS
             inline  QDErr   SafeNewGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect,
                                            CTabHandle cTable, GDHandle aGDevice, GWorldFlags flags
-                                          ) {
+                                          )
+            {
                 // NewGWorld seems to crash with 7.5.3 when we are low on memory in our app heap.
                 // So just treat this as a failure result from NewGWorld, and avoid the crash.
                 // LGP 960524
@@ -149,7 +152,8 @@ namespace   Stroika {
             inline  GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDepth,
                                                   const Rect* boundsRect, CTabHandle cTable,
                                                   GDHandle aGDevice, GWorldFlags flags
-                                                 ) {
+                                                 )
+            {
                 // UpdateGWorld seems to crash with 7.5.3 when we are low on memory in our app heap.
                 // So just treat this as a failure result from UpdateGWorld, and avoid the crash.
                 // LGP 960524
@@ -168,7 +172,8 @@ namespace   Stroika {
 
 #if     qWindows
 #if     qWideCharacters && (qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBugs)
-            inline  bool    CodePageBetterOffUsingWideCharVersion (UINT codePage) {
+            inline  bool    CodePageBetterOffUsingWideCharVersion (UINT codePage)
+            {
                 switch (codePage) {
                     case    kCodePage_SJIS:
                     case    kCodePage_Korean:
@@ -181,7 +186,8 @@ namespace   Stroika {
             }
 #endif
 #if     qWideCharacters && (qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBugs)
-            inline  void    Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize) {
+            inline  void    Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
+            {
                 Assert (nChars >= 0);
                 Memory::SmallStackBuffer<char>  buf (2 * nChars);
 
@@ -235,7 +241,8 @@ namespace   Stroika {
             }
 #endif
 #if     qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
-            inline  void    Win32_GetTextExtentPoint_Win95WorkAround (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize) {
+            inline  void    Win32_GetTextExtentPoint_Win95WorkAround (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
+            {
                 UINT    codePage    =   Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
                 if (CodePageBetterOffUsingWideCharVersion (codePage)) {
                     Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
@@ -247,7 +254,8 @@ namespace   Stroika {
             }
 #endif
 #if     qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
-            inline  void    Win32_TextOut_Win95WorkAround (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars) {
+            inline  void    Win32_TextOut_Win95WorkAround (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
+            {
                 UINT    codePage    =   Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
                 if (CodePageBetterOffUsingWideCharVersion (codePage)) {
                     Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
@@ -258,7 +266,8 @@ namespace   Stroika {
                 Verify (::TextOutA (hdc, xStart, yStart, buf, nChars2));
             }
 #endif
-            inline  void    Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize) {
+            inline  void    Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
+            {
 #if     qWideCharacters
 #if     qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBug
                 if (not kRunning32BitGDI) {
@@ -271,7 +280,8 @@ namespace   Stroika {
                 Verify (::GetTextExtentExPointA (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
 #endif
             }
-            inline  void    Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize) {
+            inline  void    Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
+            {
 #if     qWideCharacters
 #if     qWorkAroundWin95UNICODECharImagingBugs
                 if (kRunningWin95GDI) {
@@ -284,7 +294,8 @@ namespace   Stroika {
                 Verify (::GetTextExtentPointA (hdc, str, nChars, lpSize));
 #endif
             }
-            inline  void    Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars) {
+            inline  void    Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
+            {
 #if     qWideCharacters
 #if     qWorkAroundWin95UNICODECharImagingBugs
                 if (kRunningWin95GDI) {
@@ -445,13 +456,15 @@ namespace   Stroika {
 
 
             namespace   {
-                inline  bool    IS_WIN30_DIB (const Led_DIB* dib) {
+                inline  bool    IS_WIN30_DIB (const Led_DIB* dib)
+                {
                     // Logic from MSFT DibLook sample in MSVC.Net 2003
                     RequireNotNull (dib);
                     const BITMAPINFOHEADER& hdr =   dib->bmiHeader;
                     return Led_ByteSwapFromWindows (hdr.biSize) == sizeof(BITMAPINFOHEADER);
                 }
-                inline  size_t  DIBNumColors (const Led_DIB* dib) {
+                inline  size_t  DIBNumColors (const Led_DIB* dib)
+                {
                     // Logic from MSFT DibLook sample in MSVC.Net 2003
                     RequireNotNull (dib);
                     const BITMAPINFOHEADER& hdr =   dib->bmiHeader;
@@ -494,7 +507,8 @@ namespace   Stroika {
 #if     qWindows
             namespace {
 
-                inline  RGBQUAD mkRGBQuad (COLORREF c) {
+                inline  RGBQUAD mkRGBQuad (COLORREF c)
+                {
                     RGBQUAD r;
                     r.rgbBlue = GetBValue (c);
                     r.rgbGreen = GetGValue (c);
@@ -502,7 +516,8 @@ namespace   Stroika {
                     r.rgbReserved = 0;
                     return r;
                 }
-                inline  void    MaybeAddColorRefToTable_ (RGBQUAD colorTable[256], size_t* iP, COLORREF c) {
+                inline  void    MaybeAddColorRefToTable_ (RGBQUAD colorTable[256], size_t* iP, COLORREF c)
+                {
                     Assert (sizeof (RGBQUAD) == sizeof (COLORREF));
                     COLORREF*   ct  =   reinterpret_cast<COLORREF*> (colorTable);   // use COLORREF instead of RGBQUAD cuz same size but COLOREF has op== defined
                     if (find (ct, ct + *iP, c) == ct + *iP and c != RGB (255, 255, 255)) {
@@ -511,7 +526,8 @@ namespace   Stroika {
                     }
                 }
 
-                void    CreateStandardColorTable (RGBQUAD colorTable[256], COLORREF c1 = RGB (0, 0, 0), COLORREF c2 = RGB (0, 0, 0), COLORREF c3 = RGB (0, 0, 0), COLORREF c4 = RGB (0, 0, 0)) {
+                void    CreateStandardColorTable (RGBQUAD colorTable[256], COLORREF c1 = RGB (0, 0, 0), COLORREF c2 = RGB (0, 0, 0), COLORREF c3 = RGB (0, 0, 0), COLORREF c4 = RGB (0, 0, 0))
+                {
                     /*
                      *  Cannot use ::GetStockObject (DEFAULT_PALETTE) - because - believe it or not - it returns a 20-entry pallete.
                      */
@@ -595,7 +611,8 @@ namespace   Stroika {
                     }
                 }
 
-                HPALETTE    CreatePaletteForColorTable (const RGBQUAD colorTable[256]) {
+                HPALETTE    CreatePaletteForColorTable (const RGBQUAD colorTable[256])
+                {
                     /*
                      *  Cannot use ::GetStockObject (DEFAULT_PALETTE) - because - believe it or not - it returns a 20-entry pallete.
                      */
@@ -614,13 +631,15 @@ namespace   Stroika {
                     return ::CreatePalette (lplgPal);
                 }
 
-                HPALETTE    CreateStandardPalette (COLORREF c1, COLORREF c2, COLORREF c3, COLORREF c4) {
+                HPALETTE    CreateStandardPalette (COLORREF c1, COLORREF c2, COLORREF c3, COLORREF c4)
+                {
                     RGBQUAD colorTable[256];
                     CreateStandardColorTable (colorTable, c1, c2, c3, c4);
                     return CreatePaletteForColorTable (colorTable);
                 }
 
-                HBITMAP Create8BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY, const RGBQUAD* colorTable = nullptr, LPBYTE* ppBits = nullptr) {
+                HBITMAP Create8BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY, const RGBQUAD* colorTable = nullptr, LPBYTE* ppBits = nullptr)
+                {
                     LPBYTE  ignored =   nullptr;
                     if (ppBits == nullptr) {
                         ppBits = &ignored;
@@ -657,7 +676,8 @@ namespace   Stroika {
                     return ::CreateDIBSection (refDC, pbmi, DIB_RGB_COLORS, (void**)ppBits, nullptr, 0);
                 }
 
-                HBITMAP Create16BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY) {
+                HBITMAP Create16BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY)
+                {
                     // Create the header big enough to contain color table and bitmasks if needed
                     size_t  nInfoSize = sizeof( BITMAPINFOHEADER ) +  3 * sizeof(DWORD);
                     Memory::SmallStackBuffer<char>  bmiBuf (nInfoSize);
@@ -681,7 +701,8 @@ namespace   Stroika {
                     return ::CreateDIBSection (refDC, pbmi, DIB_RGB_COLORS, (void**)&pBits, nullptr, 0);
                 }
 
-                HBITMAP Create32BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY) {
+                HBITMAP Create32BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY)
+                {
                     // Create the header big enough to contain color table and bitmasks if needed
                     size_t  nInfoSize = sizeof( BITMAPINFOHEADER ) + 3 * sizeof(DWORD);
                     Memory::SmallStackBuffer<char>  bmiBuf (nInfoSize);
@@ -725,14 +746,16 @@ namespace   Stroika {
              ************************************ Led_Bitmap ********************************
              ********************************************************************************
              */
-            BOOL    Led_Bitmap::CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight) {
+            BOOL    Led_Bitmap::CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight)
+            {
                 Assert (m_hObject == nullptr);
                 m_hObject = ::CreateCompatibleBitmap (hdc, nWidth, nHeight);
                 fImageSize = Led_Size (nHeight, nWidth);
                 return (m_hObject != nullptr);  // return value backward compat hack...
             }
 
-            BOOL    Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight) {
+            BOOL    Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight)
+            {
                 RequireNotNull (hdc);
                 Require (m_hObject == nullptr);
                 int useDepth    =   16; // default to DIBSection depth - seems to work pretty well in most cases
@@ -762,7 +785,8 @@ namespace   Stroika {
                 return (m_hObject != nullptr);  // return value backward compat hack...
             }
 
-            void    Led_Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName) {
+            void    Led_Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
+            {
                 Require (m_hObject == nullptr);
                 m_hObject = ::LoadBitmap (hInstance, lpBitmapName);
                 Led_ThrowIfNull (m_hObject);
@@ -853,7 +877,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     qXWindows
-            string  Led_FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize) {
+            string  Led_FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize)
+            {
                 char    hRes[1024];
                 (void)::sprintf (hRes, "%d", Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
                 char    vRes[1024];
@@ -862,7 +887,8 @@ namespace   Stroika {
                 return result;
             }
 
-            string  Led_FontSpecification::GetOSRep () const {
+            string  Led_FontSpecification::GetOSRep () const
+            {
                 string  foundry     =   "*";
                 string  weight      =   fBold ? "bold" : "medium";
                 string  slant       =   fItalics ? "i" : "r";
@@ -871,7 +897,8 @@ namespace   Stroika {
                 return mkOSRep (foundry, fFontFamily, weight, slant, pointSize);
             }
 
-            void    Led_FontSpecification::SetFromOSRep (const string& osRep) {
+            void    Led_FontSpecification::SetFromOSRep (const string& osRep)
+            {
                 Led_SDK_String  familyName;
                 Led_SDK_String  fontSize;
                 Led_SDK_String  fontWeight;
@@ -909,7 +936,8 @@ namespace   Stroika {
             @METHOD:        Led_FontSpecification::SetFontName
             @DESCRIPTION:   <p>See also @'Led_FontSpecification::GetFontName'.</p>
             */
-            void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName) {
+            void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
+            {
 #if     qMacOS
                 Str255  pFontName;
                 pFontName[0] = fontName.length ();
@@ -930,13 +958,15 @@ namespace   Stroika {
             }
 
 #if     qWindows
-            Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from) {
+            Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
+            {
                 (void)::_tcsncpy (fName, from, LF_FACESIZE);
                 fName[LF_FACESIZE - 1] = '\0';
             }
 #endif
 
-            void    Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier) {
+            void    Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
+            {
 #if     qMacOS
                 fFontSpecifier = fontNameSpecifier;
 #elif   qWindows
@@ -965,7 +995,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Compute the subset of the two @'Led_IncrementalFontSpecification' arguments where both parts
                         are valid and identical.</p>
             */
-            Led_IncrementalFontSpecification    Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs) {
+            Led_IncrementalFontSpecification    Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
+            {
                 Led_IncrementalFontSpecification    result  =   lhs;
 
                 // FontName Info
@@ -1135,7 +1166,8 @@ namespace   Stroika {
                 COLORREF    fOldBackColor;
                 COLORREF    fOldForeColor;
             };
-            inline  COLORREF    Led_Tablet_::RecolorHelper::MapColor (COLORREF c) const {
+            inline  COLORREF    Led_Tablet_::RecolorHelper::MapColor (COLORREF c) const
+            {
                 float fIntrp;
                 fIntrp = (float)(255 - GetRValue (c)) / 256.0f;
                 BYTE    red = static_cast<BYTE> (
@@ -1159,7 +1191,8 @@ namespace   Stroika {
                                );
                 return RGB (red, green, blue);
             }
-            inline  COLORREF    Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const {
+            inline  COLORREF    Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const
+            {
                 return MapColor (RGB (c.rgbRed, c.rgbGreen, c.rgbBlue));
             }
 
@@ -1177,7 +1210,8 @@ namespace   Stroika {
                 fHilightBackColor (hilightBackColor.GetOSRep ()),
                 fHilightForeColor (hilightForeColor.GetOSRep ()),
                 fOldBackColor (oldBackColor.GetOSRep ()),
-                fOldForeColor (oldForeColor.GetOSRep ()) {
+                fOldForeColor (oldForeColor.GetOSRep ())
+            {
                 CreateStandardColorTable (fColorTable, fHilightBackColor, fHilightForeColor, fOldBackColor, fOldForeColor);
                 fDibSection = Create8BitDIBSection (baseHDC, size.h, size.v, fColorTable, &fDibData);
                 BITMAP      bm;
@@ -1188,7 +1222,8 @@ namespace   Stroika {
                 MakeMappingTable ();
             }
 
-            Led_Tablet_::RecolorHelper::~RecolorHelper () {
+            Led_Tablet_::RecolorHelper::~RecolorHelper ()
+            {
                 if (fDibSection != nullptr) {
                     ::SelectObject (fHMemDC, fOldBitmap);
                     ::DeleteDC (fHMemDC);
@@ -1196,7 +1231,8 @@ namespace   Stroika {
                 }
             }
 
-            Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor) {
+            Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+            {
                 if (_THIS_ == nullptr or
                         size.h > _THIS_->fSize.h or
                         size.v > _THIS_->fSize.v or
@@ -1218,13 +1254,15 @@ namespace   Stroika {
                 return _THIS_;
             }
 
-            void    Led_Tablet_::RecolorHelper::MakeMappingTable () {
+            void    Led_Tablet_::RecolorHelper::MakeMappingTable ()
+            {
                 for (size_t i = 0; i < 256; ++i) {
                     fMappingTable[i] = FindClosestColorInColorTable (MapColor (fColorTable[i]));
                 }
             }
 
-            size_t  Led_Tablet_::RecolorHelper::FindClosestColorInColorTable (COLORREF c) const {
+            size_t  Led_Tablet_::RecolorHelper::FindClosestColorInColorTable (COLORREF c) const
+            {
                 // walk through the color table and see which color is closest to 'c'
                 size_t          closest =   0;
                 unsigned int    closestDistance =   0xffffffff; // big distance
@@ -1241,7 +1279,8 @@ namespace   Stroika {
                 return closest;
             }
 
-            void    Led_Tablet_::RecolorHelper::DoRecolor (const Led_Rect& hilightArea) {
+            void    Led_Tablet_::RecolorHelper::DoRecolor (const Led_Rect& hilightArea)
+            {
                 HPALETTE    hPal    =   nullptr;
                 HPALETTE    hOldPal =   nullptr;
                 if (::GetDeviceCaps (fBaseDC, RASTERCAPS) & RC_PALETTE) {
@@ -1261,7 +1300,8 @@ namespace   Stroika {
                 }
             }
 
-            void    Led_Tablet_::RecolorHelper::DoRecolor_SimpleDSTINVERT (const Led_Rect& hilightArea) {
+            void    Led_Tablet_::RecolorHelper::DoRecolor_SimpleDSTINVERT (const Led_Rect& hilightArea)
+            {
                 // Does proper inverse video, but seems to ignore the TextColor/BkColor/Pen/Brush colors.
                 // Really should fix this to behave like Mac - replacing the background color with the text hilight color.
                 // See SPR#1271
@@ -1270,7 +1310,8 @@ namespace   Stroika {
                          );
             }
 
-            void    Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hilightArea) {
+            void    Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hilightArea)
+            {
                 // Attempt at solving SPR#1271. Works decently - producing the right background - but the text is colored YELLOW instead of WHITE - and so
                 // doesn't look very good (not enough contrast).
                 Led_Color           useColor    =   Led_Color::kWhite - Led_Color (fHilightBackColor);
@@ -1284,7 +1325,8 @@ namespace   Stroika {
                 (void)::SelectObject (fBaseDC, oldBrush);
             }
 
-            void    Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led_Rect& hilightArea) {
+            void    Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led_Rect& hilightArea)
+            {
                 // By commenting stuff in and out - I determinted that virtuall ALL the time is spent in this first
                 // BitBlt () - LGP 2003-03-11
                 // I also found that qUseDIBSectionForOffscreenBitmap made this BitBlt go much faster - to the point of acceptable speed
@@ -1343,7 +1385,8 @@ namespace   Stroika {
              */
 #if     qMacOS
             Led_Tablet_::Led_Tablet_ (GrafPtr gp):
-                fGrafPort (gp) {
+                fGrafPort (gp)
+            {
                 RequireNotNull (gp);
             }
 #elif   qWindows
@@ -1354,7 +1397,8 @@ namespace   Stroika {
                 m_bPrinting (false),
                 fOwnsDC (ownsDC),
                 fLogPixelsV (0),
-                fLogPixelsH (0) {
+                fLogPixelsH (0)
+            {
             }
 #elif   qXWindows
             Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable):
@@ -1366,7 +1410,8 @@ namespace   Stroika {
                 fGC (nullptr),
                 fColormap (0),
                 fCachedFontInfo (nullptr),
-                fFontMappingCache () {
+                fFontMappingCache ()
+            {
                 int screen = DefaultScreen (display);
                 fGC = ::XCreateGC (display, drawable, 0, nullptr);
                 ::XSetForeground (display, fGC, BlackPixel (display, screen));
@@ -1394,7 +1439,8 @@ namespace   Stroika {
             }
 #endif
 
-            Led_Tablet_::~Led_Tablet_ () {
+            Led_Tablet_::~Led_Tablet_ ()
+            {
 #if     qWindows
                 delete fRecolorHelper;
                 if (m_hDC != nullptr and fOwnsDC == eOwnsDC) {
@@ -1413,7 +1459,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
                 <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
             */
-            Led_Point   Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Point from) const {
+            Led_Point   Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Point from) const
+            {
                 return Led_Point (CvtFromTWIPSV (from.v), CvtFromTWIPSH (from.h));
             }
 
@@ -1422,7 +1469,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
                 <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
             */
-            Led_TWIPS_Point Led_Tablet_::CvtToTWIPS (Led_Point from) const {
+            Led_TWIPS_Point Led_Tablet_::CvtToTWIPS (Led_Point from) const
+            {
                 return Led_TWIPS_Point (CvtToTWIPSV (from.v), CvtToTWIPSH (from.h));
             }
 
@@ -1431,7 +1479,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
                 <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
             */
-            Led_Rect        Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Rect from) const {
+            Led_Rect        Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Rect from) const
+            {
                 return Led_Rect (CvtFromTWIPS (from.GetOrigin ()), Led_Size (CvtFromTWIPS (from.GetSize ())));
             }
 
@@ -1440,7 +1489,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
                 <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
             */
-            Led_TWIPS_Rect  Led_Tablet_::CvtToTWIPS (Led_Rect from) const {
+            Led_TWIPS_Rect  Led_Tablet_::CvtToTWIPS (Led_Rect from) const
+            {
                 return Led_TWIPS_Rect (CvtToTWIPS (from.GetOrigin ()), CvtToTWIPS (Led_Point (from.GetSize ())));
             }
 
@@ -1449,7 +1499,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Scroll the given 'windowRect' by 'scrollVBy localical units. The area of the window exposed by this
                         action is invalidated (so a later update event will fix it).</p>
             */
-            void    Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Coordinate scrollVBy) {
+            void    Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Coordinate scrollVBy)
+            {
 #if     qMacOS
                 Rect            qdMoveRect  =   AsQDRect (windowRect);
                 RgnHandle       updateRgn   =   ::NewRgn ();
@@ -1540,7 +1591,8 @@ namespace   Stroika {
             @METHOD:        Led_Tablet_::FrameRegion
             @DESCRIPTION:   <p>Draw the outline of the given region 'r' in color 'c'.</p>
             */
-            void    Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c) {
+            void    Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
+            {
 #if     qMacOS
                 Led_MacPortAndClipRegionEtcSaver    saver;      // unclear if this is useful/needed?
                 SetPort ();
@@ -1563,7 +1615,8 @@ namespace   Stroika {
                         by 'r'.
                             </p>
             */
-            void    Led_Tablet_::FrameRectangle (const Led_Rect& r, Led_Color c, Led_Distance borderWidth) {
+            void    Led_Tablet_::FrameRectangle (const Led_Rect& r, Led_Color c, Led_Distance borderWidth)
+            {
                 /*
                  *  Almost certainly can implement much more efficiently, but leave like this for now to assure pixel-for-pixel
                  *  equiv across GDIs.
@@ -1586,7 +1639,8 @@ namespace   Stroika {
             */
             void    Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
                                               const Led_tChar* text, size_t nTChars, Led_Distance* charLocations
-                                             ) {
+                                             )
+            {
                 RequireNotNull (text);
                 RequireNotNull (charLocations);
 #if     qMacOS
@@ -1788,7 +1842,8 @@ Succeeded:
                                                 TextDirection direction,
                                                 Led_Point outputAt, Led_Coordinate hTabOrigin, const Led_TabStopList& tabStopList,
                                                 Led_Distance* amountDrawn, Led_Coordinate hScrollOffset
-                                               ) {
+                                               )
+            {
 #if     !qWideCharacters
                 Led_Arg_Unused (direction);
 #endif
@@ -2014,7 +2069,8 @@ Succeeded:
                 }
             }
 
-            void    Led_Tablet_::SetBackColor (const Led_Color& backColor) {
+            void    Led_Tablet_::SetBackColor (const Led_Color& backColor)
+            {
 #if     qMacOS
                 SetPort ();
                 GDI_RGBBackColor (backColor.GetOSRep ());
@@ -2045,7 +2101,8 @@ Succeeded:
 #endif
             }
 
-            void    Led_Tablet_::SetForeColor (const Led_Color& foreColor) {
+            void    Led_Tablet_::SetForeColor (const Led_Color& foreColor)
+            {
 #if     qMacOS
                 SetPort ();
                 GDI_RGBForeColor (foreColor.GetOSRep ());
@@ -2081,7 +2138,8 @@ Succeeded:
             @DESCRIPTION:   <p>EraseBackground_SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE
                 @'TextImager::EraseBackground'.</p>
             */
-            void    Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Led_Color& eraseColor) {
+            void    Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Led_Color& eraseColor)
+            {
                 if (not eraseRect.IsEmpty ()) {
 #if     qMacOS
                     SetPort ();
@@ -2125,7 +2183,8 @@ Succeeded:
                         platform UI conventionally calls for) inverting the text via a simple XOR.</p>
                             <p>OBSOLETE - Use @'Led_Tablet_::HilightArea__SolidHelper' instead.</p>
             */
-            void    Led_Tablet_::HilightARectangle_SolidHelper (const Led_Rect& hilightRect, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor) {
+            void    Led_Tablet_::HilightARectangle_SolidHelper (const Led_Rect& hilightRect, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+            {
                 if (not hilightRect.IsEmpty ()) {
 #if     qMacOS
                     Led_Arg_Unused (hilightBackColor);
@@ -2177,7 +2236,8 @@ Succeeded:
                         the background color to while, and the hilight colors the reverse of this (fore=black/back=white), this code will revert
                         to the old algorithm, and run much faster.</p>
             */
-            void    Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor) {
+            void    Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+            {
                 if (not hilightArea.IsEmpty ()) {
 #if     qMacOS
                     Led_Arg_Unused (hilightBackColor);
@@ -2250,7 +2310,8 @@ Succeeded:
                             <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
                         platform UI conventionally calls for) inverting the text via a simple XOR.</p>
             */
-            void    Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor) {
+            void    Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+            {
                 if (not hilightArea.IsEmpty ()) {
 #if     qMacOS
                     Led_Arg_Unused (hilightBackColor);
@@ -2274,7 +2335,8 @@ Succeeded:
             @METHOD:        Led_Tablet_::GetFontMetrics
             @DESCRIPTION:   <p>Retrieve the (@'Led_FontMetrics') associated with the current tablet (based on the last SetFont call).</p>
             */
-            Led_FontMetrics Led_Tablet_::GetFontMetrics () const {
+            Led_FontMetrics Led_Tablet_::GetFontMetrics () const
+            {
 #if     qMacOS
                 FontInfo    fontInfo;
                 ::GetFontInfo (&fontInfo);
@@ -2297,7 +2359,8 @@ Succeeded:
             }
 
 #if     qXWindows
-            void    Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec) {
+            void    Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
+            {
                 /*
                  * First, see if the XFontStruct* is already cached. If so - all we need todo is (maybe) an XSetFont call.
                  */
@@ -2398,13 +2461,15 @@ Succeeded:
                 ::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
             }
 
-            void    Led_Tablet_::SetDrawableOrigin (const Led_Point& origin) {
+            void    Led_Tablet_::SetDrawableOrigin (const Led_Point& origin)
+            {
                 fDrawableOrigin = origin;
             }
 #endif
 
 #if     qXWindows
-            static  bool    FontNamesEqual (const string& lhs, const string& rhs) {
+            static  bool    FontNamesEqual (const string& lhs, const string& rhs)
+            {
                 if (lhs.length () != rhs.length ()) {
                     return false;
                 }
@@ -2415,7 +2480,8 @@ Succeeded:
                 }
                 return true;
             }
-            Led_SDK_String  Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, const vector<Led_SDK_String>& fontsList) {
+            Led_SDK_String  Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, const vector<Led_SDK_String>& fontsList)
+            {
                 Led_SDK_String  bestAnswer;
                 float           bestScore       =   0.0f;
                 Led_SDK_String  fspName         =   fsp.GetFontName ();
@@ -2457,11 +2523,13 @@ Succeeded:
                 return bestAnswer;
             }
 
-            int Led_Tablet_::IngoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/) {
+            int Led_Tablet_::IngoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
+            {
                 return 0;
             }
 
-            void    Led_Tablet_::ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant) {
+            void    Led_Tablet_::ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant)
+            {
                 RequireNotNull (familyName);
                 RequireNotNull (fontSize);
                 RequireNotNull (fontWeight);
@@ -2538,15 +2606,18 @@ Succeeded:
              */
 #if     qMacOS
             OffscreenTablet::OT::OT (GrafPtr gp):
-                inherited (gp) {
+                inherited (gp)
+            {
             }
 #elif   qWindows
             OffscreenTablet::OT::OT (HDC hdc, Led_Tablet_::OwnDCControl ownsDC):
-                inherited (hdc, ownsDC) {
+                inherited (hdc, ownsDC)
+            {
             }
 #elif   qXWindows
             OffscreenTablet::OT::OT (Display* display, Drawable drawable):
-                inherited (display, drawable) {
+                inherited (display, drawable)
+            {
             }
 #endif
 
@@ -2578,7 +2649,8 @@ Succeeded:
             {
             }
 
-            OffscreenTablet::~OffscreenTablet () {
+            OffscreenTablet::~OffscreenTablet ()
+            {
 #if     qMacOS
                 if (fOrigPort != nullptr) {
                     ::SetGWorld (fOrigPort, fOrigDevice);   // restore gworld
@@ -2604,7 +2676,8 @@ Succeeded:
                             <p>Later call @'OffscreenTablet::PrepareRect' before any actual drawing can be done. This should be called once before
                         calling @'OffscreenTablet::PrepareRect'.</p>
             */
-            void    OffscreenTablet::Setup (Led_Tablet origTablet) {
+            void    OffscreenTablet::Setup (Led_Tablet origTablet)
+            {
                 Require (fOrigTablet == nullptr);   // can only call once.
                 RequireNotNull (origTablet);
 
@@ -2643,7 +2716,8 @@ Succeeded:
                         after the call to @'OffscreenTablet::Setup' - but can be called multiple times. Note that calls to this
                         will typically 'destroy' the bits in the offscreen tablet.</p>
             */
-            Led_Tablet  OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect) {
+            Led_Tablet  OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect)
+            {
                 Led_Tablet  result  =   fOrigTablet;
 #if     qMacOS
                 if (fOffscreenTablet != nullptr) {
@@ -2782,7 +2856,8 @@ good:
             @DESCRIPTION:   <p>Copy the bits which have been saved away into this offscreen tablet back to the original tablet specified in
                         @'OffscreenTablet::Setup' and to coordinates specified in the last call to @'OffscreenTablet::PrepareRect'.</p>
             */
-            void    OffscreenTablet::BlastBitmapToOrigTablet () {
+            void    OffscreenTablet::BlastBitmapToOrigTablet ()
+            {
                 if (fOffscreenTablet != nullptr) {
 #if     qMacOS
                     Rect    bounds  =   AsQDRect (fOffscreenRect);
@@ -2837,7 +2912,8 @@ good:
                 FilterOptions filterOptions
             ):
                 fFilterOptions (filterOptions),
-                fFontNames () {
+                fFontNames ()
+            {
 #if     qWindows
                 LOGFONT lf;
                 memset(&lf, 0, sizeof(LOGFONT));
@@ -2875,7 +2951,8 @@ good:
             }
 
 #if     qWindows
-            BOOL    FAR PASCAL  Led_InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis) {
+            BOOL    FAR PASCAL  Led_InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis)
+            {
                 Led_InstalledFonts* thisP   =   reinterpret_cast<Led_InstalledFonts*> (pThis);
 
                 if (thisP->fFilterOptions & eSkipRasterFonts) {
@@ -2919,11 +2996,13 @@ good:
 
             Led_GDIGlobals::Led_GDIGlobals ():
                 fLogPixelsH (0),
-                fLogPixelsV (0) {
+                fLogPixelsV (0)
+            {
                 InvalidateGlobals ();
             }
 
-            void    Led_GDIGlobals::InvalidateGlobals () {
+            void    Led_GDIGlobals::InvalidateGlobals ()
+            {
                 // From the name, it would appear we invalidated, and re-validate later. But I think this implematnion is a bit
                 // simpler, and should perform fine given its expected usage.
 #if     qMacOS
@@ -2959,7 +3038,8 @@ good:
              ************************************ AddRectangleToRegion **********************
              ********************************************************************************
              */
-            void    AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn) {
+            void    AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn)
+            {
                 RequireNotNull (toRgn);
                 *toRgn = *toRgn + Led_Region (addRect);
             }
@@ -2980,7 +3060,8 @@ good:
             @METHOD:        Led_GetDIBImageSize
             @DESCRIPTION:   <p>Return the size in pixels of the given argument DIB</p>
             */
-            Led_Size    Led_GetDIBImageSize (const Led_DIB* dib) {
+            Led_Size    Led_GetDIBImageSize (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
                 Assert (sizeof (BITMAPINFOHEADER) == 40);   // just to make sure we have these defined right on other platforms
                 Assert (sizeof (BITMAPCOREHEADER) == 12);   // ''
@@ -3005,7 +3086,8 @@ good:
              *************************** Led_GetDIBPalletByteCount **************************
              ********************************************************************************
              */
-            size_t      Led_GetDIBPalletByteCount (const Led_DIB* dib) {
+            size_t      Led_GetDIBPalletByteCount (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
                 /*
                  *  Logic from MSFT DibLook sample in MSVC.Net 2003, plus:
@@ -3048,7 +3130,8 @@ good:
             @METHOD:        Led_GetDIBImageRowByteCount
             @DESCRIPTION:   <p>Return the size in bytes of a single ROW of pixels in the given argument DIB.</p>
             */
-            size_t      Led_GetDIBImageRowByteCount (const Led_DIB* dib) {
+            size_t      Led_GetDIBImageRowByteCount (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
                 Led_Size                imageSize   =   Led_GetDIBImageSize (dib);
                 const BITMAPINFOHEADER& hdr         =   dib->bmiHeader;
@@ -3070,7 +3153,8 @@ good:
             @METHOD:        Led_GetDIBImageByteCount
             @DESCRIPTION:   <p>Return the size in bytes of the given argument DIB. DIBs are contiguous chunks of RAM.</p>
             */
-            size_t      Led_GetDIBImageByteCount (const Led_DIB* dib) {
+            size_t      Led_GetDIBImageByteCount (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
                 Led_Size                imageSize   =   Led_GetDIBImageSize (dib);
                 const BITMAPINFOHEADER& hdr         =   dib->bmiHeader;
@@ -3102,7 +3186,8 @@ good:
             @DESCRIPTION:   <p>Make a copy of the given @'Led_DIB' object using ::operator new (). Just use normal C++ ::operator delete ()
                         to destroy the result.</p>
             */
-            Led_DIB*    Led_CloneDIB (const Led_DIB* dib) {
+            Led_DIB*    Led_CloneDIB (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
                 size_t  nBytes  =   Led_GetDIBImageByteCount (dib);
                 Led_DIB*    newDIB  =   reinterpret_cast<Led_DIB*> (new char [nBytes]);
@@ -3123,7 +3208,8 @@ good:
             @METHOD:        Led_GetDIBBitsPointer
             @DESCRIPTION:   <p></p>
             */
-            const void*     Led_GetDIBBitsPointer (const Led_DIB* dib) {
+            const void*     Led_GetDIBBitsPointer (const Led_DIB* dib)
+            {
                 RequireNotNull (dib);
                 const BITMAPINFOHEADER& hdr =   dib->bmiHeader;
                 return  reinterpret_cast<const char*> (dib) +
@@ -3140,7 +3226,8 @@ good:
              ****************************** Led_DIBFromHBITMAP ******************************
              ********************************************************************************
              */
-            Led_DIB*    Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm) {
+            Led_DIB*    Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
+            {
                 RequireNotNull (hbm);
                 BITMAP bm;
                 Verify (::GetObject (hbm, sizeof(BITMAP), (LPVOID)&bm));
@@ -3213,7 +3300,8 @@ good:
                 fImmSetOpenStatus (nullptr),
                 fWinNlsAvailable (false),
                 fLastX (-1),
-                fLastY (-1) {
+                fLastY (-1)
+            {
                 Assert (sThe == nullptr);
                 sThe = this;
 
@@ -3245,13 +3333,15 @@ good:
                 }
             }
 
-            void    Led_IME::NotifyPosition (HWND hWnd, const SHORT x, const SHORT y) {
+            void    Led_IME::NotifyPosition (HWND hWnd, const SHORT x, const SHORT y)
+            {
                 if (x != fLastX || y != fLastY)  {
                     UpdatePosition (hWnd, x, y);
                 }
             }
 
-            void    Led_IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf) {
+            void    Led_IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf)
+            {
                 if (fImmGetContext != nullptr and fImmSetCompositionFont != nullptr and fImmReleaseContext != nullptr) {
                     DWORD_PTR   hImc    =   NULL;
                     if ((hImc = fImmGetContext (hWnd)) != NULL) {
@@ -3262,7 +3352,8 @@ good:
             }
 
 #if     !qUseNewIMECode
-            void    Led_IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam) {
+            void    Led_IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam)
+            {
                 if (fSendIMEMessageProc != nullptr) {
                     HANDLE      hime =  ::GlobalAlloc (GMEM_MOVEABLE | GMEM_LOWER | GMEM_DDESHARE, (DWORD)sizeof(IMESTRUCT));
                     LPIMESTRUCT lpime;
@@ -3283,7 +3374,8 @@ good:
             }
 #endif
 
-            void    Led_IME::IMEOn (HWND hWnd) {
+            void    Led_IME::IMEOn (HWND hWnd)
+            {
 #if     qUseNewIMECode
                 if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
                     DWORD_PTR   hImc    =   NULL;
@@ -3297,7 +3389,8 @@ good:
 #endif
             }
 
-            void    Led_IME::IMEOff (HWND hWnd) {
+            void    Led_IME::IMEOff (HWND hWnd)
+            {
 #if     qUseNewIMECode
                 if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
                     DWORD_PTR   hImc    =   NULL;
@@ -3311,7 +3404,8 @@ good:
 #endif
             }
 
-            void    Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y) {
+            void    Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
+            {
                 if (fSendIMEMessageProc != nullptr) {
 #if     qUseNewIMECode
                     if (fImmGetContext != nullptr and fImmSetCompositionWindow != nullptr and fImmReleaseContext != nullptr) {
@@ -3381,7 +3475,8 @@ good:
                 }
             }
 
-            wstring Led_IME::GetCompositionResultStringW (HWND hWnd) {
+            wstring Led_IME::GetCompositionResultStringW (HWND hWnd)
+            {
                 wstring result;
                 if (fImmGetCompositionStringW != nullptr and fImmGetContext != nullptr and fImmReleaseContext != nullptr) {
                     DWORD   hImc    =   0;
@@ -3406,14 +3501,16 @@ good:
 
 
 
-            Led_Rect    CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn) {
+            Led_Rect    CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
+            {
                 Led_Coordinate  xLeft   =   (centerIn.left + centerIn.right) / 2 - r.GetWidth () / 2;
                 Led_Coordinate  yTop    =   (centerIn.top + centerIn.bottom) / 2 - r.GetHeight () / 2;
                 return Led_Rect (yTop, xLeft, r.GetHeight (), r.GetWidth ());
             }
 
 #if     qWindows
-            void    Led_CenterWindowInParent (HWND w) {
+            void    Led_CenterWindowInParent (HWND w)
+            {
                 Assert (::IsWindow (w));
                 HWND hWndCenter = ::GetWindow (w, GW_OWNER);
                 if (hWndCenter == nullptr) {
@@ -3529,25 +3626,29 @@ good:
 // function call when working with the CMAP TrueType table
             static  DWORD dwCmapName = MAKETABLENAME( 'c', 'm', 'a', 'p' );
 
-            static  USHORT* GetEndCountArray(LPBYTE pBuff) {
+            static  USHORT* GetEndCountArray(LPBYTE pBuff)
+            {
                 return (USHORT*)(pBuff + 7 * sizeof(USHORT));   // Per TT spec
             }
 
-            static  USHORT* GetStartCountArray(LPBYTE pBuff) {
+            static  USHORT* GetStartCountArray(LPBYTE pBuff)
+            {
                 DWORD   segCount = ((LPCMAP4)pBuff)->segCountX2 / 2;
                 return (USHORT*)( pBuff +
                                   8 * sizeof(USHORT) +        // 7 header + 1 reserved USHORT
                                   segCount * sizeof(USHORT) ); // Per TT spec
             }
 
-            static  USHORT* GetIdDeltaArray(LPBYTE pBuff) {
+            static  USHORT* GetIdDeltaArray(LPBYTE pBuff)
+            {
                 DWORD   segCount = ((LPCMAP4)pBuff)->segCountX2 / 2;
                 return (USHORT*)( pBuff +
                                   8 * sizeof(USHORT) +        // 7 header + 1 reserved USHORT
                                   segCount * 2 * sizeof(USHORT) );    // Per TT spec
             }
 
-            static  USHORT* GetIdRangeOffsetArray(LPBYTE pBuff) {
+            static  USHORT* GetIdRangeOffsetArray(LPBYTE pBuff)
+            {
                 DWORD   segCount = ((LPCMAP4)pBuff)->segCountX2 / 2;
                 return (USHORT*)( pBuff +
                                   8 * sizeof(USHORT) +        // 7 header + 1 reserved USHORT
@@ -3555,7 +3656,8 @@ good:
             }
 
 
-            static  void SwapArrays( LPCMAP4 pFormat4 ) {
+            static  void SwapArrays( LPCMAP4 pFormat4 )
+            {
                 DWORD   segCount = pFormat4->segCountX2 / 2; // Per TT Spec
                 DWORD   i;
                 USHORT*  pGlyphId,
@@ -3660,7 +3762,8 @@ good:
                 HDC hdc,                    // DC with TrueType font
                 LPCMAP4 pFormat4Subtable,   // destination buffer
                 DWORD   dwOffset            // Offset within font
-            ) {
+            )
+            {
                 DWORD   dwResult;
                 USHORT  length;
 
@@ -3693,7 +3796,8 @@ good:
 
             static  USHORT GetFontFormat4CharCount (
                 LPCMAP4 pFormat4    // pointer to a valid Format4 subtable
-            ) {
+            )
+            {
                 USHORT  i,
                         *pendCount = GetEndCountArray((LPBYTE) pFormat4),
                          *pstartCount = GetStartCountArray((LPBYTE) pFormat4),
@@ -3990,7 +4094,8 @@ good:
             } /* end of function GetTTUnicodeGlyphIndex */
 
 
-            static  bool    Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* srcText, size_t len, wchar_t* glyphImagesOut) {
+            static  bool    Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* srcText, size_t len, wchar_t* glyphImagesOut)
+            {
 // Should check if really using a true-type font and as the doc "Microsoft Knowledge Base Article - 241020" says:
 // This sample code was written for clarity of explanation. It is not optimized for repeated use because
 // it allocates and retrieves TrueType tables each time a public function is called. For real applications,

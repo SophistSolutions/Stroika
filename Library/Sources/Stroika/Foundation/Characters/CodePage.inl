@@ -23,7 +23,8 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
-            inline  CodePage    GetDefaultSDKCodePage () {
+            inline  CodePage    GetDefaultSDKCodePage ()
+            {
 #if     qPlatform_Windows
                 //http://blogs.msdn.com/b/michkap/archive/2005/01/06/347834.aspx
 #if     defined (CP_ACP)
@@ -43,13 +44,16 @@ namespace   Stroika {
 
 
             //  class   UTF8Converter
-            inline  size_t  UTF8Converter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const {
+            inline  size_t  UTF8Converter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
+            {
                 return inMBCharCnt;
             }
-            inline  size_t  UTF8Converter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* /*inChars*/, size_t inCharCnt) const {
+            inline  size_t  UTF8Converter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* /*inChars*/, size_t inCharCnt) const
+            {
                 return inCharCnt * 6;
             }
-            inline  void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const {
+            inline  void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+            {
 #if     qNBytesPerWCharT == 2
                 MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
 #elif   qNBytesPerWCharT == 4
@@ -58,7 +62,8 @@ namespace   Stroika {
                 AssertNotReached ();
 #endif
             }
-            inline  void    UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const {
+            inline  void    UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+            {
 #if     qNBytesPerWCharT == 2
                 MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
 #elif   qNBytesPerWCharT == 4
@@ -75,25 +80,31 @@ namespace   Stroika {
             //  class   CodePageConverter
             inline  CodePageConverter::CodePageConverter (CodePage codePage)
                 : fHandleBOM (false)
-                , fCodePage (codePage) {
+                , fCodePage (codePage)
+            {
             }
             inline  CodePageConverter::CodePageConverter (CodePage codePage, HandleBOMFlag h)
                 : fHandleBOM (true)
-                , fCodePage (codePage) {
+                , fCodePage (codePage)
+            {
                 Require (h == eHandleBOM);
                 Arg_Unused (h);
             }
-            inline  bool    CodePageConverter::GetHandleBOM () const {
+            inline  bool    CodePageConverter::GetHandleBOM () const
+            {
                 return fHandleBOM;
             }
-            inline  void    CodePageConverter::SetHandleBOM (bool handleBOM) {
+            inline  void    CodePageConverter::SetHandleBOM (bool handleBOM)
+            {
                 fHandleBOM = handleBOM;
             }
-            inline  size_t  CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const {
+            inline  size_t  CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
+            {
                 size_t  resultSize  =   inMBCharCnt;
                 return resultSize;
             }
-            inline  void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const {
+            inline  void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+            {
 #if     qNBytesPerWCharT == 2
                 MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
 #elif   qNBytesPerWCharT == 4
@@ -102,7 +113,8 @@ namespace   Stroika {
                 AssertNotReached ();
 #endif
             }
-            inline  void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const {
+            inline  void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+            {
 #if     qNBytesPerWCharT == 2
                 MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
 #elif   qNBytesPerWCharT == 4
@@ -119,7 +131,8 @@ namespace   Stroika {
 
             //  class   CodePageConverter::CodePageNotSupportedException
             inline  CodePageConverter::CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage):
-                fCodePage (codePage) {
+                fCodePage (codePage)
+            {
             }
 
 
@@ -127,22 +140,26 @@ namespace   Stroika {
 
 
 
-            inline  void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult) {
+            inline  void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
+            {
                 RequireNotNull (intoResult);
                 const wchar_t*  wsp =   ws.c_str ();
                 WideStringToNarrow (wsp, wsp + ws.length (), codePage, intoResult);
             }
-            inline  string  WideStringToNarrow (const wstring& ws, CodePage codePage) {
+            inline  string  WideStringToNarrow (const wstring& ws, CodePage codePage)
+            {
                 string  result;
                 WideStringToNarrow (ws, codePage, &result);
                 return result;
             }
-            inline  void    NarrowStringToWide (const string& s, int codePage, wstring* intoResult) {
+            inline  void    NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
+            {
                 RequireNotNull (intoResult);
                 const char* sp  =   s.c_str ();
                 NarrowStringToWide (sp, sp + s.length (), codePage, intoResult);
             }
-            inline  wstring NarrowStringToWide (const string& s, int codePage) {
+            inline  wstring NarrowStringToWide (const string& s, int codePage)
+            {
                 wstring result;
                 NarrowStringToWide (s, codePage, &result);
                 return result;
@@ -153,7 +170,8 @@ namespace   Stroika {
 
 
 
-            inline  wstring ASCIIStringToWide (const string& s) {
+            inline  wstring ASCIIStringToWide (const string& s)
+            {
 #if     qDebug
                 for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
                     Assert (isascii (*i));
@@ -161,7 +179,8 @@ namespace   Stroika {
 #endif
                 return wstring (s.begin (), s.end ());
             }
-            inline  string  WideStringToASCII (const wstring& s) {
+            inline  string  WideStringToASCII (const wstring& s)
+            {
 #if     qDebug
                 for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
                     Assert (isascii (*i));
@@ -171,23 +190,28 @@ namespace   Stroika {
             }
 
 
-            inline  string  WideStringToUTF8 (const wstring& ws) {
+            inline  string  WideStringToUTF8 (const wstring& ws)
+            {
                 return WideStringToNarrow (ws, kCodePage_UTF8);
             }
-            inline  void    UTF8StringToWide (const char* s, wstring* intoStr) {
+            inline  void    UTF8StringToWide (const char* s, wstring* intoStr)
+            {
                 RequireNotNull (s);
                 NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, intoStr);
             }
-            inline  void    UTF8StringToWide (const string& s, wstring* intoStr) {
+            inline  void    UTF8StringToWide (const string& s, wstring* intoStr)
+            {
                 NarrowStringToWide (s, kCodePage_UTF8, intoStr);
             }
-            inline  wstring UTF8StringToWide (const char* s) {
+            inline  wstring UTF8StringToWide (const char* s)
+            {
                 RequireNotNull (s);
                 wstring result;
                 NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, &result);
                 return result;
             }
-            inline  wstring UTF8StringToWide (const string& s) {
+            inline  wstring UTF8StringToWide (const string& s)
+            {
                 return NarrowStringToWide (s, kCodePage_UTF8);
             }
 

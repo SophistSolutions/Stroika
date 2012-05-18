@@ -22,7 +22,8 @@ using   Characters::String;
  ************************ Platform::POSIX::UserName2UID *************************
  ********************************************************************************
  */
-uid_t   Platform::POSIX::UserName2UID (const String& name) {
+uid_t   Platform::POSIX::UserName2UID (const String& name)
+{
     size_t  bufsize = sysconf (_SC_GETPW_R_SIZE_MAX);
     if (bufsize == -1) {          /* Value was indeterminate */
         bufsize = 16384;        /* Should be more than enough */
@@ -49,7 +50,8 @@ uid_t   Platform::POSIX::UserName2UID (const String& name) {
  ********************** Platform::POSIX::uid_t2UserName *************************
  ********************************************************************************
  */
-String  Platform::POSIX::uid_t2UserName (uid_t uid) {
+String  Platform::POSIX::uid_t2UserName (uid_t uid)
+{
     size_t  bufsize = sysconf (_SC_GETPW_R_SIZE_MAX);
     if (bufsize == -1) {          /* Value was indeterminate */
         bufsize = 16384;        /* Should be more than enough */
@@ -76,7 +78,8 @@ String  Platform::POSIX::uid_t2UserName (uid_t uid) {
  ****************************** Platform::POSIX::GetUID *************************
  ********************************************************************************
  */
-uid_t   Platform::POSIX::GetUID () {
+uid_t   Platform::POSIX::GetUID ()
+{
     return getuid ();
 }
 
@@ -86,7 +89,8 @@ uid_t   Platform::POSIX::GetUID () {
  ********************* Platform::POSIX::GetEffectiveUID *************************
  ********************************************************************************
  */
-uid_t   Platform::POSIX::GetEffectiveUID () {
+uid_t   Platform::POSIX::GetEffectiveUID ()
+{
     return geteuid ();
 }
 

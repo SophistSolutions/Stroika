@@ -42,54 +42,65 @@ namespace   Stroika {
             namespace   FileSystem {
 
                 //  class   IO::ThroughTmpFileWriter
-                inline  ThroughTmpFileWriter::operator TString () const {
+                inline  ThroughTmpFileWriter::operator TString () const
+                {
                     Require (not fTmpFilePath.empty ());    // cannot access after Commit ()
                     return fTmpFilePath;
                 }
 
 
                 //  class   FileReader
-                inline  const Byte* FileReader::GetFileStart () const {
+                inline  const Byte* FileReader::GetFileStart () const
+                {
                     return fFileDataStart;
                 }
-                inline  const Byte* FileReader::GetFileEnd () const {
+                inline  const Byte* FileReader::GetFileEnd () const
+                {
                     return fFileDataEnd;
                 }
-                inline  size_t  FileReader::GetFileSize () const {
+                inline  size_t  FileReader::GetFileSize () const
+                {
                     return fFileDataEnd - fFileDataStart;
                 }
 
 
 
                 //  class   MemoryMappedFileReader
-                inline  const Byte* MemoryMappedFileReader::GetFileStart () const {
+                inline  const Byte* MemoryMappedFileReader::GetFileStart () const
+                {
                     return fFileDataStart;
                 }
-                inline  const Byte* MemoryMappedFileReader::GetFileEnd () const {
+                inline  const Byte* MemoryMappedFileReader::GetFileEnd () const
+                {
                     return fFileDataEnd;
                 }
-                inline  size_t  MemoryMappedFileReader::GetFileSize () const {
+                inline  size_t  MemoryMappedFileReader::GetFileSize () const
+                {
                     return fFileDataEnd - fFileDataStart;
                 }
 
 
 
                 //  class   AppTempFileManager
-                inline  AppTempFileManager& AppTempFileManager::Get () {
+                inline  AppTempFileManager& AppTempFileManager::Get ()
+                {
                     return _FileUtils_MOULULE_INIT_.Actual ().fAppTempFileManager;
                 }
-                inline  TString AppTempFileManager::GetMasterTempDir () const {
+                inline  TString AppTempFileManager::GetMasterTempDir () const
+                {
                     return fTmpDir;
                 }
 
 
                 //  class   ScopedTmpDir {
-                inline  ScopedTmpDir::operator TString () const {
+                inline  ScopedTmpDir::operator TString () const
+                {
                     return fTmpDir;
                 }
 
                 //  class   ScopedTmpFile {
-                inline  ScopedTmpFile::operator TString () const {
+                inline  ScopedTmpFile::operator TString () const
+                {
                     return fTmpFile;
                 }
 

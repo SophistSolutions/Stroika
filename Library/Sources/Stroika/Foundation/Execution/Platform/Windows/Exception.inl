@@ -21,26 +21,32 @@ namespace   Stroika {
 
                     //  class   Exception
                     inline  Exception::Exception (DWORD error)
-                        : fError (error) {
+                        : fError (error)
+                    {
                     }
-                    inline  Exception::operator DWORD () const {
+                    inline  Exception::operator DWORD () const
+                    {
                         return fError;
                     }
-                    inline  TString Exception::LookupMessage () const {
+                    inline  TString Exception::LookupMessage () const
+                    {
                         return LookupMessage (fError);
                     }
 
-                    inline  void    ThrowIfFalseGetLastError (bool test) {
+                    inline  void    ThrowIfFalseGetLastError (bool test)
+                    {
                         if (not test) {
                             Exception::DoThrow (::GetLastError ());
                         }
                     }
-                    inline  void    ThrowIfFalseGetLastError (BOOL test) {
+                    inline  void    ThrowIfFalseGetLastError (BOOL test)
+                    {
                         if (not test) {
                             Exception::DoThrow (::GetLastError ());
                         }
                     }
-                    inline  void    ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode) {
+                    inline  void    ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
+                    {
                         if (win32ErrCode != ERROR_SUCCESS) {
                             Exception::DoThrow (win32ErrCode);
                         }
@@ -49,7 +55,8 @@ namespace   Stroika {
             }
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const Platform::Windows::Exception& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const Platform::Windows::Exception& e2Throw)
+            {
                 // Go directly through class DoThrow() since that may remap to differnt kinds of exceptions, and already has trace messages
                 Platform::Windows::Exception::DoThrow (e2Throw);
             }

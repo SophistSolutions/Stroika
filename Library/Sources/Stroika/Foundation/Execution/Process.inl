@@ -15,7 +15,8 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            inline  pid_t   GetCurrentProcessID () {
+            inline  pid_t   GetCurrentProcessID ()
+            {
 #if     qPlatform_Windows
                 return GetCurrentProcessId ();
 #elif   qPlatform_POSIX

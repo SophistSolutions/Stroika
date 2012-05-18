@@ -29,7 +29,8 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
-DurationSecondsType Stroika::Foundation::Time::GetTickCount () {
+DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
+{
 #if     qPlatform_Windows
     static  bool            sInited =   false;
     static  LARGE_INTEGER   sPerformanceFrequency;

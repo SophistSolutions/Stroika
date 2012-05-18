@@ -29,7 +29,8 @@ using   namespace   Stroika::Foundation::Characters::Platform::Windows;
  *************** Characters::Platform::Windows::BSTRStringToUTF8 ****************
  ********************************************************************************
  */
-string  Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr) {
+string  Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr)
+{
     if (bstr == nullptr) {
         return string ();
     }
@@ -51,7 +52,8 @@ string  Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr) {
  *************** Characters::Platform::Windows::UTF8StringToBSTR ****************
  ********************************************************************************
  */
-BSTR    Characters::Platform::Windows::UTF8StringToBSTR (const char* ws) {
+BSTR    Characters::Platform::Windows::UTF8StringToBSTR (const char* ws)
+{
     RequireNotNull (ws);
     size_t  wsLen   =   ::strlen (ws);
     int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), nullptr, 0);
@@ -70,7 +72,8 @@ BSTR    Characters::Platform::Windows::UTF8StringToBSTR (const char* ws) {
  ******************* Characters::Platform::Windows::BSTR2wstring ****************
  ********************************************************************************
  */
-wstring Characters::Platform::Windows::BSTR2wstring (VARIANT b) {
+wstring Characters::Platform::Windows::BSTR2wstring (VARIANT b)
+{
     if (b.vt == VT_BSTR) {
         return BSTR2wstring (b.bstrVal);
     }
@@ -93,7 +96,8 @@ wstring Characters::Platform::Windows::BSTR2wstring (VARIANT b) {
  **************************** PlatformCodePageConverter *************************
  ********************************************************************************
  */
-void    PlatformCodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const {
+void    PlatformCodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+{
     Require (inMBCharCnt == 0 or inMBChars != nullptr);
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);
@@ -112,7 +116,8 @@ void    PlatformCodePageConverter::MapToUNICODE (const char* inMBChars, size_t i
 #endif
 }
 
-void    PlatformCodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const {
+void    PlatformCodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+{
     Require (inCharCnt == 0 or inChars != nullptr);
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);

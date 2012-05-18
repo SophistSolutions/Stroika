@@ -40,7 +40,8 @@ namespace   {
 
 namespace   {
 #if     qSuperAssertChecks_MemAllocator
-    inline  void    SUPER_ASSERT_ (bool t) {
+    inline  void    SUPER_ASSERT_ (bool t)
+    {
 #if     qDebug
         Assert (t);
 #else
@@ -65,7 +66,8 @@ namespace   {
  ********************* Memory::SimpleAllocator_CallLIBCMallocFree ***************
  ********************************************************************************
  */
-void*   SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size) {
+void*   SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
+{
     void*   p   =   malloc (size);
     if (p == nullptr) {
         Execution::DoThrow (bad_alloc ());
@@ -73,7 +75,8 @@ void*   SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size) {
     return p;
 }
 
-void    SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p) {
+void    SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p)
+{
     RequireNotNull (p);
     free (p);
 }
@@ -88,11 +91,13 @@ void    SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p) {
  ******************* Memory::SimpleAllocator_CallLIBCNewDelete ******************
  ********************************************************************************
  */
-void*   SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size) {
+void*   SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size)
+{
     return ::operator new (size);
 }
 
-void    SimpleAllocator_CallLIBCNewDelete::Deallocate (void* p) {
+void    SimpleAllocator_CallLIBCNewDelete::Deallocate (void* p)
+{
     RequireNotNull (p);
     ::operator delete (p);
 }
@@ -128,16 +133,19 @@ namespace   {
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ()
     : fBaseAllocator (sDefaultAllocator)
     , fNetAllocationCount (0)
-    , fNetAllocatedByteCount (0) {
+    , fNetAllocatedByteCount (0)
+{
 }
 
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
     : fBaseAllocator (baseAllocator)
     , fNetAllocationCount (0)
-    , fNetAllocatedByteCount (0) {
+    , fNetAllocatedByteCount (0)
+{
 }
 
-SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllocator () {
+SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllocator ()
+{
     //TraceContextBumper trcCtx (TSTR ("SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllocator"));
     //DbgTrace (L"fNetAllocationCount=%d, fNetAllocatedByteCount=%d", fNetAllocationCount, fNetAllocatedByteCount);
     // caller must free all entries before destroying allocator
@@ -145,7 +153,8 @@ SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllo
     Require (fNetAllocatedByteCount == 0);
 }
 
-void*   SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size) {
+void*   SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
+{
     size_t              effectiveSize   =   size + sizeof (MemWithExtraStuff) + sizeof (unsigned int);
     MemWithExtraStuff*  p               =   reinterpret_cast<MemWithExtraStuff*> (fBaseAllocator.Allocate (effectiveSize));
     p->fPreGuard = kPreGUARD;
@@ -156,7 +165,8 @@ void*   SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size) {
     return (reinterpret_cast<Byte*> (p) + sizeof (MemWithExtraStuff));
 }
 
-void    SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr) {
+void    SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr)
+{
     RequireNotNull (ptr);
     MemWithExtraStuff*  p   =   reinterpret_cast<MemWithExtraStuff*> (reinterpret_cast<Byte*> (ptr) - sizeof (MemWithExtraStuff));
     SUPER_ASSERT_ (p->fPreGuard == kPreGUARD);
@@ -166,12 +176,14 @@ void    SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr) {
     fBaseAllocator.Deallocate (p);
 }
 
-size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocationCount () const {
+size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocationCount () const
+{
     Require (fNetAllocationCount >= 0); // bad use of this class - not a bug with the class - if this fails (probably)
     return static_cast<size_t> (fNetAllocationCount);
 }
 
-size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () const {
+size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
+{
     Require (fNetAllocatedByteCount >= 0);  // bad use of this class - not a bug with the class - if this fails (probably)
     return static_cast<size_t> (fNetAllocatedByteCount);
 }
@@ -196,7 +208,8 @@ size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () c
  */
 namespace   {
     typedef LeakTrackingGeneralPurposeAllocator::PTRMAP PTRMAP;
-    void    ExtractInfo_ (const PTRMAP& m, set<size_t>* sizeSet, size_t* totalAllocated) {
+    void    ExtractInfo_ (const PTRMAP& m, set<size_t>* sizeSet, size_t* totalAllocated)
+    {
         RequireNotNull (sizeSet);
         RequireNotNull (totalAllocated);
         sizeSet->clear ();
@@ -206,7 +219,8 @@ namespace   {
             (*totalAllocated) += i->second;
         }
     }
-    unsigned int    ExtractCountUsedForSize_ (const PTRMAP& m, size_t eltSize) {
+    unsigned int    ExtractCountUsedForSize_ (const PTRMAP& m, size_t eltSize)
+    {
         unsigned int    result  =   0;
         for (PTRMAP::const_iterator i = m.begin (); i != m.end (); ++i) {
             if (i->second == eltSize) {
@@ -219,16 +233,19 @@ namespace   {
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator ()
     : fBaseAllocator (sDefaultAllocator)
     , fCritSection ()
-    , fAllocations () {
+    , fAllocations ()
+{
 }
 
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
     : fBaseAllocator (baseAllocator)
     , fCritSection ()
-    , fAllocations () {
+    , fAllocations ()
+{
 }
 
-LeakTrackingGeneralPurposeAllocator::~LeakTrackingGeneralPurposeAllocator () {
+LeakTrackingGeneralPurposeAllocator::~LeakTrackingGeneralPurposeAllocator ()
+{
     // Avoid DbgTrace (etc) calls here - since when we do 'global op new' debugging, this gets deleted VERY late - after
     // most other modules (including DbgTrace support) are shutdown)
     // But - Assert OK ;-)
@@ -236,7 +253,8 @@ LeakTrackingGeneralPurposeAllocator::~LeakTrackingGeneralPurposeAllocator () {
     SUPER_ASSERT_ (fAllocations.size () == 0);
 }
 
-void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size) {
+void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
+{
     void*   memptr  =   fBaseAllocator.Allocate (size);
     AssertNotNull (memptr);
     AutoCriticalSection enterCriticalSection (fCritSection);
@@ -250,7 +268,8 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size) {
     }
 }
 
-void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p) {
+void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
+{
     RequireNotNull (p);
     AutoCriticalSection enterCriticalSection (fCritSection);
     PTRMAP::iterator    i   =   fAllocations.find (p);
@@ -259,12 +278,14 @@ void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p) {
     fBaseAllocator.Deallocate (p);
 }
 
-size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocationCount () const {
+size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocationCount () const
+{
     AutoCriticalSection enterCriticalSection (fCritSection);
     return fAllocations.size ();
 }
 
-size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const {
+size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
+{
     AutoCriticalSection enterCriticalSection (fCritSection);
     size_t  total   =   0;
     for (PTRMAP::const_iterator i = fAllocations.begin (); i != fAllocations.end (); ++i) {
@@ -273,13 +294,15 @@ size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const {
     return total;
 }
 
-LeakTrackingGeneralPurposeAllocator::Snapshot   LeakTrackingGeneralPurposeAllocator::GetSnapshot () const {
+LeakTrackingGeneralPurposeAllocator::Snapshot   LeakTrackingGeneralPurposeAllocator::GetSnapshot () const
+{
     AutoCriticalSection enterCriticalSection (fCritSection);
     return Snapshot (fAllocations);
 }
 
 namespace   {
-    void    DUMPCurMemStats_ (const LeakTrackingGeneralPurposeAllocator::Snapshot& curSnapshot, const LeakTrackingGeneralPurposeAllocator::Snapshot& sinceSnapshot) {
+    void    DUMPCurMemStats_ (const LeakTrackingGeneralPurposeAllocator::Snapshot& curSnapshot, const LeakTrackingGeneralPurposeAllocator::Snapshot& sinceSnapshot)
+    {
         set<size_t> sizes;
         set<size_t> prevSizes;
         size_t  totalRemainingAlloced   =   0;
@@ -351,7 +374,8 @@ namespace   {
         }
     }
 }
-void    LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats (const Snapshot& sinceSnapshot) {
+void    LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats (const Snapshot& sinceSnapshot)
+{
     Snapshot    curSnapshot =   GetSnapshot ();
     TraceContextBumper ctx (TSTR ("LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats"));
     DUMPCurMemStats_ (curSnapshot, sinceSnapshot);
@@ -363,9 +387,11 @@ void    LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats (const Snapshot& si
 
 
 LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot ()
-    : fAllocations () {
+    : fAllocations ()
+{
 }
 
 LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot (const PTRMAP& m)
-    : fAllocations (m) {
+    : fAllocations (m)
+{
 }

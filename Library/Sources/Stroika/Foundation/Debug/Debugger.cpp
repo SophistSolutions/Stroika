@@ -11,7 +11,8 @@
 
 using   namespace   Stroika::Foundation;
 
-void    Debug::DropIntoDebuggerIfPresent () {
+void    Debug::DropIntoDebuggerIfPresent ()
+{
 #if     qPlatform_Windows
     if (::IsDebuggerPresent ()) {
         ::DebugBreak ();

@@ -45,10 +45,12 @@ DataExchangeFormat::Private_::InternetMediaType_INIT::InternetMediaType_INIT ()
 
     , kXSLT_CT                              (String_Constant (L"application/x-xslt"))
     , kJavaArchive_CT                       (String_Constant (L"application/java-archive"))
-    , kApplication_RTF_CT                   (String_Constant (L"application/rtf")) {
+    , kApplication_RTF_CT                   (String_Constant (L"application/rtf"))
+{
 }
 
-DataExchangeFormat::Private_::InternetMediaType_INIT::~InternetMediaType_INIT () {
+DataExchangeFormat::Private_::InternetMediaType_INIT::~InternetMediaType_INIT ()
+{
 }
 
 
@@ -62,7 +64,8 @@ DataExchangeFormat::Private_::InternetMediaType_INIT::~InternetMediaType_INIT ()
  ************************** InternetMediaType ***********************************
  ********************************************************************************
  */
-bool    InternetMediaType::IsTextFormat () const {
+bool    InternetMediaType::IsTextFormat () const
+{
     /*
      * TODO:
      *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES - EG HelathFrameWorks PHR FORMATS
@@ -74,7 +77,8 @@ bool    InternetMediaType::IsTextFormat () const {
         ;
 }
 
-bool    InternetMediaType::IsImageFormat () const {
+bool    InternetMediaType::IsImageFormat () const
+{
     /*
      * TODO:
      *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
@@ -93,7 +97,8 @@ bool    InternetMediaType::IsImageFormat () const {
  ******************************** IsSubTypeOf ***********************************
  ********************************************************************************
  */
-bool    DataExchangeFormat::IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType) {
+bool    DataExchangeFormat::IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+{
     /*
      * TODO:
      *      o   This could be simpler and clearer using Stroika strings...
@@ -112,6 +117,7 @@ bool    DataExchangeFormat::IsSubTypeOf (const InternetMediaType& moreSpecificTy
  *************************** IsSubTypeOfOrEqualTo *******************************
  ********************************************************************************
  */
-bool    DataExchangeFormat::IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType) {
+bool    DataExchangeFormat::IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+{
     return moreSpecificType == moreGeneralType or IsSubTypeOf (moreSpecificType, moreGeneralType);
 }

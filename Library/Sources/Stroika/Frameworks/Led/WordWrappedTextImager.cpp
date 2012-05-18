@@ -34,7 +34,8 @@ namespace   Stroika {
 
 
 #if     qMultiByteCharacters
-            inline  AdjustToValidCharIndex (const Led_tChar* text, size_t index) {
+            inline  AdjustToValidCharIndex (const Led_tChar* text, size_t index)
+            {
                 if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
                     Assert (index > 0);
                     index--;
@@ -43,7 +44,8 @@ namespace   Stroika {
             }
 #endif
 
-            inline  Led_Distance    LookupLengthInVector (const Led_Distance* widthsVector, size_t startSoFar, size_t i) {
+            inline  Led_Distance    LookupLengthInVector (const Led_Distance* widthsVector, size_t startSoFar, size_t i)
+            {
                 AssertNotNull (widthsVector);
                 if (i == 0) {
                     return 0;
@@ -80,7 +82,8 @@ namespace   Stroika {
                 the given @'Partition::PartitionMarker'.</p>
                     <p>Basicly, this is where we start the word-wrap process (on demand, per paragraph).</p>
             */
-            void    WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo) {
+            void    WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo)
+            {
 // Need to be careful about exceptions here!!! Probably good enuf to just
 // Invalidate the caceh and then propogate exception...
 // Perhaps better to place bogus entry in? No - probably not...
@@ -195,7 +198,8 @@ namespace   Stroika {
                         wrap point. On function entry - 'rowLength' points to the calculated row length, and on output, it must be a valid
                         row length (possibly shorter than the original value, but always greater than zero).</p>
             */
-            void    WordWrappedTextImager::AdjustBestRowLength (size_t /*textStart*/, const Led_tChar* text, const Led_tChar* end, size_t* rowLength) {
+            void    WordWrappedTextImager::AdjustBestRowLength (size_t /*textStart*/, const Led_tChar* text, const Led_tChar* end, size_t* rowLength)
+            {
                 Require (*rowLength > 0);
                 for (const Led_tChar* cur = &text[0]; cur < end; cur = Led_NextChar (cur)) {
                     if (*cur == WordWrappedTextImager::kSoftLineBreakChar) {
@@ -217,7 +221,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Override @'TextImager::ContainsMappedDisplayCharacters' to hide kSoftLineBreakChar characters.
                 See @'qDefaultLedSoftLineBreakChar'.</p>
             */
-            bool    WordWrappedTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const {
+            bool    WordWrappedTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const
+            {
                 return
                     ContainsMappedDisplayCharacters_HelperForChar (text, nTChars, kSoftLineBreakChar) or
                     inherited::ContainsMappedDisplayCharacters (text, nTChars)
@@ -228,7 +233,8 @@ namespace   Stroika {
             @METHOD:        WordWrappedTextImager::RemoveMappedDisplayCharacters
             @DESCRIPTION:   <p>Override @'TextImager::RemoveMappedDisplayCharacters' to hide kSoftLineBreakChar characters.</p>
             */
-            size_t  WordWrappedTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const {
+            size_t  WordWrappedTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const
+            {
                 size_t  newLen  =   inherited::RemoveMappedDisplayCharacters (copyText, nTChars);
                 Assert (newLen <= nTChars);
                 size_t  newerLen    =   RemoveMappedDisplayCharacters_HelperForChar (copyText, newLen, kSoftLineBreakChar);
@@ -241,7 +247,8 @@ namespace   Stroika {
             @METHOD:        WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters
             @DESCRIPTION:   <p>Override @'TextImager::PatchWidthRemoveMappedDisplayCharacters' to hide kSoftLineBreakChar characters.</p>
             */
-            void    WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const {
+            void    WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const
+            {
                 inherited::PatchWidthRemoveMappedDisplayCharacters (srcText, distanceResults, nTChars);
                 PatchWidthRemoveMappedDisplayCharacters_HelperForChar (srcText, distanceResults, nTChars, kSoftLineBreakChar);
             }
@@ -254,7 +261,8 @@ namespace   Stroika {
             */
             size_t  WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
                     size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar
-                                                                        ) {
+                                                                        )
+            {
                 RequireNotNull (widthsVector);
                 Require (wrapWidth >= 1);
 #if     qMultiByteCharacters
@@ -370,7 +378,8 @@ namespace   Stroika {
 #endif
                     const Led_Distance* widthsVector, size_t startSoFar,
                     size_t searchStart, size_t wrapLength
-                                                                              ) {
+                                                                              )
+            {
                 AssertNotNull (widthsVector);
 #if     qMultiByteCharacters
                 Assert (Led_IsValidMultiByteString (text, length));
@@ -442,7 +451,8 @@ namespace   Stroika {
                 size_t length, Led_Distance wrapWidth,
                 size_t offsetToMarkerCoords,
                 const Led_Distance* widthsVector, size_t startSoFar
-            ) {
+            )
+            {
                 size_t  bestRowLength   =   0;
 
                 // Try binary search to find the best point to break up the

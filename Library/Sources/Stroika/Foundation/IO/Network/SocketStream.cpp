@@ -29,13 +29,16 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-SocketStream::~SocketStream () {
+SocketStream::~SocketStream ()
+{
 }
 
-size_t  SocketStream::_Read (Byte* intoStart, Byte* intoEnd) override {
+size_t  SocketStream::_Read (Byte* intoStart, Byte* intoEnd) override
+{
     return fSD_.Read (intoStart, intoEnd);
 }
 
-void    SocketStream::_Write (const Byte* start, const Byte* end) override {
+void    SocketStream::_Write (const Byte* start, const Byte* end) override
+{
     fSD_.Write (start, end);
 }

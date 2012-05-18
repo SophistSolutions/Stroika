@@ -35,34 +35,42 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-ConnectionManager::ConnectionManager () {
+ConnectionManager::ConnectionManager ()
+{
 }
 
-ConnectionManager::~ConnectionManager () {
+ConnectionManager::~ConnectionManager ()
+{
 }
 
-void    ConnectionManager::Start () {
+void    ConnectionManager::Start ()
+{
     fThreads_.AddTask (Execution::SimpleObjRunnable<ConnectionManager>::MAKE (&ConnectionManager::DoMainConnectionLoop_, this));
 }
 
-void    ConnectionManager::Abort () {
+void    ConnectionManager::Abort ()
+{
     fThreads_.Abort ();
 }
 
-void    ConnectionManager::WaitForDone (Time::DurationSecondsType timeout) {
+void    ConnectionManager::WaitForDone (Time::DurationSecondsType timeout)
+{
     fThreads_.WaitForDone (timeout);
 }
 
-void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeout) {
+void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+{
     fThreads_.AbortAndWaitForDone ();
 }
 
-void    ConnectionManager::AddHandler (const SharedPtr<HTTPRequestHandler>& h) {
+void    ConnectionManager::AddHandler (const SharedPtr<HTTPRequestHandler>& h)
+{
     Execution::AutoCriticalSection  critSec (fHandlers_);
     fHandlers_.push_back (h);
 }
 
-void    ConnectionManager::RemoveHandler (const SharedPtr<HTTPRequestHandler>& h) {
+void    ConnectionManager::RemoveHandler (const SharedPtr<HTTPRequestHandler>& h)
+{
     Execution::AutoCriticalSection  critSec (fHandlers_);
     for (list<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
         if (*i == h) {
@@ -73,16 +81,19 @@ void    ConnectionManager::RemoveHandler (const SharedPtr<HTTPRequestHandler>& h
     RequireNotReached ();   // you must specify a valid handler to remove
 }
 
-void    ConnectionManager::AddConnection (const SharedPtr<HTTPConnection>& conn) {
+void    ConnectionManager::AddConnection (const SharedPtr<HTTPConnection>& conn)
+{
     Execution::AutoCriticalSection  critSec (fActiveConnections_);
     fActiveConnections_.push_back (conn);
 }
 
-void    ConnectionManager::AbortConnection (const SharedPtr<HTTPConnection>& conn) {
+void    ConnectionManager::AbortConnection (const SharedPtr<HTTPConnection>& conn)
+{
     AssertNotImplemented ();
 }
 
-void    ConnectionManager::DoMainConnectionLoop_ () {
+void    ConnectionManager::DoMainConnectionLoop_ ()
+{
     // MUST DO MAJOR CRITICAL SECTION WORK HERE
     while (true) {
         Execution::Sleep (0.1); // hack - need smarter wait on available data
@@ -112,7 +123,8 @@ void    ConnectionManager::DoMainConnectionLoop_ () {
     }
 }
 
-void    ConnectionManager::DoOneConnection_ (SharedPtr<HTTPConnection> c) {
+void    ConnectionManager::DoOneConnection_ (SharedPtr<HTTPConnection> c)
+{
     // prevent exceptions for now cuz outer code not handling them...
     try {
         c->ReadHeaders ();

@@ -24,12 +24,14 @@ using   namespace   Stroika::Foundation::Streams;
 MemoryBinaryInputStream::MemoryBinaryInputStream (const Byte* start, const Byte* end)
     : fCriticalSection_ ()
     , fData_ (end - start)
-    , fCursor_ () {
+    , fCursor_ ()
+{
     memcpy (fData_.begin (), start, end - start);
     fCursor_ = fData_.begin ();
 }
 
-size_t  MemoryBinaryInputStream::_Read (Byte* intoStart, Byte* intoEnd) {
+size_t  MemoryBinaryInputStream::_Read (Byte* intoStart, Byte* intoEnd)
+{
     RequireNotNull (intoStart);
     RequireNotNull (intoEnd);
     Require (intoStart < intoEnd);
@@ -43,11 +45,13 @@ size_t  MemoryBinaryInputStream::_Read (Byte* intoStart, Byte* intoEnd) {
     return nCopied; // this can be zero on EOF
 }
 
-Streams::SeekOffsetType MemoryBinaryInputStream::_GetOffset () const override {
+Streams::SeekOffsetType MemoryBinaryInputStream::_GetOffset () const override
+{
     return fCursor_ - fData_.begin ();
 }
 
-void    MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override {
+void    MemoryBinaryInputStream::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+{
     Execution::AutoCriticalSection  critSec (fCriticalSection_);
     switch (whence) {
         case    FromStart_W: {

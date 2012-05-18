@@ -28,15 +28,18 @@ namespace   Stroika {
             */
 #if     qMacOS
             OptionsFileHelper::OptionsFileHelper (int resFile):
-                fResFile (resFile) {
+                fResFile (resFile)
+            {
             }
 #elif   qWindows
             OptionsFileHelper::OptionsFileHelper (HKEY hkey):
-                fKey (hkey) {
+                fKey (hkey)
+            {
             }
 #endif
 
-            OptionsFileHelper::~OptionsFileHelper () {
+            OptionsFileHelper::~OptionsFileHelper ()
+            {
 #if     qMacOS
                 Assert (false); // NYI
 #elif   qWindows
@@ -50,7 +53,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Walk the given path (in segments) - and make sure each exists, and create each segment if it doesn't
                         exist. Finally - do a regular registry open with access permissions 'samDesired'.</p>
             */
-            HKEY    OptionsFileHelper::OpenWithCreateAlongPath (HKEY parentKey, const Led_SDK_String& path, REGSAM samDesired) {
+            HKEY    OptionsFileHelper::OpenWithCreateAlongPath (HKEY parentKey, const Led_SDK_String& path, REGSAM samDesired)
+            {
                 size_t  prevPos =   0;
                 HKEY    curPar  =   parentKey;
                 for (;;) {
@@ -82,7 +86,8 @@ namespace   Stroika {
                         named preference (and type) is available, it is returned through that parameter, and
                         true is returned. Otherwise, false is returned.</p>
             */
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, string* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, string* value)
+            {
                 RequireNotNull (prefName);
                 RequireNotNull (value);
 #if     qMacOS
@@ -111,7 +116,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, wstring* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, wstring* value)
+            {
                 RequireNotNull (prefName);
                 RequireNotNull (value);
 #if     qMacOS
@@ -148,7 +154,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, bool* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, bool* value)
+            {
                 RequireNotNull (prefName);
                 RequireNotNull (value);
                 int tmp     =   0;
@@ -159,7 +166,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, int* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, int* value)
+            {
                 RequireNotNull (prefName);
                 RequireNotNull (value);
 #if     qMacOS
@@ -179,7 +187,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<Byte>* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<Byte>* value)
+            {
                 RequireNotNull (prefName);
                 RequireNotNull (value);
 #if     qMacOS
@@ -202,7 +211,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<string>* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<string>* value)
+            {
                 RequireNotNull (value);
                 value->clear ();
                 string  tmp;
@@ -212,7 +222,8 @@ namespace   Stroika {
                 return not value->empty ();
             }
 
-            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<wstring>* value) {
+            bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<wstring>* value)
+            {
                 RequireNotNull (value);
                 value->clear ();
                 wstring tmp;
@@ -222,7 +233,8 @@ namespace   Stroika {
                 return not value->empty ();
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string& value) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string& value)
+            {
                 RequireNotNull (prefName);
 #if     qMacOS
                 Assert (false); // NYI
@@ -231,7 +243,8 @@ namespace   Stroika {
 #endif
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const wstring& value) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const wstring& value)
+            {
                 RequireNotNull (prefName);
 #if     qMacOS
                 Assert (false); // NYI
@@ -244,12 +257,14 @@ namespace   Stroika {
 #endif
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, bool value) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, bool value)
+            {
                 RequireNotNull (prefName);
                 StorePref (prefName, static_cast<int> (value));
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, int value) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, int value)
+            {
                 RequireNotNull (prefName);
 #if     qMacOS
                 Assert (false); // NYI
@@ -259,7 +274,8 @@ namespace   Stroika {
 #endif
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, const Byte* data) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, const Byte* data)
+            {
                 RequireNotNull (prefName);
                 RequireNotNull (data);
 #if     qMacOS
@@ -269,14 +285,16 @@ namespace   Stroika {
 #endif
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<string>& value) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<string>& value)
+            {
                 RequireNotNull (prefName);
                 for (vector<string>::const_iterator i = value.begin (); i != value.end (); ++i) {
                     StorePref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
                 }
             }
 
-            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<wstring>& value) {
+            void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<wstring>& value)
+            {
                 RequireNotNull (prefName);
                 for (vector<wstring>::const_iterator i = value.begin (); i != value.end (); ++i) {
                     StorePref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);

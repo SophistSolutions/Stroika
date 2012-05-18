@@ -41,7 +41,8 @@ namespace   Stroika {
             void    StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                     ) {
+                                                     )
+            {
                 RequireNotNull (imager);
                 imager->DrawSegment_ (tablet, fFontSpecification, from, to, text, drawInto, useBaseLine, pixelsDrawn);
             }
@@ -49,17 +50,20 @@ namespace   Stroika {
             void    StandardStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                             ) const {
+                                                             ) const
+            {
                 RequireNotNull (imager);
                 imager->MeasureSegmentWidth_ (fFontSpecification, from, to, text, distanceResults);
             }
 
-            Led_Distance    StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 RequireNotNull (imager);
                 return (imager->MeasureSegmentHeight_ (fFontSpecification, from, to));
             }
 
-            Led_Distance    StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const {
+            Led_Distance    StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+            {
                 RequireNotNull (imager);
                 return (imager->MeasureSegmentBaseLine_ (fFontSpecification, from, to));
             }
@@ -82,18 +86,22 @@ namespace   Stroika {
             StandardStyledTextImager::StandardStyledTextImager ():
                 StyledTextImager (),
                 fStyleDatabase (nullptr),
-                fICreatedDatabase (false) {
+                fICreatedDatabase (false)
+            {
             }
 
-            StandardStyledTextImager::~StandardStyledTextImager () {
+            StandardStyledTextImager::~StandardStyledTextImager ()
+            {
             }
 
-            void    StandardStyledTextImager::HookLosingTextStore () {
+            void    StandardStyledTextImager::HookLosingTextStore ()
+            {
                 inherited::HookLosingTextStore ();
                 HookLosingTextStore_ ();
             }
 
-            void    StandardStyledTextImager::HookLosingTextStore_ () {
+            void    StandardStyledTextImager::HookLosingTextStore_ ()
+            {
                 // Only if we created the styledb should we delete it. If it was set by SetStyleDatabase(), don't unset it here.
                 if (fICreatedDatabase) {
                     fICreatedDatabase = false;
@@ -104,12 +112,14 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextImager::HookGainedNewTextStore () {
+            void    StandardStyledTextImager::HookGainedNewTextStore ()
+            {
                 inherited::HookGainedNewTextStore ();
                 HookGainedNewTextStore_ ();
             }
 
-            void    StandardStyledTextImager::HookGainedNewTextStore_ () {
+            void    StandardStyledTextImager::HookGainedNewTextStore_ ()
+            {
                 if (fStyleDatabase.IsNull ()) {
                     fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
                     fICreatedDatabase = true;
@@ -117,7 +127,8 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDatabase) {
+            void    StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDatabase)
+            {
                 fStyleDatabase = styleDatabase;
                 fICreatedDatabase = false;
                 if (fStyleDatabase.IsNull () and PeekAtTextStore () != nullptr) {
@@ -133,10 +144,12 @@ namespace   Stroika {
                 is changed. This means when a new one is provided, created, or disassociated. It does NOT mean that its called when any of the
                 data in the style database changes.</p>
             */
-            void    StandardStyledTextImager::HookStyleDatabaseChanged () {
+            void    StandardStyledTextImager::HookStyleDatabaseChanged ()
+            {
             }
 
-            Led_FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const {
+            Led_FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
+            {
                 Tablet_Acquirer tablet (this);
                 AssertNotNull (static_cast<Led_Tablet> (tablet));
 
@@ -152,7 +165,8 @@ namespace   Stroika {
             @METHOD:        StandardStyledTextImager::GetDefaultSelectionFont
             @DESCRIPTION:   <p>Override @'TextImager::GetDefaultSelectionFont'.</p>
             */
-            Led_FontSpecification   StandardStyledTextImager::GetDefaultSelectionFont () const {
+            Led_FontSpecification   StandardStyledTextImager::GetDefaultSelectionFont () const
+            {
                 vector<InfoSummaryRecord>   summaryInfo =   GetStyleInfo (GetSelectionEnd (), 0);
                 Assert (summaryInfo.size () == 1);
                 return summaryInfo[0];
@@ -166,12 +180,14 @@ namespace   Stroika {
                 valid (and set to that common face) and the font size attribute will be set invalid.</p>
                     <p>This is useful for setting menus checked or unchecked in a typical word processor font menu.</p>
             */
-            Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyleInfo (size_t from, size_t nTChars) const {
+            Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyleInfo (size_t from, size_t nTChars) const
+            {
                 vector<InfoSummaryRecord>   summaryInfo =   GetStyleInfo (from, nTChars);
                 return (GetContinuousStyleInfo_ (summaryInfo));
             }
 
-            Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const {
+            Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const
+            {
                 Led_IncrementalFontSpecification    fontSpec;
 
 
@@ -270,7 +286,8 @@ namespace   Stroika {
             }
 
 #if     qMacOS
-            bool    StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle) {
+            bool    StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle)
+            {
                 //  Require ((*mode & doColor) == 0);   // NB: we currently don't support   doColor,  doAll , addSize
                 // Just silently ingore doColor for now since done from TCL - and we just return NO for that style...
                 Require ((*mode & addSize) == 0);
@@ -293,7 +310,8 @@ namespace   Stroika {
                 return (result);
             }
 
-            vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts) {
+            vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts)
+            {
                 vector<InfoSummaryRecord>   result;
                 for (size_t i = 0; i < nElts; i++) {
                     Led_IncrementalFontSpecification    fsp;
@@ -305,7 +323,8 @@ namespace   Stroika {
                 return (result);
             }
 
-            void    StandardStyledTextImager::Convert (const vector<InfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt) {
+            void    StandardStyledTextImager::Convert (const vector<InfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt)
+            {
                 size_t  nElts       =   fromLedStyleRuns.size ();
                 size_t  startChar   =   0;
 
@@ -349,7 +368,8 @@ namespace   Stroika {
 #endif
 
 #if     qDebug
-            void    StandardStyledTextImager::Invariant_ () const {
+            void    StandardStyledTextImager::Invariant_ () const
+            {
                 StyledTextImager::Invariant_ ();
                 if (not fStyleDatabase.IsNull ()) {
                     fStyleDatabase->Invariant ();
@@ -367,7 +387,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     qDebug
-            void    StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const {
+            void    StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const
+            {
             }
 #endif
 
@@ -380,10 +401,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             StyleDatabaseRep::StyleDatabaseRep (TextStore& textStore):
-                inheritedMC (textStore, TextImager::GetStaticDefaultFont ()) {
+                inheritedMC (textStore, TextImager::GetStaticDefaultFont ())
+            {
             }
 
-            vector<StandardStyledTextImager::InfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const {
+            vector<StandardStyledTextImager::InfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+            {
                 MarkerVector    standardStyleMarkers    =   GetInfoMarkers (charAfterPos, nTCharsFollowing);
 
                 vector<InfoSummaryRecord>   result;
@@ -417,15 +440,18 @@ namespace   Stroika {
                 return result;
             }
 
-            void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) {
+            void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo)
+            {
                 SetInfo (charAfterPos, nTCharsFollowing, styleInfo);
             }
 #if 0
-            void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos) {
+            void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos)
+            {
                 SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfos.size (), &styleInfos.front ());
             }
 #endif
-            void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) {
+            void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos)
+            {
                 size_t  setAt           =   charAfterPos;
                 size_t  lengthUsedSoFar =   0;
                 for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; i++) {
@@ -440,7 +466,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    StyleDatabaseRep::Invariant_ () const {
+            void    StyleDatabaseRep::Invariant_ () const
+            {
                 inheritedMC::Invariant_ ();
             }
 #endif

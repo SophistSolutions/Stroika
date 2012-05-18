@@ -34,7 +34,8 @@ using   namespace   Stroika::Foundation::Memory;
  *********************************** tolower ************************************
  ********************************************************************************
  */
-void    Characters::tolower (wstring* s) {
+void    Characters::tolower (wstring* s)
+{
     RequireNotNull (s);
     wstring::iterator   end =   s->end ();
     for (wstring::iterator i = s->begin (); i != end; ++i) {
@@ -42,7 +43,8 @@ void    Characters::tolower (wstring* s) {
     }
 }
 
-void    Characters::tolower (string* s) {
+void    Characters::tolower (string* s)
+{
     RequireNotNull (s);
     string::iterator    end =   s->end ();
     for (string::iterator i = s->begin (); i != end; ++i) {
@@ -59,7 +61,8 @@ void    Characters::tolower (string* s) {
  *********************************** toupper ************************************
  ********************************************************************************
  */
-void    Characters::toupper (wstring* s) {
+void    Characters::toupper (wstring* s)
+{
     RequireNotNull (s);
     wstring::iterator   end =   s->end ();
     for (wstring::iterator i = s->begin (); i != end; ++i) {
@@ -67,7 +70,8 @@ void    Characters::toupper (wstring* s) {
     }
 }
 
-void    Characters::toupper (string* s) {
+void    Characters::toupper (string* s)
+{
     RequireNotNull (s);
     string::iterator    end =   s->end ();
     for (string::iterator i = s->begin (); i != end; ++i) {
@@ -90,7 +94,8 @@ void    Characters::toupper (string* s) {
  ********************************* Contains *************************************
  ********************************************************************************
  */
-bool    Characters::Contains (const wstring& string2Search, const wstring& substr, StringCompareOptions co) {
+bool    Characters::Contains (const wstring& string2Search, const wstring& substr, StringCompareOptions co)
+{
     if (co == eWithCase_CO) {
         return string2Search.find (substr) != wstring::npos;
     }
@@ -120,7 +125,8 @@ bool    Characters::Contains (const wstring& string2Search, const wstring& subst
  */
 namespace   {
     template    <typename STRING>
-    inline  STRING  StripTrailingCharIfAny_HLPR (const STRING& str, typename STRING::value_type c) {
+    inline  STRING  StripTrailingCharIfAny_HLPR (const STRING& str, typename STRING::value_type c)
+    {
         if (str.size () > 0 and str[str.size () - 1] == c) {
             STRING  tmp =   str;
             tmp.erase (tmp.size () - 1);
@@ -130,11 +136,13 @@ namespace   {
     }
 }
 
-string  Characters::StripTrailingCharIfAny (const string& s, char c) {
+string  Characters::StripTrailingCharIfAny (const string& s, char c)
+{
     return StripTrailingCharIfAny_HLPR (s, c);
 }
 
-wstring Characters::StripTrailingCharIfAny (const wstring& s, wchar_t c) {
+wstring Characters::StripTrailingCharIfAny (const wstring& s, wchar_t c)
+{
     return StripTrailingCharIfAny_HLPR (s, c);
 }
 
@@ -155,7 +163,8 @@ wstring Characters::StripTrailingCharIfAny (const wstring& s, wchar_t c) {
  */
 namespace   {
     template    <typename STRING>
-    inline  STRING  LimitLength_HLPR (const STRING& str, size_t maxLen, bool keepLeft, const STRING& kELIPSIS) {
+    inline  STRING  LimitLength_HLPR (const STRING& str, size_t maxLen, bool keepLeft, const STRING& kELIPSIS)
+    {
         if (str.length () <= maxLen) {
             return str;
         }
@@ -174,11 +183,13 @@ namespace   {
         }
     }
 }
-string  Characters::LimitLength (const string& str, size_t maxLen, bool keepLeft) {
+string  Characters::LimitLength (const string& str, size_t maxLen, bool keepLeft)
+{
     return LimitLength_HLPR<string> (str, maxLen, keepLeft, "...");
 }
 
-wstring Characters::LimitLength (const wstring& str, size_t maxLen, bool keepLeft) {
+wstring Characters::LimitLength (const wstring& str, size_t maxLen, bool keepLeft)
+{
     return LimitLength_HLPR<wstring> (str, maxLen, keepLeft, L"...");
 }
 
@@ -193,10 +204,12 @@ wstring Characters::LimitLength (const wstring& str, size_t maxLen, bool keepLef
  ********************************************************************************
  */
 namespace   {
-    inline  bool    IS_ENCODED_CHAR (wchar_t c) {
+    inline  bool    IS_ENCODED_CHAR (wchar_t c)
+    {
         return c == '\0' or c == '(' or c == ')' or c == '&';
     }
-    inline  wstring ENCODE (wchar_t c) {
+    inline  wstring ENCODE (wchar_t c)
+    {
         Require (IS_ENCODED_CHAR (c));
         switch (c) {
             case    '\0':
@@ -211,7 +224,8 @@ namespace   {
         Assert (false);
         return wstring ();
     }
-    wstring ENCODE (const wstring& s) {
+    wstring ENCODE (const wstring& s)
+    {
         wstring r;
         r.reserve (s.size ());
         for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
@@ -227,7 +241,8 @@ namespace   {
     }
 
     // return true iff resultChar is a valid character (has nothing to do with if more chars available)
-    bool    DECODE (wstring::const_iterator* i, wstring::const_iterator end, wchar_t* resultChar) {
+    bool    DECODE (wstring::const_iterator* i, wstring::const_iterator end, wchar_t* resultChar)
+    {
         RequireNotNull (resultChar);
         if (*i == end) {
             return false;
@@ -281,7 +296,8 @@ namespace   {
         }
     }
 }
-wstring         Characters::StringVectorEncoding::Encode (const vector<wstring>& v) {
+wstring         Characters::StringVectorEncoding::Encode (const vector<wstring>& v)
+{
     /*
      *  use LISP-LIKE SYNTAX for encoding.
      */
@@ -303,7 +319,8 @@ wstring         Characters::StringVectorEncoding::Encode (const vector<wstring>&
     return result;
 }
 
-vector<wstring> Characters::StringVectorEncoding::Decode (const wstring& encodedString) {
+vector<wstring> Characters::StringVectorEncoding::Decode (const wstring& encodedString)
+{
     vector<wstring> result;
 
     if (encodedString.size () > 4 and encodedString[0] == '(' and encodedString[encodedString.length () - 1] == ')') {

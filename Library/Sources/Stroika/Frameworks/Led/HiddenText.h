@@ -379,13 +379,16 @@ namespace   Stroika {
              ********************************************************************************
              */
 //  class   HidableTextMarkerOwner
-            inline  Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    HidableTextMarkerOwner::GetInternalizer () const {
+            inline  Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    HidableTextMarkerOwner::GetInternalizer () const
+            {
                 return fInternalizer;
             }
-            inline  Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    HidableTextMarkerOwner::GetExternalizer () const {
+            inline  Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    HidableTextMarkerOwner::GetExternalizer () const
+            {
                 return fExternalizer;
             }
-            inline  void    HidableTextMarkerOwner::Invariant () const {
+            inline  void    HidableTextMarkerOwner::Invariant () const
+            {
 #if     qDebug
                 Invariant_ ();
 #endif
@@ -396,27 +399,32 @@ namespace   Stroika {
 //  class   HidableTextMarkerOwner::HidableTextMarker
             inline  HidableTextMarkerOwner::HidableTextMarker::HidableTextMarker ():
                 inherited (),
-                fShown (true) {
+                fShown (true)
+            {
             }
-            inline  HidableTextMarkerOwner& HidableTextMarkerOwner::HidableTextMarker::GetOwner () const {
+            inline  HidableTextMarkerOwner& HidableTextMarkerOwner::HidableTextMarker::GetOwner () const
+            {
                 MarkerOwner*    mo  =   inherited::GetOwner ();
                 HidableTextMarkerOwner* hmo =   dynamic_cast<HidableTextMarkerOwner*> (mo);
                 EnsureNotNull (hmo);
                 return *hmo;
             }
-            inline  void    HidableTextMarkerOwner::HidableTextMarker::Hide () {
+            inline  void    HidableTextMarkerOwner::HidableTextMarker::Hide ()
+            {
                 if (fShown) {
                     GetOwner ().CollapseMarker (this);
                 }
                 Ensure (not fShown);
             }
-            inline  void    HidableTextMarkerOwner::HidableTextMarker::Show () {
+            inline  void    HidableTextMarkerOwner::HidableTextMarker::Show ()
+            {
                 if (not fShown) {
                     GetOwner ().ReifyMarker (this);
                 }
                 Ensure (fShown);
             }
-            inline  bool    HidableTextMarkerOwner::HidableTextMarker::IsShown () const {
+            inline  bool    HidableTextMarkerOwner::HidableTextMarker::IsShown () const
+            {
                 return fShown;
             }
 
@@ -432,10 +440,12 @@ namespace   Stroika {
 //  class   HidableTextMarkerHelper<BASECLASS>
             template    <typename   BASECLASS>
             inline  HidableTextMarkerHelper<BASECLASS>::HidableTextMarkerHelper ():
-                inherited () {
+                inherited ()
+            {
             }
             template    <typename   BASECLASS>
-            int HidableTextMarkerHelper<BASECLASS>::GetPriority () const {
+            int HidableTextMarkerHelper<BASECLASS>::GetPriority () const
+            {
                 // simpleembedings are priorty 100 - maybe should use ENUM CONST? return 100;       // large enough to override most other markers (esp StyledTextImager::StyleMarker which we know how to aggregate).
                 return 200;     // large enough to override most other markers (esp StyledTextImager::StyleMarker which we know how to aggregate).
             }
@@ -444,7 +454,8 @@ namespace   Stroika {
                     size_t from, size_t to, const TextLayoutBlock& text,
                     const Led_Rect& drawInto, const Led_Rect& invalidRect, Led_Coordinate useBaseLine,
                     Led_Distance* pixelsDrawn
-                                                                    ) {
+                                                                    )
+            {
                 if (IsShown ()) {
                     inherited::DrawSegment (imager, runElement, tablet, from, to, text, drawInto, invalidRect, useBaseLine, pixelsDrawn);
                 }
@@ -455,7 +466,8 @@ namespace   Stroika {
             template    <typename   BASECLASS>
             void    HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to, const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                                            ) const {
+                                                                            ) const
+            {
                 if (IsShown ()) {
                     inherited::MeasureSegmentWidth (imager, runElement, from, to, text, distanceResults);
                 }
@@ -467,7 +479,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   BASECLASS>
-            Led_Distance    HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const {
+            Led_Distance    HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
+            {
                 if (IsShown ()) {
                     return inherited::MeasureSegmentHeight (imager, runElement, from, to);
                 }
@@ -476,7 +489,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   BASECLASS>
-            Led_Distance    HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const {
+            Led_Distance    HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
+            {
                 if (IsShown ()) {
                     return inherited::MeasureSegmentBaseLine (imager, runElement, from, to);
                 }
@@ -489,13 +503,15 @@ namespace   Stroika {
 //  class   FontSpecHidableTextMarkerOwner::FontSpecHidableTextMarker
             inline  HidableTextMarkerOwner::FontSpecHidableTextMarker::FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo):
                 inherited (),
-                fFontSpecification (styleInfo) {
+                fFontSpecification (styleInfo)
+            {
             }
 
 
 
 //  class   UniformHidableTextMarkerOwner
-            inline  bool    UniformHidableTextMarkerOwner::IsHidden () const {
+            inline  bool    UniformHidableTextMarkerOwner::IsHidden () const
+            {
                 return fHidden;
             }
 
@@ -511,19 +527,24 @@ namespace   Stroika {
             inline  ColoredUniformHidableTextMarkerOwner::ColoredUniformHidableTextMarkerOwner (TextStore& textStore):
                 inherited (textStore),
                 fColor (Led_Color::kRed),
-                fColored (false) {
+                fColored (false)
+            {
             }
-            inline  Led_Color   ColoredUniformHidableTextMarkerOwner::GetColor () const {
+            inline  Led_Color   ColoredUniformHidableTextMarkerOwner::GetColor () const
+            {
                 return fColor;
             }
-            inline  void    ColoredUniformHidableTextMarkerOwner::SetColor (const Led_Color& color) {
+            inline  void    ColoredUniformHidableTextMarkerOwner::SetColor (const Led_Color& color)
+            {
                 fColor = color;
                 FixupSubMarkers ();
             }
-            inline  bool    ColoredUniformHidableTextMarkerOwner::GetColored () const {
+            inline  bool    ColoredUniformHidableTextMarkerOwner::GetColored () const
+            {
                 return fColored;
             }
-            inline  void    ColoredUniformHidableTextMarkerOwner::SetColored (bool colored) {
+            inline  void    ColoredUniformHidableTextMarkerOwner::SetColored (bool colored)
+            {
                 fColored = colored;
                 FixupSubMarkers ();
             }

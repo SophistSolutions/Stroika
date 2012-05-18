@@ -138,7 +138,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  T   OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, T defaultValue) {
+            inline  T   OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, T defaultValue)
+            {
                 T   result;
                 if (LookupPref (prefName, &result)) {
                     return result;
@@ -150,7 +151,8 @@ namespace   Stroika {
 
 
 #if     qMemberTemplateNeedsExplicitDeclarationForEachTypeBug
-            inline  bool    OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, bool defaultValue) {
+            inline  bool    OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, bool defaultValue)
+            {
                 bool    result;
                 if (LookupPref (prefName, &result)) {
                     return result;
@@ -159,7 +161,8 @@ namespace   Stroika {
                     return defaultValue;
                 }
             }
-            inline  string  OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, string defaultValue) {
+            inline  string  OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, string defaultValue)
+            {
                 string  result;
                 if (LookupPref (prefName, &result)) {
                     return result;
@@ -168,7 +171,8 @@ namespace   Stroika {
                     return defaultValue;
                 }
             }
-            inline  wstring OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, wstring defaultValue) {
+            inline  wstring OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, wstring defaultValue)
+            {
                 wstring result;
                 if (LookupPref (prefName, &result)) {
                     return result;
@@ -177,7 +181,8 @@ namespace   Stroika {
                     return defaultValue;
                 }
             }
-            inline  vector<string>  OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, vector<string> defaultValue) {
+            inline  vector<string>  OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, vector<string> defaultValue)
+            {
                 vector<string>  result;
                 if (LookupPref (prefName, &result)) {
                     return result;
@@ -186,7 +191,8 @@ namespace   Stroika {
                     return defaultValue;
                 }
             }
-            inline  vector<wstring> OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, vector<wstring> defaultValue) {
+            inline  vector<wstring> OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, vector<wstring> defaultValue)
+            {
                 vector<wstring> result;
                 if (LookupPref (prefName, &result)) {
                     return result;

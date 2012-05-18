@@ -20,11 +20,13 @@ using   namespace   Stroika::Foundation::Execution;
  *************************** Execution::SimpleRunnable **************************
  ********************************************************************************
  */
-void    SimpleRunnable::Run () override {
+void    SimpleRunnable::Run () override
+{
     (fFun2CallOnce) (fArg);
 }
 
-void    SimpleRunnable::FakeZeroArg_ (void* arg) {
+void    SimpleRunnable::FakeZeroArg_ (void* arg)
+{
     void (*realFunCall) ()  =   reinterpret_cast<void (*) ()> (arg);
     (realFunCall) ();
 }

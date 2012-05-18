@@ -45,25 +45,30 @@ namespace   Stroika {
 
 
             // class Rep<T>
-            template    <typename T> inline Iterator<T>::Rep::Rep () {
+            template    <typename T> inline Iterator<T>::Rep::Rep ()
+            {
             }
 
-            template    <typename T> inline Iterator<T>::Rep::~Rep () {
+            template    <typename T> inline Iterator<T>::Rep::~Rep ()
+            {
             }
 
-            template    <typename T> inline bool    Iterator<T>::Rep::Done () const {
+            template    <typename T> inline bool    Iterator<T>::Rep::Done () const
+            {
                 return not const_cast<Iterator<T>::Rep*> (this)->More (nullptr, false);
             }
 
             // class Iterator<T>
             template    <typename T> inline Iterator<T>::Iterator (const Iterator<T>& from) :
                 fIterator (from.fIterator, &Clone_),
-                fCurrent (from.fCurrent) {
+                fCurrent (from.fCurrent)
+            {
                 RequireNotNull (from.fIterator);
             }
 
             template    <typename T> inline Iterator<T>::Iterator (Rep* it)   :
-                fIterator (it, &Clone_) {
+                fIterator (it, &Clone_)
+            {
                 if (it == nullptr) {
                     fIterator = GetSentinal ().fIterator;
                 }
@@ -71,43 +76,52 @@ namespace   Stroika {
                 EnsureNotNull (fIterator);
             }
 
-            template    <typename T> inline Iterator<T>::~Iterator () {
+            template    <typename T> inline Iterator<T>::~Iterator ()
+            {
             }
 
-            template    <typename T> inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs) {
+            template    <typename T> inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs)
+            {
                 fIterator = rhs.fIterator;
                 fCurrent = rhs.fCurrent;
                 return (*this);
             }
 
-            template    <typename T> inline T   Iterator<T>::Current () const {
+            template    <typename T> inline T   Iterator<T>::Current () const
+            {
                 return (operator* ());
             }
 
-            template    <typename T> inline bool    Iterator<T>::Done () const {
+            template    <typename T> inline bool    Iterator<T>::Done () const
+            {
                 return fIterator->Done ();
             }
 
-            template    <typename T>  inline    T   Iterator<T>::operator* () const {
+            template    <typename T>  inline    T   Iterator<T>::operator* () const
+            {
                 RequireNotNull (fIterator);
                 return (fCurrent);
             }
 
-            template    <typename T>   inline   void  Iterator<T>::operator++ () {
+            template    <typename T>   inline   void  Iterator<T>::operator++ ()
+            {
                 RequireNotNull (fIterator);
                 fIterator->More (&fCurrent, true);
             }
 
-            template    <typename T>   inline   void  Iterator<T>::operator++ (int) {
+            template    <typename T>   inline   void  Iterator<T>::operator++ (int)
+            {
                 RequireNotNull (fIterator);
                 fIterator->More (&fCurrent, true);
             }
 
-            template    <typename T> inline bool   Iterator<T>::operator!= (Iterator rhs)  const {
+            template    <typename T> inline bool   Iterator<T>::operator!= (Iterator rhs)  const
+            {
                 return not operator== (rhs);
             }
 
-            template    <typename T> inline bool   Iterator<T>::operator== (Iterator rhs)  const {
+            template    <typename T> inline bool   Iterator<T>::operator== (Iterator rhs)  const
+            {
                 if (rhs.Done ()) {
                     return Done ();
                 }
@@ -122,11 +136,13 @@ namespace   Stroika {
                         and fCurrent == rhs.fCurrent);
             }
 
-            template    <typename T> inline  typename Iterator<T>::Rep*   Iterator<T>::Clone_ (const typename Iterator<T>::Rep& rep) {
+            template    <typename T> inline  typename Iterator<T>::Rep*   Iterator<T>::Clone_ (const typename Iterator<T>::Rep& rep)
+            {
                 return rep.Clone ();
             }
 
-            template    <typename T>    Iterator<T> Iterator<T>::GetSentinal () {
+            template    <typename T>    Iterator<T> Iterator<T>::GetSentinal ()
+            {
                 class RepSentinal : public Iterator<T>::Rep  {
                 public:
                     RepSentinal () {}

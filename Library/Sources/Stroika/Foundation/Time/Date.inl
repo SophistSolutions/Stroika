@@ -19,13 +19,16 @@ namespace   Stroika {
 
 
             //  class Date
-            inline  Date::JulianRepType Date::GetJulianRep () const {
+            inline  Date::JulianRepType Date::GetJulianRep () const
+            {
                 return (fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_);
             }
-            inline  bool    Date::empty () const {
+            inline  bool    Date::empty () const
+            {
                 return fJulianDateRep_ == kEmptyJulianRep;
             }
-            inline  int Date::Compare (const Date& rhs) const {
+            inline  int Date::Compare (const Date& rhs) const
+            {
                 if (empty ()) {
                     return rhs.empty () ? 0 : -1;
                 }
@@ -44,19 +47,24 @@ namespace   Stroika {
             }
 
 
-            inline  bool operator<= (const Date& lhs, const Date& rhs) {
+            inline  bool operator<= (const Date& lhs, const Date& rhs)
+            {
                 return lhs.Compare (rhs) <= 0;
             }
-            inline  bool operator< (const Date& lhs, const Date& rhs) {
+            inline  bool operator< (const Date& lhs, const Date& rhs)
+            {
                 return lhs.Compare (rhs) < 0;
             }
-            inline  bool operator> (const Date& lhs, const Date& rhs) {
+            inline  bool operator> (const Date& lhs, const Date& rhs)
+            {
                 return lhs.Compare (rhs) > 0;
             }
-            inline  bool operator== (const Date& lhs, const Date& rhs) {
+            inline  bool operator== (const Date& lhs, const Date& rhs)
+            {
                 return lhs.Compare (rhs) == 0;
             }
-            inline  bool operator!= (const Date& lhs, const Date& rhs) {
+            inline  bool operator!= (const Date& lhs, const Date& rhs)
+            {
                 return lhs.Compare (rhs) != 0;
             }
 
@@ -65,7 +73,8 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            inline  void    _NoReturn_  DoThrow (const Time::Date::FormatException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const Time::Date::FormatException& e2Throw)
+            {
                 DbgTrace (L"Throwing Date::FormatException");
                 throw e2Throw;
             }

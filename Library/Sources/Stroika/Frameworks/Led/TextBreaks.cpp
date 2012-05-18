@@ -48,26 +48,32 @@ namespace   Stroika {
 
 
             // These SHOULD work for UNICODE, MBYTE and SingleByte case...
-            inline  bool    IsASCIISpace (Led_tChar c) {
+            inline  bool    IsASCIISpace (Led_tChar c)
+            {
                 return isascii (c) and isspace (c);
             }
-            inline  bool    IsASCIIAlnum (Led_tChar c) {
+            inline  bool    IsASCIIAlnum (Led_tChar c)
+            {
                 return isascii (c) and isalnum (c);
             }
-            inline  bool    IsASCIIAlpha (Led_tChar c) {
+            inline  bool    IsASCIIAlpha (Led_tChar c)
+            {
                 return isascii (c) and isalpha (c);
             }
-            inline  bool    IsASCIIDigit (Led_tChar c) {
+            inline  bool    IsASCIIDigit (Led_tChar c)
+            {
                 return isascii (c) and isdigit (c);
             }
 
 
 #if     qWideCharacters
-            static  bool    SJIS_IsLeadByte (unsigned char c) {
+            static  bool    SJIS_IsLeadByte (unsigned char c)
+            {
                 // Based on code from LEC - mtcdef.h
                 return ((c >= 0x81 and c <= 0x9f) or (c >= 0xe0 and c <= 0xfc));
             }
-            static  bool    SJIS_IsBOLChar (const char* mbChar) {
+            static  bool    SJIS_IsBOLChar (const char* mbChar)
+            {
                 AssertNotNull (mbChar);
                 unsigned char byte0 = (unsigned char)mbChar[0];
                 unsigned char byte1 = (unsigned char)mbChar[1];
@@ -112,7 +118,8 @@ namespace   Stroika {
                 bool    isBOLChar   = (yBOLTable[hi][lo / 8] & yBits[lo & 7]);
                 return (isBOLChar);
             }
-            static  bool    SJIS_IsEOLChar (const char* mbChar) {
+            static  bool    SJIS_IsEOLChar (const char* mbChar)
+            {
                 AssertNotNull (mbChar);
                 unsigned char byte0 = (unsigned char)mbChar[0];
                 unsigned char byte1 = (unsigned char)mbChar[1];
@@ -152,7 +159,8 @@ namespace   Stroika {
             }
 
 // CONSIDER USING CodePageConverter class here!!!
-            inline  unsigned    SJIS_To_Kuten_Row (const char mbChar[2]) {
+            inline  unsigned    SJIS_To_Kuten_Row (const char mbChar[2])
+            {
                 // See alec@lec.com's 950111 email message/SPEC
                 unsigned    char    c1  =   mbChar[0];
                 unsigned    char    c2  =   mbChar[1];
@@ -162,7 +170,8 @@ namespace   Stroika {
                 Assert (result >= 0);
                 return (result);
             }
-            inline  bool    IsJapaneseBOLChar (wchar_t c) {
+            inline  bool    IsJapaneseBOLChar (wchar_t c)
+            {
                 char    mbyteChars[2];
                 size_t  nBytesInThisChar    =   2;
                 CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
@@ -172,7 +181,8 @@ namespace   Stroika {
                 }
                 return SJIS_IsBOLChar (mbyteChars);
             }
-            inline  bool    IsJapaneseEOLChar (wchar_t c) {
+            inline  bool    IsJapaneseEOLChar (wchar_t c)
+            {
                 char    mbyteChars[2];
                 size_t  nBytesInThisChar    =   2;
                 CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
@@ -182,7 +192,8 @@ namespace   Stroika {
                 }
                 return SJIS_IsEOLChar (mbyteChars);
             }
-            inline  unsigned    GetJapaneseKutenRow (wchar_t c) {
+            inline  unsigned    GetJapaneseKutenRow (wchar_t c)
+            {
                 char    mbyteChars[2];
                 size_t  nBytesInThisChar    =   2;
                 CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
@@ -219,7 +230,8 @@ namespace   Stroika {
              */
 
             TextBreaks_Basic::TextBreaks_Basic ():
-                inherited () {
+                inherited ()
+            {
 #if     qDebug
                 // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
                 // That fact is important - since subclasses might change its result in a way to voilate this regression test. Thats fine - if its
@@ -231,7 +243,8 @@ namespace   Stroika {
 
             void    TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
                     size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
-                                                     ) const {
+                                                     ) const
+            {
                 AssertNotNull (startOfText);
                 AssertNotNull (wordStartResult);
                 AssertNotNull (wordEndResult);
@@ -317,7 +330,8 @@ namespace   Stroika {
 
             void    TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
                     size_t* wordEndResult, bool* wordReal
-                                                     ) const {
+                                                     ) const
+            {
                 AssertNotNull (startOfText);
                 AssertNotNull (wordEndResult);
                 AssertNotNull (wordReal);
@@ -412,7 +426,8 @@ namespace   Stroika {
             }
 
 #if     qSingleByteCharacters || qWideCharacters
-            TextBreaks_Basic::CharacterClasses  TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const {
+            TextBreaks_Basic::CharacterClasses  TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+            {
 #if     qSingleByteCharacters || qWideCharacters
                 Led_tChar   c = *charToExamine;
 #elif   qMultiByteCharacters
@@ -472,13 +487,15 @@ namespace   Stroika {
                 return eOtherCharacterClass;
             }
 #elif   qMultiByteCharacters
-            TextBreaks_Basic::CharacterClasses  TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) {
+            TextBreaks_Basic::CharacterClasses  TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine)
+            {
 #error  "Not yet supported - now looking like it never will be - use UNICODE instead"
             }
 #endif
 
 #if     qDebug
-            void    TextBreaks_Basic::RegressionTest () {
+            void    TextBreaks_Basic::RegressionTest ()
+            {
                 {
                     const   Led_tChar*  kTest   =   LED_TCHAR_OF ("This is a good test");
                     size_t              wordStartResult =   0;
@@ -509,7 +526,8 @@ namespace   Stroika {
              */
 
             TextBreaks_Basic_WP::TextBreaks_Basic_WP ():
-                inherited () {
+                inherited ()
+            {
 #if     qDebug
                 // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
                 // That fact is important - since subclasses might change its result in a way to voilate this regression test. Thats fine - if its
@@ -519,7 +537,8 @@ namespace   Stroika {
 #endif
             }
 
-            TextBreaks_Basic_WP::CharacterClasses   TextBreaks_Basic_WP::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const {
+            TextBreaks_Basic_WP::CharacterClasses   TextBreaks_Basic_WP::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+            {
                 switch (*charToExamine) {
                     case    ',': {      // COMMA between digits
                             if (charToExamine > startOfText and charToExamine < &startOfText[lengthOfText]) {
@@ -584,7 +603,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    TextBreaks_Basic_WP::RegressionTest () {
+            void    TextBreaks_Basic_WP::RegressionTest ()
+            {
                 {
                     const   Led_tChar*  kTest   =   LED_TCHAR_OF ("This is a good test");
                     size_t              wordStartResult =   0;
@@ -625,7 +645,8 @@ namespace   Stroika {
              */
 
             TextBreaks_Basic_TextEditor::TextBreaks_Basic_TextEditor ():
-                inherited () {
+                inherited ()
+            {
 #if     qDebug
                 // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
                 // That fact is important - since subclasses might change its result in a way to voilate this regression test. Thats fine - if its
@@ -635,7 +656,8 @@ namespace   Stroika {
 #endif
             }
 
-            TextBreaks_Basic_TextEditor::CharacterClasses   TextBreaks_Basic_TextEditor::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const {
+            TextBreaks_Basic_TextEditor::CharacterClasses   TextBreaks_Basic_TextEditor::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+            {
                 if (*charToExamine == '$' or * charToExamine == '%') {
                     return (eWordClass);
                 }
@@ -646,7 +668,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    TextBreaks_Basic_TextEditor::RegressionTest () {
+            void    TextBreaks_Basic_TextEditor::RegressionTest ()
+            {
                 {
                     const   Led_tChar*  kTest   =   LED_TCHAR_OF ("This is a good test of Simone's bug with the 'word'.");
                     size_t              wordStartResult =   0;
@@ -673,7 +696,8 @@ namespace   Stroika {
              */
             void    TextBreaks_System::FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
                     size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
-                                                      ) const {
+                                                      ) const
+            {
                 AssertNotNull (startOfText);
                 AssertNotNull (wordStartResult);
                 AssertNotNull (wordEndResult);
@@ -722,7 +746,8 @@ namespace   Stroika {
 
             void    TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
                     size_t* wordEndResult, bool* wordReal
-                                                      ) const {
+                                                      ) const
+            {
                 AssertNotNull (startOfText);
                 AssertNotNull (wordEndResult);
                 AssertNotNull (wordReal);

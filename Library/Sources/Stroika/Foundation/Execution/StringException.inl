@@ -18,16 +18,19 @@ namespace   Stroika {
 
             //  class   StringException
             inline  StringException::StringException (const wstring& reasonForError)
-                : fError (reasonForError) {
+                : fError (reasonForError)
+            {
             }
             template    <>
-            inline  wstring StringException::As () const {
+            inline  wstring StringException::As () const
+            {
                 return fError;
             }
 
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const StringException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const StringException& e2Throw)
+            {
                 DbgTrace (L"Throwing StringException: '%s'", e2Throw.As<wstring> ().substr (0, 20).c_str ());
                 throw e2Throw;
             }

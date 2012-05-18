@@ -16,12 +16,15 @@ namespace   Stroika {
 
             //  class   CopyableCriticalSection
             inline  CopyableCriticalSection::CopyableCriticalSection ()
-                : fCritSec (DEBUG_NEW CriticalSection ()) {
+                : fCritSec (DEBUG_NEW CriticalSection ())
+            {
             }
-            inline  void    CopyableCriticalSection::Lock () {
+            inline  void    CopyableCriticalSection::Lock ()
+            {
                 fCritSec->Lock ();
             }
-            inline  void CopyableCriticalSection::Unlock () {
+            inline  void CopyableCriticalSection::Unlock ()
+            {
                 fCritSec->Unlock ();
             }
 

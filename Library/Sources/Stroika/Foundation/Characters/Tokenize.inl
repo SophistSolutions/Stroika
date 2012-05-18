@@ -18,7 +18,8 @@ namespace   Stroika {
 
 
             template    <typename STRING>
-            vector<STRING> Tokenize (const STRING& str, const STRING& delimiters) {
+            vector<STRING> Tokenize (const STRING& str, const STRING& delimiters)
+            {
                 vector<STRING>  result;
                 typename STRING::size_type  lastPos = str.find_first_not_of (delimiters, 0);        // Skip delimiters at beginning
                 typename STRING::size_type  pos     = str.find_first_of (delimiters, lastPos);      // Find first "non-delimiter"

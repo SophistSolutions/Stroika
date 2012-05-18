@@ -31,7 +31,8 @@ namespace   Stroika {
             @METHOD:        MarkerOwner::FindNextCharacter
             @DESCRIPTION:   <p>Return the associated @'TextStore::FindNextCharacter' ().</p>
             */
-            size_t  MarkerOwner::FindNextCharacter (size_t afterPos) const {
+            size_t  MarkerOwner::FindNextCharacter (size_t afterPos) const
+            {
                 return GetTextStore ().FindNextCharacter (afterPos);
             }
 
@@ -39,7 +40,8 @@ namespace   Stroika {
             @METHOD:        MarkerOwner::FindPreviousCharacter
             @DESCRIPTION:   <p>Return the associated @'TextStore::FindPreviousCharacter' ().</p>
             */
-            size_t  MarkerOwner::FindPreviousCharacter (size_t beforePos) const {
+            size_t  MarkerOwner::FindPreviousCharacter (size_t beforePos) const
+            {
                 return GetTextStore ().FindPreviousCharacter (beforePos);
             }
 
@@ -47,7 +49,8 @@ namespace   Stroika {
             @METHOD:        MarkerOwner::GetLength
             @DESCRIPTION:   <p>Return the associated @'TextStore::GetLength' ().</p>
             */
-            size_t  MarkerOwner::GetLength () const {
+            size_t  MarkerOwner::GetLength () const
+            {
                 return (GetTextStore ().GetLength ());
             }
 
@@ -55,7 +58,8 @@ namespace   Stroika {
             @METHOD:        MarkerOwner::GetEnd
             @DESCRIPTION:   <p>Return the associated @'TextStore::GetEnd' ().</p>
             */
-            size_t  MarkerOwner::GetEnd () const {
+            size_t  MarkerOwner::GetEnd () const
+            {
                 return (GetTextStore ().GetEnd ());
             }
 
@@ -63,12 +67,14 @@ namespace   Stroika {
             @METHOD:        MarkerOwner::CopyOut
             @DESCRIPTION:   <p>Calls the associated @'TextStore::CopyOut' ().</p>
             */
-            void    MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const {
+            void    MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const
+            {
                 GetTextStore ().CopyOut (from, count, buffer);
             }
 
 #if     qMultiByteCharacters
-            void    MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const {
+            void    MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
+            {
 #if     qDebug
                 GetTextStore ().Assert_CharPosDoesNotSplitCharacter (charPos);
 #endif
@@ -86,7 +92,8 @@ namespace   Stroika {
             TempMarker::TempMarker (TextStore& ts, size_t start, size_t end):
                 inherited (),
                 fTextStore (ts),
-                fMarker () {
+                fMarker ()
+            {
                 Require (start <= end);
                 GetTextStore ().AddMarkerOwner (this);
                 try {
@@ -98,7 +105,8 @@ namespace   Stroika {
                 }
             }
 
-            TempMarker::~TempMarker () {
+            TempMarker::~TempMarker ()
+            {
                 try {
                     GetTextStore ().RemoveMarker (&fMarker);
                 }
@@ -111,7 +119,8 @@ namespace   Stroika {
                 }
             }
 
-            TextStore*  TempMarker::PeekAtTextStore () const {
+            TextStore*  TempMarker::PeekAtTextStore () const
+            {
                 return &fTextStore;
             }
 

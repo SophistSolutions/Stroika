@@ -18,26 +18,33 @@ namespace   Stroika {
 
 
                     // class Connection::_IRep
-                    inline  Connection::_IRep::_IRep () {
+                    inline  Connection::_IRep::_IRep ()
+                    {
                     }
-                    inline  Connection::_IRep::~_IRep () {
+                    inline  Connection::_IRep::~_IRep ()
+                    {
                     }
 
 
                     // class Connection
                     inline  Connection::Connection (const Memory::SharedPtr<_IRep>& rep)
-                        : fRep_ (rep) {
+                        : fRep_ (rep)
+                    {
                     }
-                    inline  URL     Connection::GetURL () const {
+                    inline  URL     Connection::GetURL () const
+                    {
                         return fRep_->GetURL ();
                     }
-                    inline  void    Connection::SetURL (const URL& url) {
+                    inline  void    Connection::SetURL (const URL& url)
+                    {
                         fRep_->SetURL (url);
                     }
-                    inline  void    Connection::Close () {
+                    inline  void    Connection::Close ()
+                    {
                         fRep_->Close ();
                     }
-                    inline  Response    Connection::SendAndRequest (const Request& r) {
+                    inline  Response    Connection::SendAndRequest (const Request& r)
+                    {
                         return fRep_->SendAndRequest (r);
                     }
 

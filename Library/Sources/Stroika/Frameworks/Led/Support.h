@@ -608,7 +608,8 @@ public:\
             @DESCRIPTION:   <p></p>
             */
             template <class VECTOR>
-            inline  void    PUSH_BACK (VECTOR& v, const typename VECTOR::value_type& e) {
+            inline  void    PUSH_BACK (VECTOR& v, const typename VECTOR::value_type& e)
+            {
                 size_t  vSize   =   v.size ();
                 size_t  vCap    =   v.capacity ();
                 Assert (vSize <= vCap);
@@ -1092,7 +1093,8 @@ public:\
 // Sadly this is NEEDED for GCC 3.? on RH 7.3 but is NOT needed for GCC 3.2 or later on RH8. Not sure how to
 // tell from compile time flags which is which?
 template <>
-inline  const wchar_t*  basic_string<wchar_t>::c_str () const {
+inline  const wchar_t*  basic_string<wchar_t>::c_str () const
+{
     terminate ();
     return data ();
 }
@@ -1114,7 +1116,8 @@ namespace   Stroika {
 
 
 
-            inline  size_t  Led_tStrlen (const Led_tChar* s) {
+            inline  size_t  Led_tStrlen (const Led_tChar* s)
+            {
                 RequireNotNull (s);
 #if     qSingleByteCharacters
                 return ::strlen (s);
@@ -1126,7 +1129,8 @@ namespace   Stroika {
             }
 
 
-            inline  int Led_tStrCmp (const Led_tChar* l, const Led_tChar* r) {
+            inline  int Led_tStrCmp (const Led_tChar* l, const Led_tChar* r)
+            {
                 RequireNotNull (l);
                 RequireNotNull (r);
 #if     qSingleByteCharacters
@@ -1139,7 +1143,8 @@ namespace   Stroika {
             }
 
 
-            inline  int Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n) {
+            inline  int Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
+            {
                 RequireNotNull (l);
                 RequireNotNull (r);
 #if     qSingleByteCharacters
@@ -1153,7 +1158,8 @@ namespace   Stroika {
 
 
 
-            inline  const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c) {
+            inline  const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c)
+            {
                 RequireNotNull (s);
 #if     qWideCharacters
                 return ::wcschr (s, c);
@@ -1172,7 +1178,8 @@ namespace   Stroika {
 #if     !qHasIsAscii && !defined (isascii)
             // I know this used to be part of the UNIX ctype - unsure why it does not appear to
             // be in the ANSI ctype??? - LGP 950211
-            inline  bool    isascii (unsigned char c) {
+            inline  bool    isascii (unsigned char c)
+            {
                 return (c <= 0x7f);
             }
 #endif
@@ -1183,45 +1190,55 @@ namespace   Stroika {
 
 
 #if     qSDK_UNICODE
-            inline  Led_SDK_String  Led_Wide2SDKString (const wstring& s) {
+            inline  Led_SDK_String  Led_Wide2SDKString (const wstring& s)
+            {
                 return s;
             }
-            inline  wstring Led_SDKString2Wide (const Led_SDK_String& s) {
+            inline  wstring Led_SDKString2Wide (const Led_SDK_String& s)
+            {
                 return s;
             }
 #else
-            inline  Led_SDK_String  Led_ANSI2SDKString (const string& s) {
+            inline  Led_SDK_String  Led_ANSI2SDKString (const string& s)
+            {
                 return s;
             }
-            inline  string  Led_SDKString2ANSI (const Led_SDK_String& s) {
+            inline  string  Led_SDKString2ANSI (const Led_SDK_String& s)
+            {
                 return s;
             }
 #endif
 
 #if         qWideCharacters
-            inline  Led_tString Led_WideString2tString (const wstring& s) {
+            inline  Led_tString Led_WideString2tString (const wstring& s)
+            {
                 return s;
             }
-            inline  wstring Led_tString2WideString (const Led_tString& s) {
+            inline  wstring Led_tString2WideString (const Led_tString& s)
+            {
                 return s;
             }
 #endif
 
 #if     !qWideCharacters
-            inline  Led_tString Led_ANSIString2tString (const string& s) {
+            inline  Led_tString Led_ANSIString2tString (const string& s)
+            {
                 return s;
             }
-            inline  string  Led_tString2ANSIString (const Led_tString& s) {
+            inline  string  Led_tString2ANSIString (const Led_tString& s)
+            {
                 return s;
             }
 #endif
 
 
 #if     qWideCharacters == qSDK_UNICODE
-            inline  Led_SDK_String  Led_tString2SDKString (const Led_tString& s) {
+            inline  Led_SDK_String  Led_tString2SDKString (const Led_tString& s)
+            {
                 return s;
             }
-            inline  Led_tString Led_SDKString2tString (const Led_SDK_String& s) {
+            inline  Led_tString Led_SDKString2tString (const Led_SDK_String& s)
+            {
                 return s;
             }
 #endif
@@ -1230,18 +1247,22 @@ namespace   Stroika {
 #if     qWindows
 //  class   Win32ErrorException
             inline  Win32ErrorException::Win32ErrorException (DWORD error):
-                fError (error) {
+                fError (error)
+            {
             }
-            inline  Win32ErrorException::operator DWORD () const {
+            inline  Win32ErrorException::operator DWORD () const
+            {
                 return fError;
             }
 
 
 //  class   HRESULTErrorException
             inline  HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
-                fHResult (hresult) {
+                fHResult (hresult)
+            {
             }
-            inline  HRESULTErrorException::operator HRESULT () const {
+            inline  HRESULTErrorException::operator HRESULT () const
+            {
                 return fHResult;
             }
 #endif
@@ -1251,7 +1272,8 @@ namespace   Stroika {
             @METHOD:        Led_ThrowIfFalseGetLastError
             @DESCRIPTION:   <p></p>
             */
-            inline  void    Led_ThrowIfFalseGetLastError (bool test) {
+            inline  void    Led_ThrowIfFalseGetLastError (bool test)
+            {
                 if (not test) {
                     throw (Win32ErrorException (::GetLastError ()));
                 }
@@ -1260,7 +1282,8 @@ namespace   Stroika {
             @METHOD:        Led_ThrowIfNotERROR_SUCCESS
             @DESCRIPTION:   <p></p>
             */
-            inline  void    Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode) {
+            inline  void    Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
+            {
                 if (win32ErrCode != ERROR_SUCCESS) {
                     throw Win32ErrorException (win32ErrCode);
                 }
@@ -1271,7 +1294,8 @@ namespace   Stroika {
 
 
 #if     qWindows
-            inline  void    Led_ThrowIfErrorHRESULT (HRESULT hr) {
+            inline  void    Led_ThrowIfErrorHRESULT (HRESULT hr)
+            {
                 if (not SUCCEEDED (hr)) {
                     throw HRESULTErrorException (hr);
                 }
@@ -1284,7 +1308,8 @@ namespace   Stroika {
             @METHOD:        Led_ThrowIfOSErr
             @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
             */
-            inline  void    Led_ThrowIfOSErr (OSErr err) {
+            inline  void    Led_ThrowIfOSErr (OSErr err)
+            {
                 if (err != noErr) {
                     throw err;
                 }
@@ -1293,13 +1318,15 @@ namespace   Stroika {
             @METHOD:        Led_ThrowIfOSStatus
             @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
             */
-            inline  void    Led_ThrowIfOSStatus (OSStatus err) {
+            inline  void    Led_ThrowIfOSStatus (OSStatus err)
+            {
                 if (err != noErr) {
                     throw err;
                 }
             }
 #endif
-            inline  void    Led_ThrowIfNull (void* p) {
+            inline  void    Led_ThrowIfNull (void* p)
+            {
                 if (p == nullptr) {
                     Led_ThrowOutOfMemoryException ();
                 }
@@ -1309,67 +1336,79 @@ namespace   Stroika {
 
 
 
-            inline  unsigned short  Led_ByteSwapFromMac (unsigned short src) {
+            inline  unsigned short  Led_ByteSwapFromMac (unsigned short src)
+            {
 #if     qMacOS
                 return src;
 #elif   qWindows
                 return ((src & 0xff) << 8) + (src >> 8);
 #endif
             }
-            inline  short   Led_ByteSwapFromMac (short src) {
+            inline  short   Led_ByteSwapFromMac (short src)
+            {
                 return short (Led_ByteSwapFromMac ((unsigned short)src));
             }
 
 
 
-            inline  unsigned short  Led_ByteSwapFromWindows (unsigned short src) {
+            inline  unsigned short  Led_ByteSwapFromWindows (unsigned short src)
+            {
 #if     qMacOS
                 return ((src & 0xff) << 8) + (src >> 8);
 #elif   qWindows
                 return src;
 #endif
             }
-            inline  short   Led_ByteSwapFromWindows (short src) {
+            inline  short   Led_ByteSwapFromWindows (short src)
+            {
                 return short (Led_ByteSwapFromWindows ((unsigned short)src));
             }
-            inline  unsigned long   Led_ByteSwapFromWindows (unsigned long src) {
+            inline  unsigned long   Led_ByteSwapFromWindows (unsigned long src)
+            {
 #if     qMacOS
                 return (Led_ByteSwapFromWindows ((unsigned short)(src & 0xffff)) << 16) + Led_ByteSwapFromWindows ((unsigned short)(src >> 16));
 #elif   qWindows
                 return src;
 #endif
             }
-            inline  long    Led_ByteSwapFromWindows (long src) {
+            inline  long    Led_ByteSwapFromWindows (long src)
+            {
                 return long (Led_ByteSwapFromWindows ((unsigned long)src));
             }
 
 
 
 
-            inline  void    Led_USHORTToBuf (unsigned short u, unsigned short* realBuf) {
+            inline  void    Led_USHORTToBuf (unsigned short u, unsigned short* realBuf)
+            {
                 unsigned char* buf  =   (unsigned char*)realBuf;
                 buf[0] = (unsigned char)(u >> 8);
                 buf[1] = (unsigned char)u;
             }
-            inline  unsigned short  Led_BufToUSHORT (const unsigned short* realBuf) {
+            inline  unsigned short  Led_BufToUSHORT (const unsigned short* realBuf)
+            {
                 const unsigned char* buf    =   (const unsigned char*)realBuf;
                 return (unsigned short)((((unsigned short)buf[0]) << 8) + (unsigned short)buf[1]);
             }
-            inline  void    Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf) {
+            inline  void    Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf)
+            {
                 unsigned short* buf =   (unsigned short*)realBuf;
                 Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
                 Led_USHORTToBuf((unsigned short)(ul), buf + 1);
             }
-            inline  unsigned long   Led_BufToULONG (const unsigned long* buf) {
+            inline  unsigned long   Led_BufToULONG (const unsigned long* buf)
+            {
                 unsigned short* bufAsShortArray =   (unsigned short*)buf;
                 return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
             }
-            inline  void    Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf) {
+            inline  void    Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf)
+            {
                 unsigned short* buf =   (unsigned short*)realBuf;
                 Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
                 Led_USHORTToBuf((unsigned short)(ul), buf + 1);
             }
-            inline  unsigned int    Led_BufToULONG (const uint32_t* buf) {
+            inline  unsigned int    Led_BufToULONG (const uint32_t* buf)
+            {
                 unsigned short* bufAsShortArray =   (unsigned short*)buf;
                 return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
             }
@@ -1384,7 +1423,8 @@ namespace   Stroika {
 #if     qMacOS
             // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
             // fall back on application-heap-zone if no tmp memory
-            inline  Handle  Led_DoNewHandle (size_t n) {
+            inline  Handle  Led_DoNewHandle (size_t n)
+            {
 #if     qUseMacTmpMemForAllocs
                 OSErr err;  // ingored...
                 Handle  h   =   ::TempNewHandle (n, &err);  // try temp mem, and use our local mem if no temp mem left
@@ -1397,7 +1437,8 @@ namespace   Stroika {
                 Led_ThrowIfNull (h);
                 return h;
             }
-            inline  void    Led_CheckSomeLocalHeapRAMAvailable (size_t n) {
+            inline  void    Led_CheckSomeLocalHeapRAMAvailable (size_t n)
+            {
                 Handle  h   =   ::NewHandle (n);
                 Led_ThrowIfNull (h);
                 ::DisposeHandle (h);
@@ -1411,7 +1452,8 @@ namespace   Stroika {
 
 
             template    <typename ARRAY_CONTAINER, class    T>
-            size_t  IndexOf (const ARRAY_CONTAINER& array, T item) {
+            size_t  IndexOf (const ARRAY_CONTAINER& array, T item)
+            {
                 for (typename ARRAY_CONTAINER::const_iterator i = array.begin (); i != array.end (); ++i) {
                     if (*i == item) {
                         return (i - array.begin ());
@@ -1429,7 +1471,8 @@ namespace   Stroika {
 
 #if     qMacOS || qWindows
             inline  Led_StackBasedHandleLocker::Led_StackBasedHandleLocker (GenericHandle h):
-                fHandle (h) {
+                fHandle (h)
+            {
                 RequireNotNull (h);
 #if     qMacOS
                 fOldState = ::HGetState (h);
@@ -1438,14 +1481,16 @@ namespace   Stroika {
                 fPointer = ::GlobalLock (h);
 #endif
             }
-            inline  Led_StackBasedHandleLocker::~Led_StackBasedHandleLocker () {
+            inline  Led_StackBasedHandleLocker::~Led_StackBasedHandleLocker ()
+            {
 #if     qMacOS
                 ::HSetState (fHandle, fOldState);
 #elif   qWindows
                 ::GlobalUnlock (fHandle);
 #endif
             }
-            inline  void*   Led_StackBasedHandleLocker::GetPointer () const {
+            inline  void*   Led_StackBasedHandleLocker::GetPointer () const
+            {
 #if     qMacOS
                 return *fHandle;
 #elif   qWindows
@@ -1466,19 +1511,23 @@ namespace   Stroika {
 
 
 #if     qMultiByteCharacters
-            inline  bool    Led_IsLeadByte (unsigned char c) {
+            inline  bool    Led_IsLeadByte (unsigned char c)
+            {
 #error  "That Multibyte character set not supported"
             }
-            inline  bool    Led_IsValidSingleByte (unsigned char /*c*/) {
+            inline  bool    Led_IsValidSingleByte (unsigned char /*c*/)
+            {
                 // This isn't really right, but close enough for now. Alec Wysocker seems to think
                 // so anyhow... LGP 950306
                 return true;
             }
-            inline  bool    Led_IsValidSecondByte (unsigned char c) {
+            inline  bool    Led_IsValidSecondByte (unsigned char c)
+            {
 #error  "That Multibyte character set not supported"
             }
 #endif
-            inline  Led_tChar*      Led_NextChar (Led_tChar* fromHere) {
+            inline  Led_tChar*      Led_NextChar (Led_tChar* fromHere)
+            {
                 AssertNotNull (fromHere);
 #if     qSingleByteCharacters || qWideCharacters
                 return (fromHere + 1);      // address arithmatic does the magic for wide characters
@@ -1486,7 +1535,8 @@ namespace   Stroika {
                 return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
 #endif
             }
-            inline  const Led_tChar*    Led_NextChar (const Led_tChar* fromHere) {
+            inline  const Led_tChar*    Led_NextChar (const Led_tChar* fromHere)
+            {
                 AssertNotNull (fromHere);
 #if     qSingleByteCharacters || qWideCharacters
                 return (fromHere + 1);      // address arithmatic does the magic for wide characters
@@ -1525,7 +1575,8 @@ namespace   Stroika {
                 *   is true for SJIS - but I'm not posative it is always true - LGP 950216.
 
              */
-            inline  const Led_tChar*    Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere) {
+            inline  const Led_tChar*    Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere)
+            {
                 AssertNotNull (startOfString);
                 AssertNotNull (fromHere);
                 Assert (startOfString < fromHere);  // Must be room for previous character to exist!
@@ -1578,7 +1629,8 @@ namespace   Stroika {
                 return (0);     // previous character must exist!!!
 #endif
             }
-            inline  Led_tChar*          Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere) {
+            inline  Led_tChar*          Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere)
+            {
                 // We could duplicate all the code above - but its simpler to just cast and invoke
                 // the above impemenation...
                 return ((Led_tChar*)Led_PreviousChar ((const Led_tChar*)startOfString, (const Led_tChar*)fromHere));
@@ -1592,7 +1644,8 @@ namespace   Stroika {
 #else
                 const Led_tChar*, size_t
 #endif
-            ) {
+            )
+            {
 #if     qMultiByteCharacters
                 return (Led_IsValidMultiByteString (text, length));
 #else
@@ -1601,7 +1654,8 @@ namespace   Stroika {
 #endif
             }
 
-            inline  unsigned    Led_DigitCharToNumber (char digitChar) {
+            inline  unsigned    Led_DigitCharToNumber (char digitChar)
+            {
                 // assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
 
                 // require input is valid decimal digit
@@ -1609,7 +1663,8 @@ namespace   Stroika {
                 Require (digitChar <= '9');
                 return (digitChar - '0');
             }
-            inline  char        Led_NumberToDigitChar (unsigned digitValue) {
+            inline  char        Led_NumberToDigitChar (unsigned digitValue)
+            {
                 // assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
 
                 // require input is valid decimal digit value
@@ -1622,7 +1677,8 @@ namespace   Stroika {
 
 
 #if     qMultiByteCharacters
-            inline  const Led_tChar*    Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd) {
+            inline  const Led_tChar*    Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd)
+            {
                 if (guessedEnd == start) {
                     return guessedEnd;
                 }
@@ -1649,7 +1705,8 @@ namespace   Stroika {
                 Assert ((closestStart == guessedEnd) or (closestStart == guessedEnd - 1));
                 return closestStart;
             }
-            inline  Led_tChar*          Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd) {
+            inline  Led_tChar*          Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd)
+            {
                 // We could duplicate all the code above - but its simpler to just cast and invoke
                 // the above impemenation...
                 return ((Led_tChar*)Led_FindPrevOrEqualCharBoundary ((const Led_tChar*)start, (const Led_tChar*)guessedEnd));
@@ -1664,7 +1721,8 @@ namespace   Stroika {
 
 
 
-            inline  bool    Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType) {
+            inline  bool    Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
+            {
 #if     qMacOS
 #if     TARGET_CARBON
                 ScrapRef            scrap   =   nullptr;
@@ -1683,7 +1741,8 @@ namespace   Stroika {
                 return true;
 #endif
             }
-            inline  bool    Led_ClipboardObjectAcquire::FormatAvailable_TEXT () {
+            inline  bool    Led_ClipboardObjectAcquire::FormatAvailable_TEXT ()
+            {
                 if (FormatAvailable (kTEXTClipFormat)) {
                     return true;
                 }
@@ -1694,7 +1753,8 @@ namespace   Stroika {
 #endif
                 return false;
             }
-            inline  Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire () {
+            inline  Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire ()
+            {
                 // For windows me must unlock, but not delete
 #if     qWindows
                 if (fLockedData != nullptr) {
@@ -1709,18 +1769,21 @@ namespace   Stroika {
                 }
 #endif
             }
-            inline  bool    Led_ClipboardObjectAcquire::GoodClip () const {
+            inline  bool    Led_ClipboardObjectAcquire::GoodClip () const
+            {
 #if     qMacOS || qWindows
                 return (fOSClipHandle != nullptr and fLockedData != nullptr);
 #else
                 return false;   // X-TMP-HACK-LGP991213
 #endif
             }
-            inline  void*   Led_ClipboardObjectAcquire::GetData () const {
+            inline  void*   Led_ClipboardObjectAcquire::GetData () const
+            {
                 Assert (GoodClip ());
                 return (fLockedData);
             }
-            inline  size_t  Led_ClipboardObjectAcquire::GetDataLength () const {
+            inline  size_t  Led_ClipboardObjectAcquire::GetDataLength () const
+            {
                 Assert (GoodClip ());
 #if     qMacOS
                 return (::GetHandleSize (fOSClipHandle));

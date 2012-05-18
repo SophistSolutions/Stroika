@@ -22,7 +22,8 @@ namespace   Stroika {
 
 #if     qCompilerAndStdLib_Supports_constexpr
             template    <>
-            inline  constexpr const char*       GetEOL () {
+            inline  constexpr const char*       GetEOL ()
+            {
 #if     qPlatform_Windows
                 return "\r\n";
 #elif   qPlatform_POSIX
@@ -32,7 +33,8 @@ namespace   Stroika {
 #endif
             }
             template    <>
-            inline  constexpr  const wchar_t*   GetEOL () {
+            inline  constexpr  const wchar_t*   GetEOL ()
+            {
 #if     qPlatform_Windows
                 return L"\r\n";
 #elif   qPlatform_POSIX
@@ -43,7 +45,8 @@ namespace   Stroika {
             }
 #else
             template    <>
-            inline  const char*     GetEOL () {
+            inline  const char*     GetEOL ()
+            {
 #if     qPlatform_Windows
                 return "\r\n";
 #elif   qPlatform_POSIX
@@ -53,7 +56,8 @@ namespace   Stroika {
 #endif
             }
             template    <>
-            inline  const wchar_t*  GetEOL () {
+            inline  const wchar_t*  GetEOL ()
+            {
 #if     qPlatform_Windows
                 return L"\r\n";
 #elif   qPlatform_POSIX
@@ -67,7 +71,8 @@ namespace   Stroika {
 
 
             template    <typename CHAR>
-            void    AssureHasLineTermination (basic_string<CHAR>* text) {
+            void    AssureHasLineTermination (basic_string<CHAR>* text)
+            {
                 RequireNotNull (text);
                 const   CHAR*   eol =   GetEOL<CHAR> ();
                 size_t          eolLen  =   C_String::Length (eol);
@@ -84,7 +89,8 @@ namespace   Stroika {
 
 
             template    <typename TCHAR>
-            size_t  CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize) {
+            size_t  CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            {
                 RequireNotNull (srcText);
                 RequireNotNull (outBuf);
                 TCHAR*  outPtr  =   outBuf;
@@ -107,14 +113,16 @@ namespace   Stroika {
                 return (nBytes);
             }
             template    <typename TCHAR>
-            inline  void    CRLFToNL (basic_string<TCHAR>* text) {
+            inline  void    CRLFToNL (basic_string<TCHAR>* text)
+            {
                 size_t  origLen =   text->length ();
                 size_t  newLen  =   CRLFToNL (Containers::Start (*text), origLen, Containers::Start (*text), origLen);
                 Assert (newLen <= origLen);
                 text->resize (newLen);
             }
             template    <typename TCHAR>
-            inline  basic_string<TCHAR> CRLFToNL (const basic_string<TCHAR>& text) {
+            inline  basic_string<TCHAR> CRLFToNL (const basic_string<TCHAR>& text)
+            {
                 basic_string<TCHAR> r   =   text;
                 CRLFToNL (&r);
                 return r;
@@ -122,7 +130,8 @@ namespace   Stroika {
 
 
             template    <typename TCHAR>
-            size_t  NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize) {
+            size_t  NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            {
                 Require (srcText != outBuf);    // though we support this for the others - its too hard
                 // in this case for the PC...
                 TCHAR*  outPtr  =   outBuf;
@@ -140,7 +149,8 @@ namespace   Stroika {
                 return (nBytes);
             }
             template    <typename TCHAR>
-            inline  basic_string<TCHAR> NLToCRLF (const basic_string<TCHAR>& text) {
+            inline  basic_string<TCHAR> NLToCRLF (const basic_string<TCHAR>& text)
+            {
                 size_t  outBufSize  =   (text.length () + 1) * 2;
                 Memory::SmallStackBuffer<TCHAR> outBuf (outBufSize);
                 size_t newSize = NLToCRLF<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
@@ -151,7 +161,8 @@ namespace   Stroika {
 
 
             template    <typename TCHAR>
-            size_t  NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize) {
+            size_t  NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            {
                 Require (srcText != outBuf);    // though we support this for the others - its too hard
                 // in this case for the PC...
                 TCHAR*  outPtr  =   outBuf;
@@ -176,7 +187,8 @@ namespace   Stroika {
                 return (nBytes);
             }
             template    <typename TCHAR>
-            inline  basic_string<TCHAR> NLToNative (const basic_string<TCHAR>& text) {
+            inline  basic_string<TCHAR> NLToNative (const basic_string<TCHAR>& text)
+            {
                 size_t  outBufSize  =   (text.length () + 1) * 2;
                 Memory::SmallStackBuffer<TCHAR> outBuf (outBufSize);
                 size_t newSize = NLToNative<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
@@ -187,7 +199,8 @@ namespace   Stroika {
 
 
             template    <typename TCHAR>
-            size_t  NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize) {
+            size_t  NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            {
                 Require (srcTextBytes == 0 or srcText != nullptr);
                 Require (outBufSize == 0 or outBuf != nullptr);
                 // Require outBufSize big enough to hold the converted srcTextBytes (best to just make sizes the same)
@@ -213,7 +226,8 @@ namespace   Stroika {
                 return (nBytes);
             }
             template    <typename TCHAR>
-            inline  void    NormalizeTextToNL (basic_string<TCHAR>* text) {
+            inline  void    NormalizeTextToNL (basic_string<TCHAR>* text)
+            {
                 RequireNotNull (text);
                 size_t  origLen =   text->length ();
                 size_t  newLen  =   NormalizeTextToNL (static_cast<const TCHAR*> (Containers::Start (*text)), origLen, static_cast<TCHAR*> (Containers::Start (*text)), origLen);
@@ -221,7 +235,8 @@ namespace   Stroika {
                 text->resize (newLen);
             }
             template    <typename TCHAR>
-            inline  basic_string<TCHAR> NormalizeTextToNL (const basic_string<TCHAR>& text) {
+            inline  basic_string<TCHAR> NormalizeTextToNL (const basic_string<TCHAR>& text)
+            {
                 basic_string<TCHAR> r   =   text;
                 NormalizeTextToNL (&r);
                 return r;

@@ -16,7 +16,8 @@ namespace   Stroika {
             namespace   Platform {
                 namespace   Windows {
 
-                    inline  DWORD   Duration2Milliseconds (Time::DurationSecondsType nSeconds) {
+                    inline  DWORD   Duration2Milliseconds (Time::DurationSecondsType nSeconds)
+                    {
                         return (nSeconds > numeric_limits<DWORD>::max () / 2) ? INFINITE : static_cast<DWORD> (nSeconds * 1000);
                     }
 

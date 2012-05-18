@@ -51,15 +51,18 @@ namespace   {
 
 
 
-    wstring Prepass2UNICODE_ (const wstring& in) {
+    wstring Prepass2UNICODE_ (const wstring& in)
+    {
 // even given unicode, we could have \u characters - mapem!!!
 // NYI
         return in;
     }
-    wstring Prepass2UNICODE_ (wistream& in) {
+    wstring Prepass2UNICODE_ (wistream& in)
+    {
         return Prepass2UNICODE_ (Streams::iostream::ReadTextStream (in));
     }
-    wstring Prepass2UNICODE_ (istream& in) {
+    wstring Prepass2UNICODE_ (istream& in)
+    {
         return Prepass2UNICODE_ (Streams::iostream::ReadTextStream (in));
     }
 
@@ -68,12 +71,14 @@ namespace   {
     /*
      * Utilities to treat string iterator/end ptr as a 'stream pointer' - and get next char
      */
-    bool    IsAtEOF_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    bool    IsAtEOF_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (i != nullptr);
         Require (*i <= end);
         return *i == end;
     }
-    wchar_t NextChar_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    wchar_t NextChar_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (not IsAtEOF_ (i, end));
         wchar_t c   =   *(*i);
         (*i)++;
@@ -84,7 +89,8 @@ namespace   {
 
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
-    Memory::VariantValue    Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    Memory::VariantValue    Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (i != nullptr);
         Require (*i < end);
         wchar_t c   =   NextChar_ (i, end);
@@ -109,7 +115,8 @@ namespace   {
 
 
     // 'in' is positioned to the start of number, and we read, leaving in possitioned just after end of number
-    Memory::VariantValue    Reader_Number_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    Memory::VariantValue    Reader_Number_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (i != nullptr);
         Require (*i < end);
 
@@ -148,7 +155,8 @@ namespace   {
         }
     }
 
-    Memory::VariantValue    Reader_Object_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    Memory::VariantValue    Reader_Object_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (i != nullptr);
         Require (*i < end);
         map<wstring, Memory::VariantValue>   result;
@@ -213,7 +221,8 @@ namespace   {
         }
     }
 
-    Memory::VariantValue    Reader_Array_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    Memory::VariantValue    Reader_Array_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (i != nullptr);
         Require (*i < end);
         vector<Memory::VariantValue>    result;
@@ -260,7 +269,8 @@ namespace   {
         }
     }
 
-    Memory::VariantValue    Reader_SpecialToken_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    Memory::VariantValue    Reader_SpecialToken_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         Require (i != nullptr);
         Require (*i < end);
         switch (**i) {
@@ -302,7 +312,8 @@ namespace   {
         Execution::DoThrow (BadFormatException (L"JSON: Unrecognized token"));
     }
 
-    Memory::VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end) {
+    Memory::VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end)
+    {
         // Skip initial whitespace, and look for any value:
         //      string
         //      number
@@ -366,13 +377,15 @@ namespace   {
  ******************** DataExchangeFormat::JSON::Reader **************************
  ********************************************************************************
  */
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (istream& in) {
+Memory::VariantValue    DataExchangeFormat::JSON::Reader (istream& in)
+{
     wstring tmp =   Prepass2UNICODE_ (in);
     wstring::const_iterator i = tmp.begin ();
     return Reader_value_ (&i, tmp.end ());
 }
 
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (wistream& in) {
+Memory::VariantValue    DataExchangeFormat::JSON::Reader (wistream& in)
+{
     wstring tmp =   Prepass2UNICODE_ (in);
     wstring::const_iterator i = tmp.begin ();
     return Reader_value_ (&i, tmp.end ());

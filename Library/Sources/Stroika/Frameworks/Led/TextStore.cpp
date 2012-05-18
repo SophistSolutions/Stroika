@@ -27,7 +27,8 @@ namespace   Stroika {
         namespace   Led {
 
 
-            inline  bool    IsASCIIAlpha (int c) {
+            inline  bool    IsASCIIAlpha (int c)
+            {
                 return isascii (c) and isalpha (c);
             }
 
@@ -45,7 +46,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Don't call directly. Called as a by-product of TextStore::CollectAllMarkersInRange ().
                 This TextStore::VectorMarkerSink produces a vector for such collect calls.</p>
             */
-            void    TextStore::VectorMarkerSink::Append (Marker* m) {
+            void    TextStore::VectorMarkerSink::Append (Marker* m)
+            {
                 RequireNotNull (m);
                 AssertNotNull (fMarkers);
                 //fMarkers->push_back (m);
@@ -68,7 +70,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Don't call directly. Called as a by-product of TextStore::CollectAllMarkersInRange ().
                 This TextStore::VectorMarkerSink produces a @'Memory::SmallStackBuffer<T>' for such collect calls.</p>
             */
-            void    TextStore::SmallStackBufferMarkerSink::Append (Marker* m) {
+            void    TextStore::SmallStackBufferMarkerSink::Append (Marker* m)
+            {
                 RequireNotNull (m);
                 AssertNotNull (fMarkers);
                 fMarkers.push_back (m);
@@ -93,13 +96,15 @@ namespace   Stroika {
             */
             const   MarkerOwner*    TextStore::kAnyMarkerOwner  =   reinterpret_cast<MarkerOwner*> (1);
 
-            TextStore::~TextStore () {
+            TextStore::~TextStore ()
+            {
                 Require (fMarkerOwners.size () == 1 and fMarkerOwners[0] == this);  // better have deleted 'em all by now (except for US)!
             }
 
 #if     qMultiByteCharacters
 // qSingleByteCharacters || qWideCharacters cases in headers
-            size_t  TextStore::CharacterToTCharIndex (size_t i) {
+            size_t  TextStore::CharacterToTCharIndex (size_t i)
+            {
                 size_t  tCharIndex = 1;
                 int ii  =   i;
                 for (; ii > 0; ii--) {
@@ -111,7 +116,8 @@ namespace   Stroika {
 
 #if     qMultiByteCharacters
 // qSingleByteCharacters || qWideCharacters cases in headers
-            size_t  TextStore::TCharToCharacterIndex (size_t i) {
+            size_t  TextStore::TCharToCharacterIndex (size_t i)
+            {
                 size_t  charCount   =   1;
                 for (size_t tCharIndex = 0; tCharIndex < i; tCharIndex = FindNextCharacter (tCharIndex)) {
                     charCount++;
@@ -128,7 +134,8 @@ namespace   Stroika {
                             <p>Note - this used to be pure virtual, and impelemented by subclasses. Now its a trivial wrapper
                         on @'TextStore::ReplaceWithoutUpdate'. This change was made in Led 3.1.</p>
             */
-            void    TextStore::Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) {
+            void    TextStore::Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)
+            {
                 Require (from <= to);
                 Require (to <= GetEnd ());
 #if     qMultiByteCharacters
@@ -155,7 +162,8 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Returns the marker position of the start of the given line #.</p>
             */
-            size_t  TextStore::GetStartOfLine (size_t lineNumber) const {
+            size_t  TextStore::GetStartOfLine (size_t lineNumber) const
+            {
                 Require (lineNumber >= 0);
                 Require (lineNumber <= GetLineCount ());
 
@@ -184,7 +192,8 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Returns the marker position of the end of the given line #.</p>
             */
-            size_t  TextStore::GetEndOfLine (size_t lineNumber) const {
+            size_t  TextStore::GetEndOfLine (size_t lineNumber) const
+            {
 // LGP 961129 - not 100% sure this is right - quickie implementation...
                 Require (lineNumber >= 0);
                 Require (lineNumber <= GetLineCount ());
@@ -214,7 +223,8 @@ namespace   Stroika {
                 <p>Returns the # of the line which contains the given charPosition. NB: we use charPosition here
                 to deal with the ambiguity of what line a markerPosition is at when it straddles two lines.</p>
             */
-            size_t  TextStore::GetLineContainingPosition (size_t charPosition) const {
+            size_t  TextStore::GetLineContainingPosition (size_t charPosition) const
+            {
 // LGP 961129 - not 100% sure this is right - quickie implementation...
                 Assert (charPosition >= 0);
                 Assert (charPosition <= GetEnd ());
@@ -243,7 +253,8 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Returns the # of the lines in the TextStore.</p>
             */
-            size_t  TextStore::GetLineCount () const {
+            size_t  TextStore::GetLineCount () const
+            {
 // LGP 961129 - not 100% sure this is right - quickie implementation...
                 /*
                  *  Just walk through each char looking for '\n's and count lines. Could be
@@ -266,7 +277,8 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Returns the marker position of the start of the line contains the character after 'afterPos'.</p>
             */
-            size_t  TextStore::GetStartOfLineContainingPosition (size_t afterPos) const {
+            size_t  TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
+            {
                 Assert (afterPos >= 0);
                 Assert (afterPos <= GetEnd ());
 
@@ -323,7 +335,8 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Returns the marker position of the end of the line contains the character after 'afterPos'.</p>
             */
-            size_t  TextStore::GetEndOfLineContainingPosition (size_t afterPos) const {
+            size_t  TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
+            {
                 Assert (afterPos >= 0);
                 Assert (afterPos <= GetEnd ());
 
@@ -370,7 +383,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the marker position of the previous character. If at the start of the buffer, it returns
                 0. Use this instead of pos--, in order to deal properly with multibyte character sets.</p>
             */
-            size_t  TextStore::FindPreviousCharacter (size_t beforePos) const {
+            size_t  TextStore::FindPreviousCharacter (size_t beforePos) const
+            {
                 Assert (beforePos >= 0);
                 if (beforePos == 0) {
                     return (0);
@@ -481,7 +495,8 @@ namespace   Stroika {
                     *wordStartResult and *wordEndResult refer to actual marker positions in this TextStore.</p>
             </p>
             */
-            void    TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker) {
+            void    TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker)
+            {
                 AssertNotNull (wordStartResult);
                 AssertNotNull (wordEndResult);
                 AssertNotNull (wordReal);
@@ -513,7 +528,8 @@ namespace   Stroika {
                     end of the word. *wordEndResult refers to actual marker position in this TextStore.</p>
             </p>
             */
-            void    TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker) {
+            void    TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker)
+            {
                 AssertNotNull (wordEndResult);
                 AssertNotNull (wordReal);
                 size_t  startOfThisLine =   GetStartOfLineContainingPosition (afterPosition);
@@ -535,7 +551,8 @@ namespace   Stroika {
                 *wordEndResult = zeroBasedEnd + startOfThisLine;
             }
 
-            size_t  TextStore::FindFirstWordStartBeforePosition (size_t position, bool wordMustBeReal) {
+            size_t  TextStore::FindFirstWordStartBeforePosition (size_t position, bool wordMustBeReal)
+            {
                 /*
                  *  Quick and dirty algorithm. This is quite in-efficient - but should do
                  *  for the time being.
@@ -556,7 +573,8 @@ namespace   Stroika {
                 return (0);
             }
 
-            size_t  TextStore::FindFirstWordStartStrictlyBeforePosition (size_t position, bool wordMustBeReal) {
+            size_t  TextStore::FindFirstWordStartStrictlyBeforePosition (size_t position, bool wordMustBeReal)
+            {
                 // maybe just FindFirstWordStartBeforePosition (POS-1)????
 
 
@@ -580,7 +598,8 @@ namespace   Stroika {
                 return (0);
             }
 
-            size_t  TextStore::FindFirstWordEndAfterPosition (size_t position, bool wordMustBeReal) {
+            size_t  TextStore::FindFirstWordEndAfterPosition (size_t position, bool wordMustBeReal)
+            {
                 /*
                  *  Quick and dirty algorithm. This is quite in-efficient - but should do
                  *  for the time being.
@@ -601,7 +620,8 @@ namespace   Stroika {
                 return (GetEnd ());
             }
 
-            size_t  TextStore::FindFirstWordStartAfterPosition (size_t position) {
+            size_t  TextStore::FindFirstWordStartAfterPosition (size_t position)
+            {
                 /*
                  *  Quick and dirty algorithm. This is quite in-efficient - but should do
                  *  for the time being.
@@ -626,7 +646,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Search within the given range for the text specified in <code>SearchParameters</code>. The <code>SearchParameters</code>
                 specify a bunch of different matching criteria, as well. No 'regexp' searching supported as of yet.</p>
             */
-            size_t  TextStore::Find (const SearchParameters& params, size_t searchFrom, size_t searchTo) {
+            size_t  TextStore::Find (const SearchParameters& params, size_t searchFrom, size_t searchTo)
+            {
                 Require (searchTo == eUseSearchParameters or searchTo <= GetEnd ());
 
                 const   Led_tChar*  pattern     =   params.fMatchString.c_str ();
@@ -763,7 +784,8 @@ notFoundByBuffersEnd:
             }
 
 #if     qSupportLed30CompatAPI
-            void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers) {
+            void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers)
+            {
                 Assert (false);
                 DoAboutToUpdateCalls (updateInfo, &*markers.begin (), &*markers.end ());
             }
@@ -780,7 +802,8 @@ notFoundByBuffersEnd:
                         </p>
                         <p>Note also that this API changed arguments in Led 3.1a4</p>
             */
-            void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd) {
+            void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)
+            {
                 /*
                  *  Note that AboutToUpdateText calls ARE allowed to raise exceptions. In which
                  *  case, we abandon the update.
@@ -800,7 +823,8 @@ notFoundByBuffersEnd:
             }
 
 #if     qSupportLed30CompatAPI
-            void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers)  throw () {
+            void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers)  throw ()
+            {
                 DoDidUpdateCalls (updateInfo, &*markers.begin (), &*markers.end ());
             }
 #endif
@@ -813,7 +837,8 @@ notFoundByBuffersEnd:
                         in the <em>reverse</em> order in which the @'MarkerOwner::AboutToUpdateText' calls were made.</p>
                         <p>Note also that this API changed arguments in Led 3.1a4</p>
             */
-            void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)  throw () {
+            void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)  throw ()
+            {
                 vector<MarkerOwner*>    markerOwners    =   GetMarkerOwners ();
                 /*
                  *  Not STRICTLY required that the list of markerowners doesn't change during this call - but would be a possible symptom of
@@ -862,7 +887,8 @@ notFoundByBuffersEnd:
             @METHOD:        TextStore::PeekAtTextStore
             @DESCRIPTION:   <p>Since a TextStore is a MarkerOwner, is must OVERRIDE the PeekAtTextStore method, and return itself.</p>
             */
-            TextStore*  TextStore::PeekAtTextStore () const {
+            TextStore*  TextStore::PeekAtTextStore () const
+            {
                 return const_cast<TextStore*>(this);
             }
 
@@ -872,7 +898,8 @@ notFoundByBuffersEnd:
             @DESCRIPTION:   <p>Check internal consitency of data structures. Don't call this directly. Call TextStore::Invariant instead.
                 And only call at quiesent times; not in the midst of some update where data structures might not be fully consistent.</p>
             */
-            void    TextStore::Invariant_ () const {
+            void    TextStore::Invariant_ () const
+            {
                 size_t                          len =   GetLength ();
                 Memory::SmallStackBuffer<Led_tChar> buf (len);
                 CopyOut (0, len, buf);

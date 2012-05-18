@@ -24,7 +24,8 @@ namespace   Stroika {
 #endif
                 {
                 }
-                inline  void    SAXObjectReader::Push (const Memory::SharedPtr<ObjectBase>& elt) {
+                inline  void    SAXObjectReader::Push (const Memory::SharedPtr<ObjectBase>& elt)
+                {
 #if     qDefaultTracingOn
                     if (fTraceThisReader) {
                         DbgTrace ("%sSAXObjectReader::Push", TraceLeader_ ().c_str ());
@@ -33,7 +34,8 @@ namespace   Stroika {
                     Containers::ReserveSpeedTweekAdd1 (fStack_);
                     fStack_.push_back (elt);
                 }
-                inline  void    SAXObjectReader::Pop () {
+                inline  void    SAXObjectReader::Pop ()
+                {
                     fStack_.pop_back ();
 #if     qDefaultTracingOn
                     if (fTraceThisReader) {
@@ -41,7 +43,8 @@ namespace   Stroika {
                     }
 #endif
                 }
-                inline  Memory::SharedPtr<SAXObjectReader::ObjectBase>  SAXObjectReader::GetTop () const {
+                inline  Memory::SharedPtr<SAXObjectReader::ObjectBase>  SAXObjectReader::GetTop () const
+                {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
                 }
@@ -140,18 +143,22 @@ namespace   Stroika {
                 OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String, Memory::VariantValue>& attrs)
                     : value_ (intoVal)
                     , proxyValue_ ()
-                    , actualReader_ (&proxyValue_) {
+                    , actualReader_ (&proxyValue_)
+                {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+                {
                     actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text) override {
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text) override
+                {
                     actualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (SAXObjectReader& r) override {
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (SAXObjectReader& r) override
+                {
                     Memory::SharedPtr<ObjectBase>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
                     // However, we cannot do the copy back to value beofre the base POP, because
@@ -167,21 +174,25 @@ namespace   Stroika {
 
                 template    <typename   T>
                 inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp, const map<String, Memory::VariantValue>& attrs)
-                    : fValuePtr (vp) {
+                    : fValuePtr (vp)
+                {
                     RequireNotNull (vp);
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleTextInside (SAXObjectReader& r, const String& text) override {
+                void    ComplexObjectReader<T>::HandleTextInside (SAXObjectReader& r, const String& text) override
+                {
                     // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
                     // assure input is valid
                     Assert (text.IsWhitespace ());
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleEndTag (SAXObjectReader& r) override {
+                void    ComplexObjectReader<T>::HandleEndTag (SAXObjectReader& r) override
+                {
                     r.Pop ();
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::_PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push) {
+                void    ComplexObjectReader<T>::_PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push)
+                {
                     RequireNotNull (newlyAllocatedObject2Push);
                     r.Push (Memory::SharedPtr<ObjectBase> (newlyAllocatedObject2Push));
                 }
@@ -193,10 +204,12 @@ namespace   Stroika {
                 template    <typename TRAITS>
                 ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String, Memory::VariantValue>& attrs)
                     : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
-                            , readingAT_ (false) {
+                            , readingAT_ (false)
+                {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+                {
                     if (localName == TRAITS::ElementName) {
                         if (readingAT_) {
                             Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
@@ -212,7 +225,8 @@ namespace   Stroika {
                     }
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader& r) override {
+                void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader& r) override
+                {
                     if (readingAT_) {
                         Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
                         this->fValuePtr->push_back (curTReading_);

@@ -29,7 +29,8 @@ namespace   Stroika {
             void    CheckForThreadAborting ();
 
             // class    Sleep
-            inline  void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep) {
+            inline  void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep)
+            {
                 Require (seconds2Wait >= 0.0);
                 RequireNotNull (remainingInSleep);  // else call the over overload
                 CheckForThreadAborting ();

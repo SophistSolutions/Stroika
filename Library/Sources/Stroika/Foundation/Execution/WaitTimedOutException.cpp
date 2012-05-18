@@ -18,6 +18,7 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 WaitTimedOutException::WaitTimedOutException ()
-    : StringException (L"WAIT timed out") {
+    : StringException (L"WAIT timed out")
+{
 }
 

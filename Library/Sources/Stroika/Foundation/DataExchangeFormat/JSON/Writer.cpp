@@ -25,7 +25,8 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
  ********************************************************************************
  */
 namespace   {
-    void    Indent_ (ostream& out, int indentLevel) {
+    void    Indent_ (ostream& out, int indentLevel)
+    {
         for (int i = 0; i < indentLevel; ++i) {
             out << "    ";
         }
@@ -33,10 +34,12 @@ namespace   {
 }
 namespace   {
     void    PrettyPrint_ (const Memory::VariantValue& v, ostream& out, int indentLevel);
-    void    PrettyPrint_Null_ (ostream& out) {
+    void    PrettyPrint_Null_ (ostream& out)
+    {
         out << "null";
     }
-    void    PrettyPrint_ (bool v, ostream& out) {
+    void    PrettyPrint_ (bool v, ostream& out)
+    {
         if (v) {
             out << "true";
         }
@@ -44,13 +47,16 @@ namespace   {
             out << "false";
         }
     }
-    void    PrettyPrint_ (int v, ostream& out) {
+    void    PrettyPrint_ (int v, ostream& out)
+    {
         out << v;
     }
-    void    PrettyPrint_ (float v, ostream& out) {
+    void    PrettyPrint_ (float v, ostream& out)
+    {
         out << v;
     }
-    void    PrettyPrint_ (const wstring& v, ostream& out) {
+    void    PrettyPrint_ (const wstring& v, ostream& out)
+    {
         out << "\"";
         string  tmp =   Characters::WideStringToUTF8 (v);
         for (string::const_iterator i = tmp.begin (); i != tmp.end (); ++i) {
@@ -75,7 +81,8 @@ namespace   {
         }
         out << "\"";
     }
-    void    PrettyPrint_ (const vector<Memory::VariantValue>& v, ostream& out, int indentLevel) {
+    void    PrettyPrint_ (const vector<Memory::VariantValue>& v, ostream& out, int indentLevel)
+    {
         out << "[" << endl;
         for (vector<Memory::VariantValue>::const_iterator i = v.begin (); i != v.end (); ++i) {
             Indent_ (out, indentLevel + 1);
@@ -88,7 +95,8 @@ namespace   {
         Indent_ (out, indentLevel);
         out << "]";
     }
-    void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, ostream& out, int indentLevel) {
+    void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, ostream& out, int indentLevel)
+    {
         out << "{" << endl;
         for (map<wstring, Memory::VariantValue>::const_iterator i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel + 1);
@@ -104,7 +112,8 @@ namespace   {
         Indent_ (out, indentLevel);
         out << "}";
     }
-    void    PrettyPrint_ (const Memory::VariantValue& v, ostream& out, int indentLevel) {
+    void    PrettyPrint_ (const Memory::VariantValue& v, ostream& out, int indentLevel)
+    {
         switch (v.GetType ()) {
             case    Memory::VariantValue::eNull:
                 PrettyPrint_Null_ (out);
@@ -133,6 +142,7 @@ namespace   {
     }
 }
 
-void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out) {
+void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
+{
     PrettyPrint_ (v, out, 0);
 }

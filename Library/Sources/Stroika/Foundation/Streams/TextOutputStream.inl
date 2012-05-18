@@ -17,11 +17,14 @@ namespace   Stroika {
         namespace   Streams {
 
             //  class   TextOutputStream
-            inline  TextOutputStream::TextOutputStream () {
+            inline  TextOutputStream::TextOutputStream ()
+            {
             }
-            inline  TextOutputStream::~TextOutputStream () {
+            inline  TextOutputStream::~TextOutputStream ()
+            {
             }
-            void    TextOutputStream::Write (const Character* start, const Character* end) {
+            void    TextOutputStream::Write (const Character* start, const Character* end)
+            {
                 RequireNotNull (start);
                 Require (end - start >= 1);
                 _Write (start, end);

@@ -21,9 +21,11 @@ namespace   Stroika {
             inline  DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
                 : fTimezone_ (tz)
                 , fDate_ (date)
-                , fTimeOfDay_ (timeOfDay) {
+                , fTimeOfDay_ (timeOfDay)
+            {
             }
-            inline  bool    DateTime::empty () const {
+            inline  bool    DateTime::empty () const
+            {
                 // Risky change so late in the game - but this logic seems wrong (and causes some trouble).
                 // DateTime is NOT empty just because date part is empty. We CAN use a DateTime record to store JUST a time!
                 //      -- LGP 2006-04-26
@@ -33,41 +35,52 @@ namespace   Stroika {
                 // if the Date part is empty...
                 return fDate_.empty ();
             }
-            inline  Date    DateTime::GetDate () const {
+            inline  Date    DateTime::GetDate () const
+            {
                 return fDate_;
             }
-            inline  TimeOfDay   DateTime::GetTimeOfDay () const {
+            inline  TimeOfDay   DateTime::GetTimeOfDay () const
+            {
                 return fTimeOfDay_;
             }
             template    <>
-            inline  Date    DateTime::As () const {
+            inline  Date    DateTime::As () const
+            {
                 return fDate_;
             }
-            inline  Date    DateTime::GetToday () {
+            inline  Date    DateTime::GetToday ()
+            {
                 return Now ().GetDate ();
             }
-            inline  DateTime::Timezone  DateTime::GetTimezone () const {
+            inline  DateTime::Timezone  DateTime::GetTimezone () const
+            {
                 return fTimezone_;
             }
 
 
 
-            inline  bool operator< (const DateTime& lhs, const DateTime& rhs) {
+            inline  bool operator< (const DateTime& lhs, const DateTime& rhs)
+            {
                 return lhs.Compare (rhs) < 0;
             }
-            inline  bool operator<= (const DateTime& lhs, const DateTime& rhs) {
+            inline  bool operator<= (const DateTime& lhs, const DateTime& rhs)
+            {
                 return lhs.Compare (rhs) <= 0;
             }
-            inline  bool operator> (const DateTime& lhs, const DateTime& rhs) {
+            inline  bool operator> (const DateTime& lhs, const DateTime& rhs)
+            {
                 return lhs.Compare (rhs) > 0;
             }
-            inline  bool operator>= (const DateTime& lhs, const DateTime& rhs) {
+            inline  bool operator>= (const DateTime& lhs, const DateTime& rhs)
+            {
                 return lhs.Compare (rhs) >= 0;
             }
-            inline  bool operator== (const DateTime& lhs, const DateTime& rhs) {
+            inline  bool operator== (const DateTime& lhs, const DateTime& rhs)
+            {
                 return lhs.Compare (rhs) == 0;
             }
-            inline  bool operator!= (const DateTime& lhs, const DateTime& rhs) {
+            inline  bool operator!= (const DateTime& lhs, const DateTime& rhs)
+            {
                 return lhs.Compare (rhs) != 0;
             }
         }

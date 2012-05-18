@@ -19,10 +19,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            inline  ProgressRangeType   ProgressMontior::GetProgress () const {
+            inline  ProgressRangeType   ProgressMontior::GetProgress () const
+            {
                 return fCurrentProgress_;
             }
-            inline  void    ProgressMontior::SetProgress (ProgressRangeType p) {
+            inline  void    ProgressMontior::SetProgress (ProgressRangeType p)
+            {
                 Require (0.0 <= p and p <= 1.0);
                 Require (p >= fCurrentProgress_);
                 if (p > fCurrentProgress_) {
@@ -30,26 +32,32 @@ namespace   Stroika {
                     CallNotifyProgress_ ();
                 }
             }
-            inline  void    ProgressMontior::Cancel () {
+            inline  void    ProgressMontior::Cancel ()
+            {
                 fCanceled_ = true;
             }
-            inline  void    ProgressMontior::ThrowIfCanceled () {
+            inline  void    ProgressMontior::ThrowIfCanceled ()
+            {
                 if (fCanceled_) {
                     DoThrow (UserCanceledException ());
                     //DoThrow<ThreadAbortException> (ThreadAbortException ());
                 }
             }
-            inline  ProgressMontior::CurrentTaskInfo    ProgressMontior::GetCurrentTaskInfo () const {
+            inline  ProgressMontior::CurrentTaskInfo    ProgressMontior::GetCurrentTaskInfo () const
+            {
                 return fCurrentTaskInfo_;
             }
-            inline  void    ProgressMontior::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo) {
+            inline  void    ProgressMontior::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
+            {
                 fCurrentTaskInfo_ = taskInfo;
             }
-            inline  void    ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress) {
+            inline  void    ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
+            {
                 SetProgress (currentProgress);
                 ThrowIfCanceled ();
             }
-            inline  void    ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress) {
+            inline  void    ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress)
+            {
                 if (objOrNull != nullptr) {
                     objOrNull->SetCurrentProgressAndThrowIfCanceled (currentProgress);
                 }

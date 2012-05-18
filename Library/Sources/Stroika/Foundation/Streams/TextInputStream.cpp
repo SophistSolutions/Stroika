@@ -23,10 +23,12 @@ using   namespace   Stroika::Foundation::Streams;
  */
 TextInputStream::TextInputStream ()
     : fPutBackCharValid_ (false)
-    , fPutBackCharacter_ () {
+    , fPutBackCharacter_ ()
+{
 }
 
-wstring TextInputStream::ReadLine () {
+wstring TextInputStream::ReadLine ()
+{
     wstring result;
     Character   c;
     while (true) {

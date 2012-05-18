@@ -26,7 +26,8 @@ namespace   Stroika {
                 fTotalOutstandingBytesAllocated (0),
                 fPageFaultCount (0),
                 fWorkingSetSize (0),
-                fPagefileUsage (0) {
+                fPagefileUsage (0)
+            {
             }
 
 

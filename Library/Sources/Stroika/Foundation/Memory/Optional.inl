@@ -17,55 +17,67 @@ namespace   Stroika {
             //  class   Optional::Optional<T>
             template    <typename T>
             inline  Optional<T>::Optional ()
-                : fValue_ (nullptr) {
+                : fValue_ (nullptr)
+            {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const T& from)
-                : fValue_ (new T (from)) {
+                : fValue_ (new T (from))
+            {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const Optional<T>& from)
-                : fValue_ (from.fValue_) {
+                : fValue_ (from.fValue_)
+            {
             }
             template    <typename T>
-            inline  void    Optional<T>::clear () {
+            inline  void    Optional<T>::clear ()
+            {
                 fValue_.clear ();
             }
             template    <typename T>
-            inline  const T*    Optional<T>::get () const {
+            inline  const T*    Optional<T>::get () const
+            {
                 return fValue_.IsNull () ? nullptr : fValue_.get ();
             }
             template    <typename T>
-            inline  bool    Optional<T>::empty () const {
+            inline  bool    Optional<T>::empty () const
+            {
                 return fValue_.IsNull ();
             }
             template    <typename T>
-            inline  const T* Optional<T>::operator-> () const {
+            inline  const T* Optional<T>::operator-> () const
+            {
                 Require (not empty ())
                 return &fValue_.GetRep ();
             }
             template    <typename T>
-            inline  T* Optional<T>::operator-> () {
+            inline  T* Optional<T>::operator-> ()
+            {
                 Require (not empty ())
                 return &fValue_.GetRep ();
             }
             template    <typename T>
-            inline  const T& Optional<T>::operator* () const {
+            inline  const T& Optional<T>::operator* () const
+            {
                 Require (not empty ())
                 return fValue_.GetRep ();
             }
             template    <typename T>
-            inline  T& Optional<T>::operator* () {
+            inline  T& Optional<T>::operator* ()
+            {
                 Require (not empty ())
                 return fValue_.GetRep ();
             }
             template    <typename T>
-            inline  Optional<T>::operator T () const {
+            inline  Optional<T>::operator T () const
+            {
                 Require (not empty ())
                 return *fValue_;
             }
             template    <typename T>
-            bool    Optional<T>::operator< (const Optional<T>& rhs) const {
+            bool    Optional<T>::operator< (const Optional<T>& rhs) const
+            {
                 if (fValue_.IsNull ()) {
                     return rhs.fValue_.IsNull () ? false : true; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
@@ -75,19 +87,23 @@ namespace   Stroika {
                 return *fValue_ < rhs.fValue_;
             }
             template    <typename T>
-            bool    Optional<T>::operator<= (const Optional<T>& rhs) const {
+            bool    Optional<T>::operator<= (const Optional<T>& rhs) const
+            {
                 return *this < rhs or * this == rhs;
             }
             template    <typename T>
-            inline  bool    Optional<T>::operator> (const Optional<T>& rhs) const {
+            inline  bool    Optional<T>::operator> (const Optional<T>& rhs) const
+            {
                 return rhs < *this;
             }
             template    <typename T>
-            bool    Optional<T>::operator>= (const Optional<T>& rhs) const {
+            bool    Optional<T>::operator>= (const Optional<T>& rhs) const
+            {
                 return *this > rhs or * this == rhs;
             }
             template    <typename T>
-            bool    Optional<T>::operator== (const Optional<T>& rhs) const {
+            bool    Optional<T>::operator== (const Optional<T>& rhs) const
+            {
                 if (fValue_.IsNull ()) {
                     return rhs.fValue_.IsNull ();
                 }
@@ -97,7 +113,8 @@ namespace   Stroika {
                 return *fValue_ == *rhs.fValue_;
             }
             template    <typename T>
-            inline  bool    Optional<T>::operator!= (const Optional<T>& rhs) const {
+            inline  bool    Optional<T>::operator!= (const Optional<T>& rhs) const
+            {
                 return not (*this == rhs);
             }
 

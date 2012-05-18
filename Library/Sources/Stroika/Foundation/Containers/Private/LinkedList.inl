@@ -23,14 +23,17 @@ namespace   Stroika {
                 // class Link<T>
                 template    <class T>   inline  Link<T>::Link (T item, Link<T>* next) :
                     fItem (item),
-                    fNext (next) {
+                    fNext (next)
+                {
                 }
 
-                template    <typename   T>  inline  void*   Link<T>::operator new (size_t size) {
+                template    <typename   T>  inline  void*   Link<T>::operator new (size_t size)
+                {
                     return (Memory::BlockAllocated<Link<T> >::operator new (size));
                 }
 
-                template    <typename   T>  inline  void    Link<T>::operator delete (void* p) {
+                template    <typename   T>  inline  void    Link<T>::operator delete (void* p)
+                {
                     Memory::BlockAllocated<Link<T> >::operator delete (p);
                 }
 
@@ -38,7 +41,8 @@ namespace   Stroika {
                 // class LinkedList<T>
                 template    <typename   T>  LinkedList<T>::LinkedList (const LinkedList<T>& from) :
                     fLength (from.fLength),
-                    fFirst (nullptr) {
+                    fFirst (nullptr)
+                {
                     /*
                      *      Copy the link list by keeping a point to the new current and new
                      *  previous, and sliding them along in parallel as we construct the
@@ -59,7 +63,8 @@ namespace   Stroika {
                     Invariant ();
                 }
 
-                template    <class T>   inline  void    LinkedList<T>::Invariant () const {
+                template    <class T>   inline  void    LinkedList<T>::Invariant () const
+                {
 #if     qDebug
                     Invariant_ ();
 #endif
@@ -67,11 +72,13 @@ namespace   Stroika {
 
                 template    <class T>   inline  LinkedList<T>::LinkedList () :
                     fLength (0),
-                    fFirst (nullptr) {
+                    fFirst (nullptr)
+                {
                     Invariant ();
                 }
 
-                template    <class T>   inline  LinkedList<T>::~LinkedList () {
+                template    <class T>   inline  LinkedList<T>::~LinkedList ()
+                {
                     /*
                      * This could be a little cheaper - we could avoid setting fLength field,
                      * and fFirst pointer, but we must worry more about codeSize/re-use.
@@ -87,24 +94,28 @@ namespace   Stroika {
                     Ensure (fFirst == nullptr);
                 }
 
-                template    <class T>   inline  size_t  LinkedList<T>::GetLength () const {
+                template    <class T>   inline  size_t  LinkedList<T>::GetLength () const
+                {
                     return (fLength);
                 }
 
-                template    <class T>   inline  T   LinkedList<T>::GetFirst () const {
+                template    <class T>   inline  T   LinkedList<T>::GetFirst () const
+                {
                     Require (fLength > 0);
                     AssertNotNull (fFirst);
                     return (fFirst->fItem);
                 }
 
-                template    <class T>   inline  void    LinkedList<T>::Prepend (T item) {
+                template    <class T>   inline  void    LinkedList<T>::Prepend (T item)
+                {
                     Invariant ();
                     fFirst = new Link<T> (item, fFirst);
                     fLength++;
                     Invariant ();
                 }
 
-                template    <class T>   inline  void    LinkedList<T>::RemoveFirst () {
+                template    <class T>   inline  void    LinkedList<T>::RemoveFirst ()
+                {
                     RequireNotNull (fFirst);
                     Invariant ();
 
@@ -116,7 +127,8 @@ namespace   Stroika {
                     Invariant ();
                 }
 
-                template    <typename   T>  LinkedList<T>& LinkedList<T>::operator= (const LinkedList<T>& list) {
+                template    <typename   T>  LinkedList<T>& LinkedList<T>::operator= (const LinkedList<T>& list)
+                {
                     Invariant ();
 
                     RemoveAll ();
@@ -145,7 +157,8 @@ namespace   Stroika {
                     return (*this);
                 }
 
-                template    <typename   T>  void    LinkedList<T>::Remove (T item) {
+                template    <typename   T>  void    LinkedList<T>::Remove (T item)
+                {
                     Require (fLength >= 1);
 
                     Invariant ();
@@ -169,7 +182,8 @@ namespace   Stroika {
                     Invariant ();
                 }
 
-                template    <typename   T>  bool    LinkedList<T>::Contains (T item) const {
+                template    <typename   T>  bool    LinkedList<T>::Contains (T item) const
+                {
                     for (const Link<T>* current = fFirst; current != nullptr; current = current->fNext) {
                         if (current->fItem == item) {
                             return (true);
@@ -178,7 +192,8 @@ namespace   Stroika {
                     return (false);
                 }
 
-                template    <typename   T>  void    LinkedList<T>::RemoveAll () {
+                template    <typename   T>  void    LinkedList<T>::RemoveAll ()
+                {
                     for (Link<T>* i = fFirst; i != nullptr;) {
                         Link<T>*    deleteMe    =   i;
                         i = i->fNext;
@@ -188,7 +203,8 @@ namespace   Stroika {
                     fLength = 0;
                 }
 
-                template    <typename   T>  T   LinkedList<T>::GetAt (size_t i) const {
+                template    <typename   T>  T   LinkedList<T>::GetAt (size_t i) const
+                {
                     Require (i >= 0);
                     Require (i < fLength);
                     const Link<T>* cur = fFirst;
@@ -199,7 +215,8 @@ namespace   Stroika {
                     return (cur->fItem);
                 }
 
-                template    <typename   T>  void    LinkedList<T>::SetAt (T item, size_t i) {
+                template    <typename   T>  void    LinkedList<T>::SetAt (T item, size_t i)
+                {
                     Require (i >= 0);
                     Require (i < fLength);
                     Link<T>* cur = fFirst;
@@ -211,7 +228,8 @@ namespace   Stroika {
                 }
 
 #if     qDebug
-                template    <typename   T>  void    LinkedList<T>::Invariant_ () const {
+                template    <typename   T>  void    LinkedList<T>::Invariant_ () const
+                {
                     /*
                      * Check we are properly linked together.
                      */
@@ -229,7 +247,8 @@ namespace   Stroika {
 
 
                 // class LinkedListIterator<T>
-                template    <class T>   inline  void    LinkedListIterator<T>::Invariant () const {
+                template    <class T>   inline  void    LinkedListIterator<T>::Invariant () const
+                {
 #if     qDebug
                     Invariant_ ();
 #endif
@@ -237,15 +256,18 @@ namespace   Stroika {
 
                 template    <class T>   inline  LinkedListIterator<T>::LinkedListIterator (const LinkedList<T>& data) :
                     fCurrent (data.fFirst),
-                    fSuppressMore (true) {
+                    fSuppressMore (true)
+                {
                 }
 
                 template    <class T>   inline  LinkedListIterator<T>::LinkedListIterator (const LinkedListIterator<T>& from) :
                     fCurrent (from.fCurrent),
-                    fSuppressMore (from.fSuppressMore) {
+                    fSuppressMore (from.fSuppressMore)
+                {
                 }
 
-                template    <class T>   inline  LinkedListIterator<T>&  LinkedListIterator<T>::operator= (const LinkedListIterator<T>& rhs) {
+                template    <class T>   inline  LinkedListIterator<T>&  LinkedListIterator<T>::operator= (const LinkedListIterator<T>& rhs)
+                {
                     Invariant ();
                     fCurrent = rhs.fCurrent;
                     fSuppressMore = rhs.fSuppressMore;
@@ -253,12 +275,14 @@ namespace   Stroika {
                     return (*this);
                 }
 
-                template    <class T>   inline  bool    LinkedListIterator<T>::Done () const {
+                template    <class T>   inline  bool    LinkedListIterator<T>::Done () const
+                {
                     Invariant ();
                     return bool (fCurrent == nullptr);
                 }
 
-                template    <class T>   inline  bool    LinkedListIterator<T>::More (T* current, bool advance) {
+                template    <class T>   inline  bool    LinkedListIterator<T>::More (T* current, bool advance)
+                {
                     Invariant ();
 
                     if (advance) {
@@ -278,7 +302,8 @@ namespace   Stroika {
                     return (not Done ());
                 }
 
-                template    <class T>   inline  T   LinkedListIterator<T>::Current () const {
+                template    <class T>   inline  T   LinkedListIterator<T>::Current () const
+                {
                     Require (not (Done ()));
                     Invariant ();
                     AssertNotNull (fCurrent);
@@ -286,7 +311,8 @@ namespace   Stroika {
                 }
 
 #if     qDebug
-                template    <typename   T>  void    LinkedListIterator<T>::Invariant_ () const {
+                template    <typename   T>  void    LinkedListIterator<T>::Invariant_ () const
+                {
                 }
 #endif
 
@@ -294,7 +320,8 @@ namespace   Stroika {
 
 
                 // class LinkedList_Patch<T>
-                template    <typename   T>  inline  void    LinkedList_Patch<T>::Invariant () const {
+                template    <typename   T>  inline  void    LinkedList_Patch<T>::Invariant () const
+                {
 #if     qDebug
                     Invariant_ ();
                     InvariantOnIterators_ ();
@@ -303,7 +330,8 @@ namespace   Stroika {
 
                 template    <typename   T>  inline  LinkedList_Patch<T>::LinkedList_Patch () :
                     LinkedList<T> (),
-                    fIterators (nullptr) {
+                    fIterators (nullptr)
+                {
                     Invariant ();
                 }
 
@@ -315,35 +343,41 @@ namespace   Stroika {
                     Invariant ();
                 }
 
-                template    <typename   T>  inline  LinkedList_Patch<T>::~LinkedList_Patch () {
+                template    <typename   T>  inline  LinkedList_Patch<T>::~LinkedList_Patch ()
+                {
                     Require (fIterators == nullptr);
                 }
 
-                template    <typename   T>  inline  bool    LinkedList_Patch<T>::HasActiveIterators () const {
+                template    <typename   T>  inline  bool    LinkedList_Patch<T>::HasActiveIterators () const
+                {
                     return bool (fIterators != nullptr);
                 }
 
-                template    <class T>   inline  void    LinkedList_Patch<T>::PatchViewsAdd (const Link<T>* link) const {
+                template    <class T>   inline  void    LinkedList_Patch<T>::PatchViewsAdd (const Link<T>* link) const
+                {
                     RequireNotNull (link);
                     for (LinkedListIterator_Patch<T>* v = fIterators; v != nullptr; v = v->fNext) {
                         v->PatchAdd (link);
                     }
                 }
 
-                template    <class T>   inline  void    LinkedList_Patch<T>::PatchViewsRemove (const Link<T>* link) const {
+                template    <class T>   inline  void    LinkedList_Patch<T>::PatchViewsRemove (const Link<T>* link) const
+                {
                     RequireNotNull (link);
                     for (LinkedListIterator_Patch<T>* v = fIterators; v != nullptr; v = v->fNext) {
                         v->PatchRemove (link);
                     }
                 }
 
-                template    <class T>   inline  void    LinkedList_Patch<T>::PatchViewsRemoveAll () const {
+                template    <class T>   inline  void    LinkedList_Patch<T>::PatchViewsRemoveAll () const
+                {
                     for (LinkedListIterator_Patch<T>* v = fIterators; v != nullptr; v = v->fNext) {
                         v->PatchRemoveAll ();
                     }
                 }
 
-                template    <typename   T>  inline  LinkedList_Patch<T>& LinkedList_Patch<T>::operator= (const LinkedList_Patch<T>& rhs) {
+                template    <typename   T>  inline  LinkedList_Patch<T>& LinkedList_Patch<T>::operator= (const LinkedList_Patch<T>& rhs)
+                {
                     /*
                      * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
                      * If this is to be supported at some future date, well need to work on our patching.
@@ -353,28 +387,32 @@ namespace   Stroika {
                     return (*this);
                 }
 
-                template    <typename   T>  inline  void    LinkedList_Patch<T>::Prepend (T item) {
+                template    <typename   T>  inline  void    LinkedList_Patch<T>::Prepend (T item)
+                {
                     Invariant ();
                     LinkedList<T>::Prepend (item);
                     PatchViewsAdd (this->fFirst);
                     Invariant ();
                 }
 
-                template    <typename   T>  inline  void    LinkedList_Patch<T>::RemoveFirst () {
+                template    <typename   T>  inline  void    LinkedList_Patch<T>::RemoveFirst ()
+                {
                     Invariant ();
                     PatchViewsRemove (this->fFirst);
                     LinkedList<T>::RemoveFirst ();
                     Invariant ();
                 }
 
-                template    <typename   T>  inline  void    LinkedList_Patch<T>::RemoveAll () {
+                template    <typename   T>  inline  void    LinkedList_Patch<T>::RemoveAll ()
+                {
                     Invariant ();
                     LinkedList<T>::RemoveAll ();
                     PatchViewsRemoveAll ();
                     Invariant ();
                 }
 
-                template    <typename   T>  void    LinkedList_Patch<T>::Remove (T item) {
+                template    <typename   T>  void    LinkedList_Patch<T>::Remove (T item)
+                {
                     Require (this->fLength >= 1);
 
                     Invariant ();
@@ -391,7 +429,8 @@ namespace   Stroika {
 
 
 #if     qDebug
-                template    <typename   T>  void    LinkedList_Patch<T>::Invariant_ () const {
+                template    <typename   T>  void    LinkedList_Patch<T>::Invariant_ () const
+                {
                     LinkedList<T>::Invariant_ ();
                     /*
                      *      Be sure each iterator points back to us. Thats about all we can test from
@@ -406,7 +445,8 @@ namespace   Stroika {
                     }
                 }
 
-                template    <typename   T>  void    LinkedList_Patch<T>::InvariantOnIterators_ () const {
+                template    <typename   T>  void    LinkedList_Patch<T>::InvariantOnIterators_ () const
+                {
                     /*
                      *      Only here can we iterate over each iterator and calls its Invariant()
                      *  since now we've completed any needed patching.
@@ -425,7 +465,8 @@ namespace   Stroika {
                     LinkedListIterator<T> (data),
                     fData (&data),
                     fNext (data.fIterators),
-                    fPrev (nullptr) {       // means invalid or fData->fFirst == fCurrent ...
+                    fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
+                {
                     const_cast<LinkedList_Patch<T>*> (&data)->fIterators = this;
                     this->Invariant ();
                 }
@@ -434,13 +475,15 @@ namespace   Stroika {
                     LinkedListIterator<T> (from),
                     fData (from.fData),
                     fNext (from.fData->fIterators),
-                    fPrev (from.fPrev) {
+                    fPrev (from.fPrev)
+                {
                     from.Invariant ();
                     const_cast<LinkedList_Patch<T>*> (fData)->fIterators = this;
                     this->Invariant ();
                 }
 
-                template    <class T>   inline  LinkedListIterator_Patch<T>::~LinkedListIterator_Patch () {
+                template    <class T>   inline  LinkedListIterator_Patch<T>::~LinkedListIterator_Patch ()
+                {
                     this->Invariant ();
                     AssertNotNull (fData);
                     if (fData->fIterators == this) {
@@ -458,7 +501,8 @@ namespace   Stroika {
                     }
                 }
 
-                template    <class T>   inline  LinkedListIterator_Patch<T>&    LinkedListIterator_Patch<T>::operator= (const LinkedListIterator_Patch<T>& rhs) {
+                template    <class T>   inline  LinkedListIterator_Patch<T>&    LinkedListIterator_Patch<T>::operator= (const LinkedListIterator_Patch<T>& rhs)
+                {
                     this->Invariant ();
 
                     /*
@@ -503,7 +547,8 @@ namespace   Stroika {
                     return (*this);
                 }
 
-                template    <class T>   inline  bool    LinkedListIterator_Patch<T>::More (T* current, bool advance) {
+                template    <class T>   inline  bool    LinkedListIterator_Patch<T>::More (T* current, bool advance)
+                {
                     this->Invariant ();
 
                     if (advance) {
@@ -525,7 +570,8 @@ namespace   Stroika {
                     return (not this->Done ());
                 }
 
-                template    <class T>   inline  void    LinkedListIterator_Patch<T>::PatchAdd (const Link<T>* link) {
+                template    <class T>   inline  void    LinkedListIterator_Patch<T>::PatchAdd (const Link<T>* link)
+                {
                     /*
                      *      link is the new link just added. If it was just after current, then
                      *  there is no problem - we will soon hit it. If it was well before current
@@ -538,7 +584,8 @@ namespace   Stroika {
                     }
                 }
 
-                template    <class T>   inline  void    LinkedListIterator_Patch<T>::PatchRemove (const Link<T>* link) {
+                template    <class T>   inline  void    LinkedListIterator_Patch<T>::PatchRemove (const Link<T>* link)
+                {
                     RequireNotNull (link);
 
                     /*
@@ -567,14 +614,16 @@ namespace   Stroika {
                     }
                 }
 
-                template    <class T>   inline  void    LinkedListIterator_Patch<T>::PatchRemoveAll () {
+                template    <class T>   inline  void    LinkedListIterator_Patch<T>::PatchRemoveAll ()
+                {
                     this->fCurrent = nullptr;
                     fPrev = nullptr;
                     Ensure (this->Done ());
                 }
 
 #if     qDebug
-                template    <typename   T>  void    LinkedListIterator_Patch<T>::Invariant_ () const {
+                template    <typename   T>  void    LinkedListIterator_Patch<T>::Invariant_ () const
+                {
                     LinkedListIterator<T>::Invariant_ ();
 
                     /*
@@ -587,19 +636,23 @@ namespace   Stroika {
 
                 // Class LinkedListMutator_Patch<T>
                 template    <class T>   inline  LinkedListMutator_Patch<T>::LinkedListMutator_Patch (LinkedList_Patch<T>& data) :
-                    LinkedListIterator_Patch<T> ((const LinkedList_Patch<T>&)data) {
+                    LinkedListIterator_Patch<T> ((const LinkedList_Patch<T>&)data)
+                {
                 }
 
                 template    <class T>   inline  LinkedListMutator_Patch<T>::LinkedListMutator_Patch (const LinkedListMutator_Patch<T>& from) :
-                    LinkedListIterator_Patch<T> ((const LinkedListIterator_Patch<T>&)from) {
+                    LinkedListIterator_Patch<T> ((const LinkedListIterator_Patch<T>&)from)
+                {
                 }
 
-                template    <class T>   inline  LinkedListMutator_Patch<T>& LinkedListMutator_Patch<T>::operator= (LinkedListMutator_Patch<T>& rhs) {
+                template    <class T>   inline  LinkedListMutator_Patch<T>& LinkedListMutator_Patch<T>::operator= (LinkedListMutator_Patch<T>& rhs)
+                {
                     LinkedListIterator_Patch<T>::operator= ((const LinkedListIterator_Patch<T>&)rhs);
                     return (*this);
                 }
 
-                template    <class T>   inline  void    LinkedListMutator_Patch<T>::RemoveCurrent () {
+                template    <class T>   inline  void    LinkedListMutator_Patch<T>::RemoveCurrent ()
+                {
                     Require (not this->Done ());
                     this->Invariant ();
                     Link<T>*    victim  = const_cast<Link<T>*> (this->fCurrent);
@@ -631,11 +684,13 @@ namespace   Stroika {
                     this->Invariant ();
                     this->fData->Invariant ();  // calls by invariant
                 }
-                template    <class T>   inline  void    LinkedListMutator_Patch<T>::UpdateCurrent (T newValue) {
+                template    <class T>   inline  void    LinkedListMutator_Patch<T>::UpdateCurrent (T newValue)
+                {
                     RequireNotNull (this->fCurrent);
                     const_cast<Link<T>*> (this->fCurrent)->fItem = newValue;
                 }
-                template    <class T>   inline  void    LinkedListMutator_Patch<T>::AddBefore (T newValue) {
+                template    <class T>   inline  void    LinkedListMutator_Patch<T>::AddBefore (T newValue)
+                {
                     /*
                      * NB: This code works fine, even if we are done!!!
                      */
@@ -667,7 +722,8 @@ namespace   Stroika {
                     this->fData->Invariant ();  // will call this's Invariant()
                 }
 
-                template    <class T>   inline  void    LinkedListMutator_Patch<T>::AddAfter (T newValue) {
+                template    <class T>   inline  void    LinkedListMutator_Patch<T>::AddAfter (T newValue)
+                {
                     Require (not this->Done ());
                     AssertNotNull (this->fCurrent); // since not done...
                     const_cast<Link<T>*>(this->fCurrent)->fNext = new Link<T> (newValue, this->fCurrent->fNext);

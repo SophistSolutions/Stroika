@@ -16,16 +16,20 @@ namespace   Stroika {
 
             inline  SimpleRunnable::SimpleRunnable (void (*fun2CallOnce) ())
                 : fFun2CallOnce (FakeZeroArg_)
-                , fArg (reinterpret_cast<void*> (fun2CallOnce)) {
+                , fArg (reinterpret_cast<void*> (fun2CallOnce))
+            {
             }
             inline  SimpleRunnable::SimpleRunnable (void (*fun2CallOnce) (void* arg), void* arg)
                 : fFun2CallOnce (fun2CallOnce)
-                , fArg (arg) {
+                , fArg (arg)
+            {
             }
-            inline  Memory::SharedPtr<IRunnable>    SimpleRunnable::MAKE (void (*fun2CallOnce) ()) {
+            inline  Memory::SharedPtr<IRunnable>    SimpleRunnable::MAKE (void (*fun2CallOnce) ())
+            {
                 return Memory::SharedPtr<IRunnable> (DEBUG_NEW SimpleRunnable (fun2CallOnce));
             }
-            inline  Memory::SharedPtr<IRunnable>    SimpleRunnable::MAKE (void (*fun2CallOnce) (void* arg), void* arg) {
+            inline  Memory::SharedPtr<IRunnable>    SimpleRunnable::MAKE (void (*fun2CallOnce) (void* arg), void* arg)
+            {
                 return Memory::SharedPtr<IRunnable> (DEBUG_NEW SimpleRunnable (fun2CallOnce, arg));
             }
 
@@ -34,14 +38,17 @@ namespace   Stroika {
             template    <typename   OBJ>
             inline  SimpleObjRunnable<OBJ>::SimpleObjRunnable (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
                 : fPtrToMemberFunction_ (ptrToMemberFunction)
-                , fObjPtr_ (objPtr) {
+                , fObjPtr_ (objPtr)
+            {
             }
             template    <typename   OBJ>
-            inline  Memory::SharedPtr<IRunnable>    SimpleObjRunnable<OBJ>::MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr) {
+            inline  Memory::SharedPtr<IRunnable>    SimpleObjRunnable<OBJ>::MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
+            {
                 return Memory::SharedPtr<IRunnable> (DEBUG_NEW SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
             }
             template    <typename   OBJ>
-            void    SimpleObjRunnable<OBJ>::Run () override {
+            void    SimpleObjRunnable<OBJ>::Run () override
+            {
                 ((*fObjPtr_).*(fPtrToMemberFunction_)) ();
             }
 

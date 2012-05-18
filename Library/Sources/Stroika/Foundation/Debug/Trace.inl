@@ -14,7 +14,8 @@ namespace   Stroika {
 
             //  class   Trace::Emitter
             template    <typename   CHARTYPE>
-            inline  void    Emitter::EmitUnadornedText (const CHARTYPE* p) {
+            inline  void    Emitter::EmitUnadornedText (const CHARTYPE* p)
+            {
                 DoEmit_ (p);
             }
 
@@ -31,9 +32,11 @@ namespace   Stroika {
             }
 
 #if     !qDefaultTracingOn
-            inline  TraceContextBumper::TraceContextBumper (const TChar* contextName) {
+            inline  TraceContextBumper::TraceContextBumper (const TChar* contextName)
+            {
             }
-            inline  TraceContextBumper::~TraceContextBumper () {
+            inline  TraceContextBumper::~TraceContextBumper ()
+            {
             }
 #endif
 
@@ -57,7 +60,8 @@ namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Debug::Private::MODULE_INIT> _TracePrivateINIT_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
-inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get () {
+inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get ()
+{
     return _TracePrivateINIT_.Actual ().fEmitter;
 }
 #endif  /*_Stroika_Foundation_Debug_Trace_inl_*/

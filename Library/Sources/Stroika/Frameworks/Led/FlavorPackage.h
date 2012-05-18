@@ -264,21 +264,24 @@ namespace   Stroika {
 //  class   FlavorPackageExternalizer
             inline  FlavorPackageExternalizer::FlavorPackageExternalizer (TextStore& ts):
                 inherited (),
-                fTextStore (ts) {
+                fTextStore (ts)
+            {
             }
 
 
 //  class   FlavorPackageInternalizer
             inline  FlavorPackageInternalizer::FlavorPackageInternalizer (TextStore& ts):
                 inherited (),
-                fTextStore (ts) {
+                fTextStore (ts)
+            {
             }
 
 
 
 
 //  class   ReaderFlavorPackage
-            inline  bool    ReaderFlavorPackage::GetFlavorAvailable_TEXT () const {
+            inline  bool    ReaderFlavorPackage::GetFlavorAvailable_TEXT () const
+            {
                 if (GetFlavorAvailable (kTEXTClipFormat)) {
                     return true;
                 }

@@ -35,7 +35,8 @@ using   namespace   Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const wstring& message):
-    StringException (Format (L"Database connection error: %s", message.c_str ())) {
+    StringException (Format (L"Database connection error: %s", message.c_str ()))
+{
 }
 
 
@@ -47,7 +48,8 @@ Database::Exception::Exception (const wstring& message):
  ********************************************************************************
  */
 Database::NoDataException::NoDataException ():
-    Exception (L"No Data") {
+    Exception (L"No Data")
+{
 }
 
 
@@ -60,7 +62,8 @@ Database::NoDataException::NoDataException ():
  ********************************************************************************
  */
 namespace   {
-    void    ThrowIfSQLError (SQLRETURN r, const wstring& message) {
+    void    ThrowIfSQLError (SQLRETURN r, const wstring& message)
+    {
         if ((r != SQL_SUCCESS) &&
                 (r != SQL_SUCCESS_WITH_INFO))
             Execution::DoThrow (Exception (message));
@@ -146,13 +149,16 @@ public:
     }
 };
 Database::DBConnection::DBConnection (const wstring& dsn):
-    fRep (DEBUG_NEW Rep (dsn)) {
+    fRep (DEBUG_NEW Rep (dsn))
+{
 }
 
-Database::DBConnection::~DBConnection () {
+Database::DBConnection::~DBConnection ()
+{
 }
 
-unsigned int Database::DBConnection::GetNestedTransactionCount () const {
+unsigned int Database::DBConnection::GetNestedTransactionCount () const
+{
     return fRep->fNestedTransactionCount;
 }
 #endif

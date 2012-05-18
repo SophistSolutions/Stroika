@@ -81,7 +81,8 @@ namespace   Stroika {
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-            inline  size_t  SimpleTextStore::GetLength () const throw () {
+            inline  size_t  SimpleTextStore::GetLength () const throw ()
+            {
                 return (fLength);
             }
 

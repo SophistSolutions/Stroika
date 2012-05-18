@@ -66,7 +66,8 @@ namespace   Stroika {
 
 
 
-            inline  int ConvertReadSingleHexDigit (char digit) {
+            inline  int ConvertReadSingleHexDigit (char digit)
+            {
                 if (isupper (digit)) {
                     digit = tolower (digit);
                 }
@@ -82,7 +83,8 @@ namespace   Stroika {
                     return 0; // not reached
                 }
             }
-            inline  char    ConvertWriteSingleHexDigit (int numZeroToFifteen) {
+            inline  char    ConvertWriteSingleHexDigit (int numZeroToFifteen)
+            {
                 Require (numZeroToFifteen >= 0);
                 Require (numZeroToFifteen <= 15);
                 if (numZeroToFifteen < 10) {
@@ -102,7 +104,8 @@ namespace   Stroika {
 
 
             // RTF / Led_LineSpacing support
-            inline  static  Led_LineSpacing mkLineSpacing_From_RTFValues (Led_Coordinate sl, bool multi) {
+            inline  static  Led_LineSpacing mkLineSpacing_From_RTFValues (Led_Coordinate sl, bool multi)
+            {
                 Led_LineSpacing result;     // defaults to single line...
                 if (sl != 1000) {
                     if (multi) {
@@ -128,7 +131,8 @@ namespace   Stroika {
                 }
                 return result;
             }
-            inline  static  void    mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Led_Coordinate* sl, bool* multi) {
+            inline  static  void    mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Led_Coordinate* sl, bool* multi)
+            {
                 const   int kOneLinesWorth  =   240;
                 switch (inLS.fRule) {
                     case    Led_LineSpacing::eOnePointFiveSpace:
@@ -235,7 +239,8 @@ namespace   Stroika {
                 fFamily (eNil),
                 fCharSet (-1),
                 fPitch (0),
-                fCodePage (0) {
+                fCodePage (0)
+            {
             }
 
 
@@ -250,14 +255,17 @@ namespace   Stroika {
             typedef RTFIO::FontTableEntry   FontTableEntry;
             typedef RTFIO::FontTable        FontTable;
             FontTable::FontTable ():
-                fEntries () {
+                fEntries ()
+            {
             }
 
             FontTable::FontTable (const vector<FontTableEntry>& fontTable):
-                fEntries (fontTable) {
+                fEntries (fontTable)
+            {
             }
 
-            Led_IncrementalFontSpecification    FontTable::GetFontSpec (int fontNumber) {
+            Led_IncrementalFontSpecification    FontTable::GetFontSpec (int fontNumber)
+            {
                 const FontTableEntry*   ftep    =   LookupEntryByNumber (fontNumber);
                 if (ftep == nullptr) {
                     return Led_IncrementalFontSpecification ();     // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
@@ -323,7 +331,8 @@ namespace   Stroika {
                 return fontSpec;
             }
 
-            const FontTableEntry*   FontTable::LookupEntryByNumber (int fontNumber) {
+            const FontTableEntry*   FontTable::LookupEntryByNumber (int fontNumber)
+            {
                 for (size_t i = 0; i < fEntries.size (); i++) {
                     const FontTableEntry&   fte =   fEntries[i];
                     if (fte.fFNum == fontNumber) {
@@ -333,7 +342,8 @@ namespace   Stroika {
                 return nullptr;
             }
 
-            const FontTableEntry*   FontTable::LookupEntryByName (const Led_SDK_String& name) {
+            const FontTableEntry*   FontTable::LookupEntryByName (const Led_SDK_String& name)
+            {
                 for (size_t i = 0; i < fEntries.size (); i++) {
                     const FontTableEntry&   fte =   fEntries[i];
                     if (fte.fFontName == name) {
@@ -343,7 +353,8 @@ namespace   Stroika {
                 return nullptr;
             }
 
-            FontTableEntry  FontTable::Add (const FontTableEntry& newEntry) {
+            FontTableEntry  FontTable::Add (const FontTableEntry& newEntry)
+            {
                 int newFontNumber   =   FindSmallestUnusedFontNumber ();
                 FontTableEntry  newerEntry  =   newEntry;
                 newerEntry.fFNum = newFontNumber;
@@ -351,7 +362,8 @@ namespace   Stroika {
                 return newerEntry;
             }
 
-            int     FontTable::FindSmallestUnusedFontNumber () const {
+            int     FontTable::FindSmallestUnusedFontNumber () const
+            {
                 // Not terribly efficient, but OK for small numbers... LGP 960825
                 int tryThis =   0;
 Again:
@@ -377,21 +389,25 @@ Again:
              ********************************************************************************
              */
             RTFIO::ColorTable::ColorTable ():
-                fEntries () {
+                fEntries ()
+            {
             }
 
             RTFIO::ColorTable::ColorTable (const vector<Led_Color>& colorTable):
-                fEntries (colorTable) {
+                fEntries (colorTable)
+            {
             }
 
-            Led_Color   RTFIO::ColorTable::LookupColor (size_t colorNumber) const {
+            Led_Color   RTFIO::ColorTable::LookupColor (size_t colorNumber) const
+            {
                 if (colorNumber < 0 or colorNumber >= fEntries.size ()) {
                     Led_ThrowBadFormatDataException (); // font number not found!
                 }
                 return fEntries[colorNumber];
             }
 
-            size_t  RTFIO::ColorTable::LookupColor (const Led_Color& color) const {
+            size_t  RTFIO::ColorTable::LookupColor (const Led_Color& color) const
+            {
                 for (size_t i = 0; i < fEntries.size (); i++) {
                     const Led_Color&    c   =   fEntries[i];
                     if (c == color) {
@@ -402,7 +418,8 @@ Again:
                 return 0;
             }
 
-            int     RTFIO::ColorTable::EnterColor (const Led_Color& color) {
+            int     RTFIO::ColorTable::EnterColor (const Led_Color& color)
+            {
                 for (size_t i = 0; i < fEntries.size (); i++) {
                     const Led_Color&    c   =   fEntries[i];
                     if (c == color) {
@@ -433,7 +450,8 @@ Again:
                 fListID (0),
                 fListTemplateID (0),
                 fListStyle (eListStyle_None),
-                fFontID (0) {
+                fFontID (0)
+            {
             }
 
 
@@ -448,7 +466,8 @@ Again:
              ********************************************************************************
              */
             RTFIO::ListOverrideTableEntry::ListOverrideTableEntry ():
-                fListID (0) {
+                fListID (0)
+            {
             }
 
 
@@ -464,12 +483,14 @@ Again:
              */
             RTFIO::ListTables::ListTables ():
                 fEntries (),
-                fOverrideEntries () {
+                fOverrideEntries ()
+            {
             }
 
             RTFIO::ListTables::ListTables (const vector<ListTableEntry>& listTableEntries, const vector<ListOverrideTableEntry>& listOverrideTableEntries):
                 fEntries (listTableEntries),
-                fOverrideEntries (listOverrideTableEntries) {
+                fOverrideEntries (listOverrideTableEntries)
+            {
             }
 
 
@@ -492,7 +513,8 @@ Again:
             const   Led_PrivateEmbeddingTag RTFIO::kRTFBodyGroupFragmentEmbeddingTag    =   "RTFBFrag";
             const   Led_ClipFormat          RTFIO::kRTFBodyGroupFragmentClipFormat      =   'RTFF';
 
-            inline  RTFIO::ControlWordNameMap   RTFIO::mkDefaultControlWordNameMap () {
+            inline  RTFIO::ControlWordNameMap   RTFIO::mkDefaultControlWordNameMap ()
+            {
                 RTFIO::ControlWordNameMap   table;
 #if     qUseMapForControlWordMap
 #define TAB_INS_METHOD(name)    Assert (table.size () == RTFIO::eControlAtom_##name); table.insert (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
@@ -660,7 +682,8 @@ Again:
             }
             RTFIO::ControlWordNameMap   RTFIO::sControlWordNameMap  =   RTFIO::mkDefaultControlWordNameMap ();
 
-            string  RTFIO::GetAtomName (ControlWordAtom atom) {
+            string  RTFIO::GetAtomName (ControlWordAtom atom)
+            {
                 typedef RTFIO::ControlWordNameMap::const_iterator   ITER;
                 ITER    start   =   sControlWordNameMap.begin ();
                 ITER    end     =   sControlWordNameMap.end ();
@@ -686,7 +709,8 @@ Again:
 #else
                 const char* controlWord
 #endif
-            ) {
+            )
+            {
 #if     !qUseMapForControlWordMap
                 RequireNotNull (controlWord);
 #endif
@@ -784,22 +808,26 @@ Again:
                 fTableNextRowNum (0),
                 fTableInRow (false),
                 fTableNextCellNum (0),
-                fTableInCell (false) {
+                fTableInCell (false)
+            {
             }
 
-            SinkStreamDestination::~SinkStreamDestination () {
+            SinkStreamDestination::~SinkStreamDestination ()
+            {
                 // must FLUSH THIS GUY BEFORE DTOR - cannot flush here cuz that could raise exception, and
                 // (at least with MWERKS CW9) that appears to cause unexpected() to be called - illegal in C++
                 // to throw from DTOR? - LGP 960921
                 Require (fTCharsInSmallBuffer == 0);
             }
 
-            void    SinkStreamDestination::AppendText (const Led_tChar* text, size_t nTChars) {
+            void    SinkStreamDestination::AppendText (const Led_tChar* text, size_t nTChars)
+            {
                 AboutToChange ();
                 AppendText_ (text, nTChars);
             }
 
-            void    SinkStreamDestination::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) {
+            void    SinkStreamDestination::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
+            {
                 //  NB: we PROBABLY should apply the current font to this region as well, but so far - at least - it
                 //  has no significance. So ignore for now ... LGP 961003
 
@@ -810,18 +838,21 @@ Again:
                 fSinkStream.AppendEmbedding (embedding);
             }
 
-            void    SinkStreamDestination::AppendSoftLineBreak () {
+            void    SinkStreamDestination::AppendSoftLineBreak ()
+            {
                 AboutToChange ();
                 Flush ();
                 fSinkStream.AppendSoftLineBreak ();
             }
 
-            void    SinkStreamDestination::EndParagraph () {
+            void    SinkStreamDestination::EndParagraph ()
+            {
                 AboutToChange ();
                 fParaEndedFlag = true;
             }
 
-            void    SinkStreamDestination::UseFont (const Led_IncrementalFontSpecification& fontSpec) {
+            void    SinkStreamDestination::UseFont (const Led_IncrementalFontSpecification& fontSpec)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fFontSpec != fontSpec) {
                     Flush ();
@@ -829,7 +860,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetJustification (Led_Justification justification) {
+            void    SinkStreamDestination::SetJustification (Led_Justification justification)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fJustification != justification) {
                     Flush ();
@@ -837,7 +869,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetTabStops (const TextImager::StandardTabStopList& tabStops) {
+            void    SinkStreamDestination::SetTabStops (const TextImager::StandardTabStopList& tabStops)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fTabStops != tabStops) {
                     Flush ();
@@ -845,7 +878,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetFirstIndent (Led_TWIPS tx) {
+            void    SinkStreamDestination::SetFirstIndent (Led_TWIPS tx)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fFirstIndent != tx) {
                     Flush ();
@@ -853,7 +887,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetLeftMargin (Led_TWIPS lhs) {
+            void    SinkStreamDestination::SetLeftMargin (Led_TWIPS lhs)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fLeftMargin != lhs) {
                     Flush ();
@@ -861,7 +896,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetRightMargin (Led_TWIPS rhs) {
+            void    SinkStreamDestination::SetRightMargin (Led_TWIPS rhs)
+            {
                 AboutToChange ();
                 Flush ();
 
@@ -873,7 +909,8 @@ Again:
                 fSinkStream.SetRightMargin (fCurrentContext.fRightMargin = realMargin);
             }
 
-            void    SinkStreamDestination::SetSpaceBefore (Led_TWIPS tx) {
+            void    SinkStreamDestination::SetSpaceBefore (Led_TWIPS tx)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fSpaceBefore != tx) {
                     Flush ();
@@ -881,7 +918,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetSpaceAfter (Led_TWIPS tx) {
+            void    SinkStreamDestination::SetSpaceAfter (Led_TWIPS tx)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fSpaceAfter != tx) {
                     Flush ();
@@ -889,7 +927,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetSpaceBetweenLines (Led_Coordinate sl) {
+            void    SinkStreamDestination::SetSpaceBetweenLines (Led_Coordinate sl)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fSpaceBetweenLines != sl) {
                     Flush ();
@@ -897,7 +936,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetSpaceBetweenLinesMult (bool multipleLineSpacing) {
+            void    SinkStreamDestination::SetSpaceBetweenLinesMult (bool multipleLineSpacing)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fSpaceBetweenLinesMult != multipleLineSpacing) {
                     Flush ();
@@ -905,7 +945,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetTextHidden (bool hidden) {
+            void    SinkStreamDestination::SetTextHidden (bool hidden)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fTextHidden != hidden) {
                     Flush ();
@@ -913,7 +954,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetInTable (bool inTable) {
+            void    SinkStreamDestination::SetInTable (bool inTable)
+            {
                 AboutToChange ();
                 if (fInTable != inTable) {
                     Flush ();
@@ -921,7 +963,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::EndRow (bool forceEmit) {
+            void    SinkStreamDestination::EndRow (bool forceEmit)
+            {
                 if (forceEmit and not fTableInRow) {
                     AssureTableOpen ();
                     DoStartRow ();
@@ -940,7 +983,8 @@ Again:
                 SetInTable (false); // not SURE this is right - but I THINK \intbl needs to be repeated after each row???
             }
 
-            void    SinkStreamDestination::EndCell (bool forceEmit) {
+            void    SinkStreamDestination::EndCell (bool forceEmit)
+            {
                 if (forceEmit and not fTableInCell) {
                     AssureTableOpen ();
                     if (not fTableInRow) {
@@ -960,7 +1004,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetListStyle (ListStyle listStyle) {
+            void    SinkStreamDestination::SetListStyle (ListStyle listStyle)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fListStyle != listStyle) {
                     Flush ();
@@ -968,7 +1013,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetListIndentLevel (unsigned char indentLevel) {
+            void    SinkStreamDestination::SetListIndentLevel (unsigned char indentLevel)
+            {
                 AboutToChange ();
                 if (fCurrentContext.fListIndentLevel != indentLevel) {
                     Flush ();
@@ -976,13 +1022,15 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::SetTableBorderColor (Led_Color c) {
+            void    SinkStreamDestination::SetTableBorderColor (Led_Color c)
+            {
                 AboutToChange ();
                 Flush ();
                 fSinkStream.SetTableBorderColor (c);
             }
 
-            void    SinkStreamDestination::SetCellX (Led_TWIPS cellx) {
+            void    SinkStreamDestination::SetCellX (Led_TWIPS cellx)
+            {
                 AboutToChange ();
                 /*
                  *  Ends a <celldef> according to the RTF 1.5 spec.
@@ -1003,64 +1051,77 @@ Again:
                 fNextCellInfo = CellInfo ();    // clear out to default values
             }
 
-            void    SinkStreamDestination::SetCellBackColor (const Led_Color& c) {
+            void    SinkStreamDestination::SetCellBackColor (const Led_Color& c)
+            {
                 AboutToChange ();
                 fNextCellInfo.f_clcbpat = c;
             }
 
-            void    SinkStreamDestination::Call_trowd () {
+            void    SinkStreamDestination::Call_trowd ()
+            {
                 fNextCellInfo = CellInfo ();    // clear out to default values
                 fThisRow = RowInfo ();          // ditto
             }
 
-            void    SinkStreamDestination::Set_trleft (Led_TWIPS t) {
+            void    SinkStreamDestination::Set_trleft (Led_TWIPS t)
+            {
                 fThisRow.f_trleft = t;
             }
 
-            void    SinkStreamDestination::SetDefaultCellMarginsForRow_top (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellMarginsForRow_top (Led_TWIPS t)
+            {
                 fThisRow.fDefaultCellMargins.top = t;
             }
 
-            void    SinkStreamDestination::SetDefaultCellMarginsForRow_left (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellMarginsForRow_left (Led_TWIPS t)
+            {
                 fThisRow.fDefaultCellMargins.left = t;
             }
 
-            void    SinkStreamDestination::SetDefaultCellMarginsForRow_bottom (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellMarginsForRow_bottom (Led_TWIPS t)
+            {
                 fThisRow.fDefaultCellMargins.bottom = t;
             }
 
-            void    SinkStreamDestination::SetDefaultCellMarginsForRow_right (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellMarginsForRow_right (Led_TWIPS t)
+            {
                 fThisRow.fDefaultCellMargins.right = t;
             }
 
-            void    SinkStreamDestination::SetDefaultCellSpacingForRow_top (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellSpacingForRow_top (Led_TWIPS t)
+            {
                 // Because value written is only half real spacing - See RTF 1.7 spec
                 fThisRow.fDefaultCellSpacing.top = Led_TWIPS (t * 2);
             }
 
-            void    SinkStreamDestination::SetDefaultCellSpacingForRow_left (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellSpacingForRow_left (Led_TWIPS t)
+            {
                 // Because value written is only half real spacing - See RTF 1.7 spec
                 fThisRow.fDefaultCellSpacing.left = Led_TWIPS (t * 2);
             }
 
-            void    SinkStreamDestination::SetDefaultCellSpacingForRow_bottom (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellSpacingForRow_bottom (Led_TWIPS t)
+            {
                 // Because value written is only half real spacing - See RTF 1.7 spec
                 fThisRow.fDefaultCellSpacing.bottom = Led_TWIPS (t * 2);
             }
 
-            void    SinkStreamDestination::SetDefaultCellSpacingForRow_right (Led_TWIPS t) {
+            void    SinkStreamDestination::SetDefaultCellSpacingForRow_right (Led_TWIPS t)
+            {
                 // Because value written is only half real spacing - See RTF 1.7 spec
                 fThisRow.fDefaultCellSpacing.right = Led_TWIPS (t * 2);
             }
 
-            void    SinkStreamDestination::AssureTableOpen () {
+            void    SinkStreamDestination::AssureTableOpen ()
+            {
                 if (not fTableInRow and fTableNextRowNum == 0) {
                     fSinkStream.StartTable ();
                     fTableOpen = true;
                 }
             }
 
-            void    SinkStreamDestination::DoStartRow () {
+            void    SinkStreamDestination::DoStartRow ()
+            {
                 fSinkStream.StartTableRow ();
                 {
                     vector<Led_TWIPS>   cellWidths;
@@ -1098,13 +1159,15 @@ Again:
                 fTableNextRowNum++;
             }
 
-            void    SinkStreamDestination::DoStartCell () {
+            void    SinkStreamDestination::DoStartCell ()
+            {
                 fSinkStream.StartTableCell (fThisRow.fCellInfosForThisRow[fTableNextCellNum].fColSpan);
                 fTableInCell = true;
                 fTableNextCellNum++;
             }
 
-            void    SinkStreamDestination::DoEndTable () {
+            void    SinkStreamDestination::DoEndTable ()
+            {
                 if (fTableInRow) {
                     EndRow ();
                 }
@@ -1118,7 +1181,8 @@ Again:
                 Ensure (not fTableOpen);
             }
 
-            void    SinkStreamDestination::Flush () {
+            void    SinkStreamDestination::Flush ()
+            {
                 FlushParaEndings ();
                 if (fTCharsInSmallBuffer != 0) {
                     Led_FontSpecification   fsp = fSinkStream.GetDefaultFontSpec ();
@@ -1128,24 +1192,28 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::Done () {
+            void    SinkStreamDestination::Done ()
+            {
                 fParaEndedFlag = false;// EXPLAIN -= SPR#0952
                 DoEndTable ();
                 fSinkStream.EndOfBuffer ();
                 Flush ();
             }
 
-            SinkStreamDestination::Context  SinkStreamDestination::GetContext () const {
+            SinkStreamDestination::Context  SinkStreamDestination::GetContext () const
+            {
                 return fCurrentContext;
             }
 
-            void    SinkStreamDestination::SetContext (const Context& c) {
+            void    SinkStreamDestination::SetContext (const Context& c)
+            {
                 fParaEndBeforeNewContext = fParaEndedFlag;
                 fNewContext = c;
                 fNewContextPending = true;
             }
 
-            void    SinkStreamDestination::ApplyContext (const Context& c) {
+            void    SinkStreamDestination::ApplyContext (const Context& c)
+            {
                 /*
                  *  See elaborate comment about SPR#0952,0968 above.
                  */
@@ -1164,12 +1232,14 @@ Again:
                 SetTextHidden (c.fTextHidden);
             }
 
-            size_t  SinkStreamDestination::current_offset () const {
+            size_t  SinkStreamDestination::current_offset () const
+            {
                 AboutToChange ();
                 return fSinkStream.current_offset () + fTCharsInSmallBuffer;
             }
 
-            void    SinkStreamDestination::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) {
+            void    SinkStreamDestination::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner)
+            {
                 Require (at <= current_offset ());
                 AboutToChange ();
                 // Flush () before adding markers if any part of the marker must wrap text inserted text. Must let
@@ -1180,7 +1250,8 @@ Again:
                 fSinkStream.InsertMarker (m, at, length, markerOwner);
             }
 
-            void    SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars) {
+            void    SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
+            {
                 if (nTChars > 0) {
                     if (fInTable) {
 #if     1
@@ -1224,7 +1295,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::AboutToChange () const {
+            void    SinkStreamDestination::AboutToChange () const
+            {
                 /*
                  *  See elaborate comment about SPR#0952,0968 above.
                  */
@@ -1232,7 +1304,8 @@ Again:
                 FlushSetContextCalls ();
             }
 
-            void    SinkStreamDestination::FlushSetContextCalls () const {
+            void    SinkStreamDestination::FlushSetContextCalls () const
+            {
                 /*
                  *  See elaborate comment about SPR#0952,0968 above.
                  */
@@ -1242,7 +1315,8 @@ Again:
                 }
             }
 
-            void    SinkStreamDestination::FlushParaEndings () const {
+            void    SinkStreamDestination::FlushParaEndings () const
+            {
                 /*
                  *  See elaborate comment about SPR#0952,0968 above.
                  */
@@ -1266,7 +1340,8 @@ Again:
             SinkStreamDestination::CellInfo::CellInfo ():
                 f_cellx (Led_TWIPS (0)),
                 f_clcbpat (Led_Color::kWhite),
-                fColSpan (1) {
+                fColSpan (1)
+            {
             }
 
 
@@ -1283,7 +1358,8 @@ Again:
                 f_trleft (Led_TWIPS (0)),
                 fDefaultCellMargins (Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0)),
                 fDefaultCellSpacing (Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0)),
-                fCellInfosForThisRow () {
+                fCellInfosForThisRow ()
+            {
             }
 
 
@@ -1325,7 +1401,8 @@ Again:
                 fDefaultDestination (),
                 fCurrentGroup (nullptr),
                 fFontTable (nullptr),
-                fColorTable (nullptr) {
+                fColorTable (nullptr)
+            {
 #if     qWideCharacters
                 memset (fMultiByteInputCharBuf, 0, sizeof (fMultiByteInputCharBuf));
 #endif
@@ -1338,7 +1415,8 @@ Again:
                 SetDestination (fDefaultDestination.get ());
             }
 
-            StyledTextIOReader_RTF::ReaderContext::~ReaderContext () {
+            StyledTextIOReader_RTF::ReaderContext::~ReaderContext ()
+            {
                 Require (fCurrentGroup == nullptr); // all our current groups must be deleted before this whole
                 // reader context (else they would have pointers back to us
                 // after we've been destroyed)
@@ -1346,7 +1424,8 @@ Again:
                 delete fColorTable;
             }
 
-            void    StyledTextIOReader_RTF::ReaderContext::UseInputCharSetEncoding (CodePage codePage) {
+            void    StyledTextIOReader_RTF::ReaderContext::UseInputCharSetEncoding (CodePage codePage)
+            {
 #if     qWideCharacters
                 fCurrentInputCharSetEncoding = codePage;
 #else
@@ -1358,7 +1437,8 @@ Again:
             }
 
 #if     !qWideCharacters
-            void    StyledTextIOReader_RTF::ReaderContext::UseOutputCharSetEncoding (CodePage codePage) {
+            void    StyledTextIOReader_RTF::ReaderContext::UseOutputCharSetEncoding (CodePage codePage)
+            {
                 if (fCurrentOutputCharSetEncoding != codePage) {
                     fCurrentOutputCharSetEncoding = codePage;
                     fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
@@ -1366,7 +1446,8 @@ Again:
             }
 #endif
 
-            void    StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c) {
+            void    StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
+            {
                 RequireNotNull (GetCurrentGroupContext ());
 
 #if     qWideCharacters
@@ -1468,7 +1549,8 @@ Again:
                 fCurrentGroupStartIdx (readerContext.GetReader ().GetSrcStream ().current_offset ()),
                 fCurrentCodePage (kCodePage_ANSI),
                 fCCHSCodePage (0),
-                fDestinationContext () {            /// LGP 2001-08-22- ------ FOR NOW - BOGUS INITIAL VALUE- BUT SHOULD GET FROM readerContext::Destination::GetContext() rather than from parent group!!!
+                fDestinationContext ()              /// LGP 2001-08-22- ------ FOR NOW - BOGUS INITIAL VALUE- BUT SHOULD GET FROM readerContext::Destination::GetContext() rather than from parent group!!!
+            {
                 if (fParentGroup != nullptr) {
                     fDestinationContext = fParentGroup->fDestinationContext;    // SEE ABOVE - DONT GET FROM PARENT GROUP BUT FROM CUR DESTINATION CONTEXT!!!
                     fCurrentCodePage = fParentGroup->fCurrentCodePage;
@@ -1477,7 +1559,8 @@ Again:
                 readerContext.fCurrentGroup = this;
             }
 
-            StyledTextIOReader_RTF::ReaderContext::GroupContext::~GroupContext () {
+            StyledTextIOReader_RTF::ReaderContext::GroupContext::~GroupContext ()
+            {
                 Assert (fReaderContext.fCurrentGroup == this);  // cuz these always (even with exceptions) must be unwound in
                 // reverse order of creation.
                 fReaderContext.fCurrentGroup = fParentGroup;
@@ -1545,13 +1628,15 @@ Again:
 #endif
             }
 
-            StyledTextIOReader_RTF::~StyledTextIOReader_RTF () {
+            StyledTextIOReader_RTF::~StyledTextIOReader_RTF ()
+            {
                 if (fOwnRTFInfo) {
                     delete fRTFInfo;
                 }
             }
 
-            void    StyledTextIOReader_RTF::Read () {
+            void    StyledTextIOReader_RTF::Read ()
+            {
                 ReaderContext   readerContext (*this);
                 try {
                     ReadGroup (readerContext);
@@ -1565,7 +1650,8 @@ Again:
                 readerContext.fDefaultDestination->Done ();
             }
 
-            bool    StyledTextIOReader_RTF::QuickLookAppearsToBeRightFormat () {
+            bool    StyledTextIOReader_RTF::QuickLookAppearsToBeRightFormat ()
+            {
                 SrcStreamSeekSaver  savePos (GetSrcStream ());
 
                 const   char    kStandardRTFOpenString[]    =   "{\\rtf";
@@ -1574,7 +1660,8 @@ Again:
                 return ((bytesRead == sizeof (kStandardRTFOpenString) - 1) and ::memcmp (kStandardRTFOpenString, buf, sizeof (kStandardRTFOpenString) - 1) == 0);
             }
 
-            void    StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext) {
+            void    StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
+            {
                 ReaderContext::GroupContext thisGroupContext (readerContext);
 
                 if (GetNextChar () != RTFIO::kRTFOpenGroupChar) {
@@ -1796,7 +1883,8 @@ ReadNormalChar:
                 }
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 switch (controlWord.fWord) {
                     case    RTFIO::eControlAtom_ansi:
                         return (HandleControlWord_ansi (readerContext, controlWord));
@@ -1979,23 +2067,27 @@ ReadNormalChar:
                 }
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ansi (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ansi (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.fDocumentCharacterSet = kCodePage_ANSI;
                 readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_author (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_author (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 SkipToEndOfCurrentGroup ();     // we ignore unknown groups
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_b (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_b (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_brdrXXX (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_brdrXXX (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 switch (controlWord.fWord) {
                     case    RTFIO::eControlAtom_brdrcf: {
                             if (not controlWord.fHasArg) {
@@ -2014,7 +2106,8 @@ ReadNormalChar:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_cchs (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_cchs (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (readerContext.GetCurrentGroupContext () == nullptr) {
                     HandleBadlyFormattedInput (true);       // cannot charset
@@ -2046,13 +2139,15 @@ ReadNormalChar:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_cell (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_cell (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 readerContext.GetDestination ().EndCell (true);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_cellx (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_cellx (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput (true);       // must have a numeric code page argument
@@ -2061,18 +2156,21 @@ ReadNormalChar:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_cf (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_cf (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_clcbpat (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_clcbpat (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 readerContext.GetDestination ().SetCellBackColor (LookupColor (readerContext, static_cast<size_t> (controlWord.fValue)));
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_cpg (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_cpg (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (readerContext.GetCurrentGroupContext () == nullptr) {
                     HandleBadlyFormattedInput (true);       // cannot charset
@@ -2085,7 +2183,8 @@ ReadNormalChar:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 if (readerContext.fColorTable != nullptr) {
                     HandleBadlyFormattedInput ();   // cannot have two color tables...
                 }
@@ -2255,7 +2354,8 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_deff (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_deff (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();
                 }
@@ -2265,7 +2365,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_deftab (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_deftab (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();
                     return false;
@@ -2285,7 +2386,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_deleted (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_deleted (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 /*
                  *  Groups marked as deleted, we should not read in any of the text. Eventually, we
                  *  might want to keep track of this stuff if we ever supported changebars etc.
@@ -2294,7 +2396,8 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_dn (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_dn (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 /*
                  *  Kludge/workaround for SPR#1620.
                  */
@@ -2307,12 +2410,14 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_f (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_f (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_fi (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_fi (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2322,7 +2427,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_footer (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_footer (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 /*
                  *  We ignore these for now. In Led 2.3 - we would treat them as plain text - part of the document. At least then you would SEE
                  *  them. But they came out in the wrong place and looked terrible. On balance - this is probably better.
@@ -2331,7 +2437,8 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_fonttbl (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_fonttbl (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 if (readerContext.fFontTable != nullptr) {
                     HandleBadlyFormattedInput ();   // cannot have two font tables...
                 }
@@ -2377,12 +2484,14 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_fs (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_fs (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_header (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_header (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 /*
                  *  We ignore these for now. In Led 2.3 - we would treat them as plain text - part of the document. At least then you would SEE
                  *  them. But they came out in the wrong place and looked terrible. On balance - this is probably better.
@@ -2391,12 +2500,14 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_i (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_i (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ilvl (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ilvl (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2410,12 +2521,14 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_info (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_info (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 SkipToEndOfCurrentGroup ();     // we ignore unknown groups
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_intbl (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_intbl (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (readerContext.GetCurrentGroupContext () == nullptr) {
                     HandleBadlyFormattedInput (true);       // cannot set INTABLE without a current group!
@@ -2424,7 +2537,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_li (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_li (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2434,17 +2548,20 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_line (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_line (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.GetDestination ().AppendSoftLineBreak ();
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_listtext (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_listtext (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 SkipToEndOfCurrentGroup ();     // we ignore this because we properly handle the lists already
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ls (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ls (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2458,13 +2575,15 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_mac (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_mac (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.fDocumentCharacterSet = kCodePage_MAC;
                 readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_margX (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_margX (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                     return false;
@@ -2494,12 +2613,14 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_outl (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_outl (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                     return false;
@@ -2521,7 +2642,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 typedef RTFIO::UnknownRTFEmbedding  UnknownRTFEmbedding;
                 typedef RTFIO::ControlWord          ControlWord;
@@ -2691,7 +2813,8 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_par (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_par (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 /*
                  *  According to RTF spec, \par ENDS a paragraph. This very nearly is accomplished by just emitting a newline in Led. But -
                  *  for the special case of the last paragraph in a document - that doesn't work. In that case - Led would produce an extra
@@ -2702,7 +2825,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 // Reset ALL defaults here
                 // Assign to current context AND destination at the same time...
                 readerContext.GetDestination ().SetTabStops (readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops = TextImager::StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
@@ -2723,19 +2847,22 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_pc (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_pc (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.fDocumentCharacterSet = kCodePage_PC;
                 readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_pca (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_pca (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.fDocumentCharacterSet = kCodePage_PCA;
                 readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 CheckIfAboutToStartBody (readerContext);
 
                 Led_TWIPS_Point                     shownSize               =   Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
@@ -2776,37 +2903,44 @@ ColorsComplete:
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_plain (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_plain (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_pntext (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_pntext (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 SkipToEndOfCurrentGroup ();     // we ignore pntext groups cuz we get the \lsN stuff instead... (spr#968)
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_qc (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_qc (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eCenterJustify);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_qj (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_qj (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eFullyJustify);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ql (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ql (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eLeftJustify);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_qr (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_qr (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eRightJustify);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ri (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ri (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2816,18 +2950,21 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_row (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_row (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 readerContext.GetDestination ().EndRow (true);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_rtf (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_rtf (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 // maybe should check version# or something - check only occurs once? No point...
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_sa (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_sa (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2837,7 +2974,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_sb (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_sb (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2847,12 +2985,14 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_shad (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_shad (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_sl (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_sl (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2862,7 +3002,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_slmult (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_slmult (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric argument
                 }
@@ -2872,27 +3013,32 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_sub (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_sub (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_super (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_super (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_strike (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_strike (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_stylesheet (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_stylesheet (ReaderContext& /*readerContext*/, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 SkipToEndOfCurrentGroup ();     // we ignore unknown groups
                 return true;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_trleft (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_trleft (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric color-number argument
@@ -2901,7 +3047,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_trgaph (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_trgaph (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric color-number argument
@@ -2914,13 +3061,15 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_trowd (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_trowd (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 readerContext.GetDestination ().Call_trowd ();
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_trpaddX (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_trpaddX (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric color-number argument
@@ -2945,7 +3094,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_trspdX (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_trspdX (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric color-number argument
@@ -2970,7 +3120,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 if (not controlWord.fHasArg) {
                     HandleBadlyFormattedInput ();       // must have a numeric color-number argument
                 }
@@ -2992,7 +3143,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_u (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_u (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 // Unclear how I should treat this for the NON-UNICODE Led case. I COULD read the UNICODE chars - and then map them to narrow. But probably just
                 // as good to just read whatever narrow characters were already there.
                 // LGP 2000/04/29
@@ -3012,7 +3164,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_uc (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_uc (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
 #if     qWideCharacters
                 if (not controlWord.fHasArg) {
                     readerContext.fUnicodeUCValue = 1;
@@ -3027,17 +3180,20 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ul (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ul (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_ulnone (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_ulnone (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 ApplyFontSpec (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_up (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_up (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 /*
                  *  Kludge/workaround for SPR#1620.
                  */
@@ -3050,7 +3206,8 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_v (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_v (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (readerContext.GetCurrentGroupContext () == nullptr) {
                     HandleBadlyFormattedInput (true);       // cannot set font name without a current group!
@@ -3060,12 +3217,14 @@ ColorsComplete:
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandleControlWord_UnknownControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandleControlWord_UnknownControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 (void)HandlePossibleSpecialCharacterControlWord (readerContext, controlWord);
                 return false;
             }
 
-            bool    StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord) {
+            bool    StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+            {
                 // Lookup. If good, then insert special character, and return true. Else return false to handle normally.
                 for (size_t i = 0; i < NEltsOf (kMappings); i++) {
                     if (controlWord.fWord == kMappings[i].fControlWordName) {
@@ -3085,7 +3244,8 @@ ColorsComplete:
                 return false;
             }
 
-            void    StyledTextIOReader_RTF::ReadCommentGroup (ReaderContext& readerContext) {
+            void    StyledTextIOReader_RTF::ReadCommentGroup (ReaderContext& readerContext)
+            {
                 /*
                  *  Comment groups are often used for newly introduced groups/features, so they can
                  *  be ignored by old readers, and still convey info to NEW readers. So we should
@@ -3106,7 +3266,8 @@ ColorsComplete:
                 SkipToEndOfCurrentGroup ();     // we ignore unknown groups
             }
 
-            void    StyledTextIOReader_RTF::ReadIn_pn_Group (ReaderContext& readerContext) {
+            void    StyledTextIOReader_RTF::ReadIn_pn_Group (ReaderContext& readerContext)
+            {
                 /*
                  *  Exceedingly primitive support for reading in 'Word 6.0 and Word 95 RTF' style
                  *  bullet and paragraph info data. See examples from SPR#1550, and the RTF 1.7 docs
@@ -3121,17 +3282,20 @@ ColorsComplete:
             }
 
 #define qTryQuickISXXX  1
-            inline  bool    quickIsAlpha (char c) {
+            inline  bool    quickIsAlpha (char c)
+            {
                 return (c >= 'a' and c <= 'z') or
                        (c >= 'A' and c <= 'Z')
                        ;
             }
-            inline  bool    quickIsDigit (char c) {
+            inline  bool    quickIsDigit (char c)
+            {
                 return (c >= '0' and c <= '9');
 
             }
 
-            RTFIO::ControlWord  StyledTextIOReader_RTF::ReadControlWord () {
+            RTFIO::ControlWord  StyledTextIOReader_RTF::ReadControlWord ()
+            {
                 /*
                  *  WARNING: THIS ROUTINE ASSUMES 'a'..'z' and '0'..'9' are contiguous.
                  *  This is true for ASCII.
@@ -3259,7 +3423,8 @@ ColorsComplete:
                 return controlWord;
             }
 
-            void    StyledTextIOReader_RTF::AboutToStartBody (ReaderContext& readerContext) {
+            void    StyledTextIOReader_RTF::AboutToStartBody (ReaderContext& readerContext)
+            {
                 Require (not readerContext.fStartedBodyYet);
                 readerContext.fStartedBodyYet = true;
 
@@ -3284,7 +3449,8 @@ ColorsComplete:
                 }
             }
 
-            FontTableEntry  StyledTextIOReader_RTF::ReadInFontTablesEntry () {
+            FontTableEntry  StyledTextIOReader_RTF::ReadInFontTablesEntry ()
+            {
                 /*
                  *  We must be looking at the open brace. Read in the entire group (consuming the close brace),
                  *  And return this summary info entry record.
@@ -3384,7 +3550,8 @@ ReadRest:
                 return entry;
             }
 
-            void    StyledTextIOReader_RTF::ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt) {
+            void    StyledTextIOReader_RTF::ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt)
+            {
                 RequireNotNull (data);
                 if (GetNextChar () != RTFIO::kRTFOpenGroupChar) {
                     HandleBadlyFormattedInput (true);
@@ -3425,7 +3592,8 @@ ReadRest:
                 SkipToEndOfCurrentGroup ();
             }
 
-            void    StyledTextIOReader_RTF::ReadObjData (vector<char>* data) {
+            void    StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
+            {
                 RequireNotNull (data);
 
                 // Keep reading hex characters, and concatenate them onto 'data'. When we get a close-brace, we are done.
@@ -3440,7 +3608,8 @@ ReadRest:
                 ConsumeNextChar ();     // Eat terminating brace
             }
 
-            void    StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data) {
+            void    StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data)
+            {
 #if     qWindows
                 typedef RTFIO::RTFOLEEmbedding  RTFOLEEmbedding;
                 const   Led_ClipFormat                              kOLEEmbedClipFormat     =   (Led_ClipFormat)::RegisterClipboardFormat (_T ("Object Descriptor"));
@@ -3473,7 +3642,8 @@ ReadRest:
                 Led_ThrowBadFormatDataException ();     // Will be caught by caller, and use "unknown embedding object"
             }
 
-            void    StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data) {
+            void    StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data)
+            {
                 // The first sizeof (Led_PrivateEmbeddingTag) bytes are the type tag, and the rest is standard
                 // internalize/externalize data.
                 if (nBytes < sizeof (Led_PrivateEmbeddingTag)) {
@@ -3501,7 +3671,8 @@ ReadRest:
                 Led_ThrowBadFormatDataException ();     // Will be caught by caller, and use "unknown embedding object"
             }
 
-            void    StyledTextIOReader_RTF::ReadPictData (vector<char>* data) {
+            void    StyledTextIOReader_RTF::ReadPictData (vector<char>* data)
+            {
                 RequireNotNull (data);
 
                 // Keep reading hex characters, and concatenate them onto 'data'. When we get a close-brace or start of another tag, we are done.
@@ -3520,7 +3691,8 @@ ReadRest:
             @METHOD:        StyledTextIOReader_RTF::ReadTopLevelPictData
             @DESCRIPTION:   <p>Read in the data from a \pict group.</p>
             */
-            void    StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData) {
+            void    StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData)
+            {
                 typedef RTFIO::UnknownRTFEmbedding  UnknownRTFEmbedding;
                 typedef RTFIO::ControlWord          ControlWord;
 
@@ -3628,7 +3800,8 @@ ReadRest:
             @DESCRIPTION:   <p>Take the given size and data parameters, and consturct a new Led_DIB (which must be freed by caller using delete()). Returns nullptr
                 if unable to convert the given format.</p>
             */
-            Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize, ImageFormat imageFormat, Led_TWIPS_Point bmSize, size_t nBytes, const void* data) {
+            Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize, ImageFormat imageFormat, Led_TWIPS_Point bmSize, size_t nBytes, const void* data)
+            {
                 if (data == nullptr) {
                     HandleBadlyFormattedInput ();
                     return nullptr; // allow bad input to be treated as unknown format - just return nullptr...
@@ -3687,7 +3860,8 @@ ReadRest:
                         size specified in the metafile itself.</p>
                             <p>This routine is only available if @'qWindows'.</p>
             */
-            Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF) {
+            Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF)
+            {
                 RequireNotNull (hMF);
 
                 ENHMETAHEADER   header;
@@ -3769,7 +3943,8 @@ ReadRest:
             }
 #endif
 
-            void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const RTFIO::ControlWord& cw) {
+            void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const RTFIO::ControlWord& cw)
+            {
                 CheckIfAboutToStartBody (readerContext);
                 if (readerContext.GetCurrentGroupContext () == nullptr) {
                     HandleBadlyFormattedInput (true);       // cannot set font name without a current group!
@@ -3924,7 +4099,8 @@ ReadRest:
                 readerContext.GetDestination ().UseFont (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFontSpec = fontSpec);
             }
 
-            unsigned char   StyledTextIOReader_RTF::GetNextRTFHexByte () const {
+            unsigned char   StyledTextIOReader_RTF::GetNextRTFHexByte () const
+            {
                 char    c   =   GetNextChar ();
 
                 // First nibble
@@ -3970,7 +4146,8 @@ ReadRest:
                 return value;
             }
 
-            string  StyledTextIOReader_RTF::ReadInGroupAndSave () {
+            string  StyledTextIOReader_RTF::ReadInGroupAndSave ()
+            {
                 size_t  startOfGroup    =   GetSrcStream ().current_offset ();
                 if (GetNextChar () != RTFIO::kRTFOpenGroupChar) {
                     HandleBadlyFormattedInput (true);
@@ -3979,7 +4156,8 @@ ReadRest:
                 return GrabString (startOfGroup);
             }
 
-            void    StyledTextIOReader_RTF::SkipToEndOfCurrentGroup () {
+            void    StyledTextIOReader_RTF::SkipToEndOfCurrentGroup ()
+            {
                 int     depth   =   1;          // assume we start INSIDE a group
                 for (; depth > 0; ) {
                     ScanForwardFor ("{}");
@@ -4002,7 +4180,8 @@ ReadRest:
                 }
             }
 
-            void    StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars) {
+            void    StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
+            {
                 RequireNotNull (setOfChars);
 
 #if     qUseCompiledSetHack
@@ -4046,7 +4225,8 @@ ReadRest:
                         and leave the stream positioned where found. If fail to find - leave stream pointer unchanged. Don't THROW cuz of
                         end of file - but just treat that as not finding. Other exceptions also return stream to original position.</p>
             */
-            bool    StyledTextIOReader_RTF::SearchForwardFor (const char* searchFor, size_t maxCharsToExamine) {
+            bool    StyledTextIOReader_RTF::SearchForwardFor (const char* searchFor, size_t maxCharsToExamine)
+            {
                 RequireNotNull (searchFor);
                 SrcStream&  srcStream   =   GetSrcStream ();
                 size_t      origOffset  =   srcStream.current_offset ();
@@ -4092,7 +4272,8 @@ RetryNextMatch:
                 return false;
             }
 
-            RTFInfo&    StyledTextIOReader_RTF::GetRTFInfo () const {
+            RTFInfo&    StyledTextIOReader_RTF::GetRTFInfo () const
+            {
                 AssertNotNull (fRTFInfo);
                 return *fRTFInfo;
             }
@@ -4108,11 +4289,13 @@ RetryNextMatch:
              ************************ StyledTextIOWriter_RTF::WriterContext *****************
              ********************************************************************************
              */
-            size_t  StyledTextIOWriter_RTF::WriterContext::GetCurSrcOffset () const {
+            size_t  StyledTextIOWriter_RTF::WriterContext::GetCurSrcOffset () const
+            {
                 return GetSrcStream ().current_offset ();
             }
 
-            SimpleEmbeddedObjectStyleMarker*    StyledTextIOWriter_RTF::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const {
+            SimpleEmbeddedObjectStyleMarker*    StyledTextIOWriter_RTF::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
+            {
                 size_t  offset  =   GetCurSrcOffset ();
                 vector<SimpleEmbeddedObjectStyleMarker*>    embeddingsList  =   GetSrcStream ().CollectAllEmbeddingMarkersInRange (offset - 1, offset);
                 Assert (embeddingsList.size () <= 1);   // cuz we gave a range of one, and can only have a single
@@ -4126,7 +4309,8 @@ RetryNextMatch:
                 }
             }
 
-            StyledTextIOWriter_RTF::Table*  StyledTextIOWriter_RTF::WriterContext::GetCurRTFTable () const {
+            StyledTextIOWriter_RTF::Table*  StyledTextIOWriter_RTF::WriterContext::GetCurRTFTable () const
+            {
                 return GetSrcStream ().GetTableAt (GetCurSrcOffset () - 1);
             }
 
@@ -4162,7 +4346,8 @@ RetryNextMatch:
                 fStyleRunSummary (),
                 fDocumentCharacterSet (kCodePage_ANSI),
                 fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ()),
-                fHidableTextRuns (srcStream->GetHidableTextRuns ()) {
+                fHidableTextRuns (srcStream->GetHidableTextRuns ())
+            {
                 const   pair<string, wchar_t>    kCharsWrittenByName[]   =   {
                     pair<string, wchar_t> ("tab",            0x0009),
                     pair<string, wchar_t> ("emdash",         0x2013),
@@ -4175,13 +4360,15 @@ RetryNextMatch:
                 SetCharactersSavedByName (vector<pair<string, wchar_t> > (&kCharsWrittenByName[0], &kCharsWrittenByName[NEltsOf (kCharsWrittenByName)]));
             }
 
-            StyledTextIOWriter_RTF::~StyledTextIOWriter_RTF () {
+            StyledTextIOWriter_RTF::~StyledTextIOWriter_RTF ()
+            {
                 delete fFontTable;
                 delete fColorTable;
                 delete fListTable;
             }
 
-            void    StyledTextIOWriter_RTF::UseOutputCharSetEncoding (CodePage codePage) {
+            void    StyledTextIOWriter_RTF::UseOutputCharSetEncoding (CodePage codePage)
+            {
 #if     qWideCharacters
                 fCurrentOutputCharSetEncoding = codePage;
 #else
@@ -4193,7 +4380,8 @@ RetryNextMatch:
             }
 
 #if     !qWideCharacters
-            void    StyledTextIOWriter_RTF::UseInputCharSetEncoding (CodePage codePage) {
+            void    StyledTextIOWriter_RTF::UseInputCharSetEncoding (CodePage codePage)
+            {
                 if (fCurrentInputCharSetEncoding != codePage) {
                     fCurrentInputCharSetEncoding = codePage;
                     fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
@@ -4201,7 +4389,8 @@ RetryNextMatch:
             }
 #endif
 
-            void    StyledTextIOWriter_RTF::SetCharactersSavedByName (const vector<pair<string, wchar_t> >& charactersSavedByName) {
+            void    StyledTextIOWriter_RTF::SetCharactersSavedByName (const vector<pair<string, wchar_t> >& charactersSavedByName)
+            {
                 fCharactersSavedByName = charactersSavedByName;
                 for (vector<pair<string, wchar_t> >::const_iterator i = fCharactersSavedByName.begin (); i != fCharactersSavedByName.end (); ++i) {
                     fCharactersSavedByName_Name2Char.insert (map<string, wchar_t>::value_type (i->first, i->second));
@@ -4209,7 +4398,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::Write () {
+            void    StyledTextIOWriter_RTF::Write ()
+            {
                 WriterContext   writerContext (*this);
 
                 write (RTFIO::kRTFOpenGroupChar);
@@ -4218,7 +4408,8 @@ RetryNextMatch:
                 write (RTFIO::kRTFCloseGroupChar);
             }
 
-            void    StyledTextIOWriter_RTF::WriteHeader (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::WriteHeader (WriterContext& writerContext)
+            {
                 WriteTag ("rtf1");
                 WriteDocCharset ();
                 WriteFontTable (writerContext);
@@ -4230,7 +4421,8 @@ RetryNextMatch:
                 WriteGenerator ();
             }
 
-            void    StyledTextIOWriter_RTF::WriteBody (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::WriteBody (WriterContext& writerContext)
+            {
                 /*
                  *  Walk through the characters, and output them one at a time. Walk
                  *  SIMULTANEOUSLY through the style run information, and output new controlling
@@ -4255,7 +4447,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, Led_tChar c) {
+            void    StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, Led_tChar c)
+            {
                 /*
                  *  Note - WriteBodyCharacter () gets called AFTER we've read the next character, so the GetCurSrcOffset () is pointing one past the
                  *  character we are processing. Thats why here we say "writerContext.GetCurSrcOffset ()-1"
@@ -4383,7 +4576,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c) {
+            void    StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c)
+            {
                 char    mbCharBuf[2];
                 size_t  mbCharCount =   2;
                 CodePageConverter (fCurrentOutputCharSetEncoding).MapFromUNICODE (&c, 1, mbCharBuf, &mbCharCount);
@@ -4414,7 +4608,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::WriteHexCharHelper (unsigned char c) {
+            void    StyledTextIOWriter_RTF::WriteHexCharHelper (unsigned char c)
+            {
                 // write hex char
                 char    buf[5];
                 buf[0] = '\\';
@@ -4425,7 +4620,8 @@ RetryNextMatch:
                 write (buf);
             }
 
-            void    StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
+            {
                 WriteTag ("pard");
                 if (writerContext.fInTable) {
                     WriteTag ("intbl");
@@ -4522,7 +4718,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* table) {
+            void    StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* table)
+            {
                 typedef StyledTextIOWriter_RTF::Table::CellInfo CellInfo;
                 RequireNotNull (table);
                 write ("\r\n"); // should write a newline every once in a while...
@@ -4622,7 +4819,8 @@ RetryNextMatch:
                 }
             }
 
-            bool    StyledTextIOWriter_RTF::PossiblyWriteUnknownRTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding) {
+            bool    StyledTextIOWriter_RTF::PossiblyWriteUnknownRTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
+            {
                 // Now see if it is an RTF embedding, and if so, write it out.
 #if     qNoDeclaringVarInsideCondition
                 RTFIO::UnknownRTFEmbedding* ee;
@@ -4645,7 +4843,8 @@ RetryNextMatch:
                 return false;
             }
 
-            bool    StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding) {
+            bool    StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
+            {
                 // Now see if it is an OLE RTF embedding, and if so, write it out.
 #if     qNoDeclaringVarInsideCondition
                 RTFIO::RTFOLEEmbedding* anRTFOLEEmbedding;
@@ -4705,7 +4904,8 @@ RetryNextMatch:
 // loses the image (sometimes only transiently).
 // Anyhow - Writing as DIB seems like the best option for the time being...
 #define qWriteAsDIB 1
-            bool    StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding) {
+            bool    StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
+            {
                 // Now see if it is an OLE RTF embedding, and if so, write it out.
 #if     qNoDeclaringVarInsideCondition
                 StandardDIBStyleMarker* aPictEmbedding;
@@ -4803,7 +5003,8 @@ RetryNextMatch:
                 vector<char>    fData;
             };
 #endif
-            void    StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding) {
+            void    StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
+            {
 #if     qBorlandNameInLocalFunctDeclarationSpaceCompilerBug
                 using namespace Led;
 #endif
@@ -4841,7 +5042,8 @@ RetryNextMatch:
                 write ("}");
             }
 
-            void    StyledTextIOWriter_RTF::WriteTag (const char* tagStr) {
+            void    StyledTextIOWriter_RTF::WriteTag (const char* tagStr)
+            {
                 RequireNotNull (tagStr);
                 Require (tagStr[0] != '\\');            // we write that ourselves
                 Require (::strchr (tagStr, ' ') == 0);  // we write trailing space, and better note be others!
@@ -4850,7 +5052,8 @@ RetryNextMatch:
                 write (' ');
             }
 
-            void    StyledTextIOWriter_RTF::WriteTagNValue (const char* tagStr, int value) {
+            void    StyledTextIOWriter_RTF::WriteTagNValue (const char* tagStr, int value)
+            {
                 RequireNotNull (tagStr);
                 Require (tagStr[0] != '\\');            // we write that ourselves
                 Require (::strchr (tagStr, ' ') == 0);  // we write trailing space, and better note be others!
@@ -4862,7 +5065,8 @@ RetryNextMatch:
                 write (' ');
             }
 
-            void    StyledTextIOWriter_RTF::WriteHexCharDataBlock (size_t nBytes, const void* resultData) {
+            void    StyledTextIOWriter_RTF::WriteHexCharDataBlock (size_t nBytes, const void* resultData)
+            {
                 const   unsigned char*  start   =   (const unsigned char*)resultData;
                 const   unsigned char*  end     =   start + nBytes;
                 for (const unsigned char* cur = start; cur != end; ++cur) {
@@ -4874,7 +5078,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::WriteRTFHexByte (unsigned char theByte) {
+            void    StyledTextIOWriter_RTF::WriteRTFHexByte (unsigned char theByte)
+            {
                 unsigned char   hiNibble    =   (theByte) >> 4;
                 unsigned char   lowNibble   =   (theByte) & 0xf;
                 Require (hiNibble <= 0xf);
@@ -4883,7 +5088,8 @@ RetryNextMatch:
                 write (ConvertWriteSingleHexDigit (lowNibble));
             }
 
-            void    StyledTextIOWriter_RTF::WriteDocCharset () {
+            void    StyledTextIOWriter_RTF::WriteDocCharset ()
+            {
                 switch (fDocumentCharacterSet) {
                     case    kCodePage_ANSI:
                         WriteTag ("ansi");
@@ -4903,7 +5109,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::WriteFontTable (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::WriteFontTable (WriterContext& writerContext)
+            {
                 write ('{');
                 WriteTag ("fonttbl");
 
@@ -4918,7 +5125,8 @@ RetryNextMatch:
                 write ('}');
             }
 
-            void    StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry) {
+            void    StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry)
+            {
                 write ('{');
 
                 WriteTagNValue ("f", entry.fFNum);
@@ -4965,7 +5173,8 @@ RetryNextMatch:
                 write ('}');
             }
 
-            void    StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext)
+            {
                 AssureColorTableBuilt (writerContext);
                 AssertNotNull (fColorTable);
 
@@ -4983,7 +5192,8 @@ RetryNextMatch:
                 write ('}');
             }
 
-            void    StyledTextIOWriter_RTF::WriteListTable () {
+            void    StyledTextIOWriter_RTF::WriteListTable ()
+            {
                 //tmphack...
                 RTFIO::ListTableEntry   lte;
                 lte.fListID = rand ();
@@ -5003,7 +5213,8 @@ RetryNextMatch:
                 write ("}\r\n");
             }
 
-            void    StyledTextIOWriter_RTF::WriteListTablesEntry (const RTFIO::ListTableEntry& entry) {
+            void    StyledTextIOWriter_RTF::WriteListTablesEntry (const RTFIO::ListTableEntry& entry)
+            {
                 write ("{");
                 WriteTag ("list");
                 WriteTagNValue ("listtemplateid", entry.fListTemplateID);
@@ -5039,7 +5250,8 @@ RetryNextMatch:
                 write ("}");
             }
 
-            void    StyledTextIOWriter_RTF::WriteListOverrideTablesEntry (const RTFIO::ListOverrideTableEntry& oEntry) {
+            void    StyledTextIOWriter_RTF::WriteListOverrideTablesEntry (const RTFIO::ListOverrideTableEntry& oEntry)
+            {
                 write ("{");
                 WriteTag ("listoverride");
                 WriteTagNValue ("listid", oEntry.fListID);
@@ -5048,7 +5260,8 @@ RetryNextMatch:
                 write ("}");
             }
 
-            void    StyledTextIOWriter_RTF::WriteGenerator () {
+            void    StyledTextIOWriter_RTF::WriteGenerator ()
+            {
                 write ("{\\*");
                 WriteTag ("generator");
                 write ("Sophist Solutions, Inc. Led RTF IO Engine - " qLed_ShortVersionString);
@@ -5056,7 +5269,8 @@ RetryNextMatch:
                 write ("}");
             }
 
-            void    StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne) {
+            void    StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne)
+            {
                 RequireNotNull (fFontTable);
 
                 WriteTag ("plain");
@@ -5103,12 +5317,14 @@ RetryNextMatch:
                 WriteTagNValue ("cf", fColorTable->LookupColor (newOne.GetTextColor ()));
             }
 
-            void    StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, const Led_FontSpecification& /*oldOne*/) {
+            void    StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, const Led_FontSpecification& /*oldOne*/)
+            {
                 // lets be simplistic to start with...
                 EmitBodyFontInfoChange (writerContext, newOne);
             }
 
-            void    StyledTextIOWriter_RTF::AssureColorTableBuilt (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::AssureColorTableBuilt (WriterContext& writerContext)
+            {
                 if (fColorTable == nullptr) {
                     fColorTable = new RTFIO::ColorTable ();
                     set<Led_Color>  colorsUsed;
@@ -5121,7 +5337,8 @@ RetryNextMatch:
 
 #if     qWindows
             namespace {
-                BOOL    FAR PASCAL  Save_Charset_EnumFontFamiliesProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int /*fontType*/, LPVOID pCharset) {
+                BOOL    FAR PASCAL  Save_Charset_EnumFontFamiliesProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int /*fontType*/, LPVOID pCharset)
+                {
                     BYTE*   charSet =   reinterpret_cast<BYTE*> (pCharset);
                     *charSet = pelf->elfLogFont.lfCharSet;
                     return 1;
@@ -5129,7 +5346,8 @@ RetryNextMatch:
             }
 #endif
 
-            void    StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
+            {
                 if (fFontTable == nullptr) {
                     fFontTable = new FontTable ();      // no need to try/catch cuz its stored in instance var, and will get destroyed
                     // on StyledTextIOWriter_RTF::DTOR
@@ -5182,7 +5400,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::AssureStyleRunSummaryBuilt (WriterContext& writerContext) {
+            void    StyledTextIOWriter_RTF::AssureStyleRunSummaryBuilt (WriterContext& writerContext)
+            {
                 if (fStyleRunSummary.empty ()) {
                     size_t  totalTextLength =   writerContext.GetSrcStream ().GetTotalTextLength ();
                     if (totalTextLength != 0) {
@@ -5191,7 +5410,8 @@ RetryNextMatch:
                 }
             }
 
-            void    StyledTextIOWriter_RTF::AssureListTableBuilt (WriterContext& /*writerContext*/) {
+            void    StyledTextIOWriter_RTF::AssureListTableBuilt (WriterContext& /*writerContext*/)
+            {
                 if (fListTable == nullptr) {
                     fListTable = new RTFIO::ListTables ();
                 }

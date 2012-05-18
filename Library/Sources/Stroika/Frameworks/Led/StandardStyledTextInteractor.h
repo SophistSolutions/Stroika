@@ -479,7 +479,8 @@ namespace   Stroika {
                         without having to change Led itself.</p>
                     <p>See also @'StandardStyledTextInteractor::CommandNames'.</p>
             */
-            inline  const StandardStyledTextInteractor::CommandNames&   StandardStyledTextInteractor::GetCommandNames () {
+            inline  const StandardStyledTextInteractor::CommandNames&   StandardStyledTextInteractor::GetCommandNames ()
+            {
 #if     qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
                 return sCommandNames ();
 #else
@@ -490,7 +491,8 @@ namespace   Stroika {
             @METHOD:        StandardStyledTextInteractor::SetCommandNames
             @DESCRIPTION:   <p>See @'StandardStyledTextInteractor::GetCommandNames'.</p>
             */
-            inline  void    StandardStyledTextInteractor::SetCommandNames (const StandardStyledTextInteractor::CommandNames& cmdNames) {
+            inline  void    StandardStyledTextInteractor::SetCommandNames (const StandardStyledTextInteractor::CommandNames& cmdNames)
+            {
 #if     qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
                 sCommandNames () = cmdNames;
 #else
@@ -501,11 +503,13 @@ namespace   Stroika {
 
 
 //  class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream
-            inline  TextStore&  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetTextStore () const {
+            inline  TextStore&  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetTextStore () const
+            {
                 EnsureNotNull (fTextStore);
                 return *fTextStore;
             }
-            inline  StandardStyledTextImager::StyleDatabasePtr  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const {
+            inline  StandardStyledTextImager::StyleDatabasePtr  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const
+            {
                 return fStyleRunDatabase;
             }
             /*
@@ -513,36 +517,44 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns where (in TextStore marker coordinates - not relative to the sinkstream) where the next character
                         will be inserted. See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart'</p>
             */
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const {
+            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const
+            {
                 return fInsertionStart;
             }
             /*
             @METHOD:        StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart
             @DESCRIPTION:   <p>See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart'</p>
             */
-            inline  void    StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart (size_t insertionStart) {
+            inline  void    StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart (size_t insertionStart)
+            {
                 fInsertionStart = insertionStart;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const {
+            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const
+            {
                 return fOriginalStart;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const {
+            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const
+            {
                 return fCachedText.size ();
             }
-            inline  const vector<Led_tChar>&    StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const {
+            inline  const vector<Led_tChar>&    StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const
+            {
                 return fCachedText;
             }
 
 
 
 //  class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const {
+            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const
+            {
                 return fCurOffset;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const {
+            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const
+            {
                 return fSelStart;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const {
+            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const
+            {
                 return fSelEnd;
             }
 

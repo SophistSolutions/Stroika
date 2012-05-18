@@ -16,19 +16,24 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
-            inline  bool operator<= (const Duration& lhs, const Duration& rhs) {
+            inline  bool operator<= (const Duration& lhs, const Duration& rhs)
+            {
                 return lhs.Compare (rhs) <= 0;
             }
-            inline  bool operator< (const Duration& lhs, const Duration& rhs) {
+            inline  bool operator< (const Duration& lhs, const Duration& rhs)
+            {
                 return lhs.Compare (rhs) < 0;
             }
-            inline  bool operator> (const Duration& lhs, const Duration& rhs) {
+            inline  bool operator> (const Duration& lhs, const Duration& rhs)
+            {
                 return lhs.Compare (rhs) > 0;
             }
-            inline  bool operator== (const Duration& lhs, const Duration& rhs) {
+            inline  bool operator== (const Duration& lhs, const Duration& rhs)
+            {
                 return lhs.Compare (rhs) == 0;
             }
-            inline  bool operator!= (const Duration& lhs, const Duration& rhs) {
+            inline  bool operator!= (const Duration& lhs, const Duration& rhs)
+            {
                 return lhs.Compare (rhs) != 0;
             }
 
@@ -37,7 +42,8 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            inline  void    _NoReturn_  DoThrow (const Time::Duration::FormatException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const Time::Duration::FormatException& e2Throw)
+            {
                 DbgTrace (L"Throwing Duration::FormatException");
                 throw e2Throw;
             }

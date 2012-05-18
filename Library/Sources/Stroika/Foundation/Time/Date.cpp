@@ -40,7 +40,8 @@ using   namespace   Time;
 
 #if     qPlatform_Windows
 namespace   {
-    SYSTEMTIME toSYSTEM_ (const Date& date) {
+    SYSTEMTIME toSYSTEM_ (const Date& date)
+    {
         SYSTEMTIME  st;
         memset (&st, 0, sizeof (st));
         MonthOfYear m   =   eEmptyMonthOfYear;
@@ -66,7 +67,8 @@ namespace   {
      *
      * (This code originally from NIHCL)
      */
-    Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year) {
+    Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
+    {
         if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
             return Date::kEmptyJulianRep;
         }
@@ -89,7 +91,8 @@ namespace   {
 }
 
 namespace   {
-    Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year) {
+    Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+    {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
         if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
@@ -106,13 +109,15 @@ namespace   {
 
 
 namespace   {
-    Date    AsDate_ (const tm& when) {
+    Date    AsDate_ (const tm& when)
+    {
         return Date (Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900)));
     }
 }
 
 namespace   {
-    tm  Date2TM_ (const Date& d) {
+    tm  Date2TM_ (const Date& d)
+    {
         struct tm tm;
         memset(&tm, 0, sizeof(tm));
         tm.tm_year = d.GetYear () - 1900;
@@ -136,7 +141,8 @@ namespace   {
  ********************************************************************************
  */
 Date::FormatException::FormatException ()
-    : StringException (L"Invalid Date Format") {
+    : StringException (L"Invalid Date Format")
+{
 }
 
 
@@ -154,18 +160,22 @@ const   Date    Date::kMin  =   Date (Date::JulianRepType (Date::kMinJulianRep))
 const   Date    Date::kMax  =   Date (Date::JulianRepType (UINT_MAX - 1));
 
 Date::Date ()
-    : fJulianDateRep_ (kEmptyJulianRep) {
+    : fJulianDateRep_ (kEmptyJulianRep)
+{
 }
 
 Date::Date (JulianRepType julianRep)
-    : fJulianDateRep_ (julianRep) {
+    : fJulianDateRep_ (julianRep)
+{
 }
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
-    : fJulianDateRep_ (jday_ (month, day, year)) {
+    : fJulianDateRep_ (jday_ (month, day, year))
+{
 }
 
-Date    Date::Parse (const wstring& rep, PrintFormat pf) {
+Date    Date::Parse (const wstring& rep, PrintFormat pf)
+{
     if (rep.empty ()) {
         return Date ();
     }
@@ -229,7 +239,8 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf) {
     }
 }
 
-Date    Date::Parse (const wstring& rep, const locale& l) {
+Date    Date::Parse (const wstring& rep, const locale& l)
+{
     if (rep.empty ()) {
         return Date ();
     }
@@ -252,7 +263,8 @@ Date    Date::Parse (const wstring& rep, const locale& l) {
 }
 
 #if     qPlatform_Windows
-Date    Date::Parse (const wstring& rep, LCID lcid) {
+Date    Date::Parse (const wstring& rep, LCID lcid)
+{
     if (rep.empty ()) {
         return Date ();
     }
@@ -272,7 +284,8 @@ Date    Date::Parse (const wstring& rep, LCID lcid) {
 }
 #endif
 
-wstring Date::Format (PrintFormat pf) const {
+wstring Date::Format (PrintFormat pf) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -325,7 +338,8 @@ wstring Date::Format (PrintFormat pf) const {
     }
 }
 
-wstring Date::Format (const locale& l) const {
+wstring Date::Format (const locale& l) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -341,7 +355,8 @@ wstring Date::Format (const locale& l) const {
 }
 
 #if     qPlatform_Windows
-wstring Date::Format (LCID lcid) const {
+wstring Date::Format (LCID lcid) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -357,7 +372,8 @@ wstring Date::Format (LCID lcid) const {
     }
 }
 
-wstring Date::Format (const TString& format, LCID lcid) const {
+wstring Date::Format (const TString& format, LCID lcid) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -375,7 +391,8 @@ wstring Date::Format (const TString& format, LCID lcid) const {
 #endif
 
 #if     qPlatform_Windows
-wstring Date::LongFormat (LCID lcid) const {
+wstring Date::LongFormat (LCID lcid) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -392,7 +409,8 @@ wstring Date::LongFormat (LCID lcid) const {
 }
 #endif
 
-Date    Date::AddDays (int dayCount) {
+Date    Date::AddDays (int dayCount)
+{
     if (empty ()) {
         // then assume was supposed to be relative to today
         *this = DateTime::GetToday ();
@@ -401,7 +419,8 @@ Date    Date::AddDays (int dayCount) {
     return *this;
 }
 
-Date::JulianRepType Date::DaysSince () const {
+Date::JulianRepType Date::DaysSince () const
+{
     int r   =   DayDifference (DateTime::GetToday (), *this);
     if (r < 0) {
         return 0;
@@ -411,7 +430,8 @@ Date::JulianRepType Date::DaysSince () const {
     }
 }
 
-Year    Date::GetYear () const {
+Year    Date::GetYear () const
+{
     MonthOfYear m   =   eEmptyMonthOfYear;
     DayOfMonth  d   =   eEmptyDayOfMonth;
     Year        y   =   eEmptyYear;
@@ -419,7 +439,8 @@ Year    Date::GetYear () const {
     return y;
 }
 
-MonthOfYear Date::GetMonth () const {
+MonthOfYear Date::GetMonth () const
+{
     MonthOfYear m   =   eEmptyMonthOfYear;
     DayOfMonth  d   =   eEmptyDayOfMonth;
     Year        y   =   eEmptyYear;
@@ -429,7 +450,8 @@ MonthOfYear Date::GetMonth () const {
     return m;
 }
 
-DayOfMonth  Date::GetDayOfMonth () const {
+DayOfMonth  Date::GetDayOfMonth () const
+{
     MonthOfYear m   =   eEmptyMonthOfYear;
     DayOfMonth  d   =   eEmptyDayOfMonth;
     Year        y   =   eEmptyYear;
@@ -447,7 +469,8 @@ DayOfMonth  Date::GetDayOfMonth () const {
  *
  * (This code originally from NIHCL)
  */
-void    Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const {
+void    Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
+{
     RequireNotNull (month);
     RequireNotNull (day);
     RequireNotNull (year);
@@ -496,7 +519,8 @@ void    Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const {
  ********************************************************************************
  */
 
-int Time::DayDifference (const Date& lhs, const Date& rhs) {
+int Time::DayDifference (const Date& lhs, const Date& rhs)
+{
     Require (not lhs.empty ());
     Require (not rhs.empty ());     // since unclear what diff would mean
     Date::JulianRepType l   =   lhs.GetJulianRep ();
@@ -535,7 +559,8 @@ int Time::DayDifference (const Date& lhs, const Date& rhs) {
  ********************************************************************************
  */
 
-int Time::YearDifference (const Date& lhs, const Date& rhs) {
+int Time::YearDifference (const Date& lhs, const Date& rhs)
+{
     Require (not lhs.empty ());     // since meaning of diff wouldn't make much sense
     Require (not rhs.empty ());     // ditto
 
@@ -557,7 +582,8 @@ int Time::YearDifference (const Date& lhs, const Date& rhs) {
     return diff;
 }
 
-float   Time::YearDifferenceF (const Date& lhs, const Date& rhs) {
+float   Time::YearDifferenceF (const Date& lhs, const Date& rhs)
+{
     Require (not lhs.empty ());     // since meaning of diff wouldn't make much sense
     Require (not rhs.empty ());     // ditto
     return DayDifference (lhs, rhs) / 365.25f;  //tmphack
@@ -573,7 +599,8 @@ float   Time::YearDifferenceF (const Date& lhs, const Date& rhs) {
  ***************************** GetFormattedAge **********************************
  ********************************************************************************
  */
-wstring Time::GetFormattedAge (const Date& birthDate, const Date& deathDate) {
+wstring Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
+{
     if (birthDate.empty ()) {
         return L"?";
     }
@@ -583,7 +610,8 @@ wstring Time::GetFormattedAge (const Date& birthDate, const Date& deathDate) {
     }
 }
 
-wstring Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit) {
+wstring Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
+{
     if (birthDate.empty ()) {
         return L"?";
     }

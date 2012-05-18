@@ -23,11 +23,13 @@ namespace   {
 
     map<SignalIDType, set<SignalHandlerType>>    sHandlers_;
 
-    bool    IsSigIgnore_ (const set<SignalHandlerType>& sigSet) {
+    bool    IsSigIgnore_ (const set<SignalHandlerType>& sigSet)
+    {
         return sigSet.size () == 1 and * sigSet.begin () == SignalHandlerRegistry::kIGNORED;
     }
 
-    void    MyHandler_ (int signal) {
+    void    MyHandler_ (int signal)
+    {
         Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
         DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
         set<SignalHandlerType>  handlers;
@@ -57,15 +59,18 @@ namespace   {
 
 const   SignalHandlerType   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
 
-SignalHandlerRegistry&  SignalHandlerRegistry::Get () {
+SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
+{
     static  SignalHandlerRegistry   sThe_;
     return sThe_;
 }
 
-SignalHandlerRegistry::SignalHandlerRegistry () {
+SignalHandlerRegistry::SignalHandlerRegistry ()
+{
 }
 
-set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const {
+set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
+{
     set<SignalIDType>   result;
     {
         AutoCriticalSection critSec (sCritSection_);
@@ -76,7 +81,8 @@ set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const {
     return result;
 }
 
-set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const {
+set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
+{
     AutoCriticalSection critSec (sCritSection_);
     map<SignalIDType, set<SignalHandlerType>>::const_iterator i = sHandlers_.find (signal);
     if (i == sHandlers_.end ()) {
@@ -87,15 +93,18 @@ set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType s
     }
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal) {
+void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)
+{
     SetSignalHandlers (signal, set<SignalHandlerType> ());
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandlerType handler) {
+void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandlerType handler)
+{
     SetSignalHandlers (signal, set<SignalHandlerType> (&handler, &handler + 1));
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers) {
+void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers)
+{
     Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
     AutoCriticalSection critSec (sCritSection_);
@@ -120,25 +129,29 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set
     }
 }
 
-void    SignalHandlerRegistry::AddSignalHandler (SignalIDType signal, SignalHandlerType handler) {
+void    SignalHandlerRegistry::AddSignalHandler (SignalIDType signal, SignalHandlerType handler)
+{
     set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
     s.insert (handler);
     SetSignalHandlers (signal, s);
 }
 
-void    SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler) {
+void    SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler)
+{
     set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
     Require (s.find (handler) != s.end ());
     s.erase (handler);
     SetSignalHandlers (signal, s);
 }
 
-void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal) {
+void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal)
+{
     DbgTrace (L"Serious Signal Error trapped: %s ... Aborting", SignalToName (signal).c_str ());
     abort ();
 }
 
-void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const set<SignalIDType>& excludedSignals) {
+void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const set<SignalIDType>& excludedSignals)
+{
     if (excludedSignals.find (SIGINT) == excludedSignals.end ())         {  SetSignalHandlers (SIGINT, handler);        }
     if (excludedSignals.find (SIGILL) == excludedSignals.end ())         {  SetSignalHandlers (SIGILL, handler);        }
     if (excludedSignals.find (SIGFPE) == excludedSignals.end ())         {  SetSignalHandlers (SIGFPE, handler);        }
@@ -166,7 +179,8 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType
  ************************** Execution::SignalToName *****************************
  ********************************************************************************
  */
-wstring Execution::SignalToName (SignalIDType signal) {
+wstring Execution::SignalToName (SignalIDType signal)
+{
     switch (signal) {
         case    SIGINT:
             return L"SIGINT";
@@ -230,7 +244,8 @@ wstring Execution::SignalToName (SignalIDType signal) {
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-void    Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal) {
+void    Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
+{
     Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
 #if     qPlatform_POSIX
     DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), static_cast<unsigned long> (h));
@@ -257,7 +272,8 @@ void    Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal) 
  */
 ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType signal)
     : fSignal_ (signal)
-    , fRestoreMask_ () {
+    , fRestoreMask_ ()
+{
     //DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
     sigset_t    mySet;
     sigemptyset (&mySet);
@@ -266,7 +282,8 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType sig
     Verify (pthread_sigmask (SIG_BLOCK,  &mySet, &fRestoreMask_) == 0);
 }
 
-ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal () {
+ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
+{
     //DbgTrace (L"ScopedBlockCurrentThreadSignal restoriing signals for %s", SignalToName (fSignal_).c_str ());
     Verify (pthread_sigmask (SIG_SETMASK,  &fRestoreMask_, nullptr) == 0);
 }

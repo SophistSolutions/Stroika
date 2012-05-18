@@ -14,14 +14,16 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
 
-            inline  TString         FileFormatException::GetFileName () const {
+            inline  TString         FileFormatException::GetFileName () const
+            {
                 return fFileName_;
             }
         }
 
         namespace   Execution {
             template    <>
-            inline  void    _NoReturn_  DoThrow (const IO::FileFormatException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const IO::FileFormatException& e2Throw)
+            {
                 DbgTrace (TSTR ("Throwing FileFormatException: fFileName = '%s'"), e2Throw.GetFileName ().c_str ());
                 throw e2Throw;
             }

@@ -36,15 +36,18 @@ BufferedBinaryOutputStream::BufferedBinaryOutputStream (BinaryOutputStream& real
     fBuffer_.reserve (kDefaultBufSize);
 }
 
-BufferedBinaryOutputStream::~BufferedBinaryOutputStream () {
+BufferedBinaryOutputStream::~BufferedBinaryOutputStream ()
+{
     Require (fBuffer_.size () == 0);        // require FLUSHED
 }
 
-size_t  BufferedBinaryOutputStream::GetBufferSize () const {
+size_t  BufferedBinaryOutputStream::GetBufferSize () const
+{
     return (fBuffer_.capacity ());
 }
 
-void    BufferedBinaryOutputStream::SetBufferSize (size_t bufSize) {
+void    BufferedBinaryOutputStream::SetBufferSize (size_t bufSize)
+{
     bufSize = max (bufSize, kMinBufSize_);
     if (bufSize < fBuffer_.size ()) {
         Flush ();
@@ -52,14 +55,16 @@ void    BufferedBinaryOutputStream::SetBufferSize (size_t bufSize) {
     fBuffer_.reserve (bufSize);
 }
 
-void    BufferedBinaryOutputStream::Abort () {
+void    BufferedBinaryOutputStream::Abort ()
+{
 #if     qDebug
     fAborted_ = true;   // for debug sake track this
 #endif
     fBuffer_.clear ();
 }
 
-void    BufferedBinaryOutputStream::Flush () {
+void    BufferedBinaryOutputStream::Flush ()
+{
     Require (not fAborted_ or fBuffer_.empty ());
     if (not fBuffer_.empty ()) {
         fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
@@ -68,7 +73,8 @@ void    BufferedBinaryOutputStream::Flush () {
     Ensure (fBuffer_.empty ());
 }
 
-void    BufferedBinaryOutputStream::_Write (const Byte* start, const Byte* end) override {
+void    BufferedBinaryOutputStream::_Write (const Byte* start, const Byte* end) override
+{
     Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
     Require (not fAborted_);
     /*

@@ -57,7 +57,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-            TextStore*  FlavorPackageExternalizer::PeekAtTextStore () const {
+            TextStore*  FlavorPackageExternalizer::PeekAtTextStore () const
+            {
                 return &fTextStore;
             }
 
@@ -67,7 +68,8 @@ namespace   Stroika {
                 given range. This can be for a Drag&Drop package, a ClipBoard package, or whatever
                 (see @'FlavorPackageExternalizer::ExternalizeBestFlavor').</p>
             */
-            void    FlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    FlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 ExternalizeFlavor_TEXT (flavorPackage, from, to);
             }
 
@@ -77,7 +79,8 @@ namespace   Stroika {
                 given range. This can be for a Drag&Drop package, a ClipBoard package, or whatever
                 (see @'FlavorPackageExternalizer::ExternalizeFlavors').</p>
             */
-            void    FlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    FlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 ExternalizeFlavor_TEXT (flavorPackage, from, to);
             }
 
@@ -89,7 +92,8 @@ namespace   Stroika {
                     <p>This method externalizes in the native OS text format (with any embedded NUL-characters
                 in the text eliminated).</p>
             */
-            void    FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 size_t  start   =   from;
                 size_t  end     =   to;
                 Require (start >= 0);
@@ -152,11 +156,13 @@ namespace   Stroika {
              *************************** FlavorPackageInternalizer **************************
              ********************************************************************************
              */
-            TextStore*  FlavorPackageInternalizer::PeekAtTextStore () const {
+            TextStore*  FlavorPackageInternalizer::PeekAtTextStore () const
+            {
                 return &fTextStore;
             }
 
-            bool    FlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    FlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 if (InternalizeFlavor_FILE (flavorPackage, from, to)) {
                     return true;
                 }
@@ -166,7 +172,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 if (flavorPackage.GetFlavorAvailable_TEXT ()) {
                     size_t          length      =   flavorPackage.GetFlavorSize (kTEXTClipFormat);
                     Led_ClipFormat  textFormat  =   kTEXTClipFormat;
@@ -213,7 +220,8 @@ namespace   Stroika {
                 }
             }
 
-            bool    FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 // For now, we ingore any files beyond the first one (Mac&PC)...LGP 960522
                 if (flavorPackage.GetFlavorAvailable (kFILEClipFormat)) {
                     size_t  fileSpecBufferLength        =   flavorPackage.GetFlavorSize (kFILEClipFormat);
@@ -260,7 +268,8 @@ namespace   Stroika {
                 Led_ClipFormat* suggestedClipFormat,
                 CodePage* suggestedCodePage,
                 size_t from, size_t to
-            ) {
+            )
+            {
                 using   Stroika::Foundation::IO::FileSystem::FileReader;
                 FileReader  fileReader (fileName);
                 const Byte* fileBuf = fileReader.GetFileStart ();
@@ -286,7 +295,8 @@ namespace   Stroika {
 #endif
                 Led_ClipFormat* suggestedClipFormat,
                 CodePage* suggestedCodePage
-            ) {
+            )
+            {
 #if     qMacOS
                 // Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
                 // called from elsewhere...
@@ -325,7 +335,8 @@ namespace   Stroika {
                 CodePage* suggestedCodePage,
                 size_t from, size_t to,
                 const void* rawBytes, size_t nRawBytes
-            ) {
+            )
+            {
                 /*
                  *  If suggesedFormat UNKNOWN - treat as text.
                  *
@@ -393,7 +404,8 @@ namespace   Stroika {
             map<Led_ClipFormat, vector<char> >   ReaderClipboardFlavorPackage::sPrivateClipData;
 #endif
 
-            bool    ReaderClipboardFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const {
+            bool    ReaderClipboardFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
+            {
 #if     qXWindows
                 map<Led_ClipFormat, vector<char> >::const_iterator i = sPrivateClipData.find (clipFormat);
                 return (i != sPrivateClipData.end ());
@@ -402,7 +414,8 @@ namespace   Stroika {
 #endif
             }
 
-            size_t  ReaderClipboardFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const {
+            size_t  ReaderClipboardFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
+            {
 #if     qXWindows
                 map<Led_ClipFormat, vector<char> >::const_iterator i = sPrivateClipData.find (clipFormat);
                 if (i == sPrivateClipData.end ()) {
@@ -422,7 +435,8 @@ namespace   Stroika {
 #endif
             }
 
-            size_t  ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const {
+            size_t  ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
+            {
 #if     qXWindows
                 map<Led_ClipFormat, vector<char> >::const_iterator i = sPrivateClipData.find (clipFormat);
                 if (i == sPrivateClipData.end ()) {
@@ -462,7 +476,8 @@ namespace   Stroika {
              **************************** WriterClipboardFlavorPackage **********************
              ********************************************************************************
              */
-            void    WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf) {
+            void    WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
+            {
 #if     qMacOS
 #if     TARGET_CARBON
                 ScrapRef            scrap   =   nullptr;
@@ -511,7 +526,8 @@ namespace   Stroika {
             ReadWriteMemBufferPackage::ReadWriteMemBufferPackage ():
                 ReaderFlavorPackage (),
                 WriterFlavorPackage (),
-                fPackages () {
+                fPackages ()
+            {
                 // Tuned to the MWERKS CWPro1 STL implemenation. If you don't call vector::reserve () it uses 361 (pagesize/size(T) apx)
                 // which means this is HUGE. And since we keep several of these (one per char typed for undo), it helps mem usage
                 // alot to keep this down.
@@ -523,10 +539,12 @@ namespace   Stroika {
                 fPackages.reserve (1);
             }
 
-            ReadWriteMemBufferPackage::~ReadWriteMemBufferPackage () {
+            ReadWriteMemBufferPackage::~ReadWriteMemBufferPackage ()
+            {
             }
 
-            bool    ReadWriteMemBufferPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const {
+            bool    ReadWriteMemBufferPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
+            {
                 for (size_t i = 0; i < fPackages.size (); i++) {
                     if (fPackages[i].fFormat == clipFormat) {
                         return true;
@@ -535,7 +553,8 @@ namespace   Stroika {
                 return false;
             }
 
-            size_t  ReadWriteMemBufferPackage::GetFlavorSize (Led_ClipFormat clipFormat) const {
+            size_t  ReadWriteMemBufferPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
+            {
                 for (size_t i = 0; i < fPackages.size (); i++) {
                     if (fPackages[i].fFormat == clipFormat) {
                         return fPackages[i].fData.size ();
@@ -545,7 +564,8 @@ namespace   Stroika {
                 return 0;
             }
 
-            size_t  ReadWriteMemBufferPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const {
+            size_t  ReadWriteMemBufferPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
+            {
                 for (size_t i = 0; i < fPackages.size (); i++) {
                     if (fPackages[i].fFormat == clipFormat) {
                         size_t  copyNBytes  =   Led_Min (bufSize, fPackages[i].fData.size ());
@@ -559,7 +579,8 @@ namespace   Stroika {
                 return 0;
             }
 
-            void    ReadWriteMemBufferPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf) {
+            void    ReadWriteMemBufferPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
+            {
                 PackageRecord   pr;
                 pr.fFormat = clipFormat;
                 const char* cb  =   reinterpret_cast<const char*> (buf);

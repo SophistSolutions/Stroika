@@ -17,10 +17,12 @@ namespace   Stroika {
     namespace   Foundation  {
         namespace   IO {
 
-            inline  TString         FileAccessException::GetFileName () const {
+            inline  TString         FileAccessException::GetFileName () const
+            {
                 return fFileName_;
             }
-            inline  FileAccessMode  FileAccessException::GetFileAccessMode () const {
+            inline  FileAccessMode  FileAccessException::GetFileAccessMode () const
+            {
                 return fFileAccessMode_;
             }
         }
@@ -28,7 +30,8 @@ namespace   Stroika {
         namespace   Execution {
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const IO::FileAccessException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const IO::FileAccessException& e2Throw)
+            {
                 DbgTrace (TSTR ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.GetFileName ().c_str (), e2Throw.GetFileAccessMode ());
                 throw e2Throw;
             }

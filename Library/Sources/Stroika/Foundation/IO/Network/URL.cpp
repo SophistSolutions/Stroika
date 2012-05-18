@@ -31,7 +31,8 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 namespace   {
-    inline  int ConvertReadSingleHexDigit_ (char digit) {
+    inline  int ConvertReadSingleHexDigit_ (char digit)
+    {
         if (isupper (digit)) {
             digit = tolower (digit);
         }
@@ -53,7 +54,8 @@ namespace   {
  ********************* Network::GetDefaultPortForProtocol ***********************
  ********************************************************************************
  */
-int     Network::GetDefaultPortForProtocol (const wstring& proto) {
+int     Network::GetDefaultPortForProtocol (const wstring& proto)
+{
     // From http://www.iana.org/assignments/port-numbers
     if (proto == L"")       {       return 80;  }
     if (proto == L"http")   {       return 80;  }
@@ -82,12 +84,14 @@ URL::URL ()
     , fPort (kDefaultPort)
     , fRelPath ()
     , fQuery ()
-    , fFragment () {
+    , fFragment ()
+{
 }
 
 #if qPlatform_Windows
 namespace   {
-    void    OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query) {
+    void    OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
+    {
         RequireNotNull (protocol);
         RequireNotNull (host);
         RequireNotNull (relPath);
@@ -142,7 +146,8 @@ URL::URL (const wstring& w)
     , fPort (kDefaultPort)
     , fRelPath ()
     , fQuery ()
-    , fFragment () {
+    , fFragment ()
+{
     if (w.empty ()) {
         return;
     }
@@ -268,7 +273,8 @@ URL::URL (const wstring& protocol, const wstring& host, int portNumber, const ws
     , fPort (portNumber)
     , fRelPath (relPath)
     , fQuery (query)
-    , fFragment (fragment) {
+    , fFragment (fragment)
+{
 }
 
 URL::URL (const wstring& protocol, const wstring& host, const wstring& relPath, const wstring& query, const wstring& fragment)
@@ -277,10 +283,12 @@ URL::URL (const wstring& protocol, const wstring& host, const wstring& relPath, 
     , fPort (kDefaultPort)
     , fRelPath (relPath)
     , fQuery (query)
-    , fFragment (fragment) {
+    , fFragment (fragment)
+{
 }
 
-URL URL::ParseHostRelativeURL (const wstring& w) {
+URL URL::ParseHostRelativeURL (const wstring& w)
+{
     URL url;
     {
         url.fRelPath = w;
@@ -308,12 +316,14 @@ URL URL::ParseHostRelativeURL (const wstring& w) {
     return url;
 }
 
-bool    URL::IsSecure () const {
+bool    URL::IsSecure () const
+{
     // should be large list of items - and maybe do soemthing to assure case matching handled properly, if needed?
     return fProtocol == L"https" or fProtocol == L"ftps" or fProtocol == L"ldaps";
 }
 
-wstring URL::GetURL () const {
+wstring URL::GetURL () const
+{
     wstring result;
     result.reserve (10 + fHost.length () + fRelPath.length () + fQuery.length () + fFragment.length ());
 
@@ -345,7 +355,8 @@ wstring URL::GetURL () const {
     return result;
 }
 
-wstring URL::GetHostRelPathDir () const {
+wstring URL::GetHostRelPathDir () const
+{
     wstring result  =   fRelPath;
     size_t  i   =   result.rfind ('/');
     if (i == wstring::npos) {
@@ -357,7 +368,8 @@ wstring URL::GetHostRelPathDir () const {
     return result;
 }
 
-void    URL::clear () {
+void    URL::clear ()
+{
     fProtocol.clear ();
     fHost.clear ();
     fRelPath.clear ();
@@ -367,11 +379,13 @@ void    URL::clear () {
     Ensure (empty ());
 }
 
-bool    URL::empty () const {
+bool    URL::empty () const
+{
     return fProtocol.empty () and fHost.empty () and fRelPath.empty () and fQuery.empty () and fFragment.empty () and fPort == kDefaultPort;
 }
 
-bool    Network::operator== (const URL& lhs, const URL& rhs) {
+bool    Network::operator== (const URL& lhs, const URL& rhs)
+{
     // A simpler way to compare - and probably better - is if they both produce the same URL string, they are the
     // same URL (since GetURL normalizes output)
     //  -- LGP 2009-01-17
@@ -444,7 +458,8 @@ http://ABC.com:/%7esmith/home.html
  *********************** EncodeURLQueryStringField ******************************
  ********************************************************************************
  */
-string  Network::EncodeURLQueryStringField (const wstring& s) {
+string  Network::EncodeURLQueryStringField (const wstring& s)
+{
     //
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
@@ -488,7 +503,8 @@ string  Network::EncodeURLQueryStringField (const wstring& s) {
 namespace   {
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
-    void    InitURLQueryDecoder_ (map<wstring, wstring>* m, const string& utf8Query) {
+    void    InitURLQueryDecoder_ (map<wstring, wstring>* m, const string& utf8Query)
+    {
         size_t  utfqLen =   utf8Query.length ();
         for (size_t i = 0; i < utfqLen; ) {
             size_t  e   =   utf8Query.find ('&', i);
@@ -521,23 +537,27 @@ namespace   {
     }
 }
 URLQueryDecoder::URLQueryDecoder (const wstring& query):
-    fMap () {
+    fMap ()
+{
     InitURLQueryDecoder_ (&fMap, WideStringToUTF8 (query));
 }
 
 URLQueryDecoder::URLQueryDecoder (const string& query):
-    fMap () {
+    fMap ()
+{
     InitURLQueryDecoder_ (&fMap, query);
 }
 
-void    URLQueryDecoder::RemoveFieldIfAny (const wstring& idx) {
+void    URLQueryDecoder::RemoveFieldIfAny (const wstring& idx)
+{
     map<wstring, wstring>::iterator  i   =   fMap.find (idx);
     if (i != fMap.end ()) {
         fMap.erase (i);
     }
 }
 
-wstring URLQueryDecoder::ComputeQueryString () const {
+wstring URLQueryDecoder::ComputeQueryString () const
+{
     string  result;
     for (map<wstring, wstring>::const_iterator i = fMap.begin (); i != fMap.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (result);

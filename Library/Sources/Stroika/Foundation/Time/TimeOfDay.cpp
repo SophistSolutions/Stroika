@@ -41,7 +41,8 @@ using   namespace   Time;
 
 #if     qPlatform_Windows
 namespace   {
-    wstring GetLocaleInfo_ (LCID Locale, LCTYPE LCType) {
+    wstring GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
+    {
         int sizeNeeded  =   ::GetLocaleInfoW (Locale, LCType, nullptr, 0);
         SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
         Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
@@ -53,7 +54,8 @@ namespace   {
 
 #if     qPlatform_Windows
 namespace   {
-    TimeOfDay   mkTimeOfDay_ (const SYSTEMTIME& sysTime) {
+    TimeOfDay   mkTimeOfDay_ (const SYSTEMTIME& sysTime)
+    {
         WORD    hour = max (sysTime.wHour, static_cast<WORD> (0));
         hour = min (hour, static_cast<WORD> (23));
         WORD    minute = max (sysTime.wMinute, static_cast<WORD> (0));
@@ -67,7 +69,8 @@ namespace   {
 
 #if     qPlatform_Windows
 namespace   {
-    wstring GenTimeStr4TOD_ (LCID lcid, unsigned int hour, unsigned int minutes, unsigned int seconds) {
+    wstring GenTimeStr4TOD_ (LCID lcid, unsigned int hour, unsigned int minutes, unsigned int seconds)
+    {
 // Consider rewriting using Win32 GetTimeFormat () - and just futzing with teh format string for the case
 // of zero minutes/seconds?? That might be more robust in case of changes in adding special tokens for some cultures/etc?
 //
@@ -210,7 +213,8 @@ namespace   {
  ********************************************************************************
  */
 TimeOfDay::FormatException::FormatException ()
-    : StringException (L"Invalid Time Format") {
+    : StringException (L"Invalid Time Format")
+{
 }
 
 
@@ -227,14 +231,17 @@ const   TimeOfDay   TimeOfDay::kMin =   TimeOfDay (0);
 const   TimeOfDay   TimeOfDay::kMax =   TimeOfDay (kMaxSecondsPerDay - 1);
 
 TimeOfDay::TimeOfDay ()
-    : fTime_ (-1) {
+    : fTime_ (-1)
+{
 }
 
 TimeOfDay::TimeOfDay (uint32_t t)
-    : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1)) {
+    : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
+{
 }
 
-TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf) {
+TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
+{
     if (rep.empty ()) {
         return TimeOfDay ();
     }
@@ -275,7 +282,8 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf) {
     }
 }
 
-TimeOfDay   TimeOfDay::Parse (const wstring& rep, const locale& l) {
+TimeOfDay   TimeOfDay::Parse (const wstring& rep, const locale& l)
+{
     if (rep.empty ()) {
         return TimeOfDay ();
     }
@@ -337,7 +345,8 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, const locale& l) {
 }
 
 #if     qPlatform_Windows
-TimeOfDay   TimeOfDay::Parse (const wstring& rep, LCID lcid) {
+TimeOfDay   TimeOfDay::Parse (const wstring& rep, LCID lcid)
+{
     if (rep.empty ()) {
         return TimeOfDay ();
     }
@@ -368,7 +377,8 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, LCID lcid) {
 }
 #endif
 
-wstring TimeOfDay::Format (PrintFormat pf) const {
+wstring TimeOfDay::Format (PrintFormat pf) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -396,7 +406,8 @@ wstring TimeOfDay::Format (PrintFormat pf) const {
     }
 }
 
-wstring TimeOfDay::Format (const locale& l) const {
+wstring TimeOfDay::Format (const locale& l) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -417,7 +428,8 @@ wstring TimeOfDay::Format (const locale& l) const {
 }
 
 #if     qPlatform_Windows
-wstring TimeOfDay::Format (LCID lcid) const {
+wstring TimeOfDay::Format (LCID lcid) const
+{
     if (empty ()) {
         return wstring ();
     }
@@ -433,7 +445,8 @@ wstring TimeOfDay::Format (LCID lcid) const {
 }
 #endif
 
-void    TimeOfDay::ClearSecondsField () {
+void    TimeOfDay::ClearSecondsField ()
+{
     int hour = fTime_ / (60 * 60);
     int minutes = (fTime_ - hour * 60 * 60) / 60;
     int secs = fTime_ - hour * 60 * 60 - minutes * 60;

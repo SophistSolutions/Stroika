@@ -41,7 +41,8 @@ const   TChar   FileSystem::kPathComponentSeperator =   '/';
  ************** FileSystem::AssureDirectoryPathSlashTerminated ******************
  ********************************************************************************
  */
-TString FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath) {
+TString FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath)
+{
     if (dirPath.empty ()) {
         AssertNotReached ();    // not sure if this is an error or not. Not sure how code used.
         // put assert in there to find out... Probably should THROW!
@@ -71,7 +72,8 @@ TString FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath) 
  *********************** FileSystem::SafeFilenameChars **************************
  ********************************************************************************
  */
-TString FileSystem::SafeFilenameChars (const TString& s) {
+TString FileSystem::SafeFilenameChars (const TString& s)
+{
     wstring tmp =   TString2Wide (s);   // analyze as wide-char string so we don't mis-identify
     // characters (by looking at lead bytes etc)
 Again:
@@ -106,7 +108,8 @@ Again:
  ********************* FileSystem::AssureLongFileName ***************************
  ********************************************************************************
  */
-TString FileSystem::AssureLongFileName (const TString& fileName) {
+TString FileSystem::AssureLongFileName (const TString& fileName)
+{
 #if     qPlatform_Windows
     DWORD   r   =   ::GetLongPathName (fileName.c_str (), nullptr, 0);
     if (r != 0) {
@@ -129,7 +132,8 @@ TString FileSystem::AssureLongFileName (const TString& fileName) {
  ************************** FileSystem::GetFileSuffix ***************************
  ********************************************************************************
  */
-TString FileSystem::GetFileSuffix (const TString& fileName) {
+TString FileSystem::GetFileSuffix (const TString& fileName)
+{
 #if     qPlatform_Windows
     TString useFName    =   fileName;
 
@@ -167,7 +171,8 @@ TString FileSystem::GetFileSuffix (const TString& fileName) {
  ************************ FileSystem::GetFileBaseName ***************************
  ********************************************************************************
  */
-TString FileSystem::GetFileBaseName (const TString& pathName) {
+TString FileSystem::GetFileBaseName (const TString& pathName)
+{
 #if     qPlatform_Windows
     TString useFName    =   pathName;
 
@@ -202,7 +207,8 @@ TString FileSystem::GetFileBaseName (const TString& pathName) {
  ************************ FileSystem::StripFileSuffix ***************************
  ********************************************************************************
  */
-TString FileSystem::StripFileSuffix (const TString& pathName) {
+TString FileSystem::StripFileSuffix (const TString& pathName)
+{
     TString useFName    =   pathName;
     TString fileSuffix  =   GetFileSuffix (pathName);
     if (useFName.length () > fileSuffix.length ()) {
@@ -223,7 +229,8 @@ TString FileSystem::StripFileSuffix (const TString& pathName) {
  ************************ FileSystem::GetFileDirectory **************************
  ********************************************************************************
  */
-TString FileSystem::GetFileDirectory (const TString& pathName) {
+TString FileSystem::GetFileDirectory (const TString& pathName)
+{
     // could use splitpath, but this maybe better, since works with \\UNCNAMES
     TString tmp     =   pathName;
     size_t  idx     =   tmp.rfind (kPathComponentSeperator);

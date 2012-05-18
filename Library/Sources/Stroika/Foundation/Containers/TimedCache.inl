@@ -30,7 +30,8 @@ namespace   Stroika {
                 Require (fTimeout > 0.0f);
             }
             template    <typename   KEY, typename RESULT>
-            void    TimedCache<KEY, RESULT>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds) {
+            void    TimedCache<KEY, RESULT>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
+            {
                 Require (timeoutInSeconds > 0.0f);
                 if (fTimeout != timeoutInSeconds) {
                     ClearIfNeeded_ ();
@@ -39,7 +40,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   KEY, typename RESULT>
-            bool    TimedCache<KEY, RESULT>::AccessElement (const KEY& key, RESULT* result) {
+            bool    TimedCache<KEY, RESULT>::AccessElement (const KEY& key, RESULT* result)
+            {
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult>::iterator i = fMap.find (key);
                 if (i == fMap.end ()) {
@@ -62,7 +64,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   KEY, typename RESULT>
-            void    TimedCache<KEY, RESULT>::AddElement (const KEY& key, const RESULT& result) {
+            void    TimedCache<KEY, RESULT>::AddElement (const KEY& key, const RESULT& result)
+            {
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult>::iterator i = fMap.find (key);
                 if (i == fMap.end ()) {
@@ -73,17 +76,20 @@ namespace   Stroika {
                 }
             }
             template    <typename   KEY, typename RESULT>
-            inline  void    TimedCache<KEY, RESULT>::DoBookkeeping () {
+            inline  void    TimedCache<KEY, RESULT>::DoBookkeeping ()
+            {
                 ClearOld_ ();
             }
             template    <typename   KEY, typename RESULT>
-            inline  void    TimedCache<KEY, RESULT>::ClearIfNeeded_ () {
+            inline  void    TimedCache<KEY, RESULT>::ClearIfNeeded_ ()
+            {
                 if (fNextAutoClearAt < Time::GetTickCount ()) {
                     ClearOld_ ();
                 }
             }
             template    <typename   KEY, typename RESULT>
-            void    TimedCache<KEY, RESULT>::ClearOld_ () {
+            void    TimedCache<KEY, RESULT>::ClearOld_ ()
+            {
                 Stroika::Foundation::Time::DurationSecondsType  now =   Time::GetTickCount ();
                 fNextAutoClearAt = now + fTimeout / 2.0f; // somewhat arbitrary how far into the future we do this...
                 Stroika::Foundation::Time::DurationSecondsType  lastAccessThreshold =   now - fTimeout;
@@ -98,7 +104,8 @@ namespace   Stroika {
             }
 #if     qKeepTimedCacheStats
             template    <typename   KEY, typename RESULT>
-            void    TimedCache<KEY, RESULT>::DbgTraceStats (const TChar* label) const {
+            void    TimedCache<KEY, RESULT>::DbgTraceStats (const TChar* label) const
+            {
                 size_t  total   =   fCachedCollected_Hits + fCachedCollected_Misses;
                 if (total == 0) {
                     total = 1;  // avoid divide by zero

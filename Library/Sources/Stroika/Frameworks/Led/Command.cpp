@@ -42,11 +42,13 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the name associated with a command. This is used for UI purposes in constructing the
                 text of the Undo command name.</p>
             */
-            const Led_SDK_Char* Command::GetName () const {
+            const Led_SDK_Char* Command::GetName () const
+            {
                 return Led_SDK_TCHAROF ("");
             }
 
-            bool    Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/) {
+            bool    Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
+            {
                 return false;
             }
 
@@ -59,15 +61,18 @@ namespace   Stroika {
              ******************************** CommandHandler ********************************
              ********************************************************************************
              */
-            CommandHandler::CommandHandler () {
+            CommandHandler::CommandHandler ()
+            {
             }
 
-            bool    CommandHandler::PostUpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/) {
+            bool    CommandHandler::PostUpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
                 return false;
             }
 
-            size_t  CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize) {
+            size_t  CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
+            {
                 const   char    kCantUndo[] =   "Can't Undo";
                 const   char    kUndo[] =       "Undo";
                 const   char    kReUndo[]   =   "Redo";
@@ -105,14 +110,16 @@ namespace   Stroika {
             {
             }
 
-            void    SingleUndoCommandHandler::Post (Command* newCommand) {
+            void    SingleUndoCommandHandler::Post (Command* newCommand)
+            {
                 Require (not fDoingCommands);
                 IdleManager::NonIdleContext nonIdleContext;
                 delete fLastCmd;
                 fLastCmd = newCommand;
             }
 
-            bool    SingleUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) {
+            bool    SingleUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
                 if (fLastCmd != nullptr) {
                     return fLastCmd->UpdateSimpleTextInsert (insertAt, c);
@@ -120,13 +127,16 @@ namespace   Stroika {
                 return false;
             }
 
-            void    SingleUndoCommandHandler::BreakInGroupedCommands () {
+            void    SingleUndoCommandHandler::BreakInGroupedCommands ()
+            {
             }
 
-            void    SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& /*cmdName*/) {
+            void    SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& /*cmdName*/)
+            {
             }
 
-            void    SingleUndoCommandHandler::DoUndo (TextInteractor& interactor) {
+            void    SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
+            {
                 Require (CanUndo ());
 
                 RequireNotNull (fLastCmd);
@@ -150,7 +160,8 @@ namespace   Stroika {
 #endif
             }
 
-            void    SingleUndoCommandHandler::DoRedo (TextInteractor& interactor) {
+            void    SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
+            {
                 Require (CanRedo ());
                 RequireNotNull (fLastCmd);
                 Require (not GetDone ());
@@ -173,24 +184,29 @@ namespace   Stroika {
 #endif
             }
 
-            void    SingleUndoCommandHandler::Commit () {
+            void    SingleUndoCommandHandler::Commit ()
+            {
                 delete fLastCmd;
                 fLastCmd = nullptr;
             }
 
-            bool    SingleUndoCommandHandler::CanUndo () {
+            bool    SingleUndoCommandHandler::CanUndo ()
+            {
                 return fLastCmd != nullptr and GetDone ();
             }
 
-            bool    SingleUndoCommandHandler::CanRedo () {
+            bool    SingleUndoCommandHandler::CanRedo ()
+            {
                 return fLastCmd != nullptr and not GetDone ();
             }
 
-            bool    SingleUndoCommandHandler::GetDone () const {
+            bool    SingleUndoCommandHandler::GetDone () const
+            {
                 return (fLastCmd != nullptr and fLastCmd->GetDone ());
             }
 
-            const Led_SDK_Char* SingleUndoCommandHandler::GetUndoCmdName () {
+            const Led_SDK_Char* SingleUndoCommandHandler::GetUndoCmdName ()
+            {
                 if (CanUndo ()) {
                     return fLastCmd->GetName ();
                 }
@@ -199,7 +215,8 @@ namespace   Stroika {
                 }
             }
 
-            const Led_SDK_Char* SingleUndoCommandHandler::GetRedoCmdName () {
+            const Led_SDK_Char* SingleUndoCommandHandler::GetRedoCmdName ()
+            {
                 if (CanRedo ()) {
                     return fLastCmd->GetName ();
                 }
@@ -232,11 +249,13 @@ namespace   Stroika {
             {
             }
 
-            MultiLevelUndoCommandHandler::~MultiLevelUndoCommandHandler () {
+            MultiLevelUndoCommandHandler::~MultiLevelUndoCommandHandler ()
+            {
                 Commit ();  // just to avoid memory leak...
             }
 
-            void    MultiLevelUndoCommandHandler::Post (Command* newCommand) {
+            void    MultiLevelUndoCommandHandler::Post (Command* newCommand)
+            {
                 RequireNotNull (newCommand);
                 Require (not fDoingCommands);
 
@@ -313,7 +332,8 @@ namespace   Stroika {
                 fUndoCursor = fCommands.size ();
             }
 
-            bool    MultiLevelUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) {
+            bool    MultiLevelUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
                 if (fUndoCursor != fCommands.size ()) {
                     // cannot update last command with undo info if we've undone anything on stack
@@ -326,7 +346,8 @@ namespace   Stroika {
                 return false;
             }
 
-            void    MultiLevelUndoCommandHandler::BreakInGroupedCommands () {
+            void    MultiLevelUndoCommandHandler::BreakInGroupedCommands ()
+            {
                 size_t  commandListLen  =   fCommands.size ();
                 /*
                  *  Unless we are at the end of a sequence of commands, don't do a break (cuz it would
@@ -341,13 +362,15 @@ namespace   Stroika {
                 }
             }
 
-            void    MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) {
+            void    MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+            {
                 if (fCommands.size () != 0 and fCommands.back () != nullptr and fCommands.back ()->GetName () != cmdName) {
                     BreakInGroupedCommands ();
                 }
             }
 
-            void    MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor) {
+            void    MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
+            {
                 Require (CanUndo ());
 
                 IdleManager::NonIdleContext nonIdleContext;
@@ -381,7 +404,8 @@ namespace   Stroika {
                 Assert (fUndoneGroupCount <= fCommandGroupCount);
             }
 
-            void    MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor) {
+            void    MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
+            {
                 Require (CanRedo ());
 
                 IdleManager::NonIdleContext nonIdleContext;
@@ -421,7 +445,8 @@ namespace   Stroika {
                 fUndoneGroupCount--;
             }
 
-            void    MultiLevelUndoCommandHandler::Commit () {
+            void    MultiLevelUndoCommandHandler::Commit ()
+            {
                 for (size_t i = 0; i < fCommands.size (); i++) {
                     delete fCommands[i];
                 }
@@ -431,15 +456,18 @@ namespace   Stroika {
                 fCommandGroupCount = 0;
             }
 
-            bool    MultiLevelUndoCommandHandler::CanUndo () {
+            bool    MultiLevelUndoCommandHandler::CanUndo ()
+            {
                 return (fCommandGroupCount > fUndoneGroupCount);
             }
 
-            bool    MultiLevelUndoCommandHandler::CanRedo () {
+            bool    MultiLevelUndoCommandHandler::CanRedo ()
+            {
                 return (fUndoneGroupCount > 0);
             }
 
-            const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName () {
+            const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
+            {
                 if (CanUndo ()) {
                     size_t  start;
                     size_t  end;
@@ -453,7 +481,8 @@ namespace   Stroika {
                 }
             }
 
-            const Led_SDK_Char* MultiLevelUndoCommandHandler::GetRedoCmdName () {
+            const Led_SDK_Char* MultiLevelUndoCommandHandler::GetRedoCmdName ()
+            {
                 if (CanRedo ()) {
                     size_t  start;
                     size_t  end;
@@ -472,14 +501,16 @@ namespace   Stroika {
             @DESCRIPTION:   <p>See @'MultiLevelUndoCommandHandler::GetMaxUnDoLevels'</p>
 
             */
-            void    MultiLevelUndoCommandHandler::SetMaxUnDoLevels (size_t maxUndoLevels) {
+            void    MultiLevelUndoCommandHandler::SetMaxUnDoLevels (size_t maxUndoLevels)
+            {
                 if (fCommandGroupCount >= maxUndoLevels) {
                     Commit ();
                 }
                 fMaxUndoLevels = maxUndoLevels;
             }
 
-            bool    MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size_t* endIdx) const {
+            bool    MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size_t* endIdx) const
+            {
                 RequireNotNull (startIdx);
                 RequireNotNull (endIdx);
 
@@ -514,7 +545,8 @@ namespace   Stroika {
                 return true;
             }
 
-            bool    MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_t* endIdx) const {
+            bool    MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_t* endIdx) const
+            {
                 RequireNotNull (startIdx);
                 RequireNotNull (endIdx);
 
@@ -548,7 +580,8 @@ namespace   Stroika {
                 }
             }
 
-            void    MultiLevelUndoCommandHandler::Commit_After (size_t after) {
+            void    MultiLevelUndoCommandHandler::Commit_After (size_t after)
+            {
                 Require (after >= 0);
                 size_t  commandsLen =   fCommands.size ();
                 if (commandsLen != 0) {
@@ -560,7 +593,8 @@ namespace   Stroika {
                 }
             }
 
-            void    MultiLevelUndoCommandHandler::Commit_Before (size_t before) {
+            void    MultiLevelUndoCommandHandler::Commit_Before (size_t before)
+            {
                 // delete items before 'before' - and INCLUDING THAT ITEM. So this MUST BE CALLED ON
                 // A NON_EMPTY LIST!
                 Require (before >= 0);
@@ -585,10 +619,12 @@ namespace   Stroika {
              */
 
             SnoopingCommandHandler::SnoopingCommandHandler (CommandHandler* realHandler):
-                fRealHandler (realHandler) {
+                fRealHandler (realHandler)
+            {
             }
 
-            void    SnoopingCommandHandler::Post (Command* newCommand) {
+            void    SnoopingCommandHandler::Post (Command* newCommand)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
                 Snoop (newCommand);
                 if (fRealHandler != nullptr) {
@@ -596,19 +632,22 @@ namespace   Stroika {
                 }
             }
 
-            void    SnoopingCommandHandler::BreakInGroupedCommands () {
+            void    SnoopingCommandHandler::BreakInGroupedCommands ()
+            {
                 if (fRealHandler != nullptr) {
                     fRealHandler->BreakInGroupedCommands ();
                 }
             }
 
-            void    SnoopingCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) {
+            void    SnoopingCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+            {
                 if (fRealHandler != nullptr) {
                     fRealHandler->BreakInGroupedCommandsIfDifferentCommand (cmdName);
                 }
             }
 
-            void    SnoopingCommandHandler::DoUndo (TextInteractor& interactor) {
+            void    SnoopingCommandHandler::DoUndo (TextInteractor& interactor)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
 
                 if (fRealHandler != nullptr) {
@@ -616,7 +655,8 @@ namespace   Stroika {
                 }
             }
 
-            void    SnoopingCommandHandler::DoRedo (TextInteractor& interactor) {
+            void    SnoopingCommandHandler::DoRedo (TextInteractor& interactor)
+            {
                 IdleManager::NonIdleContext nonIdleContext;
 
                 if (fRealHandler != nullptr) {
@@ -624,13 +664,15 @@ namespace   Stroika {
                 }
             }
 
-            void    SnoopingCommandHandler::Commit () {
+            void    SnoopingCommandHandler::Commit ()
+            {
                 if (fRealHandler != nullptr) {
                     fRealHandler->Commit ();
                 }
             }
 
-            bool    SnoopingCommandHandler::CanUndo () {
+            bool    SnoopingCommandHandler::CanUndo ()
+            {
                 if (fRealHandler == nullptr) {
                     return false;
                 }
@@ -639,7 +681,8 @@ namespace   Stroika {
                 }
             }
 
-            bool    SnoopingCommandHandler::CanRedo () {
+            bool    SnoopingCommandHandler::CanRedo ()
+            {
                 if (fRealHandler == nullptr) {
                     return false;
                 }
@@ -648,7 +691,8 @@ namespace   Stroika {
                 }
             }
 
-            const Led_SDK_Char* SnoopingCommandHandler::GetUndoCmdName () {
+            const Led_SDK_Char* SnoopingCommandHandler::GetUndoCmdName ()
+            {
                 if (fRealHandler == nullptr) {
                     return Led_SDK_TCHAROF ("");
                 }
@@ -657,7 +701,8 @@ namespace   Stroika {
                 }
             }
 
-            const Led_SDK_Char* SnoopingCommandHandler::GetRedoCmdName () {
+            const Led_SDK_Char* SnoopingCommandHandler::GetRedoCmdName ()
+            {
                 if (fRealHandler == nullptr) {
                     return Led_SDK_TCHAROF ("");
                 }
@@ -693,21 +738,25 @@ namespace   Stroika {
                 fBeforeRegion (beforeRegion),
                 fAfterRegion (afterRegion),
                 fAt (at),
-                fCmdName (cmdName) {
+                fCmdName (cmdName)
+            {
                 RequireNotNull (fBeforeRegion);
                 RequireNotNull (fAfterRegion);
             }
 
-            InteractiveReplaceCommand::~InteractiveReplaceCommand () {
+            InteractiveReplaceCommand::~InteractiveReplaceCommand ()
+            {
                 delete fBeforeRegion;
                 delete fAfterRegion;
             }
 
-            void    InteractiveReplaceCommand::Do (TextInteractor& /*interactor*/) {
+            void    InteractiveReplaceCommand::Do (TextInteractor& /*interactor*/)
+            {
                 Assert (false); // illegal to call - command must be PRE-DONE
             }
 
-            void    InteractiveReplaceCommand::UnDo (TextInteractor& interactor) {
+            void    InteractiveReplaceCommand::UnDo (TextInteractor& interactor)
+            {
                 AssertNotNull (fBeforeRegion);
                 AssertNotNull (fAfterRegion);
                 fBeforeRegion->InsertSelf (&interactor, fAt, fAfterRegion->GetLength ());
@@ -716,7 +765,8 @@ namespace   Stroika {
                 inherited::UnDo (interactor);
             }
 
-            void    InteractiveReplaceCommand::ReDo (TextInteractor& interactor) {
+            void    InteractiveReplaceCommand::ReDo (TextInteractor& interactor)
+            {
                 AssertNotNull (fBeforeRegion);
                 AssertNotNull (fAfterRegion);
                 fAfterRegion->InsertSelf (&interactor, fAt, fBeforeRegion->GetLength ());
@@ -725,7 +775,8 @@ namespace   Stroika {
                 inherited::ReDo (interactor);
             }
 
-            bool    InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tChar c) {
+            bool    InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
+            {
                 AssertNotNull (fBeforeRegion);
                 AssertNotNull (fAfterRegion);
 
@@ -737,7 +788,8 @@ namespace   Stroika {
                 return false;
             }
 
-            const Led_SDK_Char* InteractiveReplaceCommand::GetName () const {
+            const Led_SDK_Char* InteractiveReplaceCommand::GetName () const
+            {
                 return fCmdName.c_str ();
             }
 
@@ -751,7 +803,8 @@ namespace   Stroika {
              ******************** InteractiveReplaceCommand::SavedTextRep *******************
              ********************************************************************************
              */
-            void    InteractiveReplaceCommand::SavedTextRep::ApplySelection (TextInteractor* imager) {
+            void    InteractiveReplaceCommand::SavedTextRep::ApplySelection (TextInteractor* imager)
+            {
                 RequireNotNull (imager);
                 imager->SetSelection (fSelStart, fSelEnd);
             }
@@ -770,22 +823,26 @@ namespace   Stroika {
             InteractiveReplaceCommand::PlainTextRep::PlainTextRep (size_t selStart, size_t selEnd, const Led_tChar* text, size_t textLen):
                 inherited (selStart, selEnd),
                 fText (nullptr),
-                fTextLength (textLen) {
+                fTextLength (textLen)
+            {
                 if (textLen != 0) {
                     fText = new Led_tChar [textLen];
                     memcpy (fText, text, textLen * sizeof (Led_tChar));
                 }
             }
 
-            InteractiveReplaceCommand::PlainTextRep::~PlainTextRep () {
+            InteractiveReplaceCommand::PlainTextRep::~PlainTextRep ()
+            {
                 delete[] fText;
             }
 
-            size_t  InteractiveReplaceCommand::PlainTextRep::GetLength () const {
+            size_t  InteractiveReplaceCommand::PlainTextRep::GetLength () const
+            {
                 return fTextLength;
             }
 
-            void    InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) {
+            void    InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
+            {
                 RequireNotNull (interactor);
                 interactor->Replace (at, at + nBytesToOverwrite, fText, fTextLength);
             }
@@ -794,7 +851,8 @@ namespace   Stroika {
             @METHOD:        InteractiveReplaceCommand::PlainTextRep::AppendCharToRep
             @DESCRIPTION:   <p>Utility used internally to implement optimized undo code.</p>
             */
-            bool    InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertAt, Led_tChar c) {
+            bool    InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertAt, Led_tChar c)
+            {
                 if (fSelStart == insertAt and fSelEnd == insertAt) {
                     // could be more efficient and avoid copy - but this is already a big improvemnt over old algorithm - so lets not complain just yet...
                     Led_tChar*  newText = new Led_tChar [fTextLength + 1];

@@ -16,15 +16,19 @@ namespace   Stroika {
 
 
             //  class   Seekable
-            inline  Seekable::~Seekable () {
+            inline  Seekable::~Seekable ()
+            {
             }
-            inline  SeekOffsetType  Seekable::GetOffset () const {
+            inline  SeekOffsetType  Seekable::GetOffset () const
+            {
                 return _GetOffset ();
             }
-            inline  void    Seekable::Seek (SeekOffsetType offset) {
+            inline  void    Seekable::Seek (SeekOffsetType offset)
+            {
                 _Seek (FromStart_W, offset);
             }
-            inline  void    Seekable::Seek (Whence whence, SeekOffsetType offset) {
+            inline  void    Seekable::Seek (Whence whence, SeekOffsetType offset)
+            {
                 _Seek (whence, offset);
             }
 

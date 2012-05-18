@@ -42,7 +42,8 @@ namespace   Stroika {
 
 
 #if     qMacOS
-            inline  void    GDI_TextFont (short font) {
+            inline  void    GDI_TextFont (short font)
+            {
 #if     TARGET_CARBON
                 ::TextFont (font);
 #else
@@ -51,7 +52,8 @@ namespace   Stroika {
                 }
 #endif
             }
-            inline  void    GDI_TextFace (short face) {
+            inline  void    GDI_TextFace (short face)
+            {
 #if     TARGET_CARBON
                 ::TextFace (face);
 #else
@@ -60,7 +62,8 @@ namespace   Stroika {
                 }
 #endif
             }
-            inline  void    GDI_TextMode (short mode) {
+            inline  void    GDI_TextMode (short mode)
+            {
 #if     TARGET_CARBON
                 ::TextMode (mode);
 #else
@@ -69,7 +72,8 @@ namespace   Stroika {
                 }
 #endif
             }
-            inline  void    GDI_TextSize (short size) {
+            inline  void    GDI_TextSize (short size)
+            {
 #if     TARGET_CARBON
                 ::TextSize (size);
 #else
@@ -99,12 +103,14 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     qWindows
-            inline  bool    LogFontsEqual (LOGFONT lhs, LOGFONT rhs) {
+            inline  bool    LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
+            {
                 size_t  bytesToCompare  =   offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Led_SDK_Char);
                 Require (bytesToCompare <= sizeof (LOGFONT));   // else we were passed bogus LogFont (and we should validate them before here!)
                 return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
             }
-            inline  bool    LogFontsEqual (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs) {
+            inline  bool    LogFontsEqual (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
+            {
                 if (lhs.GetStyle_SubOrSuperScript () == rhs.GetStyle_SubOrSuperScript ()) {
                     LOGFONT lhslf;
                     lhs.GetOSRep (&lhslf);
@@ -212,7 +218,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             TextImager::HilightMarker::HilightMarker ():
-                Marker () {
+                Marker ()
+            {
             }
 
 
@@ -256,7 +263,8 @@ namespace   Stroika {
                 }
             }
 
-            TextImager::~TextImager () {
+            TextImager::~TextImager ()
+            {
                 Require (fTextStore == nullptr);
                 Require (fHiliteMarker == nullptr);
                 for (Led_Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
@@ -268,7 +276,8 @@ namespace   Stroika {
 #endif
             }
 
-            TextStore*  TextImager::PeekAtTextStore () const {
+            TextStore*  TextImager::PeekAtTextStore () const
+            {
                 return fTextStore;      // Can return nullptr if no markers owned
             }
 
@@ -279,7 +288,8 @@ namespace   Stroika {
                 @'TextStore::AddMarkerOwner'. So be sure that this @'TextImager' has not yet been added as a @'MarkerOwner' for
                 any other (or this given) TextStore.</p>
             */
-            void    TextImager::SpecifyTextStore (TextStore* useTextStore) {
+            void    TextImager::SpecifyTextStore (TextStore* useTextStore)
+            {
                 if (fTextStore != useTextStore) {
                     if (fTextStore != nullptr) {
                         HookLosingTextStore ();
@@ -291,11 +301,13 @@ namespace   Stroika {
                 }
             }
 
-            void    TextImager::HookLosingTextStore () {
+            void    TextImager::HookLosingTextStore ()
+            {
                 HookLosingTextStore_ ();
             }
 
-            void    TextImager::HookLosingTextStore_ () {
+            void    TextImager::HookLosingTextStore_ ()
+            {
                 // BE MORE CAREFUL HERE - NO NEED TO DELETE HILIGHT MARKER - JUST REMOVE AND RE_ADD!!!
                 AssertNotNull (fTextStore);
                 if (fHiliteMarker != nullptr) {
@@ -307,11 +319,13 @@ namespace   Stroika {
                 }
             }
 
-            void    TextImager::HookGainedNewTextStore () {
+            void    TextImager::HookGainedNewTextStore ()
+            {
                 HookGainedNewTextStore_ ();
             }
 
-            void    TextImager::HookGainedNewTextStore_ () {
+            void    TextImager::HookGainedNewTextStore_ ()
+            {
                 AssertNotNull (fTextStore);
                 if (fHiliteMarker == nullptr) {
                     fTextStore->AddMarkerOwner (this);
@@ -326,7 +340,8 @@ namespace   Stroika {
                         The default implementation calls @'TextImager::InvalidateAllCaches'.
                         </p>
             */
-            void    TextImager::PurgeUnneededMemory () {
+            void    TextImager::PurgeUnneededMemory ()
+            {
                 InvalidateAllCaches ();
             }
 
@@ -337,7 +352,8 @@ namespace   Stroika {
                         TextImager::InvalidateAllCaches is called automatically from @'MultiRowTextImager::TabletChangedMetrics ()'
                         </p>
             */
-            void    TextImager::InvalidateAllCaches () {
+            void    TextImager::InvalidateAllCaches ()
+            {
                 // Classes which cache font-based information must OVERRIDE and invalidate it...
 #if     qWindows
                 delete fCachedFont;
@@ -358,11 +374,13 @@ namespace   Stroika {
                         use @'StandardStyledTextInteractor::InteractiveSetFont'.
                         </p>
             */
-            void    TextImager::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) {
+            void    TextImager::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont)
+            {
                 SetDefaultFont_ (defaultFont);
             }
 
-            void    TextImager::SetDefaultFont_ (const Led_IncrementalFontSpecification& defaultFont) {
+            void    TextImager::SetDefaultFont_ (const Led_IncrementalFontSpecification& defaultFont)
+            {
                 if (PeekAtTextStore () != nullptr) {
                     TextStore::SimpleUpdater    u   (GetTextStore (), 0, GetTextStore ().GetEnd (), false); // update buffer so cached measurement values refreshed
                     fDefaultFont.MergeIn (defaultFont);
@@ -427,7 +445,8 @@ namespace   Stroika {
                     return score;
                 }
             };
-            static  int FAR PASCAL  EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /*lpntm*/, DWORD fontType, LPARAM arg) {
+            static  int FAR PASCAL  EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /*lpntm*/, DWORD fontType, LPARAM arg)
+            {
                 // Score each font choice, and pick the 'best' one. Pick randomly if several are 'best'.
                 RequireNotNull (lplf);
                 FontSelectionInfo&  result  =   *(FontSelectionInfo*)arg;
@@ -483,7 +502,8 @@ namespace   Stroika {
                 return 1;
             }
 #endif
-            Led_FontSpecification   TextImager::GetStaticDefaultFont () {
+            Led_FontSpecification   TextImager::GetStaticDefaultFont ()
+            {
                 //  Since this can be called alot, and since its value shouldn't change during the lifetime
                 //  of Led running, cache the result (and since on windows - at least - it is expensive to compute)
                 static  bool                    sDefaultFontValid   =   false;
@@ -508,7 +528,8 @@ namespace   Stroika {
             }
 
 #if     qWindows
-            Led_FontSpecification   TextImager::GetStaticDefaultFont (BYTE charSet) {
+            Led_FontSpecification   TextImager::GetStaticDefaultFont (BYTE charSet)
+            {
                 Led_FontSpecification   defaultFont;
                 //nb: import to go through the intermediary font so we don't set into the
                 // LOGFONT lots of fields which are part of the chosen font but are
@@ -562,11 +583,13 @@ namespace   Stroika {
                         the selection's current font.
                         </p>
             */
-            Led_FontSpecification   TextImager::GetDefaultSelectionFont () const {
+            Led_FontSpecification   TextImager::GetDefaultSelectionFont () const
+            {
                 return GetDefaultFont ();
             }
 
-            void    TextImager::SetSelectionShown (bool shown) {
+            void    TextImager::SetSelectionShown (bool shown)
+            {
                 fSelectionShown = shown;
             }
 
@@ -578,7 +601,8 @@ namespace   Stroika {
                     <p>Override this to provide a different tabstop list. The default is a @'TextImager::SimpleTabStopList' of width
                 roughly 1/3 of an inch.</p>
             */
-            const TextImager::TabStopList&  TextImager::GetTabStopList (size_t /*containingPos*/) const {
+            const TextImager::TabStopList&  TextImager::GetTabStopList (size_t /*containingPos*/) const
+            {
                 // 1/3 inch tabstops by default (roughly 4 chars wide on Mac in Courier 10-point)
                 static  SimpleTabStopList   sDefaultTabStopList =   SimpleTabStopList (Led_TWIPS (1440 / 3));
                 return sDefaultTabStopList;
@@ -588,7 +612,8 @@ namespace   Stroika {
             @METHOD:        TextImager::SetWindowRect
             @DESCRIPTION:   <p>See also @'TextImager::GetWindowRect'.
             */
-            void    TextImager::SetWindowRect (const Led_Rect& windowRect) {
+            void    TextImager::SetWindowRect (const Led_Rect& windowRect)
+            {
                 SetWindowRect_ (windowRect);
             }
 
@@ -597,7 +622,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>You probably should NOT call this directly. This is a helper to share code in implementing
                 @'TextImager::ScrollSoShowing' in subclasses.</p>
             */
-            void    TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMarkerPos) {
+            void    TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMarkerPos)
+            {
                 Led_Coordinate  maxHScrollPos   =   ComputeMaxHScrollPos ();
                 Led_Coordinate  hsp             =   GetHScrollPos ();
 
@@ -656,7 +682,8 @@ namespace   Stroika {
                 SetHScrollPos (hsp);
             }
 
-            void    TextImager::SetHScrollPos (Led_Coordinate hScrollPos) {
+            void    TextImager::SetHScrollPos (Led_Coordinate hScrollPos)
+            {
                 if (hScrollPos != GetHScrollPos ()) {
                     SetHScrollPos_ (hScrollPos);
                     InvalidateScrollBarParameters ();
@@ -680,7 +707,8 @@ namespace   Stroika {
                         (@'WordProcessor::ComputeMaxHScrollPos').
                         </p>
             */
-            Led_Distance    TextImager::ComputeMaxHScrollPos () const {
+            Led_Distance    TextImager::ComputeMaxHScrollPos () const
+            {
                 return 0;
             }
 
@@ -689,7 +717,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>This is a utility methods, very handy for implementing horizontal scrolling.
                 It can (and should be) overriden in certain subclasses for efficiency. But the default implementation will work.</p>
             */
-            Led_Distance    TextImager::CalculateLongestRowInWindowPixelWidth () const {
+            Led_Distance    TextImager::CalculateLongestRowInWindowPixelWidth () const
+            {
                 size_t  startOfWindow   =   GetMarkerPositionOfStartOfWindow ();
                 size_t  endOfWindow     =   GetMarkerPositionOfEndOfWindow ();
 
@@ -714,11 +743,13 @@ namespace   Stroika {
                 invalidate any information the @'TextImager' has cached. This is called automaticly, internal to Led, by anything
                 Led knows about which would change the metrics.</p>
             */
-            void    TextImager::TabletChangedMetrics () {
+            void    TextImager::TabletChangedMetrics ()
+            {
                 InvalidateAllCaches ();
             }
 
-            void    TextImager::SetSelection (size_t start, size_t end) {
+            void    TextImager::SetSelection (size_t start, size_t end)
+            {
                 Assert (start >= 0);
                 Assert (end <= GetEnd ());      // char 1 between positions 1..2
 #if     qMultiByteCharacters
@@ -740,7 +771,8 @@ namespace   Stroika {
                 }
             }
 
-            size_t  TextImager::GetSelectionStart () const {
+            size_t  TextImager::GetSelectionStart () const
+            {
                 RequireNotNull (PeekAtTextStore ());    // Must specify TextStore before calling this, or any routine that calls it.
 #if     qMultiByteCharacters
                 Assert_CharPosDoesNotSplitCharacter (fHiliteMarker->GetStart ());
@@ -748,7 +780,8 @@ namespace   Stroika {
                 return (fHiliteMarker->GetStart ());
             }
 
-            size_t  TextImager::GetSelectionEnd () const {
+            size_t  TextImager::GetSelectionEnd () const
+            {
                 RequireNotNull (PeekAtTextStore ());    // Must specify TextStore before calling this, or any routine that calls it.
 #if     qMultiByteCharacters
                 Assert_CharPosDoesNotSplitCharacter (fHiliteMarker->GetEnd ());
@@ -756,7 +789,8 @@ namespace   Stroika {
                 return (fHiliteMarker->GetEnd ());
             }
 
-            void    TextImager::GetSelection (size_t* start, size_t* end) const {
+            void    TextImager::GetSelection (size_t* start, size_t* end) const
+            {
                 RequireNotNull (PeekAtTextStore ());    // Must specify TextStore before calling this, or any routine that calls it.
                 AssertNotNull (start);
                 AssertNotNull (end);
@@ -767,14 +801,16 @@ namespace   Stroika {
 #endif
             }
 
-            void    TextImager::SetSelection_ (size_t start, size_t end) {
+            void    TextImager::SetSelection_ (size_t start, size_t end)
+            {
                 Require (start >= 0);
                 Require (end <= GetEnd ());
                 Require (start <= end);
                 GetTextStore ().SetMarkerRange (fHiliteMarker, start, end);
             }
 
-            void    TextImager::SetHilightMarker (HilightMarker* newHilightMarker) {
+            void    TextImager::SetHilightMarker (HilightMarker* newHilightMarker)
+            {
                 size_t  start   =   0;
                 size_t  end     =   0;
                 if (fHiliteMarker != nullptr) {
@@ -794,7 +830,8 @@ namespace   Stroika {
             }
 
 #if     qSupportLed30CompatAPI
-            void    TextImager::NotificationOf_SelectionChanged () {
+            void    TextImager::NotificationOf_SelectionChanged ()
+            {
             }
 #endif
 
@@ -802,7 +839,8 @@ namespace   Stroika {
             @METHOD:        TextImager::RecomputeSelectionGoalColumn
             @DESCRIPTION:   <p></p>
             */
-            void    TextImager::RecomputeSelectionGoalColumn () {
+            void    TextImager::RecomputeSelectionGoalColumn ()
+            {
                 if (not fSupressGoalColumnRecompute) {
                     // We now maintain a goal-column-target using pixel offsets within the row, rather than
                     // character offsets, cuz thats what LEC/Alan Pollack prefers, and I think most
@@ -818,7 +856,8 @@ namespace   Stroika {
             @METHOD:        TextImager::ComputeRelativePosition
             @DESCRIPTION:   <p></p>
             */
-            size_t  TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirection direction, CursorMovementUnit movementUnit) {
+            size_t  TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirection direction, CursorMovementUnit movementUnit)
+            {
                 /*
                  *  Handle all the different cases of movement directions (back, forward etc) and units (by char, word etc).
                  *  Take the given starting point, and produce no side effects - returning the new resulting position.
@@ -1051,7 +1090,8 @@ namespace   Stroika {
                             <p>Most likely you want to use @'TextImager::GetTextWindowBoundingRect'. This routine isn't
                         BIDI friendly.</p>
             */
-            Led_Rect    TextImager::GetTextBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const {
+            Led_Rect    TextImager::GetTextBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const
+            {
                 Led_Rect    caretStart  =   GetCharLocation (fromMarkerPos);
                 Led_Rect    caretEnd    =   (fromMarkerPos == toMarkerPos) ? caretStart : GetCharLocation (toMarkerPos);
 
@@ -1084,7 +1124,8 @@ namespace   Stroika {
                     <p>Return value is pinned to be within the WindowRect.</p>
                     <p>See also @'TextImager::GetIntraRowTextWindowBoundingRect'</p>
             */
-            Led_Rect    TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const {
+            Led_Rect    TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const
+            {
                 Require (fromMarkerPos <= toMarkerPos);
 
                 Led_Rect    windowRect  =   GetWindowRect ();
@@ -1200,7 +1241,8 @@ namespace   Stroika {
                             <p>You CAN call this function with any range of 'fromMarkerPos' to 'toMarkerPos' within a row, but it only REALLY
                         makes sense if you call it within a directional segment.</p>
             */
-            Led_Rect    TextImager::GetIntraRowTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const {
+            Led_Rect    TextImager::GetIntraRowTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const
+            {
                 Require (fromMarkerPos <= toMarkerPos); // and they must be within the same row!!! Assert later...
 
                 Led_Rect    windowRect  =   GetWindowRect ();
@@ -1246,7 +1288,8 @@ namespace   Stroika {
                             <p>This routine is called by @'TextImager::GetSelectionWindowRegion' and @'TextImager::DrawRowHilight' to figure out what areas
                         of the screen to hilight.</p>
             */
-            vector<Led_Rect>    TextImager::GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const {
+            vector<Led_Rect>    TextImager::GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const
+            {
                 Require (rowEnd == GetEndOfRowContainingPosition (rowStart));       // passed in for performance reasons - so not computed multiple times
 
                 vector<Led_Rect>    result;
@@ -1339,7 +1382,8 @@ namespace   Stroika {
             @ACCESS:        public
             @DESCRIPTION:   <p>REQUIRE that rowStart and rowEnd are valid rowstart/end values</p>
             */
-            TextLayoutBlock_Copy    TextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const {
+            TextLayoutBlock_Copy    TextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const
+            {
                 size_t                          rowLen      =   rowEnd - rowStart;
                 Memory::SmallStackBuffer<Led_tChar> rowBuf (rowLen);
                 CopyOut (rowStart, rowLen, rowBuf);
@@ -1358,7 +1402,8 @@ namespace   Stroika {
                         extending the hilight from succeeding rows back to the bottom of the preceeding row.</p>
                             <p>See also @'TextImager::GetSelectionWindowRegion'</p>
             */
-            vector<Led_Rect>    TextImager::GetSelectionWindowRects (size_t from, size_t to) const {
+            vector<Led_Rect>    TextImager::GetSelectionWindowRects (size_t from, size_t to) const
+            {
                 Require (from <= to);
 
                 vector<Led_Rect>    result;
@@ -1461,7 +1506,8 @@ namespace   Stroika {
                         cuz MFC's CRgn class doesn't support being copied.</p>
                             <p>This routine is a simple wrapper on @'TextImager::GetSelectionWindowRects'</p>
             */
-            void    TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const {
+            void    TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const
+            {
                 RequireNotNull (r);
                 vector<Led_Rect>    selRects    =   GetSelectionWindowRects (from, to);
                 for (vector<Led_Rect>::const_iterator i = selRects.begin (); i != selRects.end (); ++i) {
@@ -1486,7 +1532,8 @@ namespace   Stroika {
                     <p>Note - typically when you OVERRIDE this - you will want to OVERRIDE @'TextImager::HilightARectangle' to change
                 its implementation to specify a new background color (so inverting works properly). Perhaps see SPR#0708 for details.</p>
             */
-            void    TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) {
+            void    TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+            {
                 RequireNotNull (tablet);
                 // Don't erase when printing - at least by default. Tends to screw up most print drivers.
                 if (not printing) {
@@ -1503,7 +1550,8 @@ namespace   Stroika {
                 to remain in sync with other changes to the EraseBackground behavior.</p>
                     <p>OBSOLETE - use @'TextImager::HilightArea' instead.</p>
             */
-            void    TextImager::HilightARectangle (Led_Tablet tablet, Led_Rect hiliteRect) {
+            void    TextImager::HilightARectangle (Led_Tablet tablet, Led_Rect hiliteRect)
+            {
                 RequireNotNull (tablet);
                 HilightArea (tablet, hiliteRect);
             }
@@ -1516,7 +1564,8 @@ namespace   Stroika {
                     <p>Override this mostly if you want different hilighting behavior, or if you want your hilighting behavior
                 to remain in sync with other changes to the EraseBackground behavior.</p>
             */
-            void    TextImager::HilightArea (Led_Tablet tablet, Led_Rect hiliteArea) {
+            void    TextImager::HilightArea (Led_Tablet tablet, Led_Rect hiliteArea)
+            {
                 RequireNotNull (tablet);
                 tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
             }
@@ -1528,7 +1577,8 @@ namespace   Stroika {
                     <p>Override this mostly if you want different hilighting behavior, or if you want your hilighting behavior
                 to remain in sync with other changes to the EraseBackground behavior.</p>
             */
-            void    TextImager::HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea) {
+            void    TextImager::HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea)
+            {
                 RequireNotNull (tablet);
                 tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
             }
@@ -1546,7 +1596,8 @@ namespace   Stroika {
             */
             void    TextImager::DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                          const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing
-                                        ) {
+                                        )
+            {
                 RequireNotNull (tablet);
                 Require (rowEnd == GetEndOfRowContainingPosition (rowStart));       // passed in for performance reasons - so not computed multiple times
 
@@ -1581,7 +1632,8 @@ namespace   Stroika {
             */
             void    TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                                  const TextLayoutBlock& text, size_t rowStart, size_t rowEnd
-                                                ) {
+                                                )
+            {
                 RequireNotNull (tablet);
 
 #if     qDebug && 0
@@ -1628,7 +1680,8 @@ namespace   Stroika {
             */
             void    TextImager::DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& /*invalidRowRect*/,
                                                 const TextLayoutBlock& text, size_t rowStart, size_t rowEnd
-                                               ) {
+                                               )
+            {
                 Require (rowEnd == GetEndOfRowContainingPosition (rowStart));       // passed in for performance reasons - so not computed multiple times
                 Led_Arg_Unused (currentRowRect);
 
@@ -1660,7 +1713,8 @@ namespace   Stroika {
                         paragraphs (as in LECs LVEJ side-by-side mode).</p>
                             <p>Renamed to @'TextImager::DrawInterLineSpace' from MutliRowTextImager::DrawInterLineSpace for Led 3.1a3 release.</p>
             */
-            void    TextImager::DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tablet, Led_Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing) {
+            void    TextImager::DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tablet, Led_Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
+            {
                 // This code not been checked/tested since I rewrote the erasing code etc.. Maybe wrong - probably wrong? No matter, anybody
                 // ever using interline space would probably OVERRIDE this anyhow..
                 // LGP 960516
@@ -1692,7 +1746,8 @@ namespace   Stroika {
                     <p>If you OVERRIDE this - you may find it handy to call @'TextImager::ContainsMappedDisplayCharacters_HelperForChar'
                 to do most of the work.</p>
             */
-            bool    TextImager::ContainsMappedDisplayCharacters (const Led_tChar* /*text*/, size_t /*nTChars*/) const {
+            bool    TextImager::ContainsMappedDisplayCharacters (const Led_tChar* /*text*/, size_t /*nTChars*/) const
+            {
                 return false;
             }
 
@@ -1705,7 +1760,8 @@ namespace   Stroika {
                 to do most of the work.</p>
                     <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
             */
-            void    TextImager::ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Led_tChar* copyText, size_t nTChars) const {
+            void    TextImager::ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Led_tChar* copyText, size_t nTChars) const
+            {
                 // Default to none replaced- just plain copy...
                 (void)::memcpy (copyText, srcText, nTChars * sizeof (Led_tChar));
             }
@@ -1720,7 +1776,8 @@ namespace   Stroika {
                 to do most of the work.</p>
                     <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
             */
-            size_t  TextImager::RemoveMappedDisplayCharacters (Led_tChar* /*copyText*/, size_t nTChars) const {
+            size_t  TextImager::RemoveMappedDisplayCharacters (Led_tChar* /*copyText*/, size_t nTChars) const
+            {
                 // Default to none removed
                 return nTChars;
             }
@@ -1736,7 +1793,8 @@ namespace   Stroika {
                 to do most of the work.</p>
                     <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
             */
-            void    TextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* /*srcText*/, Led_Distance* /*distanceResults*/, size_t /*nTChars*/) const {
+            void    TextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* /*srcText*/, Led_Distance* /*distanceResults*/, size_t /*nTChars*/) const
+            {
             }
 
             /*
@@ -1744,7 +1802,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Simple implementation of See also @'TextImager::ContainsMappedDisplayCharacters' which is frequently applicable.
                 Just specify the special character you are looking for.</p>
             */
-            bool    TextImager::ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap) {
+            bool    TextImager::ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap)
+            {
                 // 'charToMap' characters can appear anywhere in a segment of text (cuz this gets called to compute widths for an entire paragraph at a time).
                 const Led_tChar*    end     =   &text[nTChars];
                 for (const Led_tChar* cur = text; cur < end; cur = Led_NextChar (cur)) {
@@ -1761,7 +1820,8 @@ namespace   Stroika {
                 Just specify the special character you are looking for, and the one you are mapping to.</p>
                     <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
             */
-            void    TextImager::ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo) {
+            void    TextImager::ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo)
+            {
                 // 'charToMap' characters can appear anywhere in a segment of text (cuz this gets called to compute widths for an entire paragraph at a time).
                 Led_tChar*  end     =   &copyText[nTChars];
                 for (Led_tChar* cur = copyText; cur < end; cur = Led_NextChar (cur)) {
@@ -1777,7 +1837,8 @@ namespace   Stroika {
                 Just specify the special character you are looking to remove.</p>
                     <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
             */
-            size_t  TextImager::RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToRemove) {
+            size_t  TextImager::RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToRemove)
+            {
                 // Trim out any kSoftLineBreakChar characters
                 Led_tChar*  outPtr  =   copyText;
                 Led_tChar*  end     =   copyText + nTChars;
@@ -1798,7 +1859,8 @@ namespace   Stroika {
                 Just specify the special character you are looking to remove.</p>
                     <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
             */
-            void    TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars, Led_tChar charToRemove) {
+            void    TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars, Led_tChar charToRemove)
+            {
                 // Each of these kSoftLineBreakChar will be mapped to ZERO-WIDTH. So walk text (and distanceResults) and when
                 // I see a softlinebreak - zero its size, and subtrace from start point total amount of zero-ed softlinebreaks.
                 Led_Distance        cumSubtract =   0;
@@ -1830,7 +1892,8 @@ namespace   Stroika {
             void    TextImager::DrawSegment (Led_Tablet tablet,
                                              size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                              Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                            ) {
+                                            )
+            {
                 DrawSegment_ (tablet, GetDefaultFont (), from, to, text, drawInto, useBaseLine, pixelsDrawn);
             }
 
@@ -1847,7 +1910,8 @@ namespace   Stroika {
             void    TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& fontSpec,
                                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
                                               Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                             ) const {
+                                             ) const
+            {
                 RequireNotNull (tablet);
                 Assert (from <= to);
 
@@ -1944,7 +2008,8 @@ namespace   Stroika {
 
             void    TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                    ) const {
+                                                    ) const
+            {
                 MeasureSegmentWidth_ (GetDefaultFont (), from, to, text, distanceResults);
             }
 
@@ -1958,7 +2023,8 @@ namespace   Stroika {
             void        TextImager::MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, size_t from, size_t to,
                     const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                         ) const {
+                                                         ) const
+            {
                 Require (to > from);
 
                 Tablet_Acquirer tablet (this);
@@ -1985,22 +2051,26 @@ namespace   Stroika {
                 }
             }
 
-            Led_Distance    TextImager::MeasureSegmentHeight (size_t from, size_t to) const {
+            Led_Distance    TextImager::MeasureSegmentHeight (size_t from, size_t to) const
+            {
                 return (MeasureSegmentHeight_ (GetDefaultFont (), from, to));
             }
 
-            Led_Distance    TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const {
+            Led_Distance    TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
+            {
                 Tablet_Acquirer tablet (this);
                 AssertNotNull (static_cast<Led_Tablet> (tablet));
                 FontCacheInfoUpdater    fontCacheUpdater (this, tablet, fontSpec);
                 return (fCachedFontInfo.GetLineHeight ());
             }
 
-            Led_Distance    TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const {
+            Led_Distance    TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
+            {
                 return (MeasureSegmentBaseLine_ (GetDefaultFont (), from, to));
             }
 
-            Led_Distance    TextImager::MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const {
+            Led_Distance    TextImager::MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
+            {
                 Tablet_Acquirer tablet (this);
                 AssertNotNull (static_cast<Led_Tablet> (tablet));
                 FontCacheInfoUpdater    fontCacheUpdater (this, tablet, fontSpec);
@@ -2013,7 +2083,8 @@ namespace   Stroika {
 #else
                 size_t /*charAfterPos*/
 #endif
-            ) const {
+            ) const
+            {
                 Tablet_Acquirer tablet (this);
                 AssertNotNull (static_cast<Led_Tablet> (tablet));
 

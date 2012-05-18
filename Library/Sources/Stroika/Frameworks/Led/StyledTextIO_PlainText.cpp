@@ -42,10 +42,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             StyledTextIOReader_PlainText::StyledTextIOReader_PlainText (SrcStream* srcStream, SinkStream* sinkStream):
-                StyledTextIOReader (srcStream, sinkStream) {
+                StyledTextIOReader (srcStream, sinkStream)
+            {
             }
 
-            void    StyledTextIOReader_PlainText::Read () {
+            void    StyledTextIOReader_PlainText::Read ()
+            {
 #if 1
                 // Read into a contiguous block of memory since it makes the dealing with CRLF
                 // strattling a buffer-bounary problem go away. Note that the Memory::SmallStackBuffer<>::GrowToSize()
@@ -99,7 +101,8 @@ namespace   Stroika {
                 GetSinkStream ().EndOfBuffer ();
             }
 
-            bool    StyledTextIOReader_PlainText::QuickLookAppearsToBeRightFormat () {
+            bool    StyledTextIOReader_PlainText::QuickLookAppearsToBeRightFormat ()
+            {
 #if     qWideCharacters
                 return true;
 #else
@@ -124,10 +127,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             StyledTextIOWriter_PlainText::StyledTextIOWriter_PlainText (SrcStream* srcStream, SinkStream* sinkStream):
-                StyledTextIOWriter (srcStream, sinkStream) {
+                StyledTextIOWriter (srcStream, sinkStream)
+            {
             }
 
-            void    StyledTextIOWriter_PlainText::Write () {
+            void    StyledTextIOWriter_PlainText::Write ()
+            {
                 Led_tChar   buf[8 * 1024];
                 size_t  bytesRead   =   0;
                 while ( (bytesRead = GetSrcStream ().readNTChars (buf, NEltsOf (buf))) != 0 ) {

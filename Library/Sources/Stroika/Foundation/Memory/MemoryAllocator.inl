@@ -15,71 +15,86 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
             // class    Memory::AbstractGeneralPurposeAllocator
-            inline  AbstractGeneralPurposeAllocator::~AbstractGeneralPurposeAllocator () {
+            inline  AbstractGeneralPurposeAllocator::~AbstractGeneralPurposeAllocator ()
+            {
             }
 
 
             // class    Memory::STLAllocator<T,BASE_ALLOCATOR>
             template <typename T, typename BASE_ALLOCATOR>
-            inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::reference _Val) const {
+            inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::reference _Val) const
+            {
                 return (&_Val);
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  typename    STLAllocator<T, BASE_ALLOCATOR>::const_pointer STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::const_reference _Val) const {
+            inline  typename    STLAllocator<T, BASE_ALLOCATOR>::const_pointer STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::const_reference _Val) const
+            {
                 return (&_Val);
             }
             template <typename T, typename BASE_ALLOCATOR>
             inline  STLAllocator<T, BASE_ALLOCATOR>::STLAllocator ()
-                : fBaseAllocator () {
+                : fBaseAllocator ()
+            {
             }
             template <typename T, typename BASE_ALLOCATOR>
             inline  STLAllocator<T, BASE_ALLOCATOR>::STLAllocator (const STLAllocator<T, BASE_ALLOCATOR>& from)
-                : fBaseAllocator (from.fBaseAllocator) {
+                : fBaseAllocator (from.fBaseAllocator)
+            {
             }
             template <typename T, typename BASE_ALLOCATOR>
             template    <typename OTHER>
             inline  STLAllocator<T, BASE_ALLOCATOR>::STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from)
-                : fBaseAllocator (from.fBaseAllocator) {
+                : fBaseAllocator (from.fBaseAllocator)
+            {
             }
             template <typename T, typename BASE_ALLOCATOR>
             template    <typename OTHER>
-            inline  STLAllocator<T, BASE_ALLOCATOR>& STLAllocator<T, BASE_ALLOCATOR>::operator= (const STLAllocator<OTHER, BASE_ALLOCATOR>& rhs) {
+            inline  STLAllocator<T, BASE_ALLOCATOR>& STLAllocator<T, BASE_ALLOCATOR>::operator= (const STLAllocator<OTHER, BASE_ALLOCATOR>& rhs)
+            {
                 fBaseAllocator = rhs.from.fBaseAllocator;
                 return (*this);
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::allocate (size_type nElements) {
+            inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::allocate (size_type nElements)
+            {
                 // allocate storage for _Count elements of type T
                 return ((T*)fBaseAllocator.Allocate (nElements * sizeof (T)));
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::allocate (size_type nElements, const void*) {
+            inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::allocate (size_type nElements, const void*)
+            {
                 return (allocate (nElements));
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  void STLAllocator<T, BASE_ALLOCATOR>::deallocate (pointer ptr, size_type) {
+            inline  void STLAllocator<T, BASE_ALLOCATOR>::deallocate (pointer ptr, size_type)
+            {
                 if (ptr != nullptr) {
                     fBaseAllocator.Deallocate (ptr);
                 }
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  void    STLAllocator<T, BASE_ALLOCATOR>::construct (pointer ptr, const T& v) {
+            inline  void    STLAllocator<T, BASE_ALLOCATOR>::construct (pointer ptr, const T& v)
+            {
                 new (ptr) T (v);
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  void    STLAllocator<T, BASE_ALLOCATOR>::destroy (pointer p) {
+            inline  void    STLAllocator<T, BASE_ALLOCATOR>::destroy (pointer p)
+            {
                 p->~T ();
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  size_t  STLAllocator<T, BASE_ALLOCATOR>::max_size () const noexcept {
+            inline  size_t  STLAllocator<T, BASE_ALLOCATOR>::max_size () const noexcept
+            {
                 return numeric_limits<size_type>::max () / sizeof (T);
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const {
+            inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
+            {
                 return true;
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const {
+            inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
+            {
                 return !operator== (rhs);
             }
         }

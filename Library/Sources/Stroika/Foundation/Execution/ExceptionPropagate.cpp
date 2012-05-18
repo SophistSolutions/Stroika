@@ -35,7 +35,8 @@ ExceptionPropagateHelper::ExceptionPropagateHelper ()
 {
 }
 
-void    ExceptionPropagateHelper::DoRunWithCatchRePropagate (IRunnable* callback) {
+void    ExceptionPropagateHelper::DoRunWithCatchRePropagate (IRunnable* callback)
+{
     // Subclassers add additional 'Execution' as data members, and override this to catch additioanl fields, and
     // AnyExceptionCaught/RethrowIfAnyCaught to rethrow each
     RequireNotNull (callback);
@@ -45,7 +46,8 @@ void    ExceptionPropagateHelper::DoRunWithCatchRePropagate (IRunnable* callback
     CATCH_AND_CAPTURE_CATCH_BLOCK(*this);
 }
 
-bool    ExceptionPropagateHelper::AnyExceptionCaught () const {
+bool    ExceptionPropagateHelper::AnyExceptionCaught () const
+{
     return
         fStringException.get () != nullptr
         or fFileFormatException.get () != nullptr
@@ -59,7 +61,8 @@ bool    ExceptionPropagateHelper::AnyExceptionCaught () const {
         ;
 }
 
-void    ExceptionPropagateHelper::RethrowIfAnyCaught () const {
+void    ExceptionPropagateHelper::RethrowIfAnyCaught () const
+{
 #if     qPlatform_Windows
     if (fHRESULTErrorException.get () != nullptr) {
         throw* fHRESULTErrorException.get ();

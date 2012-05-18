@@ -84,10 +84,12 @@ namespace   Stroika {
 
             // class Tally_Array<T>
             template    <typename T>    inline  Tally_Array<T>::Tally_Array (const Tally_Array<T>& src) :
-                Tally<T> (src) {
+                Tally<T> (src)
+            {
             }
 
-            template    <typename T>    inline  Tally_Array<T>& Tally_Array<T>::operator= (const Tally_Array<T>& src) {
+            template    <typename T>    inline  Tally_Array<T>& Tally_Array<T>::operator= (const Tally_Array<T>& src)
+            {
                 Tally<T>::operator= (src);
                 return (*this);
             }
@@ -99,33 +101,40 @@ namespace   Stroika {
              ********************************* Tally_ArrayMutatorRep ************************
              ********************************************************************************
              */
-            template    <class  T>  inline  void*   Tally_ArrayMutatorRep<T>::operator new (size_t size) {
+            template    <class  T>  inline  void*   Tally_ArrayMutatorRep<T>::operator new (size_t size)
+            {
                 return (Memory::BlockAllocated<Tally_ArrayMutatorRep<T> >::operator new (size));
             }
 
-            template    <class  T>  inline  void    Tally_ArrayMutatorRep<T>::operator delete (void* p) {
+            template    <class  T>  inline  void    Tally_ArrayMutatorRep<T>::operator delete (void* p)
+            {
                 Memory::BlockAllocated<Tally_ArrayMutatorRep<T> >::operator delete (p);
             }
 
             template    <class  T>  Tally_ArrayMutatorRep<T>::Tally_ArrayMutatorRep (Tally_ArrayRep<T>& owner) :
                 TallyMutatorRep<T> (),
-                fIterator (owner.fData) {
+                fIterator (owner.fData)
+            {
             }
 
 
-            template    <class  T>  bool    Tally_ArrayMutatorRep<T>::More (TallyEntry<T>* current, bool advance) {
+            template    <class  T>  bool    Tally_ArrayMutatorRep<T>::More (TallyEntry<T>* current, bool advance)
+            {
                 return (fIterator.More(current, advance));
             }
 
-            template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_ArrayMutatorRep<T>::Clone () const {
+            template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_ArrayMutatorRep<T>::Clone () const
+            {
                 return (new Tally_ArrayMutatorRep<T> (*this));
             }
 
-            template    <typename T>    void    Tally_ArrayMutatorRep<T>::RemoveCurrent () {
+            template    <typename T>    void    Tally_ArrayMutatorRep<T>::RemoveCurrent ()
+            {
                 fIterator.RemoveCurrent ();
             }
 
-            template    <typename T>    void    Tally_ArrayMutatorRep<T>::UpdateCount (size_t newCount) {
+            template    <typename T>    void    Tally_ArrayMutatorRep<T>::UpdateCount (size_t newCount)
+            {
                 if (newCount == 0) {
                     fIterator.RemoveCurrent ();
                 }
@@ -145,37 +154,45 @@ namespace   Stroika {
              ********************************* Tally_ArrayRep *******************************
              ********************************************************************************
              */
-            template    <class  T>  inline  void*   Tally_ArrayRep<T>::operator new (size_t size) {
+            template    <class  T>  inline  void*   Tally_ArrayRep<T>::operator new (size_t size)
+            {
                 return (Memory::BlockAllocated<Tally_ArrayRep<T> >::operator new (size));
             }
 
-            template    <class  T>  inline  void    Tally_ArrayRep<T>::operator delete (void* p) {
+            template    <class  T>  inline  void    Tally_ArrayRep<T>::operator delete (void* p)
+            {
                 Memory::BlockAllocated<Tally_ArrayRep<T> >::operator delete (p);
             }
 
             template    <typename T>    inline  Tally_ArrayRep<T>::Tally_ArrayRep () :
                 TallyRep<T> (),
-                fData () {
+                fData ()
+            {
             }
 
-            template    <typename T>    size_t  Tally_ArrayRep<T>::GetLength () const {
+            template    <typename T>    size_t  Tally_ArrayRep<T>::GetLength () const
+            {
                 return (fData.GetLength ());
             }
 
-            template    <typename T>    bool    Tally_ArrayRep<T>::Contains (T item) const {
+            template    <typename T>    bool    Tally_ArrayRep<T>::Contains (T item) const
+            {
                 TallyEntry<T> tmp (item);
                 return (bool (Find (tmp) != kNotFound));
             }
 
-            template    <typename T>    void    Tally_ArrayRep<T>::Compact () {
+            template    <typename T>    void    Tally_ArrayRep<T>::Compact ()
+            {
                 fData.Compact ();
             }
 
-            template    <typename T>    TallyRep<T>*    Tally_ArrayRep<T>::Clone () const {
+            template    <typename T>    TallyRep<T>*    Tally_ArrayRep<T>::Clone () const
+            {
                 return (new Tally_ArrayRep<T> (*this));
             }
 
-            template    <typename T>    void    Tally_ArrayRep<T>::Add (T item, size_t count) {
+            template    <typename T>    void    Tally_ArrayRep<T>::Add (T item, size_t count)
+            {
                 TallyEntry<T> tmp (item, count);
 
                 size_t index = Find (tmp);
@@ -188,7 +205,8 @@ namespace   Stroika {
                 }
             }
 
-            template    <typename T>    void    Tally_ArrayRep<T>::Remove (T item, size_t count) {
+            template    <typename T>    void    Tally_ArrayRep<T>::Remove (T item, size_t count)
+            {
                 TallyEntry<T> tmp (item);
 
                 size_t index = Find (tmp);
@@ -205,11 +223,13 @@ namespace   Stroika {
                 }
             }
 
-            template    <typename T>    void    Tally_ArrayRep<T>::RemoveAll () {
+            template    <typename T>    void    Tally_ArrayRep<T>::RemoveAll ()
+            {
                 fData.RemoveAll ();
             }
 
-            template    <typename T>    size_t  Tally_ArrayRep<T>::TallyOf (T item) const {
+            template    <typename T>    size_t  Tally_ArrayRep<T>::TallyOf (T item) const
+            {
                 TallyEntry<T> tmp (item);
 
                 size_t index = Find (tmp);
@@ -218,19 +238,23 @@ namespace   Stroika {
                 return (tmp.fCount);
             }
 
-            template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_ArrayRep<T>::MakeTallyIterator () {
+            template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_ArrayRep<T>::MakeTallyIterator ()
+            {
                 return (new Tally_ArrayMutatorRep<T> (*this));
             }
 
-            template    <typename T>    TallyMutatorRep<T>* Tally_ArrayRep<T>::MakeTallyMutator () {
+            template    <typename T>    TallyMutatorRep<T>* Tally_ArrayRep<T>::MakeTallyMutator ()
+            {
                 return (new Tally_ArrayMutatorRep<T> (*this));
             }
 
-            template    <typename T>    void    Tally_ArrayRep<T>::RemoveAt (size_t index) {
+            template    <typename T>    void    Tally_ArrayRep<T>::RemoveAt (size_t index)
+            {
                 fData.RemoveAt (index);
             }
 
-            template    <typename T>    size_t  Tally_ArrayRep<T>::Find (TallyEntry<T>& item) const {
+            template    <typename T>    size_t  Tally_ArrayRep<T>::Find (TallyEntry<T>& item) const
+            {
                 size_t length = fData.GetLength ();
                 for (size_t i = 0; i < length; i++) {
                     if (fData.GetAt (i).fItem == item.fItem) {
@@ -254,34 +278,41 @@ namespace   Stroika {
              */
 
             template    <typename T>    Tally_Array<T>::Tally_Array () :
-                Tally<T> (new Tally_ArrayRep<T> ()) {
+                Tally<T> (new Tally_ArrayRep<T> ())
+            {
             }
 
             template    <typename T>    Tally_Array<T>::Tally_Array (const T* items, size_t size) :
-                Tally<T> (new Tally_ArrayRep<T> ()) {
+                Tally<T> (new Tally_ArrayRep<T> ())
+            {
                 SetSlotsAlloced (size);
                 AddItems (items, size);
             }
 
             template    <typename T>    Tally_Array<T>::Tally_Array (const Tally<T>& src) :
-                Tally<T> (new Tally_ArrayRep<T> ()) {
+                Tally<T> (new Tally_ArrayRep<T> ())
+            {
                 SetSlotsAlloced (src.GetLength ());
                 operator+= (src);
             }
 
-            template    <typename T>    inline  const Tally_ArrayRep<T>*    Tally_Array<T>::GetRep () const {
+            template    <typename T>    inline  const Tally_ArrayRep<T>*    Tally_Array<T>::GetRep () const
+            {
                 return ((const Tally_ArrayRep<T>*) Tally<T>::GetRep ());
             }
 
-            template    <typename T>    inline  Tally_ArrayRep<T>*  Tally_Array<T>::GetRep () {
+            template    <typename T>    inline  Tally_ArrayRep<T>*  Tally_Array<T>::GetRep ()
+            {
                 return ((Tally_ArrayRep<T>*) Tally<T>::GetRep ());
             }
 
-            template    <typename T>    size_t  Tally_Array<T>::GetSlotsAlloced () const {
+            template    <typename T>    size_t  Tally_Array<T>::GetSlotsAlloced () const
+            {
                 return (GetRep ()->fData.GetSlotsAlloced ());
             }
 
-            template    <typename T>    void    Tally_Array<T>::SetSlotsAlloced (size_t slotsAlloced) {
+            template    <typename T>    void    Tally_Array<T>::SetSlotsAlloced (size_t slotsAlloced)
+            {
                 GetRep ()->fData.SetSlotsAlloced (slotsAlloced);
             }
 

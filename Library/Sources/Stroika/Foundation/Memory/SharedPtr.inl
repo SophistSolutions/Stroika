@@ -152,11 +152,13 @@ namespace   Stroika {
             //  class   SharedPtr<T,T_TRAITS>
             template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr ()
-                : fEnvelope_ (nullptr, nullptr) {
+                : fEnvelope_ (nullptr, nullptr)
+            {
             }
             template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr (T* from)
-                : fEnvelope_ (from, nullptr) {
+                : fEnvelope_ (from, nullptr)
+            {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
                     // in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
@@ -165,14 +167,16 @@ namespace   Stroika {
             }
             template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr (const typename T_TRAITS::Envelope& from)
-                : fEnvelope_ (from) {
+                : fEnvelope_ (from)
+            {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
             }
             template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T, T_TRAITS>& from)
-                : fEnvelope_ (from.fEnvelope_) {
+                : fEnvelope_ (from.fEnvelope_)
+            {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
@@ -180,13 +184,15 @@ namespace   Stroika {
             template    <typename T, typename T_TRAITS>
             template <typename T2, typename T2_TRAITS>
             SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from)
-                : fEnvelope_ (from.fEnvelope_) {
+                : fEnvelope_ (from.fEnvelope_)
+            {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>& SharedPtr<T, T_TRAITS>::operator= (const SharedPtr<T, T_TRAITS>& rhs) {
+            inline  SharedPtr<T, T_TRAITS>& SharedPtr<T, T_TRAITS>::operator= (const SharedPtr<T, T_TRAITS>& rhs)
+            {
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
                     if (fEnvelope_.GetPtr () != nullptr) {
                         if (fEnvelope_.Decrement ()) {
@@ -203,7 +209,8 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::~SharedPtr () {
+            inline  SharedPtr<T, T_TRAITS>::~SharedPtr ()
+            {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     if (fEnvelope_.Decrement ()) {
                         delete fEnvelope_.GetPtr ();
@@ -211,105 +218,126 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::IsNull () const {
+            inline  bool    SharedPtr<T, T_TRAITS>::IsNull () const
+            {
                 return fEnvelope_.GetPtr () == nullptr;
             }
             template    <typename T, typename T_TRAITS>
-            inline  T&  SharedPtr<T, T_TRAITS>::GetRep () const {
+            inline  T&  SharedPtr<T, T_TRAITS>::GetRep () const
+            {
                 RequireNotNull (fEnvelope_.GetPtr ());
                 Assert (fEnvelope_.CurrentRefCount () > 0);
                 return *fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  T* SharedPtr<T, T_TRAITS>::operator-> () const {
+            inline  T* SharedPtr<T, T_TRAITS>::operator-> () const
+            {
                 return &GetRep ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  T& SharedPtr<T, T_TRAITS>::operator* () const {
+            inline  T& SharedPtr<T, T_TRAITS>::operator* () const
+            {
                 return GetRep ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::operator T* () const {
+            inline  SharedPtr<T, T_TRAITS>::operator T* () const
+            {
                 return fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  T*  SharedPtr<T, T_TRAITS>::get () const {
+            inline  T*  SharedPtr<T, T_TRAITS>::get () const
+            {
                 return (fEnvelope_.GetPtr ());
             }
             template    <typename T, typename T_TRAITS>
-            inline  void    SharedPtr<T, T_TRAITS>::release () {
+            inline  void    SharedPtr<T, T_TRAITS>::release ()
+            {
                 *this = SharedPtr<T, T_TRAITS> (nullptr);
             }
             template    <typename T, typename T_TRAITS>
-            inline  void    SharedPtr<T, T_TRAITS>::clear () {
+            inline  void    SharedPtr<T, T_TRAITS>::clear ()
+            {
                 release ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  void    SharedPtr<T, T_TRAITS>::reset (T* p) {
+            inline  void    SharedPtr<T, T_TRAITS>::reset (T* p)
+            {
                 if (fEnvelope_.GetPtr () != p) {
                     *this = SharedPtr<T, T_TRAITS> (p);
                 }
             }
             template    <typename T, typename T_TRAITS>
             template <typename T2>
-            SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast () {
+            SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast ()
+            {
                 return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (dynamic_cast<T2*> (get ()), fEnvelope_.GetCounterPointer ()));
             }
             template    <typename T, typename T_TRAITS>
-            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::CurrentRefCount () const {
+            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::CurrentRefCount () const
+            {
                 return fEnvelope_.CurrentRefCount ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::use_count () const {
+            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::use_count () const
+            {
                 return fEnvelope_.CurrentRefCount ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::IsUnique () const {
+            inline  bool    SharedPtr<T, T_TRAITS>::IsUnique () const
+            {
                 return fEnvelope_.CurrentRefCount () == 1;
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::unique () const {
+            inline  bool    SharedPtr<T, T_TRAITS>::unique () const
+            {
                 // respect the stl-ish names
                 return IsUnique ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator< (const SharedPtr<T, T_TRAITS>& rhs) const {
+            bool    SharedPtr<T, T_TRAITS>::operator< (const SharedPtr<T, T_TRAITS>& rhs) const
+            {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
                 //      -- LGP 2009-01-11
                 return fEnvelope_.GetPtr () < rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator<= (const SharedPtr<T, T_TRAITS>& rhs) const {
+            bool    SharedPtr<T, T_TRAITS>::operator<= (const SharedPtr<T, T_TRAITS>& rhs) const
+            {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
                 //      -- LGP 2009-01-11
                 return fEnvelope_.GetPtr () <= rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator> (const SharedPtr<T, T_TRAITS>& rhs) const {
+            bool    SharedPtr<T, T_TRAITS>::operator> (const SharedPtr<T, T_TRAITS>& rhs) const
+            {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
                 //      -- LGP 2009-01-11
                 return fEnvelope_.GetPtr () > rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator>= (const SharedPtr<T, T_TRAITS>& rhs) const {
+            bool    SharedPtr<T, T_TRAITS>::operator>= (const SharedPtr<T, T_TRAITS>& rhs) const
+            {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
                 //      -- LGP 2009-01-11
                 return fEnvelope_.GetPtr () >= rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator== (const SharedPtr<T, T_TRAITS>& rhs) const {
+            bool    SharedPtr<T, T_TRAITS>::operator== (const SharedPtr<T, T_TRAITS>& rhs) const
+            {
                 return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator!= (const SharedPtr<T, T_TRAITS>& rhs) const {
+            bool    SharedPtr<T, T_TRAITS>::operator!= (const SharedPtr<T, T_TRAITS>& rhs) const
+            {
                 return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            typename    T_TRAITS::Envelope* SharedPtr<T, T_TRAITS>::PeekAtEnvelope () {
+            typename    T_TRAITS::Envelope* SharedPtr<T, T_TRAITS>::PeekAtEnvelope ()
+            {
                 return &fEnvelope_;
             }
 
@@ -321,13 +349,16 @@ namespace   Stroika {
             //  class   enable_shared_from_this<T>
             template    <typename   T>
             inline  enable_shared_from_this<T>::enable_shared_from_this ():
-                fCount_ (0) {
+                fCount_ (0)
+            {
             }
             template    <typename   T>
-            inline  enable_shared_from_this<T>::~enable_shared_from_this () {
+            inline  enable_shared_from_this<T>::~enable_shared_from_this ()
+            {
             }
             template    <typename   T>
-            SharedPtr<T, SharedPtrFromThis_Traits<T>> enable_shared_from_this<T>::shared_from_this () {
+            SharedPtr<T, SharedPtrFromThis_Traits<T>> enable_shared_from_this<T>::shared_from_this ()
+            {
                 /*
                     * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
                     * the ONLY legal way to use this enable_shared_from_this is:
@@ -351,13 +382,15 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <typename T>
-            inline  void    ThrowIfNull (const Memory::SharedPtr<T>& p) {
+            inline  void    ThrowIfNull (const Memory::SharedPtr<T>& p)
+            {
                 if (p.get () == nullptr) {
                     Execution::DoThrow (bad_alloc (), "ThrowIfNull (SharedPtr<T> ()) - throwing bad_alloc ()");
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  void    ThrowIfNull (const Memory::SharedPtr<T, T_TRAITS>& p) {
+            inline  void    ThrowIfNull (const Memory::SharedPtr<T, T_TRAITS>& p)
+            {
                 if (p.get () == nullptr) {
                     Execution::DoThrow (bad_alloc (), "ThrowIfNull (SharedPtr<T,T_TRAITS> ()) - throwing bad_alloc ()");
                 }

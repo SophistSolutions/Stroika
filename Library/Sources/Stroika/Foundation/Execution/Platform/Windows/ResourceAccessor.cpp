@@ -34,7 +34,8 @@ using   namespace   Stroika::Foundation::Execution::Platform::Windows;
  */
 ResourceAccessor::ResourceAccessor (HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType):
     fDataStart (nullptr),
-    fDataEnd (nullptr) {
+    fDataEnd (nullptr)
+{
     HRSRC   hres    =   ::FindResource (hModule, lpName, lpType);
     if (hres != nullptr) {
         HGLOBAL lglbl   =   ::LoadResource (hModule, hres);

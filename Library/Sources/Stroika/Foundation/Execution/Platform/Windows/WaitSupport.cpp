@@ -36,11 +36,13 @@ using   Time::DurationSecondsType;
 /*
  *  Call this if you want to pump messages and want to block/wait for a while if need be (to avoid busy-waiting).
  */
-void    Windows::WaitAndPumpMessages (HWND dialog, Time::DurationSecondsType forNSecs) {
+void    Windows::WaitAndPumpMessages (HWND dialog, Time::DurationSecondsType forNSecs)
+{
     Windows::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
 }
 
-void    Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSecondsType forNSecs) {
+void    Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSecondsType forNSecs)
+{
     DurationSecondsType startAt =   Time::GetTickCount ();
     DurationSecondsType endAt   =   startAt + forNSecs;
 
@@ -71,7 +73,8 @@ void    Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn,
  *  Call this if you want to pump messages, but return immediately if none available (e.g. when you are
  *  doing something else).
  */
-void    Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSecondsType atMostNSecs) {
+void    Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSecondsType atMostNSecs)
+{
     DurationSecondsType startAt =   Time::GetTickCount ();
     DurationSecondsType endAt   =   startAt + atMostNSecs;
 

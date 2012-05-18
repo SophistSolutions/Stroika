@@ -67,7 +67,8 @@ namespace   Stroika {
             @METHOD:        ACP2WideString
             @DESCRIPTION:
             */
-            wstring ACP2WideString (const string& s) {
+            wstring ACP2WideString (const string& s)
+            {
                 size_t nChars   = s.length () + 1;  // convert null byte, too
                 Memory::SmallStackBuffer<wchar_t>   result (nChars);
                 CodePageConverter   cpg (GetDefaultSDKCodePage ());
@@ -82,7 +83,8 @@ namespace   Stroika {
             @METHOD:        Wide2ACPString
             @DESCRIPTION:
             */
-            string  Wide2ACPString (const wstring& s) {
+            string  Wide2ACPString (const wstring& s)
+            {
                 size_t nChars   = s.length () * sizeof (wchar_t) + 1;   // convert null byte, too
                 Memory::SmallStackBuffer<char>  result (nChars);
                 CodePageConverter   cpg (GetDefaultSDKCodePage ());
@@ -98,21 +100,24 @@ namespace   Stroika {
             @METHOD:        Led_ANSI2SDKString
             @DESCRIPTION:   <p></p>
             */
-            Led_SDK_String  Led_ANSI2SDKString (const string& s) {
+            Led_SDK_String  Led_ANSI2SDKString (const string& s)
+            {
                 size_t nChars   = s.length () + 1;  // convert null byte, too
                 Memory::SmallStackBuffer<Led_SDK_Char>  result (nChars);
                 CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
                 return Led_SDK_String (result);
             }
 #else
-            Led_SDK_String  Led_Wide2SDKString (const wstring& s) {
+            Led_SDK_String  Led_Wide2SDKString (const wstring& s)
+            {
                 size_t nChars   = s.length () * sizeof (wchar_t) + 1;   // convert null byte, too
                 Memory::SmallStackBuffer<char>  result (nChars);
                 CodePageConverter   cpg (GetDefaultSDKCodePage ());
                 cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
                 return Led_SDK_String (result);
             }
-            wstring Led_SDKString2Wide (const Led_SDK_String& s) {
+            wstring Led_SDKString2Wide (const Led_SDK_String& s)
+            {
                 return ACP2WideString (s);
             }
 #endif
@@ -122,7 +127,8 @@ namespace   Stroika {
             @METHOD:        Led_SDKString2ANSI
             @DESCRIPTION:   <p></p>
             */
-            string  Led_SDKString2ANSI (const Led_SDK_String& s) {
+            string  Led_SDKString2ANSI (const Led_SDK_String& s)
+            {
                 size_t nChars   = s.length () * sizeof (wchar_t) + 1;   // convert null byte, too
                 Memory::SmallStackBuffer<char>  result (nChars);
                 CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
@@ -131,11 +137,13 @@ namespace   Stroika {
 #endif
 
 #if         !qWideCharacters
-            Led_tString Led_WideString2tString (const wstring& s) {
+            Led_tString Led_WideString2tString (const wstring& s)
+            {
                 return Wide2ACPString (s);
             }
 
-            wstring Led_tString2WideString (const Led_tString& s) {
+            wstring Led_tString2WideString (const Led_tString& s)
+            {
                 return ACP2WideString (s);
             }
 #endif
@@ -145,7 +153,8 @@ namespace   Stroika {
             @METHOD:        Led_tString2SDKString
             @DESCRIPTION:   <p></p>
             */
-            Led_SDK_String  Led_tString2SDKString (const Led_tString& s) {
+            Led_SDK_String  Led_tString2SDKString (const Led_tString& s)
+            {
 #if     qWideCharacters && !qSDK_UNICODE
                 size_t nChars   = s.length () * sizeof (wchar_t) + 1;   // convert null byte, too
                 Memory::SmallStackBuffer<Led_SDK_Char>  result (nChars);
@@ -167,7 +176,8 @@ namespace   Stroika {
             @METHOD:        Led_SDKString2tString
             @DESCRIPTION:   <p></p>
             */
-            Led_tString Led_SDKString2tString (const Led_SDK_String& s) {
+            Led_tString Led_SDKString2tString (const Led_SDK_String& s)
+            {
 #if     qWideCharacters && !qSDK_UNICODE
                 size_t nChars   = s.length () + 1;  // convert null byte, too
                 Memory::SmallStackBuffer<Led_tChar> result (nChars);
@@ -189,7 +199,8 @@ namespace   Stroika {
             @METHOD:        Led_ANSIString2tString
             @DESCRIPTION:   <p></p>
             */
-            Led_tString Led_ANSIString2tString (const string& s) {
+            Led_tString Led_ANSIString2tString (const string& s)
+            {
                 size_t nChars   = s.length () + 1;  // convert null byte, too
                 Memory::SmallStackBuffer<Led_tChar> result (nChars);
                 CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
@@ -202,7 +213,8 @@ namespace   Stroika {
             @METHOD:        Led_tString2ANSIString
             @DESCRIPTION:   <p></p>
             */
-            string  Led_tString2ANSIString (const Led_tString& s) {
+            string  Led_tString2ANSIString (const Led_tString& s)
+            {
                 size_t nChars   = s.length () * sizeof (wchar_t) + 1;   // convert null byte, too
                 Memory::SmallStackBuffer<char>  result (nChars);
                 CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
@@ -220,7 +232,8 @@ namespace   Stroika {
                         callback procedure to handle the beeping.
                         This is because with X-Windows, the beep callback requires data (XDisplay) we don't have at this level.</p>
             */
-            void    Led_BeepNotify () {
+            void    Led_BeepNotify ()
+            {
 #if     qMacOS
                 ::SysBeep (1);
 #elif   qWindows
@@ -236,7 +249,8 @@ namespace   Stroika {
 #if     qXWindows
             static  unsigned long   sLastXWindowsEventTime;
             static  double          sLastEventReferenceTime;
-            static  double  GetThisMachineCurTime () {
+            static  double  GetThisMachineCurTime ()
+            {
                 struct  timeval     tv;
                 memset (&tv, 0, sizeof (tv));
                 Verify (::gettimeofday (&tv, nullptr) == 0);
@@ -261,7 +275,8 @@ namespace   Stroika {
                         data - together with time values from the client (where Led is running) computer will be used to provide a
                         better approximation of the true elapsed time.</p>
             */
-            float   Led_GetTickCount () {
+            float   Led_GetTickCount ()
+            {
 #if     qMacOS
                 return (float (::TickCount ()) / 60.0f);
 #elif   qWindows
@@ -295,7 +310,8 @@ namespace   Stroika {
             @METHOD:        SyncronizeLedXTickCount
             @DESCRIPTION:   <p>X-Windows specific magic. See @'Led_GetTickCount'.</p>
             */
-            void    SyncronizeLedXTickCount (unsigned long xTickCount) {
+            void    SyncronizeLedXTickCount (unsigned long xTickCount)
+            {
                 sLastEventReferenceTime = GetThisMachineCurTime ();
                 sLastXWindowsEventTime = xTickCount;
             }
@@ -305,7 +321,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>X-Windows specific. See also @'SyncronizeLedXTickCount' and @'Led_GetTickCount'. Maps Led_GetTickCount ()
                         result to the sort of time value you can stick into an XEvent record.</p>
             */
-            unsigned long   LedTickCount2XTime (float ledTickCount) {
+            unsigned long   LedTickCount2XTime (float ledTickCount)
+            {
                 return static_cast<unsigned long> (ledTickCount * 1000.0f);
             }
 #endif
@@ -318,7 +335,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the amount of time (in seconds) between clicks which the OS deems should be interpretted
                         as a double click.</p>
             */
-            float   Led_GetDoubleClickTime () {
+            float   Led_GetDoubleClickTime ()
+            {
 #if     qMacOS
                 return (float (::GetDblTime ()) / 60.0f);
 #elif   qWindows
@@ -349,7 +367,8 @@ namespace   Stroika {
              */
             static  void    (*sLedOutOfMemoryExceptionCallback) ()      =   nullptr;
 
-            void    Led_ThrowOutOfMemoryException () {
+            void    Led_ThrowOutOfMemoryException ()
+            {
                 if (sLedOutOfMemoryExceptionCallback == nullptr) {
                     throw std::bad_alloc ();
                 }
@@ -359,11 +378,13 @@ namespace   Stroika {
                 Assert (false); // should never get here!
             }
 
-            void    (*Led_Get_OutOfMemoryException_Handler ()) () {
+            void    (*Led_Get_OutOfMemoryException_Handler ()) ()
+            {
                 return sLedOutOfMemoryExceptionCallback;
             }
 
-            void    Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ()) {
+            void    Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ())
+            {
                 sLedOutOfMemoryExceptionCallback = outOfMemoryHandler;
             }
 
@@ -372,7 +393,8 @@ namespace   Stroika {
 
 
 #if     !qNoSTRNICMP
-            int Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n) {
+            int Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
+            {
                 RequireNotNull (l);
                 RequireNotNull (r);
 #if     qSingleByteCharacters
@@ -384,7 +406,8 @@ namespace   Stroika {
 #endif
             }
 
-            int Led_tStriCmp (const Led_tChar* l, const Led_tChar* r) {
+            int Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
+            {
                 RequireNotNull (l);
                 RequireNotNull (r);
 #if     qSingleByteCharacters
@@ -407,7 +430,8 @@ namespace   Stroika {
              */
             static  void    (*sLedBadFormatDataExceptionCallback) ()        =   nullptr;
 
-            void    Led_ThrowBadFormatDataException () {
+            void    Led_ThrowBadFormatDataException ()
+            {
                 if (sLedBadFormatDataExceptionCallback == nullptr) {
                     // not sure what this should throw by default?
                     Led_ThrowOutOfMemoryException ();
@@ -418,11 +442,13 @@ namespace   Stroika {
                 Assert (false); // should never get here!
             }
 
-            void    (*Led_Get_BadFormatDataException_Handler ()) () {
+            void    (*Led_Get_BadFormatDataException_Handler ()) ()
+            {
                 return sLedBadFormatDataExceptionCallback;
             }
 
-            void    Led_Set_BadFormatDataException_Handler (void (*badFormatDataExceptionCallback) ()) {
+            void    Led_Set_BadFormatDataException_Handler (void (*badFormatDataExceptionCallback) ())
+            {
                 sLedBadFormatDataExceptionCallback = badFormatDataExceptionCallback;
             }
 
@@ -437,7 +463,8 @@ namespace   Stroika {
              */
             static  void    (*sLedThrowOSErrExceptionCallback) (OSErr)      =   nullptr;
 
-            void    Led_ThrowOSErr (OSErr err) {
+            void    Led_ThrowOSErr (OSErr err)
+            {
                 if (err != noErr) {
                     if (sLedThrowOSErrExceptionCallback == nullptr) {
                         throw err;
@@ -449,11 +476,13 @@ namespace   Stroika {
                 }
             }
 
-            void    (*Led_Get_ThrowOSErrException_Handler ()) (OSErr err) {
+            void    (*Led_Get_ThrowOSErrException_Handler ()) (OSErr err)
+            {
                 return sLedThrowOSErrExceptionCallback;
             }
 
-            void    Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err)) {
+            void    Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err))
+            {
                 sLedThrowOSErrExceptionCallback = throwOSErrExceptionCallback;
             }
 #endif
@@ -491,7 +520,8 @@ namespace   Stroika {
 
 
 #if     qNoSTRNICMP
-            int Led_tStrniCmp (const Led_tChar* lhs, const Led_tChar* rhs, size_t n) {
+            int Led_tStrniCmp (const Led_tChar* lhs, const Led_tChar* rhs, size_t n)
+            {
                 RequireNotNull (lhs);
                 RequireNotNull (rhs);
 #if     qSingleByteCharacters || qWideCharacters
@@ -524,7 +554,8 @@ namespace   Stroika {
 #endif
             }
 
-            int Led_tStriCmp (const Led_tChar* lhs, const Led_tChar* rhs) {
+            int Led_tStriCmp (const Led_tChar* lhs, const Led_tChar* rhs)
+            {
                 RequireNotNull (lhs);
                 RequireNotNull (rhs);
 #if     qSingleByteCharacters || qWideCharacters
@@ -557,7 +588,8 @@ namespace   Stroika {
 
 
 
-            size_t  Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize) {
+            size_t  Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
+            {
                 Led_tChar*  outPtr  =   outBuf;
                 for (size_t i = 1; i <= srcTextBytes; i++) {
 #if     qMacOS
@@ -584,7 +616,8 @@ namespace   Stroika {
                 return (nBytes);
             }
 
-            size_t  Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize) {
+            size_t  Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
+            {
                 Require (srcText != outBuf);    // though we support this for the others - its too hard
                 // in this case for the PC...
                 Led_tChar*  outPtr  =   outBuf;
@@ -610,7 +643,8 @@ namespace   Stroika {
 
 // return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 // always big enough!!!
-            size_t  Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize) {
+            size_t  Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
+            {
                 // NB: We DO Support the case where srcText == outBuf!!!!
                 Led_tChar*  outPtr  =   outBuf;
                 for (size_t i = 0; i < srcTextBytes; i++) {
@@ -638,7 +672,8 @@ namespace   Stroika {
                 any other such undesirable characters. Returns NEW length of string (after removals).
                 Removes in place.</p>
             */
-            size_t  Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tChar charToRemove) {
+            size_t  Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tChar charToRemove)
+            {
                 size_t      charsSkipped    =   0;
                 Led_tChar*  end             =   text + textLen;
                 for (Led_tChar* p = text; p + charsSkipped < end; ) {
@@ -655,7 +690,8 @@ namespace   Stroika {
 
 
 #if     qMultiByteCharacters
-            bool    Led_IsValidMultiByteString (const Led_tChar* start, size_t len) {
+            bool    Led_IsValidMultiByteString (const Led_tChar* start, size_t len)
+            {
                 AssertNotNull (start);
                 const   Led_tChar*  end =   &start[len];
                 const Led_tChar* cur = start;
@@ -695,7 +731,8 @@ namespace   Stroika {
 #if     qMacOS || qWindows
                 fOSClipHandle (nullptr),
 #endif
-                fLockedData (nullptr) {
+                fLockedData (nullptr)
+            {
 #if     qMacOS
 #if     TARGET_CARBON
                 ScrapRef            scrap   =   nullptr;
@@ -750,7 +787,8 @@ namespace   Stroika {
              */
             VariantArrayPacker::VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts):
                 fSafeArrayVariant (v),
-                fPtr (nullptr) {
+                fPtr (nullptr)
+            {
                 RequireNotNull (v);
                 // assumes passed in variant is CONSTRUCTED (initied) - but not necesarily having the right type
                 ::VariantClear (fSafeArrayVariant);
@@ -760,13 +798,15 @@ namespace   Stroika {
                 Led_ThrowIfErrorHRESULT (::SafeArrayAccessData (fSafeArrayVariant->parray, &fPtr));
             }
 
-            VariantArrayPacker::~VariantArrayPacker () {
+            VariantArrayPacker::~VariantArrayPacker ()
+            {
                 AssertNotNull (fSafeArrayVariant);
                 AssertNotNull (fSafeArrayVariant->parray);
                 ::SafeArrayUnaccessData (fSafeArrayVariant->parray);
             }
 
-            void*   VariantArrayPacker::PokeAtData () const {
+            void*   VariantArrayPacker::PokeAtData () const
+            {
                 return fPtr;
             }
 
@@ -781,7 +821,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             VariantArrayUnpacker::VariantArrayUnpacker (const VARIANT& v):
-                fSafeArray (v.parray) {
+                fSafeArray (v.parray)
+            {
                 if (not (v.vt & VT_ARRAY) or fSafeArray == nullptr) {
                     throw E_INVALIDARG;
                 }
@@ -794,23 +835,27 @@ namespace   Stroika {
                 fPtr = useP;
             }
 
-            VariantArrayUnpacker::~VariantArrayUnpacker () {
+            VariantArrayUnpacker::~VariantArrayUnpacker ()
+            {
                 AssertNotNull (fSafeArray);
                 ::SafeArrayUnaccessData (fSafeArray);
             }
 
-            const void*     VariantArrayUnpacker::PeekAtData () const {
+            const void*     VariantArrayUnpacker::PeekAtData () const
+            {
                 return fPtr;
             }
 
-            VARTYPE     VariantArrayUnpacker::GetArrayElementType () const {
+            VARTYPE     VariantArrayUnpacker::GetArrayElementType () const
+            {
                 AssertNotNull (fSafeArray);
                 VARTYPE vt  =   VT_EMPTY;
                 Led_ThrowIfErrorHRESULT (::SafeArrayGetVartype (fSafeArray, &vt));
                 return vt;
             }
 
-            size_t      VariantArrayUnpacker::GetLength () const {
+            size_t      VariantArrayUnpacker::GetLength () const
+            {
                 AssertNotNull (fSafeArray);
                 long    lb  =   0;
                 long    ub  =   0;
@@ -839,7 +884,8 @@ namespace   Stroika {
             @METHOD:        CreateSafeArrayOfBSTR
             @DESCRIPTION:   <p>Overloaded method to create a VARIANT record containing a safe-array of BSTRs.</p>
             */
-            VARIANT CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar_t* const* strsEnd) {
+            VARIANT CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar_t* const* strsEnd)
+            {
                 size_t  nElts   =   strsEnd - strsStart;
                 VARIANT result;
                 ::VariantInit (&result);
@@ -870,11 +916,13 @@ namespace   Stroika {
                 return result;
             }
 
-            VARIANT CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v) {
+            VARIANT CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v)
+            {
                 return CreateSafeArrayOfBSTR (&*v.begin (), &*v.end ());
             }
 
-            VARIANT CreateSafeArrayOfBSTR (const vector<wstring>& v) {
+            VARIANT CreateSafeArrayOfBSTR (const vector<wstring>& v)
+            {
                 vector<const wchar_t*>  tmp;
                 for (vector<wstring>::const_iterator i = v.begin (); i != v.end (); ++i) {
                     // I hope (assure?) this doesn't create temporaries and take .c_str () of temporaries
@@ -890,7 +938,8 @@ namespace   Stroika {
              ***************** UnpackVectorOfStringsFromVariantArray ************************
              ********************************************************************************
              */
-            vector<wstring> UnpackVectorOfStringsFromVariantArray (const VARIANT& v) {
+            vector<wstring> UnpackVectorOfStringsFromVariantArray (const VARIANT& v)
+            {
                 vector<wstring>         result;
                 VariantArrayUnpacker    up (v);
                 size_t                  nElts   =   up.GetLength ();
@@ -925,7 +974,8 @@ namespace   Stroika {
                         supported by a given COM object. The arguments 'objectName' and 'levelPrefix' can be nullptr (optional).
                         </p>
             */
-            void    DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char* levelPrefix) {
+            void    DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char* levelPrefix)
+            {
                 {
                     size_t                      labelLen    =   ((objectName == nullptr) ? 0 : ::strlen (objectName)) + 100;
                     Memory::SmallStackBuffer<char>  labelBuf (labelLen);
@@ -1014,7 +1064,8 @@ namespace   Stroika {
                         'iteratorName' and 'levelPrefix' can be nullptr (optional).
                         </p>
             */
-            void    DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const char* levelPrefix) {
+            void    DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const char* levelPrefix)
+            {
                 {
                     size_t                      labelLen    =   ((iteratorName == nullptr) ? 0 : ::strlen (iteratorName)) + 100;
                     Memory::SmallStackBuffer<char>  labelBuf (labelLen);
@@ -1064,7 +1115,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             Led_URLD::Led_URLD (const char* url, const char* title):
-                fData () {
+                fData ()
+            {
                 RequireNotNull (url);
                 RequireNotNull (title);
                 size_t  urlLen      =   ::strlen (url);
@@ -1080,7 +1132,8 @@ namespace   Stroika {
             }
 
             Led_URLD::Led_URLD (const void* urlData, size_t nBytes):
-                fData () {
+                fData ()
+            {
                 // assure a validly formatted Led_URLD - regardless of input
                 for (size_t i = 0; i < nBytes; i++) {
                     char    c   =   ((char*)urlData)[i];
@@ -1095,12 +1148,14 @@ namespace   Stroika {
                 }
             }
 
-            size_t  Led_URLD::GetURLDLength () const {
+            size_t  Led_URLD::GetURLDLength () const
+            {
                 // Note we DONT count the terminating NUL - cuz Netscape 2.0 doesn't appear to. And thats our reference.
                 return fData.size () - 1;
             }
 
-            size_t  Led_URLD::GetURLLength () const {
+            size_t  Led_URLD::GetURLLength () const
+            {
                 size_t  len =   fData.size ();
                 for (size_t i = 0; i < len; i++) {
                     if (fData[i] == '\r') {
@@ -1110,7 +1165,8 @@ namespace   Stroika {
                 return len - 1;
             }
 
-            size_t  Led_URLD::GetTitleLength () const {
+            size_t  Led_URLD::GetTitleLength () const
+            {
                 size_t  len =   fData.size ();
                 for (size_t i = 0; i < len; i++) {
                     if (fData[i] == '\r') {
@@ -1121,23 +1177,28 @@ namespace   Stroika {
                 return 0;
             }
 
-            char*   Led_URLD::PeekAtURLD () const {
+            char*   Led_URLD::PeekAtURLD () const
+            {
                 return (&const_cast<Led_URLD*>(this)->fData.front ());
             }
 
-            char*   Led_URLD::PeekAtURL () const {
+            char*   Led_URLD::PeekAtURL () const
+            {
                 return (&const_cast<Led_URLD*>(this)->fData.front ());
             }
 
-            char*   Led_URLD::PeekAtTitle () const {
+            char*   Led_URLD::PeekAtTitle () const
+            {
                 return PeekAtURL () + GetURLLength () + 1;  // skip URL and '\r'
             }
 
-            string  Led_URLD::GetTitle () const {
+            string  Led_URLD::GetTitle () const
+            {
                 return string (PeekAtTitle (), GetTitleLength ());
             }
 
-            string  Led_URLD::GetURL () const {
+            string  Led_URLD::GetURL () const
+            {
                 return string (PeekAtURL (), GetURLLength ());
             }
 
@@ -1155,24 +1216,28 @@ namespace   Stroika {
 #endif
             Led_URLManager* Led_URLManager::sThe    =   nullptr;
 
-            Led_URLManager::Led_URLManager () {
+            Led_URLManager::Led_URLManager ()
+            {
             }
 
-            Led_URLManager& Led_URLManager::Get () {
+            Led_URLManager& Led_URLManager::Get ()
+            {
                 if (sThe == nullptr) {
                     sThe = new Led_URLManager ();
                 }
                 return *sThe;
             }
 
-            void    Led_URLManager::Set (Led_URLManager* newURLMgr) {
+            void    Led_URLManager::Set (Led_URLManager* newURLMgr)
+            {
                 if (sThe != newURLMgr) {
                     delete sThe;
                     sThe = newURLMgr;
                 }
             }
 
-            void    Led_URLManager::Open (const string& url) {
+            void    Led_URLManager::Open (const string& url)
+            {
 #if     qUseInternetConfig
                 try {
                     Open_IC (url);
@@ -1204,7 +1269,8 @@ namespace   Stroika {
             }
 
 #if     qMacOS
-            string  Led_URLManager::FileSpecToURL (const FSSpec& fsp) {
+            string  Led_URLManager::FileSpecToURL (const FSSpec& fsp)
+            {
                 short   len =   0;
                 Handle  h   =   nullptr;
                 Led_ThrowOSErr (FSpGetFullPath (&fsp, &len, &h));
@@ -1246,14 +1312,16 @@ namespace   Stroika {
                 return rr;
             }
 #elif   qWindows
-            string  Led_URLManager::FileSpecToURL (const string& path) {
+            string  Led_URLManager::FileSpecToURL (const string& path)
+            {
                 Assert (false); // nyi (not needed anywhere right now)
                 return "";
             }
 #endif
 
 #if     qUseInternetConfig
-            void    Led_URLManager::Open_IC (const string& url) {
+            void    Led_URLManager::Open_IC (const string& url)
+            {
                 // If we compile for internet config, first try that. If that fails, fall back on Netscape.
                 Str255  hint        =   "\p";   // not sure what this is for. See how it works without it...
                 OSType  signature   =   '\?\?\?\?';
@@ -1291,7 +1359,8 @@ namespace   Stroika {
 #endif
 
 #if     qMacOS
-            void    Led_URLManager::Open_SpyglassAppleEvent (const string& url) {
+            void    Led_URLManager::Open_SpyglassAppleEvent (const string& url)
+            {
                 const   OSType  AE_spy_receive_suite    =   'WWW!';
                 const   OSType  AE_spy_openURL          =   'OURL'; // typeChar OpenURL
                 ProcessSerialNumber browserPSN  =   FindBrowser ();
@@ -1323,7 +1392,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseActiveXToOpenURLs
-            void    Led_URLManager::Open_ActiveX (const string& url) {
+            void    Led_URLManager::Open_ActiveX (const string& url)
+            {
                 Memory::SmallStackBuffer<wchar_t>   wideURLBuf (url.length () + 1);
                 {
                     int nWideChars = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), url.length (), wideURLBuf, url.length ());
@@ -1360,7 +1430,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseSpyglassDDESDIToOpenURLs
-            void    Led_URLManager::Open_SpyglassDDE (const string& url) {
+            void    Led_URLManager::Open_SpyglassDDE (const string& url)
+            {
                 /*
                  *  Use DDE to talk to any browser supporting the Spyglass DDE SDI Suite (right now I only know of
                  *  Netscape, ironicly) - LGP 960502
@@ -1423,7 +1494,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseSystemNetscapeOpenURLs
-            void    Led_URLManager::Open_SystemNetscape (const string& url) {
+            void    Led_URLManager::Open_SystemNetscape (const string& url)
+            {
                 string  execString;
                 /*
                  *  Code lifted (based on) code from AbiWord - xap_UnixFrame.cpp
@@ -1460,7 +1532,8 @@ namespace   Stroika {
 #endif
 
 #if     qMacOS
-            pascal  OSErr   Led_URLManager::FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath) {
+            pascal  OSErr   Led_URLManager::FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath)
+            {
                 // Based on code from Apple Macintosh Developer Technical Support
                 // "MoreFiles 1.4.2" example code
                 OSErr       result;
@@ -1523,7 +1596,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseSpyglassDDESDIToOpenURLs
-            void    Led_URLManager::InitDDEHandler () {
+            void    Led_URLManager::InitDDEHandler ()
+            {
                 //  Initialize DDEML
                 Require (sDDEMLInstance == 0);  // only call once
 
@@ -1537,7 +1611,8 @@ namespace   Stroika {
 #endif
 
 #if     qMacOS
-            ProcessSerialNumber Led_URLManager::FindBrowser () {
+            ProcessSerialNumber Led_URLManager::FindBrowser ()
+            {
                 OSType  sig             =   'MOSS'; // currently we hardwire Netscape - but we could extend this list to include all known browsers...
                 OSType  processType     =   'APPL';
                 ProcessSerialNumber psn;
@@ -1561,13 +1636,15 @@ namespace   Stroika {
 #endif
 
 #if     qUseSpyglassDDESDIToOpenURLs
-            HDDEDATA CALLBACK   Led_URLManager::SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/) {
+            HDDEDATA CALLBACK   Led_URLManager::SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/)
+            {
                 return 0;
             }
 #endif
 
 #if     qUseSpyglassDDESDIToOpenURLs
-            const char* Led_URLManager::SkipToNextArgument (const char* pFormat) {
+            const char* Led_URLManager::SkipToNextArgument (const char* pFormat)
+            {
                 RequireNotNull (pFormat);
                 if (*pFormat == '\0')   {
                     return (pFormat);
@@ -1585,7 +1662,8 @@ namespace   Stroika {
 #endif
 
 #if     qUseSpyglassDDESDIToOpenURLs
-            HSZ Led_URLManager::ClientArguments (const char* pFormat, ...) {
+            HSZ Led_URLManager::ClientArguments (const char* pFormat, ...)
+            {
                 RequireNotNull (pFormat);
 
                 //  Always pass in pointer values.
@@ -1672,7 +1750,8 @@ namespace   Stroika {
                 return(Final);
             }
 
-            char*   Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg) {
+            char*   Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
+            {
                 //  Quoted strings are counted as only one argument, though
                 //      the quotes are not copied into the return string.
 
@@ -1785,7 +1864,8 @@ namespace   Stroika {
                 return(pRetVal);
             }
 
-            void    Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...) {
+            void    Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...)
+            {
                 //  Of course, only pointers should be passed in as the variable number of
                 //      arguments so assignment can take place.
                 //  hArgs is free'd off by this function.
@@ -1936,7 +2016,8 @@ namespace   Stroika {
              *************************** MakeSophistsAppNameVersionURL **********************
              ********************************************************************************
              */
-            string  MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs) {
+            string  MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs)
+            {
                 Require (relURL.length () > 0 and relURL[0] == '/');
                 char    fullVersionBuf[1024];
                 (void)::snprintf (fullVersionBuf, NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
@@ -1972,7 +2053,8 @@ namespace   Stroika {
              ******************************* Led_CasedCharsEqual ****************************
              ********************************************************************************
              */
-            bool    Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase) {
+            bool    Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase)
+            {
                 if (lhs == rhs) {
                     return true;
                 }
@@ -1993,7 +2075,8 @@ namespace   Stroika {
              ******************************* Led_CasedStringsEqual **************************
              ********************************************************************************
              */
-            bool    Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase) {
+            bool    Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase)
+            {
                 if (lhs.length () != rhs.length ()) {
                     return false;
                 }

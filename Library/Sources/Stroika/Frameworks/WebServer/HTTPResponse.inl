@@ -18,50 +18,62 @@ namespace   Stroika {
 
 
             //  class   HTTPResponse
-            inline  HTTPResponse::State HTTPResponse::GetState () const {
+            inline  HTTPResponse::State HTTPResponse::GetState () const
+            {
                 return fState_;
             }
-            inline  IO::Network::HTTP::Status   HTTPResponse::GetStatus () const {
+            inline  IO::Network::HTTP::Status   HTTPResponse::GetStatus () const
+            {
                 return fStatus_;
             }
-            inline  InternetMediaType   HTTPResponse::GetContentType () const {
+            inline  InternetMediaType   HTTPResponse::GetContentType () const
+            {
                 return fContentType_;
             }
-            inline  Characters::CodePage    HTTPResponse::GetCodePage () const {
+            inline  Characters::CodePage    HTTPResponse::GetCodePage () const
+            {
                 return fCodePage_;
             }
-            inline  void    HTTPResponse::write (const wchar_t* e) {
+            inline  void    HTTPResponse::write (const wchar_t* e)
+            {
                 RequireNotNull (e);
                 write (e, e + ::wcslen (e));
             }
-            inline  void    HTTPResponse::write (const wstring& e) {
+            inline  void    HTTPResponse::write (const wstring& e)
+            {
                 if (not e.empty ()) {
                     write (Containers::Start (e), Containers::End (e));
                 }
             }
-            inline  void    HTTPResponse::writeln (const wchar_t* e) {
+            inline  void    HTTPResponse::writeln (const wchar_t* e)
+            {
                 RequireNotNull (e);
                 const   wchar_t kEOL[]  =   L"\r\n";
                 write (e, e + ::wcslen (e));
                 write (StartOfArray (kEOL), EndOfArray (kEOL));
             }
-            inline  void    HTTPResponse::writeln (const wstring& e) {
+            inline  void    HTTPResponse::writeln (const wstring& e)
+            {
                 const   wchar_t kEOL[]  =   L"\r\n";
                 if (not e.empty ()) {
                     write (Containers::Start (e), Containers::End (e));
                 }
                 write (StartOfArray (kEOL), EndOfArray (kEOL));
             }
-            inline  void    HTTPResponse::clear () {
+            inline  void    HTTPResponse::clear ()
+            {
                 fBytes_.clear ();
             }
-            inline  bool    HTTPResponse::empty () const {
+            inline  bool    HTTPResponse::empty () const
+            {
                 return fBytes_.empty ();
             }
-            inline  const vector<Byte>& HTTPResponse::GetBytes () const {
+            inline  const vector<Byte>& HTTPResponse::GetBytes () const
+            {
                 return fBytes_;
             }
-            inline  HTTPResponse::ContentSizePolicy HTTPResponse::GetContentSizePolicy () const {
+            inline  HTTPResponse::ContentSizePolicy HTTPResponse::GetContentSizePolicy () const
+            {
                 return fContentSizePolicy_;
             }
 

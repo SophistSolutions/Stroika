@@ -26,7 +26,8 @@ const   wchar_t RequiredComponentMissingException::kJava[]          =   L"Java";
 const   wchar_t RequiredComponentMissingException::kPDFViewer[]     =   L"PDFViewer";
 const   wchar_t RequiredComponentMissingException::kPDFOCXViewer[]  =   L"PDFOCXViewer";
 namespace   {
-    wstring mkMsg (const wstring& component) {
+    wstring mkMsg (const wstring& component)
+    {
         wstring cName   =   component;
         if (cName == RequiredComponentMissingException::kPDFViewer)         { cName = L"PDF Viewer";        }
         else if (cName == RequiredComponentMissingException::kPDFOCXViewer) { cName = L"PDF Viewer (OCX)";  }
@@ -36,7 +37,8 @@ namespace   {
 }
 RequiredComponentMissingException::RequiredComponentMissingException (const wstring& component):
     StringException (mkMsg (component)),
-    fComponent (component) {
+    fComponent (component)
+{
 }
 
 

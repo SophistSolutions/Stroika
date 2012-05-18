@@ -21,14 +21,17 @@ using   namespace   Stroika::Foundation::Execution;
  */
 OperationNotSupportedException::OperationNotSupportedException ()
     : StringException (L"Operation Not Supported")
-    , fOperationName_ () {
+    , fOperationName_ ()
+{
 }
 
 OperationNotSupportedException::OperationNotSupportedException (const String& operationName)
     : StringException (L"Operation '" + operationName.As<wstring> () + L"' Not Supported")
-    , fOperationName_ (operationName) {
+    , fOperationName_ (operationName)
+{
 }
 
-Characters::String  OperationNotSupportedException::GetOperationName () const {
+Characters::String  OperationNotSupportedException::GetOperationName () const
+{
     return fOperationName_;
 }

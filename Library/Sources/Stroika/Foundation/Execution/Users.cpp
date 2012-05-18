@@ -33,7 +33,8 @@ using   Characters::String;
  ************************ Execution::GetCurrentUserName *************************
  ********************************************************************************
  */
-String  Execution::GetCurrentUserName (UserNameFormat format) {
+String  Execution::GetCurrentUserName (UserNameFormat format)
+{
 #if     qPlatform_Windows && 0
     EXTENDED_NAME_FORMAT    useFormat   =   NameDisplay;
     ULONG                   sz          =   0;

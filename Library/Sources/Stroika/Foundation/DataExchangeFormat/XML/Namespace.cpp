@@ -26,7 +26,8 @@ using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
  ************************** NamespaceDefinitionsList ****************************
  ********************************************************************************
  */
-void    NamespaceDefinitionsList::Add (const wstring& uri, const wstring& prefix) {
+void    NamespaceDefinitionsList::Add (const wstring& uri, const wstring& prefix)
+{
 #if     defined(_DEBUG)
     for (vector<NamespaceDefinition>::const_iterator i = fNamespaces.begin (); i != fNamespaces.end (); ++i) {
         Assert (uri != i->fURI);
@@ -36,7 +37,8 @@ void    NamespaceDefinitionsList::Add (const wstring& uri, const wstring& prefix
     fNamespaces.push_back (NamespaceDefinition (uri, prefix));
 }
 
-bool    XML::operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs) {
+bool    XML::operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs)
+{
     vector<NamespaceDefinition>::const_iterator li  =   lhs.fNamespaces.begin ();
     vector<NamespaceDefinition>::const_iterator le  =   lhs.fNamespaces.end ();
     vector<NamespaceDefinition>::const_iterator ri  =   rhs.fNamespaces.begin ();
@@ -71,7 +73,8 @@ bool    XML::operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefi
     return false;
 }
 
-bool    XML::operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs) {
+bool    XML::operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs)
+{
     vector<NamespaceDefinition>::const_iterator li  =   lhs.fNamespaces.begin ();
     vector<NamespaceDefinition>::const_iterator le  =   lhs.fNamespaces.end ();
     vector<NamespaceDefinition>::const_iterator ri  =   rhs.fNamespaces.begin ();

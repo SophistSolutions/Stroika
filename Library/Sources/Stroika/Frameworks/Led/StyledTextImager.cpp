@@ -47,7 +47,8 @@ namespace   Stroika {
                 easily either markers that take precedence over, or are always superseded by the
                 standard style markers. And this returns eBaselinePriority - ZERO - by default.</p>
              */
-            int StyleMarker::GetPriority () const {
+            int StyleMarker::GetPriority () const
+            {
                 return eBaselinePriority;
             }
 
@@ -67,7 +68,8 @@ namespace   Stroika {
                 fBuckets (),
                 fText (nullptr),
                 fFrom (from),
-                fTo (to) {
+                fTo (to)
+            {
                 // See SPR#1293 - may want to get rid of this eventually
                 Require (from <= to);
                 if (from != to) {
@@ -80,7 +82,8 @@ namespace   Stroika {
                 fBuckets (),
                 fText (&text),
                 fFrom (from),
-                fTo (to) {
+                fTo (to)
+            {
                 Require (from <= to);
                 if (from != to) {
                     fBuckets.push_back (RunElement (nullptr, to - from));
@@ -93,7 +96,8 @@ namespace   Stroika {
                 }
             }
 
-            void    StyleMarkerSummarySink::Append (Marker* m) {
+            void    StyleMarkerSummarySink::Append (Marker* m)
+            {
                 RequireNotNull (m);
                 StyleMarker*    styleMarker =   dynamic_cast<StyleMarker*>(m);
                 if (styleMarker != nullptr) {
@@ -127,7 +131,8 @@ namespace   Stroika {
                         index. We don't even keep track of the index explicitly in the buckets: we compute it based on the fLength
                         field in the buckets and their offset from the summary sink start ('this->fFrom').</p>
             */
-            void    StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos) {
+            void    StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
+            {
                 Require (markerPos >= fFrom);
                 Require (markerPos <= fTo);
                 size_t  upTo = fFrom;
@@ -168,7 +173,8 @@ namespace   Stroika {
                 from a TextStore - that results in random choices. That can cause trouble - so try to avoid ties
                 without GOOD motivation.</p>
             */
-            void    StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker) {
+            void    StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker)
+            {
                 RequireNotNull (runElement);
                 RequireNotNull (newStyleMarker);
 
@@ -197,7 +203,8 @@ namespace   Stroika {
                         order - NOT logical (internal memory buffer) order. The elements are gauranteed not to cross
                         any directional boundaries (as returned from the @'TextLayoutBlock::GetScriptRuns' API)</p>
             */
-            vector<StyledTextImager::RunElement>    StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const {
+            vector<StyledTextImager::RunElement>    StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const
+            {
                 typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
 // Soon fix to use fText as a REFERENCE. Then we probably should have this code assure its re-ordering is done only once and then cached,
 // LGP 2002-12-16
@@ -248,12 +255,14 @@ namespace   Stroika {
 
             StyleMarkerSummarySinkForSingleOwner::StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to):
                 inherited (from, to),
-                fOwner (owner) {
+                fOwner (owner)
+            {
             }
 
             StyleMarkerSummarySinkForSingleOwner::StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to, const TextLayoutBlock& text):
                 inherited (from, to, text),
-                fOwner (owner) {
+                fOwner (owner)
+            {
             }
 
             /*
@@ -261,7 +270,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Like @'StyledTextImager::StyleMarkerSummarySink::CombineElements', except that matching
                 the MarkerOwner is more important than the Marker Priority.</p>
             */
-            void    StyleMarkerSummarySinkForSingleOwner::CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker) {
+            void    StyleMarkerSummarySinkForSingleOwner::CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker)
+            {
                 RequireNotNull (runElement);
                 RequireNotNull (newStyleMarker);
 
@@ -296,7 +306,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             StyledTextImager::StyledTextImager ():
-                TextImager () {
+                TextImager ()
+            {
             }
 
             /*
@@ -304,7 +315,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Create a summary of the style markers applied to a given range of text (by default using
                 @'StyledTextImager::StyleMarkerSummarySink') into @'StyledTextImager::RunElement's.</p>
             */
-            vector<RunElement>  StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to) const {
+            vector<RunElement>  StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to) const
+            {
                 // See SPR#1293 - may want to get rid of this eventually
                 StyleMarkerSummarySink summary (from, to);
                 GetTextStore ().CollectAllMarkersInRangeInto (from, to, TextStore::kAnyMarkerOwner, summary);
@@ -316,7 +328,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Create a summary of the style markers applied to a given range of text (by default using
                 @'StyledTextImager::StyleMarkerSummarySink') into @'StyledTextImager::RunElement's.</p>
             */
-            vector<RunElement>  StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const {
+            vector<RunElement>  StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const
+            {
                 StyleMarkerSummarySink summary (from, to, text);
                 GetTextStore ().CollectAllMarkersInRangeInto (from, to, TextStore::kAnyMarkerOwner, summary);
                 return summary.ProduceOutputSummary ();
@@ -332,7 +345,8 @@ namespace   Stroika {
                                                    size_t from, size_t to, const TextLayoutBlock& text,
                                                    const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                                    Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                  ) {
+                                                  )
+            {
                 /*
                  *  Note that SummarizeStyleMarkers assures 'outputSummary' comes out in VIRTUAL order.
                  *  Must display text in LTR virtual display order.
@@ -416,7 +430,8 @@ namespace   Stroika {
 
             void    StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
                     Led_Distance* distanceResults
-                                                          ) const {
+                                                          ) const
+            {
                 // See SPR#1293 - may want to pass in TextLayoutBlock here - instead of just plain text...
                 vector<RunElement>  outputSummary   =   SummarizeStyleMarkers (from, to);
 
@@ -444,7 +459,8 @@ namespace   Stroika {
                 }
             }
 
-            Led_Distance    StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) const {
+            Led_Distance    StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) const
+            {
                 // See SPR#1293 - may want to pass in TextLayoutBlock here ... and then pass that to SummarizeStyleMarkers ()
                 Require (from <= to);
                 if (from == to) {           // HACK/TMP? SO WE GET AT LEAST ONE SUMMARY RECORD?? LGP 951018
@@ -495,7 +511,8 @@ namespace   Stroika {
                 return maxHeightAbove + maxHeightBelow;
             }
 
-            Led_Distance    StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) const {
+            Led_Distance    StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
+            {
                 // See SPR#1293 - may want to pass in TextLayoutBlock here ... and then pass that to SummarizeStyleMarkers ()
                 Require (from <= to);
                 if (from == to) {           // HACK/TMP? SO WE GET AT LEAST ONE SUMMARY RECORD?? LGP 951018
@@ -525,7 +542,8 @@ namespace   Stroika {
             }
 
 #if     qDebug
-            void    StyledTextImager::Invariant_ () const {
+            void    StyledTextImager::Invariant_ () const
+            {
             }
 #endif
 
@@ -541,7 +559,8 @@ namespace   Stroika {
              ************************** TrivialFontSpecStyleMarker **************************
              ********************************************************************************
              */
-            int     TrivialFontSpecStyleMarker::GetPriority () const {
+            int     TrivialFontSpecStyleMarker::GetPriority () const
+            {
                 return eBaselinePriority + 1;
             }
 

@@ -193,20 +193,24 @@ namespace   Stroika {
              */
 
 //  class   Idler
-            inline  Idler::Idler () {
+            inline  Idler::Idler ()
+            {
             }
 
 //  class   EnterIdler
-            inline  EnterIdler::EnterIdler () {
+            inline  EnterIdler::EnterIdler ()
+            {
             }
 
 
 //  class   IdleManager::NonIdleContext
-            inline  IdleManager::NonIdleContext::NonIdleContext () {
+            inline  IdleManager::NonIdleContext::NonIdleContext ()
+            {
                 IdleManager::Get ().SetInIdleMode (false);
                 IdleManager::Get ().fNonIdleContextCount ++;
             }
-            inline  IdleManager::NonIdleContext::~NonIdleContext () {
+            inline  IdleManager::NonIdleContext::~NonIdleContext ()
+            {
                 Assert (IdleManager::Get ().fNonIdleContextCount > 0);
                 IdleManager::Get ().fNonIdleContextCount --;
             }
@@ -220,18 +224,22 @@ namespace   Stroika {
                 fIdleManagerOSImpl (nullptr),
                 fIdlers (),
                 fNeedMgrIdleCalls (false),
-                fEnterIdlers () {
+                fEnterIdlers ()
+            {
             }
-            inline  IdleManager&    IdleManager::Get () {
+            inline  IdleManager&    IdleManager::Get ()
+            {
                 if (sThe == nullptr) {
                     sThe = new IdleManager ();
                 }
                 return *sThe;
             }
-            inline  bool    IdleManager::GetInIdleMode () const {
+            inline  bool    IdleManager::GetInIdleMode () const
+            {
                 return fInIdleMode;
             }
-            inline  void    IdleManager::SetInIdleMode (bool inIdleMode) {
+            inline  void    IdleManager::SetInIdleMode (bool inIdleMode)
+            {
                 bool    effectiveInIdleMode =   inIdleMode and fNonIdleContextCount == 0;
                 bool    enteringIdle    =   not fInIdleMode and effectiveInIdleMode;
                 fInIdleMode = effectiveInIdleMode;
@@ -243,7 +251,8 @@ namespace   Stroika {
 
 
 //  class   IdleManager::IdleManagerOSImpl
-            inline  IdleManager::IdleManagerOSImpl::IdleManagerOSImpl () {
+            inline  IdleManager::IdleManagerOSImpl::IdleManagerOSImpl ()
+            {
             }
 
 

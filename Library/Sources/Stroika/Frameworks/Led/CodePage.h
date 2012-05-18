@@ -397,7 +397,8 @@ namespace   Stroika {
             @METHOD:        GetDefaultSDKCodePage
             @DESCRIPTION:   <p>Returns the assumed code page of @'Led_SDK_Char'.</p>
             */
-            inline  CodePage    GetDefaultSDKCodePage () {
+            inline  CodePage    GetDefaultSDKCodePage ()
+            {
 #if     qMacOS
                 return kCodePage_MAC;   // there maybe a better answer than this??? Some Mac SDK API?
 #elif   qWindows
@@ -419,7 +420,8 @@ namespace   Stroika {
                         This routine is made portable to other platforms BECAUSE it is used in RTF files.
                         This function returns the magic code page # zero (CP_ACP on windows) if there is no good mapping.</p>
             */
-            inline  CodePage    Win32CharSetToCodePage (unsigned char lfCharSet) {
+            inline  CodePage    Win32CharSetToCodePage (unsigned char lfCharSet)
+            {
                 // See MSFT info article Q165478. No routine to map from these charset values - just this table... Sigh...
                 // LGP 2001-04-30
 
@@ -587,7 +589,8 @@ namespace   Stroika {
             @METHOD:        Win32PrimaryLangIDToCodePage
             @DESCRIPTION:   <p>Map from a Win32 language identifier to a code page.</p>
             */
-            inline  CodePage    Win32PrimaryLangIDToCodePage (USHORT languageIdenifier) {
+            inline  CodePage    Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
+            {
                 /*
                  *  I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesnt provide their own
                  *  mapping routines! Anyhow - I got a start on this from some UNISCRIBE sample code, and have since
@@ -640,10 +643,12 @@ namespace   Stroika {
 
 
 //  class   UTF8Converter
-            inline  size_t  UTF8Converter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const {
+            inline  size_t  UTF8Converter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
+            {
                 return inMBCharCnt;
             }
-            inline  size_t  UTF8Converter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* /*inChars*/, size_t inCharCnt) const {
+            inline  size_t  UTF8Converter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* /*inChars*/, size_t inCharCnt) const
+            {
                 return inCharCnt * 6;
             }
 
@@ -652,11 +657,13 @@ namespace   Stroika {
 //  class   CodePageConverter
             inline  CodePageConverter::CodePageConverter (CodePage codePage):
                 fHandleBOM (false),
-                fCodePage (codePage) {
+                fCodePage (codePage)
+            {
             }
             inline  CodePageConverter::CodePageConverter (CodePage codePage, HandleBOMFlag h):
                 fHandleBOM (true),
-                fCodePage (codePage) {
+                fCodePage (codePage)
+            {
                 Require (h == eHandleBOM);
                 Led_Arg_Unused (h);
             }
@@ -677,14 +684,16 @@ namespace   Stroika {
                         <p>See also @'CodePageConverter::SetHandleBOM', and note that there is an overloaded CTOR that lets you specify
                     CodePageConverter::eHandleBOM as a final argument to automatically set this BOM converter flag.</p>
             */
-            inline  bool    CodePageConverter::GetHandleBOM () const {
+            inline  bool    CodePageConverter::GetHandleBOM () const
+            {
                 return fHandleBOM;
             }
             /*
             @METHOD:        CodePageConverter::SetHandleBOM
             @DESCRIPTION:   <p>See also @'CodePageConverter::GetHandleBOM'.</p>
             */
-            inline  void    CodePageConverter::SetHandleBOM (bool handleBOM) {
+            inline  void    CodePageConverter::SetHandleBOM (bool handleBOM)
+            {
                 fHandleBOM = handleBOM;
             }
             /*
@@ -692,7 +701,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Call to get an upper bound, reasonable buffer size to use to pass to
                         @'CodePageConverter::MapToUNICODE' calls.</p>
             */
-            inline  size_t  CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const {
+            inline  size_t  CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
+            {
                 size_t  resultSize  =   inMBCharCnt;
                 return resultSize;
             }
@@ -700,7 +710,8 @@ namespace   Stroika {
             @METHOD:        CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize
             @DESCRIPTION:   <p>Call to get an upper bound, reasonable buffer size to use to pass to MapFromUNICODE calls.</p>
             */
-            inline  size_t  CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const {
+            inline  size_t  CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const
+            {
                 size_t  resultSize;
                 switch (fCodePage) {
                     case    kCodePage_ANSI:
@@ -754,7 +765,8 @@ namespace   Stroika {
 
 //  class   CodePageConverter::CodePageNotSupportedException
             inline  CodePageConverter::CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage):
-                fCodePage (codePage) {
+                fCodePage (codePage)
+            {
             }
 
 
@@ -763,7 +775,8 @@ namespace   Stroika {
 #if     qWindows
 //  class   CodePageConverter
             inline  Win32_CodePageConverter::Win32_CodePageConverter (int codePage):
-                fCodePage (codePage) {
+                fCodePage (codePage)
+            {
             }
 #endif
 
@@ -778,7 +791,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns a list of all code pages installed on the system.
                         This list is returned in sorted order.</p>
             */
-            inline  const vector<CodePage>& CodePagesInstalled::GetAll () {
+            inline  const vector<CodePage>& CodePagesInstalled::GetAll ()
+            {
                 if (sCodePages.empty ()) {
                     Init ();
                 }
@@ -788,7 +802,8 @@ namespace   Stroika {
             @METHOD:        CodePagesInstalled::IsCodePageAvailable
             @DESCRIPTION:   <p>Checks if the given code page is installed.</p>
             */
-            inline  bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp) {
+            inline  bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+            {
                 const vector<CodePage>&             codePages   =   GetAll ();
                 vector<CodePage>::const_iterator    i           =   lower_bound (codePages.begin (), codePages.end (), cp);
                 return (i != codePages.end ());
@@ -799,7 +814,8 @@ namespace   Stroika {
                         the default code page Led will use. Led will use this occasionally as its default, however.
                         On Windows - this is basically a call to ::GetACP ().</p>
             */
-            inline  CodePage    CodePagesInstalled::GetDefaultCodePage () {
+            inline  CodePage    CodePagesInstalled::GetDefaultCodePage ()
+            {
 #if     qMacOS
                 return kCodePage_MAC;
 #elif   qWindows
@@ -815,10 +831,12 @@ namespace   Stroika {
 
 
 //  class   CodePagePrettyNameMapper
-            inline  const CodePagePrettyNameMapper::CodePageNames&  CodePagePrettyNameMapper::GetCodePageNames () {
+            inline  const CodePagePrettyNameMapper::CodePageNames&  CodePagePrettyNameMapper::GetCodePageNames ()
+            {
                 return sCodePageNames;
             }
-            inline  void    CodePagePrettyNameMapper::SetCodePageNames (const CodePageNames& codePageNames) {
+            inline  void    CodePagePrettyNameMapper::SetCodePageNames (const CodePageNames& codePageNames)
+            {
                 sCodePageNames = codePageNames;
             }
 
@@ -827,22 +845,28 @@ namespace   Stroika {
 
 //  class   CharacterProperties
 #if     qSingleByteCharacters
-            inline  bool    CharacterProperties::IsAlpha (Led_tChar c) {
+            inline  bool    CharacterProperties::IsAlpha (Led_tChar c)
+            {
                 return isalpha (c);
             }
-            inline  bool    CharacterProperties::IsAlnum (Led_tChar c) {
+            inline  bool    CharacterProperties::IsAlnum (Led_tChar c)
+            {
                 return isalnum (c);
             }
-            inline  bool    CharacterProperties::IsPunct (Led_tChar c) {
+            inline  bool    CharacterProperties::IsPunct (Led_tChar c)
+            {
                 return ispunct (c);
             }
-            inline  bool    CharacterProperties::IsSpace (Led_tChar c) {
+            inline  bool    CharacterProperties::IsSpace (Led_tChar c)
+            {
                 return isspace (c);
             }
-            inline  bool    CharacterProperties::IsCntrl (Led_tChar c) {
+            inline  bool    CharacterProperties::IsCntrl (Led_tChar c)
+            {
                 return iscntrl (c);
             }
-            inline  bool    CharacterProperties::IsDigit (Led_tChar c) {
+            inline  bool    CharacterProperties::IsDigit (Led_tChar c)
+            {
                 return isdigit (c);
             }
 #endif

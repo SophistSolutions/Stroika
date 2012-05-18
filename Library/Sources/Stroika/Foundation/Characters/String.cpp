@@ -525,11 +525,13 @@ namespace   {
 }
 
 String::String ()
-    : _fRep (MyEmptyString_::mkEmptyStrRep_ ()) {
+    : _fRep (MyEmptyString_::mkEmptyStrRep_ ())
+{
 }
 
 String::String (const char16_t* cString)
-    : _fRep (MyEmptyString_::mkEmptyStrRep_ ()) {
+    : _fRep (MyEmptyString_::mkEmptyStrRep_ ())
+{
     RequireNotNull (cString);
     // Horrible, but temporarily OK impl
     for (const char16_t* i = cString; *i != '\0'; ++i) {
@@ -538,52 +540,62 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ()) {
+    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
+{
     RequireNotNull (cString);
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (from, to), _Rep_Cloner ()) {
+    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (from, to), _Rep_Cloner ())
+{
     Require (from <= to);
     Require (from != nullptr or from == to);
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const Character* from, const Character* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ()) {
+    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
+{
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
     Require (from <= to);
     Require (from != nullptr or from == to);
 }
 
 String::String (const std::wstring& r)
-    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ()) {
+    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
+{
 }
 
 String::String (_Rep* sharedPart, _REPCTOR)
-    : _fRep (sharedPart, _Rep_Cloner ()) {
+    : _fRep (sharedPart, _Rep_Cloner ())
+{
     RequireNotNull (sharedPart);
     Require (_fRep.unique ());
 }
 
-String  String::FromUTF8 (const char* from) {
+String  String::FromUTF8 (const char* from)
+{
     return UTF8StringToWide (from);
 }
 
-String  String::FromUTF8 (const std::string& from) {
+String  String::FromUTF8 (const std::string& from)
+{
     return UTF8StringToWide (from);
 }
 
-String  String::FromTString (const TChar* from) {
+String  String::FromTString (const TChar* from)
+{
     return TString2Wide (from);
 }
 
-String  String::FromTString (const basic_string<TChar>& from) {
+String  String::FromTString (const basic_string<TChar>& from)
+{
     return TString2Wide (from);
 }
 
-void    String::SetLength (size_t newLength) {
+void    String::SetLength (size_t newLength)
+{
     try {
         if (newLength == 0) {
             _fRep->RemoveAll ();
@@ -604,7 +616,8 @@ void    String::SetLength (size_t newLength) {
     }
 }
 
-void    String::SetCharAt (Character c, size_t i) {
+void    String::SetCharAt (Character c, size_t i)
+{
     Require (i >= 0);
     Require (i < GetLength ());
     try {
@@ -617,7 +630,8 @@ void    String::SetCharAt (Character c, size_t i) {
     }
 }
 
-void    String::InsertAt (const Character* from, const Character* to, size_t at) {
+void    String::InsertAt (const Character* from, const Character* to, size_t at)
+{
     Require (at >= 0);
     Require (at <= (GetLength ()));
     Require (from <= to);
@@ -636,7 +650,8 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     }
 }
 
-void    String::RemoveAt (size_t index, size_t nCharsToRemove) {
+void    String::RemoveAt (size_t index, size_t nCharsToRemove)
+{
     Require (index + nCharsToRemove < GetLength ());
     try {
         _fRep->RemoveAt (index, nCharsToRemove);
@@ -648,14 +663,16 @@ void    String::RemoveAt (size_t index, size_t nCharsToRemove) {
     }
 }
 
-void    String::Remove (Character c) {
+void    String::Remove (Character c)
+{
     size_t index = IndexOf (c);
     if (index != kBadStringIndex) {
         RemoveAt (index, 1);
     }
 }
 
-size_t  String::IndexOf (Character c) const {
+size_t  String::IndexOf (Character c) const
+{
     //TODO: HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
     for (size_t i = 0; i < length; i++) {
@@ -666,7 +683,8 @@ size_t  String::IndexOf (Character c) const {
     return (kBadStringIndex);
 }
 
-size_t  String::IndexOf (const String& subString) const {
+size_t  String::IndexOf (const String& subString) const
+{
     if (subString.GetLength () == 0) {
         return ((GetLength () == 0) ? kBadStringIndex : 0);
     }
@@ -690,7 +708,8 @@ nogood:
     return (kBadStringIndex);
 }
 
-size_t  String::RIndexOf (Character c) const {
+size_t  String::RIndexOf (Character c) const
+{
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
     for (size_t i = length; i > 0; --i) {
@@ -701,7 +720,8 @@ size_t  String::RIndexOf (Character c) const {
     return (kBadStringIndex);
 }
 
-size_t  String::RIndexOf (const String& subString) const {
+size_t  String::RIndexOf (const String& subString) const
+{
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     /*
      * Do quickie implementation, and dont worry about efficiency...
@@ -720,15 +740,18 @@ size_t  String::RIndexOf (const String& subString) const {
     return (kBadStringIndex);
 }
 
-bool    String::Contains (Character c) const {
+bool    String::Contains (Character c) const
+{
     return (_fRep->Contains (c));
 }
 
-bool    String::Contains (const String& subString) const {
+bool    String::Contains (const String& subString) const
+{
     return bool (IndexOf (subString) != kBadStringIndex);
 }
 
-bool    String::Match (const String& regEx) const {
+bool    String::Match (const String& regEx) const
+{
 #if     qCompilerAndStdLib_Bug_regexpr
     AssertNotImplemented ();
     return false;
@@ -738,7 +761,8 @@ bool    String::Match (const String& regEx) const {
 #endif
 }
 
-vector<String>  String::Find (const String& regEx) const {
+vector<String>  String::Find (const String& regEx) const
+{
     vector<String>  result;
 #if     qCompilerAndStdLib_Bug_regexpr
     AssertNotImplemented ();
@@ -755,7 +779,8 @@ vector<String>  String::Find (const String& regEx) const {
     return result;
 }
 
-String  String::Replace (const String& regEx, const String& with) const {
+String  String::Replace (const String& regEx, const String& with) const
+{
 #if     qCompilerAndStdLib_Bug_regexpr
     AssertNotImplemented ();
     return String ();
@@ -764,7 +789,8 @@ String  String::Replace (const String& regEx, const String& with) const {
 #endif
 }
 
-String  String::SubString (size_t from, size_t to) const {
+String  String::SubString (size_t from, size_t to) const
+{
     Require ((from <= to) or (to == kBadStringIndex));
 
     size_t  myLength    =   GetLength ();
@@ -782,7 +808,8 @@ String  String::SubString (size_t from, size_t to) const {
 #endif
 }
 
-String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const {
+String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
+{
     RequireNotNull (shouldBeTrimmmed);
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
@@ -802,7 +829,8 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const {
     return String ();
 }
 
-String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const {
+String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
+{
     RequireNotNull (shouldBeTrimmmed);
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
@@ -825,7 +853,8 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const {
     return String ();
 }
 
-String  String::Trim (bool (*shouldBeTrimmmed) (Character)) const {
+String  String::Trim (bool (*shouldBeTrimmmed) (Character)) const
+{
     RequireNotNull (shouldBeTrimmmed);
     /*
      * This could be implemented more efficient, but this is simpler for now..
@@ -833,7 +862,8 @@ String  String::Trim (bool (*shouldBeTrimmmed) (Character)) const {
     return LTrim (shouldBeTrimmmed).RTrim (shouldBeTrimmmed);
 }
 
-String  String::StripAll (bool (*removeCharIf) (Character)) const {
+String  String::StripAll (bool (*removeCharIf) (Character)) const
+{
     RequireNotNull (removeCharIf);
 
     // TODO: optimize special case where removeCharIf is always false
@@ -859,7 +889,8 @@ String  String::StripAll (bool (*removeCharIf) (Character)) const {
     return *this;   // if we NEVER get removeCharIf return false, just clone this
 }
 
-String  String::ToLowerCase () const {
+String  String::ToLowerCase () const
+{
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
     // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
     String  result  =   *this;
@@ -873,7 +904,8 @@ String  String::ToLowerCase () const {
     return result;
 }
 
-String  String::ToUpperCase () const {
+String  String::ToUpperCase () const
+{
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
     // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
     String  result  =   *this;
@@ -887,7 +919,8 @@ String  String::ToUpperCase () const {
     return result;
 }
 
-bool String::IsWhitespace () const {
+bool String::IsWhitespace () const
+{
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
     size_t  n   =   GetLength ();
     for (size_t i = 0; i < n; ++i) {
@@ -900,24 +933,28 @@ bool String::IsWhitespace () const {
 }
 
 template    <>
-void    String::AsUTF8 (string* into) const {
+void    String::AsUTF8 (string* into) const
+{
     RequireNotNull (into);
     *into = WideStringToUTF8 (As<wstring> ());  //tmphack impl (but shoudl work)
 }
 
-TString String::AsTString () const {
+TString String::AsTString () const
+{
     TString result;
     AsTString (&result);
     return result;
 }
 
-void    String::AsTString (TString* into) const {
+void    String::AsTString (TString* into) const
+{
     RequireNotNull (into);
     *into = Wide2TString (As<wstring> ());  // poor inefficient implementation
 }
 
 template    <>
-void    String::AsASCII (string* into) const {
+void    String::AsASCII (string* into) const
+{
     RequireNotNull (into);
 
     into->clear ();
@@ -928,7 +965,8 @@ void    String::AsASCII (string* into) const {
     }
 }
 
-const wchar_t*  String::c_str () const {
+const wchar_t*  String::c_str () const
+{
     const   wchar_t*    result  =   _fRep->c_str_peek ();
     if (result == nullptr) {
         // Then we must force it to be NUL-terminated
@@ -961,45 +999,55 @@ const wchar_t*  String::c_str () const {
  ********************************************************************************
  */
 String_BufferedArray::String_BufferedArray ()
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0), _eRepCTOR)
+{
 }
 
 String_BufferedArray::String_BufferedArray (size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve), _eRepCTOR)
+{
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+{
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString, size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve), _eRepCTOR)
+{
     Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ()), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ()), _eRepCTOR)
+{
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str, size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve), _eRepCTOR)
+{
     Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const String& from)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR)
+{
 }
 
 String_BufferedArray::String_BufferedArray (const String& from, size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve), _eRepCTOR) {
+    : String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve), _eRepCTOR)
+{
     Require (GetLength () <= reserve);
 }
 
-size_t  String_BufferedArray::capacity () const {
+size_t  String_BufferedArray::capacity () const
+{
     return const_cast<String_BufferedArray*> (this)->_fRep.Dynamic_Cast<String_BufferedArray_Rep_> ()->capacity ();
 }
 
-void    String_BufferedArray::reserve (size_t n) {
+void    String_BufferedArray::reserve (size_t n)
+{
     _fRep.Dynamic_Cast<String_BufferedArray_Rep_> ()->reserve (n);
 }
 
@@ -1019,7 +1067,8 @@ void    String_BufferedArray::reserve (size_t n) {
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
-    : String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR) {
+    : String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+{
 }
 
 
@@ -1035,7 +1084,8 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemo
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
-    : String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR) {
+    : String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+{
 }
 
 
@@ -1051,7 +1101,8 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMem
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_StackLifetime_ReadOnly::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* cString)
-    : String (cString) {
+    : String (cString)
+{
     /* TODO: FIX PERFORMANCE!!!
      *      This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
      *  advantages the class description promises.
@@ -1073,7 +1124,8 @@ String_ExternalMemoryOwnership_StackLifetime_ReadOnly::String_ExternalMemoryOwne
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_StackLifetime_ReadWrite::String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* cString)
-    : String (cString) {
+    : String (cString)
+{
     /* TODO: FIX PERFORMANCE!!!
      *      This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
      *  advantages the class description promises.
@@ -1106,21 +1158,25 @@ String_ExternalMemoryOwnership_StackLifetime_ReadWrite::String_ExternalMemoryOwn
 String_Substring_::MyRep_::MyRep_ (const SharedByValue<_Rep, _Rep_Cloner>& baseString, size_t from, size_t length)
     : fBase (baseString)
     , fFrom (from)
-    , fLength (length) {
+    , fLength (length)
+{
     Require (from >= 0);
     Require (length >= 0);
     Require ((from + length) <= fBase->GetLength ());
 }
 
-String::_Rep*   String_Substring_::MyRep_::Clone () const {
+String::_Rep*   String_Substring_::MyRep_::Clone () const
+{
     return (new String_CharArray::MyRep_ (Peek (), GetLength ()));
 }
 
-size_t  String_Substring_::MyRep_::GetLength () const {
+size_t  String_Substring_::MyRep_::GetLength () const
+{
     return (fLength);
 }
 
-bool    String_Substring_::MyRep_::Contains (Character item) const {
+bool    String_Substring_::MyRep_::Contains (Character item) const
+{
     for (size_t i = 0; i < fLength; i++) {
         if (GetAt (i) == item) {
             return (true);
@@ -1129,25 +1185,29 @@ bool    String_Substring_::MyRep_::Contains (Character item) const {
     return (false);
 }
 
-void    String_Substring_::MyRep_::RemoveAll () {
+void    String_Substring_::MyRep_::RemoveAll ()
+{
     fBase->RemoveAll ();
     fFrom = 0;
     fLength = 0;
 }
 
-Character   String_Substring_::MyRep_::GetAt (size_t index) const {
+Character   String_Substring_::MyRep_::GetAt (size_t index) const
+{
     Require (index < GetLength ());
     Assert ((fFrom + index) < fBase->GetLength ());
     return (fBase->GetAt (fFrom + index));
 }
 
-void    String_Substring_::MyRep_::SetAt (Character item, size_t index) {
+void    String_Substring_::MyRep_::SetAt (Character item, size_t index)
+{
     Require (index < GetLength ());
     Assert ((fFrom + index) < fBase->GetLength ());
     fBase->SetAt (item, (fFrom + index));
 }
 
-void    String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) {
+void    String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
+{
     Require (index <= GetLength ());
     Assert ((fFrom + index) <= fBase->GetLength ());
 
@@ -1158,7 +1218,8 @@ void    String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Ch
     fLength++;
 }
 
-void    String_Substring_::MyRep_::RemoveAt (size_t index, size_t amountToRemove) {
+void    String_Substring_::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
+{
     Require (index < GetLength ());
     Require ((index + amountToRemove) < GetLength ());
 
@@ -1167,7 +1228,8 @@ void    String_Substring_::MyRep_::RemoveAt (size_t index, size_t amountToRemove
     fLength -= amountToRemove;
 }
 
-void    String_Substring_::MyRep_::SetLength (size_t newLength) {
+void    String_Substring_::MyRep_::SetLength (size_t newLength)
+{
     size_t delta = newLength - fLength;
     if (delta != 0) {
         fBase->SetLength (fBase->GetLength () + delta);
@@ -1175,7 +1237,8 @@ void    String_Substring_::MyRep_::SetLength (size_t newLength) {
     }
 }
 
-const Character*    String_Substring_::MyRep_::Peek () const {
+const Character*    String_Substring_::MyRep_::Peek () const
+{
     Assert (fFrom <= fBase->GetLength ());
 
     const Character* buffer = fBase->Peek ();
@@ -1196,7 +1259,8 @@ const Character*    String_Substring_::MyRep_::Peek () const {
  ********************************** operator+ ***********************************
  ********************************************************************************
  */
-String  Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs) {
+String  Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
+{
     String_BufferedArray    tmp =   String_BufferedArray (lhs, lhs.size () + rhs.size ());
     tmp.InsertAt (rhs, tmp.GetLength ());
     return tmp;

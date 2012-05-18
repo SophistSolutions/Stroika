@@ -40,7 +40,8 @@ Request::Request ()
     : fMethod ()
     , fOverrideHeaders ()
     , fData ()
-    , fContentType () {
+    , fContentType ()
+{
 }
 
 
@@ -55,7 +56,8 @@ Request::Request ()
 Response::Response ()
     : fData ()
     , fHeaders ()
-    , fStatus () {
+    , fStatus ()
+{
 }
 
 
@@ -68,14 +70,16 @@ Response::Response ()
  **************************** Transfer::Connection ******************************
  ********************************************************************************
  */
-Response    Connection::Get (const map<String, String>& extraHeaders) {
+Response    Connection::Get (const map<String, String>& extraHeaders)
+{
     Request r;
     r.fMethod = HTTP::Methods::kGet;
     r.fOverrideHeaders = extraHeaders;
     return SendAndRequest (r);
 }
 
-Response    Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders) {
+Response    Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders)
+{
     Request r;
     r.fMethod = HTTP::Methods::kPost;
     r.fOverrideHeaders = extraHeaders;
@@ -84,14 +88,16 @@ Response    Connection::Post (const vector<Byte>& data, const InternetMediaType&
     return SendAndRequest (r);
 }
 
-Response    Connection::Delete (const map<String, String>& extraHeaders) {
+Response    Connection::Delete (const map<String, String>& extraHeaders)
+{
     Request r;
     r.fMethod = HTTP::Methods::kDelete;
     r.fOverrideHeaders = extraHeaders;
     return SendAndRequest (r);
 }
 
-Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders) {
+Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders)
+{
     Request r;
     r.fMethod = HTTP::Methods::kPut;
     r.fOverrideHeaders = extraHeaders;
@@ -100,7 +106,8 @@ Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& 
     return SendAndRequest (r);
 }
 
-Response    Connection::Options (const map<String, String>& extraHeaders) {
+Response    Connection::Options (const map<String, String>& extraHeaders)
+{
     Request r;
     r.fMethod = HTTP::Methods::kOptions;
     r.fOverrideHeaders = extraHeaders;
@@ -117,7 +124,8 @@ Response    Connection::Options (const map<String, String>& extraHeaders) {
  ************************ Transfer::CreateConnection ****************************
  ********************************************************************************
  */
-Connection  Transfer::CreateConnection () {
+Connection  Transfer::CreateConnection ()
+{
 #if     qHasFeature_libcurl
     return Connection_LibCurl ();
 #endif

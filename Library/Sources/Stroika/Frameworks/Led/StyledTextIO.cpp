@@ -82,28 +82,32 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::StartTable
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::StartTable () {
+            void    StyledTextIOReader::SinkStream::StartTable ()
+            {
             }
 
             /*
             @METHOD:        StyledTextIOReader::SinkStream::EndTable
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::EndTable () {
+            void    StyledTextIOReader::SinkStream::EndTable ()
+            {
             }
 
             /*
             @METHOD:        StyledTextIOReader::SinkStream::StartTableRow
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::StartTableRow () {
+            void    StyledTextIOReader::SinkStream::StartTableRow ()
+            {
             }
 
             /*
             @METHOD:        StyledTextIOReader::SinkStream::EndTableRow
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::EndTableRow () {
+            void    StyledTextIOReader::SinkStream::EndTableRow ()
+            {
             }
 
             /*
@@ -117,33 +121,40 @@ namespace   Stroika {
                         @'StyledTextIOReader::SinkStream::SetCellWidths' argument.
                         </p>
             */
-            void    StyledTextIOReader::SinkStream::StartTableCell (size_t /*colSpan*/) {
+            void    StyledTextIOReader::SinkStream::StartTableCell (size_t /*colSpan*/)
+            {
             }
 
             /*
             @METHOD:        StyledTextIOReader::SinkStream::EndTableCell
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::EndTableCell () {
+            void    StyledTextIOReader::SinkStream::EndTableCell ()
+            {
             }
 
-            void    StyledTextIOReader::SinkStream::SetJustification (Led_Justification /*justification*/) {
+            void    StyledTextIOReader::SinkStream::SetJustification (Led_Justification /*justification*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
-            void    StyledTextIOReader::SinkStream::SetStandardTabStopList (const TextImager::StandardTabStopList& /*tabStops*/) {
+            void    StyledTextIOReader::SinkStream::SetStandardTabStopList (const TextImager::StandardTabStopList& /*tabStops*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
-            void    StyledTextIOReader::SinkStream::SetFirstIndent (Led_TWIPS /*tx*/) {
+            void    StyledTextIOReader::SinkStream::SetFirstIndent (Led_TWIPS /*tx*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
-            void    StyledTextIOReader::SinkStream::SetLeftMargin (Led_TWIPS /*lhs*/) {
+            void    StyledTextIOReader::SinkStream::SetLeftMargin (Led_TWIPS /*lhs*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
-            void    StyledTextIOReader::SinkStream::SetRightMargin (Led_TWIPS /*rhs*/) {
+            void    StyledTextIOReader::SinkStream::SetRightMargin (Led_TWIPS /*rhs*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -151,7 +162,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetSpaceBefore
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetSpaceBefore (Led_TWIPS /*sb*/) {
+            void    StyledTextIOReader::SinkStream::SetSpaceBefore (Led_TWIPS /*sb*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -159,7 +171,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetSpaceAfter
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetSpaceAfter (Led_TWIPS /*sa*/) {
+            void    StyledTextIOReader::SinkStream::SetSpaceAfter (Led_TWIPS /*sa*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -167,7 +180,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetLineSpacing
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetLineSpacing (Led_LineSpacing /*sl*/) {
+            void    StyledTextIOReader::SinkStream::SetLineSpacing (Led_LineSpacing /*sl*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -175,7 +189,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetTextHidden
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetTextHidden (bool /*hidden*/) {
+            void    StyledTextIOReader::SinkStream::SetTextHidden (bool /*hidden*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -183,7 +198,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetListStyle
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetListStyle (ListStyle /*listStyle*/) {
+            void    StyledTextIOReader::SinkStream::SetListStyle (ListStyle /*listStyle*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -191,7 +207,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetListIndentLevel
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetListIndentLevel (unsigned char /*indentLevel*/) {
+            void    StyledTextIOReader::SinkStream::SetListIndentLevel (unsigned char /*indentLevel*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -199,7 +216,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetTableBorderColor
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetTableBorderColor (Led_Color /*c*/) {
+            void    StyledTextIOReader::SinkStream::SetTableBorderColor (Led_Color /*c*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -207,7 +225,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetTableBorderWidth
             @DESCRIPTION:
             */
-            void    StyledTextIOReader::SinkStream::SetTableBorderWidth (Led_TWIPS /*bWidth*/) {
+            void    StyledTextIOReader::SinkStream::SetTableBorderWidth (Led_TWIPS /*bWidth*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -222,7 +241,8 @@ namespace   Stroika {
                         @'StyledTextIOReader::SinkStream::StartTableCell' call).
                         </p>
             */
-            void    StyledTextIOReader::SinkStream::SetCellWidths (const vector<Led_TWIPS>& /*cellWidths*/) {
+            void    StyledTextIOReader::SinkStream::SetCellWidths (const vector<Led_TWIPS>& /*cellWidths*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -230,7 +250,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetCellBackColor
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::SetCellBackColor (const Led_Color /*c*/) {
+            void    StyledTextIOReader::SinkStream::SetCellBackColor (const Led_Color /*c*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -238,7 +259,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow (Led_TWIPS /*top*/, Led_TWIPS /*left*/, Led_TWIPS /*bottom*/, Led_TWIPS /*right*/) {
+            void    StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow (Led_TWIPS /*top*/, Led_TWIPS /*left*/, Led_TWIPS /*bottom*/, Led_TWIPS /*right*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -246,7 +268,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow
             @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
             */
-            void    StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow (Led_TWIPS /*top*/, Led_TWIPS /*left*/, Led_TWIPS /*bottom*/, Led_TWIPS /*right*/) {
+            void    StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow (Led_TWIPS /*top*/, Led_TWIPS /*left*/, Led_TWIPS /*bottom*/, Led_TWIPS /*right*/)
+            {
                 // OVERRIDE, and ignore, since that feature isn't supported by this class
             }
 
@@ -271,7 +294,8 @@ namespace   Stroika {
                 subclass can OVERRIDE to throw @'Led_ThrowBadFormatDataException' - if thats the behavior you want. You can replace the error handler associated with
                 a particular @'StyledTextIOReader' by calling @'StyledTextIOReader::SetBadInputHandler'.</p>
             */
-            void    StyledTextIOReader::BadInputHandler::HandleBadlyFormattedInput (const StyledTextIOReader& /*reader*/, bool unrecoverable) {
+            void    StyledTextIOReader::BadInputHandler::HandleBadlyFormattedInput (const StyledTextIOReader& /*reader*/, bool unrecoverable)
+            {
                 if (unrecoverable) {
                     Led_ThrowBadFormatDataException ();
                 }
@@ -292,7 +316,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetJustification
             @DESCRIPTION:
             */
-            Led_Justification   StyledTextIOWriter::SrcStream::GetJustification ()  const {
+            Led_Justification   StyledTextIOWriter::SrcStream::GetJustification ()  const
+            {
                 return eLeftJustify;
             }
 
@@ -300,7 +325,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetStandardTabStopList
             @DESCRIPTION:
             */
-            TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList ()    const {
+            TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList ()    const
+            {
                 return StandardTabStopList ();
             }
 
@@ -308,7 +334,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetFirstIndent
             @DESCRIPTION:
             */
-            Led_TWIPS   StyledTextIOWriter::SrcStream::GetFirstIndent () const {
+            Led_TWIPS   StyledTextIOWriter::SrcStream::GetFirstIndent () const
+            {
                 return Led_TWIPS (0);
             }
 
@@ -316,7 +343,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetMargins
             @DESCRIPTION:
             */
-            void    StyledTextIOWriter::SrcStream::GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const {
+            void    StyledTextIOWriter::SrcStream::GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const
+            {
                 RequireNotNull (lhs);
                 RequireNotNull (rhs);
                 *lhs = Led_TWIPS (0);
@@ -327,7 +355,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetSpaceBefore
             @DESCRIPTION:
             */
-            Led_TWIPS   StyledTextIOWriter::SrcStream::GetSpaceBefore () const {
+            Led_TWIPS   StyledTextIOWriter::SrcStream::GetSpaceBefore () const
+            {
                 return Led_TWIPS (0);
             }
 
@@ -335,7 +364,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetSpaceAfter
             @DESCRIPTION:
             */
-            Led_TWIPS       StyledTextIOWriter::SrcStream::GetSpaceAfter () const {
+            Led_TWIPS       StyledTextIOWriter::SrcStream::GetSpaceAfter () const
+            {
                 return Led_TWIPS (0);
             }
 
@@ -343,7 +373,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetLineSpacing
             @DESCRIPTION:
             */
-            Led_LineSpacing     StyledTextIOWriter::SrcStream::GetLineSpacing () const {
+            Led_LineSpacing     StyledTextIOWriter::SrcStream::GetLineSpacing () const
+            {
                 return Led_LineSpacing ();
             }
 
@@ -351,7 +382,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetListStyleInfo
             @DESCRIPTION:
             */
-            void        StyledTextIOWriter::SrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const {
+            void        StyledTextIOWriter::SrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const
+            {
                 RequireNotNull (listStyle);
                 RequireNotNull (indentLevel);
                 *listStyle = eListStyle_None;
@@ -363,7 +395,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the special character which should be treated (in RTF output) as the SOFT-RETURN line
                 break character (in RTF \line).</p>
             */
-            Led_tChar   StyledTextIOWriter::SrcStream::GetSoftLineBreakCharacter () const {
+            Led_tChar   StyledTextIOWriter::SrcStream::GetSoftLineBreakCharacter () const
+            {
                 return 0;   // bogus value - this class doesn't know about this stuff... LGP 991227
             }
 
@@ -371,7 +404,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOWriter::SrcStream::GetHidableTextRuns
             @DESCRIPTION:
             */
-            DiscontiguousRun<bool>  StyledTextIOWriter::SrcStream::GetHidableTextRuns () const {
+            DiscontiguousRun<bool>  StyledTextIOWriter::SrcStream::GetHidableTextRuns () const
+            {
                 return DiscontiguousRun<bool> ();
             }
 
@@ -406,18 +440,21 @@ namespace   Stroika {
             {
             }
 
-            size_t  StyledTextIOSrcStream_Memory::current_offset () const {
+            size_t  StyledTextIOSrcStream_Memory::current_offset () const
+            {
                 return (((char*)fCurPtr - (char*)fData));
             }
 
-            void    StyledTextIOSrcStream_Memory::seek_to (size_t to) {
+            void    StyledTextIOSrcStream_Memory::seek_to (size_t to)
+            {
                 Require (to >= 0);
                 to = min (to, fBytesInBuffer);
 //  fBytesLeft = fBytesInBuffer - to;
                 fCurPtr = ((char*)fData) + to;
             }
 
-            size_t  StyledTextIOSrcStream_Memory::read (void* buffer, size_t bytes) {
+            size_t  StyledTextIOSrcStream_Memory::read (void* buffer, size_t bytes)
+            {
                 RequireNotNull (buffer);
 
 #if 1
@@ -437,7 +474,8 @@ namespace   Stroika {
 #endif
             }
 
-            size_t  StyledTextIOSrcStream_Memory::read1 (char* c) {
+            size_t  StyledTextIOSrcStream_Memory::read1 (char* c)
+            {
                 RequireNotNull (c);
                 char*   curBytePtr  =   (char*)fCurPtr;
                 if (curBytePtr != fDataEnd) {
@@ -449,7 +487,8 @@ namespace   Stroika {
             }
 
 #if     qMacOS
-            Handle  StyledTextIOSrcStream_Memory::GetAUXResourceHandle () const {
+            Handle  StyledTextIOSrcStream_Memory::GetAUXResourceHandle () const
+            {
                 return fResourceHandle;
             }
 #endif
@@ -486,15 +525,18 @@ namespace   Stroika {
             {
             }
 
-            StyledTextIOSrcStream_FileDescriptor::~StyledTextIOSrcStream_FileDescriptor () {
+            StyledTextIOSrcStream_FileDescriptor::~StyledTextIOSrcStream_FileDescriptor ()
+            {
                 delete[] fInputBuffer;
             }
 
-            size_t  StyledTextIOSrcStream_FileDescriptor::current_offset () const {
+            size_t  StyledTextIOSrcStream_FileDescriptor::current_offset () const
+            {
                 return fCurSeekPos;
             }
 
-            void    StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to) {
+            void    StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
+            {
                 Require (to >= 0);
 
                 size_t  targetSeekPos   =   (to);
@@ -520,7 +562,8 @@ namespace   Stroika {
                 fCurSeekPos = targetSeekPos;
             }
 
-            size_t  StyledTextIOSrcStream_FileDescriptor::read (void* buffer, size_t bytes) {
+            size_t  StyledTextIOSrcStream_FileDescriptor::read (void* buffer, size_t bytes)
+            {
                 RequireNotNull (buffer);
 
                 if (bytes == 0) {
@@ -576,7 +619,8 @@ NotherRead:
                 return bytesCopiedSoFar;
             }
 
-            void    StyledTextIOSrcStream_FileDescriptor::SetBufferSize (size_t bufSize) {
+            void    StyledTextIOSrcStream_FileDescriptor::SetBufferSize (size_t bufSize)
+            {
                 if (fInputBufferSize != bufSize) {
                     delete[] fInputBuffer;
                     fInputBuffer = nullptr;
@@ -588,7 +632,8 @@ NotherRead:
                 }
             }
 
-            void    StyledTextIOSrcStream_FileDescriptor::ReadInWindow (size_t startAt) {
+            void    StyledTextIOSrcStream_FileDescriptor::ReadInWindow (size_t startAt)
+            {
                 RequireNotNull (fInputBuffer);
                 Require (fInputBufferSize > 0);
 #if     qMacOS
@@ -605,7 +650,8 @@ NotherRead:
             }
 
 #if     qMacOS
-            Handle  StyledTextIOSrcStream_FileDescriptor::GetAUXResourceHandle () const {
+            Handle  StyledTextIOSrcStream_FileDescriptor::GetAUXResourceHandle () const
+            {
                 return fResourceHandle;
             }
 #endif
@@ -627,24 +673,29 @@ NotherRead:
                 fData (nullptr),
                 fBytesUsed (0),
                 fBytesAllocated (0),
-                fCurPtr (nullptr) {
+                fCurPtr (nullptr)
+            {
             }
 
-            StyledTextIOWriterSinkStream_Memory::~StyledTextIOWriterSinkStream_Memory () {
+            StyledTextIOWriterSinkStream_Memory::~StyledTextIOWriterSinkStream_Memory ()
+            {
                 delete[] fData;
             }
 
-            size_t  StyledTextIOWriterSinkStream_Memory::current_offset () const {
+            size_t  StyledTextIOWriterSinkStream_Memory::current_offset () const
+            {
                 return (fCurPtr - fData);
             }
 
-            void    StyledTextIOWriterSinkStream_Memory::seek_to (size_t to) {
+            void    StyledTextIOWriterSinkStream_Memory::seek_to (size_t to)
+            {
                 Require (to >= 0);
                 to = Led_Min (to, fBytesUsed);
                 fCurPtr = fData + to;
             }
 
-            void    StyledTextIOWriterSinkStream_Memory::write (const void* buffer, size_t bytes) {
+            void    StyledTextIOWriterSinkStream_Memory::write (const void* buffer, size_t bytes)
+            {
                 const   size_t  kMemBlockOverhead   =   40;         // wild guess as to how much overhead this is in a memory request.
                 // This is helpful so that we request the largest block size possible
                 // from the underlying OS storage without any waste. If the number is wrong -
@@ -719,10 +770,12 @@ NotherRead:
                 fBufferWindowStart (0),
                 fBufferWindowEnd (0),
                 fFurthestDiskWriteAt (0),
-                fCurSeekPos (0) {
+                fCurSeekPos (0)
+            {
             }
 
-            StyledTextIOWriterSinkStream_FileDescriptor::~StyledTextIOWriterSinkStream_FileDescriptor () {
+            StyledTextIOWriterSinkStream_FileDescriptor::~StyledTextIOWriterSinkStream_FileDescriptor ()
+            {
                 try {
                     Flush ();
                     UpdateEOF ();
@@ -733,16 +786,19 @@ NotherRead:
                 }
             }
 
-            size_t  StyledTextIOWriterSinkStream_FileDescriptor::current_offset () const {
+            size_t  StyledTextIOWriterSinkStream_FileDescriptor::current_offset () const
+            {
                 return fCurSeekPos;
             }
 
-            void    StyledTextIOWriterSinkStream_FileDescriptor::seek_to (size_t to) {
+            void    StyledTextIOWriterSinkStream_FileDescriptor::seek_to (size_t to)
+            {
                 Require (to >= 0);
                 fCurSeekPos = to;
             }
 
-            void    StyledTextIOWriterSinkStream_FileDescriptor::write (const void* buffer, size_t bytes) {
+            void    StyledTextIOWriterSinkStream_FileDescriptor::write (const void* buffer, size_t bytes)
+            {
                 if (bytes > fOutputBufferSize or fCurSeekPos < fFurthestDiskWriteAt) {
                     /*
                      *  No point in doing partial buffering. For large writes, just let 'em pass
@@ -794,7 +850,8 @@ NotherRead:
                 }
             }
 
-            void    StyledTextIOWriterSinkStream_FileDescriptor::SetBufferSize (size_t bufSize) {
+            void    StyledTextIOWriterSinkStream_FileDescriptor::SetBufferSize (size_t bufSize)
+            {
                 if (fOutputBufferSize != bufSize) {
                     Flush ();
 
@@ -808,7 +865,8 @@ NotherRead:
                 }
             }
 
-            void    StyledTextIOWriterSinkStream_FileDescriptor::Flush () {
+            void    StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
+            {
                 if (fBufferWindowStart != fBufferWindowEnd) {
                     Assert (fOutputBufferSize != 0);
                     size_t  bytesInWindow   =   fBufferWindowEnd - fBufferWindowStart;
@@ -826,7 +884,8 @@ NotherRead:
                 }
             }
 
-            void    StyledTextIOWriterSinkStream_FileDescriptor::UpdateEOF () {
+            void    StyledTextIOWriterSinkStream_FileDescriptor::UpdateEOF ()
+            {
                 Flush ();
 #if     qMacOS
                 Led_ThrowOSErr (::SetEOF (fFileDescriptor, fCurSeekPos));
@@ -847,7 +906,8 @@ NotherRead:
              ********************************************************************************
              */
 
-            string  StyledTextIOReader::GrabString (size_t from, size_t to) {
+            string  StyledTextIOReader::GrabString (size_t from, size_t to)
+            {
                 size_t  onEntrySeekPos  =   GetSrcStream ().current_offset ();
 
                 size_t  effectiveTo =   to;
@@ -878,20 +938,24 @@ NotherRead:
              ******************************* StyledTextIOWriter *****************************
              ********************************************************************************
              */
-            void    StyledTextIOWriter::write (const void* data, size_t nBytes) {
+            void    StyledTextIOWriter::write (const void* data, size_t nBytes)
+            {
                 GetSinkStream ().write (data, nBytes);
             }
 
-            void    StyledTextIOWriter::write (char c) {
+            void    StyledTextIOWriter::write (char c)
+            {
                 GetSinkStream ().write (&c, 1);
             }
 
-            void    StyledTextIOWriter::write (const char* str) {
+            void    StyledTextIOWriter::write (const char* str)
+            {
                 RequireNotNull (str);
                 GetSinkStream ().write (str, strlen (str));
             }
 
-            void    StyledTextIOWriter::write (const string& str) {
+            void    StyledTextIOWriter::write (const string& str)
+            {
                 GetSinkStream ().write (str.c_str (), str.length ());
             }
 
@@ -906,10 +970,12 @@ NotherRead:
              */
             EmbeddingSinkStream::EmbeddingSinkStream (StyledTextIOWriter::SinkStream& realSinkStream):
                 SimpleEmbeddedObjectStyleMarker::SinkStream (),
-                fRealSinkStream (realSinkStream) {
+                fRealSinkStream (realSinkStream)
+            {
             }
 
-            void    EmbeddingSinkStream::write (const void* buffer, size_t bytes) {
+            void    EmbeddingSinkStream::write (const void* buffer, size_t bytes)
+            {
                 fRealSinkStream.write (buffer, bytes);
             }
 

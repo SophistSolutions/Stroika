@@ -16,18 +16,22 @@ namespace   Stroika {
 
             //  class   HRESULTErrorException
             inline  Platform::Windows::HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
-                fHResult (hresult) {
+                fHResult (hresult)
+            {
             }
-            inline  Platform::Windows::HRESULTErrorException::operator HRESULT () const {
+            inline  Platform::Windows::HRESULTErrorException::operator HRESULT () const
+            {
                 return fHResult;
             }
-            inline  TString Platform::Windows::HRESULTErrorException::LookupMessage () const {
+            inline  TString Platform::Windows::HRESULTErrorException::LookupMessage () const
+            {
                 return LookupMessage (fHResult);
             }
 
 
 
-            inline  void    ThrowIfErrorHRESULT (HRESULT hr) {
+            inline  void    ThrowIfErrorHRESULT (HRESULT hr)
+            {
                 if (not SUCCEEDED (hr)) {
                     DoThrow (Platform::Windows::HRESULTErrorException (hr));
                 }
@@ -36,13 +40,15 @@ namespace   Stroika {
 
 
             template<>
-            inline  void    ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr) {
+            inline  void    ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
+            {
                 ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
             }
 
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw)
+            {
                 DbgTrace ("Throwing Platform::Windows::HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
                 throw e2Throw;
             }

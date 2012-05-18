@@ -18,35 +18,41 @@ namespace   Stroika {
 
 
             //  class TimeOfDay
-            inline  bool    TimeOfDay::empty () const {
+            inline  bool    TimeOfDay::empty () const
+            {
                 return fTime_ == static_cast<unsigned int> (-1);
             }
-            inline  unsigned int    TimeOfDay::GetAsSecondsCount () const {
+            inline  unsigned int    TimeOfDay::GetAsSecondsCount () const
+            {
                 if (empty ()) {
                     return 0;
                 }
                 return fTime_;
             }
-            inline  uint8_t TimeOfDay::GetHours () const {
+            inline  uint8_t TimeOfDay::GetHours () const
+            {
                 uint32_t    n   =   GetAsSecondsCount () / (60 * 60);
                 Ensure (0 <= n and n <= 23);
                 return n;
             }
-            inline  uint8_t TimeOfDay::GetMinutes () const {
+            inline  uint8_t TimeOfDay::GetMinutes () const
+            {
                 uint32_t    n   =   GetAsSecondsCount ();
                 n -= GetHours () * 60 * 60;
                 n /= 60;
                 Ensure (0 <= n and n <= 59);
                 return n;
             }
-            inline  uint8_t TimeOfDay::GetSeconds () const {
+            inline  uint8_t TimeOfDay::GetSeconds () const
+            {
                 uint32_t    n   =   GetAsSecondsCount ();
                 n -= GetHours () * 60 * 60;
                 n -= GetMinutes () * 60;
                 Ensure (0 <= n and n <= 59);
                 return n;
             }
-            inline  int TimeOfDay::Compare (const TimeOfDay& rhs) const {
+            inline  int TimeOfDay::Compare (const TimeOfDay& rhs) const
+            {
                 if (empty ()) {
                     return rhs.empty () ? 0 : -1;
                 }
@@ -54,16 +60,20 @@ namespace   Stroika {
                     return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
                 }
             }
-            inline  bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs) {
+            inline  bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            {
                 return lhs.Compare (rhs) < 0;
             }
-            inline  bool operator> (const TimeOfDay& lhs, const TimeOfDay& rhs) {
+            inline  bool operator> (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            {
                 return lhs.Compare (rhs) > 0;
             }
-            inline  bool operator== (const TimeOfDay& lhs, const TimeOfDay& rhs) {
+            inline  bool operator== (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            {
                 return lhs.Compare (rhs) == 0;
             }
-            inline  bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs) {
+            inline  bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            {
                 return lhs.Compare (rhs) != 0;
             }
 
@@ -72,7 +82,8 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            inline  void    _NoReturn_  DoThrow (const Time::TimeOfDay::FormatException& e2Throw) {
+            inline  void    _NoReturn_  DoThrow (const Time::TimeOfDay::FormatException& e2Throw)
+            {
                 DbgTrace (L"Throwing TimeOfDay::FormatException");
                 throw e2Throw;
             }

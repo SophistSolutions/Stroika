@@ -93,7 +93,8 @@ namespace   Stroika {
 
 #if     qBuildMemoizedISXXXBuilderProc
                 template    <class FUNCTION>
-                void    WriteMemoizedIsXXXProc (FUNCTION function, const string& origFunctionName, const string& functionName) {
+                void    WriteMemoizedIsXXXProc (FUNCTION function, const string& origFunctionName, const string& functionName)
+                {
                     ofstream    outStream ("IsXXXProc.txt");
 
                     outStream << "bool	" << functionName << " (wchar_t c)\n";
@@ -235,7 +236,8 @@ namespace   Stroika {
                     <p>'outCharCnt' is the size of the output buffer coming in, and it contains the number
                 of UNICODE chars copied out on return.</p>
             */
-            void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const {
+            void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+            {
                 Require (inMBCharCnt == 0 or inMBChars != nullptr);
                 RequireNotNull (outCharCnt);
                 Require (*outCharCnt == 0 or outChars != nullptr);
@@ -327,7 +329,8 @@ namespace   Stroika {
 #endif
             }
 
-            void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const {
+            void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+            {
                 Require (inCharCnt == 0 or inChars != nullptr);
                 RequireNotNull (outCharCnt);
                 Require (*outCharCnt == 0 or outChars != nullptr);
@@ -484,7 +487,8 @@ namespace   Stroika {
              **************************** Win32_CodePageConverter ***************************
              ********************************************************************************
              */
-            void    Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const {
+            void    Win32_CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+            {
                 Require (inMBCharCnt == 0 or inMBChars != nullptr);
                 RequireNotNull (outCharCnt);
                 Require (*outCharCnt == 0 or outChars != nullptr);
@@ -492,7 +496,8 @@ namespace   Stroika {
                 *outCharCnt = ::MultiByteToWideChar (fCodePage, 0, inMBChars, inMBCharCnt, outChars, *outCharCnt);
             }
 
-            void    Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const {
+            void    Win32_CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+            {
                 Require (inCharCnt == 0 or inChars != nullptr);
                 RequireNotNull (outCharCnt);
                 Require (*outCharCnt == 0 or outChars != nullptr);
@@ -550,7 +555,8 @@ namespace   Stroika {
                 0xf8,       0xf9,       0xfa,       0xfb,       0xfc,       0xfd,       0xfe,       0xff,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_ANSI>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_ANSI>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -558,7 +564,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_ANSI>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -625,7 +632,8 @@ namespace   Stroika {
                 0xaf,       0x2d8,      0x2d9,      0x2da,      0xb8,       0x2dd,      0x2db,      0x2c7,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_MAC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_MAC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -633,7 +641,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_MAC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -697,7 +706,8 @@ namespace   Stroika {
                 0xb0,       0x2219,     0xb7,       0x221a,     0x207f,     0xb2,       0x25a0,     0xa0,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_PC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_PC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -705,7 +715,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_PC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_PC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -771,7 +782,8 @@ namespace   Stroika {
                 0xb0,       0xa8,       0xb7,       0xb9,       0xb3,       0xb2,       0x25a0,     0xa0,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_PCA>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_PCA>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -779,7 +791,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_PCA>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_PCA>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -844,7 +857,8 @@ namespace   Stroika {
                 0x3c8,      0x3c9,      0x3ca,      0x3cb,      0x3cc,      0x3cd,      0x3ce,      0xf8fb,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_GREEK>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_GREEK>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -852,7 +866,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_GREEK>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_GREEK>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -917,7 +932,8 @@ namespace   Stroika {
                 0xf8,       0xf9,       0xfa,       0xfb,       0xfc,       0x131,      0x15f,      0xff,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_Turkish>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_Turkish>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -925,7 +941,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_Turkish>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_Turkish>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -991,7 +1008,8 @@ namespace   Stroika {
                 0x5e8,      0x5e9,      0x5ea,      0xf894,     0xf895,     0x200e,     0x200f,     0xf896,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_HEBREW>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_HEBREW>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -999,7 +1017,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_HEBREW>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_HEBREW>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -1064,7 +1083,8 @@ namespace   Stroika {
                 0x651,      0xf9,       0x652,      0xfb,       0xfc,       0x200e,     0x200f,     0x6d2,
             };
 
-            void    TableDrivenCodePageConverter<kCodePage_ARABIC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_ARABIC>::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inMBCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     outChars[i] = kMap[(unsigned char)inMBChars[i]];
@@ -1072,7 +1092,8 @@ namespace   Stroika {
                 *outCharCnt = nCharsToCopy;
             }
 
-            void    TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) {
+            void    TableDrivenCodePageConverter<kCodePage_ARABIC>::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt)
+            {
                 size_t  nCharsToCopy    =   min (inCharCnt, *outCharCnt);
                 for (size_t i = 0; i < nCharsToCopy; ++i) {
                     size_t j = 0;
@@ -1104,7 +1125,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-            void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const {
+            void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
+            {
                 Require (inMBCharCnt == 0 or inMBChars != nullptr);
                 RequireNotNull (outCharCnt);
                 Require (*outCharCnt == 0 or outChars != nullptr);
@@ -1216,7 +1238,8 @@ namespace   Stroika {
                 }
             }
 
-            void    UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const {
+            void    UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
+            {
                 /*
                  *  NOTE - based on ConvertUTF16toUTF8 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
                  *   and owned by Taligtent. That code is copyrighted. It says it cannot be reproduced without the consent of Taligent,
@@ -1400,13 +1423,15 @@ namespace   Stroika {
             vector<CodePage>    CodePagesInstalled::sCodePages;
 
 #if     qWindows
-            BOOL FAR    PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageString) {
+            BOOL FAR    PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageString)
+            {
                 sCodePages.push_back (_ttoi (lpCodePageString));
                 return (1);
             }
 #endif
 
-            void    CodePagesInstalled::Init () {
+            void    CodePagesInstalled::Init ()
+            {
                 Assert (sCodePages.size () == 0);
 #if     qWindows
                 ::EnumSystemCodePages (EnumCodePagesProc, CP_INSTALLED);
@@ -1418,7 +1443,8 @@ namespace   Stroika {
                 std::sort (sCodePages.begin (), sCodePages.end ());
             }
 
-            void    CodePagesInstalled::AddIfNotPresent (CodePage cp) {
+            void    CodePagesInstalled::AddIfNotPresent (CodePage cp)
+            {
                 if (std::find (sCodePages.begin (), sCodePages.end (), cp) == sCodePages.end ()) {
                     sCodePages.push_back (cp);
                 }
@@ -1442,7 +1468,8 @@ namespace   Stroika {
                         and return the number of bytes of BOM (byte-order-mark) prefix to strip from teh source in 'bytesFromFrontToStrip'
                         unless it is nullptr (which it is by default).</p>
             */
-            CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* confidence, size_t* bytesFromFrontToStrip) {
+            CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* confidence, size_t* bytesFromFrontToStrip)
+            {
                 if (confidence != nullptr) {
                     *confidence = eLow;
                 }
@@ -1527,7 +1554,8 @@ namespace   Stroika {
              */
             CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::sCodePageNames    =   CodePagePrettyNameMapper::MakeDefaultCodePageNames ();
 
-            CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::MakeDefaultCodePageNames () {
+            CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::MakeDefaultCodePageNames ()
+            {
                 CodePageNames   codePageNames;
                 codePageNames.fUNICODE_WIDE             =   Led_SDK_TCHAROF ("UNICODE {wide characters}");
                 codePageNames.fUNICODE_WIDE_BIGENDIAN   =   Led_SDK_TCHAROF ("UNICODE {wide characters - big endian}");
@@ -1551,7 +1579,8 @@ namespace   Stroika {
                 return codePageNames;
             }
 
-            Led_SDK_String  CodePagePrettyNameMapper::GetName (CodePage cp) {
+            Led_SDK_String  CodePagePrettyNameMapper::GetName (CodePage cp)
+            {
                 switch (cp) {
                     case    kCodePage_UNICODE_WIDE:
                         return sCodePageNames.fUNICODE_WIDE;
@@ -1609,7 +1638,8 @@ namespace   Stroika {
              */
 #if     qMultiByteCharacters || qWideCharacters
 
-            bool    CharacterProperties::IsAlpha (Led_tChar c) {
+            bool    CharacterProperties::IsAlpha (Led_tChar c)
+            {
 #if     qMultiByteCharacters
                 return ::isalpha (c);
 #elif   qWideCharacters
@@ -1621,7 +1651,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    CharacterProperties::IsAlnum (Led_tChar c) {
+            bool    CharacterProperties::IsAlnum (Led_tChar c)
+            {
 #if     qMultiByteCharacters
                 return ::isalnum (c);
 #elif   qWideCharacters
@@ -1633,7 +1664,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    CharacterProperties::IsPunct (Led_tChar c) {
+            bool    CharacterProperties::IsPunct (Led_tChar c)
+            {
 #if     qMultiByteCharacters
                 return ::ispunct (c);
 #elif   qWideCharacters
@@ -1645,7 +1677,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    CharacterProperties::IsSpace (Led_tChar c) {
+            bool    CharacterProperties::IsSpace (Led_tChar c)
+            {
 #if     qMultiByteCharacters
                 return ::isspace (c);
 #elif   qWideCharacters
@@ -1657,7 +1690,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    CharacterProperties::IsCntrl (Led_tChar c) {
+            bool    CharacterProperties::IsCntrl (Led_tChar c)
+            {
 #if     qMultiByteCharacters
                 return ::iscntrl (c);
 #elif   qWideCharacters
@@ -1669,7 +1703,8 @@ namespace   Stroika {
 #endif
             }
 
-            bool    CharacterProperties::IsDigit (Led_tChar c) {
+            bool    CharacterProperties::IsDigit (Led_tChar c)
+            {
 #if     qMultiByteCharacters
                 return ::isdigit (c);
 #elif   qWideCharacters
@@ -1695,7 +1730,8 @@ namespace   Stroika {
                 };
             }
 
-            bool    CharacterProperties::IsMirrored (Led_tChar c, Led_tChar* mirrorChar) {
+            bool    CharacterProperties::IsMirrored (Led_tChar c, Led_tChar* mirrorChar)
+            {
                 // Table from http://www.unicode.org/Public/3.2-Update/BidiMirroring-3.2.0.txt
                 const MirrorChars   kMirrorChars[]  =   {
                     {   0x0028, 0x0029  },  // LEFT PARENTHESIS
@@ -2048,7 +2084,8 @@ namespace   Stroika {
 #endif
 
 #if     qWideCharacters
-            bool    CharacterProperties::IsAlpha_M (wchar_t c) {
+            bool    CharacterProperties::IsAlpha_M (wchar_t c)
+            {
                 // ********** CharacterProperties::isalpha_M (AUTOGENERATED memoize of iswalpha - Feb 24 2003) ***********
                 // Hack for SPR#1220 and SPR#1306
                 if (c < 255) {
@@ -2384,7 +2421,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    CharacterProperties::IsAlnum_M (wchar_t c) {
+            bool    CharacterProperties::IsAlnum_M (wchar_t c)
+            {
                 // ********** CharacterProperties::isalnum_M (AUTOGENERATED memoize of iswalnum - Feb 24 2003) ***********
                 // Hack for SPR#1220 and SPR#1306
                 if (c < 255) {
@@ -2739,7 +2777,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    CharacterProperties::IsPunct_M (wchar_t c) {
+            bool    CharacterProperties::IsPunct_M (wchar_t c)
+            {
                 // ********** CharacterProperties::ispunct_M (AUTOGENERATED memoize of iswpunct - Feb 24 2003) ***********
                 // Hack for SPR#1220 and SPR#1306
                 if (c < 255) {
@@ -2839,7 +2878,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    CharacterProperties::IsSpace_M (wchar_t c) {
+            bool    CharacterProperties::IsSpace_M (wchar_t c)
+            {
                 // ********** CharacterProperties::isspace_M (AUTOGENERATED memoize of iswspace - Feb 24 2003) ***********
                 // Hack for SPR#1220 and SPR#1306
                 if (c < 255) {
@@ -2880,7 +2920,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    CharacterProperties::IsCntrl_M (wchar_t c) {
+            bool    CharacterProperties::IsCntrl_M (wchar_t c)
+            {
                 // ********** CharacterProperties::iscntrl_M (AUTOGENERATED memoize of iswcntrl - Feb 24 2003) ***********
                 // Hack for SPR#1220 and SPR#1306
                 if (c < 255) {
@@ -2922,7 +2963,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    CharacterProperties::IsDigit_M (wchar_t c) {
+            bool    CharacterProperties::IsDigit_M (wchar_t c)
+            {
                 // ********** CharacterProperties::IsDigit_M (AUTOGENERATED memoize of iswdigit - Jun 25 2003) ***********
                 // Hack for SPR#1220 and SPR#1306
                 if (c < 255) {
@@ -2993,7 +3035,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-            static  void    WriteCodePageTable (CodePage codePage) {
+            static  void    WriteCodePageTable (CodePage codePage)
+            {
                 Win32_CodePageConverter converter (codePage);
                 ofstream    outStream ("codePage.txt");
 

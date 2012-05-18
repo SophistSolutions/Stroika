@@ -23,23 +23,27 @@ namespace   Stroika {
 
 #if     !qCompilerAndStdLib_Supports_lambda_default_argument
             template    <typename   T>
-            T*  SharedByValue_CopyByFunction<T>::DefaultElementCopier_ (const T& t) {
+            T*  SharedByValue_CopyByFunction<T>::DefaultElementCopier_ (const T& t)
+            {
                 return new T (t);
             }
 #endif
             template    <typename   T>
             inline  SharedByValue_CopyByFunction<T>::SharedByValue_CopyByFunction (T * (*copier) (const T&))
-                : fCopier_ (copier) {
+                : fCopier_ (copier)
+            {
             }
             template    <typename   T>
-            inline  T*  SharedByValue_CopyByFunction<T>::Copy (const T& t) const {
+            inline  T*  SharedByValue_CopyByFunction<T>::Copy (const T& t) const
+            {
                 return (*fCopier_) (t);
             }
 
 
 
             template    <typename   T>
-            inline  T*  SharedByValue_CopyByDefault<T>::Copy (const T& t) {
+            inline  T*  SharedByValue_CopyByDefault<T>::Copy (const T& t)
+            {
                 return new T (t);
             }
 
@@ -49,35 +53,42 @@ namespace   Stroika {
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue ()
                 : SHARED_IMLP ()
-                , fCopier_ (COPIER ()) {
+                , fCopier_ (COPIER ())
+            {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from)
                 : SHARED_IMLP (from)
-                , fCopier_ (from.fCopier_) {
+                , fCopier_ (from.fCopier_)
+            {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SHARED_IMLP& from, const COPIER& copier)
                 : SHARED_IMLP (from)
-                , fCopier_ (copier) {
+                , fCopier_ (copier)
+            {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (T* from, const COPIER& copier)
                 : SHARED_IMLP (from)
-                , fCopier_ (copier) {
+                , fCopier_ (copier)
+            {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>& SharedByValue<T, COPIER, SHARED_IMLP>::operator= (const SharedByValue<T, COPIER, SHARED_IMLP>& src) {
+            inline  SharedByValue<T, COPIER, SHARED_IMLP>& SharedByValue<T, COPIER, SHARED_IMLP>::operator= (const SharedByValue<T, COPIER, SHARED_IMLP>& src)
+            {
                 SHARED_IMLP::operator= (src);
                 fCopier_ = src.fCopier_;
                 return *this;
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer () const {
+            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer () const
+            {
                 return (SHARED_IMLP::get ());
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            T* SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer () {
+            T* SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer ()
+            {
                 T*  ptr =   SHARED_IMLP::get ();
                 /*
                  * For non-const pointing, we must clone ourselves (if there are
@@ -94,21 +105,25 @@ namespace   Stroika {
                 return (ptr);
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::operator-> () const {
+            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::operator-> () const
+            {
                 return (SHARED_IMLP::get ());
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  T* SharedByValue<T, COPIER, SHARED_IMLP>::operator-> () {
+            inline  T* SharedByValue<T, COPIER, SHARED_IMLP>::operator-> ()
+            {
                 return GetPointer ();
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T&    SharedByValue<T, COPIER, SHARED_IMLP>::operator* () const {
+            inline  const T&    SharedByValue<T, COPIER, SHARED_IMLP>::operator* () const
+            {
                 T*  ptr =   GetPointer ();
                 EnsureNotNull (ptr);
                 return (*ptr);
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            T& SharedByValue<T, COPIER, SHARED_IMLP>::operator* () {
+            T& SharedByValue<T, COPIER, SHARED_IMLP>::operator* ()
+            {
                 T*  ptr =   GetPointer ();
                 /*
                  * For non-const dereferencing, we must clone ourselves (if there are
@@ -119,13 +134,15 @@ namespace   Stroika {
                 return (*ptr);
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  void    SharedByValue<T, COPIER, SHARED_IMLP>::Assure1Reference () {
+            inline  void    SharedByValue<T, COPIER, SHARED_IMLP>::Assure1Reference ()
+            {
                 if (!SHARED_IMLP::unique ()) {
                     BreakReferences_ ();
                 }
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            void    SharedByValue<T, COPIER, SHARED_IMLP>::BreakReferences_ () {
+            void    SharedByValue<T, COPIER, SHARED_IMLP>::BreakReferences_ ()
+            {
                 T*  ptr =   SHARED_IMLP::get ();
                 RequireNotNull (ptr);
                 /*

@@ -18,30 +18,37 @@ namespace   Stroika {
                 //  class   NamespaceDefinition
                 inline  NamespaceDefinition::NamespaceDefinition (const wstring& uri, const wstring& prefix)
                     : fURI (uri)
-                    , fPrefix (prefix) {
+                    , fPrefix (prefix)
+                {
                 }
-                inline  bool    operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs) {
+                inline  bool    operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs)
+                {
                     if (lhs.fURI == rhs.fURI) {
                         return lhs.fPrefix < rhs.fPrefix;
                     }
                     return lhs.fURI < rhs.fURI;
                 }
-                inline  bool    operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs) {
+                inline  bool    operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs)
+                {
                     return lhs.fURI == rhs.fURI and lhs.fPrefix == rhs.fPrefix;
                 }
 
 
                 //  class   NamespaceDefinitionsList
                 inline  NamespaceDefinitionsList::NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces)
-                    : fNamespaces (namespaces) {
+                    : fNamespaces (namespaces)
+                {
                 }
-                inline  bool    NamespaceDefinitionsList::empty () const {
+                inline  bool    NamespaceDefinitionsList::empty () const
+                {
                     return fNamespaces.empty ();
                 }
-                inline  vector<NamespaceDefinition> NamespaceDefinitionsList::GetNamespaces () const {
+                inline  vector<NamespaceDefinition> NamespaceDefinitionsList::GetNamespaces () const
+                {
                     return fNamespaces;
                 }
-                inline  void    NamespaceDefinitionsList::SetNamespaces (const vector<NamespaceDefinition>& namespaces) {
+                inline  void    NamespaceDefinitionsList::SetNamespaces (const vector<NamespaceDefinition>& namespaces)
+                {
                     fNamespaces = namespaces;
                 }
 

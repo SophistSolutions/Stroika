@@ -20,7 +20,8 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_ (const TString& fileName) {
+    wstring mkMessage_ (const TString& fileName)
+    {
         if (fileName.empty ()) {
             return Characters::Format (L"Invalid file format");
         }
@@ -32,7 +33,8 @@ namespace   {
 
 FileFormatException::FileFormatException (const TString& fileName)
     : StringException (mkMessage_ (fileName))
-    , fFileName_ (fileName) {
+    , fFileName_ (fileName)
+{
 }
 
 

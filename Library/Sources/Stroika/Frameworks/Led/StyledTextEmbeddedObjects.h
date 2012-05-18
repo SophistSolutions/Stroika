@@ -666,7 +666,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 // class EmbeddedObjectCreatorRegistry::Assoc
-            inline  Led_ClipFormat  EmbeddedObjectCreatorRegistry::Assoc::GetIthFormat (size_t i) const {
+            inline  Led_ClipFormat  EmbeddedObjectCreatorRegistry::Assoc::GetIthFormat (size_t i) const
+            {
                 Assert (fFormatTagCount >= 1);
                 Require (i < fFormatTagCount);
                 return (fFormatTagCount == 1) ? fFormatTag : fFormatTags[i];
@@ -674,20 +675,24 @@ namespace   Stroika {
 
 // class EmbeddedObjectCreatorRegistry
             inline  EmbeddedObjectCreatorRegistry::EmbeddedObjectCreatorRegistry ():
-                fAssocList () {
+                fAssocList ()
+            {
             }
-            inline  EmbeddedObjectCreatorRegistry&  EmbeddedObjectCreatorRegistry::Get () {
+            inline  EmbeddedObjectCreatorRegistry&  EmbeddedObjectCreatorRegistry::Get ()
+            {
                 if (sThe == nullptr) {
                     sThe = new EmbeddedObjectCreatorRegistry ();
                 }
                 return *sThe;
             }
-            inline  void    EmbeddedObjectCreatorRegistry::AddAssoc (Assoc assoc) {
+            inline  void    EmbeddedObjectCreatorRegistry::AddAssoc (Assoc assoc)
+            {
                 fAssocList.push_back (assoc);
             }
             inline  void    EmbeddedObjectCreatorRegistry::AddAssoc (const char* embeddingTag,
                     SimpleEmbeddedObjectStyleMarker * (*memReader) (const char* embeddingTag, const void* data, size_t len)
-                                                                    ) {
+                                                                    )
+            {
                 Assoc   assoc;
                 assoc.fFormatTagCount = 0;
                 memcpy (assoc.fEmbeddingTag, embeddingTag, sizeof (assoc.fEmbeddingTag));
@@ -698,7 +703,8 @@ namespace   Stroika {
             inline  void    EmbeddedObjectCreatorRegistry::AddAssoc (Led_ClipFormat clipFormat, const char* embeddingTag,
                     SimpleEmbeddedObjectStyleMarker * (*memReader) (const char* embeddingTag, const void* data, size_t len),
                     SimpleEmbeddedObjectStyleMarker * (*packageReader) (ReaderFlavorPackage& flavorPackage)
-                                                                    ) {
+                                                                    )
+            {
                 Assoc   assoc;
                 assoc.fFormatTag = clipFormat;
                 assoc.fFormatTagCount = 1;
@@ -710,7 +716,8 @@ namespace   Stroika {
             inline  void    EmbeddedObjectCreatorRegistry::AddAssoc (const Led_ClipFormat* clipFormats, size_t clipFormatCount, const char* embeddingTag,
                     SimpleEmbeddedObjectStyleMarker * (*memReader) (const char* embeddingTag, const void* data, size_t len),
                     SimpleEmbeddedObjectStyleMarker * (*packageReader) (ReaderFlavorPackage& flavorPackage)
-                                                                    ) {
+                                                                    )
+            {
                 Assoc   assoc;
                 assoc.fFormatTags = clipFormats;
                 assoc.fFormatTagCount = clipFormatCount;
@@ -719,10 +726,12 @@ namespace   Stroika {
                 assoc.fReadFromFlavorPackage = packageReader;
                 AddAssoc (assoc);
             }
-            inline  const vector<EmbeddedObjectCreatorRegistry::Assoc>& EmbeddedObjectCreatorRegistry::GetAssocList () const {
+            inline  const vector<EmbeddedObjectCreatorRegistry::Assoc>& EmbeddedObjectCreatorRegistry::GetAssocList () const
+            {
                 return fAssocList;
             }
-            inline  void    EmbeddedObjectCreatorRegistry::SetAssocList (const vector<Assoc>& assocList) {
+            inline  void    EmbeddedObjectCreatorRegistry::SetAssocList (const vector<Assoc>& assocList)
+            {
                 fAssocList = assocList;
             }
 
@@ -736,14 +745,16 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns command name for each of the user-visible commands produced by this module.</p>
                     <p>See also @'TextInteractor::CommandNames'.</p>
             */
-            inline  const SimpleEmbeddedObjectStyleMarker::CommandNames&    SimpleEmbeddedObjectStyleMarker::GetCommandNames () {
+            inline  const SimpleEmbeddedObjectStyleMarker::CommandNames&    SimpleEmbeddedObjectStyleMarker::GetCommandNames ()
+            {
                 return sCommandNames;
             }
             /*
             @METHOD:        SimpleEmbeddedObjectStyleMarker::SetCommandNames
             @DESCRIPTION:   <p>See @'SimpleEmbeddedObjectStyleMarker::GetCommandNames'.</p>
             */
-            inline  void    SimpleEmbeddedObjectStyleMarker::SetCommandNames (const SimpleEmbeddedObjectStyleMarker::CommandNames& cmdNames) {
+            inline  void    SimpleEmbeddedObjectStyleMarker::SetCommandNames (const SimpleEmbeddedObjectStyleMarker::CommandNames& cmdNames)
+            {
                 sCommandNames = cmdNames;
             }
 
@@ -753,11 +764,13 @@ namespace   Stroika {
 
 #if     qMacOS || qWindows
 // class StandardMacPictureStyleMarker
-            inline  StandardMacPictureStyleMarker::PictureHandle    StandardMacPictureStyleMarker::GetPictureHandle () const {
+            inline  StandardMacPictureStyleMarker::PictureHandle    StandardMacPictureStyleMarker::GetPictureHandle () const
+            {
                 EnsureNotNull (fPictureHandle);
                 return fPictureHandle;
             }
-            inline  size_t  StandardMacPictureStyleMarker::GetPictureByteSize () const {
+            inline  size_t  StandardMacPictureStyleMarker::GetPictureByteSize () const
+            {
 #if     qMacOS
                 return ::GetHandleSize (Handle (fPictureHandle));
 #elif   qWindows
@@ -769,7 +782,8 @@ namespace   Stroika {
 
 
 // class StandardDIBStyleMarker
-            inline  const Led_DIB*  StandardDIBStyleMarker::GetDIBData () const {
+            inline  const Led_DIB*  StandardDIBStyleMarker::GetDIBData () const
+            {
                 EnsureNotNull (fDIBData);
                 return (fDIBData);
             }
@@ -779,11 +793,13 @@ namespace   Stroika {
 
 #if     qMacOS || qWindows
 // class StandardMacPictureWithURLStyleMarker
-            inline  StandardMacPictureStyleMarker::PictureHandle    StandardMacPictureWithURLStyleMarker::GetPictureHandle () const {
+            inline  StandardMacPictureStyleMarker::PictureHandle    StandardMacPictureWithURLStyleMarker::GetPictureHandle () const
+            {
                 EnsureNotNull (fPictureHandle);
                 return fPictureHandle;
             }
-            inline  size_t  StandardMacPictureWithURLStyleMarker::GetPictureByteSize () const {
+            inline  size_t  StandardMacPictureWithURLStyleMarker::GetPictureByteSize () const
+            {
 #if     qMacOS
                 return ::GetHandleSize (Handle (fPictureHandle));
 #elif   qWindows
@@ -796,7 +812,8 @@ namespace   Stroika {
 
 
 // class StandardDIBWithURLStyleMarker
-            inline  const Led_DIB*  StandardDIBWithURLStyleMarker::GetDIBData () const {
+            inline  const Led_DIB*  StandardDIBWithURLStyleMarker::GetDIBData () const
+            {
                 EnsureNotNull (fDIBData);
                 return (fDIBData);
             }
@@ -811,13 +828,16 @@ namespace   Stroika {
                         (like in reading RTF files which contain size annotations), we select an appropriate size.</p>
                             <p>See @'StandardUnknownTypeStyleMarker::SetShownSize'
             */
-            inline  Led_TWIPS_Point StandardUnknownTypeStyleMarker::GetShownSize () const {
+            inline  Led_TWIPS_Point StandardUnknownTypeStyleMarker::GetShownSize () const
+            {
                 return fShownSize;
             }
-            inline  const void* StandardUnknownTypeStyleMarker::GetData () const {
+            inline  const void* StandardUnknownTypeStyleMarker::GetData () const
+            {
                 return fData;
             }
-            inline  size_t  StandardUnknownTypeStyleMarker::GetDataLength () const {
+            inline  size_t  StandardUnknownTypeStyleMarker::GetDataLength () const
+            {
                 return fLength;
             }
 

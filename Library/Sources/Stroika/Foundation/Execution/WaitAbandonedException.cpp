@@ -18,5 +18,6 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 WaitAbandonedException::WaitAbandonedException ()
-    : StringException (L"WAIT on object abandoned because the owning thread terminated") {
+    : StringException (L"WAIT on object abandoned because the owning thread terminated")
+{
 }

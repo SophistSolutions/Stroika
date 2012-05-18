@@ -37,15 +37,18 @@ namespace   Stroika {
              */
 
             LineBasedPartition::LineBasedPartition (TextStore& textStore):
-                inherited (textStore) {
+                inherited (textStore)
+            {
                 FinalConstruct ();
             }
 
             LineBasedPartition::LineBasedPartition (TextStore& textStore, SpecialHackToDisableInit /*hack*/):
-                inherited (textStore) {
+                inherited (textStore)
+            {
             }
 
-            void    LineBasedPartition::FinalConstruct () {
+            void    LineBasedPartition::FinalConstruct ()
+            {
                 inherited::FinalConstruct ();
                 PartitionMarker*    pm  =   GetFirstPartitionMarker ();
                 // Perform any splits of the first created PM into lines (in case text buffer starts with text in it)
@@ -65,7 +68,8 @@ namespace   Stroika {
                             <p>Call @'LineBasedPartition::CheckForSplits' for each character to see if any splits are needed,
                         and call @'LineBasedPartition::NeedToCoalesce' to see if the given PM needs coalescing because of the update.</p>
             */
-            void    LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) throw () {
+            void    LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) throw ()
+            {
                 RequireNotNull (pm);
 
                 if (updateInfo.fTextModified) {
@@ -99,7 +103,8 @@ namespace   Stroika {
                         requires any partition elements to be split. 'i' is the position at which we may want
                         to do a split (e.g. right after the newline character).</p>
             */
-            void    LineBasedPartition::CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) throw () {
+            void    LineBasedPartition::CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) throw ()
+            {
                 Require (updateInfo.fTextModified); //so there is something in the fTextInserted area
                 if (updateInfo.fTextInserted[i - updateInfo.fReplaceFrom - 1] == '\n') {
                     Split (pm, i);
@@ -112,7 +117,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Called by @'LineBasedPartition::UpdatePartitions' () to check if the given inserted text requires this PM to be coalesed with its
                         following one.</p>
             */
-            bool    LineBasedPartition::NeedToCoalesce (PartitionMarker* pm) throw () {
+            bool    LineBasedPartition::NeedToCoalesce (PartitionMarker* pm) throw ()
+            {
                 // If after inserting a bunch of characters, and deleting some too, my
                 // last character is no longer a newline - better Coalece...
                 bool    coalesce    =   false;
@@ -139,7 +145,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Check internal consitency of data structures. Don't call this directly. Call Invariant instead.
                 And only call at quiesent times; not in the midst of some update where data structures might not be fully consistent.</p>
             */
-            void    LineBasedPartition::Invariant_ () const {
+            void    LineBasedPartition::Invariant_ () const
+            {
                 inherited::Invariant_ ();
                 for (PartitionMarker* cur = GetFirstPartitionMarker (); cur != nullptr; cur = cur->GetNext ()) {
                     AssertNotNull (cur);

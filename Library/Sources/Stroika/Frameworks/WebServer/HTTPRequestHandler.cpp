@@ -31,8 +31,10 @@ using   namespace   Stroika::Frameworks::WebServer;
  ********************* WebServer::HTTPRequestHandler ****************************
  ********************************************************************************
  */
-HTTPRequestHandler::HTTPRequestHandler () {
+HTTPRequestHandler::HTTPRequestHandler ()
+{
 }
 
-HTTPRequestHandler::~HTTPRequestHandler () {
+HTTPRequestHandler::~HTTPRequestHandler ()
+{
 }

@@ -22,7 +22,8 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_ (const TString& fileName) {
+    wstring mkMessage_ (const TString& fileName)
+    {
         if (fileName.empty ()) {
             return Characters::Format (L"File busy");
         }
@@ -34,7 +35,8 @@ namespace   {
 
 FileBusyException::FileBusyException (const TString& fileName)
     : StringException (mkMessage_ (fileName))
-    , fFileName_ (fileName) {
+    , fFileName_ (fileName)
+{
 }
 
 

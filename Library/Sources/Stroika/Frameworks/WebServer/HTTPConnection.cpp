@@ -36,16 +36,19 @@ HTTPConnection::HTTPConnection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
     , fRequest_ (fSocketStream_)
-    , fResponse_ (s, fSocketStream_, DataExchangeFormat::PredefinedInternetMediaType::OctetStream_CT ()) {
+    , fResponse_ (s, fSocketStream_, DataExchangeFormat::PredefinedInternetMediaType::OctetStream_CT ())
+{
 }
 
-HTTPConnection::~HTTPConnection () {
+HTTPConnection::~HTTPConnection ()
+{
     if (fResponse_.GetState () != HTTPResponse::eCompleted) {
         IgnoreExceptionsForCall (fResponse_.Abort ());
     }
 }
 
-void    HTTPConnection::ReadHeaders () {
+void    HTTPConnection::ReadHeaders ()
+{
     {
         // Read METHOD line
         wstring line    =   fRequest_.fInputTextStream.ReadLine ();
@@ -83,7 +86,8 @@ void    HTTPConnection::ReadHeaders () {
     }
 }
 
-void    HTTPConnection::Close () {
+void    HTTPConnection::Close ()
+{
     fResponse_.Flush ();
     fSocket_.Close ();
 }

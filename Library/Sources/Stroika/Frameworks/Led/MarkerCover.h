@@ -163,7 +163,8 @@ namespace   Stroika {
                 fTextStore (useTextStore),
                 fNeedExtraUpdateCheck (false),
                 fEarlyDidUpdateCalled (false),
-                fNeedExtraUpdateCheck_UpdateInfo (0, 0, nullptr, 0, false, false) {
+                fNeedExtraUpdateCheck_UpdateInfo (0, 0, nullptr, 0, false, false)
+            {
                 /*
                  *  Add ourselves to the TextStore (for callbacks), and add one marker to span
                  *  the entire buffer length (plus one so catches anything at the end).
@@ -172,7 +173,8 @@ namespace   Stroika {
                 fTextStore.AddMarker (new MARKER (defaultInfo), 0, fTextStore.GetEnd () + 1, this);
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::~MarkerCover () {
+            MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::~MarkerCover ()
+            {
                 try {
                     //  NB: We are collecting ALL markers we own here, not just markers we added!
                     //  This is because it is common practice to add other markers - such as embeddings - to a textstore
@@ -197,11 +199,13 @@ namespace   Stroika {
                 fTextStore.RemoveMarkerOwner (this);
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            TextStore*  MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::PeekAtTextStore () const {
+            TextStore*  MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::PeekAtTextStore () const
+            {
                 return &fTextStore;
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllInRange (size_t from, size_t to) const {
+            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllInRange (size_t from, size_t to) const
+            {
                 /*
                  *  Walk through all the markers in existence (in this range), and throw away all
                  *  but our standard style markers.
@@ -215,7 +219,8 @@ namespace   Stroika {
                 return result.fResult;
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllInRange_OrSurroundings (size_t from, size_t to) const {
+            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllInRange_OrSurroundings (size_t from, size_t to) const
+            {
                 /*
                  *  Walk through all the markers in existence (in this range), and throw away all
                  *  but our standard style markers.
@@ -229,7 +234,8 @@ namespace   Stroika {
                 return result.fResult;
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllNonEmptyInRange (size_t from, size_t to) const {
+            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllNonEmptyInRange (size_t from, size_t to) const
+            {
                 /*
                  *  See CollectAllInRange - but with extra test to eliminate zero-len markers...
                  */
@@ -238,7 +244,8 @@ namespace   Stroika {
                 return result.fResult;
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllNonEmptyInRange_OrSurroundings (size_t from, size_t to) const {
+            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllNonEmptyInRange_OrSurroundings (size_t from, size_t to) const
+            {
                 /*
                  *  See CollectAllInRange - but with extra test to eliminate zero-len markers...
                  */
@@ -247,7 +254,8 @@ namespace   Stroika {
                 return result.fResult;
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            inline  const MARKERINFO&   MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfo (size_t charAfterPos) const {
+            inline  const MARKERINFO&   MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfo (size_t charAfterPos) const
+            {
                 HandleCallBeforeDidUpdateComplete ();
                 Invariant ();
                 MarkerOfATypeMarkerSink<MARKER> result;
@@ -271,7 +279,8 @@ namespace   Stroika {
                 assumed to really be at least one.</p>
                     <p>The marker list is returned sorted, and always contains at least one element.</p>
             */
-            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfoMarkers (size_t charAfterPos, size_t nTCharsFollowing) const {
+            inline  typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfoMarkers (size_t charAfterPos, size_t nTCharsFollowing) const
+            {
                 HandleCallBeforeDidUpdateComplete ();
                 Invariant ();
                 if (nTCharsFollowing == 0) {
@@ -293,7 +302,8 @@ namespace   Stroika {
                     <p>See also @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::SetInfo',
                 and @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::SetInfos'</p>
             */
-            inline  vector<pair<MARKERINFO, size_t> >    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfo (size_t charAfterPos, size_t nTCharsFollowing) const {
+            inline  vector<pair<MARKERINFO, size_t> >    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+            {
                 MarkerVector                        markers =   GetInfoMarkers (charAfterPos, nTCharsFollowing);
                 vector<pair<MARKERINFO, size_t> >    result;
                 for (typename MarkerVector::const_iterator i = markers.begin (); i != markers.end (); ++i) {
@@ -324,7 +334,8 @@ namespace   Stroika {
                     <p>See also @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::GetInfo', and
                 @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::SetInfos'</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers)
+            {
                 HandleCallBeforeDidUpdateComplete ();
                 Invariant ();
 
@@ -361,7 +372,8 @@ namespace   Stroika {
             @DESCRIPTION:
                     <p>DOC LATER. SHOULD TIS TAKE A VECTOR OF INCREMENTALMARKERINFO???? INSTEAD OF MARKERINFO</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t> >& infoForMarkers) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t> >& infoForMarkers)
+            {
                 HandleCallBeforeDidUpdateComplete ();
 
                 Invariant ();
@@ -446,7 +458,8 @@ namespace   Stroika {
             @METHOD:        MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::SetInfos2
             @DESCRIPTION:
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t> >& infoForMarkers) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t> >& infoForMarkers)
+            {
                 vector<pair<INCREMENTALMARKERINFO, size_t> > tmp;
                 for (typename vector<pair<MARKERINFO, size_t> >::const_iterator i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
                     tmp.push_back (pair<MARKERINFO, size_t> (INCREMENTALMARKERINFO ((*i).first), (*i).second));
@@ -471,7 +484,8 @@ namespace   Stroika {
                 const INCREMENTALMARKERINFO& infoForMarkers,
                 const UpdateInfo& allMarkersUpdateInfo,
                 TextStore::SimpleUpdater** updater
-            ) {
+            )
+            {
                 // Gather all style markers and sumarize them for the region which overlaps my change
                 // Sort the markers to make the coalesce code below simpler, and more efficient...
                 MarkerVector        markers =   CollectAllNonEmptyInRange (from > 0 ? from - 1 : from, to);
@@ -608,7 +622,8 @@ namespace   Stroika {
                 a ParagraphDatabase, this makes sure the boundaries on lookups/changes fall on partition element boundaries. By default,
                 this routine does nothing.</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::ConstrainSetInfoArgs (size_t* /*charAfterPos*/, size_t* /*nTCharsFollowing*/) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::ConstrainSetInfoArgs (size_t* /*charAfterPos*/, size_t* /*nTCharsFollowing*/)
+            {
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
             /*
@@ -619,7 +634,8 @@ namespace   Stroika {
                 will walk the affected region, and make sure all contraints (like no zero-length markers) are observed. It calls the
                 virtual @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied' to handle the real gruntwork.</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to)
+            {
                 Require (from <= to);
                 Require (to <= fTextStore.GetEnd () + 1);
                 MarkerVector    markers =   CollectAllInRange_OrSurroundings (from, to);
@@ -627,7 +643,8 @@ namespace   Stroika {
                 NoteCoverRangeDirtied (from, to, markers);
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers)
+            {
                 Require (from <= to);
                 Require (to <= fTextStore.GetEnd () + 1);
                 Led_Arg_Unused (from);
@@ -636,7 +653,8 @@ namespace   Stroika {
                 CheckForMerges (rangeAndSurroundingsMarkers);
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::AboutToUpdateText (const UpdateInfo& updateInfo) {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::AboutToUpdateText (const UpdateInfo& updateInfo)
+            {
                 fNeedExtraUpdateCheck = false;  // If we set true before this call - must be because an 'AboutToUpdate' was aborted.
                 Assert (fMarkersToBeDeleted.IsEmpty ());
                 Invariant ();
@@ -648,7 +666,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) throw ()
+            {
                 // See docs on @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete' for an
                 // explanation of this code.
                 fEarlyDidUpdateCalled = true;
@@ -661,7 +680,8 @@ namespace   Stroika {
                 Calls @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied'. Also checks the Invariant ()
                 after its called (invariant could fail before DidUpdate() call).</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 fNeedExtraUpdateCheck = false;
                 if (updateInfo.fTextModified) {
                     NoteCoverRangeDirtied (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
@@ -677,11 +697,13 @@ namespace   Stroika {
             @DESCRIPTION:
                     <p>Internal utility routine, used to check for (and safely delete) zero-width cover elements.</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (size_t around) throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (size_t around) throw ()
+            {
                 CullZerod (CollectAllInRange_OrSurroundings (around, around));
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) throw ()
+            {
                 // all effected text is diff if we did a replace or not - if no, then from-to,
                 // else from to from+textInserted (cuz from-to deleted)
                 for (typename MarkerVector::const_iterator i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
@@ -692,7 +714,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (size_t around) throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (size_t around) throw ()
+            {
                 // Gather all style markers and sumarize them for the region which overlaps my change
                 MarkerVector        markers =   CollectAllNonEmptyInRange_OrSurroundings (around, around);
                 Assert (markers.size () != 0);
@@ -715,7 +738,8 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) throw ()
+            {
                 /*
                  *  Argument markers must be pre-sorted.
                  *
@@ -781,13 +805,15 @@ namespace   Stroika {
                 the NoteCoverRangeDirtied (). But we cannot BLINDLY do this. We need to know if the actual text modification has taken place (so we know
                 which buffer offsets to use). It is for this reason that we have the 'fEarlyDidUpdateCalled' variable.</p>
             */
-            inline  void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete () const throw () {
+            inline  void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete () const throw ()
+            {
                 if (fNeedExtraUpdateCheck) {
                     HandleCallBeforeDidUpdateComplete_ ();
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete_ () const throw () {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete_ () const throw ()
+            {
                 /*
                  *  If some 'GetInfo' routine is called - AFTER our AboutToUpdate () call but before our EarlyDidUpdate call, then
                  *  the text hasn't truely been updated - so we cannot yet do our checks (and nor do we need to).
@@ -800,14 +826,16 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            inline  void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant () const {
+            inline  void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant () const
+            {
 #if     qDebug && qHeavyDebugging
                 Invariant_ ();
 #endif
             }
 #if     qDebug
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant_ () const {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant_ () const
+            {
                 MarkerVector        markers =   CollectAllInRange (0, fTextStore.GetEnd () + 1);
                 sort (markers.begin (), markers.end (), LessThan<MARKER> ());
 

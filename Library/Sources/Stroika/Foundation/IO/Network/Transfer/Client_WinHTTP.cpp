@@ -74,7 +74,8 @@ private:
 #pragma comment(lib, "Winhttp.lib")
 
 namespace   {
-    wstring Extract_WinHttpHeader_ (HINTERNET hRequest, DWORD dwInfoLevel, LPCWSTR pwszName, LPDWORD lpdwIndex) {
+    wstring Extract_WinHttpHeader_ (HINTERNET hRequest, DWORD dwInfoLevel, LPCWSTR pwszName, LPDWORD lpdwIndex)
+    {
         DWORD   size    =   0;
         (void)::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, WINHTTP_NO_OUTPUT_BUFFER, &size, lpdwIndex);
         DWORD   error   =   GetLastError ();
@@ -106,10 +107,12 @@ namespace   {
  */
 Connection_WinHTTP::Rep_::Rep_ ()
     : fSessionHandle_ (nullptr)
-    , fConnectionHandle_ (nullptr) {
+    , fConnectionHandle_ (nullptr)
+{
 }
 
-Connection_WinHTTP::Rep_::~Rep_ () {
+Connection_WinHTTP::Rep_::~Rep_ ()
+{
     if (fConnectionHandle_ != nullptr) {
         Verify (::WinHttpCloseHandle (fConnectionHandle_));
     }
@@ -118,28 +121,33 @@ Connection_WinHTTP::Rep_::~Rep_ () {
     }
 }
 
-DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const override {
+DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const override
+{
     AssertNotImplemented ();
     return 0;
 }
 
-void    Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout) override {
+void    Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout) override
+{
     AssertNotImplemented ();
 }
 
-URL     Connection_WinHTTP::Rep_::GetURL () const override {
+URL     Connection_WinHTTP::Rep_::GetURL () const override
+{
     // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
     AssertNotImplemented ();
 //  return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
     return URL ();
 }
 
-void    Connection_WinHTTP::Rep_::SetURL (const URL& url) override {
+void    Connection_WinHTTP::Rep_::SetURL (const URL& url) override
+{
     AssureHasHandle_ ();
     AssertNotImplemented ();
 }
 
-void    Connection_WinHTTP::Rep_::Close ()  override {
+void    Connection_WinHTTP::Rep_::Close ()  override
+{
     if (fConnectionHandle_ != nullptr) {
         Verify (::WinHttpCloseHandle (fConnectionHandle_));
         fConnectionHandle_ = nullptr;
@@ -150,7 +158,8 @@ void    Connection_WinHTTP::Rep_::Close ()  override {
     }
 }
 
-Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   override {
+Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   override
+{
     Close ();//tmphack
     Response    response;
 
@@ -400,7 +409,8 @@ RetryWithNoCERTCheck:
     return response;
 }
 
-void    Connection_WinHTTP::Rep_::AssureHasHandle_ () {
+void    Connection_WinHTTP::Rep_::AssureHasHandle_ ()
+{
 }
 #endif
 
@@ -415,7 +425,8 @@ void    Connection_WinHTTP::Rep_::AssureHasHandle_ () {
  ********************************************************************************
  */
 Connection_WinHTTP::Connection_WinHTTP ()
-    : Connection (Memory::SharedPtr<_IRep> (DEBUG_NEW Rep_ ())) {
+    : Connection (Memory::SharedPtr<_IRep> (DEBUG_NEW Rep_ ()))
+{
 }
 #endif
 

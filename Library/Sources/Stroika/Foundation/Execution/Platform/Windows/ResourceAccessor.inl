@@ -17,16 +17,20 @@ namespace   Stroika {
                 namespace   Windows {
 
                     //  class   ResourceAccessor
-                    inline  bool    ResourceAccessor::GetFound () const {
+                    inline  bool    ResourceAccessor::GetFound () const
+                    {
                         return fDataStart != nullptr;
                     }
-                    inline  const Byte* ResourceAccessor::GetDataStart () const {
+                    inline  const Byte* ResourceAccessor::GetDataStart () const
+                    {
                         return fDataStart;
                     }
-                    inline  const Byte* ResourceAccessor::GetDataEnd () const {
+                    inline  const Byte* ResourceAccessor::GetDataEnd () const
+                    {
                         return fDataEnd;
                     }
-                    inline  vector<Byte>    ResourceAccessor::GetData () const {
+                    inline  vector<Byte>    ResourceAccessor::GetData () const
+                    {
                         return vector<Byte> (fDataStart, fDataEnd);
                     }
                 }

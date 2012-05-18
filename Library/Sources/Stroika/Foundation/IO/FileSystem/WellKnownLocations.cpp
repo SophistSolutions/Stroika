@@ -36,7 +36,8 @@ using   Characters::TChar;
  ************ FileSystem::WellKnownLocations::GetMyDocuments ********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent) {
+TString FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
+{
 #if     qPlatform_Windows
     TChar   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
@@ -75,7 +76,8 @@ TString FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
  ******** FileSystem::WellKnownLocations::GetApplicationData ********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent) {
+TString FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
+{
 #if     qPlatform_Windows
     TChar   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
@@ -111,7 +113,8 @@ TString FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPres
  ************** FileSystem::WellKnownLocations::GetWinSxS ***********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetWinSxS () {
+TString FileSystem::WellKnownLocations::GetWinSxS ()
+{
     TChar   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_WINDOWS, false));
@@ -140,7 +143,8 @@ TString FileSystem::WellKnownLocations::GetWinSxS () {
  ************* FileSystem::WellKnownLocations::GetTemporary *********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetTemporary () {
+TString FileSystem::WellKnownLocations::GetTemporary ()
+{
     TString tempPath;
 #if     qPlatform_Windows
     TChar   buf[1024];

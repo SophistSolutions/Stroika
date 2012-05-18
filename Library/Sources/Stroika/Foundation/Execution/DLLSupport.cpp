@@ -28,7 +28,8 @@ using   Debug::TraceContextBumper;
  **************************** DLLSupport::DLLLoader *****************************
  ********************************************************************************
  */
-DLLLoader::DLLLoader (const TChar* dllName) {
+DLLLoader::DLLLoader (const TChar* dllName)
+{
     DbgTrace (TSTR ("DLLLoader - loading DLL %s"), dllName);
     RequireNotNull (dllName);
 #if     qPlatform_Windows
@@ -38,7 +39,8 @@ DLLLoader::DLLLoader (const TChar* dllName) {
 #endif
 }
 
-DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath) {
+DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
+{
     DbgTrace (TSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
     RequireNotNull (dllName);
     try {
@@ -65,7 +67,8 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath) {
 }
 
 #if     !qPlatform_Windows
-DLLHandle   DLLLoader::LoadDLL (const TChar* dllName, int flags) {
+DLLHandle   DLLLoader::LoadDLL (const TChar* dllName, int flags)
+{
 #if qTargetPlatformSDKUseswchar_t
     DLLHandle module = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
 #else
@@ -83,7 +86,8 @@ DLLHandle   DLLLoader::LoadDLL (const TChar* dllName, int flags) {
 }
 #endif
 
-DLLLoader::~DLLLoader () {
+DLLLoader::~DLLLoader ()
+{
     DbgTrace (TSTR ("DLLLoader - unloading dll"));
     AssertNotNull (fModule);
 #if     qPlatform_Windows

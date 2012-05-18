@@ -32,7 +32,8 @@ using   namespace   Stroika::Foundation::Linguistics;
  */
 namespace   {
     template    <typename STRING>
-    inline  STRING  PluralizeNoun_HLPR (const STRING& str, int count) {
+    inline  STRING  PluralizeNoun_HLPR (const STRING& str, int count)
+    {
         // Implement VERY WEAK ENGLISH rules for now... (ignores y ->ies, and other cases too)
         if (count == 1) {
             return str;
@@ -44,19 +45,23 @@ namespace   {
         }
     }
 }
-string  Linguistics::PluralizeNoun (const string& s, int count) {
+string  Linguistics::PluralizeNoun (const string& s, int count)
+{
     return PluralizeNoun_HLPR (s, count);
 }
 
-wstring Linguistics::PluralizeNoun (const wstring& s, int count) {
+wstring Linguistics::PluralizeNoun (const wstring& s, int count)
+{
     return PluralizeNoun_HLPR (s, count);
 }
 
-string  Linguistics::PluralizeNoun (const string& s, const string& sPlural, int count) {
+string  Linguistics::PluralizeNoun (const string& s, const string& sPlural, int count)
+{
     return count == 1 ? s : sPlural;
 }
 
-wstring Linguistics::PluralizeNoun (const wstring& s, const wstring& sPlural, int count) {
+wstring Linguistics::PluralizeNoun (const wstring& s, const wstring& sPlural, int count)
+{
     return count == 1 ? s : sPlural;
 }
 
@@ -72,7 +77,8 @@ wstring Linguistics::PluralizeNoun (const wstring& s, const wstring& sPlural, in
  */
 namespace   {
     template    <typename STR>
-    inline  STR MungeStringSoSingular_ (const STR& s) {
+    inline  STR MungeStringSoSingular_ (const STR& s)
+    {
         STR r   =   s;
         // take an ENGLISH string (assume English) - and munge it so its singular (if it happened to have been plural)
 
@@ -109,11 +115,13 @@ namespace   {
         return r;
     }
 }
-wstring Linguistics::MungeStringSoSingular (const wstring& s) {
+wstring Linguistics::MungeStringSoSingular (const wstring& s)
+{
     return MungeStringSoSingular_ (s);
 }
 
-string  Linguistics::MungeStringSoSingular (const string& s) {
+string  Linguistics::MungeStringSoSingular (const string& s)
+{
     return MungeStringSoSingular_ (s);
 }
 
@@ -131,7 +139,8 @@ string  Linguistics::MungeStringSoSingular (const string& s) {
  */
 namespace   {
     template    <typename STR>
-    inline  STR CapitalizeEachWord_ (const STR& s) {
+    inline  STR CapitalizeEachWord_ (const STR& s)
+    {
         STR r   =   s;
         // take an ENGLISH string (assume English)
 
@@ -146,11 +155,13 @@ namespace   {
         return r;
     }
 }
-wstring Linguistics::CapitalizeEachWord (const wstring& s) {
+wstring Linguistics::CapitalizeEachWord (const wstring& s)
+{
     return CapitalizeEachWord_ (s);
 }
 
-string  Linguistics::CapitalizeEachWord (const string& s) {
+string  Linguistics::CapitalizeEachWord (const string& s)
+{
     return CapitalizeEachWord_ (s);
 }
 
@@ -167,7 +178,8 @@ string  Linguistics::CapitalizeEachWord (const string& s) {
  */
 namespace   {
     template    <typename STR>
-    inline  STR CapitalizeEachSentence_ (const STR& s) {
+    inline  STR CapitalizeEachSentence_ (const STR& s)
+    {
         // WAY too kludgly - but hopefully adequate for primitive message cleanups...
         //      -- LGP 2008-09-20
         STR r   =   s;
@@ -187,11 +199,13 @@ namespace   {
         return r;
     }
 }
-wstring Linguistics::CapitalizeEachSentence (const wstring& s) {
+wstring Linguistics::CapitalizeEachSentence (const wstring& s)
+{
     return CapitalizeEachSentence_ (s);
 }
 
-string  Linguistics::CapitalizeEachSentence (const string& s) {
+string  Linguistics::CapitalizeEachSentence (const string& s)
+{
     return CapitalizeEachSentence_ (s);
 }
 
@@ -209,7 +223,8 @@ string  Linguistics::CapitalizeEachSentence (const string& s) {
  */
 namespace   {
     template    <typename STR>
-    inline  STR UnCapitalizeFirstWord_ (const STR& s) {
+    inline  STR UnCapitalizeFirstWord_ (const STR& s)
+    {
         // WAY too kludgly - but hopefully adequate for primitive message cleanups...
         //      -- LGP 2008-09-20
         STR r   =   s;
@@ -221,11 +236,13 @@ namespace   {
         return r;
     }
 }
-wstring Linguistics::UnCapitalizeFirstWord (const wstring& s) {
+wstring Linguistics::UnCapitalizeFirstWord (const wstring& s)
+{
     return UnCapitalizeFirstWord_ (s);
 }
 
-string  Linguistics::UnCapitalizeFirstWord (const string& s) {
+string  Linguistics::UnCapitalizeFirstWord (const string& s)
+{
     return UnCapitalizeFirstWord_ (s);
 }
 
@@ -240,11 +257,13 @@ string  Linguistics::UnCapitalizeFirstWord (const string& s) {
  ********************************** IsAllCaps ***********************************
  ********************************************************************************
  */
-bool    Linguistics::IsAllCaps (const string& s) {
+bool    Linguistics::IsAllCaps (const string& s)
+{
     return not s.empty () and s == toupper (s);
 }
 
-bool    Linguistics::IsAllCaps (const wstring& s) {
+bool    Linguistics::IsAllCaps (const wstring& s)
+{
     return not s.empty () and s == toupper (s);
 }
 

@@ -63,7 +63,8 @@ namespace   {
             , plainchar ('\0') {
         }
     };
-    int base64_decode_value_ (char value_in) {
+    int base64_decode_value_ (char value_in)
+    {
         static const char kDecoding[] = {62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -2, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
         value_in -= 43;
         if (value_in < 0 || value_in >= NEltsOf (kDecoding)) {
@@ -72,7 +73,8 @@ namespace   {
         Assert (0 <= value_in and value_in < NEltsOf (kDecoding));
         return kDecoding[(int)value_in];
     }
-    size_t base64_decode_block_ (const char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state) {
+    size_t base64_decode_block_ (const char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
+    {
         RequireNotNull (code_in);
         RequireNotNull (plaintext_out);
 
@@ -136,7 +138,8 @@ namespace   {
     }
 }
 
-vector<Byte>    Cryptography::DecodeBase64 (const string& s) {
+vector<Byte>    Cryptography::DecodeBase64 (const string& s)
+{
     if (s.empty ()) {
         return vector<Byte> ();
     }
@@ -180,7 +183,8 @@ namespace   {
         }
     };
 
-    char base64_encode_value_ (char value_in) {
+    char base64_encode_value_ (char value_in)
+    {
         const char  BASE64_CHARS_[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         Assert  (NEltsOf (BASE64_CHARS_) == (2 * 26 + 10 + 2 + 1));
         if (value_in > 63) {
@@ -189,7 +193,8 @@ namespace   {
         return BASE64_CHARS_[(int)value_in];
     }
 
-    size_t base64_encode_block_ (const Byte* plaintext_in, size_t length_in, char* code_out, base64_encodestate* state) {
+    size_t base64_encode_block_ (const Byte* plaintext_in, size_t length_in, char* code_out, base64_encodestate* state)
+    {
         const int CHARS_PER_LINE = 76;
 
         const Byte*         plainchar       =   plaintext_in;
@@ -249,7 +254,8 @@ namespace   {
         }
         return codechar - code_out;
     }
-    inline  size_t  base64_encode_blockend_ (char* code_out, base64_encodestate* state) {
+    inline  size_t  base64_encode_blockend_ (char* code_out, base64_encodestate* state)
+    {
         char* codechar = code_out;
         switch (state->step) {
             case step_B:
@@ -268,7 +274,8 @@ namespace   {
     }
 }
 
-string  Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb) {
+string  Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
+{
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
 
@@ -284,6 +291,7 @@ string  Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBrea
     return string (data.begin (), data.begin () + totalBytes);
 }
 
-string  Cryptography::EncodeBase64 (const vector<Byte>& b, LineBreak lb) {
+string  Cryptography::EncodeBase64 (const vector<Byte>& b, LineBreak lb)
+{
     return EncodeBase64 (Containers::Start (b), Containers::End (b), lb);
 }

@@ -51,13 +51,15 @@ namespace   Stroika {
                 fInternalizer (),
                 fExternalizer (),
                 fTextStore (textStore),
-                fMarkersToBeDeleted () {
+                fMarkersToBeDeleted ()
+            {
                 SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());  // sets default
                 SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());  // DITTO
                 fTextStore.AddMarkerOwner (this);
             }
 
-            HidableTextMarkerOwner::~HidableTextMarkerOwner () {
+            HidableTextMarkerOwner::~HidableTextMarkerOwner ()
+            {
                 Require (fMarkersToBeDeleted.IsEmpty ());
                 try {
                     MarkerList  markers =   CollectAllInRange (0, fTextStore.GetLength () + 1);
@@ -87,11 +89,13 @@ namespace   Stroika {
                 Call @'HidableTextMarkerOwner::MakeRegionHidable' for that.</p>
                     <p>See @'HidableTextMarkerOwner::ShowAll' to re-show them.</p>
             */
-            void    HidableTextMarkerOwner::HideAll () {
+            void    HidableTextMarkerOwner::HideAll ()
+            {
                 HideAll (0, fTextStore.GetEnd () + 1);
             }
 
-            void    HidableTextMarkerOwner::HideAll (size_t from, size_t to) {
+            void    HidableTextMarkerOwner::HideAll (size_t from, size_t to)
+            {
                 Invariant ();
                 MarkerList  markers =   CollectAllInRange (from, to);
                 sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
@@ -111,11 +115,13 @@ namespace   Stroika {
                 It merely re-installs their context into the document so that it can be seen and edited.</p>
                     <p>See also @'HidableTextMarkerOwner::HideAll'.</p>
             */
-            void    HidableTextMarkerOwner::ShowAll () {
+            void    HidableTextMarkerOwner::ShowAll ()
+            {
                 ShowAll (0, fTextStore.GetEnd () + 1);
             }
 
-            void    HidableTextMarkerOwner::ShowAll (size_t from, size_t to) {
+            void    HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
+            {
                 Invariant ();
                 MarkerList  markers =   CollectAllInRange (from, to);
                 sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
@@ -145,7 +151,8 @@ namespace   Stroika {
                 it the same range given this function to get the text to actaully disapear from the screen.</p>
                     <p>See also @'HidableTextMarkerOwner::MakeRegionUnHidable'</p>
             */
-            void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to) {
+            void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
+            {
                 Require (from <= to);
                 Invariant ();
 
@@ -229,7 +236,8 @@ namespace   Stroika {
                 at the time. This could involce splitting or coalescing adjacent markers.</p>
                     <p>See also @'HidableTextMarkerOwner::MakeRegionHidable'.</p>
             */
-            void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to) {
+            void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
+            {
                 Require (from <= to);
                 Invariant ();
 
@@ -297,7 +305,8 @@ namespace   Stroika {
                 actual sizes of the hidden text.</p>
                     <p>See also @'HidableTextMarkerOwner::GetHidableRegionsWithData'.</p>
             */
-            DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions (size_t from, size_t to) const {
+            DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions (size_t from, size_t to) const
+            {
                 Invariant ();
                 DiscontiguousRun<bool>  result;
                 MarkerList  markers =   CollectAllInRange (from, to);
@@ -318,7 +327,8 @@ namespace   Stroika {
                 return result;
             }
 
-            DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions () const {
+            DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions () const
+            {
                 return GetHidableRegions (0, fTextStore.GetEnd () + 1);
             }
 
@@ -327,7 +337,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>If 'hidden' is true - then return true - iff the entire region from 'from' to 'to' is hidden.
                 If 'hidden' is false, then return true iff the entire region from 'from' to 'to' contains no hidden elements.</p>
             */
-            bool    HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t to, bool hidden) const {
+            bool    HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t to, bool hidden) const
+            {
                 Invariant ();
                 // Sloppy, inefficient implementation. Can be MUCH faster - since we just need to know if there are ANY in this region!
                 DiscontiguousRun<bool>  tmpHack =       GetHidableRegions (from, to);
@@ -352,7 +363,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Sets the internalizer (@'FlavorPackageInternalizer' subclass). to be used with this class.
                 It defaults to @'FlavorPackageInternalizer'.</p>
             */
-            void    HidableTextMarkerOwner::SetInternalizer (const Memory::SharedPtr<FlavorPackageInternalizer>& i) {
+            void    HidableTextMarkerOwner::SetInternalizer (const Memory::SharedPtr<FlavorPackageInternalizer>& i)
+            {
                 fInternalizer = i;
                 if (fInternalizer.IsNull ()) {
                     fInternalizer = Memory::SharedPtr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
@@ -364,7 +376,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Sets the externalizer (@'FlavorPackageExternalizer' subclass). to be used with this class.
                 It defaults to @'FlavorPackageExternalizer'.</p>
             */
-            void    HidableTextMarkerOwner::SetExternalizer (const Memory::SharedPtr<FlavorPackageExternalizer>& e) {
+            void    HidableTextMarkerOwner::SetExternalizer (const Memory::SharedPtr<FlavorPackageExternalizer>& e)
+            {
                 fExternalizer = e;
                 if (fExternalizer.IsNull ()) {
                     fExternalizer = Memory::SharedPtr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
@@ -375,7 +388,8 @@ namespace   Stroika {
             @METHOD:        HidableTextMarkerOwner::CollapseMarker
             @DESCRIPTION:
             */
-            void    HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m) {
+            void    HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
+            {
                 RequireNotNull (m);
                 Require (m->fShown);
 
@@ -390,7 +404,8 @@ namespace   Stroika {
             @METHOD:        HidableTextMarkerOwner::ReifyMarker
             @DESCRIPTION:
             */
-            void    HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m) {
+            void    HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
+            {
                 RequireNotNull (m);
                 Require (not m->fShown);
 
@@ -411,7 +426,8 @@ namespace   Stroika {
                         creates @'HidableTextMarkerOwner::FontSpecHidableTextMarker' markers. You can OVERRIDE this to create different
                         style markers, or to set differnt color etc attributes for use in your @'HidableTextMarkerOwner' subclass.</p>
             */
-            HidableTextMarkerOwner::HidableTextMarker*  HidableTextMarkerOwner::MakeHidableTextMarker () {
+            HidableTextMarkerOwner::HidableTextMarker*  HidableTextMarkerOwner::MakeHidableTextMarker ()
+            {
                 /*
                  *  Some alternates you may want to consider in your overrides...
                  *
@@ -432,17 +448,20 @@ namespace   Stroika {
                 return new LightUnderlineHidableTextMarker ();
             }
 
-            TextStore*  HidableTextMarkerOwner::PeekAtTextStore () const {
+            TextStore*  HidableTextMarkerOwner::PeekAtTextStore () const
+            {
                 return &fTextStore;
             }
 
-            void    HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo) {
+            void    HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
+            {
                 Invariant ();
                 Assert (fMarkersToBeDeleted.IsEmpty ());
                 inherited::AboutToUpdateText (updateInfo);
             }
 
-            void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 inherited::DidUpdateText (updateInfo);
                 if (updateInfo.fTextModified) {
                     // cull empty markers
@@ -458,20 +477,23 @@ namespace   Stroika {
                 Invariant ();
             }
 
-            HidableTextMarkerOwner::MarkerList  HidableTextMarkerOwner::CollectAllInRange (size_t from, size_t to) const {
+            HidableTextMarkerOwner::MarkerList  HidableTextMarkerOwner::CollectAllInRange (size_t from, size_t to) const
+            {
                 MarkersOfATypeMarkerSink2Vector<HidableTextMarker>  result;
                 fTextStore.CollectAllMarkersInRangeInto (from, to, this, result);
                 return result.fResult;
             }
 
-            HidableTextMarkerOwner::MarkerList  HidableTextMarkerOwner::CollectAllInRange_OrSurroundings (size_t from, size_t to) const {
+            HidableTextMarkerOwner::MarkerList  HidableTextMarkerOwner::CollectAllInRange_OrSurroundings (size_t from, size_t to) const
+            {
                 MarkersOfATypeMarkerSink2Vector<HidableTextMarker>  result;
                 fTextStore.CollectAllMarkersInRangeInto_OrSurroundings (from, to, this, result);
                 return result.fResult;
             }
 
 #if     qDebug
-            void    HidableTextMarkerOwner::Invariant_ () const {
+            void    HidableTextMarkerOwner::Invariant_ () const
+            {
                 MarkerList      markers =   CollectAllInRange (0, fTextStore.GetEnd () + 1);
 
                 sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
@@ -504,24 +526,28 @@ namespace   Stroika {
              */
             UniformHidableTextMarkerOwner::UniformHidableTextMarkerOwner (TextStore& textStore):
                 inherited (textStore),
-                fHidden (false) {
+                fHidden (false)
+            {
             }
 
-            void    UniformHidableTextMarkerOwner::HideAll () {
+            void    UniformHidableTextMarkerOwner::HideAll ()
+            {
                 if (not fHidden) {
                     inherited::HideAll ();
                     fHidden = true;
                 }
             }
 
-            void    UniformHidableTextMarkerOwner::ShowAll () {
+            void    UniformHidableTextMarkerOwner::ShowAll ()
+            {
                 if (fHidden) {
                     inherited::ShowAll ();
                     fHidden = false;
                 }
             }
 
-            void    UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to) {
+            void    UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
+            {
                 Require (from <= to);
 
                 //Not so great implemenation - could look at particular objects created - and make sure THEY have the hidden bit set...
@@ -546,7 +572,8 @@ namespace   Stroika {
              ************* HidableTextMarkerOwner::FontSpecHidableTextMarker ****************
              ********************************************************************************
              */
-            Led_FontSpecification       HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const {
+            Led_FontSpecification       HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
+            {
                 Led_FontSpecification   fsp;
                 for (vector<StyledTextImager::StyleMarker*>::const_iterator i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
                     if (StandardStyledTextImager::StandardStyleMarker* m = dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (*i)) {
@@ -567,11 +594,13 @@ namespace   Stroika {
              ********* HidableTextMarkerOwner::LightUnderlineHidableTextMarker **************
              ********************************************************************************
              */
-            HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTextMarker (const Led_IncrementalFontSpecification& fsp) {
+            HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTextMarker (const Led_IncrementalFontSpecification& fsp)
+            {
                 fFontSpecification = fsp;
             }
 
-            Led_Color   HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const {
+            Led_Color   HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
+            {
                 if (fFontSpecification.GetTextColor_Valid ()) {
                     return fFontSpecification.GetTextColor ();
                 }
@@ -589,7 +618,8 @@ namespace   Stroika {
              ******************* ColoredUniformHidableTextMarkerOwner ***********************
              ********************************************************************************
              */
-            void    ColoredUniformHidableTextMarkerOwner::FixupSubMarkers () {
+            void    ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
+            {
                 // Now walk all existing markers, and set their fColor field!!!
                 MarkerList  markers =   CollectAllInRange_OrSurroundings (0, GetTextStore ().GetEnd () + 1);
                 for (MarkerList::const_iterator i = markers.begin (); i != markers.end (); ++i) {
@@ -604,7 +634,8 @@ namespace   Stroika {
                 }
             }
 
-            ColoredUniformHidableTextMarkerOwner::HidableTextMarker*    ColoredUniformHidableTextMarkerOwner::MakeHidableTextMarker () {
+            ColoredUniformHidableTextMarkerOwner::HidableTextMarker*    ColoredUniformHidableTextMarkerOwner::MakeHidableTextMarker ()
+            {
                 Led_IncrementalFontSpecification    fontSpec;
                 if (fColored) {
                     fontSpec.SetTextColor (fColor);

@@ -17,9 +17,11 @@ namespace   Stroika {
         namespace   Streams {
 
 
-            inline  TextInputStream::~TextInputStream () {
+            inline  TextInputStream::~TextInputStream ()
+            {
             }
-            inline  size_t  TextInputStream::Read (Character* intoStart, Character* intoEnd) {
+            inline  size_t  TextInputStream::Read (Character* intoStart, Character* intoEnd)
+            {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 if (fPutBackCharValid_) {
@@ -29,7 +31,8 @@ namespace   Stroika {
                 }
                 return _Read (intoStart, intoEnd);
             }
-            inline  Character   TextInputStream::Read () {
+            inline  Character   TextInputStream::Read ()
+            {
                 if (fPutBackCharValid_) {
                     fPutBackCharValid_ = false;
                     return fPutBackCharacter_;

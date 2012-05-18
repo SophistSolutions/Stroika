@@ -36,7 +36,8 @@ using   namespace   Stroika::Foundation::Execution::Platform::Windows;
  ********** Platform::Windows::HRESULTErrorException ****************************
  ********************************************************************************
  */
-TString Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr) {
+TString Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
+{
     switch (hr) {
         case    E_FAIL:
             return TSTR ("HRESULT failure (E_FAIL)");

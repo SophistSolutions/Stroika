@@ -29,14 +29,16 @@ namespace   Stroika {
              ********************************************************************************
              */
             WordWrappedTextInteractor::WordWrappedTextInteractor ():
-                inherited () {
+                inherited ()
+            {
             }
 
             /*
             @METHOD:        WordWrappedTextInteractor::OnTypedNormalCharacter
             @DESCRIPTION:   <p>Override @'TextInteractor::OnTypedNormalCharacter' to map 'shiftPressed' + NL to a soft-line break.</p>
             */
-            void    WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) {
+            void    WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
+            {
                 if (theChar == '\n' and shiftPressed) {
                     /*
                      *  Map 'shiftPressed' + NL to a soft-line break, but shutoff controlchar checking since that would
@@ -58,21 +60,24 @@ namespace   Stroika {
                 }
             }
 
-            void    WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow) {
+            void    WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow)
+            {
                 PreScrollInfo   preScrollInfo;
                 PreScrollHelper (eDefaultUpdate, &preScrollInfo);
                 WordWrappedTextImager::SetTopRowInWindow (newTopRow);
                 PostScrollHelper (preScrollInfo);
             }
 
-            void    WordWrappedTextInteractor::SetTopRowInWindow (RowReference row) {
+            void    WordWrappedTextInteractor::SetTopRowInWindow (RowReference row)
+            {
                 PreScrollInfo   preScrollInfo;
                 PreScrollHelper (eDefaultUpdate, &preScrollInfo);
                 WordWrappedTextImager::SetTopRowInWindow (row);
                 PostScrollHelper (preScrollInfo);
             }
 
-            void    WordWrappedTextInteractor::SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode) {
+            void    WordWrappedTextInteractor::SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode)
+            {
                 SetTopRowInWindow (GetRowReferenceContainingPosition (markerPos), updateMode);
             }
 

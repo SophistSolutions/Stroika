@@ -15,7 +15,8 @@ namespace   Stroika {
         namespace   Configuration {
 
             template    <typename   ENUM>
-            inline  ENUM    Inc (ENUM e) {
+            inline  ENUM    Inc (ENUM e)
+            {
                 return static_cast<ENUM> (e + 1);
             }
 

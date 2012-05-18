@@ -24,50 +24,62 @@ using   namespace   Stroika::Foundation::Memory;
  ********************************************************************************
  */
 VariantValue::VariantValue ()
-    : fVal () {
+    : fVal ()
+{
 }
 
 VariantValue::VariantValue (bool val)
-    : fVal (DEBUG_NEW TValRep<bool, eBoolean> (val)) {
+    : fVal (DEBUG_NEW TValRep<bool, eBoolean> (val))
+{
 }
 
 VariantValue::VariantValue (int val)
-    : fVal (DEBUG_NEW TValRep<int, eInteger> (val)) {
+    : fVal (DEBUG_NEW TValRep<int, eInteger> (val))
+{
 }
 
 VariantValue::VariantValue (float val)
-    : fVal (DEBUG_NEW TValRep<FloatType, eFloat> (val)) {
+    : fVal (DEBUG_NEW TValRep<FloatType, eFloat> (val))
+{
 }
 
 VariantValue::VariantValue (double val)
-    : fVal (DEBUG_NEW TValRep<FloatType, eFloat> (val)) {
+    : fVal (DEBUG_NEW TValRep<FloatType, eFloat> (val))
+{
 }
 
 VariantValue::VariantValue (const Date& val)
-    : fVal (DEBUG_NEW TValRep<Date, eDate> (val)) {
+    : fVal (DEBUG_NEW TValRep<Date, eDate> (val))
+{
 }
 
 VariantValue::VariantValue (const DateTime& val)
-    : fVal (DEBUG_NEW TValRep<DateTime, eDateTime> (val)) {
+    : fVal (DEBUG_NEW TValRep<DateTime, eDateTime> (val))
+{
 }
 
 VariantValue::VariantValue (const wchar_t* val)
-    : fVal (DEBUG_NEW TValRep<wstring, eString> (val)) {
+    : fVal (DEBUG_NEW TValRep<wstring, eString> (val))
+{
 }
 
 VariantValue::VariantValue (const wstring& val)
-    : fVal (DEBUG_NEW TValRep<wstring, eString> (val)) {
+    : fVal (DEBUG_NEW TValRep<wstring, eString> (val))
+{
 }
 
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
-    : fVal (DEBUG_NEW TValRep<map<wstring, VariantValue>, eMap> (val)) {
+    : fVal (DEBUG_NEW TValRep<map<wstring, VariantValue>, eMap> (val))
+{
 }
 
 VariantValue::VariantValue (const vector<VariantValue>& val)
-    : fVal (DEBUG_NEW TValRep<vector<VariantValue>, eArray> (val)) {
+    : fVal (DEBUG_NEW TValRep<vector<VariantValue>, eArray> (val))
+{
 }
 
-bool    VariantValue::empty () const {
+bool    VariantValue::empty () const
+{
     if (fVal.IsNull ()) {
         return true;
     }
@@ -114,7 +126,8 @@ bool    VariantValue::empty () const {
 }
 
 template    <>
-bool    VariantValue::As () const {
+bool    VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return false;
     }
@@ -139,7 +152,8 @@ bool    VariantValue::As () const {
 }
 
 template    <>
-int VariantValue::As () const {
+int VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return 0;
     }
@@ -167,12 +181,14 @@ int VariantValue::As () const {
 }
 
 template    <>
-float VariantValue::As () const {
+float VariantValue::As () const
+{
     return static_cast<float> (As<double> ());
 }
 
 template    <>
-double VariantValue::As () const {
+double VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return 0.0f;
     }
@@ -201,7 +217,8 @@ double VariantValue::As () const {
 }
 
 template    <>
-Date VariantValue::As() const {
+Date VariantValue::As() const
+{
     if (fVal.IsNull ()) {
         return Date ();
     }
@@ -229,7 +246,8 @@ Date VariantValue::As() const {
 }
 
 template    <>
-DateTime VariantValue::As () const {
+DateTime VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return DateTime ();
     }
@@ -257,7 +275,8 @@ DateTime VariantValue::As () const {
 }
 
 template    <>
-wstring VariantValue::As () const {
+wstring VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return wstring ();
     }
@@ -328,7 +347,8 @@ wstring VariantValue::As () const {
 }
 
 template    <>
-map<wstring, VariantValue>   VariantValue::As () const {
+map<wstring, VariantValue>   VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return map<wstring, VariantValue> ();
     }
@@ -346,7 +366,8 @@ map<wstring, VariantValue>   VariantValue::As () const {
 }
 
 template    <>
-vector<VariantValue> VariantValue::As () const {
+vector<VariantValue> VariantValue::As () const
+{
     if (fVal.IsNull ()) {
         return vector<VariantValue> ();
     }
@@ -363,7 +384,8 @@ vector<VariantValue> VariantValue::As () const {
     }
 }
 
-wstring VariantValue::FormatXML () const {
+wstring VariantValue::FormatXML () const
+{
     if (fVal.IsNull ()) {
         return wstring ();
     }
@@ -399,7 +421,8 @@ wstring VariantValue::FormatXML () const {
     }
 }
 
-bool    Memory::operator== (const VariantValue& lhs, const VariantValue& rhs) {
+bool    Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
+{
     VariantValue::Type  lt  =   lhs.GetType ();
     VariantValue::Type  rt  =   rhs.GetType ();
     if (lt != rt) {

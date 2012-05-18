@@ -92,10 +92,12 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  ********************************************************************************
  */
 FileSystem::Private::UsingModuleHelper::UsingModuleHelper ()
-    : fAppTempFileManager () {
+    : fAppTempFileManager ()
+{
 }
 
-FileSystem::Private::UsingModuleHelper::~UsingModuleHelper () {
+FileSystem::Private::UsingModuleHelper::~UsingModuleHelper ()
+{
 }
 
 
@@ -107,7 +109,8 @@ FileSystem::Private::UsingModuleHelper::~UsingModuleHelper () {
  ************************ FileSystem::CheckFileAccess ***************************
  ********************************************************************************
  */
-void    FileSystem::CheckFileAccess (const TString& fileFullPath, bool checkCanRead, bool checkCanWrite) {
+void    FileSystem::CheckFileAccess (const TString& fileFullPath, bool checkCanRead, bool checkCanWrite)
+{
     // quick hack - not fully implemented - but since advsiory only - not too important...
 
     if (not FileExists (fileFullPath)) {
@@ -128,7 +131,8 @@ void    FileSystem::CheckFileAccess (const TString& fileFullPath, bool checkCanR
  ********************************* FileSystem::ResolveShortcut **************************
  ********************************************************************************
  */
-TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut) {
+TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut)
+{
 #if     qPlatform_Windows
     // NB: this requires COM, and for now - I don't want the support module depending on the COM module,
     // so just allow this to fail if COM isn't initialized.
@@ -206,7 +210,8 @@ TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut) {
  ************************* FileSystem::FileSizeToDisplayString **************************
  ********************************************************************************
  */
-wstring FileSystem::FileSizeToDisplayString (FileOffset_t bytes) {
+wstring FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
+{
     if (bytes < 1000) {
         return Format (L"%d bytes", static_cast<int> (bytes));
     }
@@ -227,7 +232,8 @@ wstring FileSystem::FileSizeToDisplayString (FileOffset_t bytes) {
  *********************************** FileSystem::GetFileSize ****************************
  ********************************************************************************
  */
-FileOffset_t    FileSystem::GetFileSize (const TString& fileName) {
+FileOffset_t    FileSystem::GetFileSize (const TString& fileName)
+{
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
     (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -249,7 +255,8 @@ FileOffset_t    FileSystem::GetFileSize (const TString& fileName) {
  ***************************** FileSystem::GetFileLastModificationDate ******************
  ********************************************************************************
  */
-DateTime        FileSystem::GetFileLastModificationDate (const TString& fileName) {
+DateTime        FileSystem::GetFileLastModificationDate (const TString& fileName)
+{
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
     (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -271,7 +278,8 @@ DateTime        FileSystem::GetFileLastModificationDate (const TString& fileName
  ******************************* FileSystem::GetFileLastAccessDate **********************
  ********************************************************************************
  */
-DateTime    FileSystem::GetFileLastAccessDate (const TString& fileName) {
+DateTime    FileSystem::GetFileLastAccessDate (const TString& fileName)
+{
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
     (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
@@ -297,7 +305,8 @@ DateTime    FileSystem::GetFileLastAccessDate (const TString& fileName) {
  *      Add 'Everyone' to have FULL ACCESS to the given argument file
  *
  */
-void    FileSystem::SetFileAccessWideOpened (const TString& filePathName) {
+void    FileSystem::SetFileAccessWideOpened (const TString& filePathName)
+{
     try {
 #if     qPlatform_Windows
         static  PACL pACL = nullptr;    // Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
@@ -379,7 +388,8 @@ void    FileSystem::SetFileAccessWideOpened (const TString& filePathName) {
  ************************ FileSystem::CreateDirectory ***************************
  ********************************************************************************
  */
-void    FileSystem::CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded) {
+void    FileSystem::CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded)
+{
     /*
      * TODO:
      *      (o)     This implementation is HORRIBLE!!!! Major cleanup required!
@@ -461,7 +471,8 @@ void    FileSystem::CreateDirectory (const TString& directoryPath, bool createPa
  ******************* FileSystem::CreateDirectoryForFile *************************
  ********************************************************************************
  */
-void    FileSystem::CreateDirectoryForFile (const TString& filePath) {
+void    FileSystem::CreateDirectoryForFile (const TString& filePath)
+{
     if (filePath.empty ()) {
         // NOT sure this is the best exception to throw here?
         Execution::DoThrow (IO::FileAccessException ());
@@ -483,7 +494,8 @@ void    FileSystem::CreateDirectoryForFile (const TString& filePath) {
  ************************** FileSystem::GetVolumeName ***************************
  ********************************************************************************
  */
-TString FileSystem::GetVolumeName (const TString& driveLetterAbsPath) {
+TString FileSystem::GetVolumeName (const TString& driveLetterAbsPath)
+{
 #if     qPlatform_Windows
     // SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
     AdjustSysErrorMode  errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
@@ -523,7 +535,8 @@ TString FileSystem::GetVolumeName (const TString& driveLetterAbsPath) {
  ***************************** FileSystem::FileExists ***************************
  ********************************************************************************
  */
-bool    FileSystem::FileExists (const TChar* filePath) {
+bool    FileSystem::FileExists (const TChar* filePath)
+{
 #if     qPlatform_Windows
     RequireNotNull (filePath);
     DWORD attribs = ::GetFileAttributes (filePath);
@@ -541,7 +554,8 @@ bool    FileSystem::FileExists (const TChar* filePath) {
 #endif
 }
 
-bool    FileSystem::FileExists (const TString& filePath) {
+bool    FileSystem::FileExists (const TString& filePath)
+{
     return FileExists (filePath.c_str ());
 }
 
@@ -556,7 +570,8 @@ bool    FileSystem::FileExists (const TString& filePath) {
  ************************** FileSystem::DirectoryExists *************************
  ********************************************************************************
  */
-bool    FileSystem::DirectoryExists (const TChar* filePath) {
+bool    FileSystem::DirectoryExists (const TChar* filePath)
+{
 #if     qPlatform_Windows
     RequireNotNull (filePath);
     DWORD attribs = ::GetFileAttributes (filePath);
@@ -577,7 +592,8 @@ bool    FileSystem::DirectoryExists (const TChar* filePath) {
 #endif
 }
 
-bool    FileSystem::DirectoryExists (const TString& filePath) {
+bool    FileSystem::DirectoryExists (const TString& filePath)
+{
     return DirectoryExists (filePath.c_str ());
 }
 
@@ -592,7 +608,8 @@ bool    FileSystem::DirectoryExists (const TString& filePath) {
  *************************************** FileSystem::CopyFile ***************************
  ********************************************************************************
  */
-void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath) {
+void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath)
+{
 #if     qPlatform_Windows
 // see if can be/should be rewritten to use Win32 API of same name!!!
 //
@@ -620,7 +637,8 @@ void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath) {
  ************************************* FileSystem::FindFiles ****************************
  ********************************************************************************
  */
-vector<TString> FileSystem::FindFiles (const TString& path, const TString& fileNameToMatch) {
+vector<TString> FileSystem::FindFiles (const TString& path, const TString& fileNameToMatch)
+{
     vector<TString> result;
     if (path.empty ()) {
         return result;
@@ -665,7 +683,8 @@ vector<TString> FileSystem::FindFiles (const TString& path, const TString& fileN
  ********************************* FileSystem::FindFilesOneDirUnder *********************
  ********************************************************************************
  */
-vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch) {
+vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch)
+{
     if (path.empty ()) {
         return vector<TString> ();
     }
@@ -710,7 +729,8 @@ vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TSt
  ************************* FileSystem::DeleteAllFilesInDirectory ************************
  ********************************************************************************
  */
-void    FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors) {
+void    FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
+{
 #if     qPlatform_Windows
     if (path.empty ()) {
         Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_NAME));
@@ -779,13 +799,15 @@ FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& direc
     fThread (),
     fDoneEvent (::CreateEvent (nullptr, false, false, nullptr)),
     fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter)),
-    fQuitting (false) {
+    fQuitting (false)
+{
     fThread = Execution::Thread (&ThreadProc, this);
     fThread.SetThreadName (L"DirectoryChangeWatcher");
     fThread.Start ();
 }
 
-FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher () {
+FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
+{
     fQuitting = true;
     if (fDoneEvent != INVALID_HANDLE_VALUE) {
         Verify (::SetEvent (fDoneEvent));
@@ -799,10 +821,12 @@ FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher () {
     }
 }
 
-void    FileSystem::DirectoryChangeWatcher::ValueChanged () {
+void    FileSystem::DirectoryChangeWatcher::ValueChanged ()
+{
 }
 
-void    FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter) {
+void    FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
+{
     DirectoryChangeWatcher*     _THS_   =   reinterpret_cast<DirectoryChangeWatcher*> (lpParameter);
     while (not _THS_->fQuitting and _THS_->fWatchEvent != INVALID_HANDLE_VALUE) {
         HANDLE  events[2];
@@ -827,7 +851,8 @@ void    FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter) {
  ********************************************************************************
  */
 AppTempFileManager::AppTempFileManager ():
-    fTmpDir () {
+    fTmpDir ()
+{
 #if     qPlatform_Windows
     TString tmpDir  =   WellKnownLocations::GetTemporary ();
 
@@ -887,7 +912,8 @@ AppTempFileManager::AppTempFileManager ():
 #endif
 }
 
-AppTempFileManager::~AppTempFileManager () {
+AppTempFileManager::~AppTempFileManager ()
+{
     DbgTrace (TSTR ("AppTempFileManager::DTOR: clearing '%s'"), fTmpDir.c_str ());
 #if     qPlatform_Windows
     DeleteAllFilesInDirectory (fTmpDir, true);
@@ -897,7 +923,8 @@ AppTempFileManager::~AppTempFileManager () {
 #endif
 }
 
-TString AppTempFileManager::GetTempFile (const TString& fileNameBase) {
+TString AppTempFileManager::GetTempFile (const TString& fileNameBase)
+{
 #if     qPlatform_Windows
     TString fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
     FileSystem::CreateDirectoryForFile (fn);
@@ -928,7 +955,8 @@ TString AppTempFileManager::GetTempFile (const TString& fileNameBase) {
     Execution::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
-TString AppTempFileManager::GetTempDir (const TString& fileNameBase) {
+TString AppTempFileManager::GetTempDir (const TString& fileNameBase)
+{
     TString fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
 
     int attempts = 0;
@@ -964,14 +992,16 @@ TempFileLibrarian::TempFileLibrarian (const TString& privateDirectory, bool purg
     , fPrivateDirectory (privateDirectory)
     , fMakeTMPDIRRel (makeTMPDIRRel)
     , fDeleteFilesOnDescruction (deleteFilesOnDescruction)
-    , fCriticalSection () {
+    , fCriticalSection ()
+{
     ::srand (static_cast<unsigned int> (::time (0)));
     if (purgeDirectory and fPrivateDirectory.size () > 0) {
         DeleteAllFilesInDirectory (AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + TSTR ("\\"));
     }
 }
 
-TempFileLibrarian::~TempFileLibrarian () {
+TempFileLibrarian::~TempFileLibrarian ()
+{
 #if     qPlatform_Windows
     if (fDeleteFilesOnDescruction) {
         for (set<TString>::iterator it = fFiles.begin (); it != fFiles.end (); ++it) {
@@ -991,7 +1021,8 @@ TempFileLibrarian::~TempFileLibrarian () {
 #endif
 }
 
-TString TempFileLibrarian::GetTempFile (const TString& fileNameBase) {
+TString TempFileLibrarian::GetTempFile (const TString& fileNameBase)
+{
 #if     qPlatform_Windows
     TString fn  =   fileNameBase;
     if (fn.find (':') == -1) {
@@ -1033,7 +1064,8 @@ TString TempFileLibrarian::GetTempFile (const TString& fileNameBase) {
 #endif
 }
 
-TString TempFileLibrarian::GetTempDir (const TString& fileNameBase) {
+TString TempFileLibrarian::GetTempDir (const TString& fileNameBase)
+{
 #if     qPlatform_Windows
     TString fn  =   fileNameBase;
     if (fn.find (':') == -1) {
@@ -1080,10 +1112,12 @@ TString TempFileLibrarian::GetTempDir (const TString& fileNameBase) {
  ********************************************************************************
  */
 ScopedTmpDir::ScopedTmpDir (const TString& fileNameBase)
-    : fTmpDir (AppTempFileManager::Get ().GetTempDir (fileNameBase)) {
+    : fTmpDir (AppTempFileManager::Get ().GetTempDir (fileNameBase))
+{
 }
 
-ScopedTmpDir::~ScopedTmpDir () {
+ScopedTmpDir::~ScopedTmpDir ()
+{
     try {
         DbgTrace (TSTR ("ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'"), fTmpDir.c_str ());
         DeleteAllFilesInDirectory (fTmpDir);
@@ -1109,10 +1143,12 @@ ScopedTmpDir::~ScopedTmpDir () {
  ********************************************************************************
  */
 ScopedTmpFile::ScopedTmpFile (const TString& fileNameBase):
-    fTmpFile (AppTempFileManager::Get ().GetTempFile (fileNameBase)) {
+    fTmpFile (AppTempFileManager::Get ().GetTempFile (fileNameBase))
+{
 }
 
-ScopedTmpFile::~ScopedTmpFile () {
+ScopedTmpFile::~ScopedTmpFile ()
+{
     try {
         DbgTrace (TSTR ("ScopedTmpFile::~ScopedTmpFile - removing '%s'"), fTmpFile.c_str ());
 #if     qPlatform_Windows
@@ -1138,12 +1174,14 @@ ScopedTmpFile::~ScopedTmpFile () {
  */
 ThroughTmpFileWriter::ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix)
     : fRealFilePath (realFileName)
-    , fTmpFilePath (realFileName + tmpSuffix) {
+    , fTmpFilePath (realFileName + tmpSuffix)
+{
     Require (not realFileName.empty ());
     Require (not tmpSuffix.empty ());
 }
 
-ThroughTmpFileWriter::~ThroughTmpFileWriter () {
+ThroughTmpFileWriter::~ThroughTmpFileWriter ()
+{
     if (not fRealFilePath.empty ()) {
         DbgTrace (TSTR ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to '%s'"), fRealFilePath.c_str ());
 #if     qPlatform_Windows
@@ -1154,7 +1192,8 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter () {
     }
 }
 
-void    ThroughTmpFileWriter::Commit () {
+void    ThroughTmpFileWriter::Commit ()
+{
     Require (not fTmpFilePath.empty ());    // cannot Commit more than once
     // Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
 #if     qPlatform_Windows
@@ -1194,7 +1233,8 @@ void    ThroughTmpFileWriter::Commit () {
  ************************************* FileReader *******************************
  ********************************************************************************
  */
-FileReader::FileReader (const TChar* fileName) {
+FileReader::FileReader (const TChar* fileName)
+{
 #if     qPlatform_Windows
     const   bool    kUseWIN32FILEIOAPI  =   true;   // else on Win2k reading files throgh VMWare mounting mechanism -
     // get error on read... not real importnat - but if low-level Win32
@@ -1264,7 +1304,8 @@ FileReader::FileReader (const TChar* fileName) {
 #endif
 }
 
-FileReader::~FileReader () {
+FileReader::~FileReader ()
+{
     delete[] fFileDataStart;
 }
 
@@ -1278,7 +1319,8 @@ FileReader::~FileReader () {
  ********************************************************************************
  */
 FileWriter::FileWriter (const TChar* fileName)
-    : fFD (-1) {
+    : fFD (-1)
+{
 #if     qPlatform_Windows
     ThrowIfError_errno_t (::_tsopen_s (&fFD, fileName, _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE));
     ThrowIfFalseGetLastError (fFD != -1);
@@ -1287,7 +1329,8 @@ FileWriter::FileWriter (const TChar* fileName)
 #endif
 }
 
-FileWriter::~FileWriter () {
+FileWriter::~FileWriter ()
+{
 #if     qPlatform_Windows
     if (fFD != -1) {
         ::_close (fFD);
@@ -1297,7 +1340,8 @@ FileWriter::~FileWriter () {
 #endif
 }
 
-void    FileWriter::Append (const Byte* data, size_t count) {
+void    FileWriter::Append (const Byte* data, size_t count)
+{
     Require (fFD != -1);
 #if     qPlatform_Windows
     ThrowIfFalseGetLastError (::_write (fFD, data, static_cast<unsigned int> (count)) == static_cast<int> (count));
@@ -1352,7 +1396,8 @@ MemoryMappedFileReader::MemoryMappedFileReader (const TChar* fileName)
 #endif
 }
 
-MemoryMappedFileReader::~MemoryMappedFileReader () {
+MemoryMappedFileReader::~MemoryMappedFileReader ()
+{
 #if         qPlatform_Windows
     if (fFileDataStart != nullptr) {
         (void)::UnmapViewOfFile (fFileDataStart);
@@ -1377,17 +1422,20 @@ MemoryMappedFileReader::~MemoryMappedFileReader () {
  ****************************** FileSystem::AdjustSysErrorMode **************************
  ********************************************************************************
  */
-UINT    AdjustSysErrorMode::GetErrorMode () {
+UINT    AdjustSysErrorMode::GetErrorMode ()
+{
     UINT    good    =   ::SetErrorMode (0);
     ::SetErrorMode (good);
     return good;
 }
 
 AdjustSysErrorMode::AdjustSysErrorMode (UINT newErrorMode):
-    fSavedErrorMode (::SetErrorMode (newErrorMode)) {
+    fSavedErrorMode (::SetErrorMode (newErrorMode))
+{
 }
 
-AdjustSysErrorMode::~AdjustSysErrorMode () {
+AdjustSysErrorMode::~AdjustSysErrorMode ()
+{
     (void)::SetErrorMode (fSavedErrorMode);
 }
 #endif
@@ -1424,7 +1472,8 @@ DirectoryContentsIterator::DirectoryContentsIterator (const TString& pathExpr)
 #endif
 }
 
-DirectoryContentsIterator::~DirectoryContentsIterator () {
+DirectoryContentsIterator::~DirectoryContentsIterator ()
+{
 #if         qPlatform_Windows
     if (fHandle != INVALID_HANDLE_VALUE) {
         ::FindClose (fHandle);
@@ -1434,7 +1483,8 @@ DirectoryContentsIterator::~DirectoryContentsIterator () {
 #endif
 }
 
-bool    DirectoryContentsIterator::NotAtEnd () const {
+bool    DirectoryContentsIterator::NotAtEnd () const
+{
 #if         qPlatform_Windows
     return fHandle != INVALID_HANDLE_VALUE;
 #else
@@ -1443,7 +1493,8 @@ bool    DirectoryContentsIterator::NotAtEnd () const {
 #endif
 }
 
-TString DirectoryContentsIterator::operator *() const {
+TString DirectoryContentsIterator::operator *() const
+{
     Ensure (NotAtEnd ());
 #if         qPlatform_Windows
     return fDirectory + fFindFileData.cFileName;
@@ -1453,7 +1504,8 @@ TString DirectoryContentsIterator::operator *() const {
 #endif
 }
 
-void    DirectoryContentsIterator::operator++ () {
+void    DirectoryContentsIterator::operator++ ()
+{
 #if         qPlatform_Windows
     memset (&fFindFileData, 0, sizeof (fFindFileData));
     if (::FindNextFile (fHandle, &fFindFileData) == 0) {

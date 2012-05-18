@@ -82,7 +82,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
-            StandardStyledTextInteractor::CommandNames& StandardStyledTextInteractor::sCommandNames () {
+            StandardStyledTextInteractor::CommandNames& StandardStyledTextInteractor::sCommandNames ()
+            {
                 static  CommandNames    commandNames        =       MakeDefaultCommandNames ();
                 return commandNames;
             }
@@ -94,25 +95,30 @@ namespace   Stroika {
                 TextInteractor (),
                 StandardStyledTextImager (),
                 fEmptySelectionStyleSuppressMode (false),
-                fEmptySelectionStyle (GetStaticDefaultFont ()) {
+                fEmptySelectionStyle (GetStaticDefaultFont ())
+            {
             }
 
-            StandardStyledTextInteractor::~StandardStyledTextInteractor () {
+            StandardStyledTextInteractor::~StandardStyledTextInteractor ()
+            {
             }
 
-            StandardStyledTextInteractor::CommandNames      StandardStyledTextInteractor::MakeDefaultCommandNames () {
+            StandardStyledTextInteractor::CommandNames      StandardStyledTextInteractor::MakeDefaultCommandNames ()
+            {
                 StandardStyledTextInteractor::CommandNames  cmdNames;
                 cmdNames.fFontChangeCommandName     =   Led_SDK_TCHAROF ("Font Change");
                 return cmdNames;
             }
 
-            void    StandardStyledTextInteractor::HookLosingTextStore () {
+            void    StandardStyledTextInteractor::HookLosingTextStore ()
+            {
                 TextInteractor::HookLosingTextStore ();
                 StandardStyledTextImager::HookLosingTextStore ();
                 HookLosingTextStore_ ();
             }
 
-            void    StandardStyledTextInteractor::HookLosingTextStore_ () {
+            void    StandardStyledTextInteractor::HookLosingTextStore_ ()
+            {
                 // Remove all embeddings...
                 vector<SimpleEmbeddedObjectStyleMarker*>    embeddings  =   CollectAllEmbeddingMarkersInRange (0, GetLength ());
                 for (size_t i = 0; i < embeddings.size (); i++) {
@@ -124,13 +130,15 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextInteractor::HookGainedNewTextStore () {
+            void    StandardStyledTextInteractor::HookGainedNewTextStore ()
+            {
                 TextInteractor::HookGainedNewTextStore ();
                 StandardStyledTextImager::HookGainedNewTextStore ();
                 HookGainedNewTextStore_ ();
             }
 
-            void    StandardStyledTextInteractor::HookGainedNewTextStore_ () {
+            void    StandardStyledTextInteractor::HookGainedNewTextStore_ ()
+            {
             }
 
             /*
@@ -140,7 +148,8 @@ namespace   Stroika {
                             <p>Note that this definition is significantly different than in Led 3.0. To get
                         the Led 3.0 behavior, you should call InteractiveSetFont ()</p>
              */
-            void    StandardStyledTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) {
+            void    StandardStyledTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont)
+            {
                 size_t  selStart    =   GetSelectionStart ();
                 size_t  selEnd      =   GetSelectionEnd ();
                 if (selStart == selEnd) {
@@ -168,7 +177,8 @@ namespace   Stroika {
                         (before Led 3.1a4) - but that is now obsolete. @'TextImager::SetDefaultFont' just sets a default font
                         object associated with the imager, and that has little or no effect when used with this class.
              */
-            void    StandardStyledTextInteractor::InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont) {
+            void    StandardStyledTextInteractor::InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont)
+            {
                 InteractiveModeUpdater  iuMode (*this);
                 RequireNotNull (PeekAtTextStore ());    // Must specify TextStore before calling this, or any routine that calls it.
 
@@ -193,7 +203,8 @@ namespace   Stroika {
                 undoContext.CommandComplete ();
             }
 
-            Led_IncrementalFontSpecification    StandardStyledTextInteractor::GetContinuousStyleInfo (size_t from, size_t nTChars) const {
+            Led_IncrementalFontSpecification    StandardStyledTextInteractor::GetContinuousStyleInfo (size_t from, size_t nTChars) const
+            {
                 if (nTChars == 0 and from == GetSelectionStart ()) {
                     vector<InfoSummaryRecord>   summaryInfo;
                     summaryInfo.push_back (InfoSummaryRecord (fEmptySelectionStyle, 0));
@@ -204,7 +215,8 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw () {
+            void    StandardStyledTextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            {
                 TextInteractor::DidUpdateText (updateInfo);
                 StandardStyledTextImager::DidUpdateText (updateInfo);
                 /*
@@ -215,7 +227,8 @@ namespace   Stroika {
                  */
             }
 
-            bool    StandardStyledTextInteractor::ShouldEnablePasteCommand () const {
+            bool    StandardStyledTextInteractor::ShouldEnablePasteCommand () const
+            {
                 if (TextInteractor::ShouldEnablePasteCommand ()) {
                     return true;
                 }
@@ -243,7 +256,8 @@ namespace   Stroika {
                 return false;
             }
 
-            bool    StandardStyledTextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const {
+            bool    StandardStyledTextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const
+            {
                 if (TextInteractor::CanAcceptFlavor (clipFormat)) {
                     return true;
                 }
@@ -270,7 +284,8 @@ namespace   Stroika {
                 return false;
             }
 
-            void    StandardStyledTextInteractor::HookStyleDatabaseChanged () {
+            void    StandardStyledTextInteractor::HookStyleDatabaseChanged ()
+            {
                 StandardStyledTextImager::HookStyleDatabaseChanged ();
                 if (PeekAtTextStore () != nullptr) {
                     // if no TextStore - no problem - TextInteractor::HookGainedTextStore () will recreate these.
@@ -279,11 +294,13 @@ namespace   Stroika {
                 }
             }
 
-            Memory::SharedPtr<FlavorPackageInternalizer>    StandardStyledTextInteractor::MakeDefaultInternalizer () {
+            Memory::SharedPtr<FlavorPackageInternalizer>    StandardStyledTextInteractor::MakeDefaultInternalizer ()
+            {
                 return Memory::SharedPtr<FlavorPackageInternalizer> (new StyledTextFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase ()));
             }
 
-            Memory::SharedPtr<FlavorPackageExternalizer>    StandardStyledTextInteractor::MakeDefaultExternalizer () {
+            Memory::SharedPtr<FlavorPackageExternalizer>    StandardStyledTextInteractor::MakeDefaultExternalizer ()
+            {
                 return Memory::SharedPtr<FlavorPackageExternalizer> (new StyledTextFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase ()));
             }
 
@@ -292,7 +309,8 @@ namespace   Stroika {
             @ACCESS:        protected
             @DESCRIPTION:   <p>Override @'TextInteractor::ProcessSimpleClick' to handle embeddings.</p>
             */
-            bool    StandardStyledTextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) {
+            bool    StandardStyledTextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor)
+            {
                 RequireNotNull (dragAnchor);
                 size_t      clickedOnChar   =   GetCharAtWindowLocation (clickedAt);
                 Led_Rect    charRect        =   GetCharWindowLocation (clickedOnChar);
@@ -355,7 +373,8 @@ namespace   Stroika {
                 return TextInteractor::ProcessSimpleClick (clickedAt, clickCount, extendSelection, dragAnchor);
             }
 
-            void    StandardStyledTextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor) {
+            void    StandardStyledTextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor)
+            {
                 size_t  clickedOnChar   =   GetCharAtWindowLocation (newMousePos);
                 size_t  oldSelStart     =   GetSelectionStart ();
                 size_t  oldSelEnd       =   GetSelectionEnd ();
@@ -376,7 +395,8 @@ namespace   Stroika {
                 TextInteractor::WhileSimpleMouseTracking (newMousePos, dragAnchor);
             }
 
-            void    StandardStyledTextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode) {
+            void    StandardStyledTextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode)
+            {
                 UpdateMode  useUpdateMode   =   updateMode == eImmediateUpdate ? eDelayedUpdate : updateMode;
                 Assert (not fEmptySelectionStyleSuppressMode);
                 fEmptySelectionStyleSuppressMode = true;
@@ -393,7 +413,8 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextInteractor::SetSelection (size_t start, size_t end) {
+            void    StandardStyledTextInteractor::SetSelection (size_t start, size_t end)
+            {
                 bool    changed =   (GetSelectionStart () != start) or (GetSelectionEnd () != end);
                 TextInteractor::SetSelection (start, end);
                 if (changed) {
@@ -401,7 +422,8 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextInteractor::SetSelection_ (size_t start, size_t end) {
+            void    StandardStyledTextInteractor::SetSelection_ (size_t start, size_t end)
+            {
                 Led_Arg_Unused (start);
                 Led_Arg_Unused (end);
                 // SetEmptySelectionStyle () assumes selection already set - uses set one - assure that we're called
@@ -420,7 +442,8 @@ namespace   Stroika {
                 in order to implement the usual semantics of a font / style menu.</p>
                     <p>See @'StandardStyledTextInteractor::SetEmptySelectionStyle'.</p>
             */
-            Led_FontSpecification   StandardStyledTextInteractor::GetEmptySelectionStyle () const {
+            Led_FontSpecification   StandardStyledTextInteractor::GetEmptySelectionStyle () const
+            {
                 return fEmptySelectionStyle;
             }
 
@@ -430,7 +453,8 @@ namespace   Stroika {
                         from the surrounding text (called from @'StandardStyledTextInteractor::SetSelection_').</p>
                     <p>See @'StandardStyledTextInteractor::GetEmptySelectionStyle'.</p>
             */
-            void    StandardStyledTextInteractor::SetEmptySelectionStyle () {
+            void    StandardStyledTextInteractor::SetEmptySelectionStyle ()
+            {
                 size_t  start   =   0;
                 size_t  end     =   0;
                 GetSelection (&start, &end);
@@ -456,7 +480,8 @@ namespace   Stroika {
                 notifie anyone interested of the change (so - for example - the cached font metrics of text can change).</p>
                     <p>See @'StandardStyledTextInteractor::GetEmptySelectionStyle'.</p>
             */
-            void    StandardStyledTextInteractor::SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec) {
+            void    StandardStyledTextInteractor::SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec)
+            {
                 if (fEmptySelectionStyle != newEmptyFontSpec) {
                     /*
                      *  If we change the empty style selection, this change can affect menus etc (since they show
@@ -481,7 +506,8 @@ namespace   Stroika {
                 }
             }
 
-            bool    StandardStyledTextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount) {
+            bool    StandardStyledTextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount)
+            {
                 Assert (GetSelectionStart () >= withWhatCharCount);
                 if (withWhatCharCount == 1) {
                     // If we just typed a single extra char - apply our fEmptySelectionStyle to that extra char typed. Return true iff
@@ -496,7 +522,8 @@ namespace   Stroika {
                 return false;
             }
 
-            vector<SimpleEmbeddedObjectStyleMarker*>    StandardStyledTextInteractor::CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const {
+            vector<SimpleEmbeddedObjectStyleMarker*>    StandardStyledTextInteractor::CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const
+            {
                 /*
                  *  Walk through all the markers in existence, and throw away all but our
                  *  SimpleEmbeddedObjectStyleMarker markers. This is an inefficient approach. It would be far
@@ -509,7 +536,8 @@ namespace   Stroika {
                 return result.fResult;
             }
 
-            InteractiveReplaceCommand::SavedTextRep*    StandardStyledTextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) {
+            InteractiveReplaceCommand::SavedTextRep*    StandardStyledTextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+            {
                 if (regionStart == regionEnd) {
                     // optimization, cuz these are smaller
                     return new EmptySelStyleTextRep (this, selStart, selEnd);
@@ -548,12 +576,14 @@ namespace   Stroika {
                 fOriginalStart (insertionStart),
                 fInsertionStart (insertionStart),
                 fSavedStyleInfo (),
-                fCachedText () {
+                fCachedText ()
+            {
                 RequireNotNull (textStore);
                 Require (not textStyleDatabase.IsNull ());
             }
 
-            StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream () {
+            StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream ()
+            {
                 try {
                     Flush ();
                 }
@@ -562,11 +592,13 @@ namespace   Stroika {
                 }
             }
 
-            size_t  StandardStyledTextIOSinkStream::current_offset () const {
+            size_t  StandardStyledTextIOSinkStream::current_offset () const
+            {
                 return (fInsertionStart - fOriginalStart);
             }
 
-            void    StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) {
+            void    StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec)
+            {
                 RequireNotNull (text);
                 AssertNotNull (fTextStore);
 
@@ -594,7 +626,8 @@ namespace   Stroika {
                 fInsertionStart += nTChars;
             }
 
-            void    StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) {
+            void    StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns)
+            {
                 Require (from <= to);
                 if (GetCachedTextSize () != 0) {
                     Flush ();
@@ -602,11 +635,13 @@ namespace   Stroika {
                 fStyleRunDatabase->SetStyleInfo (fOriginalStart + from, to - from, styleRuns);
             }
 
-            Led_FontSpecification   StandardStyledTextIOSinkStream::GetDefaultFontSpec () const {
+            Led_FontSpecification   StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
+            {
                 return TextImager::GetStaticDefaultFont ();
             }
 
-            void    StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) {
+            void    StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
+            {
                 RequireNotNull (embedding);
                 if (GetCachedTextSize () != 0) {
                     Flush ();
@@ -621,7 +656,8 @@ namespace   Stroika {
                 Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase);
             }
 
-            void    StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) {
+            void    StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
+            {
                 RequireNotNull (embedding);
                 AssertNotNull (fTextStore);
                 if (GetCachedTextSize () != 0) {
@@ -631,12 +667,14 @@ namespace   Stroika {
                 fInsertionStart++;
             }
 
-            void    StandardStyledTextIOSinkStream::AppendSoftLineBreak () {
+            void    StandardStyledTextIOSinkStream::AppendSoftLineBreak ()
+            {
                 // Bogus implementation - usually overriden...
                 AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
             }
 
-            void    StandardStyledTextIOSinkStream::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) {
+            void    StandardStyledTextIOSinkStream::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner)
+            {
                 Require (at <= current_offset ());
                 RequireNotNull (m);
                 RequireNotNull (markerOwner);
@@ -650,7 +688,8 @@ namespace   Stroika {
                 }
             }
 
-            void    StandardStyledTextIOSinkStream::Flush () {
+            void    StandardStyledTextIOSinkStream::Flush ()
+            {
                 if (GetCachedTextSize () != 0) {
                     AssertNotNull (fTextStore);
                     size_t  dataSize        =   fCachedText.size ();
@@ -668,7 +707,8 @@ namespace   Stroika {
             void    StandardStyledTextIOSinkStream::PushContext (TextStore* ts,
                     const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
                     size_t insertionStart
-                                                                ) {
+                                                                )
+            {
                 Require (GetCachedTextSize () == 0);    // must flush before setting/popping context
 
                 Context c;
@@ -683,7 +723,8 @@ namespace   Stroika {
                 fOriginalStart = insertionStart;
             }
 
-            void    StandardStyledTextIOSinkStream::PopContext () {
+            void    StandardStyledTextIOSinkStream::PopContext ()
+            {
                 Require (GetCachedTextSize () == 0);    // must flush before setting/popping context
                 Require (not fSavedContexts.empty ());
                 fTextStore = fSavedContexts.back ().fTextStore;
@@ -715,7 +756,8 @@ namespace   Stroika {
                 fStyleRunDatabase (textStyleDatabase),
                 fCurOffset (selectionStart),
                 fSelStart (selectionStart),
-                fSelEnd (selectionEnd) {
+                fSelEnd (selectionEnd)
+            {
                 RequireNotNull (textStore);
                 Require (not textStyleDatabase.IsNull ());
                 Require (fSelStart >= 0);
@@ -729,7 +771,8 @@ namespace   Stroika {
                 fStyleRunDatabase (textImager->GetStyleDatabase ()),
                 fCurOffset (selectionStart),
                 fSelStart (selectionStart),
-                fSelEnd (selectionEnd) {
+                fSelEnd (selectionEnd)
+            {
                 RequireNotNull (textImager);
                 RequireNotNull (fTextStore);
                 Require (not fStyleRunDatabase.IsNull ());
@@ -738,7 +781,8 @@ namespace   Stroika {
                 fSelEnd = Led_Min (fSelEnd, fTextStore->GetEnd ());
             }
 
-            size_t  StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t maxTChars) {
+            size_t  StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t maxTChars)
+            {
                 AssertNotNull (intoBuf);
                 size_t  bytesToRead =   Led_Min (maxTChars, fSelEnd - fCurOffset);
                 Assert (bytesToRead <= maxTChars);
@@ -747,11 +791,13 @@ namespace   Stroika {
                 return (bytesToRead);
             }
 
-            size_t  StandardStyledTextIOSrcStream::current_offset () const {
+            size_t  StandardStyledTextIOSrcStream::current_offset () const
+            {
                 return (fCurOffset - fSelStart);
             }
 
-            void    StandardStyledTextIOSrcStream::seek_to (size_t to) {
+            void    StandardStyledTextIOSrcStream::seek_to (size_t to)
+            {
                 Require (to >= 0);
                 to += fSelStart;
                 to = Led_Min (to, fSelEnd);
@@ -760,12 +806,14 @@ namespace   Stroika {
                 Ensure (fCurOffset <= fSelEnd);
             }
 
-            size_t  StandardStyledTextIOSrcStream::GetTotalTextLength () const {
+            size_t  StandardStyledTextIOSrcStream::GetTotalTextLength () const
+            {
                 Assert (fSelEnd >= fSelStart);
                 return (fSelEnd - fSelStart);
             }
 
-            vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const {
+            vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const
+            {
                 size_t  effectiveFrom   =   from + fSelStart;
 #if     qDebug
                 size_t  effectiveTo     =   effectiveFrom + len;
@@ -777,7 +825,8 @@ namespace   Stroika {
                 return (fStyleRunDatabase->GetStyleInfo (effectiveFrom, len));
             }
 
-            vector<SimpleEmbeddedObjectStyleMarker*>    StandardStyledTextIOSrcStream::CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const {
+            vector<SimpleEmbeddedObjectStyleMarker*>    StandardStyledTextIOSrcStream::CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const
+            {
                 size_t  effectiveFrom   =   from + fSelStart;
                 size_t  effectiveTo     =   to + fSelStart;
                 Require (effectiveFrom >= fSelStart);
@@ -791,11 +840,13 @@ namespace   Stroika {
                 return result.fResult;
             }
 
-            StandardStyledTextIOSrcStream::Table*   StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const {
+            StandardStyledTextIOSrcStream::Table*   StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const
+            {
                 return nullptr;
             }
 
-            void    StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const {
+            void    StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const
+            {
                 typedef StandardStyledTextImager::InfoSummaryRecord InfoSummaryRecord;
                 if (fontNames != nullptr or colorsUsed != nullptr) {
                     size_t                      totalTextLength =   GetTotalTextLength ();
@@ -814,7 +865,8 @@ namespace   Stroika {
                 }
             }
 
-            size_t  StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const {
+            size_t  StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
+            {
                 return (fSelStart);
             }
 
@@ -837,7 +889,8 @@ namespace   Stroika {
             typedef StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer   StyledTextFlavorPackageInternalizer;
             StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase):
                 inherited (ts),
-                fStyleDatabase (styleDatabase) {
+                fStyleDatabase (styleDatabase)
+            {
             }
 
             void    StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
@@ -848,7 +901,8 @@ namespace   Stroika {
 #endif
                 Led_ClipFormat* suggestedClipFormat,
                 CodePage* suggestedCodePage
-            ) {
+            )
+            {
                 inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
 #if     qMacOS
@@ -921,7 +975,8 @@ namespace   Stroika {
 
             bool    StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
                     size_t from, size_t to
-                                                                               ) {
+                                                                               )
+            {
                 Require (from <= GetTextStore ().GetEnd ());
                 Require (to <= GetTextStore ().GetEnd ());
                 Require (from <= to);
@@ -966,7 +1021,8 @@ namespace   Stroika {
             }
 
 #if     qMacOS
-            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 size_t  pasteStart  =   from;
                 size_t  pasteEnd    =   to;
                 Assert (pasteEnd >= pasteStart);
@@ -994,7 +1050,8 @@ namespace   Stroika {
 #endif
 
 #if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 if (flavorPackage.GetFlavorAvailable (kLedPrivateClipFormat)) {
                     size_t  length      =   flavorPackage.GetFlavorSize (kLedPrivateClipFormat);
                     Memory::SmallStackBuffer<char> buf (length);
@@ -1021,7 +1078,8 @@ namespace   Stroika {
             }
 #endif
 
-            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 if (flavorPackage.GetFlavorAvailable (kRTFClipFormat)) {
                     size_t  length      =   flavorPackage.GetFlavorSize (kRTFClipFormat);
                     if (length == 0) {
@@ -1052,7 +1110,8 @@ namespace   Stroika {
                 }
             }
 
-            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 if (flavorPackage.GetFlavorAvailable (kHTMLClipFormat)) {
                     size_t  length      =   flavorPackage.GetFlavorSize (kHTMLClipFormat);
                     Memory::SmallStackBuffer<char> buf (length);
@@ -1078,7 +1137,8 @@ namespace   Stroika {
                 }
             }
 
-            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbedding (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+            bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbedding (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 const vector<EmbeddedObjectCreatorRegistry::Assoc>& types   =   EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
                 for (size_t i = 0; i < types.size (); i++) {
                     EmbeddedObjectCreatorRegistry::Assoc    assoc   =   types[i];
@@ -1117,7 +1177,8 @@ namespace   Stroika {
                         @'StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer' can use a dynamicly typed
                         SinkStream. So - for example - the externalize methods include paragraph info.</p>
             */
-            StandardStyledTextInteractor::StandardStyledTextIOSinkStream*   StyledTextFlavorPackageInternalizer::mkStandardStyledTextIOSinkStream (size_t insertionStart) {
+            StandardStyledTextInteractor::StandardStyledTextIOSinkStream*   StyledTextFlavorPackageInternalizer::mkStandardStyledTextIOSinkStream (size_t insertionStart)
+            {
                 return new StandardStyledTextIOSinkStream (PeekAtTextStore (), fStyleDatabase, insertionStart);
             }
 
@@ -1137,10 +1198,12 @@ namespace   Stroika {
             typedef StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer   StyledTextFlavorPackageExternalizer;
             StyledTextFlavorPackageExternalizer::StyledTextFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase):
                 inherited (ts),
-                fStyleDatabase (styleDatabase) {
+                fStyleDatabase (styleDatabase)
+            {
             }
 
-            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 size_t  start   =   from;
                 size_t  end     =   to;
                 Require (start >= 0);
@@ -1183,12 +1246,14 @@ namespace   Stroika {
 #endif
             }
 
-            void    StyledTextFlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    StyledTextFlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 ExternalizeFlavor_RTF (flavorPackage, from, to);
             }
 
 #if     qMacOS
-            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 Require (from <= to);
                 Require (to <= GetTextStore ().GetEnd ());
                 size_t  length  =   to - from;
@@ -1209,7 +1274,8 @@ namespace   Stroika {
 #endif
 
 #if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 Require (from <= to);
                 Require (to <= GetTextStore ().GetEnd ());
                 auto_ptr<StandardStyledTextIOSrcStream>     source (mkStandardStyledTextIOSrcStream (from, to));
@@ -1220,7 +1286,8 @@ namespace   Stroika {
             }
 #endif
 
-            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_RTF (WriterFlavorPackage& flavorPackage, size_t from, size_t to) {
+            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_RTF (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
+            {
                 Require (from <= to);
                 Require (to <= GetTextStore ().GetEnd ());
                 auto_ptr<StandardStyledTextIOSrcStream> source (mkStandardStyledTextIOSrcStream (from, to));
@@ -1230,7 +1297,8 @@ namespace   Stroika {
                 flavorPackage.AddFlavorData (kRTFClipFormat, sink.GetLength (), sink.PeekAtData ());
             }
 
-            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_SingleSelectedEmbedding (WriterFlavorPackage& flavorPackage, SimpleEmbeddedObjectStyleMarker* embedding) {
+            void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_SingleSelectedEmbedding (WriterFlavorPackage& flavorPackage, SimpleEmbeddedObjectStyleMarker* embedding)
+            {
                 RequireNotNull (embedding);
                 embedding->ExternalizeFlavors (flavorPackage);
             }
@@ -1241,7 +1309,8 @@ namespace   Stroika {
                 @'StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer' can use a dynamicly typed
                 SinkStream. So - for example - the internalize methods include paragraph info.</p>
             */
-            StandardStyledTextInteractor::StandardStyledTextIOSrcStream*    StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd) {
+            StandardStyledTextInteractor::StandardStyledTextIOSrcStream*    StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
+            {
                 return new StandardStyledTextIOSrcStream (PeekAtTextStore (), fStyleDatabase, selectionStart, selectionEnd);
             }
 
@@ -1262,14 +1331,17 @@ namespace   Stroika {
 
             EmptySelStyleTextRep::EmptySelStyleTextRep (StandardStyledTextInteractor* interactor, size_t selStart, size_t selEnd):
                 inherited (selStart, selEnd),
-                fSavedStyle (interactor->fEmptySelectionStyle) {
+                fSavedStyle (interactor->fEmptySelectionStyle)
+            {
             }
 
-            size_t  EmptySelStyleTextRep::GetLength () const {
+            size_t  EmptySelStyleTextRep::GetLength () const
+            {
                 return 0;
             }
 
-            void    EmptySelStyleTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) {
+            void    EmptySelStyleTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
+            {
                 RequireNotNull (interactor);
                 interactor->Replace (at, at + nBytesToOverwrite, LED_TCHAR_OF (""), 0);
 

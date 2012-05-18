@@ -315,16 +315,19 @@ namespace   Stroika {
 //  class   HTMLInfo::EntityRefMapEntry
             inline  HTMLInfo::EntityRefMapEntry::EntityRefMapEntry (const string& entityRefName, wchar_t charValue):
                 fEntityRefName (entityRefName),
-                fCharValue (charValue) {
+                fCharValue (charValue)
+            {
             }
 
 
 
 //  class   StyledTextIOReader_HTML
-            inline  void    StyledTextIOReader_HTML::EmitText (const Led_tString& text, bool skipNLCheck) {
+            inline  void    StyledTextIOReader_HTML::EmitText (const Led_tString& text, bool skipNLCheck)
+            {
                 EmitText (text.c_str (), text.length (), skipNLCheck);
             }
-            inline  void    StyledTextIOReader_HTML::HandleHTMLThingy (StyledTextIOReader_HTML::ThingyType thingy, const string& text) {
+            inline  void    StyledTextIOReader_HTML::HandleHTMLThingy (StyledTextIOReader_HTML::ThingyType thingy, const string& text)
+            {
                 HandleHTMLThingy (thingy, text.c_str (), text.length ());
             }
 
@@ -344,7 +347,8 @@ namespace   Stroika {
                 fEmittingList (false),
                 fEmittingListItem (false),
                 fTagStack (),
-                fInTableCell (false) {
+                fInTableCell (false)
+            {
             }
             inline  StyledTextIOWriter_HTML::WriterContext::WriterContext (WriterContext& parentContext, SrcStream& srcStream):
                 fWriter (parentContext.fWriter),
@@ -357,15 +361,19 @@ namespace   Stroika {
                 fEmittingList (false),
                 fEmittingListItem (false),
                 fTagStack (),
-                fInTableCell (true) {
+                fInTableCell (true)
+            {
             }
-            inline  StyledTextIOWriter_HTML&    StyledTextIOWriter_HTML::WriterContext::GetWriter () const {
+            inline  StyledTextIOWriter_HTML&    StyledTextIOWriter_HTML::WriterContext::GetWriter () const
+            {
                 return fWriter;
             }
-            inline  StyledTextIOWriter::SrcStream&  StyledTextIOWriter_HTML::WriterContext::GetSrcStream () const {
+            inline  StyledTextIOWriter::SrcStream&  StyledTextIOWriter_HTML::WriterContext::GetSrcStream () const
+            {
                 return fSrcStream;
             }
-            inline  StyledTextIOWriter::SinkStream& StyledTextIOWriter_HTML::WriterContext::GetSinkStream () const {
+            inline  StyledTextIOWriter::SinkStream& StyledTextIOWriter_HTML::WriterContext::GetSinkStream () const
+            {
                 return fWriter.GetSinkStream ();
             }
 

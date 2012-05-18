@@ -15,7 +15,8 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
-                inline  NativeSocket    Socket::GetNativeSocket () const {
+                inline  NativeSocket    Socket::GetNativeSocket () const
+                {
                     return fRep_->GetNativeSocket ();
                 }
 

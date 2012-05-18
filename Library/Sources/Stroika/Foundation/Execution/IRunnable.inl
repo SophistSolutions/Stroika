@@ -16,9 +16,11 @@ namespace   Stroika {
 
 
             //  class   IRunnable
-            inline  IRunnable::IRunnable () {
+            inline  IRunnable::IRunnable ()
+            {
             }
-            inline  IRunnable::~IRunnable () {
+            inline  IRunnable::~IRunnable ()
+            {
             }
 
         }

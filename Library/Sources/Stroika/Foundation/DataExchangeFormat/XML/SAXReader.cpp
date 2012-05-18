@@ -76,7 +76,8 @@ using   namespace   Stroika::Foundation::Memory;
 
 
 namespace {
-    String xercesString2String_ (const XMLCh* t) {
+    String xercesString2String_ (const XMLCh* t)
+    {
         if (sizeof (XMLCh) == sizeof (char16_t)) {
             return String (reinterpret_cast<const char16_t*> (t));
         }
@@ -125,7 +126,8 @@ namespace {
         : fReason (reason)
         , fLineNum (lineNum)
         , fLinePos (linePos)
-        , fFilePos (filePos) {
+        , fFilePos (filePos)
+    {
     }
 
 }
@@ -211,7 +213,8 @@ namespace   {
 namespace   {
     //const XMLCh   kDOMImplFeatureDeclaration[]    =   L"Core";
     const   XMLCh   kDOMImplFeatureDeclaration[]    =   { 'C', 'o', 'r', 'e', '\0'};
-    DOMImplementation&  GetDOMIMPL_ () {
+    DOMImplementation&  GetDOMIMPL_ ()
+    {
         // safe to save in a static var? -- LGP 2007-05-20
         // from perusing implementation - this appears safe to cache and re-use in differnt threads
         static  DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
@@ -266,12 +269,14 @@ static  MyErrorReproter sMyErrorReproter;
 
 namespace   {
 #if     qHasLibrary_Xerces
-    inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader) {
+    inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader)
+    {
         reader.setFeature (XMLUni::fgSAX2CoreNameSpaces, true);
         reader.setFeature (XMLUni::fgXercesDynamic, false);
         reader.setFeature (XMLUni::fgSAX2CoreNameSpacePrefixes, false);         // false:  * *Do not report attributes used for Namespace declarations, and optionally do not report original prefixed names
     }
-    inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader, bool validatingWithSchema) {
+    inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader, bool validatingWithSchema)
+    {
         reader.setFeature (XMLUni::fgXercesSchema, validatingWithSchema);
         reader.setFeature (XMLUni::fgSAX2CoreValidation, validatingWithSchema);
 
@@ -371,13 +376,15 @@ public:
 };
 
 
-UsingModuleHelper::UsingModuleHelper () {
+UsingModuleHelper::UsingModuleHelper ()
+{
     TraceContextBumper ctx (TSTR ("XMLDB::Private::UsingModuleHelper::UsingModuleHelper"));
     Require (sUsingLibInterHelper == nullptr);
     sUsingLibInterHelper = DEBUG_NEW UsingLibInterHelper ();
 }
 
-UsingModuleHelper::~UsingModuleHelper () {
+UsingModuleHelper::~UsingModuleHelper ()
+{
     TraceContextBumper ctx (TSTR ("XMLDB::Private::UsingModuleHelper::~UsingModuleHelper"));
     RequireNotNull (sUsingLibInterHelper);
     delete sUsingLibInterHelper;
@@ -493,19 +500,24 @@ namespace   {
  ******************************* SAXCallbackInterface ***************************
  ********************************************************************************
  */
-void    SAXCallbackInterface::StartDocument () {
+void    SAXCallbackInterface::StartDocument ()
+{
 }
 
-void    SAXCallbackInterface::EndDocument () {
+void    SAXCallbackInterface::EndDocument ()
+{
 }
 
-void    SAXCallbackInterface::StartElement (const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) {
+void    SAXCallbackInterface::StartElement (const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+{
 }
 
-void    SAXCallbackInterface::EndElement (const String& uri, const String& localName, const String& qname) {
+void    SAXCallbackInterface::EndElement (const String& uri, const String& localName, const String& qname)
+{
 }
 
-void    SAXCallbackInterface::CharactersInsideElement (const String& text) {
+void    SAXCallbackInterface::CharactersInsideElement (const String& text)
+{
 }
 
 
@@ -567,7 +579,8 @@ namespace   {
     };
 }
 
-void    XML::SAXParse (istream& in, SAXCallbackInterface& callback, Execution::ProgressMontior* progres) {
+void    XML::SAXParse (istream& in, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
+{
     SAX2PrintHandlers_  handler (callback);
     SharedPtr<SAX2XMLReader>    parser  =   SharedPtr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
@@ -580,7 +593,8 @@ void    XML::SAXParse (istream& in, SAXCallbackInterface& callback, Execution::P
 
 #if 0
 //SCHEMA NOT YET SUPPROTED
-void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& callback, Execution::ProgressMontior* progres) {
+void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
+{
     if (schema.HasSchema ()) {
         SAX2PrintHandlers   handler (callback);
         Schema::AccessCompiledXSD   accessSchema (schema);// REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19

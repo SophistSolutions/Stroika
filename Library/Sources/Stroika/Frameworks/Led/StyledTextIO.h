@@ -626,9 +626,11 @@ namespace   Stroika {
                 fWindowBottom_Data (nullptr),
                 fWindowBottom_Offset (size_t (-1)),
                 fCursor_Data (nullptr),
-                fCursor_Offset (0) {
+                fCursor_Offset (0)
+            {
             }
-            inline  void    StyledTextIOReader::BufferedIndirectSrcStream::FillCache () {
+            inline  void    StyledTextIOReader::BufferedIndirectSrcStream::FillCache ()
+            {
                 fWindowTop_Offset = fCursor_Offset;
                 fRealSrcStream.seek_to (fWindowTop_Offset); // probably could frequently optimize this call way if we were careful to cache last seek-offset from buffer
                 size_t bytesRead = fRealSrcStream.read (fWindowTop_Data, NEltsOf (fWindowTop_Data));
@@ -642,10 +644,12 @@ namespace   Stroika {
                 Ensure (fWindowTop_Data <= fCursor_Data and fCursor_Data <= fWindowBottom_Data);
                 Ensure (fWindowTop_Offset <= fCursor_Offset and fCursor_Offset <= fWindowBottom_Offset);
             }
-            inline  size_t  StyledTextIOReader::BufferedIndirectSrcStream::current_offset () const {
+            inline  size_t  StyledTextIOReader::BufferedIndirectSrcStream::current_offset () const
+            {
                 return fCursor_Offset;
             }
-            inline  void    StyledTextIOReader::BufferedIndirectSrcStream::seek_to (size_t to) {
+            inline  void    StyledTextIOReader::BufferedIndirectSrcStream::seek_to (size_t to)
+            {
                 // If seekpos inside our window (at end of buffer counts as inside window even though next read may force a FillCache),
                 // just update offset(s), and otherwise - mark fCursor_Data as nullptr so we know cache invalid
                 if (fWindowTop_Offset <= to and to <= fWindowBottom_Offset) {
@@ -656,7 +660,8 @@ namespace   Stroika {
                 }
                 fCursor_Offset = to;
             }
-            inline  size_t  StyledTextIOReader::BufferedIndirectSrcStream::read (void* buffer, size_t bytes) {
+            inline  size_t  StyledTextIOReader::BufferedIndirectSrcStream::read (void* buffer, size_t bytes)
+            {
                 RequireNotNull (buffer);
 
                 Byte*   destCursor      =   reinterpret_cast<Byte*> (buffer);
@@ -705,7 +710,8 @@ namespace   Stroika {
                 }
                 return bytesReadSoFar;
             }
-            inline  size_t  StyledTextIOReader::BufferedIndirectSrcStream::read1 (char* c) {
+            inline  size_t  StyledTextIOReader::BufferedIndirectSrcStream::read1 (char* c)
+            {
                 RequireNotNull (c);
                 /*
                  *  See if we can read ANY non-zero number of bytes out of our window. If yes - then just
@@ -729,7 +735,8 @@ namespace   Stroika {
                 }
             }
 #if     qMacOS
-            inline  Handle  StyledTextIOReader::BufferedIndirectSrcStream::GetAUXResourceHandle () const {
+            inline  Handle  StyledTextIOReader::BufferedIndirectSrcStream::GetAUXResourceHandle () const
+            {
                 return fRealSrcStream.GetAUXResourceHandle ();
             }
 #endif
@@ -898,9 +905,11 @@ namespace   Stroika {
 // class StyledTextIOReader::SrcStreamSeekSaver
             inline  StyledTextIOReader::SrcStreamSeekSaver::SrcStreamSeekSaver (SrcStream& srcStream):
                 fSrcStream (srcStream),
-                fSavedPos (srcStream.current_offset ()) {
+                fSavedPos (srcStream.current_offset ())
+            {
             }
-            inline  StyledTextIOReader::SrcStreamSeekSaver::~SrcStreamSeekSaver () {
+            inline  StyledTextIOReader::SrcStreamSeekSaver::~SrcStreamSeekSaver ()
+            {
                 try {
                     fSrcStream.seek_to (fSavedPos);
                 }
@@ -917,16 +926,19 @@ namespace   Stroika {
             inline  StyledTextIOReader::StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHander):
                 fSrcStream (*srcStream),
                 fSinkStream (sinkStream),
-                fBadInputHandler (badInputHander) {
+                fBadInputHandler (badInputHander)
+            {
                 RequireNotNull (srcStream);
                 if (fBadInputHandler.IsNull ()) {
                     fBadInputHandler = Foundation::Memory::SharedPtr<BadInputHandler> (new BadInputHandler ());
                 }
             }
-            inline  StyledTextIOReader::SrcStream&  StyledTextIOReader::GetSrcStream () const {
+            inline  StyledTextIOReader::SrcStream&  StyledTextIOReader::GetSrcStream () const
+            {
                 return fSrcStream;
             }
-            inline  StyledTextIOReader::SinkStream& StyledTextIOReader::GetSinkStream () const {
+            inline  StyledTextIOReader::SinkStream& StyledTextIOReader::GetSinkStream () const
+            {
                 EnsureNotNull (fSinkStream);
                 return *fSinkStream;
             }
@@ -937,7 +949,8 @@ namespace   Stroika {
                         @'StyledTextIOReader::BadInputHandler'.</p>
                             <p>See also @'StyledTextIOReader::SetBadInputHandler' and @'StyledTextIOReader::HandleBadlyFormattedInput'.</p>
             */
-            inline  Foundation::Memory::SharedPtr<StyledTextIOReader::BadInputHandler>  StyledTextIOReader::GetBadInputHandler () const {
+            inline  Foundation::Memory::SharedPtr<StyledTextIOReader::BadInputHandler>  StyledTextIOReader::GetBadInputHandler () const
+            {
                 Ensure (not fBadInputHandler.IsNull ());
                 return fBadInputHandler;
             }
@@ -945,7 +958,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SetBadInputHandler
             @DESCRIPTION:   <p>See @'StyledTextIOReader::GetBadInputHandler'</p>
             */
-            inline  void        StyledTextIOReader::SetBadInputHandler (const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHandler) {
+            inline  void        StyledTextIOReader::SetBadInputHandler (const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHandler)
+            {
                 fBadInputHandler = badInputHandler;
                 if (fBadInputHandler.IsNull ()) {
                     fBadInputHandler = Foundation::Memory::SharedPtr<BadInputHandler> (new BadInputHandler ());
@@ -957,7 +971,8 @@ namespace   Stroika {
                 This is a simple wrapper on the owned @'StyledTextIOReader::BadInputHandler', which can be gotten/set with
                 @'StyledTextIOReader::GetBadInputHandler' / @'StyledTextIOReader::SetBadInputHandler'</p>
             */
-            inline  void    StyledTextIOReader::HandleBadlyFormattedInput (bool unrecoverable) const {
+            inline  void    StyledTextIOReader::HandleBadlyFormattedInput (bool unrecoverable) const
+            {
                 GetBadInputHandler ()->HandleBadlyFormattedInput (*this, unrecoverable);
             }
             /*
@@ -965,11 +980,13 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Unread the last read character. Note - this can be done as many times as you want (allowing infinite unread)
                         but it is a bug/error if you ever unread characters that handn't been read in the first place</p>
             */
-            inline  void    StyledTextIOReader::PutBackLastChar () const {
+            inline  void    StyledTextIOReader::PutBackLastChar () const
+            {
                 Require (fSrcStream.current_offset () > 0);
                 fSrcStream.seek_to (fSrcStream.current_offset () - 1);
             }
-            inline  char    StyledTextIOReader::GetNextChar () const {
+            inline  char    StyledTextIOReader::GetNextChar () const
+            {
                 //char  c   =   '\0';
                 char    c;      // Better to leave uninitialized for performance reasons - LGP 2003-03-17
                 if (fSrcStream.read1 (&c) == 1) {
@@ -989,7 +1006,8 @@ namespace   Stroika {
 #endif
                 }
             }
-            inline  char    StyledTextIOReader::PeekNextChar () const {
+            inline  char    StyledTextIOReader::PeekNextChar () const
+            {
                 //char  c   =   '\0';
                 char    c;      // Better to leave uninitialized for performance reasons - LGP 2003-03-17
                 if (fSrcStream.read1 (&c) == 1) {
@@ -1010,7 +1028,8 @@ namespace   Stroika {
 #endif
                 }
             }
-            inline  void    StyledTextIOReader::ConsumeNextChar () const {
+            inline  void    StyledTextIOReader::ConsumeNextChar () const
+            {
                 (void)GetNextChar ();
             }
 
@@ -1019,15 +1038,18 @@ namespace   Stroika {
 // class StyledTextIOWriter
             inline  StyledTextIOWriter::StyledTextIOWriter (SrcStream* srcStream, SinkStream* sinkStream):
                 fSrcStream (srcStream),
-                fSinkStream (sinkStream) {
+                fSinkStream (sinkStream)
+            {
                 RequireNotNull (srcStream);
                 RequireNotNull (sinkStream);
             }
-            inline  StyledTextIOWriter::SrcStream&  StyledTextIOWriter::GetSrcStream () const {
+            inline  StyledTextIOWriter::SrcStream&  StyledTextIOWriter::GetSrcStream () const
+            {
                 EnsureNotNull (fSrcStream);
                 return *fSrcStream;
             }
-            inline  StyledTextIOWriter::SinkStream& StyledTextIOWriter::GetSinkStream () const {
+            inline  StyledTextIOWriter::SinkStream& StyledTextIOWriter::GetSinkStream () const
+            {
                 EnsureNotNull (fSinkStream);
                 return *fSinkStream;
             }
@@ -1038,7 +1060,8 @@ namespace   Stroika {
             @METHOD:        StyledTextIOReader::SinkStream::GetCountOfTCharsInserted
             @DESCRIPTION:
             */
-            inline  size_t  StyledTextIOReader::SinkStream::GetCountOfTCharsInserted () const {
+            inline  size_t  StyledTextIOReader::SinkStream::GetCountOfTCharsInserted () const
+            {
                 return current_offset ();
             }
 
@@ -1046,28 +1069,33 @@ namespace   Stroika {
 // class StyledTextIOWriter::SrcStream::Table::CellInfo
             inline  StyledTextIOWriter::SrcStream::Table::CellInfo::CellInfo ():
                 f_cellx (Led_TWIPS (0)),
-                f_clcbpat (Led_Color::kWhite) {
+                f_clcbpat (Led_Color::kWhite)
+            {
             }
 
 
 
 // class StyledTextIOSrcStream_FileDescriptor
-            inline  size_t  StyledTextIOSrcStream_FileDescriptor::GetBufferSize () const {
+            inline  size_t  StyledTextIOSrcStream_FileDescriptor::GetBufferSize () const
+            {
                 return fInputBufferSize;
             }
 
 
 // class StyledTextIOWriterSinkStream_Memory
-            inline  const void* StyledTextIOWriterSinkStream_Memory::PeekAtData () const {
+            inline  const void* StyledTextIOWriterSinkStream_Memory::PeekAtData () const
+            {
                 return fData;
             }
-            inline  size_t  StyledTextIOWriterSinkStream_Memory::GetLength () const {
+            inline  size_t  StyledTextIOWriterSinkStream_Memory::GetLength () const
+            {
                 return fBytesUsed;
             }
 
 
 // class StyledTextIOWriterSinkStream_FileDescriptor
-            inline  size_t  StyledTextIOWriterSinkStream_FileDescriptor::GetBufferSize () const {
+            inline  size_t  StyledTextIOWriterSinkStream_FileDescriptor::GetBufferSize () const
+            {
                 return fOutputBufferSize;
             }
 

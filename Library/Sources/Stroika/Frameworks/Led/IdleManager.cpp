@@ -28,7 +28,8 @@ namespace   Stroika {
              ************************************ Idler *************************************
              ********************************************************************************
              */
-            void    Idler::SpendIdleTime () {
+            void    Idler::SpendIdleTime ()
+            {
             }
 
 
@@ -40,7 +41,8 @@ namespace   Stroika {
              ******************************* EnterIdler *************************************
              ********************************************************************************
              */
-            void    EnterIdler::OnEnterIdle () {
+            void    EnterIdler::OnEnterIdle ()
+            {
             }
 
 
@@ -54,7 +56,8 @@ namespace   Stroika {
              */
             IdleManager::IdlerInfo::IdlerInfo ():
                 fIdlerFrequency (IdleManager::kNeverCallIdler),
-                fLastCalledAt (0.0f) {
+                fLastCalledAt (0.0f)
+            {
             }
 
 
@@ -68,7 +71,8 @@ namespace   Stroika {
              */
             IdleManager::Cleanup    sCleanup;
 
-            IdleManager::Cleanup::~Cleanup () {
+            IdleManager::Cleanup::~Cleanup ()
+            {
                 delete IdleManager::sThe;
                 IdleManager::sThe = nullptr;
             }
@@ -86,14 +90,16 @@ namespace   Stroika {
             float           IdleManager::kNeverCallIdler    =   100.0f;
 
 
-            void    IdleManager::AddIdler (Idler* idler) {
+            void    IdleManager::AddIdler (Idler* idler)
+            {
                 RequireNotNull (idler);
                 Require (fIdlers.find (idler) == fIdlers.end ());
                 IdlerInfo   idlerInfo;
                 fIdlers.insert (map<Idler*, IdlerInfo>::value_type (idler, idlerInfo));
             }
 
-            void    IdleManager::RemoveIdler (Idler* idler) {
+            void    IdleManager::RemoveIdler (Idler* idler)
+            {
                 RequireNotNull (idler);
                 map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
 #if     qBCCStaticVCLDTORLibBug
@@ -108,14 +114,16 @@ namespace   Stroika {
                 fIdlers.erase (i);
             }
 
-            void    IdleManager::AddEnterIdler (EnterIdler* enterIdler) {
+            void    IdleManager::AddEnterIdler (EnterIdler* enterIdler)
+            {
                 RequireNotNull (enterIdler);
                 Require (std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler) == fEnterIdlers.end ());
                 fEnterIdlers.push_back (enterIdler);
                 UpdateIdleMgrImplState ();
             }
 
-            void    IdleManager::RemoveEnterIdler (EnterIdler* enterIdler) {
+            void    IdleManager::RemoveEnterIdler (EnterIdler* enterIdler)
+            {
                 RequireNotNull (enterIdler);
                 vector<EnterIdler*>::iterator i =   std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler);
                 Require (i != fEnterIdlers.end ());
@@ -124,7 +132,8 @@ namespace   Stroika {
                 UpdateIdleMgrImplState ();
             }
 
-            float   IdleManager::GetIdlerFrequncy (Idler* idler) {
+            float   IdleManager::GetIdlerFrequncy (Idler* idler)
+            {
                 RequireNotNull (idler);
                 map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
                 Require (i != fIdlers.end ());
@@ -132,7 +141,8 @@ namespace   Stroika {
                 return i->second.fIdlerFrequency;
             }
 
-            void    IdleManager::SetIdlerFrequncy (Idler* idler, float idlerFrequency) {
+            void    IdleManager::SetIdlerFrequncy (Idler* idler, float idlerFrequency)
+            {
                 RequireNotNull (idler);
                 map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
                 Require (i != fIdlers.end ());
@@ -143,7 +153,8 @@ namespace   Stroika {
                 }
             }
 
-            void    IdleManager::UpdateIdleMgrImplState () {
+            void    IdleManager::UpdateIdleMgrImplState ()
+            {
                 if (fIdleManagerOSImpl != nullptr) {
                     float   idleFreq            =   kNeverCallIdler;
                     for (map<Idler*, IdlerInfo>::iterator i = fIdlers.begin (); i != fIdlers.end (); ++i) {
@@ -167,7 +178,8 @@ namespace   Stroika {
                 }
             }
 
-            void    IdleManager::CallSpendTime () {
+            void    IdleManager::CallSpendTime ()
+            {
                 SetInIdleMode (true);   // not SURE this is the best place to call this - maybe SB called from OSREP only???
                 float   now =   Led_GetTickCount ();
                 for (map<Idler*, IdlerInfo>::iterator i = fIdlers.begin (); i != fIdlers.end (); ++i) {
@@ -181,7 +193,8 @@ namespace   Stroika {
                 }
             }
 
-            void    IdleManager::CallEnterIdle () {
+            void    IdleManager::CallEnterIdle ()
+            {
                 for (vector<EnterIdler*>::iterator i = fEnterIdlers.begin (); i != fEnterIdlers.end (); ++i) {
                     EnterIdler* enterIdler  =   *i;
                     AssertNotNull (enterIdler);
@@ -189,7 +202,8 @@ namespace   Stroika {
                 }
             }
 
-            void    IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl) {
+            void    IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl)
+            {
                 // If they are just setting the IMPL to nullptr and sThe is nullptr, then don't bother
                 // creating it (cuz at destruction time - these destructors could get done in any order,
                 // and forcing a create here could create an artificail memory block left over that looks
@@ -215,7 +229,8 @@ namespace   Stroika {
              ************************** IdleManager::IdleManagerOSImpl **********************
              ********************************************************************************
              */
-            void    IdleManager::IdleManagerOSImpl::CallSpendTime () {
+            void    IdleManager::IdleManagerOSImpl::CallSpendTime ()
+            {
                 IdleManager::Get ().CallSpendTime ();
             }
 

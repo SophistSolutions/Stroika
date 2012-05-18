@@ -23,17 +23,21 @@ namespace   Stroika {
 
                     //  class   StackBasedHandleLocker
                     inline  StackBasedHandleLocker::StackBasedHandleLocker (HANDLE h):
-                        fHandle (h) {
+                        fHandle (h)
+                    {
                         RequireNotNull (h);
                         fPointer = reinterpret_cast<Byte*> (::GlobalLock (h));
                     }
-                    inline  StackBasedHandleLocker::~StackBasedHandleLocker () {
+                    inline  StackBasedHandleLocker::~StackBasedHandleLocker ()
+                    {
                         ::GlobalUnlock (fHandle);
                     }
-                    inline  Byte*   StackBasedHandleLocker::GetPointer () const {
+                    inline  Byte*   StackBasedHandleLocker::GetPointer () const
+                    {
                         return fPointer;
                     }
-                    inline  size_t  StackBasedHandleLocker::GetSize () const {
+                    inline  size_t  StackBasedHandleLocker::GetSize () const
+                    {
                         return ::GlobalSize (fHandle);
                     }
 

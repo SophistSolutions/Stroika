@@ -34,11 +34,13 @@ using   namespace   Stroika::Foundation::Execution::Platform::Windows;
  **************** Platform::Windows::StructuredException ************************
  ********************************************************************************
  */
-void    Platform::Windows::StructuredException::RegisterHandler () {
+void    Platform::Windows::StructuredException::RegisterHandler ()
+{
     _set_se_translator (trans_func_);
 }
 
-void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp) {
+void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp)
+{
     TraceContextBumper  ctx (TSTR ("Platform::Windows::StructuredException::trans_func_"));
     {
         // I wish I knew how to get a PROCNAME of where the caller was...
@@ -66,7 +68,8 @@ void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXC
     throw Platform::Windows::StructuredException (u);
 }
 
-TString Platform::Windows::StructuredException::LookupMessage (unsigned int u) {
+TString Platform::Windows::StructuredException::LookupMessage (unsigned int u)
+{
     switch (u) {
         case    EXCEPTION_ACCESS_VIOLATION:
             return TSTR ("EXCEPTION_ACCESS_VIOLATION");

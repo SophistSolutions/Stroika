@@ -27,7 +27,8 @@ ProgressMontior::ProgressMontior ()
     , fCallbacks ()
     , fCanceled_ (false)
     , fCurrentProgress_ (0.0)
-    , fCurrentTaskInfo_ () {
+    , fCurrentTaskInfo_ ()
+{
 }
 
 ProgressMontior::ProgressMontior (const Memory::SharedPtr<ICallback>& callback)
@@ -35,19 +36,23 @@ ProgressMontior::ProgressMontior (const Memory::SharedPtr<ICallback>& callback)
     , fCallbacks ()
     , fCanceled_ (false)
     , fCurrentProgress_ (0.0)
-    , fCurrentTaskInfo_ () {
+    , fCurrentTaskInfo_ ()
+{
     AddCallback (callback);
 }
 
-ProgressMontior::~ProgressMontior () {
+ProgressMontior::~ProgressMontior ()
+{
 }
 
-void    ProgressMontior::AddCallback (const Memory::SharedPtr<ICallback>& callback) {
+void    ProgressMontior::AddCallback (const Memory::SharedPtr<ICallback>& callback)
+{
     AutoCriticalSection enterCriticalSection (fCritSect_);
     fCallbacks.push_back (callback);
 }
 
-void    ProgressMontior::CallNotifyProgress_ () const {
+void    ProgressMontior::CallNotifyProgress_ () const
+{
     AutoCriticalSection enterCriticalSection (fCritSect_);
     for (vector<Memory::SharedPtr<ICallback>>::const_iterator i = fCallbacks.begin (); i != fCallbacks.end (); ++i) {
         i->get ()->NotifyOfProgress (*this);

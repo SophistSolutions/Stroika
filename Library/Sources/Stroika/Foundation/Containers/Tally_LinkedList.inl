@@ -80,9 +80,11 @@ namespace   Stroika {
              */
 
             template    <typename T> inline Tally_LinkedList<T>::Tally_LinkedList (const Tally_LinkedList<T>& src) :
-                Tally<T> (src) {
+                Tally<T> (src)
+            {
             }
-            template    <typename T> inline Tally_LinkedList<T>& Tally_LinkedList<T>::operator= (const Tally_LinkedList<T>& src) {
+            template    <typename T> inline Tally_LinkedList<T>& Tally_LinkedList<T>::operator= (const Tally_LinkedList<T>& src)
+            {
                 Tally<T>::operator= (src);
                 return (*this);
             }
@@ -93,36 +95,44 @@ namespace   Stroika {
              ****************************** Tally_LinkedListMutatorRep ************************
              ********************************************************************************
              */
-            template    <class  T>  inline  void*   Tally_LinkedListMutatorRep<T>::operator new (size_t size) {
+            template    <class  T>  inline  void*   Tally_LinkedListMutatorRep<T>::operator new (size_t size)
+            {
                 return (Memory::BlockAllocated<Tally_LinkedListMutatorRep<T> >::operator new (size));
             }
 
-            template    <class  T>  inline  void    Tally_LinkedListMutatorRep<T>::operator delete (void* p) {
+            template    <class  T>  inline  void    Tally_LinkedListMutatorRep<T>::operator delete (void* p)
+            {
                 Memory::BlockAllocated<Tally_LinkedListMutatorRep<T> >::operator delete (p);
             }
 
             template    <typename T>    Tally_LinkedListMutatorRep<T>::Tally_LinkedListMutatorRep (Tally_LinkedListRep<T>& owner) :
-                fIterator (owner.fData) {
+                fIterator (owner.fData)
+            {
             }
 
             template    <typename T>    Tally_LinkedListMutatorRep<T>::Tally_LinkedListMutatorRep (const Tally_LinkedListMutatorRep<T>& from) :
-                fIterator (from.fIterator) {
+                fIterator (from.fIterator)
+            {
             }
 
-            template    <typename T>    bool    Tally_LinkedListMutatorRep<T>::More (TallyEntry<T>* current, bool advance) {
+            template    <typename T>    bool    Tally_LinkedListMutatorRep<T>::More (TallyEntry<T>* current, bool advance)
+            {
                 return (fIterator.More (current, advance));
             }
 
 
-            template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_LinkedListMutatorRep<T>::Clone () const {
+            template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_LinkedListMutatorRep<T>::Clone () const
+            {
                 return (new Tally_LinkedListMutatorRep<T> (*this));
             }
 
-            template    <typename T> void   Tally_LinkedListMutatorRep<T>::RemoveCurrent () {
+            template    <typename T> void   Tally_LinkedListMutatorRep<T>::RemoveCurrent ()
+            {
                 fIterator.RemoveCurrent ();
             }
 
-            template    <typename T> void   Tally_LinkedListMutatorRep<T>::UpdateCount (size_t newCount) {
+            template    <typename T> void   Tally_LinkedListMutatorRep<T>::UpdateCount (size_t newCount)
+            {
                 if (newCount == 0) {
                     fIterator.RemoveCurrent ();
                 }
@@ -145,27 +155,33 @@ namespace   Stroika {
              ********************************* Tally_LinkedListRep ****************************
              ********************************************************************************
              */
-            template    <class  T>  inline  void*   Tally_LinkedListRep<T>::operator new (size_t size) {
+            template    <class  T>  inline  void*   Tally_LinkedListRep<T>::operator new (size_t size)
+            {
                 return (Memory::BlockAllocated<Tally_LinkedListRep<T> >::operator new (size));
             }
 
-            template    <class  T>  inline  void    Tally_LinkedListRep<T>::operator delete (void* p) {
+            template    <class  T>  inline  void    Tally_LinkedListRep<T>::operator delete (void* p)
+            {
                 Memory::BlockAllocated<Tally_LinkedListRep<T> >::operator delete (p);
             }
 
             template    <typename T>    inline  Tally_LinkedListRep<T>::Tally_LinkedListRep () :
-                fData () {
+                fData ()
+            {
             }
 
             template    <typename T>    inline  Tally_LinkedListRep<T>::Tally_LinkedListRep (const Tally_LinkedListRep<T>& from) :
-                fData (from.fData) {
+                fData (from.fData)
+            {
             }
 
-            template    <typename T> size_t Tally_LinkedListRep<T>::GetLength () const {
+            template    <typename T> size_t Tally_LinkedListRep<T>::GetLength () const
+            {
                 return (fData.GetLength ());
             }
 
-            template    <typename T> bool   Tally_LinkedListRep<T>::Contains (T item) const {
+            template    <typename T> bool   Tally_LinkedListRep<T>::Contains (T item) const
+            {
                 TallyEntry<T>   c;
                 for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (&c, true); ) {
                     if (c.fItem == item) {
@@ -176,14 +192,17 @@ namespace   Stroika {
                 return (false);
             }
 
-            template    <typename T> void   Tally_LinkedListRep<T>::Compact () {
+            template    <typename T> void   Tally_LinkedListRep<T>::Compact ()
+            {
             }
 
-            template    <typename T> TallyRep<T>*   Tally_LinkedListRep<T>::Clone () const {
+            template    <typename T> TallyRep<T>*   Tally_LinkedListRep<T>::Clone () const
+            {
                 return (new Tally_LinkedListRep<T> (*this));
             }
 
-            template    <typename T> void   Tally_LinkedListRep<T>::Add (T item, size_t count) {
+            template    <typename T> void   Tally_LinkedListRep<T>::Add (T item, size_t count)
+            {
                 if (count != 0) {
                     TallyEntry<T>   current (item);
                     for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current, true); ) {
@@ -197,7 +216,8 @@ namespace   Stroika {
                 }
             }
 
-            template    <typename T> void   Tally_LinkedListRep<T>::Remove (T item, size_t count) {
+            template    <typename T> void   Tally_LinkedListRep<T>::Remove (T item, size_t count)
+            {
                 if (count != 0) {
                     TallyEntry<T>   current (item);
                     for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current, true); ) {
@@ -221,11 +241,13 @@ namespace   Stroika {
                 }
             }
 
-            template    <typename T> void   Tally_LinkedListRep<T>::RemoveAll () {
+            template    <typename T> void   Tally_LinkedListRep<T>::RemoveAll ()
+            {
                 fData.RemoveAll ();
             }
 
-            template    <typename T> size_t Tally_LinkedListRep<T>::TallyOf (T item) const {
+            template    <typename T> size_t Tally_LinkedListRep<T>::TallyOf (T item) const
+            {
                 TallyEntry<T>   c;
                 for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (&c, true); ) {
                     if (c.fItem == item) {
@@ -236,11 +258,13 @@ namespace   Stroika {
                 return (0);
             }
 
-            template    <typename T> typename Iterator<TallyEntry<T> >::Rep*    Tally_LinkedListRep<T>::MakeTallyIterator () {
+            template    <typename T> typename Iterator<TallyEntry<T> >::Rep*    Tally_LinkedListRep<T>::MakeTallyIterator ()
+            {
                 return (new Tally_LinkedListMutatorRep<T> (*this));
             }
 
-            template    <typename T> TallyMutatorRep<T>*    Tally_LinkedListRep<T>::MakeTallyMutator () {
+            template    <typename T> TallyMutatorRep<T>*    Tally_LinkedListRep<T>::MakeTallyMutator ()
+            {
                 return (new Tally_LinkedListMutatorRep<T> (*this));
             }
 
@@ -256,16 +280,19 @@ namespace   Stroika {
             // Harmless, but silly.
 
             template    <typename T> Tally_LinkedList<T>::Tally_LinkedList () :
-                Tally<T> (new Tally_LinkedListRep<T> ()) {
+                Tally<T> (new Tally_LinkedListRep<T> ())
+            {
             }
 
             template    <typename T> Tally_LinkedList<T>::Tally_LinkedList (const T* items, size_t size) :
-                Tally<T> (new Tally_LinkedListRep<T> ()) {
+                Tally<T> (new Tally_LinkedListRep<T> ())
+            {
                 AddItems (items, size);
             }
 
             template    <typename T> Tally_LinkedList<T>::Tally_LinkedList (const Tally<T>& src) :
-                Tally<T> (new Tally_LinkedListRep<T> ()) {
+                Tally<T> (new Tally_LinkedListRep<T> ())
+            {
                 operator+= (src);
             }
 

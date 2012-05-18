@@ -412,29 +412,34 @@ namespace   Stroika {
                 sometimes commands are created already done (but this defaults to false).</p>
             */
             inline  Command::Command (bool done):
-                fDone (done) {
+                fDone (done)
+            {
             }
-            inline  Command::~Command () {
+            inline  Command::~Command ()
+            {
             }
             /*
             @METHOD:        Command::Do
             @DESCRIPTION:   <p>Perform the actual commands action.</p>
             */
-            inline  void    Command::Do (TextInteractor& /*interactor*/) {
+            inline  void    Command::Do (TextInteractor& /*interactor*/)
+            {
                 fDone = true;
             }
             /*
             @METHOD:        Command::UnDo
             @DESCRIPTION:   <p>Undo an already done command.</p>
             */
-            inline  void    Command::UnDo (TextInteractor& /*interactor*/) {
+            inline  void    Command::UnDo (TextInteractor& /*interactor*/)
+            {
                 fDone = false;
             }
             /*
             @METHOD:        Command::ReDo
             @DESCRIPTION:   <p>Redo a command which has been done (or perhaps redone), and more recently undone.</p>
             */
-            inline  void    Command::ReDo (TextInteractor& /*interactor*/) {
+            inline  void    Command::ReDo (TextInteractor& /*interactor*/)
+            {
                 fDone = true;
             }
             /*
@@ -442,12 +447,14 @@ namespace   Stroika {
             @DESCRIPTION:   <p>The done, and redone states are considered identical. This returns true if the command has either
                 been done, or redone (not most recently undone).</p>
             */
-            inline  bool    Command::GetDone () const {
+            inline  bool    Command::GetDone () const
+            {
                 return fDone;
             }
 
 //  class   SnoopingCommandHandler;
-            inline  CommandHandler* SnoopingCommandHandler::GetRealHandler () const {
+            inline  CommandHandler* SnoopingCommandHandler::GetRealHandler () const
+            {
                 return fRealHandler;
             }
 
@@ -462,7 +469,8 @@ namespace   Stroika {
                     <p>See @'MultiLevelUndoCommandHandler::SetMaxUnDoLevels'</p>
 
             */
-            inline  size_t  MultiLevelUndoCommandHandler::GetMaxUnDoLevels () {
+            inline  size_t  MultiLevelUndoCommandHandler::GetMaxUnDoLevels ()
+            {
                 return fMaxUndoLevels;
             }
 
@@ -472,9 +480,11 @@ namespace   Stroika {
 //  class   InteractiveReplaceCommand::SavedTextRep
             inline  InteractiveReplaceCommand::SavedTextRep::SavedTextRep (size_t selStart, size_t selEnd):
                 fSelStart (selStart),
-                fSelEnd (selEnd) {
+                fSelEnd (selEnd)
+            {
             }
-            inline  InteractiveReplaceCommand::SavedTextRep::~SavedTextRep () {
+            inline  InteractiveReplaceCommand::SavedTextRep::~SavedTextRep ()
+            {
             }
 
 

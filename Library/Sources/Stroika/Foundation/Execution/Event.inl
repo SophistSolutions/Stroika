@@ -49,7 +49,8 @@ namespace   Stroika {
                 AssertNotImplemented ();
 #endif
             }
-            inline  Event::~Event () {
+            inline  Event::~Event ()
+            {
 #if         qPlatform_Windows
                 Verify (::CloseHandle (fEventHandle));
 #if     qTrack_Execution_HandleCounts
@@ -57,7 +58,8 @@ namespace   Stroika {
 #endif
 #endif
             }
-            inline  void    Event::Reset () {
+            inline  void    Event::Reset ()
+            {
                 //Debug::TraceContextBumper ctx (TSTR ("Event::Reset"));
 #if         qPlatform_Windows
                 AssertNotNull (fEventHandle);
@@ -71,7 +73,8 @@ namespace   Stroika {
                 AssertNotImplemented ();
 #endif
             }
-            inline  void    Event::Set () {
+            inline  void    Event::Set ()
+            {
                 //Debug::TraceContextBumper ctx (TSTR ("Event::Set"));
 #if         qPlatform_Windows
                 AssertNotNull (fEventHandle);
@@ -87,7 +90,8 @@ namespace   Stroika {
 #endif
             }
 #if         qPlatform_Windows
-            inline  Event::operator HANDLE () const {
+            inline  Event::operator HANDLE () const
+            {
                 AssertNotNull (fEventHandle);
                 return fEventHandle;
             }

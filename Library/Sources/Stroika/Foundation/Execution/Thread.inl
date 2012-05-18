@@ -115,10 +115,12 @@ namespace   Stroika {
 
 
             // class    Thread::Rep_
-            inline  void    Thread::Rep_::Start () {
+            inline  void    Thread::Rep_::Start ()
+            {
                 fOK2StartEvent_.Set ();
             }
-            inline  void    Thread::Rep_::ThrowAbortIfNeeded () const {
+            inline  void    Thread::Rep_::ThrowAbortIfNeeded () const
+            {
 #if         qUseThreads_WindowsNative
                 Require (GetCurrentThreadID () == GetID ());
 #endif
@@ -131,40 +133,48 @@ namespace   Stroika {
 
             // class    Thread
 #if         qUseThreads_WindowsNative
-            inline  HANDLE  Thread::GetOSThreadHandle () const {
+            inline  HANDLE  Thread::GetOSThreadHandle () const
+            {
                 return fRep_->fThread_;
             }
 #endif
 #if     qPlatform_POSIX
-            inline  SignalIDType        Thread::GetSignalUsedForThreadAbort () {
+            inline  SignalIDType        Thread::GetSignalUsedForThreadAbort ()
+            {
                 return sSignalUsedForThreadAbort_;
             }
 #endif
-            inline  Thread::IDType  Thread::GetID () const {
+            inline  Thread::IDType  Thread::GetID () const
+            {
                 if (fRep_.IsNull ()) {
                     return Thread::IDType (0);
                 }
                 return fRep_->GetID ();
             }
-            inline  Thread::NativeHandleType    Thread::GetNativeHandle () {
+            inline  Thread::NativeHandleType    Thread::GetNativeHandle ()
+            {
                 if (fRep_.IsNull ()) {
                     return Thread::NativeHandleType (nullptr);
                 }
                 return fRep_->GetNativeHandle ();
             }
-            inline  SharedPtr<IRunnable>    Thread::GetRunnable () const {
+            inline  SharedPtr<IRunnable>    Thread::GetRunnable () const
+            {
                 if (fRep_.IsNull ()) {
                     return SharedPtr<IRunnable> ();
                 }
                 return fRep_->fRunnable;
             }
-            inline  bool    Thread::operator< (const Thread& rhs) const {
+            inline  bool    Thread::operator< (const Thread& rhs) const
+            {
                 return fRep_ < rhs.fRep_;
             }
-            inline  wstring Thread::GetThreadName () const {
+            inline  wstring Thread::GetThreadName () const
+            {
                 return fRep_->fThreadName_;
             }
-            inline  Thread::Status  Thread::GetStatus () const {
+            inline  Thread::Status  Thread::GetStatus () const
+            {
                 if (fRep_.IsNull ()) {
                     return eNull;
                 }
@@ -173,7 +183,8 @@ namespace   Stroika {
 
 
 
-            inline  Thread::IDType  GetCurrentThreadID () {
+            inline  Thread::IDType  GetCurrentThreadID ()
+            {
 #if     qUseThreads_WindowsNative
                 return ::GetCurrentThreadId ();
 #elif   qUseThreads_StdCPlusPlus
@@ -187,7 +198,8 @@ namespace   Stroika {
 
             // class    CheckForThreadAborting
             template    <unsigned int kEveryNTimes>
-            void    CheckForThreadAborting () {
+            void    CheckForThreadAborting ()
+            {
                 static  unsigned int    n   =   0;
                 if (++n % kEveryNTimes == kEveryNTimes - 1) {
                     CheckForThreadAborting ();
