@@ -16,23 +16,23 @@ namespace   Stroika {
         namespace   Memory {
 
 
-            // class    Private::WeakSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>
+            // class    Private::WeakSharedPtrCapableSharedPtrEnvelope_<T,BASE_SharedPtr_TRAITS>
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrEnvelope_ (T* ptr)
+            Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrCapableSharedPtrEnvelope_ (T* ptr)
                 : BASE_SharedPtr_TRAITS::Envelope (ptr)
                 , fWeakSharedPtrs (DEBUG_NEW list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*> ())
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
-            inline  Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrEnvelope_ (const WeakSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from)
+            inline  Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrCapableSharedPtrEnvelope_ (const WeakSharedPtrCapableSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from)
                 : BASE_SharedPtr_TRAITS::Envelope (from)
                 , fWeakSharedPtrs (from.fWeakSharedPtrs)
             {
                 AssertNotNull (fWeakSharedPtrs);
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            inline  bool    Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::Decrement ()
+            inline  bool    Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::Decrement ()
             {
                 Execution::AutoCriticalSection critSec (sCriticalSection);  // critical section is IN CASE we need to delete counter
                 // - must make sure to grab crit section before so WeakPtr class not in middle of a
@@ -40,7 +40,7 @@ namespace   Stroika {
                 return BASE_SharedPtr_TRAITS::Envelope::Decrement ();
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            void    Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::DoDeleteCounter ()
+            void    Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::DoDeleteCounter ()
             {
                 RequireNotNull (fWeakSharedPtrs);
                 /*
@@ -57,7 +57,7 @@ namespace   Stroika {
                 BASE_SharedPtr_TRAITS::Envelope::DoDeleteCounter ();
             }
             template <typename T, typename BASE_SharedPtr_TRAITS>
-            Execution::CriticalSection Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection;
+            Execution::CriticalSection Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection;
 
 
 
@@ -69,7 +69,7 @@ namespace   Stroika {
             inline  Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrRep_ (const SharedPtrType& shared)
                 : fSharedPtrEnvelope (shared.PeekAtEnvelope ())
             {
-                Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
+                Execution::AutoCriticalSection critSec (WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
                 if (fSharedPtrEnvelope.GetPtr () != nullptr) {
                     RequireNotNull (fSharedPtrEnvelope.fWeakSharedPtrs);
                     fSharedPtrEnvelope.fWeakSharedPtrs->push_back (this);
@@ -78,7 +78,7 @@ namespace   Stroika {
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::~WeakSharedPtrRep_ ()
             {
-                Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
+                Execution::AutoCriticalSection critSec (WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
                 if (fSharedPtrEnvelope.GetPtr () != nullptr) {
                     RequireNotNull (fSharedPtrEnvelope.fWeakSharedPtrs);
                     typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = std::find (fSharedPtrEnvelope.fWeakSharedPtrs->begin (), fSharedPtrEnvelope.fWeakSharedPtrs->end (), this);
@@ -89,7 +89,7 @@ namespace   Stroika {
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::Lock ()
             {
-                Execution::AutoCriticalSection critSec (WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
+                Execution::AutoCriticalSection critSec (WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection);
                 if (fSharedPtrEnvelope.GetPtr () == nullptr) {
                     return SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> ();
                 }

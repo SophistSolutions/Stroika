@@ -59,12 +59,12 @@ namespace   Stroika {
                  * including info needed for the WeakSharedPtr tracking.
                  */
                 template    <typename T, typename BASE_SharedPtr_TRAITS>
-                struct  WeakSharedPtrEnvelope_ : BASE_SharedPtr_TRAITS::Envelope {
+                struct  WeakSharedPtrCapableSharedPtrEnvelope_ : BASE_SharedPtr_TRAITS::Envelope {
                     static  Execution::CriticalSection                      sCriticalSection;
                     list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>*     fWeakSharedPtrs;
-                    WeakSharedPtrEnvelope_ (T* ptr);
+                    WeakSharedPtrCapableSharedPtrEnvelope_ (T* ptr);
                     template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
-                    WeakSharedPtrEnvelope_ (const WeakSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from);
+                    WeakSharedPtrCapableSharedPtrEnvelope_ (const WeakSharedPtrCapableSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from);
                     bool    Decrement ();
                     void    DoDeleteCounter ();
                 };
@@ -80,7 +80,7 @@ namespace   Stroika {
              */
             template    <typename T, typename BASE_SharedPtr_TRAITS = SharedPtr_Default_Traits<T>>
         struct  WeakSharedPtrCapableSharedPtrTraits : BASE_SharedPtr_TRAITS {
-                        typedef Private::WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>               Envelope;
+                        typedef Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>               Envelope;
                     };
 
 
@@ -97,7 +97,7 @@ namespace   Stroika {
                     typedef SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   SharedPtrType;
                     WeakSharedPtrRep_ (const SharedPtrType& shared);
                     ~WeakSharedPtrRep_ ();
-                    WeakSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>    fSharedPtrEnvelope;
+                    WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>    fSharedPtrEnvelope;
                     SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   Lock ();
                 };
             }
