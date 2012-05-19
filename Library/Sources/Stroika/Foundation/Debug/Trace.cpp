@@ -277,7 +277,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
 
 namespace   {
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
-    static  bool            sFirstTime_ =   true;
+    static  bool            sMainThreadInitialized_ =   false;
     static  Thread::IDType  sMainThread_;
 }
 
@@ -295,9 +295,15 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         static  string      sThreadPrintDashAdornment_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
         char    buf[1024];
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        if (sFirstTime_) {
+        bool            printOneTimeInitialMessage      =   false;
+        if (not sMainThreadInitialized_) {
+            // Highly likely no races here because if we are writing - we assume first write happens in main thread, and unlikely a second write in another thread
+            // will happen before this logic finishes...
+            //          -- LGP 2012-05-19
             sMainThread_ = threadID;
-            size_t threadPrintWidth = FormatThreadID (threadID).length () - 4;
+            sMainThreadInitialized_ = true;
+            printOneTimeInitialMessage = true;
+            size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
             sThreadPrintDashAdornment_.reserve (threadPrintWidth / 2);
             for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
                 sThreadPrintDashAdornment_.append ("-");
@@ -306,8 +312,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
         if (sMainThread_ == threadID) {
             ::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_.c_str (), sThreadPrintDashAdornment_.c_str (), curRelativeTime);
-            if (sFirstTime_) {
-                sFirstTime_ = false;
+            if (printOneTimeInitialMessage) {
                 char buf2[1024];
                 ::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ());
 #if     __STDC_WANT_SECURE_LIB__
