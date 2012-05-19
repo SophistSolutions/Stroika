@@ -47,6 +47,38 @@ using   namespace   Execution;
 
 
 
+namespace   {
+    // This is MOSTLY to remove NEWLINES from the MIDDLE of a message - replace with kBadChar.
+    const   char    kBadChar_   =   ' ';
+    void    SquishBadCharacters_ (string* s)
+        {
+            RequireNotNull (s);
+            size_t  end =   s->length ();
+            // ignore last 2 in case crlf
+            if (end > 2) {
+                end -= 2;
+            }
+            for (size_t i = 0; i < end; ++i) {
+                if ((*s)[i] == '\n' or (*s)[i] == '\r') {
+                    (*s)[i] = kBadChar_;
+                }
+            }
+        }
+    void    SquishBadCharacters_ (wstring* s)
+        {
+            RequireNotNull (s);
+            size_t  end =   s->length ();
+            // ignore last 2 in case crlf
+            if (end > 2) {
+                end -= 2;
+            }
+            for (size_t i = 0; i < end; ++i) {
+                if ((*s)[i] == '\n' or (*s)[i] == '\r') {
+                    (*s)[i] = kBadChar_;
+                }
+            }
+        }
+}
 
 
 
@@ -228,6 +260,7 @@ void    Emitter::EmitTraceMessage (const char* format, ...)
         va_start (argsList, format);
         string  tmp =   Characters::FormatV (format, argsList);
         va_end (argsList);
+        SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
@@ -244,6 +277,7 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...)
         va_start (argsList, format);
         wstring tmp =   Characters::FormatV (format, argsList);
         va_end (argsList);
+        SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
@@ -260,6 +294,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         va_start (argsList, format);
         string  tmp =   Characters::FormatV (format, argsList);
         va_end (argsList);
+        SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
@@ -277,6 +312,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         va_start (argsList, format);
         wstring tmp =   Characters::FormatV (format, argsList);
         va_end (argsList);
+        SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
