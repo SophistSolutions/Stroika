@@ -98,7 +98,7 @@ namespace   {
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
     Thread::IDType  sMainThread_;
-    const char*     sThreadPrintDashAdornment_  =   "";
+    const char*     sThreadPrintDashAdornment_  =   ""; // initialize to default safe value, but then reset in MODULE_INIT::MODULE_INIT() based on threadid
 }
 
 
@@ -139,6 +139,7 @@ Private::MODULE_INIT::~MODULE_INIT ()
 #if     qDefaultTracingOn
     delete sCounts;
 #endif
+    sThreadPrintDashAdornment_ = "";    // restore in case of call to trace after this module is destroyed
 }
 
 
