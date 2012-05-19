@@ -279,6 +279,7 @@ namespace   {
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
     static  bool            sMainThreadInitialized_ =   false;
     static  Thread::IDType  sMainThread_;
+    static  string          sThreadPrintDashAdornment_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
 }
 
 template    <typename   CHARTYPE>
@@ -292,7 +293,6 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
     }
     Time::DurationSecondsType   curRelativeTime =   Time::GetTickCount () - sStartOfTime;
     {
-        static  string      sThreadPrintDashAdornment_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
         char    buf[1024];
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         bool            printOneTimeInitialMessage      =   false;
