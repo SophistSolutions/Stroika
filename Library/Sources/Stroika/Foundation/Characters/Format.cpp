@@ -47,7 +47,7 @@ string  Characters::FormatV (const char* format, va_list argsList)
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
     }
 #endif
-    Assert (::strlen (msgBuf) < NEltsOf (msgBuf));
+    Assert (::strlen (msgBuf.begin ()) < msgBuf.GetSize ());
     return string (msgBuf);
 }
 
