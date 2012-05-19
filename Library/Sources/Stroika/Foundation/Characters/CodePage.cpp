@@ -1770,7 +1770,7 @@ namespace   {
         Require (wsStart <= wsEnd);
         size_t  inSize  =   wsEnd - wsStart;
         CodePageConverter   cc (codePage);
-// this grossly oversates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
+// this grossly overestimates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
         size_t outSizeBuf = cc.MapFromUNICODE_QuickComputeOutBufSize (wsStart, inSize);
         intoResult->resize (outSizeBuf);
         size_t  actualOutSize   =   0;
@@ -1816,7 +1816,7 @@ namespace   {
         Require (sStart <= sEnd);
         size_t  inSize  =   sEnd - sStart;
         CodePageConverter   cc (codePage);
-// this grossly oversates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
+// this grossly overestimates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
         size_t outSizeBuf = cc.MapToUNICODE_QuickComputeOutBufSize (sStart, inSize);
         intoResult->resize (outSizeBuf);
         size_t  actualOutSize   =   0;
