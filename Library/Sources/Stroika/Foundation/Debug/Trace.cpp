@@ -97,8 +97,19 @@ namespace   {
 #endif
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
-    Thread::IDType  sMainThread_;
-    const char*     sThreadPrintDashAdornment_  =   ""; // initialize to default safe value, but then reset in MODULE_INIT::MODULE_INIT() based on threadid
+    Thread::IDType  sMainThread_                =   Execution::GetCurrentThreadID ();
+
+    string  mkPrintDashAdornment_ ()
+        {
+            size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
+            string result;
+            result.reserve (threadPrintWidth / 2);
+            for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
+                result.append ("-");
+            }
+            return result;
+        }
+    const string    sThreadPrintDashAdornment_  =   mkPrintDashAdornment_ ();
 }
 
 
@@ -115,16 +126,6 @@ Private::MODULE_INIT::MODULE_INIT ()
     sTraceFile = DEBUG_NEW ofstream ();
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
-
-    // sMainThread_
-    sMainThread_ = Execution::GetCurrentThreadID ();
-    size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
-    static  string   sThreadPrintDashAdornmentBUF_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
-    sThreadPrintDashAdornmentBUF_.reserve (threadPrintWidth / 2);
-    for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
-        sThreadPrintDashAdornmentBUF_.append ("-");
-    }
-    sThreadPrintDashAdornment_ = sThreadPrintDashAdornmentBUF_.c_str ();
 }
 
 Private::MODULE_INIT::~MODULE_INIT ()
@@ -139,7 +140,6 @@ Private::MODULE_INIT::~MODULE_INIT ()
 #if     qDefaultTracingOn
     delete sCounts;
 #endif
-    sThreadPrintDashAdornment_ = "";    // restore in case of call to trace after this module is destroyed
 }
 
 
@@ -342,7 +342,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
         if (sMainThread_ == threadID) {
-            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, curRelativeTime) > 0);
+            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_.c_str (), sThreadPrintDashAdornment_.c_str (), curRelativeTime) > 0);
             if (not sDidOneTimePrimaryThreadMessage_) {
                 sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
