@@ -337,7 +337,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
     }
 #endif
     if (bufferLastNChars == 0) {
-        DoEmit_ (p);
+        DoEmit_ (p, e);
         fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
     }
     else {
