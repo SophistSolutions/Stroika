@@ -300,12 +300,12 @@ wstring Date::Format (PrintFormat pf) const
             }
             break;
         case    eXML_PF: {
-                wchar_t buf[20];
+                wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
                 MonthOfYear m   =   eEmptyMonthOfYear;
                 DayOfMonth  d   =   eEmptyDayOfMonth;
                 Year        y   =   eEmptyYear;
                 mdy (&m, &d, &y);
-                ::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d);
+                Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
                 return buf;
             }
             break;
@@ -321,12 +321,12 @@ wstring Date::Format (PrintFormat pf) const
                  *
                  *  See also        explicit Date (const wstring& rep, Javascript);
                  */
-                wchar_t buf[20];
+                wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
                 MonthOfYear m   =   eEmptyMonthOfYear;
                 DayOfMonth  d   =   eEmptyDayOfMonth;
                 Year        y   =   eEmptyYear;
                 mdy (&m, &d, &y);
-                ::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y);
+                Verify (::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y) == 10);
                 return buf;
             }
             break;
