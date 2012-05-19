@@ -306,7 +306,7 @@ wstring Date::Format (PrintFormat pf) const
                 Year        y   =   eEmptyYear;
                 mdy (&m, &d, &y);
 #if     qSupportValgrindQuirks
-                // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
+                // Makes little sense - even buf[0] not sufficient - but this silences lots of warnings.
                 // -- LGP 2012-05-19
                 memset (buf, 0, sizeof(buf));
 #endif
@@ -331,6 +331,11 @@ wstring Date::Format (PrintFormat pf) const
                 DayOfMonth  d   =   eEmptyDayOfMonth;
                 Year        y   =   eEmptyYear;
                 mdy (&m, &d, &y);
+#if     qSupportValgrindQuirks
+                // Makes little sense - even buf[0] not sufficient - but this silences lots of warnings.
+                // -- LGP 2012-05-19
+                memset (buf, 0, sizeof(buf));
+#endif
                 Verify (::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y) == 10);
                 return buf;
             }
