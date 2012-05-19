@@ -110,6 +110,7 @@ namespace   {
             return result;
         }
     const string    sThreadPrintDashAdornment_  =   mkPrintDashAdornment_ ();
+    bool            sDidOneTimePrimaryThreadMessage_    =   false;
 }
 
 
@@ -335,7 +336,6 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
     if (sStartOfTime == 0.0) {
         sStartOfTime = Time::GetTickCount ();
     }
-    static  bool    sDidOneTimePrimaryThreadMessage_    =   false;
     Time::DurationSecondsType   curRelativeTime =   Time::GetTickCount () - sStartOfTime;
     {
         char    buf[1024];
