@@ -28,8 +28,8 @@ namespace   Stroika {
                  *
                  * This may not be totally right (when used with SharedFromThis()) pointers - so may need to rethnk that!
                  */
-                Require (CurrentRefCount () == 0);  // because otherwise we cannot use this API, as it allocates an extra fWeakSharedPtrs list
-                if (GetPtr () != nullptr) {
+                Require (this->CurrentRefCount () == 0);  // because otherwise we cannot use this API, as it allocates an extra fWeakSharedPtrs list
+                if (this->GetPtr () != nullptr) {
                     // only store linkedlist for non-null pointers
                     fWeakSharedPtrs = DEBUG_NEW list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*> ();
                 }
@@ -40,7 +40,7 @@ namespace   Stroika {
                 : BASE_SharedPtr_TRAITS::Envelope (from)
                 , fWeakSharedPtrs (from.fWeakSharedPtrs)
             {
-                Assert (fWeakSharedPtrs != nullptr or GetPtr () == nullptr);
+                Assert (fWeakSharedPtrs != nullptr or this->GetPtr () == nullptr);
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  bool    Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::Decrement ()
@@ -73,7 +73,7 @@ namespace   Stroika {
             {
                 // get base pointer so we can object slice (dont know what fields to clear otherwise). Then clear our subtype fields.
                 typename BASE_SharedPtr_TRAITS::Envelope*    thisAsBaseType    =   this;
-                *thisAsBaseType = BASE_SharedPtr_TRAITS::Envelope (nullptr);
+                *thisAsBaseType = typename BASE_SharedPtr_TRAITS::Envelope (nullptr);
                 fWeakSharedPtrs = nullptr;
             }
             template <typename T, typename BASE_SharedPtr_TRAITS>
