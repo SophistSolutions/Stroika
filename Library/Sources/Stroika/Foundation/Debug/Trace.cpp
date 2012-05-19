@@ -56,13 +56,17 @@ using   namespace   Execution;
  ********************************************************************************
  */
 namespace   {
-    static  CriticalSection*    sEmitTraceCritSec   =   nullptr;
+    CriticalSection*    sEmitTraceCritSec   =   nullptr;
 #if     qTraceToFile
-    static  ofstream*   sTraceFile  =   nullptr;
+    ofstream*   sTraceFile  =   nullptr;
 #endif
 #if     qDefaultTracingOn
-    static  map<Thread::IDType, unsigned int>*   sCounts;
+    map<Thread::IDType, unsigned int>*   sCounts;
 #endif
+
+    // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
+    Thread::IDType  sMainThread_;
+    string          sThreadPrintDashAdornment_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
 }
 
 
@@ -79,6 +83,14 @@ Private::MODULE_INIT::MODULE_INIT ()
     sTraceFile = DEBUG_NEW ofstream ();
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
+
+    // sMainThread_
+    sMainThread_ = Execution::GetCurrentThreadID ();
+    size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
+    sThreadPrintDashAdornment_.reserve (threadPrintWidth / 2);
+    for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
+        sThreadPrintDashAdornment_.append ("-");
+    }
 }
 
 Private::MODULE_INIT::~MODULE_INIT ()
@@ -275,13 +287,6 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
 }
 
-namespace   {
-    // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
-    static  bool            sMainThreadInitialized_ =   false;
-    static  Thread::IDType  sMainThread_;
-    static  string          sThreadPrintDashAdornment_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
-}
-
 template    <typename   CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
 {
@@ -291,28 +296,16 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
     if (sStartOfTime == 0.0) {
         sStartOfTime = Time::GetTickCount ();
     }
+    static  bool    sDidOneTimePrimaryThreadMessage_    =   false;
     Time::DurationSecondsType   curRelativeTime =   Time::GetTickCount () - sStartOfTime;
     {
         char    buf[1024];
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        bool            printOneTimeInitialMessage      =   false;
-        if (not sMainThreadInitialized_) {
-            // Highly likely no races here because if we are writing - we assume first write happens in main thread, and unlikely a second write in another thread
-            // will happen before this logic finishes...
-            //          -- LGP 2012-05-19
-            sMainThread_ = threadID;
-            sMainThreadInitialized_ = true;
-            printOneTimeInitialMessage = true;
-            size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
-            sThreadPrintDashAdornment_.reserve (threadPrintWidth / 2);
-            for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
-                sThreadPrintDashAdornment_.append ("-");
-            }
-        }
         string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
         if (sMainThread_ == threadID) {
             ::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_.c_str (), sThreadPrintDashAdornment_.c_str (), curRelativeTime);
-            if (printOneTimeInitialMessage) {
+            if (not sDidOneTimePrimaryThreadMessage_) {
+                sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
                 ::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ());
 #if     __STDC_WANT_SECURE_LIB__
