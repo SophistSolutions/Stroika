@@ -32,6 +32,19 @@
 
 
 
+
+/*
+@CONFIGVAR:     qSupportValgrindQuirks
+@DESCRIPTION:   <p>The qSupportValgrindQuirks macro is '1' if Stroika is compiled to use Valgrind, and if ndefined this will help workaround some of 
+            Valgrinds false-positive reporting.</p>
+*/
+#if     !defined (qSupportValgrindQuirks)
+#error  "qSupportValgrindQuirks should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+
+
 /*
  * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
  * to 'new' so it can be safely used in places where the global new operator would have been used.
