@@ -305,6 +305,11 @@ wstring Date::Format (PrintFormat pf) const
                 DayOfMonth  d   =   eEmptyDayOfMonth;
                 Year        y   =   eEmptyYear;
                 mdy (&m, &d, &y);
+#if     qSupportValgrindQuirks
+                // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
+                // -- LGP 2012-05-19
+                memset (buf, 0, sizeof(buf));
+#endif
                 Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
                 return buf;
             }

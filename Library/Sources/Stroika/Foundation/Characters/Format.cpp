@@ -38,6 +38,11 @@ string  Characters::FormatV (const char* format, va_list argsList)
 {
     RequireNotNull (format);
     Memory::SmallStackBuffer<char, 10* 1024> msgBuf (10 * 1024);
+#if     qSupportValgrindQuirks
+    // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
+    // -- LGP 2012-05-19
+    memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
+#endif
 #if     __STDC_WANT_SECURE_LIB__
     while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argsList) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
@@ -114,6 +119,12 @@ wstring Characters::FormatV (const wchar_t* format, va_list argsList)
             useFormat   =   newFormat;
         }
     }
+#endif
+
+#if     qSupportValgrindQuirks
+    // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
+    // -- LGP 2012-05-19
+    memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
 #endif
 
     // Assume only reason for failure is not enuf bytes, so allocate more.
