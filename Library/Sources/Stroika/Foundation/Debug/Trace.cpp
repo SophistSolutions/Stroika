@@ -98,7 +98,7 @@ namespace   {
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
     Thread::IDType  sMainThread_;
-    string          sThreadPrintDashAdornment_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
+    const char*     sThreadPrintDashAdornment_  =   "";
 }
 
 
@@ -119,10 +119,12 @@ Private::MODULE_INIT::MODULE_INIT ()
     // sMainThread_
     sMainThread_ = Execution::GetCurrentThreadID ();
     size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
-    sThreadPrintDashAdornment_.reserve (threadPrintWidth / 2);
+    static  string   sThreadPrintDashAdornmentBUF_;     // declare HERE not file scope so we control timing of when constructed (across modules/.o files)
+    sThreadPrintDashAdornmentBUF_.reserve (threadPrintWidth / 2);
     for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
-        sThreadPrintDashAdornment_.append ("-");
+        sThreadPrintDashAdornmentBUF_.append ("-");
     }
+    sThreadPrintDashAdornment_ = sThreadPrintDashAdornmentBUF_.c_str ();
 }
 
 Private::MODULE_INIT::~MODULE_INIT ()
@@ -339,18 +341,18 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
         if (sMainThread_ == threadID) {
-            ::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_.c_str (), sThreadPrintDashAdornment_.c_str (), curRelativeTime);
+            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, curRelativeTime) > 0);
             if (not sDidOneTimePrimaryThreadMessage_) {
                 sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
-                ::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ());
+                Verify ( ::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
 #if     __STDC_WANT_SECURE_LIB__
                 strcat_s (buf, buf2);
 #else
                 strcat (buf, buf2);
 #endif
 #if     qPlatform_POSIX
-                ::snprintf  (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ());
+                Verify (::snprintf  (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if     __STDC_WANT_SECURE_LIB__
                 strcat_s (buf, buf2);
 #else
