@@ -75,12 +75,12 @@ sub	ParseCommandLine_
 			$forceRecreate = true;
 			print "Forcing recreate...\n";
 		}
-		if (lc ($var) eq "-c-define") {
+		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraCDefines[@useExtraCDefines] = $var;
 		}
-		if (lc ($var) eq "-make-define") {
+		if (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
