@@ -44,7 +44,7 @@ namespace	{
 			VerifyTestResult (t2.CurrentRefCount () == 2);
 			VerifyTestResult (t1 == t2);
 		}
-	void	Test2 ()
+	void	Test2_SharedFromThis ()
 		{
 			struct	TTT : Memory::enable_shared_from_this<TTT> {
 				string x;
@@ -80,6 +80,21 @@ namespace	{
                 VerifyTestResult (wt1.Lock ().get () == nullptr);
             }
 		}
+	void	Test4_WeakPtrsWithSharedWithThis ()
+		{
+            {
+			    struct	TTT : Memory::enable_shared_from_this<TTT> {
+				    string x;
+			    };
+			    //typedef	WeakCapableSharedPtr<TTT,SharedPtrFromThis_Traits<TTT>>	TTT_SP;
+                typedef SharedPtr<TTT,WeakSharedPtrCapableSharedPtrTraits<SharedPtrFromThis_Traits<TTT>>> TTT_SP;
+#if 0
+			    TTT_SP	t1 (new TTT ());
+			    WeakSharedPtr<TTT>			wt1 (t1);
+			    VerifyTestResult (wt1.Lock ().get () == t1.get ());
+#endif
+            }
+		}
 }
 
 
@@ -88,8 +103,9 @@ namespace	{
 	void	DoRegressionTests_ ()
 		{
 		    Test1 ();
-			Test2 ();
+			Test2_SharedFromThis ();
 			Test3_WeakPtrs ();
+            Test4_WeakPtrsWithSharedWithThis ();
 		}
 }
 
