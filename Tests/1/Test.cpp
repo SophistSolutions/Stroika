@@ -71,8 +71,11 @@ namespace	{
 			    WeakSharedPtr<int>			wt1;
                 {
 			        WeakCapableSharedPtr<int>	t1 (new int ());
+                    VerifyTestResult (t1.use_count () == 1);
                     wt1 = WeakSharedPtr<int> (t1);
+                    VerifyTestResult (t1.use_count () == 1);
 			        VerifyTestResult (wt1.Lock ().get () == t1.get ());
+                    VerifyTestResult (t1.use_count () == 1);
                 }
                 VerifyTestResult (wt1.Lock ().get () == nullptr);
             }

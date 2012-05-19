@@ -20,8 +20,19 @@ namespace   Stroika {
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::WeakSharedPtrCapableSharedPtrEnvelope_ (T* ptr)
                 : BASE_SharedPtr_TRAITS::Envelope (ptr)
-                , fWeakSharedPtrs (DEBUG_NEW list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*> ())
+                , fWeakSharedPtrs (nullptr)
             {
+                /*
+                 * This CTOR is only called when handled an original bare pointer, so its OK to allocate the memory for hte sharedptrs list without
+                 * leaking.
+                 *
+                 * This may not be totally right (when used with SharedFromThis()) pointers - so may need to rethnk that!
+                 */
+                Require (CurrentRefCount () == 0);  // because otherwise we cannot use this API, as it allocates an extra fWeakSharedPtrs list
+                if (GetPtr () != nullptr) {
+                    // only store linkedlist for non-null pointers
+                    fWeakSharedPtrs = DEBUG_NEW list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*> ();
+                }
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             template <typename T2, typename T2_BASE_SharedPtr_TRAITS>
@@ -29,7 +40,7 @@ namespace   Stroika {
                 : BASE_SharedPtr_TRAITS::Envelope (from)
                 , fWeakSharedPtrs (from.fWeakSharedPtrs)
             {
-                AssertNotNull (fWeakSharedPtrs);
+                Assert (fWeakSharedPtrs != nullptr or GetPtr () == nullptr);
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
             inline  bool    Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::Decrement ()
@@ -48,13 +59,22 @@ namespace   Stroika {
                  * always already within the critical section.
                  */
                 // Assert (sCriticalSection.IsLocked ());       -- would do if there was such an API - maybe it should be added?
-                for (typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs->begin (); i != fWeakSharedPtrs->end (); ++i) {
-// NOT SURE RIGHT - DOCUMENT ANYHOW
-                    (*i)->fSharedPtrEnvelope.SetPtr (nullptr);
+                if (fWeakSharedPtrs != nullptr) {
+                    for (typename list<WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>*>::iterator i = fWeakSharedPtrs->begin (); i != fWeakSharedPtrs->end (); ++i) {
+                        (*i)->ClearBecauseUnderlyingPointerGone ();
+                    }
+                    delete fWeakSharedPtrs;
+                    fWeakSharedPtrs = nullptr;
                 }
-                delete fWeakSharedPtrs;
-                fWeakSharedPtrs = nullptr;
                 BASE_SharedPtr_TRAITS::Envelope::DoDeleteCounter ();
+            }
+            template    <typename T, typename BASE_SharedPtr_TRAITS>
+            void    Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::ClearBecauseUnderlyingPointerGone ()
+            {
+                // get base pointer so we can object slice (dont know what fields to clear otherwise). Then clear our subtype fields.
+                typename BASE_SharedPtr_TRAITS::Envelope*    thisAsBaseType    =   this;
+                *thisAsBaseType = BASE_SharedPtr_TRAITS::Envelope (nullptr);
+                fWeakSharedPtrs = nullptr;
             }
             template <typename T, typename BASE_SharedPtr_TRAITS>
             Execution::CriticalSection Private::WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>::sCriticalSection;
@@ -97,7 +117,11 @@ namespace   Stroika {
                     return SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>> (fSharedPtrEnvelope);
                 }
             }
-
+            template    <typename T, typename BASE_SharedPtr_TRAITS>
+            inline  void   Private::WeakSharedPtrRep_<T, BASE_SharedPtr_TRAITS>::ClearBecauseUnderlyingPointerGone ()
+            {
+                fSharedPtrEnvelope.ClearBecauseUnderlyingPointerGone ();
+            }
 
 
 
@@ -110,7 +134,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            inline WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakSharedPtr (const WeakSharedPtr<T, BASE_SharedPtr_TRAITS>& from)
+            inline  WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::WeakSharedPtr (const WeakSharedPtr<T, BASE_SharedPtr_TRAITS>& from)
                 : fRep_ (from)
             {
             }
@@ -126,7 +150,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename BASE_SharedPtr_TRAITS>
-            inline typename WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::SharedPtrType  WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::Lock () const
+            inline  typename WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::SharedPtrType  WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::Lock () const
             {
                 if (fRep_.IsNull ()) {
                     return WeakSharedPtr<T, BASE_SharedPtr_TRAITS>::SharedPtrType ();

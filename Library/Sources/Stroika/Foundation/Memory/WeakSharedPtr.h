@@ -17,6 +17,8 @@
 
 
 
+
+
 /*
  *      TODO:
  *
@@ -29,6 +31,9 @@
  *          o   Docs.
  *
  */
+
+
+
 
 
 /*
@@ -71,6 +76,7 @@ namespace   Stroika {
                     WeakSharedPtrCapableSharedPtrEnvelope_ (const WeakSharedPtrCapableSharedPtrEnvelope_<T2, T2_BASE_SharedPtr_TRAITS>& from);
                     bool    Decrement ();
                     void    DoDeleteCounter ();
+                    void    ClearBecauseUnderlyingPointerGone ();
                 };
             }
 
@@ -103,6 +109,7 @@ namespace   Stroika {
                     ~WeakSharedPtrRep_ ();
                     WeakSharedPtrCapableSharedPtrEnvelope_<T, BASE_SharedPtr_TRAITS>    fSharedPtrEnvelope;
                     SharedPtr<T, WeakSharedPtrCapableSharedPtrTraits<T, BASE_SharedPtr_TRAITS>>   Lock ();
+                    void    ClearBecauseUnderlyingPointerGone ();
                 };
             }
 
