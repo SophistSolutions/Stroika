@@ -86,17 +86,10 @@ namespace	{
 			    struct	TTT : Memory::enable_shared_from_this<TTT> {
 				    string x;
 			    };
-
-#if 0
-			    typedef	WeakCapableSharedPtr<TTT,SharedPtrFromThis_Traits<TTT>>	TTT_SP;
-#else
-                typedef SharedPtr<TTT,WeakSharedPtrCapableSharedPtrTraits<TTT, SharedPtrFromThis_Traits<TTT>>> TTT_SP;
-#endif
+                typedef	WeakSharedPtr<TTT, SharedPtrFromThis_Traits<TTT>>::SharedPtrType	TTT_SP;
 			    TTT_SP	t1 (new TTT ());
-#if 0
-			    WeakSharedPtr<TTT>			wt1 (t1);
+			    WeakSharedPtr<TTT, SharedPtrFromThis_Traits<TTT>>			wt1 (t1);
 			    VerifyTestResult (wt1.Lock ().get () == t1.get ());
-#endif
             }
 		}
 }
