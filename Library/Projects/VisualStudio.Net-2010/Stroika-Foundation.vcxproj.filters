@@ -228,9 +228,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.cpp">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
     </ClCompile>
@@ -395,9 +392,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\WeakSharedPtr.cpp">
-      <Filter>Sources\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -639,9 +633,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.h">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
     </ClInclude>
@@ -855,9 +846,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\WeakSharedPtr.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1019,9 +1007,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
     </None>
@@ -1159,9 +1144,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl">
       <Filter>Sources\IO\Network\Transfer</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\WeakSharedPtr.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
 </Project>

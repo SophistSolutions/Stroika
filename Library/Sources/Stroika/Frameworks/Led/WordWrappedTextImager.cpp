@@ -6,8 +6,6 @@
 #include    <cctype>
 
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
-#include    "../../Foundation/Memory/SharedPtr.h"
-
 
 #include    "WordWrappedTextImager.h"
 
@@ -390,7 +388,7 @@ namespace   Stroika {
 
                 Assert (wrapLength <= length);
 
-                Memory::SharedPtr<TextBreaks>   breaker =   GetTextStore ().GetTextBreaker ();
+                shared_ptr<TextBreaks>   breaker =   GetTextStore ().GetTextBreaker ();
 
                 /*
                  *  We take a bit of text here - and decide the proper position in the text to make the break.

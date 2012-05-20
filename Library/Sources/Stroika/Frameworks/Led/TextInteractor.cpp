@@ -1379,8 +1379,8 @@ SecondTry: {
             void    TextInteractor::HookLosingTextStore_ ()
             {
                 AbortReplace (fTmpPreReplaceInfo);
-                fExternalizer.clear ();
-                fInternalizer.clear ();
+                fExternalizer.reset ();
+                fInternalizer.reset ();
             }
 
             void    TextInteractor::HookGainedNewTextStore ()
@@ -1391,10 +1391,10 @@ SecondTry: {
 
             void    TextInteractor::HookGainedNewTextStore_ ()
             {
-                if (fExternalizer.IsNull ()) {
+                if (fExternalizer.get () == nullptr) {
                     SetExternalizer (MakeDefaultExternalizer ());
                 }
-                if (fInternalizer.IsNull ()) {
+                if (fInternalizer.get () == nullptr) {
                     SetInternalizer (MakeDefaultInternalizer ());
                 }
             }
@@ -3015,9 +3015,9 @@ SkipNavigation:
                 to make a different subclass, which supports different style and file formats from the (simple) default.</p>
                     <p>By default, this creates a @'FlavorPackageInternalizer'.</p>
             */
-            Memory::SharedPtr<FlavorPackageInternalizer>    TextInteractor::MakeDefaultInternalizer ()
+            shared_ptr<FlavorPackageInternalizer>    TextInteractor::MakeDefaultInternalizer ()
             {
-                return Memory::SharedPtr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
+                return shared_ptr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
             }
 
             /*
@@ -3054,9 +3054,9 @@ SkipNavigation:
                 to make a different subclass, which supports different style and file formats from the (simple) default.</p>
                     <p>By default, this creates a @'FlavorPackageExternalizer'.</p>
             */
-            Memory::SharedPtr<FlavorPackageExternalizer>    TextInteractor::MakeDefaultExternalizer ()
+            shared_ptr<FlavorPackageExternalizer>    TextInteractor::MakeDefaultExternalizer ()
             {
-                return Memory::SharedPtr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
+                return shared_ptr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
             }
 
             /*

@@ -12,7 +12,6 @@
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchangeFormat/InternetMediaType.h"
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 #include    "HTTPConnection.h"
 

@@ -305,9 +305,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\WeakSharedPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp" />
@@ -477,10 +475,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\WeakSharedPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.h" />
@@ -588,10 +584,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\WeakSharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />

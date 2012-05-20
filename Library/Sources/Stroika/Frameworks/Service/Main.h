@@ -15,7 +15,6 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 
 /*
@@ -101,10 +100,10 @@ namespace   Stroika {
                 /*
                  * Note - besides the obvios, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
-                Main (Memory::SharedPtr<IRep> rep);
+                Main (shared_ptr<IRep> rep);
 
             protected:
-                static  Memory::SharedPtr<IRep> _sRep;
+                static  shared_ptr<IRep> _sRep;
 
 
 #if     qPlatform_POSIX

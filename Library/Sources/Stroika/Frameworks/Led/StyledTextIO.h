@@ -6,7 +6,6 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 
 /*
@@ -119,7 +118,7 @@ namespace   Stroika {
                 class   BadInputHandler;
 
             protected:
-                StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHander = Foundation::Memory::SharedPtr<BadInputHandler> ());    // callers responsability to destroy srcStream/sinkStream
+                StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const shared_ptr<BadInputHandler>& badInputHander = shared_ptr<BadInputHandler> ());    // callers responsability to destroy srcStream/sinkStream
 
 
                 // The Read() method must be overriden by one subclass to provide the format interpretation
@@ -169,10 +168,10 @@ namespace   Stroika {
                 SinkStream*                         fSinkStream;
 
             public:
-                nonvirtual  Foundation::Memory::SharedPtr<BadInputHandler>  GetBadInputHandler () const;
-                nonvirtual  void                            SetBadInputHandler (const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHandler);
+                nonvirtual  shared_ptr<BadInputHandler>  GetBadInputHandler () const;
+                nonvirtual  void                            SetBadInputHandler (const shared_ptr<BadInputHandler>& badInputHandler);
             private:
-                Foundation::Memory::SharedPtr<BadInputHandler>  fBadInputHandler;
+                shared_ptr<BadInputHandler>  fBadInputHandler;
 
             public:
                 nonvirtual  void    HandleBadlyFormattedInput (bool unrecoverable = false) const;
@@ -923,14 +922,14 @@ namespace   Stroika {
 
 
 // class StyledTextIOReader
-            inline  StyledTextIOReader::StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHander):
+            inline  StyledTextIOReader::StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const shared_ptr<BadInputHandler>& badInputHander):
                 fSrcStream (*srcStream),
                 fSinkStream (sinkStream),
                 fBadInputHandler (badInputHander)
             {
                 RequireNotNull (srcStream);
-                if (fBadInputHandler.IsNull ()) {
-                    fBadInputHandler = Foundation::Memory::SharedPtr<BadInputHandler> (new BadInputHandler ());
+                if (fBadInputHandler.get () == nullptr) {
+                    fBadInputHandler = shared_ptr<BadInputHandler> (new BadInputHandler ());
                 }
             }
             inline  StyledTextIOReader::SrcStream&  StyledTextIOReader::GetSrcStream () const
@@ -949,20 +948,20 @@ namespace   Stroika {
                         @'StyledTextIOReader::BadInputHandler'.</p>
                             <p>See also @'StyledTextIOReader::SetBadInputHandler' and @'StyledTextIOReader::HandleBadlyFormattedInput'.</p>
             */
-            inline  Foundation::Memory::SharedPtr<StyledTextIOReader::BadInputHandler>  StyledTextIOReader::GetBadInputHandler () const
+            inline  shared_ptr<StyledTextIOReader::BadInputHandler>  StyledTextIOReader::GetBadInputHandler () const
             {
-                Ensure (not fBadInputHandler.IsNull ());
+                Ensure (fBadInputHandler.get () != nullptr);
                 return fBadInputHandler;
             }
             /*
             @METHOD:        StyledTextIOReader::SetBadInputHandler
             @DESCRIPTION:   <p>See @'StyledTextIOReader::GetBadInputHandler'</p>
             */
-            inline  void        StyledTextIOReader::SetBadInputHandler (const Foundation::Memory::SharedPtr<BadInputHandler>& badInputHandler)
+            inline  void        StyledTextIOReader::SetBadInputHandler (const shared_ptr<BadInputHandler>& badInputHandler)
             {
                 fBadInputHandler = badInputHandler;
-                if (fBadInputHandler.IsNull ()) {
-                    fBadInputHandler = Foundation::Memory::SharedPtr<BadInputHandler> (new BadInputHandler ());
+                if (fBadInputHandler.get () == nullptr) {
+                    fBadInputHandler = shared_ptr<BadInputHandler> (new BadInputHandler ());
                 }
             }
             /*

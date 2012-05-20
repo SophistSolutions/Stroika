@@ -14,7 +14,6 @@
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchangeFormat/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/URL.h"
-#include    "../../Foundation/Memory/SharedPtr.h"
 #include    "../../Foundation/Streams/BinaryInputStream.h"
 #include    "../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 

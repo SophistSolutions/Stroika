@@ -137,11 +137,11 @@ const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
-Memory::SharedPtr<Main::IRep>   Main::_sRep;
+shared_ptr<Main::IRep>   Main::_sRep;
 
-Main::Main (Memory::SharedPtr<IRep> rep)
+Main::Main (shared_ptr<IRep> rep)
 {
-    Ensure  (_sRep.IsNull ());
+    Require  (_sRep.get () == nullptr);     // singleton
     _sRep = rep;
 #if     qPlatform_POSIX
     SetupSignalHanlders_ ();

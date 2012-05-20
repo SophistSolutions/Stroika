@@ -38,7 +38,7 @@ namespace   Stroika {
             template    <typename T>
             inline  const T*    Optional<T>::get () const
             {
-                return fValue_.IsNull () ? nullptr : fValue_.get ();
+                return fValue_.get ();
             }
             template    <typename T>
             inline  bool    Optional<T>::empty () const
@@ -78,7 +78,7 @@ namespace   Stroika {
             template    <typename T>
             bool    Optional<T>::operator< (const Optional<T>& rhs) const
             {
-                if (fValue_.IsNull ()) {
+                if (fValue_.get () == nullptr) {
                     return (rhs.fValue_.get () == nullptr) ? false : true; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 if (rhs.fValue_.get () == nullptr) {
@@ -104,10 +104,10 @@ namespace   Stroika {
             template    <typename T>
             bool    Optional<T>::operator== (const Optional<T>& rhs) const
             {
-                if (fValue_.IsNull ()) {
-                    return rhs.fValue_.IsNull ();
+                if (fValue_.get () == nullptr) {
+                    return rhs.fValue_.get () == nullptr;
                 }
-                if (rhs.fValue_.IsNull ()) {
+                if (rhs.fValue_.get () == nullptr) {
                     return false;
                 }
                 return *fValue_ == *rhs.fValue_;

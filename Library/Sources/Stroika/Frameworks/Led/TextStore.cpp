@@ -512,7 +512,7 @@ namespace   Stroika {
                 size_t  zeroBasedStart  =   0;
                 size_t  zeroBasedEnd    =   0;
                 if (useTextBreaker == nullptr) {
-                    useTextBreaker = GetTextBreaker ();
+                    useTextBreaker = GetTextBreaker ().get ();
                 }
                 AssertNotNull (useTextBreaker);
                 useTextBreaker->FindWordBreaks (buf, len, afterPosition - startOfThisLine, &zeroBasedStart, &zeroBasedEnd, wordReal);
@@ -543,7 +543,7 @@ namespace   Stroika {
                 Assert (afterPosition <= endOfThisLine);
                 size_t  zeroBasedEnd    =   0;
                 if (useTextBreaker == nullptr) {
-                    useTextBreaker = GetTextBreaker ();
+                    useTextBreaker = GetTextBreaker ().get ();
                 }
                 AssertNotNull (useTextBreaker);
                 useTextBreaker->FindLineBreaks (buf, len, afterPosition - startOfThisLine, &zeroBasedEnd, wordReal);

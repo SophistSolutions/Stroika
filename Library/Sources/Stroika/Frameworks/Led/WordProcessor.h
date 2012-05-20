@@ -6,7 +6,6 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 /*
 @MODULE:    WordProcessor
@@ -136,10 +135,10 @@ namespace   Stroika {
                 class       ParagraphDatabaseRep;
                 /*
                 @CLASS:         WordProcessor::ParagraphDatabasePtr
-                @BASES:         @'Memory::SharedPtr<T>', (T=@'WordProcessor::AbstractParagraphDatabaseRep')
-                @DESCRIPTION:   <p>A Memory::SharedPtr (smart pointer) to a @'WordProcessor::AbstractParagraphDatabaseRep'.</p>
+                @BASES:         @'shared_ptr<T>', (T=@'WordProcessor::AbstractParagraphDatabaseRep')
+                @DESCRIPTION:   <p>A shared_ptr (smart pointer) to a @'WordProcessor::AbstractParagraphDatabaseRep'.</p>
                 */
-                typedef Foundation::Memory::SharedPtr<AbstractParagraphDatabaseRep> ParagraphDatabasePtr;
+                typedef shared_ptr<AbstractParagraphDatabaseRep> ParagraphDatabasePtr;
                 nonvirtual  ParagraphDatabasePtr            GetParagraphDatabase () const;
                 nonvirtual  void                            SetParagraphDatabase (const ParagraphDatabasePtr& paragraphDatabase);
             private:
@@ -154,10 +153,10 @@ namespace   Stroika {
             public:
                 /*
                 @CLASS:         WordProcessor::HidableTextDatabasePtr
-                @BASES:         @'Memory::SharedPtr<T>', (T=@'HidableTextMarkerOwner')
-                @DESCRIPTION:   <p>A Memory::SharedPtr (smart pointer) to a @'HidableTextMarkerOwner'.</p>
+                @BASES:         @'shared_ptr<T>', (T=@'HidableTextMarkerOwner')
+                @DESCRIPTION:   <p>A shared_ptr (smart pointer) to a @'HidableTextMarkerOwner'.</p>
                 */
-                typedef Foundation::Memory::SharedPtr<HidableTextMarkerOwner>   HidableTextDatabasePtr;
+                typedef shared_ptr<HidableTextMarkerOwner>   HidableTextDatabasePtr;
                 nonvirtual  HidableTextDatabasePtr  GetHidableTextDatabase () const;
                 nonvirtual  void                    SetHidableTextDatabase (const HidableTextDatabasePtr& hidableTextDatabase);
             private:
@@ -169,8 +168,8 @@ namespace   Stroika {
                 nonvirtual  void        HookHidableTextDatabaseChanged_ ();
 
             protected:
-                virtual     Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    MakeDefaultInternalizer () override;
-                virtual     Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    MakeDefaultExternalizer () override;
+                virtual     shared_ptr<FlavorPackageInternalizer>    MakeDefaultInternalizer () override;
+                virtual     shared_ptr<FlavorPackageExternalizer>    MakeDefaultExternalizer () override;
             protected:
                 virtual     void    HookInternalizerChanged () override;
                 virtual     void    HookExternalizerChanged () override;
@@ -829,7 +828,7 @@ namespace   Stroika {
                 AbstractParagraphDatabaseRep ();
 
             public:
-                typedef Foundation::Memory::SharedPtr<Partition>    PartitionPtr;
+                typedef shared_ptr<Partition>    PartitionPtr;
                 virtual PartitionPtr    GetPartition () const                               = 0;
                 virtual void            SetPartition (const PartitionPtr& partitionPtr)     = 0;
 
@@ -868,7 +867,7 @@ namespace   Stroika {
                 ParagraphDatabaseRep (TextStore& textStore);
 
             public:
-                typedef Foundation::Memory::SharedPtr<Partition>    PartitionPtr;
+                typedef shared_ptr<Partition>    PartitionPtr;
                 virtual     PartitionPtr    GetPartition () const override;
                 virtual     void            SetPartition (const PartitionPtr& partitionPtr) override;
             private:
@@ -1276,10 +1275,10 @@ namespace   Stroika {
                 class   Cell;
 
             protected:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 class   CellRep;
-
-            private:
-                friend  class   Foundation::Memory::SharedPtr<CellRep>;
 
             public:
                 virtual     void            DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
@@ -1613,7 +1612,7 @@ namespace   Stroika {
                 nonvirtual  void        SetCachedBoundsRect (Led_Rect r);
 
             public:
-                Foundation::Memory::SharedPtr<CellRep>  fCellRep;
+                shared_ptr<CellRep>  fCellRep;
             };
 
 

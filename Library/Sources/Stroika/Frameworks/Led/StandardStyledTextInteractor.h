@@ -150,8 +150,8 @@ namespace   Stroika {
                 virtual     void    HookStyleDatabaseChanged () override;
 
             protected:
-                virtual     Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    MakeDefaultInternalizer () override;
-                virtual     Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    MakeDefaultExternalizer () override;
+                virtual     shared_ptr<FlavorPackageInternalizer>    MakeDefaultInternalizer () override;
+                virtual     shared_ptr<FlavorPackageExternalizer>    MakeDefaultExternalizer () override;
 
             protected:
                 virtual     bool    ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) override;

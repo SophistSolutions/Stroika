@@ -138,7 +138,7 @@
 
 
 
-// Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika SharedPtr<> stuff (now I'm getting rid of)
+// Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika shared_ptr<> stuff (now I'm getting rid of)
 // over the std::shared_ptr<>
 #ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 0

@@ -6,7 +6,8 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
+#include    <memory>
+
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -251,7 +252,7 @@ namespace   Stroika {
                     const ScriptRunElt* fScriptRunsEnd;
                     // and we allocate extra space off the end of this object for the acutal data...
                 };
-                Foundation::Memory::SharedPtr<BlockRep> fRep;
+                shared_ptr<BlockRep> fRep;
             };
 
 

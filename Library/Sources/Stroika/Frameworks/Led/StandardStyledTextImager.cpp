@@ -105,7 +105,7 @@ namespace   Stroika {
                 // Only if we created the styledb should we delete it. If it was set by SetStyleDatabase(), don't unset it here.
                 if (fICreatedDatabase) {
                     fICreatedDatabase = false;
-                    if (not fStyleDatabase.IsNull ()) {
+                    if (fStyleDatabase.get () != nullptr) {
                         fStyleDatabase = StyleDatabasePtr ();
                         HookStyleDatabaseChanged ();
                     }
@@ -120,7 +120,7 @@ namespace   Stroika {
 
             void    StandardStyledTextImager::HookGainedNewTextStore_ ()
             {
-                if (fStyleDatabase.IsNull ()) {
+                if (fStyleDatabase.get () == nullptr) {
                     fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
                     fICreatedDatabase = true;
                     HookStyleDatabaseChanged ();
@@ -131,7 +131,7 @@ namespace   Stroika {
             {
                 fStyleDatabase = styleDatabase;
                 fICreatedDatabase = false;
-                if (fStyleDatabase.IsNull () and PeekAtTextStore () != nullptr) {
+                if (fStyleDatabase.get () == nullptr and PeekAtTextStore () != nullptr) {
                     fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
                     fICreatedDatabase = true;
                 }
@@ -371,7 +371,7 @@ namespace   Stroika {
             void    StandardStyledTextImager::Invariant_ () const
             {
                 StyledTextImager::Invariant_ ();
-                if (not fStyleDatabase.IsNull ()) {
+                if (fStyleDatabase.get () != nullptr) {
                     fStyleDatabase->Invariant ();
                 }
             }

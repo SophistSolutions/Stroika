@@ -3,8 +3,6 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
-
 #include    "StyledTextEmbeddedObjects.h"
 #include    "StyledTextIO_HTML.h"
 #include    "StyledTextIO_RTF.h"
@@ -294,14 +292,14 @@ namespace   Stroika {
                 }
             }
 
-            Memory::SharedPtr<FlavorPackageInternalizer>    StandardStyledTextInteractor::MakeDefaultInternalizer ()
+            shared_ptr<FlavorPackageInternalizer>    StandardStyledTextInteractor::MakeDefaultInternalizer ()
             {
-                return Memory::SharedPtr<FlavorPackageInternalizer> (new StyledTextFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase ()));
+                return shared_ptr<FlavorPackageInternalizer> (new StyledTextFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase ()));
             }
 
-            Memory::SharedPtr<FlavorPackageExternalizer>    StandardStyledTextInteractor::MakeDefaultExternalizer ()
+            shared_ptr<FlavorPackageExternalizer>    StandardStyledTextInteractor::MakeDefaultExternalizer ()
             {
-                return Memory::SharedPtr<FlavorPackageExternalizer> (new StyledTextFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase ()));
+                return shared_ptr<FlavorPackageExternalizer> (new StyledTextFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase ()));
             }
 
             /*
@@ -579,7 +577,7 @@ namespace   Stroika {
                 fCachedText ()
             {
                 RequireNotNull (textStore);
-                Require (not textStyleDatabase.IsNull ());
+                Require (textStyleDatabase.get () != nullptr);
             }
 
             StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream ()
@@ -653,7 +651,7 @@ namespace   Stroika {
                 if (testSentinal != kEmbeddingSentinalChar) {
                     Led_ThrowBadFormatDataException ();
                 }
-                Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase);
+                Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase.get ());
             }
 
             void    StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
@@ -663,7 +661,7 @@ namespace   Stroika {
                 if (GetCachedTextSize () != 0) {
                     Flush ();
                 }
-                AddEmbedding (embedding, *fTextStore, fInsertionStart, fStyleRunDatabase);
+                AddEmbedding (embedding, *fTextStore, fInsertionStart, fStyleRunDatabase.get ());
                 fInsertionStart++;
             }
 
@@ -759,7 +757,7 @@ namespace   Stroika {
                 fSelEnd (selectionEnd)
             {
                 RequireNotNull (textStore);
-                Require (not textStyleDatabase.IsNull ());
+                Require (textStyleDatabase.get () != nullptr);
                 Require (fSelStart >= 0);
                 Require (fSelEnd >= 0);
                 fSelEnd = Led_Min (fSelEnd, textStore->GetEnd ());
@@ -775,7 +773,7 @@ namespace   Stroika {
             {
                 RequireNotNull (textImager);
                 RequireNotNull (fTextStore);
-                Require (not fStyleRunDatabase.IsNull ());
+                Require (fStyleRunDatabase.get () != nullptr);
                 Require (fSelStart >= 0);
                 Require (fSelEnd >= 0);
                 fSelEnd = Led_Min (fSelEnd, fTextStore->GetEnd ());
@@ -1161,7 +1159,7 @@ namespace   Stroika {
                             {
                                 // add marker, and do DID_UPDATE stuff so cached metrics and rowheights get refreshed...
                                 TextStore::SimpleUpdater updater (GetTextStore (), pasteStart, pasteStart + 1);
-                                GetTextStore ().AddMarker (objMarker, pasteStart, 1, fStyleDatabase);
+                                GetTextStore ().AddMarker (objMarker, pasteStart, 1, fStyleDatabase.get ());
                             }
                         }
 

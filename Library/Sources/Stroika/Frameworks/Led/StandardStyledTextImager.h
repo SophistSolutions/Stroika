@@ -6,7 +6,6 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 /*
 @MODULE:    StandardStyledTextImager
@@ -130,10 +129,10 @@ namespace   Stroika {
             public:
                 /*
                 @CLASS:         StandardStyledTextImager::StyleDatabasePtr
-                @BASES:         @'Memory::SharedPtr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
+                @BASES:         @'shared_ptr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
                 @DESCRIPTION:
                 */
-                typedef Foundation::Memory::SharedPtr<AbstractStyleDatabaseRep> StyleDatabasePtr;
+                typedef shared_ptr<AbstractStyleDatabaseRep> StyleDatabasePtr;
             public:
                 nonvirtual  StyleDatabasePtr            GetStyleDatabase () const;
                 nonvirtual  void                        SetStyleDatabase (const StyleDatabasePtr& styleDatabase);

@@ -307,13 +307,13 @@ namespace   Stroika {
             */
             void    ParagraphDatabaseRep::SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)
             {
-                Assert (not fPartition.IsNull ());
+                Assert (fPartition.get () != nullptr);
                 inheritedMC::SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
             }
 
             void    ParagraphDatabaseRep::SetInfos (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t> >& infoForMarkers)
             {
-                Assert (not fPartition.IsNull ());
+                Assert (fPartition.get () != nullptr);
                 inheritedMC::SetInfos (charAfterPos, infoForMarkers);
             }
 
@@ -359,7 +359,7 @@ namespace   Stroika {
             */
             void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) throw ()
             {
-                if (not fPartition.IsNull ()) {
+                if (fPartition.get () != nullptr) {
                     MarkerVector    markers =   CollectAllInRange_OrSurroundings (from, to);
                     sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
                     CheckMarkerBounaryConstraints (markers);
@@ -372,7 +372,7 @@ namespace   Stroika {
                  *  For each paragraph style run, check if its edges fall on paragraph (as specified by the partition) boundaries.
                  *  If not - then adjust the style runs so they do.
                  */
-                if (not fPartition.IsNull ()) {
+                if (fPartition.get () != nullptr) {
                     for (MarkerVector::const_iterator i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
                         ParagraphInfoMarker*    m           =   *i;
                         AssertNotNull (m);
@@ -462,7 +462,7 @@ namespace   Stroika {
                 inheritedMC::Invariant_ ();
 
                 // Check partition in-sync with our marker alignments
-                if (not fPartition.IsNull ()) {
+                if (fPartition.get () != nullptr) {
                     // all effected text is diff if we did a replace or not - if no, then from-to,
                     // else from to from+textInserted (cuz from-to deleted)
                     MarkerVector    markers =   CollectAllInRange_OrSurroundings (0, GetTextStore ().GetLength () + 1);
@@ -505,7 +505,7 @@ namespace   Stroika {
                  *  Just randomly grab tables, and lay them out. Don't spend more than kMaxTime per
                  *  idle time call. First check if 'fSomeInvalidTables' as a performance hack (SPR#1365).
                  */
-                AbstractParagraphDatabaseRep*   pdbRep  =   fWP->GetParagraphDatabase ();
+                AbstractParagraphDatabaseRep*   pdbRep  =   fWP->GetParagraphDatabase ().get ();
                 AssertNotNull (pdbRep);
                 if (pdbRep->fSomeInvalidTables) {
                     const   float   kMaxTime    =   0.2f;
@@ -870,7 +870,7 @@ namespace   Stroika {
             bool    CheckForCommonParaValue (EXTRACTOR /*INGORED_BUT_HERE_FOR_OVERLOADING*/, const WordProcessor::ParagraphDatabasePtr& paraDB, size_t from, size_t to, T* commonValue)
             {
                 RequireNotNull (commonValue);
-                if (paraDB.IsNull ()) {
+                if (paraDB.get () == nullptr) {
                     throw WordProcessor::NoParagraphDatabaseAvailable ();
                 }
                 vector<pair<WordProcessor::ParagraphInfo, size_t> >  v   =   paraDB->GetParagraphInfo (from, to - from);
@@ -1002,8 +1002,8 @@ namespace   Stroika {
                 //  could be destroyed after this call returns - and then we'd have a database with a bogus pointer to a TextStore.
                 if (fICreatedParaDB) {
                     fICreatedParaDB = false;
-                    if (not fParagraphDatabase.IsNull ()) {
-                        fParagraphDatabase.clear ();    // Cannot call WordProcessor::SetParagraphDatabase (nullptr) cuz that might build a NEW one
+                    if (fParagraphDatabase.get () != nullptr) {
+                        fParagraphDatabase.reset ();    // Cannot call WordProcessor::SetParagraphDatabase (nullptr) cuz that might build a NEW one
                         HookParagraphDatabaseChanged ();
                     }
                 }
@@ -1012,9 +1012,9 @@ namespace   Stroika {
                     fICreatedHidableTextDB = false;
                 }
                 //to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
-                if (not fHidableTextDatabase.IsNull ()) {
-                    fHidableTextDatabase->SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());
-                    fHidableTextDatabase->SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());
+                if (fHidableTextDatabase.get () != nullptr) {
+                    fHidableTextDatabase->SetInternalizer (shared_ptr<FlavorPackageInternalizer> ());
+                    fHidableTextDatabase->SetExternalizer (shared_ptr<FlavorPackageExternalizer> ());
                 }
             }
 
@@ -1024,7 +1024,7 @@ namespace   Stroika {
                  *  Note - we must check if the ParagraphDatabase has already been set - and use its Partition. Do this before
                  *  calling inherited::HookGainedNewTextStore () to avoid redundant creation of a 'default' partition (speed tweek).
                  */
-                if (not fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () != nullptr) {
                     SetPartition (fParagraphDatabase->GetPartition ());
                 }
                 inherited::HookGainedNewTextStore ();
@@ -1033,10 +1033,10 @@ namespace   Stroika {
 
             void    WordProcessor::HookGainedNewTextStore_ ()
             {
-                if (fParagraphDatabase.IsNull ()) {
-                    SetParagraphDatabase (ParagraphDatabasePtr ()); // fills in default value since we have e textstore...
+                if (fParagraphDatabase.get () == nullptr) {
+                    SetParagraphDatabase (ParagraphDatabasePtr ()); // fills in default value since we have a textstore...
                 }
-                if (fHidableTextDatabase.IsNull ()) {
+                if (fHidableTextDatabase.get () == nullptr) {
                     SetHidableTextDatabase (HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (GetTextStore ())));  // fills in default value since we have e textstore...
                     fICreatedHidableTextDB = true;                                                  // do this AFTER above call - cuz WordProcessor::SetHidableTextDatabase () sets flag FALSE (so for case when others call it)
                 }
@@ -1046,11 +1046,11 @@ namespace   Stroika {
             {
 // Probably no point in overriding this anymore - LGP 2002-10-20 -- RETHINK??? Perhaps no harm - either...
                 RequireNotNull (PeekAtTextStore ());
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return PartitionPtr (new LineBasedPartition (GetTextStore ()));
                 }
                 else {
-                    const MarkerOwner*  mo  =   fParagraphDatabase;
+                    const MarkerOwner*  mo  =   fParagraphDatabase.get ();
                     return PartitionPtr (new WPPartition (GetTextStore (), *const_cast<MarkerOwner*> (mo)));
                 }
             }
@@ -1068,7 +1068,7 @@ namespace   Stroika {
             {
                 fParagraphDatabase = paragraphDatabase;
                 fICreatedParaDB = false;
-                if (fParagraphDatabase.IsNull () and PeekAtTextStore () != nullptr) {
+                if (fParagraphDatabase.get () == nullptr and PeekAtTextStore () != nullptr) {
                     fParagraphDatabase = ParagraphDatabasePtr (new ParagraphDatabaseRep (GetTextStore ()));
                     fICreatedParaDB = true;
                 }
@@ -1102,7 +1102,7 @@ namespace   Stroika {
                  *  ParagraphDatabase, and since you can operate on a paragraphdatabase without a WP/imager (say with a document),
                  *  it makes sense to assume THAT is primary. -- LGP 2002-10-20
                  */
-                if (not fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () != nullptr) {
                     SetPartition (fParagraphDatabase->GetPartition ());
                 }
                 SetExternalizer (MakeDefaultExternalizer ());
@@ -1124,9 +1124,9 @@ namespace   Stroika {
             void    WordProcessor::SetHidableTextDatabase (const HidableTextDatabasePtr& hidableTextDatabase)
             {
                 //to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
-                if (not fHidableTextDatabase.IsNull ()) {
-                    fHidableTextDatabase->SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());
-                    fHidableTextDatabase->SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());
+                if (fHidableTextDatabase.get () != nullptr) {
+                    fHidableTextDatabase->SetInternalizer (shared_ptr<FlavorPackageInternalizer> ());
+                    fHidableTextDatabase->SetExternalizer (shared_ptr<FlavorPackageExternalizer> ());
                 }
 
                 fHidableTextDatabase = hidableTextDatabase;
@@ -1160,14 +1160,14 @@ namespace   Stroika {
                 }
             }
 
-            Memory::SharedPtr<FlavorPackageInternalizer>    WordProcessor::MakeDefaultInternalizer ()
+            shared_ptr<FlavorPackageInternalizer>    WordProcessor::MakeDefaultInternalizer ()
             {
-                return Memory::SharedPtr<FlavorPackageInternalizer> (new WordProcessorFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
+                return shared_ptr<FlavorPackageInternalizer> (new WordProcessorFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
             }
 
-            Memory::SharedPtr<FlavorPackageExternalizer>    WordProcessor::MakeDefaultExternalizer ()
+            shared_ptr<FlavorPackageExternalizer>    WordProcessor::MakeDefaultExternalizer ()
             {
-                return Memory::SharedPtr<FlavorPackageExternalizer> (new WordProcessorFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
+                return shared_ptr<FlavorPackageExternalizer> (new WordProcessorFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
             }
 
             /*
@@ -1177,7 +1177,7 @@ namespace   Stroika {
             void    WordProcessor::HookInternalizerChanged ()
             {
                 inherited::HookInternalizerChanged ();
-                if (not fHidableTextDatabase.IsNull ()) {
+                if (fHidableTextDatabase.get () != nullptr) {
                     fHidableTextDatabase->SetInternalizer (GetInternalizer ());
                 }
             }
@@ -1189,7 +1189,7 @@ namespace   Stroika {
             void    WordProcessor::HookExternalizerChanged ()
             {
                 inherited::HookExternalizerChanged ();
-                if (not fHidableTextDatabase.IsNull ()) {
+                if (fHidableTextDatabase.get () != nullptr) {
                     fHidableTextDatabase->SetExternalizer (GetExternalizer ());
                 }
             }
@@ -1208,7 +1208,7 @@ namespace   Stroika {
                 if (t != nullptr) {
                     WordProcessorFlavorPackageInternalizer* internalizerRep =
                         dynamic_cast<WordProcessorFlavorPackageInternalizer*> (
-                            static_cast<FlavorPackageInternalizer*> (GetInternalizer ())
+                            static_cast<FlavorPackageInternalizer*> (GetInternalizer ().get ())
                         );
                     AssertNotNull (internalizerRep);
 
@@ -1253,7 +1253,7 @@ namespace   Stroika {
             {
                 WordProcessorFlavorPackageExternalizer* externalizerRep =
                     dynamic_cast<WordProcessorFlavorPackageExternalizer*> (
-                        static_cast<FlavorPackageExternalizer*> (GetExternalizer ())
+                        static_cast<FlavorPackageExternalizer*> (GetExternalizer ().get ())
                     );
                 AssertNotNull (externalizerRep);
 
@@ -1303,7 +1303,7 @@ namespace   Stroika {
             */
             Led_Justification   WordProcessor::GetJustification (size_t characterPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 return fParagraphDatabase->GetParagraphInfo (characterPos).GetJustification ();
@@ -1452,7 +1452,7 @@ namespace   Stroika {
             */
             Led_TWIPS   WordProcessor::GetSpaceBefore (size_t characterPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 return fParagraphDatabase->GetParagraphInfo (characterPos).GetSpaceBefore ();
@@ -1477,7 +1477,7 @@ namespace   Stroika {
             void    WordProcessor::SetSpaceBefore (size_t from, size_t to, Led_TWIPS sb)
             {
                 Require (from <= to);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 IncrementalParagraphInfo pi;
@@ -1492,7 +1492,7 @@ namespace   Stroika {
             */
             Led_TWIPS   WordProcessor::GetSpaceAfter (size_t characterPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 return fParagraphDatabase->GetParagraphInfo (characterPos).GetSpaceAfter ();
@@ -1517,7 +1517,7 @@ namespace   Stroika {
             void    WordProcessor::SetSpaceAfter (size_t from, size_t to, Led_TWIPS sa)
             {
                 Require (from <= to);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 IncrementalParagraphInfo pi;
@@ -1532,7 +1532,7 @@ namespace   Stroika {
             */
             Led_LineSpacing WordProcessor::GetLineSpacing (size_t characterPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 return fParagraphDatabase->GetParagraphInfo (characterPos).GetLineSpacing ();
@@ -1559,7 +1559,7 @@ namespace   Stroika {
                 Require (from <= to);
                 IncrementalParagraphInfo pi;
                 pi.SetLineSpacing (sl);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 fParagraphDatabase->SetParagraphInfo (from, to - from, pi);
@@ -1572,7 +1572,7 @@ namespace   Stroika {
             */
             ListStyle   WordProcessor::GetListStyle (size_t characterPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 return fParagraphDatabase->GetParagraphInfo (characterPos).GetListStyle ();
@@ -1599,7 +1599,7 @@ namespace   Stroika {
                 Require (from <= to);
                 IncrementalParagraphInfo pi;
                 pi.SetListStyle (listStyle);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 fParagraphDatabase->SetParagraphInfo (from, to - from, pi);
@@ -1616,7 +1616,7 @@ namespace   Stroika {
             */
             unsigned char   WordProcessor::GetListIndentLevel (size_t characterPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 return fParagraphDatabase->GetParagraphInfo (characterPos).GetListIndentLevel ();
@@ -1643,7 +1643,7 @@ namespace   Stroika {
                 Require (from <= to);
                 IncrementalParagraphInfo pi;
                 pi.SetListIndentLevel (indentLevel);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 fParagraphDatabase->SetParagraphInfo (from, to - from, pi);
@@ -1886,7 +1886,7 @@ namespace   Stroika {
             */
             WordProcessor::Table*   WordProcessor::InsertTable (size_t at)
             {
-                Table*  t   =   new Table (fParagraphDatabase, at);
+                Table*  t   =   new Table (fParagraphDatabase.get (), at);
                 t->SetDimensions (1, 1);    //tmphack so we have at least one sentinal - auto-delete table when it becomes empty?
                 //like the embeddings it owns!
                 // LGP 2002-11-15
@@ -1906,8 +1906,8 @@ namespace   Stroika {
                 Require (from <= to);
                 Require (to <= GetTextStore ().GetLength () + 1);
                 MarkersOfATypeMarkerSink2Vector<Table>  result;
-                if (not fParagraphDatabase.IsNull ()) {
-                    GetTextStore ().CollectAllMarkersInRangeInto (from, to, fParagraphDatabase, result);
+                if (fParagraphDatabase.get () != nullptr) {
+                    GetTextStore ().CollectAllMarkersInRangeInto (from, to, fParagraphDatabase.get (), result);
                 }
                 return result.fResult;
             }
@@ -1921,8 +1921,8 @@ namespace   Stroika {
                 size_t  to  =   from + 1;
                 Require (to <= GetTextStore ().GetLength () + 1);
                 MarkerOfATypeMarkerSink<Table>  result;
-                if (not fParagraphDatabase.IsNull ()) {
-                    GetTextStore ().CollectAllMarkersInRangeInto (from, to, fParagraphDatabase, result);
+                if (fParagraphDatabase.get () != nullptr) {
+                    GetTextStore ().CollectAllMarkersInRangeInto (from, to, fParagraphDatabase.get (), result);
                 }
                 return result.fResult;
             }
@@ -2032,7 +2032,7 @@ namespace   Stroika {
             */
             Led_TWIPS   WordProcessor::GetFarthestRightMarginInDocument () const
             {
-                AbstractParagraphDatabaseRep*   pdbRep  =   GetParagraphDatabase ();
+                AbstractParagraphDatabaseRep*   pdbRep  =   GetParagraphDatabase ().get ();
                 RequireNotNull (pdbRep);    // this shouldn't be called with a null PDB?
                 if (pdbRep->fCachedFarthestRightMarginInDocument == kBadCachedFarthestRightMarginInDocument) {
                     pdbRep->fCachedFarthestRightMarginInDocument = CalculateFarthestRightMarginInDocument ();
@@ -2079,8 +2079,8 @@ namespace   Stroika {
             {
                 inherited::InvalidateAllCaches ();
                 ParagraphDatabasePtr    pdb =   GetParagraphDatabase ();
-                if (not pdb.IsNull ()) {
-                    static_cast<AbstractParagraphDatabaseRep*> (pdb)->fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+                if (pdb.get () != nullptr) {
+                    static_cast<AbstractParagraphDatabaseRep*> (pdb.get ())->fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
                 }
             }
 
@@ -2088,8 +2088,8 @@ namespace   Stroika {
             {
                 inherited::TabletChangedMetrics ();
                 ParagraphDatabasePtr    pdb =   GetParagraphDatabase ();
-                if (not pdb.IsNull ()) {
-                    static_cast<AbstractParagraphDatabaseRep*> (pdb)->fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+                if (pdb.get () != nullptr) {
+                    static_cast<AbstractParagraphDatabaseRep*> (pdb.get ())->fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
                 }
             }
 
@@ -2846,7 +2846,7 @@ namespace   Stroika {
                     UndoableContextHelper   context (*this, GetCommandNames ().fInsertURLCommandName, false);
                     {
                         SimpleEmbeddedObjectStyleMarker*    e   =   new StandardURLStyleMarker (Led_URLD (Led_SDKString2ANSI (url).c_str (), Led_SDKString2ANSI (title).c_str ()));
-                        AddEmbedding (e, GetTextStore (), GetSelectionStart (), GetStyleDatabase ());
+                        AddEmbedding (e, GetTextStore (), GetSelectionStart (), GetStyleDatabase ().get ());
                         SetSelection (e->GetEnd (), e->GetEnd ());
                     }
                     context.CommandComplete ();
@@ -3288,7 +3288,7 @@ namespace   Stroika {
             */
             Led_tString WordProcessor::GetListLeader (size_t paragraphMarkerPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 ParagraphInfo   pi  =   fParagraphDatabase->GetParagraphInfo (paragraphMarkerPos);
@@ -3318,7 +3318,7 @@ namespace   Stroika {
             */
             Led_Distance    WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
 
@@ -3541,7 +3541,7 @@ namespace   Stroika {
                                                     const TextLayoutBlock& text, size_t rowStart, size_t rowEnd
                                                    )
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
                 RowReference    row =   GetRowReferenceContainingPosition (rowStart);
@@ -3731,7 +3731,7 @@ namespace   Stroika {
 
                 if (d == 0) {
                     HidableTextDatabasePtr  hdb =   GetHidableTextDatabase ();
-                    if (not hdb.IsNull ()) {
+                    if (hdb.get () != nullptr) {
                         DiscontiguousRun<bool>  regions =   hdb->GetHidableRegions (from, to);
                         if (not regions.empty ()) {
                             if (not regions[0].fData) {
@@ -3882,7 +3882,7 @@ namespace   Stroika {
 
                 if (d == 0) {
                     HidableTextDatabasePtr  hdb =   GetHidableTextDatabase ();
-                    if (not hdb.IsNull ()) {
+                    if (hdb.get () != nullptr) {
                         DiscontiguousRun<bool>  regions =   hdb->GetHidableRegions (from, to);
                         if (not regions.empty ()) {
                             if (not regions[0].fData) {
@@ -4018,7 +4018,7 @@ namespace   Stroika {
                  *  halfway decently. -- LGP 2000-08-07
                  */
                 HidableTextDatabasePtr  hdb =   GetHidableTextDatabase ();
-                if (not hdb.IsNull ()) {
+                if (hdb.get () == nullptr) {
 Again:
                     if (direction == eCursorBack or direction == eCursorToStart) {
                         DiscontiguousRun<bool>  regions =   hdb->GetHidableRegions (FindPreviousCharacter (result), result);
@@ -4202,7 +4202,7 @@ Again:
             */
             void    WordProcessor::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     throw NoParagraphDatabaseAvailable ();
                 }
 
@@ -4569,7 +4569,7 @@ Again:
                     size_t                          realCoordStart  =   GetInsertionStart ();
                     MarkerOfATypeMarkerSink<Table>  maybeTable;
                     Assert (realCoordStart <= ts.GetEnd ());
-                    ts.CollectAllMarkersInRangeInto (ts.FindPreviousCharacter (realCoordStart), realCoordStart, fParagraphDatabase, maybeTable);
+                    ts.CollectAllMarkersInRangeInto (ts.FindPreviousCharacter (realCoordStart), realCoordStart, fParagraphDatabase.get (), maybeTable);
                     if (maybeTable.fResult != nullptr) {
                         fCurrentTable = maybeTable.fResult;
                         size_t  rowSelStart =   0;
@@ -4582,7 +4582,7 @@ Again:
                 }
 
                 if (fCurrentTable == nullptr) {
-                    fCurrentTable = new Table (fParagraphDatabase, current_offset () + GetOriginalStart ());
+                    fCurrentTable = new Table (fParagraphDatabase.get (), current_offset () + GetOriginalStart ());
                     SetInsertionStart (GetInsertionStart () + 1);   // cuz we added a row which adds a sentinal
                     fNextTableRow = 0;
                     fNextTableCell = 0;
@@ -4986,7 +4986,7 @@ Again:
                 fHidableTextRuns ()
             {
 
-                if (not hidableTextDatabase.IsNull ()) {
+                if (hidableTextDatabase.get () != nullptr) {
                     fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
                 }
             }
@@ -4998,14 +4998,14 @@ Again:
                 fHidableTextRuns ()
             {
                 WordProcessor::HidableTextDatabasePtr   hidableTextDatabase =   textImager->GetHidableTextDatabase ();
-                if (not hidableTextDatabase.IsNull ()) {
+                if (hidableTextDatabase.get () != nullptr) {
                     fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
                 }
             }
 
             Led_Justification   WordProcessorTextIOSrcStream::GetJustification ()   const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return inherited::GetJustification ();
                 }
                 else {
@@ -5015,7 +5015,7 @@ Again:
 
             TextImager::StandardTabStopList WordProcessorTextIOSrcStream::GetStandardTabStopList () const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return inherited::GetStandardTabStopList ();
                 }
                 else {
@@ -5025,7 +5025,7 @@ Again:
 
             Led_TWIPS   WordProcessorTextIOSrcStream::GetFirstIndent () const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return inherited::GetFirstIndent ();
                 }
                 else {
@@ -5037,7 +5037,7 @@ Again:
             {
                 RequireNotNull (lhs);
                 RequireNotNull (rhs);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     inherited::GetMargins (lhs, rhs);
                 }
                 else {
@@ -5053,7 +5053,7 @@ Again:
             */
             Led_TWIPS       WordProcessorTextIOSrcStream::GetSpaceBefore () const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return inherited::GetSpaceBefore ();
                 }
                 else {
@@ -5068,7 +5068,7 @@ Again:
             */
             Led_TWIPS           WordProcessorTextIOSrcStream::GetSpaceAfter () const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return inherited::GetSpaceAfter ();
                 }
                 else {
@@ -5083,7 +5083,7 @@ Again:
             */
             Led_LineSpacing         WordProcessorTextIOSrcStream::GetLineSpacing () const
             {
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     return inherited::GetLineSpacing ();
                 }
                 else {
@@ -5100,7 +5100,7 @@ Again:
             {
                 RequireNotNull (listStyle);
                 RequireNotNull (indentLevel);
-                if (fParagraphDatabase.IsNull ()) {
+                if (fParagraphDatabase.get () == nullptr) {
                     inherited::GetListStyleInfo (listStyle, indentLevel);
                 }
                 else {
@@ -5122,11 +5122,11 @@ Again:
 
             WordProcessorTextIOSrcStream::Table*    WordProcessorTextIOSrcStream::GetTableAt (size_t at) const
             {
-                Require (not fParagraphDatabase.IsNull ());
+                Require (fParagraphDatabase.get () != nullptr);
                 TextStore&                                      ts              =   fParagraphDatabase->GetTextStore ();
                 size_t                                          realCoordStart  =   GetEmbeddingMarkerPosOffset () + at;
                 MarkerOfATypeMarkerSink<WordProcessor::Table>   maybeTable;
-                ts.CollectAllMarkersInRangeInto (realCoordStart, realCoordStart + 1, fParagraphDatabase, maybeTable);
+                ts.CollectAllMarkersInRangeInto (realCoordStart, realCoordStart + 1, fParagraphDatabase.get (), maybeTable);
                 if (maybeTable.fResult == nullptr) {
                     return nullptr;
                 }
@@ -5159,7 +5159,7 @@ Again:
                     typedef WordProcessor::Table    Table;
                     TextStore&                              ts          =   fParagraphDatabase->GetTextStore ();
                     MarkersOfATypeMarkerSink2Vector<Table>  tables;
-                    ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase, tables);
+                    ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase.get (), tables);
                     for (vector<Table*>::iterator i = tables.fResult.begin (); i != tables.fResult.end (); ++i) {
                         TableIOMapper tiom (**i);
                         size_t  rows    =   tiom.GetRows ();
@@ -7707,12 +7707,12 @@ Done:
 
             WordProcessor::Table::CellRep::~CellRep ()
             {
-                Require (fStyleDatabase.CurrentRefCount () == 1);       // hack to debug SPR#1465
-                Require (fParagraphDatabase.CurrentRefCount () == 1);   // ''
-                Require (fHidableTextDatabase.CurrentRefCount () == 1); // ''
-                fStyleDatabase.clear ();
-                fParagraphDatabase.clear ();
-                fHidableTextDatabase.clear ();
+                Require (fStyleDatabase.use_count () == 1);       // hack to debug SPR#1465
+                Require (fParagraphDatabase.use_count () == 1);   // ''
+                Require (fHidableTextDatabase.use_count () == 1); // ''
+                fStyleDatabase.reset ();
+                fParagraphDatabase.reset ();
+                fHidableTextDatabase.reset ();
                 if (fTextStore != nullptr) {
                     fTextStore->RemoveMarkerOwner (this);
                 }
@@ -7832,7 +7832,7 @@ Done:
                 inherited::HookInternalizerChanged ();
                 WordProcessorFlavorPackageInternalizer* internalizerRep =
                     dynamic_cast<WordProcessorFlavorPackageInternalizer*> (
-                        static_cast<FlavorPackageInternalizer*> (GetInternalizer ())
+                        static_cast<FlavorPackageInternalizer*> (GetInternalizer ().get ())
                     );
                 AssertNotNull (internalizerRep);
                 internalizerRep->SetNoTablesAllowed (true);

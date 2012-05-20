@@ -7,7 +7,6 @@
 #include    "../../Foundation/StroikaPreComp.h"
 
 #include    "../../Foundation/Containers/LRUCache.h"
-#include    "../../Foundation/Memory/SharedPtr.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -232,7 +231,7 @@ namespace   Stroika {
                 virtual ~PartitioningTextImager ();
 
             public:
-                typedef Foundation::Memory::SharedPtr<Partition>    PartitionPtr;
+                typedef shared_ptr<Partition>    PartitionPtr;
                 nonvirtual  PartitionPtr    GetPartition () const;
             protected:
                 virtual     void            SetPartition (const PartitionPtr& partitionPtr);
@@ -246,7 +245,7 @@ namespace   Stroika {
             private:
                 class   MeasureTextCache;
 #if     qAutoPtrBrokenBug
-                Foundation::Memory::SharedPtr<MeasureTextCache> fMeasureTextCache;
+                shared_ptr<MeasureTextCache> fMeasureTextCache;
 #else
                 auto_ptr<MeasureTextCache>      fMeasureTextCache;
 #endif
@@ -543,7 +542,7 @@ namespace   Stroika {
             }
             inline  Partition::PartitionMarker* PartitioningTextImager::GetFirstPartitionMarker () const
             {
-                Require (not fPartition.IsNull ());     // perhaps you've forgotten to call SpecifyTextStore or SetPartition ()?
+                Require (fPartition.get () != nullptr);     // perhaps you've forgotten to call SpecifyTextStore or SetPartition ()?
                 return fPartition->GetFirstPartitionMarker ();
             }
             /*

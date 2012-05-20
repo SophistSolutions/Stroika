@@ -453,7 +453,7 @@ namespace   {
     // For now - disable this class cuz its broken - run regression tests to see.
     // I'm not clear on how this is supposed to work. While read-only, it works FINE. But if anyone ever makes ANY modifications (removall, etc),
     // we REALLY want to switch to a differnt REP!!! Like o flength goes zero - we want to return the global kEmptyStringRep (maybe not).
-    // But we more likely want to swithc the the string buffered rep or something. Maybe have virtual methods like InsertAt<>(in rep) retuirn SharedPtr<Rep> so it can be changed?
+    // But we more likely want to swithc the the string buffered rep or something. Maybe have virtual methods like InsertAt<>(in rep) return shared_ptr<Rep> so it can be changed?
     // Or take ref-param of that guy so it can be changed???
 #define qString_SubStringClassWorks 0
 

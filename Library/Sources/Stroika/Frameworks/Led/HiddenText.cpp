@@ -4,8 +4,7 @@
 #include    "../../Foundation/StroikaPreComp.h"
 
 #include    <iterator>
-
-#include    "../../Foundation/Memory/SharedPtr.h"
+#include    <memory>
 
 #include    "Config.h"
 
@@ -53,8 +52,8 @@ namespace   Stroika {
                 fTextStore (textStore),
                 fMarkersToBeDeleted ()
             {
-                SetInternalizer (Memory::SharedPtr<FlavorPackageInternalizer> ());  // sets default
-                SetExternalizer (Memory::SharedPtr<FlavorPackageExternalizer> ());  // DITTO
+                SetInternalizer (shared_ptr<FlavorPackageInternalizer> ());  // sets default
+                SetExternalizer (shared_ptr<FlavorPackageExternalizer> ());  // DITTO
                 fTextStore.AddMarkerOwner (this);
             }
 
@@ -363,11 +362,11 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Sets the internalizer (@'FlavorPackageInternalizer' subclass). to be used with this class.
                 It defaults to @'FlavorPackageInternalizer'.</p>
             */
-            void    HidableTextMarkerOwner::SetInternalizer (const Memory::SharedPtr<FlavorPackageInternalizer>& i)
+            void    HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
             {
                 fInternalizer = i;
-                if (fInternalizer.IsNull ()) {
-                    fInternalizer = Memory::SharedPtr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
+                if (fInternalizer.get () == nullptr) {
+                    fInternalizer = shared_ptr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
                 }
             }
 
@@ -376,11 +375,11 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Sets the externalizer (@'FlavorPackageExternalizer' subclass). to be used with this class.
                 It defaults to @'FlavorPackageExternalizer'.</p>
             */
-            void    HidableTextMarkerOwner::SetExternalizer (const Memory::SharedPtr<FlavorPackageExternalizer>& e)
+            void    HidableTextMarkerOwner::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
             {
                 fExternalizer = e;
-                if (fExternalizer.IsNull ()) {
-                    fExternalizer = Memory::SharedPtr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
+                if (fExternalizer.get () == nullptr) {
+                    fExternalizer = shared_ptr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
                 }
             }
 

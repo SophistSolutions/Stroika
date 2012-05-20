@@ -12,9 +12,7 @@ Objs	=	\
 	$(ObjDir)BlockAllocated.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)MemoryAllocator.o\
-	$(ObjDir)SharedPtr.o\
 	$(ObjDir)VariantValue.o\
-	$(ObjDir)WeakSharedPtr.o\
 
 
 all:	$(Objs)

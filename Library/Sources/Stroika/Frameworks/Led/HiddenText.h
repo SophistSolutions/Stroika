@@ -6,7 +6,6 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 
 /*
@@ -86,16 +85,16 @@ namespace   Stroika {
 
 
             public:
-                nonvirtual  Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    GetInternalizer () const;
-                nonvirtual  void                                        SetInternalizer (const Foundation::Memory::SharedPtr<FlavorPackageInternalizer>& i);
+                nonvirtual  shared_ptr<FlavorPackageInternalizer>    GetInternalizer () const;
+                nonvirtual  void                                        SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
             private:
-                Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    fInternalizer;
+                shared_ptr<FlavorPackageInternalizer>    fInternalizer;
 
             public:
-                nonvirtual  Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    GetExternalizer () const;
-                nonvirtual  void                                        SetExternalizer (const Foundation::Memory::SharedPtr<FlavorPackageExternalizer>& e);
+                nonvirtual  shared_ptr<FlavorPackageExternalizer>    GetExternalizer () const;
+                nonvirtual  void                                        SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
             private:
-                Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    fExternalizer;
+                shared_ptr<FlavorPackageExternalizer>    fExternalizer;
 
             protected:
                 class   HidableTextMarker;
@@ -379,11 +378,11 @@ namespace   Stroika {
              ********************************************************************************
              */
 //  class   HidableTextMarkerOwner
-            inline  Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    HidableTextMarkerOwner::GetInternalizer () const
+            inline  shared_ptr<FlavorPackageInternalizer>    HidableTextMarkerOwner::GetInternalizer () const
             {
                 return fInternalizer;
             }
-            inline  Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    HidableTextMarkerOwner::GetExternalizer () const
+            inline  shared_ptr<FlavorPackageExternalizer>    HidableTextMarkerOwner::GetExternalizer () const
             {
                 return fExternalizer;
             }

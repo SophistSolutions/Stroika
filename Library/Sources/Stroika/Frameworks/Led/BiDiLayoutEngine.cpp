@@ -914,7 +914,7 @@ namespace   Stroika {
                 neededSize += sizeof (Led_tChar) * strLength;               // fRealText
                 neededSize += sizeof (Led_tChar) * strLength;               // fVirtualText
                 neededSize += sizeof (ScriptRunElt) * scriptRuns.size ();   // fScriptRuns
-                fRep = Memory::SharedPtr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte [neededSize]));
+                fRep = shared_ptr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte [neededSize]));
 
                 fRep->fTextLength = strLength;
 

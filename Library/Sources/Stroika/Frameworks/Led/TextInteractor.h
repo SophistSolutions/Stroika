@@ -6,7 +6,6 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 /*
 @MODULE:    TextInteractor
@@ -631,13 +630,13 @@ namespace   Stroika {
                         bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate
                                                                );
             public:
-                nonvirtual  Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    GetInternalizer () const;
-                nonvirtual  void                                        SetInternalizer (const Foundation::Memory::SharedPtr<FlavorPackageInternalizer>& i);
+                nonvirtual  shared_ptr<FlavorPackageInternalizer>    GetInternalizer () const;
+                nonvirtual  void                                        SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
             private:
-                Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    fInternalizer;
+                shared_ptr<FlavorPackageInternalizer>    fInternalizer;
 
             protected:
-                virtual Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    MakeDefaultInternalizer ();
+                virtual shared_ptr<FlavorPackageInternalizer>    MakeDefaultInternalizer ();
                 virtual void    HookInternalizerChanged ();
 
 
@@ -647,13 +646,13 @@ namespace   Stroika {
                 virtual void    ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage);
 
             public:
-                nonvirtual  Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    GetExternalizer () const;
-                nonvirtual  void                                        SetExternalizer (const Foundation::Memory::SharedPtr<FlavorPackageExternalizer>& e);
+                nonvirtual  shared_ptr<FlavorPackageExternalizer>    GetExternalizer () const;
+                nonvirtual  void                                        SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
             private:
-                Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    fExternalizer;
+                shared_ptr<FlavorPackageExternalizer>    fExternalizer;
 
             protected:
-                virtual Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    MakeDefaultExternalizer ();
+                virtual shared_ptr<FlavorPackageExternalizer>    MakeDefaultExternalizer ();
                 virtual void    HookExternalizerChanged ();
 
 
@@ -1758,7 +1757,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetInternalizer
             @DESCRIPTION:
             */
-            inline  Foundation::Memory::SharedPtr<FlavorPackageInternalizer>    TextInteractor::GetInternalizer () const
+            inline  shared_ptr<FlavorPackageInternalizer>    TextInteractor::GetInternalizer () const
             {
                 return fInternalizer;
             }
@@ -1766,7 +1765,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetInternalizer
             @DESCRIPTION:   <p>Calls @'TextInteractor::HookInternalizerChanged' whenever the internalizer changes. Can be a nullptr externalizer.</p>
             */
-            inline  void                                        TextInteractor::SetInternalizer (const Foundation::Memory::SharedPtr<FlavorPackageInternalizer>& i)
+            inline  void                                        TextInteractor::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
             {
                 fInternalizer = i;
                 HookInternalizerChanged ();
@@ -1775,7 +1774,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetExternalizer
             @DESCRIPTION:
             */
-            inline  Foundation::Memory::SharedPtr<FlavorPackageExternalizer>    TextInteractor::GetExternalizer () const
+            inline  shared_ptr<FlavorPackageExternalizer>    TextInteractor::GetExternalizer () const
             {
                 return fExternalizer;
             }
@@ -1783,7 +1782,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetExternalizer
             @DESCRIPTION:   <p>Calls @'TextInteractor::HookExternalizerChanged' whenever the externalizer changes. Can be a nullptr externalizer.</p>
             */
-            inline  void    TextInteractor::SetExternalizer (const Foundation::Memory::SharedPtr<FlavorPackageExternalizer>& e)
+            inline  void    TextInteractor::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
             {
                 fExternalizer = e;
                 HookExternalizerChanged ();

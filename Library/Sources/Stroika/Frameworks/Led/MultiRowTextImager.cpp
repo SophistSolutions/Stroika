@@ -74,7 +74,7 @@ namespace   Stroika {
 
             void    MultiRowTextImager::HookGainedNewTextStore_ ()
             {
-                if (GetPartition ().IsNull ()) {
+                if (GetPartition ().get () == nullptr) {
                     SetPartition (MakeDefaultPartition ());
                 }
             }
@@ -87,13 +87,13 @@ namespace   Stroika {
                 fPMCacheMgr.reset ();
 #endif
                 inherited::SetPartition (partitionPtr);
-                if (partitionPtr.IsNull ()) {
+                if (partitionPtr.get () == nullptr) {
                     InvalidateTotalRowsInWindow ();
                     fTopLinePartitionMarkerInWindow = nullptr;
                 }
                 else {
 #if     qAutoPtrBrokenBug
-                    fPMCacheMgr = Memory::SharedPtr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
+                    fPMCacheMgr = shared_ptr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
 #else
                     fPMCacheMgr = auto_ptr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
 #endif
@@ -1021,7 +1021,7 @@ namespace   Stroika {
             void    MultiRowTextImager::InvalidateAllCaches ()
             {
                 inherited::InvalidateAllCaches ();
-                if (not GetPartition ().IsNull ()) {        // careful that we aren't changing text metrics while we have no textstore attached!!!
+                if (GetPartition ().get () != nullptr) {        // careful that we aren't changing text metrics while we have no textstore attached!!!
                     if (fPMCacheMgr.get () != nullptr) {
                         fPMCacheMgr->ClearCache ();
                     }
@@ -1366,7 +1366,7 @@ namespace   Stroika {
              */
             void    MultiRowTextImager::PartitionElementCacheInfo::Clear ()
             {
-                fRep = Memory::SharedPtr<Rep> (new Rep ());
+                fRep = shared_ptr<Rep> (new Rep ());
             }
 
             void    MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight)
@@ -1435,15 +1435,15 @@ namespace   Stroika {
 // REDO this class to make IT a MarkerOwner - and use THAT markerowner for MyMarker. Then - store an additional MyMarker for EACH marker
 // added to cache (just around the PM its used to wrap). Then remove ONLY that PM from the cache in its DIDUpdate.
                 PartitionPtr    part    =   imager.GetPartition ();
-                Assert (not part.IsNull ());
+                Assert (part.get () != nullptr);
                 part->AddPartitionWatcher (this);
 #if     qAutoPtrBrokenBug
-                fMyMarker = Memory::SharedPtr<MyMarker> (new MyMarker (*this));
+                fMyMarker = shared_ptr<MyMarker> (new MyMarker (*this));
 #else
                 fMyMarker = auto_ptr<MyMarker> (new MyMarker (*this));
 #endif
                 TextStore&  ts  =   part->GetTextStore ();
-                ts.AddMarker (fMyMarker.get (), 0, ts.GetLength () + 1, part);
+                ts.AddMarker (fMyMarker.get (), 0, ts.GetLength () + 1, part.get ());
             }
 
             MultiRowTextImager::PMInfoCacheMgr::~PMInfoCacheMgr ()

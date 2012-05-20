@@ -399,7 +399,7 @@ namespace   Stroika {
 
             PartitioningTextImager::~PartitioningTextImager ()
             {
-                Require (fPartition.IsNull ());
+                Require (fPartition.get () == nullptr);
             }
 
             /*
@@ -420,9 +420,9 @@ namespace   Stroika {
 #endif
                 fPartition = partitionPtr;
 #if     qCacheTextMeasurementsForPM
-                if (not partitionPtr.IsNull ()) {
+                if (partitionPtr.get () != nullptr) {
 #if     qAutoPtrBrokenBug
-                    fMeasureTextCache = Memory::SharedPtr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
+                    fMeasureTextCache = shared_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
 #else
                     fMeasureTextCache = auto_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
 #endif
@@ -813,7 +813,7 @@ namespace   Stroika {
 #if     qDebug
             void    PartitioningTextImager::Invariant_ () const
             {
-                if (not fPartition.IsNull ()) {
+                if (fPartition.get () != nullptr) {
                     fPartition->Invariant ();
                     Assert (fPartition->PeekAtTextStore () == PeekAtTextStore ());
                 }
@@ -834,7 +834,7 @@ namespace   Stroika {
                 fPartition (partition),
                 fCache (1)
             {
-                Assert (not partition.IsNull ());
+                Assert (partition.get () != nullptr);
                 fPartition->AddPartitionWatcher (this);
                 TextStore&  ts  =   partition->GetTextStore ();
                 ts.AddMarkerOwner (this);

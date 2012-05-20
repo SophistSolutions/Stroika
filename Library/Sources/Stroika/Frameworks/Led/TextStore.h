@@ -6,7 +6,12 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
+#include    <algorithm>
+#include    <cstddef>
+#include    <list>
+#include    <vector>
+
+#include    "../../Foundation/Memory/BlockAllocated.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -26,11 +31,6 @@
     </ul>
  */
 
-
-#include    <algorithm>
-#include    <cstddef>
-#include    <list>
-#include    <vector>
 
 #include    "Marker.h"
 #include    "Support.h"
@@ -372,10 +372,10 @@ namespace   Stroika {
 
 
             public:
-                nonvirtual  Foundation::Memory::SharedPtr<TextBreaks>   GetTextBreaker () const;
-                nonvirtual  void                            SetTextBreaker (const Foundation::Memory::SharedPtr<TextBreaks>& textBreaker);
+                nonvirtual  shared_ptr<TextBreaks>   GetTextBreaker () const;
+                nonvirtual  void                            SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
             private:
-                mutable Foundation::Memory::SharedPtr<TextBreaks>   fTextBreaker;
+                mutable shared_ptr<TextBreaks>   fTextBreaker;
 
             public:
                 nonvirtual  void    FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
@@ -844,17 +844,17 @@ namespace   Stroika {
             }
             /*
             @METHOD:        TextStore::GetTextBreaker
-            @DESCRIPTION:   <p>Returns a @'Memory::SharedPtr<T>' wrapper on the @'TextBreaks' subclass associated
+            @DESCRIPTION:   <p>Returns a @'shared_ptr<T>' wrapper on the @'TextBreaks' subclass associated
                         with this TextStore. This
                         procedure can be changed at any time (though if any information in other parts of Led is cached and dependent on this procedures
                         results - you may wish to invalidate those caches).</p>
                             <p>If none is associated with the TextStore right now - and default one is built and returned.</p>
                             <p>See also See @'TextStore::SetTextBreaker'.</p>
             */
-            inline  Foundation::Memory::SharedPtr<TextBreaks>   TextStore::GetTextBreaker () const
+            inline  shared_ptr<TextBreaks>   TextStore::GetTextBreaker () const
             {
-                if (fTextBreaker.IsNull ()) {
-                    fTextBreaker = Foundation::Memory::SharedPtr<TextBreaks> (new TextBreaks_DefaultImpl ());
+                if (fTextBreaker.get () == nullptr) {
+                    fTextBreaker = shared_ptr<TextBreaks> (new TextBreaks_DefaultImpl ());
                 }
                 return fTextBreaker;
             }
@@ -862,7 +862,7 @@ namespace   Stroika {
             @METHOD:        TextStore::SetTextBreaker
             @DESCRIPTION:   <p>See @'TextStore::GetTextBreaker'.</p>
             */
-            inline  void    TextStore::SetTextBreaker (const Foundation::Memory::SharedPtr<TextBreaks>& textBreaker)
+            inline  void    TextStore::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
             {
                 fTextBreaker = textBreaker;
             }

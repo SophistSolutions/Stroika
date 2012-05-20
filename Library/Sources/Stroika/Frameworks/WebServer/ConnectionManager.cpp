@@ -63,16 +63,16 @@ void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeou
     fThreads_.AbortAndWaitForDone ();
 }
 
-void    ConnectionManager::AddHandler (const SharedPtr<HTTPRequestHandler>& h)
+void    ConnectionManager::AddHandler (const shared_ptr<HTTPRequestHandler>& h)
 {
     Execution::AutoCriticalSection  critSec (fHandlers_);
     fHandlers_.push_back (h);
 }
 
-void    ConnectionManager::RemoveHandler (const SharedPtr<HTTPRequestHandler>& h)
+void    ConnectionManager::RemoveHandler (const shared_ptr<HTTPRequestHandler>& h)
 {
     Execution::AutoCriticalSection  critSec (fHandlers_);
-    for (list<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+    for (list<shared_ptr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
         if (*i == h) {
             fHandlers_.erase (i);
             return;
@@ -81,13 +81,13 @@ void    ConnectionManager::RemoveHandler (const SharedPtr<HTTPRequestHandler>& h
     RequireNotReached ();   // you must specify a valid handler to remove
 }
 
-void    ConnectionManager::AddConnection (const SharedPtr<HTTPConnection>& conn)
+void    ConnectionManager::AddConnection (const shared_ptr<HTTPConnection>& conn)
 {
     Execution::AutoCriticalSection  critSec (fActiveConnections_);
     fActiveConnections_.push_back (conn);
 }
 
-void    ConnectionManager::AbortConnection (const SharedPtr<HTTPConnection>& conn)
+void    ConnectionManager::AbortConnection (const shared_ptr<HTTPConnection>& conn)
 {
     AssertNotImplemented ();
 }
@@ -97,7 +97,7 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
     // MUST DO MAJOR CRITICAL SECTION WORK HERE
     while (true) {
         Execution::Sleep (0.1); // hack - need smarter wait on available data
-        SharedPtr<HTTPConnection>   conn;
+        shared_ptr<HTTPConnection>   conn;
         {
             Execution::AutoCriticalSection  critSec (fActiveConnections_);
             if (fActiveConnections_.empty ()) {
@@ -105,13 +105,13 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
             }
         }
 
-        if (not conn.IsNull ()) {
+        if (conn.get () != nullptr) {
 
 // REALLY should create NEW TASK we subbit to the threadpool...
             DoOneConnection_ (conn);
 
             Execution::AutoCriticalSection  critSec (fActiveConnections_);
-            for (list<SharedPtr<HTTPConnection>>::iterator i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
+            for (list<shared_ptr<HTTPConnection>>::iterator i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
                 if (*i == conn) {
                     fActiveConnections_.erase (i);
                     break;
@@ -123,22 +123,22 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
     }
 }
 
-void    ConnectionManager::DoOneConnection_ (SharedPtr<HTTPConnection> c)
+void    ConnectionManager::DoOneConnection_ (shared_ptr<HTTPConnection> c)
 {
     // prevent exceptions for now cuz outer code not handling them...
     try {
         c->ReadHeaders ();
 
-        SharedPtr<HTTPRequestHandler>   h;
+        shared_ptr<HTTPRequestHandler>   h;
         {
             Execution::AutoCriticalSection  critSec (fHandlers_);
-            for (list<SharedPtr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+            for (list<shared_ptr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
                 if ((*i)->CanHandleRequest (*c)) {
                     h = *i;
                 }
             }
         }
-        if (not h.IsNull ()) {
+        if (h.get () != nullptr) {
             h->HandleRequest (*c);
             c->GetResponse ().End ();
             c->Close ();//tmphack

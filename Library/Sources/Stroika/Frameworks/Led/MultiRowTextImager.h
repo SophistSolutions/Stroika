@@ -6,7 +6,6 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SharedPtr.h"
 
 /*
 @MODULE:    MultiRowTextImager
@@ -109,7 +108,7 @@ namespace   Stroika {
             private:
                 class   PMInfoCacheMgr;
 #if     qAutoPtrBrokenBug
-                Foundation::Memory::SharedPtr<PMInfoCacheMgr>   fPMCacheMgr;
+                shared_ptr<PMInfoCacheMgr>   fPMCacheMgr;
 #else
                 auto_ptr<PMInfoCacheMgr>        fPMCacheMgr;
 #endif
@@ -336,6 +335,9 @@ namespace   Stroika {
                 enum    {   kPackRowHeightCount =   sizeof (RowHeight_*) / sizeof (RowHeight_)    };
 
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 struct  Rep {
                 public:
                     Rep ();
@@ -356,11 +358,11 @@ namespace   Stroika {
                     void operator= (const Rep&);    //  ditto
                 };
             private:
-                Foundation::Memory::SharedPtr<Rep>  fRep;
+                shared_ptr<Rep>  fRep;
 
             private:
                 friend  struct  Rep;
-                friend  class   Foundation::Memory::SharedPtr<Rep>;
+                friend  class   shared_ptr<Rep>;
             };
 
 
@@ -405,7 +407,7 @@ namespace   Stroika {
                 mutable PartitionElementCacheInfo                       fCurFillCacheInfo;
                 MultiRowTextImager&                                     fImager;
 #if     qAutoPtrBrokenBug
-                Foundation::Memory::SharedPtr<MyMarker>                             fMyMarker;
+                shared_ptr<MyMarker>                             fMyMarker;
 #else
                 auto_ptr<MyMarker>                                  fMyMarker;
 #endif
