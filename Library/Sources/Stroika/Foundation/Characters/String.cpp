@@ -24,7 +24,6 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 
-using   Memory::SharedPtr;
 using   Memory::SharedByValue;
 
 

@@ -28,8 +28,6 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Memory::SharedPtr;
-
 
             /*
              * The ThreadPool class takes a small fixed number of Thread objects, and lets you use them as if there were many more.
@@ -51,7 +49,7 @@ namespace   Stroika {
                 NO_ASSIGNMENT_OPERATOR (ThreadPool);
 
             public:
-                typedef SharedPtr<IRunnable>    TaskType;
+                typedef shared_ptr<IRunnable>    TaskType;
 
             public:
                 nonvirtual  unsigned int    GetPoolSize () const;
@@ -107,6 +105,9 @@ namespace   Stroika {
                 nonvirtual  Thread      mkThread_ ();
 
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 class   MyRunnable_;
             private:
                 mutable CriticalSection fCriticalSection_;
@@ -115,7 +116,7 @@ namespace   Stroika {
                 list<TaskType>          fTasks_;            // Use Stroika Queue
                 Event                   fTasksAdded_;
             private:
-                friend  class   MyRunnable_;
+                friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
             };
 
         }

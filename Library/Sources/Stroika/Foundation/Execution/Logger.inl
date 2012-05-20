@@ -19,14 +19,14 @@ namespace   Stroika {
             {
                 return sThe_;
             }
-            inline  Memory::SharedPtr<Logger::IAppenderRep> Logger::GetAppender () const
+            inline  shared_ptr<Logger::IAppenderRep> Logger::GetAppender () const
             {
                 return fAppender_;
             }
             inline  void    Logger::Log (Priority logLevel, const String& format, ...)
             {
                 // CANNOT DO NUMBNERIC FILTERING TIL I WORK OUT IF I WANT THE SAME GOFFY NUMBERING AS SYSLOG?
-                if (/*logLevel >= sThe_.fMinLogLevel_ and*/ not sThe_.fAppender_.IsNull ()) {
+                if (/*logLevel >= sThe_.fMinLogLevel_ and*/ sThe_.fAppender_.get () != nullptr) {
                     va_list     argsList;
                     va_start (argsList, format);
                     Log_ (logLevel, format, argsList);

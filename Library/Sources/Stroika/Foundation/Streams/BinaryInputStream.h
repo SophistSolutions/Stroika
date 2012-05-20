@@ -15,7 +15,7 @@
  *  TODO:
  *
  *      o   Unclear about lifetime of stream objects. Right now - the overall design is agnostic. But I could redo class
- *          X as X (envelope) and X::IRep is implementaiton using SharedPtr<>. This would have the advantage of making the
+ *          X as X (envelope) and X::IRep is implementaiton using shared_ptr<>. This would have the advantage of making the
  *          lifetime issues clear and simple. But right now - so far - things seem to be going OK without that.
  *
  *      o   Consider template basic_istream<>

@@ -12,7 +12,6 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Characters/String.h"
 #include    "../../../DataExchangeFormat/InternetMediaType.h"
-#include    "../../../Memory/SharedPtr.h"
 #include    "../URL.h"
 #include    "../HTTP/Status.h"
 
@@ -92,7 +91,7 @@ namespace   Stroika {
                         };
 
                     protected:
-                        Connection (const Memory::SharedPtr<_IRep>& rep);
+                        Connection (const shared_ptr<_IRep>& rep);
 
                     public:
                         // SendAndRequest should timeout after this amount of time. Note - the initial SendAndRequest may do
@@ -120,7 +119,7 @@ namespace   Stroika {
                         nonvirtual  Response    Options (const map<String, String>& extraHeaders = map<String, String> ());
 
                     private:
-                        Memory::SharedPtr<_IRep>    fRep_;
+                        shared_ptr<_IRep>    fRep_;
                     };
 
 

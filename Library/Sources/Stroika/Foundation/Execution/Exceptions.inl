@@ -71,6 +71,14 @@ namespace   Stroika {
                     DoThrow (e, "ThrowIfNull (nullptr,X) - throwing X");
                 }
             }
+
+            template    <typename   T>
+            inline  void    ThrowIfNull (const shared_ptr<T>& p)
+            {
+                if (p.get () == nullptr) {
+                    DoThrow (bad_alloc (), "ThrowIfNull (shared_ptr<> (nullptr)) - throwing bad_alloc");
+                }
+            }
         }
     }
 }

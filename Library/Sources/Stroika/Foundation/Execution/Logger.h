@@ -11,7 +11,6 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/String.h"
 #include    "../Debug/Assertions.h"
-#include    "../Memory/SharedPtr.h"
 
 
 
@@ -51,7 +50,7 @@ namespace   Stroika {
             public:
                 class   IAppenderRep;
             private:
-                Memory::SharedPtr<IAppenderRep> fRep_;
+                shared_ptr<IAppenderRep> fRep_;
 
             public:
 #if     qHas_Syslog
@@ -68,12 +67,11 @@ namespace   Stroika {
                 Logger ();
 
             public:
-                nonvirtual  Memory::SharedPtr<IAppenderRep> GetAppender () const;
-                nonvirtual  void                            SetAppender (Memory::SharedPtr<IAppenderRep> rep);
+                nonvirtual  shared_ptr<IAppenderRep> GetAppender () const;
+                nonvirtual  void                     SetAppender (const shared_ptr<IAppenderRep>& rep);
 
             private:
-                Memory::SharedPtr<IAppenderRep> fAppender_;
-
+                shared_ptr<IAppenderRep> fAppender_;
 
             public:
 

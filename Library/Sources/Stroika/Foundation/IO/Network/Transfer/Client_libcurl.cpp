@@ -273,7 +273,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************************************************************************
  */
 Connection_LibCurl::Connection_LibCurl ()
-    : Connection (Memory::SharedPtr<_IRep> (DEBUG_NEW Rep_ ()))
+    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ ()))
 {
 }
 #endif

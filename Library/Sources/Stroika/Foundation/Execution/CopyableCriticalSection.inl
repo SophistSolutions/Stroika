@@ -10,6 +10,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include    "../Memory/Common.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {

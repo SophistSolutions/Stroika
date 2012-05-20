@@ -88,7 +88,7 @@
  *                  But then have specail one that does NOTHING. And then
  *
  *          (C)     ScopedNODELETER
- *                  This would be a specail class (or parameter to SharedPtr<>) which initializes the sharedptr with a specail count
+ *                  This would be a specail class (or parameter to SharedPtr<>) which initializes the shared_ptr with a specail count
  *                  with - perhaps - the value 1, and then asserts at the end - when the envoleope is desroyed, that hte value is still 1,
  *                  and THEN delete the COUNTER (cuz 1 was magically like zero - means all refernces went away).
  *

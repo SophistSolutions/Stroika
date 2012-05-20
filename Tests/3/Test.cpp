@@ -275,7 +275,7 @@ namespace	{
 						}
 				};
 				int	intVal	=	3;
-				Memory::SharedPtr<Execution::IRunnable>	task	=	SimpleRunnable::MAKE (FRED::DoIt, &intVal);
+				shared_ptr<Execution::IRunnable>	task	=	SimpleRunnable::MAKE (FRED::DoIt, &intVal);
 				p.AddTask (task);
 				p.WaitForTask (task);
 				p.AbortAndWaitForDone ();
@@ -308,8 +308,8 @@ namespace	{
 				ThreadPool	p;
 				p.SetPoolSize (threadPoolSize);
 				int	updaterValue	=	0;
-				Memory::SharedPtr<Execution::IRunnable>	task1	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
-				Memory::SharedPtr<Execution::IRunnable>	task2	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				shared_ptr<Execution::IRunnable>	task1	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				shared_ptr<Execution::IRunnable>	task2	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
 				p.AddTask (task1);
 				p.AddTask (task2);
 				p.WaitForTask (task1);

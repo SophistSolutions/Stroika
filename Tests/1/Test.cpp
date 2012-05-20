@@ -101,8 +101,8 @@ namespace	{
 #if 0
 // doesn't work because GetSPFromThis doesnt have the linked list of back pointers to the WeakSharedRep<>!!!! - so no way to consturct TTT_SP!!!
 // may need to rethink design...
-#endif
                 VerifyTestResult (wt1.Lock ()->GetSPFromThis () == t1);
+#endif
             }
 		}
 }

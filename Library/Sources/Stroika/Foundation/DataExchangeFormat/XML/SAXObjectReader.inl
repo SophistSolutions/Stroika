@@ -24,7 +24,7 @@ namespace   Stroika {
 #endif
                 {
                 }
-                inline  void    SAXObjectReader::Push (const Memory::SharedPtr<ObjectBase>& elt)
+                inline  void    SAXObjectReader::Push (const shared_ptr<ObjectBase>& elt)
                 {
 #if     qDefaultTracingOn
                     if (fTraceThisReader) {
@@ -43,7 +43,7 @@ namespace   Stroika {
                     }
 #endif
                 }
-                inline  Memory::SharedPtr<SAXObjectReader::ObjectBase>  SAXObjectReader::GetTop () const
+                inline  shared_ptr<SAXObjectReader::ObjectBase>  SAXObjectReader::GetTop () const
                 {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
@@ -159,7 +159,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (SAXObjectReader& r) override
                 {
-                    Memory::SharedPtr<ObjectBase>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
+                    shared_ptr<ObjectBase>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
                     // However, we cannot do the copy back to value beofre the base POP, because
                     // it also might do some additioanl processing on its value
@@ -194,7 +194,7 @@ namespace   Stroika {
                 void    ComplexObjectReader<T>::_PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push)
                 {
                     RequireNotNull (newlyAllocatedObject2Push);
-                    r.Push (Memory::SharedPtr<ObjectBase> (newlyAllocatedObject2Push));
+                    r.Push (shared_ptr<ObjectBase> (newlyAllocatedObject2Push));
                 }
 
 

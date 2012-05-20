@@ -6,8 +6,9 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <memory>
+
 #include    "../../Memory/Optional.h"
-#include    "../../Memory/SharedPtr.h"
 #include    "../../Time/DateTime.h"
 
 #include    "SAXReader.h"
@@ -43,20 +44,20 @@ namespace   Stroika {
 #endif
 
                 public:
-                    nonvirtual  void    Push (const Memory::SharedPtr<ObjectBase>& elt);
+                    nonvirtual  void    Push (const shared_ptr<ObjectBase>& elt);
                     nonvirtual  void    Pop ();
 
                 public:
-                    nonvirtual  Memory::SharedPtr<ObjectBase>   GetTop () const;
+                    nonvirtual  shared_ptr<ObjectBase>   GetTop () const;
 
                 public:
                     // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve recieved
                     // a HandleChildStar tand HandleEndTag() method call (exactly once).
-                    nonvirtual  void    Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, istream& in);
-                    nonvirtual  void    Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, istream& in);
+                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, istream& in);
+                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, istream& in);
 
                 private:
-                    vector<Memory::SharedPtr<ObjectBase>> fStack_;
+                    vector<shared_ptr<ObjectBase>> fStack_;
 
                 private:
                     class   MyCallback_;

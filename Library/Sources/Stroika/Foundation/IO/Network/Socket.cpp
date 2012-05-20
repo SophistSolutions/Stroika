@@ -176,7 +176,7 @@ Socket::Socket ()
 {
 }
 
-Socket::Socket (const Memory::SharedPtr<_Rep>& rep)
+Socket::Socket (const shared_ptr<_Rep>& rep)
     : fRep_ (rep)
 {
 }
@@ -187,7 +187,7 @@ Socket::Socket (const Socket& s)
 }
 
 Socket::Socket (NativeSocket sd)
-    : fRep_ (SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)))
+    : fRep_ (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)))
 {
 }
 
@@ -206,7 +206,7 @@ const Socket& Socket::operator= (const Socket& s)
 void    Socket::Bind (const BindProperties& bindProperties)
 {
     // Should this throw if already has something bound - already non-null!???
-    if (not fRep_.IsNull () and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE) {
+    if (fRep_.get () != nullptr and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE) {
         throw Execution::StringException (L"Cannot bind an already bound socket");
     }
 
@@ -250,7 +250,7 @@ void    Socket::Bind (const BindProperties& bindProperties)
 
     Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
-    fRep_  = SharedPtr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
+    fRep_  = shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
 }
 
 void    Socket::Listen (unsigned int backlog)
@@ -277,5 +277,5 @@ void    Socket::Close ()
 {
     // not importnat to null-out, but may as well...
     fRep_->Close ();
-    fRep_.clear ();
+    fRep_.reset ();
 }

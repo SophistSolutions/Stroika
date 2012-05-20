@@ -27,7 +27,7 @@ namespace   Stroika {
 
 
                     // class Connection
-                    inline  Connection::Connection (const Memory::SharedPtr<_IRep>& rep)
+                    inline  Connection::Connection (const shared_ptr<_IRep>& rep)
                         : fRep_ (rep)
                     {
                     }

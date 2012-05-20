@@ -7,13 +7,18 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
-#include    "../Memory/SharedPtr.h"
 
 #include    "CriticalSection.h"
 #include    "Exceptions.h"
 #include    "Event.h"
 
 
+/*
+ * TODO:
+ *      (o) Consider if IRunnable should inherit from stard_ptr<T>::enable_shared_from_this<>? Reason for YES is that it may
+ *          sometimes be useful. We also ONLY use IRunnable with shared_ptr<T> - so probably causes no harm. I gues sit depends
+ *          how hard it is to mixin later (mix Irunnable and enable_shared_from_this)?
+ */
 
 
 namespace   Stroika {

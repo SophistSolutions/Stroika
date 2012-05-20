@@ -27,15 +27,15 @@ Logger::Logger ()
 {
 }
 
-void    Logger::SetAppender (Memory::SharedPtr<IAppenderRep> rep)
+void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 {
     fAppender_ = rep;
 }
 
 void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
 {
-    Memory::SharedPtr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
-    if (not tmp.IsNull ()) {
+    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+    if (tmp.get () != nullptr) {
         tmp->Log (logLevel, Characters::FormatV (format.c_str (), argList));
     }
 }

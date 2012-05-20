@@ -425,7 +425,7 @@ void    Connection_WinHTTP::Rep_::AssureHasHandle_ ()
  ********************************************************************************
  */
 Connection_WinHTTP::Connection_WinHTTP ()
-    : Connection (Memory::SharedPtr<_IRep> (DEBUG_NEW Rep_ ()))
+    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ ()))
 {
 }
 #endif

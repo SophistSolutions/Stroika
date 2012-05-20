@@ -132,7 +132,7 @@ using   Debug::TraceContextBumper;
  ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
+Thread::Rep_::Rep_ (const shared_ptr<IRunnable>& runnable)
 #if     qUseThreads_StdCPlusPlus
     : fThread_ ()
 #elif   qUseThreads_WindowsNative
@@ -152,7 +152,7 @@ Thread::Rep_::Rep_ (const SharedPtr<IRunnable>& runnable)
 {
 }
 
-void    Thread::Rep_::DoCreate (SharedPtr<Rep_>* repSharedPtr)
+void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 {
     TraceContextBumper ctx (TSTR ("Thread::Rep_::DoCreate"));
     RequireNotNull (repSharedPtr);
@@ -216,17 +216,17 @@ void    Thread::Rep_::Run () override
     fRunnable->Run ();
 }
 
-void    Thread::Rep_::ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept {
+void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx (TSTR ("Thread::Rep_::ThreadMain_"));
 
     try {
         /*
          * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
-         * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
+         * shared_ptr<> here to NOT be destroyed. We could force that with an explicit scope, but there
          * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
          */
-        SharedPtr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
+        shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
 #if     qUseTLSForSAbortingFlag
         s_Aborting = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
@@ -326,10 +326,10 @@ unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter)
     RequireNotNull (lpParameter);
     /*
      * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
-     * SharedPtr<> here to NOT be destroyed. We could force that with an explicit scope, but there
+     * shared_ptr<> here to NOT be destroyed. We could force that with an explicit scope, but there
      * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
      */
-    ThreadMain_ (reinterpret_cast<SharedPtr<Rep_>*> (lpParameter));
+    ThreadMain_ (reinterpret_cast<shared_ptr<Rep_>*> (lpParameter));
     return 0;
 }
 #endif
@@ -427,19 +427,19 @@ Thread::Thread ()
 }
 
 Thread::Thread (void (*fun2CallOnce) ())
-    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce))))
+    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce))))
 {
     Rep_::DoCreate (&fRep_);
 }
 
 Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce, arg))))
+    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce, arg))))
 {
     Rep_::DoCreate (&fRep_);
 }
 
-Thread::Thread (const SharedPtr<IRunnable>& runnable)
-    : fRep_ (SharedPtr<Rep_> (DEBUG_NEW Rep_ (runnable)))
+Thread::Thread (const shared_ptr<IRunnable>& runnable)
+    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (runnable)))
 {
     Rep_::DoCreate (&fRep_);
 }
@@ -514,7 +514,7 @@ void    Thread::Start ()
 void    Thread::Abort ()
 {
     Debug::TraceContextBumper ctx (TSTR ("Thread::Abort"));
-    if (fRep_.IsNull ()) {
+    if (fRep_.get () == nullptr) {
         // then its effectively already stopped.
         return;
     }
@@ -555,7 +555,7 @@ void    Thread::Abort ()
 
 void    Thread::Abort_Forced_Unsafe ()
 {
-    if (fRep_.IsNull ()) {
+    if (fRep_.get () == nullptr) {
         // then its effectively already stopped.
         return;
     }
@@ -612,7 +612,7 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
 {
     Debug::TraceContextBumper ctx (TSTR ("Thread::WaitForDone"));
     //DbgTrace ("(timeout = %.2f)", timeout);
-    if (fRep_.IsNull ()) {
+    if (fRep_.get () == nullptr) {
         // then its effectively already done.
         return;
     }
@@ -660,7 +660,7 @@ Again:
 #if     qPlatform_Windows
 void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
 {
-    if (fRep_.IsNull ()) {
+    if (fRep_.get () == nullptr) {
         // then its effectively already done.
         return;
     }
@@ -698,8 +698,8 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
 
 Thread::Status  Thread::GetStatus_ () const
 {
-    Require (not fRep_.IsNull ());
-    if (fRep_.IsNull ()) {
+    Require (fRep_.get () != nullptr);
+    if (fRep_.get () == nullptr) {
         return eNull;
     }
     AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);

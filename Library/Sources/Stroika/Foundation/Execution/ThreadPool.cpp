@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
+#include    "../Memory/BlockAllocated.h"
 #include    "Sleep.h"
 
 #include    "ThreadPool.h"
@@ -30,8 +31,8 @@ public:
         AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
-        Assert (fCurTask_.IsNull () or fNextTask_.IsNull ());   // one or both must be null
-        return fCurTask_.IsNull () ? fNextTask_ : fCurTask_;
+        Assert (fCurTask_.get () == nullptr or fNextTask_.get () == nullptr);   // one or both must be null
+        return fCurTask_.get () == nullptr ? fNextTask_ : fCurTask_;
     }
 
 public:
@@ -43,25 +44,25 @@ public:
             {
                 fThreadPool_.WaitForNextTask_ (&fNextTask_);            // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
-                Assert (not fNextTask_.IsNull ());
-                Assert (fCurTask_.IsNull ());
+                Assert (fNextTask_.get () != nullptr);
+                Assert (fCurTask_.get () == nullptr);
                 fCurTask_ = fNextTask_;
-                fNextTask_.clear ();
-                Assert (not fCurTask_.IsNull ());
-                Assert (fNextTask_.IsNull ());
+                fNextTask_.reset ();
+                Assert (fCurTask_.get () != nullptr);
+                Assert (fNextTask_.get () == nullptr);
             }
             try {
                 fCurTask_->Run ();
-                fCurTask_.clear ();
+                fCurTask_.reset ();
             }
             catch (const ThreadAbortException&) {
                 AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
-                fCurTask_.clear ();
+                fCurTask_.reset ();
                 throw;  // cancel this thread
             }
             catch (...) {
                 AutoCriticalSection critSect (fCurTaskUpdateCritSection_);
-                fCurTask_.clear ();
+                fCurTask_.reset ();
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
             }
         }
@@ -76,6 +77,11 @@ private:
 public:
     DECLARE_USE_BLOCK_ALLOCATION(MyRunnable_);
 };
+
+
+
+
+
 
 
 
@@ -167,9 +173,9 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     {
         AutoCriticalSection critSection (fCriticalSection_);
         for (vector<Thread>::iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            SharedPtr<IRunnable>    tr  =   i->GetRunnable ();
+            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            SharedPtr<IRunnable>    ct  =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            shared_ptr<IRunnable>    ct  =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
             if (task == ct) {
                 thread2Kill =   *i;
                 *i = mkThread_ ();
@@ -198,13 +204,13 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
 
 bool    ThreadPool::IsRunning (const TaskType& task) const
 {
-    Require (not task.IsNull ());
+    Require (task.get () != nullptr);
     {
         AutoCriticalSection critSection (fCriticalSection_);
         for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            SharedPtr<IRunnable>    tr  =   i->GetRunnable ();
+            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            SharedPtr<IRunnable>    rTask   =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            shared_ptr<IRunnable>    rTask   =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
             if (task == rTask) {
                 return true;
             }
@@ -238,10 +244,10 @@ vector<ThreadPool::TaskType>    ThreadPool::GetTasks () const
         result.reserve (fTasks_.size () + fThreads_.size ());
         result.insert (result.begin (), fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            SharedPtr<IRunnable>    tr  =   i->GetRunnable ();
+            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            SharedPtr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
-            if (not task.IsNull ()) {
+            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            if (task.get () != nullptr) {
                 result.push_back (task);
             }
         }
@@ -256,10 +262,10 @@ vector<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
         AutoCriticalSection critSection (fCriticalSection_);
         result.reserve (fThreads_.size ());
         for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            SharedPtr<IRunnable>    tr  =   i->GetRunnable ();
+            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            SharedPtr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
-            if (not task.IsNull ()) {
+            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            if (task.get () != nullptr) {
                 result.push_back (task);
             }
         }
@@ -275,10 +281,10 @@ size_t  ThreadPool::GetTasksCount () const
         AutoCriticalSection critSection (fCriticalSection_);
         count += fTasks_.size ();
         for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            SharedPtr<IRunnable>    tr  =   i->GetRunnable ();
+            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            SharedPtr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
-            if (not task.IsNull ()) {
+            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            if (task.get () != nullptr) {
                 count++;
             }
         }
@@ -351,7 +357,7 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 
 Thread      ThreadPool::mkThread_ ()
 {
-    Thread  t   =   Thread (SharedPtr<IRunnable> (DEBUG_NEW ThreadPool::MyRunnable_ (*this)));      // ADD MY THREADOBJ
+    Thread  t   =   Thread (shared_ptr<IRunnable> (DEBUG_NEW ThreadPool::MyRunnable_ (*this)));      // ADD MY THREADOBJ
     static  int sThreadNum_ =   1;  // race condition for updating this number, but who cares - its purely cosmetic...
     t.SetThreadName (Characters::Format (L"Thread Pool Entry %d", sThreadNum_++));
     t.Start ();

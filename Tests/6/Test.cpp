@@ -237,7 +237,7 @@ namespace	{
 				reader.fTraceThisReader = true;	// handy to debug these SAX-object trees...
 			#endif
 			CalendarType_		calendar;
-			reader.Run (Memory::SharedPtr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), tmpStrm);
+			reader.Run (shared_ptr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), tmpStrm);
 			VerifyTestResult (calendar.size () == 2);
 			VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
 			VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");

@@ -158,7 +158,7 @@ namespace   Stroika {
                  */
                 //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
                 // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
-                // value and it shoudl go away.
+                // value and it should go away.
                 *this = SharedByValue<T, COPIER, SHARED_IMLP> (fCopier_.Copy (*ptr), fCopier_);
                 Ensure (SHARED_IMLP::unique ());
             }

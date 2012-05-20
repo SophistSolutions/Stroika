@@ -6,8 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <memory>
+
 #include    "../Configuration/Common.h"
-#include    "../Memory/SharedPtr.h"
 #include    "BinaryInputStream.h"
 
 
@@ -19,7 +20,7 @@
  *      o Not actually implemented. Must think out if this should mixin Seekable or not. I THINK it must.
  *          I THINK if one SEEKS this, but the underlying class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
  *
- *      o   Examine other choices in stream class. Decide between using the Memory::SharedPtr<> pattern, or just using references (and count on coding styles
+ *      o   Examine other choices in stream class. Decide between using the shared_ptr<> pattern, or just using references (and count on coding styles
  *          to manage lifetime issues).
  *
  */
@@ -35,13 +36,13 @@ namespace   Stroika {
              */
             class   BufferedBinaryInputStream : public BinaryInputStream {
             public:
-                BufferedBinaryInputStream (const Memory::SharedPtr<BinaryInputStream>& realIn);
+                BufferedBinaryInputStream (const shared_ptr<BinaryInputStream>& realIn);
 
             protected:
                 virtual size_t          _Read (Byte* intoStart, Byte* intoEnd) override;
 
             private:
-                Memory::SharedPtr<BinaryInputStream>    fRealIn_;
+                shared_ptr<BinaryInputStream>    fRealIn_;
             };
 
         }

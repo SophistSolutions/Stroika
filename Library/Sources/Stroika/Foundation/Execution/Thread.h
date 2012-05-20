@@ -13,7 +13,6 @@
 #endif
 
 #include    "../Configuration/Common.h"
-#include    "../Memory/SharedPtr.h"
 #include    "../Time/Realtime.h"
 
 #include    "IRunnable.h"
@@ -92,8 +91,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-
-            using   Memory::SharedPtr;
 
 
 #if     qPlatform_POSIX
@@ -218,7 +215,7 @@ namespace   Stroika {
                 // fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
                 explicit Thread (void (*fun2CallOnce) ());
                 explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
-                explicit Thread (const SharedPtr<IRunnable>& runnable);
+                explicit Thread (const shared_ptr<IRunnable>& runnable);
 
 #if         qUseThreads_WindowsNative
             public:
@@ -226,7 +223,7 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  SharedPtr<IRunnable>    GetRunnable () const;
+                nonvirtual  shared_ptr<IRunnable>    GetRunnable () const;
 
             public:
                 nonvirtual  IDType              GetID () const;
@@ -306,7 +303,7 @@ namespace   Stroika {
 
             private:
                 class   Rep_;
-                SharedPtr<Rep_> fRep_;
+                shared_ptr<Rep_> fRep_;
             };
 
 

@@ -18,7 +18,7 @@
  * TODO:
  *          o   Must use either stdc++ multibyte code or Stroika CodePage code - currnetly a hack assuming input is ascii.
  *
- *          o   CONSIDER REDOING USE SharedPtr<> - to make lifetime stuff workout better...
+ *          o   CONSIDER REDOING USE shared_ptr<> - to make lifetime stuff workout better...
  */
 
 namespace   Stroika {

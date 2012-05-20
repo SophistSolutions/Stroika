@@ -6,14 +6,19 @@
 
 #include    "../StroikaPreComp.h"
 
+//get rid of soon
 #include    "../Memory/SharedPtr.h"
+
+#include    <memory>
 
 
 /*
  * TODO:
- *      o   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it saves it as a data member and has min-size 1 byte it wastes
- *          space in SharedByValue<T>. See if this is optimized away in release builds and if not, see if we can find some clever way around it.
- *          (template specializaiton?). Note - this is exactly what the msvc vector<T> template does so presumably it IS optimized.
+ *      o   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it
+ *          saves it as a data member and has min-size 1 byte it wastes space in SharedByValue<T>.
+ *          See if this is optimized away in release builds and if not, see if we can find some
+ *          clever way around it. (template specializaiton?). Note - this is exactly what the
+ *          msvc vector<T> template does so presumably it IS optimized.
  *
  */
 
@@ -22,10 +27,9 @@ namespace   Stroika {
         namespace   Memory {
 
 
-
-
             /*
-             * SharedByValue_CopyByFunction is the a simple copying mechanism used by SharedByValue<>. It is not the most efficient approach (since it stores an actual pointer for the
+             * SharedByValue_CopyByFunction is the a simple copying mechanism used by SharedByValue<>.
+             * It is not the most efficient approach (since it stores an actual pointer for the
              * copy function. But its very simple and usually adequate.
              */
             template    <typename   T>
@@ -42,8 +46,8 @@ namespace   Stroika {
 
 
             /*
-             * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>. It simply hardwires use of new T() - the default T(T&) constructor to copy
-             * elements of type T.
+             * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
+             * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
              */
             template    <typename   T>
             struct  SharedByValue_CopyByDefault {

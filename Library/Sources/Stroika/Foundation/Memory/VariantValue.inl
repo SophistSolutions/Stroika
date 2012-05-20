@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "BlockAllocated.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
@@ -20,8 +22,8 @@ namespace   Stroika {
             };
             template    <typename T, VariantValue::Type t>
             struct  VariantValue::TValRep : VariantValue::ValRep {
-                TValRep (T v):
-                    fVal (v) {
+                TValRep (T v)
+                    : fVal (v) {
                 }
                 virtual Type    GetType () const        {   return t; }
                 T               fVal;
@@ -29,10 +31,10 @@ namespace   Stroika {
             };
             inline  VariantValue::Type  VariantValue::GetType () const
             {
-                if (fVal.IsNull ()) {
+                if (fVal_.get () == nullptr) {
                     return eNull;
                 }
-                return fVal->GetType ();
+                return fVal_->GetType ();
             }
             inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs)
             {

@@ -6,12 +6,13 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <memory>
+
 #if     qPlatform_Windows
 #include    <Windows.h>
 #endif
 
 #include    "../Configuration/Common.h"
-#include    "../Memory/SharedPtr.h"
 
 #include    "CriticalSection.h"
 
@@ -23,7 +24,7 @@ namespace   Stroika {
 
             class   CopyableCriticalSection {
             private:
-                Memory::SharedPtr<CriticalSection>  fCritSec;
+                shared_ptr<CriticalSection>  fCritSec;
             public:
                 CopyableCriticalSection ();
 

@@ -60,7 +60,7 @@ namespace   Stroika {
                     explicit Socket (NativeSocket sd);
 
                 protected:
-                    Socket (const Memory::SharedPtr<_Rep>& rep);
+                    Socket (const shared_ptr<_Rep>& rep);
 
                 public:
                     ~Socket ();
@@ -101,7 +101,7 @@ namespace   Stroika {
                     nonvirtual  NativeSocket    GetNativeSocket () const;
 
                 private:
-                    Memory::SharedPtr<_Rep> fRep_;
+                    shared_ptr<_Rep> fRep_;
                 };
 
 

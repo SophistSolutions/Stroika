@@ -6,8 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <memory>
+
 #include    "../Configuration/Common.h"
-#include    "SharedPtr.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -68,10 +69,10 @@ namespace   Stroika {
             private:
                 /*
                  * Note: the implementation here is safe via copying - because we never WRITE to the value stored in the
-                 * SharedPtr<T> and never return a copy to someone who could, so the value can never change. One changes
+                 * shared_ptr<T> and never return a copy to someone who could, so the value can never change. One changes
                  * an Optional<T> by creating a whole new value object and assigning it.
                  */
-                SharedPtr<T>    fValue_;
+                shared_ptr<T>    fValue_;
             };
         }
     }

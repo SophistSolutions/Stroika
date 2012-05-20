@@ -34,8 +34,8 @@ namespace   Stroika {
                 virtual void    Run () override;
 
             public:
-                static  Memory::SharedPtr<IRunnable>    MAKE (void (*fun2CallOnce) ());
-                static  Memory::SharedPtr<IRunnable>    MAKE (void (*fun2CallOnce) (void* arg), void* arg);
+                static  shared_ptr<IRunnable>    MAKE (void (*fun2CallOnce) ());
+                static  shared_ptr<IRunnable>    MAKE (void (*fun2CallOnce) (void* arg), void* arg);
 
             private:
                 static  void    FakeZeroArg_ (void* arg);
@@ -60,7 +60,7 @@ namespace   Stroika {
                 virtual void    Run () override;
 
             public:
-                static  Memory::SharedPtr<IRunnable>    MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
+                static  shared_ptr<IRunnable>    MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
 
             private:
                 OBJ*    fObjPtr_;

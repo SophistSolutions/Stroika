@@ -137,6 +137,17 @@
 
 
 
+
+// Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika SharedPtr<> stuff (now I'm getting rid of)
+// over the std::shared_ptr<>
+#ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 0
+#endif
+
+
+
+
+
 #ifndef qCompilerAndStdLib_Supports_TemplateUsingEquals
 // Unclear if my usage is right, and what compiler purports to support it. Definetely not msvc 2010
 #define qCompilerAndStdLib_Supports_TemplateUsingEquals 0

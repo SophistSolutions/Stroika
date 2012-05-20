@@ -12,7 +12,6 @@
 #include    "../Configuration/Common.h"
 #include    "../Time/DateTime.h"
 
-#include    "SharedPtr.h"
 
 
 // MIMICS (eventually - not totally yet) COM "VARIANT" type - not so much for COM integration, but
@@ -42,7 +41,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
-            using   Memory::SharedPtr;
             using   Time::Date;
             using   Time::DateTime;
 
@@ -99,10 +97,17 @@ namespace   Stroika {
                 nonvirtual  wstring FormatXML () const;
 
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 struct  ValRep;
-                SharedPtr<ValRep>   fVal;
+            private:
+                shared_ptr<ValRep>   fVal_;
 
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 template    <typename T, Type t>    struct  TValRep;
             };
             bool    operator== (const VariantValue& lhs, const VariantValue& rhs);

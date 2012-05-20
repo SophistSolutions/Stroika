@@ -38,11 +38,11 @@ namespace   Stroika {
 
             class   Thread::Rep_ {
             public:
-                Rep_ (const SharedPtr<IRunnable>& runnable);
+                Rep_ (const shared_ptr<IRunnable>& runnable);
                 ~Rep_ ();
 
             public:
-                static  void    DoCreate (SharedPtr<Rep_>* repSharedPtr);
+                static  void    DoCreate (shared_ptr<Rep_>* repSharedPtr);
 
             public:
                 nonvirtual  void    Start ();
@@ -70,7 +70,7 @@ namespace   Stroika {
                 nonvirtual  void    ThrowAbortIfNeeded () const;
 
             private:
-                static  void    ThreadMain_ (SharedPtr<Rep_>* thisThreadRep) noexcept;
+                static  void    ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
 
 #if         qUseThreads_WindowsNative
             private:
@@ -90,7 +90,7 @@ namespace   Stroika {
                 nonvirtual  Thread::NativeHandleType    GetNativeHandle ();
 
             public:
-                SharedPtr<IRunnable>    fRunnable;
+                shared_ptr<IRunnable>    fRunnable;
 
             private:
                 friend class    Thread;
@@ -146,22 +146,22 @@ namespace   Stroika {
 #endif
             inline  Thread::IDType  Thread::GetID () const
             {
-                if (fRep_.IsNull ()) {
+                if (fRep_.get () == nullptr) {
                     return Thread::IDType (0);
                 }
                 return fRep_->GetID ();
             }
             inline  Thread::NativeHandleType    Thread::GetNativeHandle ()
             {
-                if (fRep_.IsNull ()) {
+                if (fRep_.get () == nullptr) {
                     return Thread::NativeHandleType (nullptr);
                 }
                 return fRep_->GetNativeHandle ();
             }
-            inline  SharedPtr<IRunnable>    Thread::GetRunnable () const
+            inline  shared_ptr<IRunnable>    Thread::GetRunnable () const
             {
-                if (fRep_.IsNull ()) {
-                    return SharedPtr<IRunnable> ();
+                if (fRep_.get () == nullptr) {
+                    return shared_ptr<IRunnable> ();
                 }
                 return fRep_->fRunnable;
             }
@@ -175,7 +175,7 @@ namespace   Stroika {
             }
             inline  Thread::Status  Thread::GetStatus () const
             {
-                if (fRep_.IsNull ()) {
+                if (fRep_.get () == nullptr) {
                     return eNull;
                 }
                 return GetStatus_ ();

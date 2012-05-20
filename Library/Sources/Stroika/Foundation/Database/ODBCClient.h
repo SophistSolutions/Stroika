@@ -10,10 +10,11 @@
 #include    <Windows.h>
 #endif
 
+#include    <memory>
 #include    <string>
 
 #include    "../Execution/StringException.h"
-#include    "../Memory/SharedPtr.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -88,7 +89,7 @@ namespace   Stroika {
                 nonvirtual  unsigned int GetNestedTransactionCount () const;
 
             private:
-                SharedPtr<Rep>  fRep;
+                shared_ptr<Rep>  fRep;
             };
 #endif
 
@@ -104,7 +105,7 @@ namespace   Stroika {
                 Query (DBConnection database);
 
             public:
-                void    Bind (SharedPtr<AbstractColumn>* columns, size_t numberColumns);
+                void    Bind (shared_ptr<AbstractColumn>* columns, size_t numberColumns);
 
             public:
                 void    Execute (const wstring& sqlQuery);
@@ -113,7 +114,7 @@ namespace   Stroika {
                 bool    FetchRow ();
 
             private:
-                SharedPtr<Rep>  fRep;
+                shared_ptr<Rep>  fRep;
             };
 #endif
 

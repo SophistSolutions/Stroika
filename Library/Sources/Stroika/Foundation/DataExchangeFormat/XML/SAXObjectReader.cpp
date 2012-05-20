@@ -79,17 +79,17 @@ public:
 
 namespace   {
     struct DocumentReader_ : public SAXObjectReader::ObjectBase {
-        Memory::SharedPtr<ObjectBase>   fDocEltBuilder;
+        shared_ptr<ObjectBase>          fDocEltBuilder;
         bool                            fAnyDocElt;
         String                          fDocEltURI;
         String                          fDocEltName;
-        DocumentReader_ (const Memory::SharedPtr<ObjectBase>& docEltBuilder)
+        DocumentReader_ (const shared_ptr<ObjectBase>& docEltBuilder)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (true)
             , fDocEltURI ()
             , fDocEltName () {
         }
-        DocumentReader_ (const Memory::SharedPtr<ObjectBase>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
+        DocumentReader_ (const shared_ptr<ObjectBase>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (false)
             , fDocEltURI (checkURI)
@@ -113,12 +113,12 @@ namespace   {
         }
     };
 }
-void    SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, istream& in)
+void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, istream& in)
 {
     RequireNotNull (docEltBuilder);
     Require (fStack_.size () == 0);
 
-    Push (Memory::SharedPtr<ObjectBase> (DEBUG_NEW DocumentReader_ (docEltBuilder)));
+    Push (shared_ptr<ObjectBase> (DEBUG_NEW DocumentReader_ (docEltBuilder)));
 
     MyCallback_ cb (*this);
     SAXParse (in, cb);
@@ -128,12 +128,12 @@ void    SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder
     Ensure (fStack_.size () == 0);
 }
 
-void    SAXObjectReader::Run (const Memory::SharedPtr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, istream& in)
+void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, istream& in)
 {
     RequireNotNull (docEltBuilder);
     Require (fStack_.size () == 0);
 
-    Push (Memory::SharedPtr<ObjectBase> (DEBUG_NEW DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
+    Push (shared_ptr<ObjectBase> (DEBUG_NEW DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
 
     MyCallback_ cb (*this);
     SAXParse (in, cb);

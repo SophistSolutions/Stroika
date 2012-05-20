@@ -62,6 +62,9 @@ namespace   Stroika {
             void    ThrowIfNull (const void* p, const E& e = E ());
             void    ThrowIfNull (const void* p);
 
+            template    <typename   T>
+            void    ThrowIfNull (const shared_ptr<T>& p);
+
 
 #define IgnoreExceptionsForCall(theCode)        try {theCode;} catch (...) {}
 
