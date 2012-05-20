@@ -23,10 +23,10 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             inline  void    SmallStackBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements)
             {
-                fSize = nElements;
+                fSize_ = nElements;
                 // very rare we'll need to grow past this limit. And we want to keep this routine small so it can be
                 // inlined. And put the rare, complex logic in other outofline function
-                if (nElements > (NEltsOf (fBuffer))) {
+                if (nElements > (NEltsOf (fBuffer_))) {
                     GrowToSize_ (nElements);
                 }
             }
@@ -38,13 +38,13 @@ namespace   Stroika {
 #pragma warn -8008
 #pragma warn -8066
 #endif
-                Require (nElements > (NEltsOf (fBuffer)));
+                Require (nElements > (NEltsOf (fBuffer_)));
                 // if we were using buffer, then assume whole thing, and if we malloced, save
                 // size in unused buffer
-                Assert (sizeof (fBuffer) >= sizeof (size_t));   // one customer changes the size of the buffer to 1, and wondered why it crashed...
-                size_t  oldEltCount =   (fPointer == fBuffer) ?
-                                        NEltsOf (fBuffer) :
-                                        *(size_t*)&fBuffer;
+                Assert (sizeof (fBuffer_) >= sizeof (size_t));   // one customer changes the size of the buffer to 1, and wondered why it crashed...
+                size_t  oldEltCount =   (fPointer_ == fBuffer_) ?
+                                        NEltsOf (fBuffer_) :
+                                        *(size_t*)&fBuffer_;
 #if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 #pragma pop
 #endif
@@ -65,103 +65,103 @@ namespace   Stroika {
                     // Not totally safe for T with CTOR/DTOR/Op= ... Don't use this class in that case!!!
                     // No idea how many to copy!!! - do worst case(maybe should keep old size if this ever
                     // bus errors???)
-                    ::memcpy (newPtr, fPointer, oldEltCount * sizeof (T));
-                    if (fPointer != fBuffer) {
+                    ::memcpy (newPtr, fPointer_, oldEltCount * sizeof (T));
+                    if (fPointer_ != fBuffer_) {
                         // we must have used the heap...
-                        delete[] fPointer;
+                        delete[] fPointer_;
                     }
-                    fPointer = newPtr;
+                    fPointer_ = newPtr;
 
-                    // since we are using the heap, we can store the size in our fBuffer
-                    *(size_t*)&fBuffer = nElements;
+                    // since we are using the heap, we can store the size in our fBuffer_
+                    *(size_t*)&fBuffer_ = nElements;
                 }
             }
             template    <typename   T, size_t BUF_SIZE>
-            inline  SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements):
-                fSize (0),
-                //fBuffer (),
-                fPointer (fBuffer)
+            inline  SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
+                : fSize_ (0)
+                //, fBuffer_ ()
+                , fPointer_ (fBuffer_)
             {
                 GrowToSize (nElements);
             }
             template    <typename   T, size_t BUF_SIZE>
-            SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from):
-                fSize (0),
-                //fBuffer (),
-                fPointer (fBuffer)
+            SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
+                : fSize_ (0),
+                //, fBuffer_ (),
+                , fPointer_ (fBuffer_)
             {
-                GrowToSize (from.fSize);
-                std::copy (from.fPointer, from.fPointer + from.fSize, fPointer);
+                GrowToSize (from.fSize_);
+                std::copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
             {
-                if (fPointer != fBuffer) {
+                if (fPointer_ != fBuffer_) {
                     // we must have used the heap...
-                    delete[] fPointer;
+                    delete[] fPointer_;
                 }
             }
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>&   SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
             {
-                GrowToSize (rhs.fSize);
+                GrowToSize (rhs.fSize_);
 #pragma warning (push)
 #pragma warning (4 : 4996)      // MSVC unneeded warning about std::copy
-                std::copy (rhs.fPointer, rhs.fPointer + rhs.fSize, fPointer);
+                std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
 #pragma warning (pop)
                 return *this;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  typename SmallStackBuffer<T, BUF_SIZE>::iterator     SmallStackBuffer<T, BUF_SIZE>::begin ()
             {
-                return fPointer;
+                return fPointer_;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  typename SmallStackBuffer<T, BUF_SIZE>::iterator     SmallStackBuffer<T, BUF_SIZE>::end ()
             {
-                return fPointer + fSize;
+                return fPointer_ + fSize_;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  typename SmallStackBuffer<T, BUF_SIZE>::const_iterator   SmallStackBuffer<T, BUF_SIZE>::begin () const
             {
-                return fPointer;
+                return fPointer_;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  typename SmallStackBuffer<T, BUF_SIZE>::const_iterator   SmallStackBuffer<T, BUF_SIZE>::end () const
             {
-                return fPointer + fSize;
+                return fPointer_ + fSize_;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  size_t  SmallStackBuffer<T, BUF_SIZE>::GetSize () const
             {
-                return fSize;
+                return fSize_;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  void    SmallStackBuffer<T, BUF_SIZE>::push_back (const T& e)
             {
                 size_t  s   =   GetSize ();
                 GrowToSize (s + 1);
-                fPointer[s] = e;
+                fPointer_[s] = e;
             }
 #if     qCompilerBuggyOverloadingConstOperators
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::operator T* () const
             {
-                AssertNotNull (fPointer);
-                return (const_cast<T*> (fPointer));
+                AssertNotNull (fPointer_);
+                return (const_cast<T*> (fPointer_));
             }
 #else
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::operator T* ()
             {
-                AssertNotNull (fPointer);
-                return (fPointer);
+                AssertNotNull (fPointer_);
+                return (fPointer_);
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::operator const T* () const
             {
-                AssertNotNull (fPointer);
-                return (fPointer);
+                AssertNotNull (fPointer_);
+                return (fPointer_);
             }
 #endif
         }

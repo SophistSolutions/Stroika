@@ -58,6 +58,7 @@ namespace   Stroika {
                 nonvirtual  const_iterator  end () const;
 
             public:
+                // Returns the size of the buffer in ELEMENTS (not necessarily in bytes)
                 nonvirtual  size_t  GetSize () const;
 
             public:
@@ -70,9 +71,9 @@ namespace   Stroika {
                 nonvirtual  void    push_back (const T& e);
 
             private:
-                size_t  fSize;
-                T       fBuffer[BUF_SIZE];
-                T*      fPointer;
+                size_t  fSize_;
+                T       fBuffer_[BUF_SIZE];
+                T*      fPointer_;
             };
 
 
