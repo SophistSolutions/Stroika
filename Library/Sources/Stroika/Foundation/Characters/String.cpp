@@ -1042,12 +1042,14 @@ String_BufferedArray::String_BufferedArray (const String& from, size_t reserve)
 
 size_t  String_BufferedArray::capacity () const
 {
-    return const_cast<String_BufferedArray*> (this)->_fRep.Dynamic_Cast<String_BufferedArray_Rep_> ()->capacity ();
+    AssertNotNull (dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ()));
+    return dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ())->capacity ();
 }
 
 void    String_BufferedArray::reserve (size_t n)
 {
-    _fRep.Dynamic_Cast<String_BufferedArray_Rep_> ()->reserve (n);
+    AssertNotNull (dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ()));
+    dynamic_cast<String_BufferedArray_Rep_*> (_fRep.get ())->reserve (n);
 }
 
 

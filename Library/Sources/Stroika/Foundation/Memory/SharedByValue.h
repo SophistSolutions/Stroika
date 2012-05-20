@@ -6,8 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-//get rid of soon
-#include    "../Memory/SharedPtr.h"
+#include    "../Configuration/Common.h"
 
 #include    <memory>
 
@@ -63,7 +62,7 @@ namespace   Stroika {
                     <p>This class should allow SHARED_IMLP to be either Memory::SharedPtr<> or std::shared_ptr</p>
                     <p>This class template was originally called CopyOnWrite<></p>
             */
-            template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = SharedPtr<T>>
+            template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = shared_ptr<T>>
         class   SharedByValue : public SHARED_IMLP {
             public:
                         SharedByValue ();
