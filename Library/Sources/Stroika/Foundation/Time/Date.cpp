@@ -540,7 +540,8 @@ int Time::DayDifference (const Date& lhs, const Date& rhs)
     }
     if (l < r) {
         unsigned int    diff    =   r - l;
-        if (diff >= static_cast<unsigned int> (-INT_MIN)) {
+        Assert (INT_MIN <= -INT_MAX);
+        if (diff >= static_cast<unsigned int> (INT_MAX)) {
             return INT_MIN;
         }
         else {
