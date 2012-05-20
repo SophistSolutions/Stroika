@@ -87,8 +87,8 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
                 : fSize_ (0),
-                //, fBuffer_ (),
-                , fPointer_ (fBuffer_)
+                  //, fBuffer_ (),
+                  , fPointer_ (fBuffer_)
             {
                 GrowToSize (from.fSize_);
                 std::copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);

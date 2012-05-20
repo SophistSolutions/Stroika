@@ -51,33 +51,33 @@ namespace   {
     // This is MOSTLY to remove NEWLINES from the MIDDLE of a message - replace with kBadChar.
     const   char    kBadChar_   =   ' ';
     void    SquishBadCharacters_ (string* s)
-        {
-            RequireNotNull (s);
-            size_t  end =   s->length ();
-            // ignore last 2 in case crlf
-            if (end > 2) {
-                end -= 2;
-            }
-            for (size_t i = 0; i < end; ++i) {
-                if ((*s)[i] == '\n' or (*s)[i] == '\r') {
-                    (*s)[i] = kBadChar_;
-                }
+    {
+        RequireNotNull (s);
+        size_t  end =   s->length ();
+        // ignore last 2 in case crlf
+        if (end > 2) {
+            end -= 2;
+        }
+        for (size_t i = 0; i < end; ++i) {
+            if ((*s)[i] == '\n' or (*s)[i] == '\r') {
+                (*s)[i] = kBadChar_;
             }
         }
+    }
     void    SquishBadCharacters_ (wstring* s)
-        {
-            RequireNotNull (s);
-            size_t  end =   s->length ();
-            // ignore last 2 in case crlf
-            if (end > 2) {
-                end -= 2;
-            }
-            for (size_t i = 0; i < end; ++i) {
-                if ((*s)[i] == '\n' or (*s)[i] == '\r') {
-                    (*s)[i] = kBadChar_;
-                }
+    {
+        RequireNotNull (s);
+        size_t  end =   s->length ();
+        // ignore last 2 in case crlf
+        if (end > 2) {
+            end -= 2;
+        }
+        for (size_t i = 0; i < end; ++i) {
+            if ((*s)[i] == '\n' or (*s)[i] == '\r') {
+                (*s)[i] = kBadChar_;
             }
         }
+    }
 }
 
 
@@ -100,15 +100,15 @@ namespace   {
     Thread::IDType  sMainThread_                =   Execution::GetCurrentThreadID ();
 
     string  mkPrintDashAdornment_ ()
-        {
-            size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
-            string result;
-            result.reserve (threadPrintWidth / 2);
-            for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
-                result.append ("-");
-            }
-            return result;
+    {
+        size_t threadPrintWidth = FormatThreadID (sMainThread_).length () - 4;
+        string result;
+        result.reserve (threadPrintWidth / 2);
+        for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
+            result.append ("-");
         }
+        return result;
+    }
     const string    sThreadPrintDashAdornment_  =   mkPrintDashAdornment_ ();
     bool            sDidOneTimePrimaryThreadMessage_    =   false;
 }
