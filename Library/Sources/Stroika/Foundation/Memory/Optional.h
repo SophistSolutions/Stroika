@@ -41,10 +41,17 @@ namespace   Stroika {
 
             public:
                 // Unclear if we want a non-const version too?
+                // Returns nullptr if value is missing
                 nonvirtual  const T*    get () const;
 
             public:
                 // Require (not empty ())
+                //
+                // Not clear its a good idea to define this. It causes problems with the mixture of CTOR(T)
+                // and operator T - creating ambiguity. However, it appears this ambiguity can always be
+                // replaced by inserting a '*' in front of the 'Optional' element to disambiguate, so
+                // I think it maybe OK
+                //      -- LGP 2012-05-20
                 nonvirtual  operator T () const;
 
             public:

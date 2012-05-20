@@ -27,6 +27,13 @@ using	namespace	Stroika::Foundation::Memory;
 namespace	{
 	void	Test1_Optional ()
 		{
+            {
+                Optional<int>   x;
+                VerifyTestResult (x.empty ());
+                x = 1;
+                VerifyTestResult (not x.empty ());
+                VerifyTestResult (*x == 1);
+            }
 		}
 	void	Test1_SharedByValue ()
 		{
