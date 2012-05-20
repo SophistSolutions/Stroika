@@ -83,13 +83,26 @@ namespace	{
 	void	Test4_WeakPtrsWithSharedWithThis ()
 		{
             {
+                struct  TTT;
+                typedef	WeakSharedPtr<TTT, SharedPtrFromThis_Traits<TTT>>::SharedPtrType	TTT_SP;
 			    struct	TTT : Memory::enable_shared_from_this<TTT> {
 				    string x;
+
+                    TTT_SP  GetSPFromThis ()
+                    {
+                        return TTT_SP (shared_from_this<WeakSharedPtrCapableSharedPtrTraits<TTT, SharedPtrFromThis_Traits<TTT>>> ());
+                    }
+
 			    };
-                typedef	WeakSharedPtr<TTT, SharedPtrFromThis_Traits<TTT>>::SharedPtrType	TTT_SP;
 			    TTT_SP	t1 (new TTT ());
 			    WeakSharedPtr<TTT, SharedPtrFromThis_Traits<TTT>>			wt1 (t1);
 			    VerifyTestResult (wt1.Lock ().get () == t1.get ());
+
+#if 0
+// doesn't work because GetSPFromThis doesnt have the linked list of back pointers to the WeakSharedRep<>!!!! - so no way to consturct TTT_SP!!!
+// may need to rethink design...
+#endif
+                VerifyTestResult (wt1.Lock ()->GetSPFromThis () == t1);
             }
 		}
 }

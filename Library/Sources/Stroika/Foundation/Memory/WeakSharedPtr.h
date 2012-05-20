@@ -17,6 +17,24 @@
 
 
 
+//DESIGN MAYBE FATALLY FLAWED (for mixing SharedWithThis AND WEAKPTR logic).
+//I THINK it works for Boost/SharedC cuz BOTH always mixed into base SharedPtr class. But without the WeakPtr linklist in the base imp its also not in enable_with_xxxxx..
+// GUESS I COULD have ENABELD_SHARED_THIS_AND_WEAKPTR!!!
+
+// YES - THAT IS THE FIX!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

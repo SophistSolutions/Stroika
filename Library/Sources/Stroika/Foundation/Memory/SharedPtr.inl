@@ -370,22 +370,30 @@ namespace   Stroika {
             {
             }
             template    <typename   T>
-            SharedPtr<T, SharedPtrFromThis_Traits<T>> enable_shared_from_this<T>::shared_from_this ()
+            template    <typename   RESULT_TRAITS>
+            SharedPtr<T, RESULT_TRAITS> enable_shared_from_this<T>::shared_from_this ()
             {
                 /*
-                    * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
-                    * the ONLY legal way to use this enable_shared_from_this is:
-                    *
-                    *       struct  TTT : Memory::enable_shared_from_this<TTT> {
-                    *           string x;
-                    *           ....
-                    *       };
-                    *
-                    *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
-                    */
+                 * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
+                 * the ONLY legal way to use this enable_shared_from_this is:
+                 *
+                 *       struct  TTT : Memory::enable_shared_from_this<TTT> {
+                 *           string x;
+                 *           ....
+                 *       };
+                 *
+                 *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
+                 */
                 T*  tStarThis   =   dynamic_cast<T*> (this);
-                return (SharedPtr<T, SharedPtrFromThis_Traits<T>> (tStarThis));
+                return (SharedPtr<T, RESULT_TRAITS> (tStarThis));
             }
+#if     !qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
+            template    <typename   T>
+            inline SharedPtr<T, SharedPtrFromThis_Traits<T>> enable_shared_from_this<T>::shared_from_this ()
+            {
+                return shared_from_this<SharedPtrFromThis_Traits<T>> ();
+            }
+#endif
 
 
         }

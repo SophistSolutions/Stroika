@@ -144,6 +144,12 @@
 
 
 
+// http://stackoverflow.com/questions/2447458/default-template-arguments-for-function-templates
+#ifndef qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
+#define qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions 0
+#endif
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_threads
 @DESCRIPTION:   <p>Defined true if the compiler supports the stdc++ threads library</p>

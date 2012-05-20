@@ -418,7 +418,14 @@ namespace   Stroika {
                 virtual ~enable_shared_from_this ();
 
     public:
-                SharedPtr<T, SharedPtrFromThis_Traits<T>> shared_from_this ();
+#if     qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
+        template    <typename   RESULT_TRAITS = SharedPtrFromThis_Traits<T>>
+                SharedPtr<T, RESULT_TRAITS> shared_from_this ();
+#else
+        template    <typename   RESULT_TRAITS>
+                SharedPtr<T, RESULT_TRAITS> shared_from_this ();
+        SharedPtr<T, SharedPtrFromThis_Traits<T>> shared_from_this ();
+#endif
 
     private:
                 friend  class   Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
