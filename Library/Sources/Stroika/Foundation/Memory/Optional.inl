@@ -35,7 +35,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Optional<T>::clear ()
             {
-                fValue_.clear ();
+                fValue_.reset ();
             }
             template    <typename T>
             inline  const T*    Optional<T>::get () const
