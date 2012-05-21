@@ -24,14 +24,17 @@
 /*
  *  TODO:
  *
- *  (o)     FIRST - we need to fix PortableWideStringToNarrow_ and CodePageConverter to have a MORE SPACE EFFICNET (COMPUTE OUT BUF SIZE).
- *          Run basic xlate algortihm without writing to OUTPUTR, and find use that WOUDL be used.
+ *  (o)     FIRST - we need to fix PortableWideStringToNarrow_ and CodePageConverter to have a MORE SPACE
+ *          EFFICNET (COMPUTE OUT BUF SIZE). Run basic xlate algortihm without writing to OUTPUTR, and find
+ *          use that WOUDL be used.
  *
- *  (o)     THEN - test performance, and see if windows version can get away with using portable version (where codes overlap)
+ *  (o)     THEN - test performance, and see if windows version can get away with using portable version
+ *          (where codes overlap)
  *
- *  (o)     Current support for char32_t is almost totally wrong. I don't understand exactly how char16_t and char32_t are interrelated, but I'm
- *          sure its not as simplistic as what is implemented here. Probably - its that bit about Character(t).IsSurrogate() - for combiing characters.
- *          But this should be good enuf to get us started...
+ *  (o)     Current support for char32_t is almost totally wrong. I don't understand exactly how char16_t
+ *          and char32_t are interrelated, but I'm sure its not as simplistic as what is implemented here.
+ *          Probably - its that bit about Character(t).IsSurrogate() - for combiing characters. But this
+ *          should be good enuf to get us started...
  */
 
 

@@ -15,14 +15,15 @@
 //
 //      o   Can we use a class with no loss of performacne (or must we use typdef wchar_t Character)
 //
-//      o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to handle here.
-//          (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING class internally stores stuff as
-//          utf8
+//      o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to
+//          handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING 
+//          class internally stores stuff as utf8
 //
 /*
  * TODO:
  *
- *      (1)     Biggest thing todo is to work out 'surrogates' - and whether or not they are needed (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
+ *      (1)     Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
+ *              (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
  *              of Character.
  */
 
@@ -74,24 +75,32 @@ namespace   Stroika {
                 nonvirtual  bool    IsDigit () const;
                 nonvirtual  bool    IsHexDigit () const;
                 nonvirtual  bool    IsAlphabetic () const;
-                // Checks if the given character is uppper case. Can be called on any character Returns false if not alphabetic
+                // Checks if the given character is uppper case. Can be called on any character.
+                // Returns false if not alphabetic
                 nonvirtual  bool    IsUpperCase () const;
-                // Checks if the given character is lower case. Can be called on any character. Returns false if not alphabetic
+                // Checks if the given character is lower case. Can be called on any character.
+                // Returns false if not alphabetic
                 nonvirtual  bool    IsLowerCase () const;
                 nonvirtual  bool    IsAlphaNumeric () const;
                 nonvirtual  bool    IsPunctuation () const;
 
             public:
                 /*
-                 * Note that this does NOT modify the character in place but returns the new desired character.
+                 *      Note that this does NOT modify the character in place but returns the new desired
+                 * character.
+                 *
                  *      It is not necessary to first check
-                 * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the original character if there is no sensible conversion.
+                 * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
+                 * original character if there is no sensible conversion.
                  */
                 nonvirtual  Character   ToLowerCase () const;
                 /*
-                 * Note that this does NOT modify the character in place but returns the new desired character.
+                 *      Note that this does NOT modify the character in place but returns the new desired
+                 * character.
+                 *
                  *      It is not necessary to first check
-                 * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the original character if there is no sensible conversion.
+                 * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
+                 * original character if there is no sensible conversion.
                  */
                 nonvirtual  Character   ToUpperCase () const;
 

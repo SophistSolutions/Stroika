@@ -48,20 +48,21 @@
  * TODO:
  *
  *
- *      o   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do StartsWith/EndsWith. It MUST be in the docString!
- *          and test cases in the test suite...
+ *      o   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
+ *          StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
  *
- *
- *      o   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite documentation, and make clearer,a nd document the tricky bits loosely
+ *      o   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
+ *          documentation, and make clearer,a nd document the tricky bits loosely
  *          alluded to in the appropriate place if the API is truely DOABLE.
  *
- *      o   At this stage - for our one trivial test - performance is now about 5% faster than visual studio.net 2010, but
+ *      o   At this stage - for our one trivial test - performance is now about 5% faster than
+ *          visual studio.net 2010, but
  *          about a factor of 2 SLOWER than GCC (as of 2011-12-04).
  *
  *          I SUSPECT the next big change to address this will be && MOVE OPERATOR support.
  *
- *      o   EITHER embed data as buffer in BufferdString - so small strings fit without malloc, or use separate buffer.
- *          Good reasons for both ways. Not sure whats best.
+ *      o   EITHER embed data as buffer in BufferdString - so small strings fit without malloc,
+ *          or use separate buffer. Good reasons for both ways. Not sure whats best.
  *
  *          o   At least one StringRep variant (maybe the stanrdard/common string-buffer rep
  *              which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
@@ -147,28 +148,31 @@ namespace   Stroika {
 
 
             /*
-             * The Stroika String class is an alternatve for the std::wstring class, which should be largely interoperable with
-             * code using wstring (there is wstring constructor and As<wstring>() methods).
+             * The Stroika String class is an alternatve for the std::wstring class, which should be largely
+             * interoperable with code using wstring (there is wstring constructor and As<wstring>()
+             * methods).
              *
-             * The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is no obvious way
-             * to map the Stroika String to a std::string. However, if you specify a codepage for conversion, or are converting to/from
-             * TString/TChar, there is builtin support for that.
+             * The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
+             * no obvious way to map the Stroika String to a std::string. However, if you specify a codepage
+             * for conversion, or are converting to/from TString/TChar, there is builtin support for that.
              *
              *
              * EOS Handling:
-             *      The Stroika String class does support having embedded NUL-characters. It also supports returning wchar_t* strings
-             *      which are NUL-terminated. But - Stroika generally does NOT maintain strings internally as NUL-terminated (generally). It may add a performance
-             *      overhead when you call the c_str() method to force a NUL-character termination. See String::c_str ().
+             *      The Stroika String class does support having embedded NUL-characters. It also supports
+             *      returning wchar_t* strings which are NUL-terminated. But - Stroika generally does NOT
+             *      maintain strings internally as NUL-terminated (generally). It may add a performance
+             *      overhead when you call the c_str() method to force a NUL-character termination.
+             *      See String::c_str ().
              *
-             *      Also note that some subclasses of String (e.g. future String_stdwstring) may not support internal NUL-characters, if their underling
-             *      implementation doesn't allow for that.
-             *
+             *      Also note that some subclasses of String (e.g. future String_stdwstring) may not support
+             *      internal NUL-characters, if their underling implementation doesn't allow for that.
              */
             class   String {
             public:
                 /*
-                 * All the constructors are obvious, except to note that NUL-character ARE allowed in strings, except for the case of single char* argument
-                 * constructors - which find the length based on the terminating NUL-character.
+                 * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
+                 * except for the case of single char* argument constructors - which find the length based on
+                 * the terminating NUL-character.
                  */
                 String ();
                 String (const char16_t* cString);
@@ -194,8 +198,8 @@ namespace   Stroika {
             public:
                 nonvirtual  size_t  GetLength () const;
                 /*
-                 * NOTE - when you increase the size of a string with SetLength() - the extra characters added are not initialized, and
-                 * will have random values.
+                 * NOTE - when you increase the size of a string with SetLength() - the extra characters
+                 * added are not initialized, and will have random values.
                  */
                 nonvirtual  void    SetLength (size_t newLength);
 
@@ -216,8 +220,8 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1). It is an error if this implies removing
-                 * characters off the end of the string.
+                 * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1).
+                 * It is an error if this implies removing characters off the end of the string.
                  */
                 nonvirtual  void        RemoveAt (size_t index, size_t nCharsToRemove = 1);
 
@@ -232,8 +236,9 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t  IndexOf (Character c) const;
                 /*
-                 * IndexOf (substring) returns the index of the first occurance of the given substring in this string. This function
-                 * always returns a valid string index, which is followed by the given substring, or kBadStringIndex otherwise.
+                 * IndexOf (substring) returns the index of the first occurance of the given substring in
+                 * this string. This function always returns a valid string index, which is followed by the
+                 * given substring, or kBadStringIndex otherwise.
                  */
                 nonvirtual  size_t  IndexOf (const String& subString) const;
 
@@ -241,8 +246,9 @@ namespace   Stroika {
                 nonvirtual  size_t  RIndexOf (Character c) const;
 
                 /*
-                 * RIndexOf (substring) returns the index of the last occurance of the given substring in this string. This function
-                 * always returns a valid string index, which is followed by the given substring, or kBadStringIndex otherwise.
+                 * RIndexOf (substring) returns the index of the last occurance of the given substring in
+                 * this string. This function always returns a valid string index, which is followed by the
+                 * given substring, or kBadStringIndex otherwise.
                  */
                 nonvirtual  size_t  RIndexOf (const String& subString) const;
 
@@ -251,8 +257,9 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Produce a substring of this string, starting at from, and up to to (require from <= to unless to == kBadStingIndex). If to
-                 * is kBadStringIndex (default) then return all the way to the end of the string.
+                 * Produce a substring of this string, starting at from, and up to to
+                 * (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
+                 * then return all the way to the end of the string.
                  */
                 nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
 
@@ -264,13 +271,15 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Apply the given regular expression, and return a vector of the starts of all substring matches.
+                 * Apply the given regular expression, and return a vector of the starts of all substring
+                 * matches.
                  */
                 nonvirtual  vector<String>  Find (const String& regEx) const;
 
             public:
                 /*
-                 * Apply the given regular expression, with 'with' and replace each match. This doesn't modify this string, but returns the replacement string.
+                 * Apply the given regular expression, with 'with' and replace each match. This doesn't
+                 * modify this string, but returns the replacement string.
                  */
                 nonvirtual  String  Replace (const String& regEx, const String& with) const;
 
@@ -281,15 +290,17 @@ namespace   Stroika {
 
 #if     qCompilerAndStdLib_Supports_lambda_default_argument && qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
                 /*
-                 * String LTrim () scans the characters form the left to right, and applies the given 'shouldBeTrimmed' function (defaults to IsWhitespace).
-                 * all such characters are removed, and the resulting string is returned. This does not modify the current string its applied to - just
-                 * returns the trimmed string.
+                 * String LTrim () scans the characters form the left to right, and applies the given
+                 * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
+                 * and the resulting string is returned. This does not modify the current string its
+                 * applied to - just returns the trimmed string.
                  */
                 nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](const Character& c) -> bool { return c.IsWhitespace (); }) const;
                 /*
-                 * String RTrim () scans the characters form the right to left, and applies the given 'shouldBeTrimmed' function (defaults to IsWhitespace).
-                 * all such characters are removed, and the resulting string is returned. This does not modify the current string its applied to - just
-                 * returns the trimmed string.
+                 * String RTrim () scans the characters form the right to left, and applies the given
+                 * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
+                 * and the resulting string is returned. This does not modify the current string its
+                 * applied to - just returns the trimmed string.
                  */
                 nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
                 /*
@@ -303,17 +314,22 @@ namespace   Stroika {
 #endif
 
             public:
-                // Walk the entire string, and produce a new string consisting of all characters for which the predicate 'removeCharIf' returned false
+                /*
+                 * Walk the entire string, and produce a new string consisting of all characters for which
+                 * the predicate 'removeCharIf' returned false.
+                 */
                 nonvirtual  String  StripAll (bool (*removeCharIf) (Character)) const;
 
             public:
                 /*
-                 * Return a new string based on this string where each lower case characer is replaced by its upper case equivilent.
+                 * Return a new string based on this string where each lower case characer is replaced by its
+                 * upper case equivilent.
                  */
                 nonvirtual  String  ToLowerCase () const;
 
                 /*
-                 * Return a new string based on this string where each lower case characer is replaced by its upper case equivilent.
+                 * Return a new string based on this string where each lower case characer is replaced by its
+                 * upper case equivilent.
                  */
                 nonvirtual  String  ToUpperCase () const;
 
@@ -326,7 +342,8 @@ namespace   Stroika {
             public:
                 /*
                  *  CopyTo () copies the contents of this string to the target buffer.
-                 *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
+                 *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
+                 *  is >= this->GetLength ()
                  */
                 nonvirtual  void    CopyTo (Character* bufFrom, Character* bufTo) const;
                 nonvirtual  void    CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
@@ -334,9 +351,11 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Convert String losslessly into a standard C++ type (right now just <wstring>,<const wchar_t*>,<const Character*> supported)
+                 * Convert String losslessly into a standard C++ type (right now just <wstring>,
+                 * <const wchar_t*>,<const Character*> supported)
                  *
-                 * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned result is NOT NUL-terminated.
+                 * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned
+                 * result is NOT NUL-terminated.
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;
@@ -345,7 +364,8 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Convert String losslessly into a standard C++ type (right now just <string> supported). Note - template param is optional.
+                 * Convert String losslessly into a standard C++ type (right now just <string> supported).
+                 * Note - template param is optional.
                  */
                 template    <typename   T>
                 nonvirtual  T   AsUTF8 () const;
@@ -362,8 +382,8 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Convert String losslessly into a standard C++ type (right now just <string> supported). The source string
-                 * MUST be valid ascii characters (asserted)
+                 * Convert String losslessly into a standard C++ type (right now just <string> supported).
+                 * The source string MUST be valid ascii characters (asserted)
                  */
                 template    <typename   T>
                 nonvirtual  T   AsASCII () const;
@@ -384,22 +404,26 @@ namespace   Stroika {
                 nonvirtual  int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const;
 
 
-                // StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without inlines - like new '=' guy???
+                // StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without
+                // inlines - like new '=' guy???
             public:
                 nonvirtual  size_t          size () const;
                 nonvirtual  size_t          length () const;
 
-                // As with STL, the return value of the data () function should NOT be assumed to be NUL-terminated
+                // As with STL, the return value of the data () function should NOT be assumed to be
+                // NUL-terminated
                 //
-                // The lifetime of the pointer returned is gauranteed until the next call to this String envelope class (that is if other reps change, or are
-                // acceessed this data will not be modified)
+                // The lifetime of the pointer returned is gauranteed until the next call to this String
+                // envelope class (that is if other reps change, or are acceessed this data will not
+                // be modified)
                 nonvirtual  const wchar_t*  data () const;
 
-                // This will always return a value which is NUL-terminated. Note that Stroika generally does NOT keep strings in NUL-terminated form, so
-                // this could be a costly function, requiring a copy of the data.
+                // This will always return a value which is NUL-terminated. Note that Stroika generally
+                // does NOT keep strings in NUL-terminated form, so this could be a costly function,
+                // requiring a copy of the data.
                 //
-                // The lifetime of the pointer returned is gauranteed until the next call to this String envelope class (that is if other reps change, or are
-                // acceessed this data will not be modified)
+                // The lifetime of the pointer returned is gauranteed until the next call to this String
+                // envelope class (that is if other reps change, or are acceessed this data will not be modified)
                 nonvirtual  const wchar_t*  c_str () const;
 
                 // need more overloads
@@ -557,11 +581,13 @@ namespace   Stroika {
                 String_BufferedArray& operator= (const String_BufferedArray& s);
 
             public:
-                // This returns the number of characters of space available in the buffer (without doing memory allocations)
+                // This returns the number of characters of space available in the buffer
+                // (without doing memory allocations)
                 nonvirtual  size_t  capacity () const;
 
             public:
-                // Reserve the given number of characters of space. N can be any size, and is only a hint. A value of n < GetLength () will be ignored.
+                // Reserve the given number of characters of space. N can be any size, and is only a hint.
+                // A value of n < GetLength () will be ignored.
                 nonvirtual  void    reserve (size_t n);
             };
 
@@ -572,15 +598,16 @@ namespace   Stroika {
 
 
             /*
-             *  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly is a subtype of string you can use to construct a String object, so long as the memory pointed to
-             * in the argument has a
+             *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly is a subtype of string you can
+             * use to construct a String object, so long as the memory pointed to in the argument has a
              *      o   FULL APPLICATION LIFETIME,
              *      o   the member referenced never changes - is READONLY.
              *
-             *  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly will NOT change the memory referenced in the CTOR.
+             *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly will NOT change the memory
+             * referenced in the CTOR.
              *
-             *  Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly maybe treated like normal strings - passed anywhere, and even modified via the
-             *  String APIs.
+             *      Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly
+             * maybe treated like normal strings - passed anywhere, and even modified via the String APIs.
              *
              *  For example
              *      String  tmp1    =   L"FRED";
@@ -593,7 +620,8 @@ namespace   Stroika {
              *      F(tmp2);
              *      F(tmp3);
              *
-             *  These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation maybe slightly more efficent, but all are equally safe.
+             *      These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation
+             * maybe slightly more efficent, but all are equally safe.
              *
              */
             class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly : public String {
@@ -609,7 +637,8 @@ namespace   Stroika {
 
 
             /*
-             *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings, with a minimum of cost.
+             *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings,
+             * with a minimum of cost.
              */
             typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
 

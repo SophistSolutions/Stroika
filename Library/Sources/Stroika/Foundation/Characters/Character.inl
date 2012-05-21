@@ -33,12 +33,16 @@ namespace   Stroika {
             inline  Character::Character (wchar_t wc)
                 : fCharacterCode_ (wc)
             {
-                static_assert (qNBytesPerWCharT == sizeof (wchar_t), "wchar_t size must agree with qNBytesPerWCharT setting");
+                static_assert (
+                        qNBytesPerWCharT == sizeof (wchar_t), 
+                        "wchar_t size must agree with qNBytesPerWCharT setting"
+                    );
             }
             inline  char    Character::GetAsciiCode () const
             {
                 // ASSERT IS ASCII
-                Require ('0' <= fCharacterCode_ and fCharacterCode_ <= 0x8f);   // not sure this is right range...
+                // not sure this is right range...
+                Require ('0' <= fCharacterCode_ and fCharacterCode_ <= 0x8f);
                 return static_cast<char> (fCharacterCode_);
             }
             inline  wchar_t Character::GetCharacterCode () const
