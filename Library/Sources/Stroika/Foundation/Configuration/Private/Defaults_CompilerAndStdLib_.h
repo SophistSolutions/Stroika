@@ -159,6 +159,7 @@
 // Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
 #endif
+#endif
 
 
 
