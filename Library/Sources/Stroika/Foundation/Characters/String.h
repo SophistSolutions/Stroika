@@ -647,17 +647,20 @@ namespace   Stroika {
 
 
             /*
-             *  String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite is a subtype of string you can use to construct a String object, so long as the memory pointed to
-             * in the argument has a
+             *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite is a subtype of string you can
+             * use to construct a String object, so long as the memory pointed to in the argument has a
              *      o   FULL APPLICATION LIFETIME,
              *      o   and never changes value through that pointer
              *
-             *  Note that the memory passed in MUST BE MODIFIABLE (READ/WRITE) - as String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite MAY modify the data in the pointer during the
-             *  objects lifetime.
+             *      Note that the memory passed in MUST BE MODIFIABLE (READ/WRITE) - as 
+             * String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite MAY modify the data in the
+             * pointer during the objects lifetime.
              *
-             *  Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite maybe treated like normal strings - passed anywhere, and even modified via the
-             *  String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString indefinitely, and re-use it as needed, so
-             *  only call this String constructor with a block of read-only, never changing memory, and then - only as a performance optimization.
+             *      Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
+             * maybe treated like normal strings - passed anywhere, and even modified via the String APIs.
+             * However, the underlying implemenation may cache the argument const wchar_t* cString
+             * indefinitely, and re-use it as needed, so only call this String constructor with a block
+             * of read-only, never changing memory, and then - only as a performance optimization.
              *
              *  For example
              *      String  tmp1    =   L"FRED";
@@ -671,7 +674,8 @@ namespace   Stroika {
              *      F(tmp2);
              *      F(tmp3);
              *
-             *  These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation maybe slightly more efficent, but all are equally safe.
+             *      These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation
+             * maybe slightly more efficent, but all are equally safe.
              *
              */
             class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite : public String {

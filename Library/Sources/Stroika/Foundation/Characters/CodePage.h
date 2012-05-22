@@ -125,20 +125,24 @@ namespace   Stroika {
             public:
                 /*
                 @METHOD:        CodePageConverter::GetHandleBOM
-                @DESCRIPTION:   <p>In UNICODE, files are generally headed by a byte order mark (BOM). This mark is used to indicate
-                        if the file is big endian, or little-endian (if the characters are wide-characters). This is true for 2 and 4
-                        byte UNICODE (UCS-2, UCS-4) UNICODE, as well as for UTF-X encodings (such as UTF-7 and UTF-8). It is also used
-                        to indicate whether or not the file is in a UTF encoding (as byte order doesn't matter in any (most?) of the
-                        UTF encodings.</p>
-                            <p>The basic rubrick for BOM's is that they are the character 0xfeff, as it would be encoded in the given
-                        UTF or UCS encoding.</p>
-                            <p>Because of this type of encoding - if you have a 0xfeff character (after decoding) at the beginning of
-                        a buffer, there is no way for this routine to know if that was REALLY there, or if it was byte order mark. And its not always
-                        desirable for the routine producing these encodings to produce the byte order mark, but sometimes its highly desirable.
-                        So - this class lets you get/set a flag to indicate whether or not to process BOMs on input, and whether or not to
-                        generate them on encoded outputs.</p>
-                            <p>See also @'CodePageConverter::SetHandleBOM', and note that there is an overloaded CTOR that lets you specify
-                        CodePageConverter::eHandleBOM as a final argument to automatically set this BOM converter flag.</p>
+                @DESCRIPTION:   <p>In UNICODE, files are generally headed by a byte order mark (BOM). This
+                        mark is used to indicate if the file is big endian, or little-endian (if the
+                        characters are wide-characters). This is true for 2 and 4 byte UNICODE (UCS-2, UCS-4)
+                        UNICODE, as well as for UTF-X encodings (such as UTF-7 and UTF-8). It is also used
+                        to indicate whether or not the file is in a UTF encoding (as byte order doesn't matter
+                        in any (most?) of the UTF encodings.</p>
+                            <p>The basic rubrick for BOM's is that they are the character 0xfeff, as it would
+                        be encoded in the given UTF or UCS encoding.</p>
+                            <p>Because of this type of encoding - if you have a 0xfeff character (after
+                        decoding) at the beginning of a buffer, there is no way for this routine to know if
+                        that was REALLY there, or if it was byte order mark. And its not always desirable for
+                        the routine producing these encodings to produce the byte order mark, but sometimes
+                        its highly desirable. So - this class lets you get/set a flag to indicate whether or not
+                        to process BOMs on input, and whether or not to generate them on encoded outputs.
+                        </p>
+                            <p>See also @'CodePageConverter::SetHandleBOM', and note that there is an
+                        overloaded CTOR that lets you specify CodePageConverter::eHandleBOM as a final
+                        argument to automatically set this BOM converter flag.</p>
                 */
                 nonvirtual  bool    GetHandleBOM () const;
                 /*
@@ -277,10 +281,13 @@ namespace   Stroika {
             public:
                 /*
                 @METHOD:        CodePagesGuesser::Guess
-                @DESCRIPTION:   <p>Guess the code page of the given snippet of text. Return that codepage. Always make some guess,
-                            and return the level of quality of the guess in the optional parameter 'confidence' - unless its nullptr (which it is by default),
-                            and return the number of bytes of BOM (byte-order-mark) prefix to strip from teh source in 'bytesFromFrontToStrip'
-                            unless it is nullptr (which it is by default).</p>
+                @DESCRIPTION:   <p>Guess the code page of the given snippet of text. Return that codepage.
+                            Always make some guess, and return the level of quality of the guess in the
+                            optional parameter 'confidence' - unless its nullptr (which it is by default),
+                            and return the number of bytes of BOM (byte-order-mark) prefix to strip from
+                            the source in 'bytesFromFrontToStrip' unless it is nullptr (which it is by 
+                            default).
+                            </p>
                 */
                 nonvirtual  CodePage    Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
             };

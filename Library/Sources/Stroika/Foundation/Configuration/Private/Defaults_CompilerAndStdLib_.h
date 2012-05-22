@@ -49,14 +49,14 @@
 #endif
 
 //NEED DOCS SOMPEPLACE
-#ifndef qCompilerAndStdLib_Supports_CTORDELETE
+#ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_CTORDELETE  1
+#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
 #elif   defined (_MSC_VER) && _MSC_VER <= 1600
-#define qCompilerAndStdLib_Supports_CTORDELETE  0
+#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  0
 #else
 // Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
-#define qCompilerAndStdLib_Supports_CTORDELETE  1
+#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
 #endif
 #endif
 
@@ -138,10 +138,26 @@
 
 
 
-// Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika shared_ptr<> stuff (now I'm getting rid of)
-// over the std::shared_ptr<>
+// Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika SharedPtr
+// verus std::shared_ptr<> stuff (now I'm getting rid of) over the std::shared_ptr<>
+//
+// At least two obvious (but not great) workarounds.
+//      o   make the class public
+//      o   use custom deleter
+//
+// maybe using FRIENDS will work?
+//
+// Anyhow - based on experimentationw with gcc, and 'common sense' - this should be defined to work - I will
+// assume its either a bug with the VS implementaiton of the compiler or the template itself.
+//
 #ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
+#elif   defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 0
+#else
+// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
 #endif
 
 
