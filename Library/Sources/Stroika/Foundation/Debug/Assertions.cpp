@@ -32,11 +32,6 @@ namespace   {
                  );
         DropIntoDebuggerIfPresent ();
         DbgTrace ("ABORTING...");
-#if     defined (__GNUC__)
-        __assert_fail (assertionText == nullptr ? "" : assertionText, fileName, lineNum, functionName == nullptr ? "" : functionName);
-#else
-        assert (false);
-#endif
         abort ();   // if we ever get that far...
     }
 }

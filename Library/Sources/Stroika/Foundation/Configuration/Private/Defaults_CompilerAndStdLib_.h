@@ -413,6 +413,45 @@
 #endif
 
 
+
+
+
+
+
+//FOR ASSERT
+#ifndef qCompilerAndStdLib_Support__PRETTY_FUNCTION__
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   1
+#else
+#define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   0
 #endif
+#endif
+
+
+//FOR ASSERT
+#ifndef qCompilerAndStdLib_Support__func__
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Support__func__   1
+#else
+#define qCompilerAndStdLib_Support__func__   0
+#endif
+#endif
+
+
+//FOR ASSERT
+#ifndef qCompilerAndStdLib_Support__FUNCTION__
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Support__FUNCTION__   1
+#else
+#define qCompilerAndStdLib_Support__FUNCTION__   0
+#endif
+#endif
+
+
+
+
+
+#endif  /*defined(__cplusplus)*/
+
 
 #endif  /*_Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_*/
