@@ -16,7 +16,7 @@
 //      o   Can we use a class with no loss of performacne (or must we use typdef wchar_t Character)
 //
 //      o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to
-//          handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING 
+//          handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING
 //          class internally stores stuff as utf8
 //
 /*

@@ -34,9 +34,9 @@ namespace   Stroika {
                 : fCharacterCode_ (wc)
             {
                 static_assert (
-                        qNBytesPerWCharT == sizeof (wchar_t), 
-                        "wchar_t size must agree with qNBytesPerWCharT setting"
-                    );
+                    qNBytesPerWCharT == sizeof (wchar_t),
+                    "wchar_t size must agree with qNBytesPerWCharT setting"
+                );
             }
             inline  char    Character::GetAsciiCode () const
             {

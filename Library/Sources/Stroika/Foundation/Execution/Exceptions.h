@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include	<memory>
+#include    <memory>
 // Unclear if/why we should include <exception>/string/stdexcept here? -- LGP 2011-11-29
 #if 0
 #include    <exception>

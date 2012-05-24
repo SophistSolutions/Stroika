@@ -28,9 +28,9 @@ namespace   Stroika {
             ENUM    Inc (ENUM e);
 
 
-/*
- * NB: we can lose these macros once all our compilers support the new C++ syntax.
- */
+            /*
+             * NB: we can lose these macros once all our compilers support the new C++ syntax.
+             */
 #if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 #define NO_DEFAULT_CONSTRUCTOR(NAME)\
     NAME () = delete;

@@ -10,8 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
- #include	"../Debug/Assertions.h"
- 
+#include   "../Debug/Assertions.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {

@@ -652,7 +652,7 @@ namespace   Stroika {
              *      o   FULL APPLICATION LIFETIME,
              *      o   and never changes value through that pointer
              *
-             *      Note that the memory passed in MUST BE MODIFIABLE (READ/WRITE) - as 
+             *      Note that the memory passed in MUST BE MODIFIABLE (READ/WRITE) - as
              * String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite MAY modify the data in the
              * pointer during the objects lifetime.
              *

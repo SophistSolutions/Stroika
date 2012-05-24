@@ -285,7 +285,7 @@ namespace   Stroika {
                             Always make some guess, and return the level of quality of the guess in the
                             optional parameter 'confidence' - unless its nullptr (which it is by default),
                             and return the number of bytes of BOM (byte-order-mark) prefix to strip from
-                            the source in 'bytesFromFrontToStrip' unless it is nullptr (which it is by 
+                            the source in 'bytesFromFrontToStrip' unless it is nullptr (which it is by
                             default).
                             </p>
                 */

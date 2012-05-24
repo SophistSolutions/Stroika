@@ -18,9 +18,9 @@ namespace   Stroika {
             typedef void    (*AssertionHandlerType) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
 
             /*
-            @DESCRIPTION:   
+            @DESCRIPTION:
                     <p>Stroika makes very heavy use of assertions (to some extent inspired and
-                patternend after Bertrand Meyers Eiffel assertion mechanism). Assertions are logical 
+                patternend after Bertrand Meyers Eiffel assertion mechanism). Assertions are logical
                 statements about function parameters, results, object states, etc, which are guaranteed
                 (required) to be held true. These logical assertions serve two important functions:
                 they <em>document</em> the requirements on input parameters for a function,
@@ -28,7 +28,7 @@ namespace   Stroika {
                 in such a way that the compiler can generate special code (conditionally) to verify that
                 the assertions hold true</em>.
                 </p>
-                    <p>This latter point about conditional compilation is important. If the macro 
+                    <p>This latter point about conditional compilation is important. If the macro
                 preprocessor symbol <code>qDebug</code> is true (non-zero), then this assertion cheching is
                 enabled. If the symbol is false (zero), then the checking is disabled. <b>Of course the
                 promises must always hold true!</b> But since the checking can significantly slow the code,
@@ -54,7 +54,7 @@ namespace   Stroika {
                 This is because these are used to check parameters validity on entry to a function. So
                 typically when you see a <em>Require</em> fail, you will find that it is the calling
                 function which is passing invalid arguments to the function which triggered the requirement
-                failure. The other reason <em>Requires</em> will be of particular interest to programmers 
+                failure. The other reason <em>Requires</em> will be of particular interest to programmers
                 using Stroika is because checking the <em>Require</em> declarations at the beggining of a
                 function is often very telling about the details of what sort of parameters the function
                 expects.
@@ -76,7 +76,7 @@ namespace   Stroika {
                 routines return non-zero on success, and zero on failure. Most sample Win32 code you look at
                 simply ignores these results. For paranoia sake (which was very helpful in the old moldy win32s
                 days) I wrap most Win32 SDK calls in a <em><code>Verify</code></em> wrapper. This - when
-                debugging is enabled - checks the return value, and asserts if there is a problem. 
+                debugging is enabled - checks the return value, and asserts if there is a problem.
                 <b>Very Important: Unlike the other flavors of Assertions, Verify always evaluates its
                 argument!</b>.
                 </p>
@@ -196,7 +196,7 @@ namespace   Stroika {
 #endif
 
             /*
-            @DESCRIPTION:   <p>Verify () is an assertion like Assert, except its argument is ALWAYS 
+            @DESCRIPTION:   <p>Verify () is an assertion like Assert, except its argument is ALWAYS
                     EVALUATED, even if debug is OFF. This is useful for cases where you just want
                     todo an assertion about the result of a function, but don't want to keep the
                     result in a temporary just to look at it for this one assertion test...
