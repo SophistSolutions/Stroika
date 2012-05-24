@@ -30,6 +30,9 @@ my @useExtraMakeDefines;
 
 ## FOR NOW ONLY USED ON LINUX BUILDS
 my $ENABLE_ASSERTIONS = 1;
+my $ENABLE_LIBCURL = 0;
+my $ENABLE_WINHTTP = 0;
+my $ENABLE_TRACE2FILE = 0;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
@@ -48,8 +51,12 @@ sub	DoHelp_
 	print("	    --only-if-unconfigured       /* Opposite of --force - only rebuilds the configfiles if absent */\n");
 	print("	    --platform {PLATFORM}        /* specifies the directory under Builds/Intermediate Files to create */\n");
 	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
-	print("	    --enable-assertions          /* enables assertions for the configuraiton being configured*/\n");
-	print("	    --disable-assertions         /* disables assertions for the configuraiton being configured*/\n");
+	print("	    --enable-assertions          /* enables assertions for the configuration being configured*/\n");
+	print("	    --disable-assertions         /* disables assertions for the configuration being configured*/\n");
+	print("	    --has-libcurl                /* enables libcurl for the configuration being configured*/\n");
+	print("	    --nohas-libcurl              /* disables libcurl for the configuration being configured*/\n");
+	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured*/\n");
+	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured*/\n");
 	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
 	print("	    --c-define {ARG}             /* Define C++ / CPP define for the given target */\n");
 	print("	    --make-define {ARG}          /* Define makefile define for the given target */\n");
@@ -59,16 +66,22 @@ print(" >>> MUST ADD HAS_FEATURE\n");
 }
 
 
-sub	ParseCommandLine_
+sub	SetDefaultForPlatform_
 {
-###HACK - do this better - but for now - we can test...
+	if ("$^O" eq "linux") {
+		$ENABLE_TRACE2FILE = 1;
+	}
 	if ("$^O" eq "linux" && -e '/usr/include/curl/curl.h') {
-		$useExtraCDefines[@useExtraCDefines] = "#define qHasFeature_libcurl 1";
+		$ENABLE_LIBCURL = 1;
 	}
 	if ("$^O" eq "cygwin") {
-		$useExtraCDefines[@useExtraCDefines] = "#define qHasFeature_WinHTTP 1";
+		$ENABLE_WINHTTP = 1;
 	}
+}
 
+sub	ParseCommandLine_
+{
+	SetDefaultForPlatform_ ();
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if (lc ($var) eq "-force" or lc ($var) eq "--force") {
@@ -94,12 +107,31 @@ sub	ParseCommandLine_
 			$i++;
 			$var = $ARGV[$i];
 			$platform = $var;
+			SetDefaultForPlatform_ ();
 		}
 		if ((lc ($var) eq "-enable-assertions") or (lc ($var) eq "--enable-assertions")) {
 			$ENABLE_ASSERTIONS = 1;
 		}
 		if ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
 			$ENABLE_ASSERTIONS = 0;
+		}
+		if ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
+			$ENABLE_LIBCURL = 1;
+		}
+		if ((lc ($var) eq "-nohas-libcurl") or (lc ($var) eq "--nohas-libcurl")) {
+			$ENABLE_LIBCURL = 0;
+		}
+		if ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
+			$ENABLE_WINHTTP = 1;
+		}
+		if ((lc ($var) eq "-nohas-winhttp") or (lc ($var) eq "--nohas-winhttp")) {
+			$ENABLE_WINHTTP = 0;
+		}
+		if ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
+			$ENABLE_TRACE2FILE = 1;
+		}
+		if ((lc ($var) eq "-disable-trace2file") or (lc ($var) eq "--disable-trace2file")) {
+			$ENABLE_TRACE2FILE = 0;
 		}
 		if ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
 			$STATIC_LINK_GCCRUNTIME = 1;
@@ -116,9 +148,7 @@ sub	ParseCommandLine_
 			$forceRecreate = false;
 		}
 		if ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
-			if ("$^O" eq "linux") {
-				$useExtraCDefines[@useExtraCDefines] = "#define qTraceToFile 1";
-			}
+			SetDefaultForPlatform_ ();
 		}
 		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
@@ -290,6 +320,53 @@ sub WriteStroikaConfigCHeader
 	}
 
 
+
+	####NB: We should PREPEND these defines to the list - not APPEND - in case user overrides!
+	#### BUt this will be OK at least temporarily
+	#### -- LGP 2012-05-23
+	
+	
+	print (OUT "//--enable-assertions or --disable-assertions\n");
+	if ($ENABLE_ASSERTIONS) {
+		print (OUT "#define	qDebug 1\n");
+	}	
+	else {
+		print (OUT "#define	qDebug 0\n");
+	}
+	print (OUT "\n");
+
+
+	print (OUT "//--has-libcurl or --nohas-libcurl\n");
+	if ($ENABLE_LIBCURL) {
+		print (OUT "#define	qHasFeature_libcurl 1\n");
+	}	
+	else {
+		print (OUT "#define	qHasFeature_libcurl 0\n");
+	}	
+	print (OUT "\n");
+
+
+	print (OUT "//--has-winhttp or --nohas-winhttp\n");
+	if ($ENABLE_WINHTTP) {
+		print (OUT "#define	qHasFeature_WinHTTP 1\n");
+	}	
+	else {
+		print (OUT "#define	qHasFeature_WinHTTP 0\n");
+	}	
+	print (OUT "\n");
+
+
+
+	print (OUT "//--enable-trace2file or --disable-trace2file\n");
+	if ($ENABLE_TRACE2FILE) {
+		print (OUT "#define	qTraceToFile 1\n");
+	}	
+	else {
+		print (OUT "#define	qTraceToFile 0\n");
+	}	
+	print (OUT "\n");
+
+
 	print (OUT "\n");
 	print (OUT "//Configure Command Line Arguments (-c-define)\n");
 	foreach $var (@useExtraCDefines)
@@ -364,6 +441,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");
 	print (OUT "IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=	$IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD\n");
 	print (OUT "ENABLE_ASSERTIONS=		$ENABLE_ASSERTIONS\n");
+	print (OUT "ENABLE_LOG2FILE=		     $ENABLE_LOG2FILE\n");
 	print (OUT "INCLUDE_SYMBOLS=			$INCLUDE_SYMBOLS\n");
 	print (OUT "\n");
 	print (OUT "\n");
