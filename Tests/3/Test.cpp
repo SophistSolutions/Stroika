@@ -112,6 +112,8 @@ namespace	{
 							sRegTest3Event_T1_.Wait ();
 							int	tmp = *argP;
 							Execution::Sleep (.01);
+                            // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                            VerifyTestResult (tmp % 2 == 0);
 							//DbgTrace ("FRED1: Updating value in of %d", tmp);
 							*argP = tmp + 1;
 							sRegTest3Event_T2_.Set ();
