@@ -55,7 +55,7 @@ sub	DoHelp_
 	print("	    --disable-assertions         /* disables assertions for the configuration being configured*/\n");
 	print("	    --default-assertions         /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
 	print("	    --has-libcurl                /* enables libcurl for the configuration being configured*/\n");
-	print("	    --nohas-libcurl              /* disables libcurl for the configuration being configured*/\n");
+	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured*/\n");
 	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured*/\n");
 	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured*/\n");
 	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
@@ -119,13 +119,13 @@ sub	ParseCommandLine_
 		if ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
 			$ENABLE_LIBCURL = 1;
 		}
-		if ((lc ($var) eq "-nohas-libcurl") or (lc ($var) eq "--nohas-libcurl")) {
+		if ((lc ($var) eq "-no-has-libcurl") or (lc ($var) eq "--no-has-libcurl")) {
 			$ENABLE_LIBCURL = 0;
 		}
 		if ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
 			$ENABLE_WINHTTP = 1;
 		}
-		if ((lc ($var) eq "-nohas-winhttp") or (lc ($var) eq "--nohas-winhttp")) {
+		if ((lc ($var) eq "-no-has-winhttp") or (lc ($var) eq "--no-has-winhttp")) {
 			$ENABLE_WINHTTP = 0;
 		}
 		if ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
@@ -339,9 +339,10 @@ sub WriteStroikaConfigCHeader
 		}
 		print (OUT "\n");
 	}
+	print (OUT "\n");
 
 
-	print (OUT "//--has-libcurl or --nohas-libcurl\n");
+	print (OUT "//--has-libcurl or --no-has-libcurl\n");
 	if ($ENABLE_LIBCURL) {
 		print (OUT "#define	qHasFeature_libcurl 1\n");
 	}	
@@ -351,7 +352,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-	print (OUT "//--has-winhttp or --nohas-winhttp\n");
+	print (OUT "//--has-winhttp or --no-has-winhttp\n");
 	if ($ENABLE_WINHTTP) {
 		print (OUT "#define	qHasFeature_WinHTTP 1\n");
 	}	
