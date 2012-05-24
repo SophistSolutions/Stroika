@@ -308,6 +308,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 	print (OUT "\n");
 
+
 	print (OUT "//Defaults overrides:\n");
 	if ($useThirdPartyXerces) {
 		print (OUT "#define	qHasLibrary_Xerces	1\n");
@@ -315,14 +316,11 @@ sub WriteStroikaConfigCHeader
 	else {
 		print (OUT "#define	qHasLibrary_Xerces	0\n");
 	}
+	print (OUT "\n");
+	print (OUT "\n");
 
 
 
-	####NB: We should PREPEND these defines to the list - not APPEND - in case user overrides!
-	#### BUt this will be OK at least temporarily
-	#### -- LGP 2012-05-23
-	
-	
 	print (OUT "//--enable-assertions or --disable-assertions\n");
 	if ($ENABLE_ASSERTIONS) {
 		print (OUT "#define	qDebug 1\n");
@@ -437,7 +435,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");
 	print (OUT "IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=	$IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD\n");
-	print (OUT "ENABLE_ASSERTIONS=		$ENABLE_ASSERTIONS\n");
 	print (OUT "INCLUDE_SYMBOLS=			$INCLUDE_SYMBOLS\n");
 	print (OUT "\n");
 	print (OUT "\n");

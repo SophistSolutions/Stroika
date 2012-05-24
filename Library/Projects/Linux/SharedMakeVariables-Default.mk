@@ -47,7 +47,7 @@ endif
 
 # Intentionally use '=' instead of ':=' so $Includes can get re-evaluated
 ifndef CFLAGS
-	CFLAGS		=	-c -std=c++0x -DqDebug=$(ENABLE_ASSERTIONS) $(COPTIMIZE_FLAGS) $(Includes)
+	CFLAGS		=	-c -std=c++0x  $(COPTIMIZE_FLAGS) $(Includes)
 endif
 
 
