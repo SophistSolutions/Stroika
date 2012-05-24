@@ -99,9 +99,9 @@ namespace	{
 namespace	{
 	Execution::Event	sRegTest3Event_T1_;
 	Execution::Event	sRegTest3Event_T2_;
-	void	RegressionTest3_ ()
+	void	RegressionTest3_WaitableEvents_ ()
 		{
-            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest3_"));
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest3_WaitableEvents_"));
 
 			// Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
 			struct	FRED1 {
@@ -367,7 +367,7 @@ namespace	{
 		{
 			RegressionTest1_ ();
 			RegressionTest2_ ();
-			RegressionTest3_ ();
+			RegressionTest3_WaitableEvents_ ();
 			RegressionTest4_Lockable_ ();
 			RegressionTest5_Aborting_ ();
 			RegressionTest6_ThreadWaiting_ ();
