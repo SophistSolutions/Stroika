@@ -68,9 +68,6 @@ print(" >>> MUST ADD HAS_FEATURE\n");
 
 sub	SetDefaultForPlatform_
 {
-	if ("$^O" eq "linux") {
-		$ENABLE_TRACE2FILE = 1;
-	}
 	if ("$^O" eq "linux" && -e '/usr/include/curl/curl.h') {
 		$ENABLE_LIBCURL = 1;
 	}
