@@ -53,7 +53,7 @@ sub	DoHelp_
 	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
 	print("	    --enable-assertions          /* enables assertions for the configuration being configured*/\n");
 	print("	    --disable-assertions         /* disables assertions for the configuration being configured*/\n");
-	print("	    --NDEBUG-assertions          /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
+	print("	    --default-assertions         /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
 	print("	    --has-libcurl                /* enables libcurl for the configuration being configured*/\n");
 	print("	    --nohas-libcurl              /* disables libcurl for the configuration being configured*/\n");
 	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured*/\n");
@@ -325,8 +325,12 @@ sub WriteStroikaConfigCHeader
 
 
 
-	if ($ENABLE_ASSERTIONS != -1) {
-		print (OUT "//--enable-assertions or --disable-assertions\n");
+	print (OUT "//--enable-assertions or --disable-assertions to force a particular value. --default-assertions to depend on NDEBUG\n");
+	if ($ENABLE_ASSERTIONS == -1) {
+		print (OUT "// UNSET so defaulting (to 0 iff NDEBUG set)\n");
+	}
+	else {
+		print (OUT "// set\n");
 		if ($ENABLE_ASSERTIONS) {
 			print (OUT "#define	qDebug 1\n");
 		}	
@@ -335,6 +339,7 @@ sub WriteStroikaConfigCHeader
 		}
 		print (OUT "\n");
 	}
+
 
 	print (OUT "//--has-libcurl or --nohas-libcurl\n");
 	if ($ENABLE_LIBCURL) {
@@ -357,8 +362,12 @@ sub WriteStroikaConfigCHeader
 
 
 
-	if ($ENABLE_TRACE2FILE != -1) {
-		print (OUT "//--enable-trace2file or --disable-trace2file\n");
+	print (OUT "//--enable-trace2file or --disable-trace2file\n");
+	if ($ENABLE_TRACE2FILE == -1) {
+		print (OUT "// UNSET so defaulting\n");
+	}
+	else {
+		print (OUT "// set\n");
 		if ($ENABLE_TRACE2FILE) {
 			print (OUT "#define	qTraceToFile 1\n");
 		}	
