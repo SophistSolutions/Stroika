@@ -32,7 +32,7 @@ my @useExtraMakeDefines;
 my $ENABLE_ASSERTIONS = -1;				#-1 not specified
 my $ENABLE_LIBCURL = 0;
 my $ENABLE_WINHTTP = 0;
-my $ENABLE_TRACE2FILE = 0;
+my $ENABLE_TRACE2FILE = -1;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
@@ -357,14 +357,16 @@ sub WriteStroikaConfigCHeader
 
 
 
-	print (OUT "//--enable-trace2file or --disable-trace2file\n");
-	if ($ENABLE_TRACE2FILE) {
-		print (OUT "#define	qTraceToFile 1\n");
-	}	
-	else {
-		print (OUT "#define	qTraceToFile 0\n");
-	}	
-	print (OUT "\n");
+	if ($ENABLE_TRACE2FILE != -1) {
+		print (OUT "//--enable-trace2file or --disable-trace2file\n");
+		if ($ENABLE_TRACE2FILE) {
+			print (OUT "#define	qTraceToFile 1\n");
+		}	
+		else {
+			print (OUT "#define	qTraceToFile 0\n");
+		}	
+		print (OUT "\n");
+	}
 
 
 	print (OUT "\n");
