@@ -21,10 +21,9 @@
 #elif   defined (NDEBUG)
 #define qDebug  0
 #else
-// NB #warning is a non-standard extension - maybe we shouldnt use?
-// DEFAULT if we have no idea?
-#warning Neither qDebug nor _DEBUG no NDEBUG defined, defaulting to no debug (qDebug=0)
-#define qDebug  0
+// The <cassert> convention is that if NDEBUG is defined, we turn off debugging, but if nothing like it is defined, we
+// turn on assertions by default. The caller can simply specify qDebug to prevent this defaulting if desired.
+#define qDebug  1
 #endif
 #endif
 
