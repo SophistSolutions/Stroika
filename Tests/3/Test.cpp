@@ -37,6 +37,7 @@ using	Execution::ThreadPool;
 namespace	{
 	void	RegressionTest1_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest1_"));
 			struct	FRED {
 				static	void	DoIt (void* ignored)
 					{
@@ -62,6 +63,7 @@ namespace	{
 	CriticalSection	sharedCriticalSection_;
 	void	RegressionTest2_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest2_"));
 
 			// Make 2 concurrent threads, which share a critical section object to take turns updating a variable
 			struct	FRED {
@@ -99,6 +101,7 @@ namespace	{
 	Execution::Event	sRegTest3Event_T2_;
 	void	RegressionTest3_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest3_"));
 
 			// Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
 			struct	FRED1 {
@@ -153,6 +156,7 @@ namespace	{
 	struct	data_ {};
 	void	RegressionTest4_Lockable_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest4_Lockable_"));
 			{
 				Lockable<data_>	x;
 				Lockable<data_>	y = data_ ();
@@ -194,6 +198,7 @@ namespace	{
 namespace	{
 	void	RegressionTest5_Aborting_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest5_Aborting_"));
 			struct	FRED {
 				static	void	DoIt ()
 					{
@@ -225,6 +230,7 @@ namespace	{
 namespace	{
 	void	RegressionTest6_ThreadWaiting_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest6_ThreadWaiting_"));
 			struct	FRED {
 				static	void	DoIt ()
 					{
@@ -261,6 +267,7 @@ namespace	{
 namespace	{
 	void	RegressionTest7_SimpleThreadPool_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest7_SimpleThreadPool_"));
 			{
 				ThreadPool	p;
 				p.SetPoolSize (1);
@@ -292,6 +299,7 @@ namespace	{
 namespace	{
 	void	RegressionTest8_ThreadPool_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest8_ThreadPool_"));
 			// Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
 			struct	FRED {
 				static	void	DoIt (void* ignored)
@@ -327,6 +335,7 @@ namespace	{
 namespace	{
 	void	RegressionTest9_ThreadsAbortingEarly_ ()
 		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest9_ThreadsAbortingEarly_"));
 			// I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
 			// between the create of thread and Abort
 			struct	FRED {
