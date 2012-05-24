@@ -100,7 +100,7 @@ namespace	{
 	void	RegressionTest3_ ()
 		{
 
-			// Make 2 concurrent threads, which share a critical section object to take turns updating a variable
+			// Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
 			struct	FRED1 {
 				static	void	DoIt (void* ignored)
 					{
@@ -137,10 +137,13 @@ namespace	{
 			Thread	thread2 (&FRED2::DoIt, &updaterValue);
 			thread1.Start ();
 			thread2.Start ();
+            // Both threads start out waiting - until we get things rolling telling one to start.
+            // Then they pingpong back and forther
 			sRegTest3Event_T1_.Set ();
 			thread1.WaitForDone ();
 			thread2.WaitForDone ();
 			//DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+            // If there was a race - its unlikely you'd end up with exact 20 as your result
 			VerifyTestResult (updaterValue == 2 * 10);
 		}
 }
