@@ -29,7 +29,7 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 
 ## FOR NOW ONLY USED ON LINUX BUILDS
-my $ENABLE_ASSERTIONS = 1;
+my $ENABLE_ASSERTIONS = -1;				#-1 not specified
 my $ENABLE_LIBCURL = 0;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = 0;
@@ -53,6 +53,7 @@ sub	DoHelp_
 	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
 	print("	    --enable-assertions          /* enables assertions for the configuration being configured*/\n");
 	print("	    --disable-assertions         /* disables assertions for the configuration being configured*/\n");
+	print("	    --NDEBUG-assertions          /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
 	print("	    --has-libcurl                /* enables libcurl for the configuration being configured*/\n");
 	print("	    --nohas-libcurl              /* disables libcurl for the configuration being configured*/\n");
 	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured*/\n");
@@ -111,6 +112,9 @@ sub	ParseCommandLine_
 		}
 		if ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
 			$ENABLE_ASSERTIONS = 0;
+		}
+		if ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
+			$ENABLE_ASSERTIONS = -1;
 		}
 		if ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
 			$ENABLE_LIBCURL = 1;
@@ -321,15 +325,16 @@ sub WriteStroikaConfigCHeader
 
 
 
-	print (OUT "//--enable-assertions or --disable-assertions\n");
-	if ($ENABLE_ASSERTIONS) {
-		print (OUT "#define	qDebug 1\n");
-	}	
-	else {
-		print (OUT "#define	qDebug 0\n");
+	if ($ENABLE_ASSERTIONS != -1) {
+		print (OUT "//--enable-assertions or --disable-assertions\n");
+		if ($ENABLE_ASSERTIONS) {
+			print (OUT "#define	qDebug 1\n");
+		}	
+		else {
+			print (OUT "#define	qDebug 0\n");
+		}
+		print (OUT "\n");
 	}
-	print (OUT "\n");
-
 
 	print (OUT "//--has-libcurl or --nohas-libcurl\n");
 	if ($ENABLE_LIBCURL) {
