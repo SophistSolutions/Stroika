@@ -3,12 +3,16 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Time/Duration.h"
+
 #include    "Event.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
+
+using   Stroika::Foundation::Time::Duration;
 
 
 /*
@@ -83,8 +87,24 @@ Again:
         if (remaining < 0) {
             DoThrow (WaitTimedOutException ());
         }
-        if (fConditionVariable_.wait_for (lock, std::chrono::duration<double> (remaining)) == std::cv_status::timeout) {
-            DoThrow (WaitTimedOutException ());
+        // avoid roundoff issues - and not  a big deal to wakeup and wait again once a day ;-)
+        const Time::DurationSecondsType k1Day   =   Time::DurationSecondsType (60 * 60 * 24);
+        if (remaining >= k1Day) {
+            remaining = k1Day;
+        }
+
+// hack needed for theadpool test??? Because Abort_ isn't interupting its WAIT
+// -- LGP 2012-05-26
+#if 1
+if (remaining > 5) {
+remaining = 5;
+}
+#endif
+
+        if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> ()) == std::cv_status::timeout) {
+            // No need for this, since could be caught next time through the loop...
+            // And it interferes with the bounding of the 'remaining' count used to avoid overflows
+            // DoThrow (WaitTimedOutException ());
         }
     }
     fTriggered_ = false ;   // autoreset
