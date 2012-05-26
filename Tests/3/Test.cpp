@@ -99,57 +99,128 @@ namespace	{
 namespace	{
 	Execution::Event	sRegTest3Event_T1_;
 	Execution::Event	sRegTest3Event_T2_;
+    namespace   WAITABLE_EVENTS_ {
+	    void	NOTIMEOUTS_ ()
+		    {
+			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+			    struct	FRED1 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T1_.Wait ();
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+                                // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                                VerifyTestResult (tmp % 2 == 0);
+							    //DbgTrace ("FRED1: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T2_.Set ();
+						    }
+					    }
+			    };
+			    struct	FRED2 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T2_.Wait ();
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+							    //DbgTrace ("FRED2: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T1_.Set ();
+						    }
+					    }
+			    };
+
+			    sRegTest3Event_T1_.Reset ();
+			    sRegTest3Event_T2_.Reset ();
+			    int	updaterValue	=	0;
+			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    Thread	thread2 (&FRED2::DoIt, &updaterValue);
+			    thread1.Start ();
+			    thread2.Start ();
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+			    sRegTest3Event_T1_.Set ();
+			    thread1.WaitForDone ();
+			    thread2.WaitForDone ();
+			    //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+			    VerifyTestResult (updaterValue == 2 * 10);
+		    }
+	    void	PingBackAndForthWithSimpleTimeouts_ ()
+		    {
+			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+			    struct	FRED1 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T1_.Wait (5.0);
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+                                // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                                VerifyTestResult (tmp % 2 == 0);
+							    //DbgTrace ("FRED1: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T2_.Set ();
+						    }
+					    }
+			    };
+			    struct	FRED2 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T2_.Wait (5.0);
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+							    //DbgTrace ("FRED2: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T1_.Set ();
+						    }
+					    }
+			    };
+
+			    sRegTest3Event_T1_.Reset ();
+			    sRegTest3Event_T2_.Reset ();
+			    int	updaterValue	=	0;
+			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    Thread	thread2 (&FRED2::DoIt, &updaterValue);
+			    thread1.Start ();
+			    thread2.Start ();
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+			    sRegTest3Event_T1_.Set ();
+			    thread1.WaitForDone ();
+			    thread2.WaitForDone ();
+			    //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+			    VerifyTestResult (updaterValue == 2 * 10);
+		    }
+	    void	TEST_TIMEOUT_EXECPETIONS_ ()
+		    {
+                bool    passed  =   false;
+			    sRegTest3Event_T1_.Reset ();
+			    try {
+                    sRegTest3Event_T1_.Wait (0.5);  // should timeout
+                }
+                catch (const Execution::WaitTimedOutException&) {
+                    passed = true;
+                }
+                catch (...) {
+                }
+                VerifyTestResult (passed);
+		    }
+    }
 	void	RegressionTest3_WaitableEvents_ ()
 		{
             Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest3_WaitableEvents_"));
-
-			// Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
-			struct	FRED1 {
-				static	void	DoIt (void* ignored)
-					{
-						int*	argP	=	reinterpret_cast<int*> (ignored);
-						for (int i = 0; i < 10; i++) {
-							sRegTest3Event_T1_.Wait ();
-							int	tmp = *argP;
-							Execution::Sleep (.01);
-                            // Since fred1/fred2 always take turns, and Fred1 always goes first...
-                            VerifyTestResult (tmp % 2 == 0);
-							//DbgTrace ("FRED1: Updating value in of %d", tmp);
-							*argP = tmp + 1;
-							sRegTest3Event_T2_.Set ();
-						}
-					}
-			};
-			struct	FRED2 {
-				static	void	DoIt (void* ignored)
-					{
-						int*	argP	=	reinterpret_cast<int*> (ignored);
-						for (int i = 0; i < 10; i++) {
-							sRegTest3Event_T2_.Wait ();
-							int	tmp = *argP;
-							Execution::Sleep (.01);
-							//DbgTrace ("FRED2: Updating value in of %d", tmp);
-							*argP = tmp + 1;
-							sRegTest3Event_T1_.Set ();
-						}
-					}
-			};
-
-			sRegTest3Event_T1_.Reset ();
-			sRegTest3Event_T2_.Reset ();
-			int	updaterValue	=	0;
-			Thread	thread1 (&FRED1::DoIt, &updaterValue);
-			Thread	thread2 (&FRED2::DoIt, &updaterValue);
-			thread1.Start ();
-			thread2.Start ();
-            // Both threads start out waiting - until we get things rolling telling one to start.
-            // Then they pingpong back and forther
-			sRegTest3Event_T1_.Set ();
-			thread1.WaitForDone ();
-			thread2.WaitForDone ();
-			//DbgTrace ("Test3 - updaterValue = %d", updaterValue);
-            // If there was a race - its unlikely you'd end up with exact 20 as your result
-			VerifyTestResult (updaterValue == 2 * 10);
+            WAITABLE_EVENTS_::NOTIMEOUTS_ ();
+            WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
+            WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
 		}
 }
 
