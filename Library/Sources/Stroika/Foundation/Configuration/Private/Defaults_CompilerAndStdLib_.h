@@ -243,6 +243,27 @@
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_stdchrono
+@DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports <chrono>.</p>
+*/
+#if     !defined (qCompilerAndStdLib_Supports_stdchrono)
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_stdchrono  1
+#elif   defined (_MSC_VER)
+#if      _MSC_VER >= 1700
+#define qCompilerAndStdLib_Supports_stdchrono  1
+#else
+#define qCompilerAndStdLib_Supports_stdchrono  0
+#endif
+#else
+// GUESS
+#define qCompilerAndStdLib_Supports_stdchrono  1
+#endif
+#endif
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_stdthreads
 @DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports threads.</p>
 */

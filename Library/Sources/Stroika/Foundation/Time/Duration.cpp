@@ -92,6 +92,13 @@ Duration::Duration (double duration)
 {
 }
 
+#if     qCompilerAndStdLib_Supports_stdchrono
+Duration::Duration (const std::duration<double>& d)
+    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
+{
+}
+#endif
+
 void    Duration::clear ()
 {
     fDurationRep.clear ();
@@ -113,6 +120,14 @@ double  Duration::As () const
 {
     return ParseTime_ (fDurationRep);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
+
+#if     qCompilerAndStdLib_Supports_stdchrono
+template    <>
+std::duration<double>  Duration::As () const
+{
+    return ParseTime_ (fDurationRep);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+#endif
 
 template    <>
 wstring Duration::As () const
