@@ -93,7 +93,7 @@ Duration::Duration (double duration)
 }
 
 #if     qCompilerAndStdLib_Supports_stdchrono
-Duration::Duration (const std::duration<double>& d)
+Duration::Duration (const std::chrono::duration<double>& d)
     : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
 {
 }
@@ -122,11 +122,27 @@ double  Duration::As () const
 }
 
 #if     qCompilerAndStdLib_Supports_stdchrono
+#if 1
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Time {
+        // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
+        // -- LGP 2012-05-26
 template    <>
 std::chrono::duration<double>  Duration::As () const
 {
-    return ParseTime_ (fDurationRep);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return std::chrono::duration<double> (ParseTime_ (fDurationRep));
 }
+}
+}
+}
+#else
+template    <>
+std::chrono::duration<double>  Duration::As () const
+{
+    return std::chrono::duration<double> (ParseTime_ (fDurationRep));
+}
+#endif
 #endif
 
 template    <>

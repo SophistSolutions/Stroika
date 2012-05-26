@@ -411,7 +411,7 @@ namespace   {
             #if     qCompilerAndStdLib_Supports_stdchrono
 			    const	Duration	k30Seconds		=	Duration (30.0);
 			    VerifyTestResult (k30Seconds.As<time_t> () == 30);
-                VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == 30.0);
+                VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == std::chrono::duration<double> (30.0));
                 VerifyTestResult (Duration (std::chrono::duration<double> (4)).As<time_t> () == 4);
             #endif
         }
