@@ -74,7 +74,7 @@ namespace   Stroika {
                 explicit Duration (int64_t duration);
                 explicit Duration (double duration);
                 #if     qCompilerAndStdLib_Supports_stdchrono
-                Duration (const std::duration<double>& d);
+                Duration (const std::chrono::duration<double>& d);
                 #endif
 
             public:
@@ -87,7 +87,7 @@ namespace   Stroika {
                  *      time_t
                  *      wstring
                  *      double
-                 *      std::duration<double>           (if qCompilerAndStdLib_Supports_stdchrono)
+                 *      std::chrono::duration<double>           (if qCompilerAndStdLib_Supports_stdchrono)
                  *
                  *  Note - if 'empty' - As<> for numeric types returns 0.
                  */

@@ -123,7 +123,7 @@ double  Duration::As () const
 
 #if     qCompilerAndStdLib_Supports_stdchrono
 template    <>
-std::duration<double>  Duration::As () const
+std::chrono::duration<double>  Duration::As () const
 {
     return ParseTime_ (fDurationRep);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
