@@ -20,6 +20,14 @@
 
 
 
+// Workaround bug that the SIGNAL KILL doesn't appear to interupt the GCC implemntation of condition_variable::wait_for ()
+// NOTE - the workaround is QUITE INCOMPLETE - and just affects SOME of threadpool code
+// -- LGP 2012-05-27
+#ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
+#define qEVENT_GCCTHREADS_LINUX_WAITBUG     qUseThreads_StdCPlusPlus
+#endif
+
+
 /*
  * TODO:
  *      o   Consider if there is a need for timed mutexes.

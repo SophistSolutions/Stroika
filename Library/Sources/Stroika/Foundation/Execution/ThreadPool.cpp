@@ -184,6 +184,9 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
         }
     }
     if (not thread2Kill.GetStatus () != Thread::eNull) {
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
+        fTasksAdded_.Set ();
+#endif
         thread2Kill.AbortAndWaitForDone (timeout);
     }
 }
@@ -321,6 +324,9 @@ void    ThreadPool::Abort ()
             i->Abort ();
         }
     }
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
+    fTasksAdded_.Set ();
+#endif
 }
 
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)

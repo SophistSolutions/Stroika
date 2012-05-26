@@ -92,15 +92,6 @@ Again:
         if (remaining >= k1Day) {
             remaining = k1Day;
         }
-
-// hack needed for theadpool test??? Because Abort_ isn't interupting its WAIT
-// -- LGP 2012-05-26
-#if 1
-if (remaining > 5) {
-remaining = 5;
-}
-#endif
-
         if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> ()) == std::cv_status::timeout) {
             // No need for this, since could be caught next time through the loop...
             // And it interferes with the bounding of the 'remaining' count used to avoid overflows
