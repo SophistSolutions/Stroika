@@ -28,12 +28,14 @@
 #endif
 
 //PLANA is to workaround in ThreadPool. This is probaly the worst appraoch but probably best for debugging, since
-// runnign regression tests and seeing this break is a good way to localize the problem.
+// running regression tests and seeing this break is a good way to localize the problem.
 //
 // Set _PLANA to 0 to use PLANB
 #define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA       0
-#define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA       qEVENT_GCCTHREADS_LINUX_WAITBUG
+//#define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA       qEVENT_GCCTHREADS_LINUX_WAITBUG
 #define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANB       (qEVENT_GCCTHREADS_LINUX_WAITBUG && !qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA)
+
+
 
 
 /*
