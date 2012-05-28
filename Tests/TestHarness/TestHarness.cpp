@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Records For Living, Inc. 2004-2011.  All rights reserved
+ * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
 #include	"Stroika/Foundation/StroikaPreComp.h"
 
