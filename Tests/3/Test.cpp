@@ -102,6 +102,7 @@ namespace	{
     namespace   WAITABLE_EVENTS_ {
 	    void	NOTIMEOUTS_ ()
 		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("pingpong threads with event.wait(NOTIMEOUTS)"));
 			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
 			    struct	FRED1 {
 				    static	void	DoIt (void* ignored)
@@ -152,6 +153,7 @@ namespace	{
 		    }
 	    void	PingBackAndForthWithSimpleTimeouts_ ()
 		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("pingpong threads with event.wait(WITHTIMEOUT)"));
 			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
 			    struct	FRED1 {
 				    static	void	DoIt (void* ignored)
@@ -202,6 +204,7 @@ namespace	{
 		    }
 	    void	TEST_TIMEOUT_EXECPETIONS_ ()
 		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("event wiat timeouts"));
                 bool    passed  =   false;
 			    sRegTest3Event_T1_.Reset ();
 			    try {
@@ -214,6 +217,62 @@ namespace	{
                 }
                 VerifyTestResult (passed);
 		    }
+	    void	TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ()
+		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("deadlock block on waitable event and abort thread (thread cancelation)"));
+			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+			    struct	FRED1 {
+				    static	void	DoIt (void* ignored)
+					    {
+							sRegTest3Event_T1_.Wait (60.0);     // just has to be much more than the waits below
+					    }
+			    };
+
+			    sRegTest3Event_T1_.Reset ();
+			    int	updaterValue	=	0;
+			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    thread1.Start ();
+
+                // At this point the thread SHOULD block and wait 30 seconds
+                {
+                    const   Time::DurationSecondsType   kMargingOfError  =   .5;
+                    const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
+                    Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
+                    Time::DurationSecondsType   caughtExceptAt  =   0;
+
+                    try {
+                        thread1.WaitForDone (kWaitOnAbortFor);
+                    }
+                    catch (const Execution::WaitTimedOutException&) {
+                        caughtExceptAt =  Time::GetTickCount ();
+                    }
+                    Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
+                    VerifyTestResult (expectedEndAt - kMargingOfError <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfError);
+                }
+
+                // Now ABORT and WAITFORDONE - that should kill it nearly immediately
+                {
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANB
+                    const   Time::DurationSecondsType   kMargingOfError  =   5.5;
+#else
+                    const   Time::DurationSecondsType   kMargingOfError  =   .5;
+#endif
+                    const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
+                    Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
+                    try {
+                        thread1.AbortAndWaitForDone (kWaitOnAbortFor);
+                    }
+                    catch (const Execution::WaitTimedOutException&) {
+                        VerifyTestResult (false);   // shouldn't fail to wait cuz we did abort
+                    }
+                    Time::DurationSecondsType   doneAt          =   Time::GetTickCount ();;
+                    Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
+                    VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError);
+                }
+                
+                // Thread MUST be done/terminated by this point
+                VerifyTestResult (thread1.GetStatus () == Thread::eCompleted);
+		    }
     }
 	void	RegressionTest3_WaitableEvents_ ()
 		{
@@ -221,6 +280,7 @@ namespace	{
             WAITABLE_EVENTS_::NOTIMEOUTS_ ();
             WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
             WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
+            WAITABLE_EVENTS_::TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ();
 		}
 }
 
