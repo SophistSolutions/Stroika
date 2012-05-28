@@ -52,6 +52,13 @@ endif
 
 
 
+ifndef ENABLE_GLIBC_ASSERTIONS
+	ENABLE_GLIBC_ASSERTIONS		=	0
+endif
+
+
+
+
 ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
   ifeq ($(IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD), 1)
     STDCPPLIBArgs      :=      $(shell g++ -print-file-name=libstdc++.a)
@@ -93,6 +100,13 @@ ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaLibsWithSupportLibs	=	$(StroikaLibs) $(StroikaSupportLibs) 
 endif
+
+
+
+ifeq ($(ENABLE_GLIBC_ASSERTIONS), 1)
+	CFLAGS +=  -D_GLIBCXX_DEBUG 
+endif
+
 
 
 ifeq ($(INCLUDE_SYMBOLS), 1)

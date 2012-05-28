@@ -439,6 +439,12 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "\n");
 
+
+	if ($ENABLE_ASSERTIONS == 1) {
+		print (OUT "ENABLE_GLIBC_ASSERTIONS=1\n");
+	}
+
+
 	print (OUT "#Defaults overrides:\n");
 
 	print (OUT "\n");
