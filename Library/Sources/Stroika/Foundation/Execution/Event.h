@@ -21,7 +21,6 @@
 
 //
 // Workaround bug that the SIGNAL KILL doesn't appear to interupt the GCC implemntation of condition_variable::wait_for ()
-// NOTE - the workaround is QUITE INCOMPLETE - and just affects SOME of threadpool code
 // -- LGP 2012-05-27
 //
 //      MAYBE use http://www.mkssoftware.com/docs/man3/pthread_cancel.3.asp
@@ -31,13 +30,7 @@
 #define qEVENT_GCCTHREADS_LINUX_WAITBUG     qUseThreads_StdCPlusPlus
 #endif
 
-//PLANA is to workaround in ThreadPool. This is probaly the worst appraoch but probably best for debugging, since
-// running regression tests and seeing this break is a good way to localize the problem.
-//
-// Set _PLANA to 0 to use PLANB
-#define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA       0
-//#define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA       qEVENT_GCCTHREADS_LINUX_WAITBUG
-#define qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANB       (qEVENT_GCCTHREADS_LINUX_WAITBUG && !qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA)
+
 
 
 

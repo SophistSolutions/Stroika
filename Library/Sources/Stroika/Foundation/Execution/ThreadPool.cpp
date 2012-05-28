@@ -184,9 +184,6 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
         }
     }
     if (not thread2Kill.GetStatus () != Thread::eNull) {
-#if     qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA
-        fTasksAdded_.Set ();
-#endif
         thread2Kill.AbortAndWaitForDone (timeout);
     }
 }
@@ -317,16 +314,13 @@ void    ThreadPool::Abort ()
     Debug::TraceContextBumper ctx (TSTR ("ThreadPool::Abort"));
     fAborted_ = true;
     {
-        // First see if its in the Q
+        // Clear the task Q and then abort each thread
         AutoCriticalSection critSection (fCriticalSection_);
         fTasks_.clear ();
         for (vector<Thread>::iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             i->Abort ();
         }
     }
-#if     qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANA
-    fTasksAdded_.Set ();
-#endif
 }
 
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)

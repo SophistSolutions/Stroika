@@ -252,7 +252,7 @@ namespace	{
 
                 // Now ABORT and WAITFORDONE - that should kill it nearly immediately
                 {
-#if     qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANB
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
                     const   Time::DurationSecondsType   kMargingOfError  =   5.5;
 #else
                     const   Time::DurationSecondsType   kMargingOfError  =   .5;

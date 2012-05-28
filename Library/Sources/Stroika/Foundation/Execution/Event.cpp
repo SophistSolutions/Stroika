@@ -92,7 +92,7 @@ Again:
         if (remaining >= k1Day) {
             remaining = k1Day;
         }
-        #if     qEVENT_GCCTHREADS_LINUX_WAITBUG_PLANB
+        #if     qEVENT_GCCTHREADS_LINUX_WAITBUG
         remaining = min (remaining, 5.0);       // hack to force quick wakeup shutting down threadpool (and other threads waiting on a semaphore)
         #endif
         if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> ()) == std::cv_status::timeout) {
