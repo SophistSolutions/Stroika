@@ -200,7 +200,7 @@ size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () c
 
 
 
-
+#if     !qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug
 /*
  ********************************************************************************
  ********************* Memory::LeakTrackingGeneralPurposeAllocator **************
@@ -395,3 +395,4 @@ LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot (const PTRMAP& m)
     : fAllocations (m)
 {
 }
+#endif

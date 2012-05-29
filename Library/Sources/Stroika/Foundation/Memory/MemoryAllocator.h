@@ -15,6 +15,18 @@
 
 
 
+/*
+ * So far - quite ill-understood very complicated template bug. Only really comes up with _GLIBCXX_DEBUG
+ * assertions code - so just disable our leaktracker in that case.
+ *      -- LGP 2012-05-28
+ */
+#ifndef qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug
+#define qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug        defined(_GLIBCXX_DEBUG)
+#endif
+
+
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -149,6 +161,7 @@ namespace   Stroika {
 
 
 
+#if     !qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug
             /*
              * The LeakTrackingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps LOTS of statistics - it tracks all allocations,
              * and delegates to some real allocator (constructor argument).
@@ -187,6 +200,7 @@ namespace   Stroika {
                 AbstractGeneralPurposeAllocator&        fBaseAllocator;
                 PTRMAP                                  fAllocations;
             };
+#endif
 
         }
     }
