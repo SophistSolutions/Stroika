@@ -281,6 +281,28 @@
 
 
 
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_varadic_templates
+@DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports varadic templates.</p>
+*/
+#if     !defined (qCompilerAndStdLib_Supports_varadic_templates)
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_varadic_templates  1
+#elif   defined (_MSC_VER) && _MSC_VER <= 1600
+#define qCompilerAndStdLib_Supports_varadic_templates  0
+#else
+// GUESS
+#define qCompilerAndStdLib_Supports_varadic_templates  1
+#endif
+#endif
+
+
+
+
 /*
     *   The StandaredC++ mechanism of commenting out unused parameters isn't good enuf
     *   in the case where the parameters might be used conditionally. This hack is

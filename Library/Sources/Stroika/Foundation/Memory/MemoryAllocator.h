@@ -103,30 +103,22 @@ namespace   Stroika {
                 nonvirtual  void    construct (pointer p, const T& v);
                 nonvirtual  void    destroy (pointer p);
 
+#if  qCompilerAndStdLib_Supports_varadic_templates
+            public:
+                template    <typename... ARGS>
+                    void construct (pointer p, ARGS&&... args)
+                        {
+                            ::new ((void*)p) T (std::forward<ARGS> (args)...);
+                        }
+#endif
+
+
             public:
                 nonvirtual  size_t  max_size() const noexcept;
 
             public:
                 nonvirtual  bool    operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
                 nonvirtual  bool    operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
-
-
-#ifndef qVaradicTemplates
-#define qVaradicTemplates   defined (__GXX_EXPERIMENTAL_CXX0X__)
-#endif
-
-
-#if  qVaradicTemplates
-                template<typename... _Args>
-                void construct (pointer p, _Args&& args)
-                {
-                    ::new ((void*)p) T (std::forward<_Args> (args)...); }
-                }
-#endif
-
-
-
-
             };
 
 
