@@ -109,6 +109,24 @@ namespace   Stroika {
             public:
                 nonvirtual  bool    operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
                 nonvirtual  bool    operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
+
+
+#ifndef qVaradicTemplates
+#define qVaradicTemplates   defined (__GXX_EXPERIMENTAL_CXX0X__)
+#endif
+
+
+#if  qVaradicTemplates
+                template<typename... _Args>
+                void construct (pointer p, _Args&& args)
+                {
+                    ::new ((void*)p) T (std::forward<_Args> (args)...); }
+                }
+#endif
+
+
+
+
             };
 
 
