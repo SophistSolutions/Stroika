@@ -3,6 +3,8 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    <ostream>
+
 #include    "../../Characters/Format.h"
 
 #include    "Writer.h"
