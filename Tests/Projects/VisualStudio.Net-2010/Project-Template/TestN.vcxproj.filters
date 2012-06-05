@@ -14,25 +14,25 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="TestHarness">
-      <UniqueIdentifier>{db1515dd-9816-4556-8427-4170ac6264f1}</UniqueIdentifier>
+      <UniqueIdentifier>{f12db992-8ca3-475f-b6b5-f3040e0ee6d1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
-      <Filter>TestHarness</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\11\Test.cpp">
+    <ClCompile Include="..\..\..\NNN\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">
       <Filter>TestHarness</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
+      <Filter>TestHarness</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\TestHarness\TestHarness.h">
+    <ClInclude Include="..\..\..\TestHarness\SimpleClass.h">
       <Filter>TestHarness</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\TestHarness\SimpleClass.h">
+    <ClInclude Include="..\..\..\TestHarness\TestHarness.h">
       <Filter>TestHarness</Filter>
     </ClInclude>
   </ItemGroup>

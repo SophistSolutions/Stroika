@@ -7,6 +7,5 @@ Release-U-64/
 Output/
 *.sdf
 *.suo
-*.opensdf
 *.vcxproj.user
 ipch/

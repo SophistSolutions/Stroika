@@ -2,4 +2,4 @@
 
 require "../../../ScriptsLib/test-Run-template.pl";
 
-DoRun (3);
+DoRun (NNN);

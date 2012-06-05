@@ -41,6 +41,7 @@ else {
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
 	chdir ("Projects/VisualStudio.Net-2010");
+		system ("perl BuildProjectsFiles.pl");
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
 			print ("$BLD_TRG Test $tst: $tstName ...\n");

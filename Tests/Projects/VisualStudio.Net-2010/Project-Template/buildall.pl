@@ -2,4 +2,4 @@
 
 require "../../../ScriptsLib/test-buildall-template.pl";
 
-DoRunBuilds ("Test12.vcxproj");
+DoRunBuilds ("TestNNN.vcxproj");
