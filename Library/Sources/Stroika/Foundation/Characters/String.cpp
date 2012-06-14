@@ -33,13 +33,15 @@ namespace   {
     /*
      *  UnsupportedFeatureException_
      *
-     *          Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support any operaiton that modifies the string.
-     *      Its up to the CONTAINER change the rep to a generic one that supports everything todo that.
+     *          Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support
+	 *		any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
+	 *		that supports everything todo that.
      *
-     *          We COULD have done this by having a SUPPORTSX() predicate method called on each rep before each all, or have an extra return value about
-     *      if it succeeded. But - that would be alot of overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one
-     *      tries to change a string that happened to come from a 'readonly' source. We can handle that internally, and transparently by thorwing an
-     *      excpetion that never makes it out of the String module/cpp file.
+     *          We COULD have done this by having a SUPPORTSX() predicate method called on each rep before
+	 *		each all, or have an extra return value about if it succeeded. But - that would be alot of
+	 *		overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one tries
+	 *		to change a string that happened to come from a 'readonly' source. We can handle that internally,
+	 *		and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
      */
     class   UnsupportedFeatureException_ {};
 }
@@ -506,6 +508,8 @@ namespace   {
  ************************************* String ***********************************
  ********************************************************************************
  */
+static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+
 namespace   {
     struct  MyEmptyString_ : String {
         static  String::_Rep*   Clone_ (const _Rep& rep) {
@@ -542,7 +546,6 @@ String::String (const wchar_t* cString)
     : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
 {
     RequireNotNull (cString);
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
@@ -550,7 +553,6 @@ String::String (const wchar_t* from, const wchar_t* to)
 {
     Require (from <= to);
     Require (from != nullptr or from == to);
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 }
 
 String::String (const Character* from, const Character* to)
@@ -751,21 +753,13 @@ bool    String::Contains (const String& subString) const
 
 bool    String::Match (const String& regEx) const
 {
-#if     qCompilerAndStdLib_Bug_regexpr
-    AssertNotImplemented ();
-    return false;
-#else
     wstring tmp =   As<wstring> ();
     return regex_match (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
-#endif
 }
 
 vector<String>  String::Find (const String& regEx) const
 {
     vector<String>  result;
-#if     qCompilerAndStdLib_Bug_regexpr
-    AssertNotImplemented ();
-#else
     wstring tmp     =   As<wstring> ();
     wregex  regExp  =   wregex (regEx.As<wstring> ());
     std::wsmatch res;
@@ -774,18 +768,12 @@ vector<String>  String::Find (const String& regEx) const
     for (wsmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
         result.push_back (String (*i));
     }
-#endif
     return result;
 }
 
 String  String::Replace (const String& regEx, const String& with) const
 {
-#if     qCompilerAndStdLib_Bug_regexpr
-    AssertNotImplemented ();
-    return String ();
-#else
     return String (regex_replace (As<wstring> (), wregex (regEx.As<wstring> ()), with.As<wstring> ()));
-#endif
 }
 
 String  String::SubString (size_t from, size_t to) const

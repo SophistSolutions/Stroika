@@ -265,14 +265,32 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Apply the given regular expression return true if it matches this string
-                 */
+                 * Apply the given regular expression return true if it matches this string. This only
+				 * returns true if the expression matches the ENTIRE string - all the way to the end.
+				 * See also 'Search()' - to find a set of things which match.
+				 *
+				 * For example:
+				 *		Assert (String (L"abc").Match (L"abc"));
+				 *		Assert (not (String (L"abc").Match (L"bc")));
+				 *		Assert (String (L"abc").Match (L".*bc"));
+				 *		Assert (not String (L"abc").Match (L"b.*c"));
+				 *
+				 * Note - there is no reason for StartsWith/EndsWith. These correspond roughly to:
+				 *		bool StartsWith (String X) { return Match (X + L".*"); }		
+				 *		bool EndsWith (String X) { return Match (L".*" + X); }		
+				 *	with the only caveat being 'quoting' X so its not interpreted as a regular expression.
+				 *
+				 *	Details on the regular expression language/format can be found at:
+				 *		http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
+				 */
                 nonvirtual  bool    Match (const String& regEx) const;
 
             public:
                 /*
                  * Apply the given regular expression, and return a vector of the starts of all substring
                  * matches.
+* See regex_replace () for definition of the regEx language 
+*		TODO: GIVE EXAMPLES
                  */
                 nonvirtual  vector<String>  Find (const String& regEx) const;
 
@@ -280,6 +298,10 @@ namespace   Stroika {
                 /*
                  * Apply the given regular expression, with 'with' and replace each match. This doesn't
                  * modify this string, but returns the replacement string.
+
+				 * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
+* See regex_replace () for definition of the regEx language 
+*		TODO: GIVE EXAMPLES
                  */
                 nonvirtual  String  Replace (const String& regEx, const String& with) const;
 

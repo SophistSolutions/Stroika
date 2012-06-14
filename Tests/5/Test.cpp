@@ -646,10 +646,30 @@ namespace	{
 
 
 namespace	{
+	void	Test17_RegExp_Match1_ ()
+		{
+			VerifyTestResult (String (L"abc").Match (L"abc"));
+			VerifyTestResult (not (String (L"abc").Match (L"bc")));
+			VerifyTestResult (String (L"abc").Match (L".*bc"));
+			VerifyTestResult (not String (L"abc").Match (L"b.*c"));
+			VerifyTestResult (not String (L"Hello world").Match (L"ello"));
+		}
+
 	void	Test17_RegExp_ ()
 		{
-		#if		!qCompilerAndStdLib_Bug_regexpr
-			VerifyTestResult (not String (L"Hello world").Match (L"ello"));
+			Test17_RegExp_Match1_ ();
+
+// CLEANUP AP - WE NEED MAYBE SEARCH (returns pair<start/end> offsets - or iteartor of such
+// and use that to repalce find. ANd dfebug issues with this stuff on GCC!!!
+#ifndef qCompilerAndStdLib_Bug_regexpr_
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Bug_regexpr_  1
+#else
+#define qCompilerAndStdLib_Bug_regexpr_  0
+#endif
+#endif
+
+		#if		!qCompilerAndStdLib_Bug_regexpr_
 			VerifyTestResult (String (L"Hello world").Find (L"ello").size () == 1);
 			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (L"<h(.)>([^<]+)");
 			VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
