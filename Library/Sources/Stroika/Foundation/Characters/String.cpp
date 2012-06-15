@@ -757,6 +757,21 @@ bool    String::Match (const String& regEx) const
     return regex_match (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
 }
 
+vector<pair<size_t,size_t>>  String::Search (const String& regEx) const
+{
+    vector<pair<size_t,size_t>>  result;
+    wstring tmp     =   As<wstring> ();
+    wregex  regExp  =   wregex (regEx.As<wstring> ());
+    std::wsmatch res;
+    regex_search (tmp, res, regExp);
+    result.reserve (res.size ());
+	size_t	nMatches	=	res.size ();
+	for (size_t mi = 0; mi < nMatches; ++mi) {
+		result.push_back (pair<size_t,size_t> (res.position (mi), res.length (mi)));
+	}
+    return result;
+}
+
 vector<String>  String::Find (const String& regEx) const
 {
     vector<String>  result;

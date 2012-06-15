@@ -292,6 +292,15 @@ namespace   Stroika {
 * See regex_replace () for definition of the regEx language 
 *		TODO: GIVE EXAMPLES
                  */
+                nonvirtual  vector<pair<size_t,size_t>>  Search (const String& regEx) const;
+
+            public:
+                /*
+                 * Apply the given regular expression, and return a vector of the starts of all substring
+                 * matches.
+* See regex_replace () for definition of the regEx language 
+*		TODO: GIVE EXAMPLES
+                 */
                 nonvirtual  vector<String>  Find (const String& regEx) const;
 
             public:

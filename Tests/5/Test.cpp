@@ -654,10 +654,19 @@ namespace	{
 			VerifyTestResult (not String (L"abc").Match (L"b.*c"));
 			VerifyTestResult (not String (L"Hello world").Match (L"ello"));
 		}
-
+	void	Test17_RegExp_Search_2_ ()
+		{
+			{
+				String	abc	=	String (L"abc");	
+				VerifyTestResult (abc.Search (abc).size () == 1);
+				pair<size_t,size_t> xxffx = pair<size_t,size_t> (0,abc.length ());
+				VerifyTestResult (abc.Search (abc)[0] == xxffx);
+			}
+		}
 	void	Test17_RegExp_ ()
 		{
 			Test17_RegExp_Match1_ ();
+			Test17_RegExp_Search_2_ ();
 
 // CLEANUP AP - WE NEED MAYBE SEARCH (returns pair<start/end> offsets - or iteartor of such
 // and use that to repalce find. ANd dfebug issues with this stuff on GCC!!!
