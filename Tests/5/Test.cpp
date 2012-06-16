@@ -6,6 +6,7 @@
 #include	<iostream>
 
 #include	"Stroika/Foundation/Characters/Format.h"
+#include	"Stroika/Foundation/Characters/RegularExpression.h"
 #include	"Stroika/Foundation/Characters/String.h"
 #include	"Stroika/Foundation/Containers/Common.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
@@ -646,27 +647,37 @@ namespace	{
 
 
 namespace	{
-	void	Test17_RegExp_Match1_ ()
+	void	Test17_RegExp_Match_ ()
 		{
-			VerifyTestResult (String (L"abc").Match (L"abc"));
-			VerifyTestResult (not (String (L"abc").Match (L"bc")));
-			VerifyTestResult (String (L"abc").Match (L".*bc"));
-			VerifyTestResult (not String (L"abc").Match (L"b.*c"));
-			VerifyTestResult (not String (L"Hello world").Match (L"ello"));
+			VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
+			VerifyTestResult (not (String (L"abc").Match (RegularExpression (L"bc"))));
+			VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc")));
+			VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c")));
+			VerifyTestResult (not String (L"Hello world").Match (RegularExpression (L"ello")));
 		}
-	void	Test17_RegExp_Search_2_ ()
+	void	Test17_RegExp_Search_ ()
 		{
 			{
-				String	abc	=	String (L"abc");	
-				VerifyTestResult (abc.Search (abc).size () == 1);
-				pair<size_t,size_t> xxffx = pair<size_t,size_t> (0,abc.length ());
-				VerifyTestResult (abc.Search (abc)[0] == xxffx);
+				RegularExpression	regExp (L"abc");
+				String				testStr2Search	=	String (L"abc");	
+				VerifyTestResult (testStr2Search.Search (regExp).size () == 1);
+				VerifyTestResult ((testStr2Search.Search (regExp)[0] == pair<size_t,size_t> (0, 3)));
 			}
+#if 0
+// not sure why this didn't work! - 
+			{
+				String	abc		=	String (L"abc");	
+				String	abcabc	=	String (L"abc abc");	
+				VerifyTestResult (abcabc.Search (abc).size () == 2);
+				VerifyTestResult ((abcabc.Search (abc)[0] == pair<size_t,size_t> (0,abc.length ())));
+				VerifyTestResult ((abcabc.Search (abc)[1] == pair<size_t,size_t> (3,abc.length ())));
+			}
+#endif
 		}
 	void	Test17_RegExp_ ()
 		{
-			Test17_RegExp_Match1_ ();
-			Test17_RegExp_Search_2_ ();
+			Test17_RegExp_Match_ ();
+			Test17_RegExp_Search_ ();
 
 // CLEANUP AP - WE NEED MAYBE SEARCH (returns pair<start/end> offsets - or iteartor of such
 // and use that to repalce find. ANd dfebug issues with this stuff on GCC!!!
@@ -679,10 +690,10 @@ namespace	{
 #endif
 
 		#if		!qCompilerAndStdLib_Bug_regexpr_
-			VerifyTestResult (String (L"Hello world").Find (L"ello").size () == 1);
-			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (L"<h(.)>([^<]+)");
+			VerifyTestResult (String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::eECMAScript)).size () == 1);
+			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::eECMAScript));
 			VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
-			VerifyTestResult (String (L"Hello world").Replace (L"world", L"Planet") == L"Hello Planet");
+			VerifyTestResult (String (L"Hello world").Replace (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
 		#endif
 		}
 }

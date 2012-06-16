@@ -12,6 +12,8 @@
 
 #include    "../Containers/Common.h"
 #include    "../Math/Common.h"
+
+#include	"RegularExpression.h"
 #include    "TString.h"
 
 #include    "String.h"
@@ -751,32 +753,50 @@ bool    String::Contains (const String& subString) const
     return bool (IndexOf (subString) != kBadStringIndex);
 }
 
-bool    String::Match (const String& regEx) const
+bool    String::Match (const RegularExpression& regEx, CompareOptions co) const
 {
     wstring tmp =   As<wstring> ();
-    return regex_match (tmp.begin(), tmp.end(), wregex (regEx.As<wstring> ()));
+    return regex_match (tmp.begin(), tmp.end(), wregex (regEx.GetAsStr ().As<wstring> ()));
 }
 
-vector<pair<size_t,size_t>>  String::Search (const String& regEx) const
+vector<pair<size_t,size_t>>  String::Search (const String& string2SearchFor, CompareOptions co) const
 {
     vector<pair<size_t,size_t>>  result;
-    wstring tmp     =   As<wstring> ();
-    wregex  regExp  =   wregex (regEx.As<wstring> ());
-    std::wsmatch res;
+	AssertNotImplemented ();
+    return result;
+}
+
+namespace	{
+	regex_constants::syntax_option_type	mkOption_ (RegularExpression::SyntaxType st)
+	{
+		regex_constants::syntax_option_type	f	=	(st == RegularExpression::eECMAScript? regex_constants::ECMAScript: regex_constants::basic);
+		return f;
+	}
+}
+vector<pair<size_t,size_t>>  String::Search (const RegularExpression& regEx, CompareOptions co) const
+{
+    vector<pair<size_t,size_t>>  result;
+#if		qCompilerAndStdLib_Supports_regex_replace
+    wstring			tmp     =   As<wstring> ();
+	wregex			regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
+    std::wsmatch	res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
 	size_t	nMatches	=	res.size ();
 	for (size_t mi = 0; mi < nMatches; ++mi) {
 		result.push_back (pair<size_t,size_t> (res.position (mi), res.length (mi)));
 	}
+#else
+	AssertNotImplemented ();
+#endif
     return result;
 }
 
-vector<String>  String::Find (const String& regEx) const
+vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co) const
 {
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
-    wregex  regExp  =   wregex (regEx.As<wstring> ());
+	wregex  regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
     std::wsmatch res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
@@ -786,9 +806,35 @@ vector<String>  String::Find (const String& regEx) const
     return result;
 }
 
-String  String::Replace (const String& regEx, const String& with) const
+vector<String>  String::Find (const String& string2SearchFor, CompareOptions co) const
 {
-    return String (regex_replace (As<wstring> (), wregex (regEx.As<wstring> ()), with.As<wstring> ()));
+	AssertNotReached ();
+    vector<String>  result;
+    wstring tmp     =   As<wstring> ();
+    wregex  regExp  =   wregex (string2SearchFor.As<wstring> ());
+    std::wsmatch res;
+    regex_search (tmp, res, regExp);
+    result.reserve (res.size ());
+    for (wsmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
+        result.push_back (String (*i));
+    }
+    return result;
+}
+
+String  String::Replace (const RegularExpression& regEx, const String& with, CompareOptions co) const
+{
+#if		qCompilerAndStdLib_Supports_regex_replace
+	return String (regex_replace (As<wstring> (), wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ())), with.As<wstring> ()));
+#else
+	AssertNotImplemented ();
+	return String ();
+#endif
+}
+
+String  String::Replace (const String& string2SearchFor, const String& with, CompareOptions co) const
+{
+	AssertNotImplemented ();
+    return String (regex_replace (As<wstring> (), wregex (string2SearchFor.As<wstring> ()), with.As<wstring> ()));
 }
 
 String  String::SubString (size_t from, size_t to) const

@@ -48,6 +48,17 @@
  * TODO:
  *
  *
+ *		o	CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more 
+ *			separate logically and have trivial wrappers here.
+ *
+ *			UNCLEAR.
+ *			
+ *
+ *
+ *		o	CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
+ *
+ *		o	Think out RINDEX/INDEXOF compare with REGEXP versions.
+ *
  *      o   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
  *          StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
  *
@@ -147,6 +158,8 @@ namespace   Stroika {
             const size_t    kBadStringIndex   = wstring::npos;
 
 
+			class	RegularExpression;
+
             /*
              * The Stroika String class is an alternatve for the std::wstring class, which should be largely
              * interoperable with code using wstring (there is wstring constructor and As<wstring>()
@@ -219,6 +232,12 @@ namespace   Stroika {
                 nonvirtual  void        InsertAt (const Character* from, const Character* to, size_t at);
 
             public:
+                enum    CompareOptions {
+                    eWithCase_CO,
+                    eCaseInsensitive_CO,
+                };
+
+            public:
                 /*
                  * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1).
                  * It is an error if this implies removing characters off the end of the string.
@@ -229,6 +248,7 @@ namespace   Stroika {
                 nonvirtual  void        Remove (Character c);
 
             public:
+/// NOT SURE WE SHOULD DO INDEXOF /RINDEX OF - CUZ OF REGEX VERSIONS
                 /*
                  * inherited from Sequence. Lookup the character (or string) in this string, and return
                  * its index - either starting from the front, or end of the string. Returns kBadStringIndex
@@ -255,7 +275,7 @@ namespace   Stroika {
                 nonvirtual  bool    Contains (Character c) const;
                 nonvirtual  bool    Contains (const String& subString) const;
 
-            public:
+			public:
                 /*
                  * Produce a substring of this string, starting at from, and up to to
                  * (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
@@ -283,7 +303,22 @@ namespace   Stroika {
 				 *	Details on the regular expression language/format can be found at:
 				 *		http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
 				 */
-                nonvirtual  bool    Match (const String& regEx) const;
+                nonvirtual  bool    Match (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
+
+            public:
+                /*
+                 * Apply the given regular expression, and return a vector of the starts of all substring
+                 * matches.
+* See regex_replace () for definition of the regEx language 
+*		TODO: GIVE EXAMPLES
+
+VERY BROKEN - GET WORKING - and maybe use this or Find() API????
+-- LGP 2012-06-14
+
+                 */
+				// 2 overloads - wtih string - its a literal search, with regexp it does regexp search
+                nonvirtual  vector<pair<size_t,size_t>>  Search (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
+                nonvirtual  vector<pair<size_t,size_t>>  Search (const String& string2SearchFor, CompareOptions co = eWithCase_CO) const;
 
             public:
                 /*
@@ -292,16 +327,8 @@ namespace   Stroika {
 * See regex_replace () for definition of the regEx language 
 *		TODO: GIVE EXAMPLES
                  */
-                nonvirtual  vector<pair<size_t,size_t>>  Search (const String& regEx) const;
-
-            public:
-                /*
-                 * Apply the given regular expression, and return a vector of the starts of all substring
-                 * matches.
-* See regex_replace () for definition of the regEx language 
-*		TODO: GIVE EXAMPLES
-                 */
-                nonvirtual  vector<String>  Find (const String& regEx) const;
+                nonvirtual  vector<String>  Find (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
+                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = eWithCase_CO) const;
 
             public:
                 /*
@@ -312,7 +339,8 @@ namespace   Stroika {
 * See regex_replace () for definition of the regEx language 
 *		TODO: GIVE EXAMPLES
                  */
-                nonvirtual  String  Replace (const String& regEx, const String& with) const;
+                nonvirtual  String  Replace (const RegularExpression& regEx, const String& with, CompareOptions co = eWithCase_CO) const;
+                nonvirtual  String  Replace (const String& string2SearchFor, const String& with, CompareOptions co = eWithCase_CO) const;
 
             public:
 #if     !qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
@@ -425,10 +453,6 @@ namespace   Stroika {
 
 
             public:
-                enum    CompareOptions {
-                    eWithCase_CO,
-                    eCaseInsensitive_CO,
-                };
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                 nonvirtual  int Compare (const String& rhs, CompareOptions co) const;
                 nonvirtual  int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const;
@@ -515,7 +539,6 @@ namespace   Stroika {
             void    String::AsASCII (string* into) const;
             template    <>
             string  String::AsASCII () const;
-
 
 
 

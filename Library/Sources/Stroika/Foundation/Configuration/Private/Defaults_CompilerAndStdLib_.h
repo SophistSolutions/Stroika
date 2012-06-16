@@ -84,6 +84,52 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_regex_search
+@DESCRIPTION:   <p>Defined true if the compiler supports regex_search</p>
+*/
+#ifndef qCompilerAndStdLib_Supports_regex_search
+#if     defined (__GNUC__)
+#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7))
+#define qCompilerAndStdLib_Supports_regex_search    1
+#else
+#define qCompilerAndStdLib_Supports_regex_search    0
+#endif
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_regex_search    1
+#else
+// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+#define qCompilerAndStdLib_Supports_regex_search    1
+#endif
+#endif
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_regex_replace
+@DESCRIPTION:   <p>Defined true if the compiler supports regex_replace</p>
+*/
+#ifndef qCompilerAndStdLib_Supports_regex_replace
+#if     defined (__GNUC__)
+#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7))
+#define qCompilerAndStdLib_Supports_regex_replace    1
+#else
+#define qCompilerAndStdLib_Supports_regex_replace    0
+#endif
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_regex_replace    1
+#else
+// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
+#define qCompilerAndStdLib_Supports_regex_replace    1
+#endif
+#endif
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_noexcept
 @DESCRIPTION:   <p>Defined true if the compiler supports noexcept</p>
