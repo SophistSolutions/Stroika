@@ -5,6 +5,7 @@
 
 #include    "../../../Characters/Format.h"
 #include    "../../../Execution/Exceptions.h"
+#include    "../HTTP/Headers.h"
 #include    "../HTTP/Methods.h"
 
 #include    "Client.h"
@@ -58,6 +59,16 @@ Response::Response ()
     , fHeaders ()
     , fStatus ()
 {
+}
+
+InternetMediaType   Response::GetContentType () const
+{
+	for (map<String, String>::const_iterator i = fHeaders.begin (); i != fHeaders.end (); ++i) {
+		if (i->first == HTTP::HeaderName::kContentType) {
+			return InternetMediaType (i->second);
+		}
+	}
+	return InternetMediaType ();
 }
 
 

@@ -17,7 +17,14 @@ namespace   Stroika {
                 namespace   Transfer {
 
 
-                    // class Connection::_IRep
+                    // class Response
+					inline	bool	Response::GetSucceeded () const
+					{
+						return 200 <= fStatus and fStatus <= 299;
+					}
+
+					
+					// class Connection::_IRep
                     inline  Connection::_IRep::_IRep ()
                     {
                     }

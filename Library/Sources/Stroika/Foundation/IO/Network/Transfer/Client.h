@@ -60,9 +60,10 @@ namespace   Stroika {
                         Response ();
 
                         vector<Byte>        fData;  // usually empty, but provided for some methods like POST
-                        map<String, String>  fHeaders;
+                        map<String, String> fHeaders;
                         HTTP::Status        fStatus;
 
+						nonvirtual	bool				GetSucceeded () const;
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
                     };
 
