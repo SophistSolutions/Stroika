@@ -13,6 +13,7 @@
 #if     qPlatform_Windows
 #include    "../../../Execution/Platform/Windows/Exception.h"
 #endif
+#include	"../../../Memory/Optional.h"
 #include    "../HTTP/Headers.h"
 
 #include    "Client_WinHTTP.h"
@@ -23,12 +24,48 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::IO::Network::HTTP;
 using   namespace   Stroika::Foundation::IO::Network::Transfer;
+using	namespace	Stroika::Foundation::Memory;
 
 
 #if     qPlatform_Windows
 using   Stroika::Foundation::Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using   Stroika::Foundation::Memory::SmallStackBuffer;
+
+
+
+////TODO: ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+
+
+#if     qHasFeature_WinHTTP
+// otherwise modules linking with this code will tend to get link errors without explicitly linking
+// to this module...
+		//		COMMENT FROM HEALTHFRAME - BUT MUST RETEST IF/TO WHAT DEGREE THIS IS TRUE STILL -- LGP 2012-06-26
+#pragma comment(lib, "Winhttp.lib")
+
+namespace	{
+	struct	AutoWinHINTERNET {
+		HINTERNET	fHandle;
+		explicit AutoWinHINTERNET (HINTERNET handle)
+			: fHandle (handle)
+		{
+			ThrowIfFalseGetLastError (fHandle != nullptr);
+		}
+		~AutoWinHINTERNET ()
+		{
+			Verify (::WinHttpCloseHandle (fHandle));
+		}
+		operator HINTERNET ()
+		{
+			return fHandle;
+		}
+	private:
+		NO_COPY_CONSTRUCTOR (AutoWinHINTERNET);
+		NO_ASSIGNMENT_OPERATOR (AutoWinHINTERNET);
+	};
+}
+#endif
+
 
 
 
@@ -53,11 +90,14 @@ public:
     virtual Response            SendAndRequest (const Request& request) override;
 
 private:
-    nonvirtual  void    AssureHasHandle_ ();
+    nonvirtual  void    AssureHasSessionHandle_ (const String& userAgent);
+    nonvirtual  void    AssureHasConnectionHandle_ ();
 
 private:
-    void*   fSessionHandle_;
-    void*   fConnectionHandle_;
+	URL								fURL_;
+	shared_ptr<AutoWinHINTERNET>	fSessionHandle_;
+	String							fSessionHandle_UserAgent_;
+	shared_ptr<AutoWinHINTERNET>	fConnectionHandle_;
 };
 #endif
 
@@ -106,19 +146,17 @@ namespace   {
  ********************************************************************************
  */
 Connection_WinHTTP::Rep_::Rep_ ()
-    : fSessionHandle_ (nullptr)
-    , fConnectionHandle_ (nullptr)
+    : fURL_ ()
+	, fSessionHandle_ ()
+	, fSessionHandle_UserAgent_ ()
+    , fConnectionHandle_ ()
 {
 }
 
 Connection_WinHTTP::Rep_::~Rep_ ()
 {
-    if (fConnectionHandle_ != nullptr) {
-        Verify (::WinHttpCloseHandle (fConnectionHandle_));
-    }
-    if (fSessionHandle_ != nullptr) {
-        Verify (::WinHttpCloseHandle (fSessionHandle_));
-    }
+	fConnectionHandle_.reset ();
+	fSessionHandle_.reset ();
 }
 
 DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const override
@@ -134,28 +172,21 @@ void    Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout) overr
 
 URL     Connection_WinHTTP::Rep_::GetURL () const override
 {
-    // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
-    AssertNotImplemented ();
-//  return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
-    return URL ();
+	return fURL_;
 }
 
 void    Connection_WinHTTP::Rep_::SetURL (const URL& url) override
 {
-    AssureHasHandle_ ();
-    AssertNotImplemented ();
+	if (fURL_ != url) {
+		fConnectionHandle_.reset ();
+		fURL_ = url;
+	}
 }
 
 void    Connection_WinHTTP::Rep_::Close ()  override
 {
-    if (fConnectionHandle_ != nullptr) {
-        Verify (::WinHttpCloseHandle (fConnectionHandle_));
-        fConnectionHandle_ = nullptr;
-    }
-    if (fSessionHandle_ != nullptr) {
-        Verify (::WinHttpCloseHandle (fSessionHandle_));
-        fSessionHandle_ = nullptr;
-    }
+	fConnectionHandle_.reset ();
+	fSessionHandle_.reset ();
 }
 
 Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   override
@@ -195,18 +226,17 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   
             useHeaderStrBuf += i->first + L": " + i->second + L"\r\n";
         }
     }
-    fSessionHandle_ = ::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
+	AssureHasSessionHandle_ (userAgent);
+	Assert (fSessionHandle_.get () != nullptr);
+	AssureHasConnectionHandle_ ();
+	Assert (fConnectionHandle_.get () != nullptr);
 
-    //URL   crackedURL (url);
-    URL crackedURL (L"http://www");
-    fConnectionHandle_ = ::WinHttpConnect (fSessionHandle_, crackedURL.fHost.c_str (), crackedURL.GetEffectivePortNumber (), 0);
-
-    bool    useSecureHTTP   =   crackedURL.fProtocol == L"https";
+    bool    useSecureHTTP   =   fURL_.fProtocol == L"https";
 
 // Lots more work todo to adapt this code...
 #if 0
-    AutoWinINETHandle   hRequest (
+    AutoWinHINTERNET   hRequest (
         ::WinHttpOpenRequest (hConnection, method.c_str (), crackedURL.fRelPath.c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
@@ -409,11 +439,28 @@ RetryWithNoCERTCheck:
     return response;
 }
 
-void    Connection_WinHTTP::Rep_::AssureHasHandle_ ()
+void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
 {
+	if (fSessionHandle_UserAgent_ != userAgent) {
+		fConnectionHandle_.reset ();
+		fSessionHandle_.reset ();
+	}
+	if (fSessionHandle_.get () == nullptr) {
+		fSessionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)));
+	}
 }
-#endif
 
+void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
+{
+	RequireNotNull (fSessionHandle_.get ());
+	if (fConnectionHandle_.get () == nullptr) {
+		fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.fHost.c_str (), fURL_.GetEffectivePortNumber (), 0)));
+	}
+}
+
+    nonvirtual  void    AssureHasConnectionHandle_ (const String& url);
+
+#endif
 
 
 

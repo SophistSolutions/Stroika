@@ -51,7 +51,7 @@ namespace   Stroika {
                         Request ();
 
                         String              fMethod;
-                        map<String, String>  fOverrideHeaders;
+                        map<String, String>	fOverrideHeaders;
                         vector<Byte>        fData;  // usually empty, but provided for some methods like POST
                         InternetMediaType   fContentType;
 
