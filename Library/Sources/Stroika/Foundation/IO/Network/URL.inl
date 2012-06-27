@@ -73,6 +73,10 @@ namespace   Stroika {
                 {
                     fPort = portNum;
                 }
+                inline	bool    operator!= (const URL& lhs, const URL& rhs)
+				{
+					return not (lhs == rhs);
+				}
 
 
 

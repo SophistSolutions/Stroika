@@ -71,6 +71,7 @@ namespace   Stroika {
                     int     fPort;
                 };
                 bool    operator== (const URL& lhs, const URL& rhs);
+                bool    operator!= (const URL& lhs, const URL& rhs);
 
 
                 // See http://tools.ietf.org/html/rfc3986
