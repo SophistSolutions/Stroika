@@ -81,11 +81,18 @@ endif
 ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=	$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a  -lpthread -lrt $(STDCPPLIBArgs)
+	ifeq ($(qHasFeature_libcurl), 1)
+		StroikaFoundationSupportLibs	+=  -lcurl
+	endif
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFrameworksSupportLibs	=	
 endif
+
+
+
+
 
 ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated

@@ -422,6 +422,12 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "ENABLE_GLIBC_ASSERTIONS=1\n");
 	}
 
+	if ($ENABLE_LIBCURL) {
+		print (OUT "qHasFeature_libcurl=1\n");
+	}	
+	else {
+		print (OUT "qHasFeature_libcurl=0\n");
+	}	
 
 	print (OUT "#Defaults overrides:\n");
 
