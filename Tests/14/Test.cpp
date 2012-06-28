@@ -75,14 +75,14 @@ namespace	{
 
 			#if     qHasFeature_libcurl
 				#if		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-					DoRegressionTests_ForConnectionFactory_ ([]() { return Connection_LibCurl (); });
+					DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
 				#else
 					DoRegressionTests_ForConnectionFactory_ (&mk_LIBCURL_);
 				#endif
 			#endif
 			#if     qHasFeature_WinHTTP
 				#if		qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-					DoRegressionTests_ForConnectionFactory_ ([]() { return Connection_WinHTTP (); });
+					DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
 				#else
 					DoRegressionTests_ForConnectionFactory_ (&mk_WinHTTP_);
 				#endif
