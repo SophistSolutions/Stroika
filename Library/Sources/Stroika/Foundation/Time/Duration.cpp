@@ -126,15 +126,15 @@ double  Duration::As () const
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
-        // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
-        // -- LGP 2012-05-26
-template    <>
-std::chrono::duration<double>  Duration::As () const
-{
-    return std::chrono::duration<double> (ParseTime_ (fDurationRep));
-}
-}
-}
+            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
+            // -- LGP 2012-05-26
+            template    <>
+            std::chrono::duration<double>  Duration::As () const
+            {
+                return std::chrono::duration<double> (ParseTime_ (fDurationRep));
+            }
+        }
+    }
 }
 #else
 template    <>

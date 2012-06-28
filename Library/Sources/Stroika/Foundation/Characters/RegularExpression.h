@@ -22,7 +22,7 @@
  * TODO:
  *
  *
- *		o	...
+ *      o   ...
  *
  *
  */
@@ -36,27 +36,26 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
-			/// VERY PRELIMINARY DRAFT
-			class	RegularExpression {
-			public:
-				// not sure what these types mean - find out and document clearly
-				enum SyntaxType { eECMAScript, eBasic };
-				public:
-					explicit RegularExpression (const String& re, SyntaxType syntaxType = eBasic)
-						: fVal (re)
-						, fSyntaxType (syntaxType)
-					{
-					}
+            /// VERY PRELIMINARY DRAFT
+            class   RegularExpression {
+            public:
+                // not sure what these types mean - find out and document clearly
+                enum SyntaxType { eECMAScript, eBasic };
+            public:
+                explicit RegularExpression (const String& re, SyntaxType syntaxType = eBasic)
+                    : fVal (re)
+                    , fSyntaxType (syntaxType) {
+                }
 
-			private:
-					SyntaxType fSyntaxType;
+            private:
+                SyntaxType fSyntaxType;
 
-			public:
-				String	GetAsStr () const { return fVal; }
-				SyntaxType	GetSyntaxType () const { return fSyntaxType; }
-				private:
-					String	fVal;
-			};
+            public:
+                String  GetAsStr () const { return fVal; }
+                SyntaxType  GetSyntaxType () const { return fSyntaxType; }
+            private:
+                String  fVal;
+            };
 
         }
     }

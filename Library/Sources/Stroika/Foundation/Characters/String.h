@@ -48,16 +48,16 @@
  * TODO:
  *
  *
- *		o	CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more 
- *			separate logically and have trivial wrappers here.
+ *      o   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
+ *          separate logically and have trivial wrappers here.
  *
- *			UNCLEAR.
- *			
+ *          UNCLEAR.
  *
  *
- *		o	CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
  *
- *		o	Think out RINDEX/INDEXOF compare with REGEXP versions.
+ *      o   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
+ *
+ *      o   Think out RINDEX/INDEXOF compare with REGEXP versions.
  *
  *      o   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
  *          StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
@@ -158,7 +158,7 @@ namespace   Stroika {
             const size_t    kBadStringIndex   = wstring::npos;
 
 
-			class	RegularExpression;
+            class   RegularExpression;
 
             /*
              * The Stroika String class is an alternatve for the std::wstring class, which should be largely
@@ -275,7 +275,7 @@ namespace   Stroika {
                 nonvirtual  bool    Contains (Character c) const;
                 nonvirtual  bool    Contains (const String& subString) const;
 
-			public:
+            public:
                 /*
                  * Produce a substring of this string, starting at from, and up to to
                  * (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
@@ -286,46 +286,46 @@ namespace   Stroika {
             public:
                 /*
                  * Apply the given regular expression return true if it matches this string. This only
-				 * returns true if the expression matches the ENTIRE string - all the way to the end.
-				 * See also 'Search()' - to find a set of things which match.
-				 *
-				 * For example:
-				 *		Assert (String (L"abc").Match (L"abc"));
-				 *		Assert (not (String (L"abc").Match (L"bc")));
-				 *		Assert (String (L"abc").Match (L".*bc"));
-				 *		Assert (not String (L"abc").Match (L"b.*c"));
-				 *
-				 * Note - there is no reason for StartsWith/EndsWith. These correspond roughly to:
-				 *		bool StartsWith (String X) { return Match (X + L".*"); }		
-				 *		bool EndsWith (String X) { return Match (L".*" + X); }		
-				 *	with the only caveat being 'quoting' X so its not interpreted as a regular expression.
-				 *
-				 *	Details on the regular expression language/format can be found at:
-				 *		http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
-				 */
+                 * returns true if the expression matches the ENTIRE string - all the way to the end.
+                 * See also 'Search()' - to find a set of things which match.
+                 *
+                 * For example:
+                 *      Assert (String (L"abc").Match (L"abc"));
+                 *      Assert (not (String (L"abc").Match (L"bc")));
+                 *      Assert (String (L"abc").Match (L".*bc"));
+                 *      Assert (not String (L"abc").Match (L"b.*c"));
+                 *
+                 * Note - there is no reason for StartsWith/EndsWith. These correspond roughly to:
+                 *      bool StartsWith (String X) { return Match (X + L".*"); }
+                 *      bool EndsWith (String X) { return Match (L".*" + X); }
+                 *  with the only caveat being 'quoting' X so its not interpreted as a regular expression.
+                 *
+                 *  Details on the regular expression language/format can be found at:
+                 *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
+                 */
                 nonvirtual  bool    Match (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
 
             public:
                 /*
                  * Apply the given regular expression, and return a vector of the starts of all substring
                  * matches.
-* See regex_replace () for definition of the regEx language 
-*		TODO: GIVE EXAMPLES
+                * See regex_replace () for definition of the regEx language
+                *       TODO: GIVE EXAMPLES
 
-VERY BROKEN - GET WORKING - and maybe use this or Find() API????
--- LGP 2012-06-14
+                VERY BROKEN - GET WORKING - and maybe use this or Find() API????
+                -- LGP 2012-06-14
 
                  */
-				// 2 overloads - wtih string - its a literal search, with regexp it does regexp search
-                nonvirtual  vector<pair<size_t,size_t>>  Search (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
-                nonvirtual  vector<pair<size_t,size_t>>  Search (const String& string2SearchFor, CompareOptions co = eWithCase_CO) const;
+                // 2 overloads - wtih string - its a literal search, with regexp it does regexp search
+                nonvirtual  vector<pair<size_t, size_t>>  Search (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
+                nonvirtual  vector<pair<size_t, size_t>>  Search (const String& string2SearchFor, CompareOptions co = eWithCase_CO) const;
 
             public:
                 /*
                  * Apply the given regular expression, and return a vector of the starts of all substring
                  * matches.
-* See regex_replace () for definition of the regEx language 
-*		TODO: GIVE EXAMPLES
+                * See regex_replace () for definition of the regEx language
+                *       TODO: GIVE EXAMPLES
                  */
                 nonvirtual  vector<String>  Find (const RegularExpression& regEx, CompareOptions co = eWithCase_CO) const;
                 nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = eWithCase_CO) const;
@@ -335,9 +335,9 @@ VERY BROKEN - GET WORKING - and maybe use this or Find() API????
                  * Apply the given regular expression, with 'with' and replace each match. This doesn't
                  * modify this string, but returns the replacement string.
 
-				 * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
-* See regex_replace () for definition of the regEx language 
-*		TODO: GIVE EXAMPLES
+                 * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
+                * See regex_replace () for definition of the regEx language
+                *       TODO: GIVE EXAMPLES
                  */
                 nonvirtual  String  Replace (const RegularExpression& regEx, const String& with, CompareOptions co = eWithCase_CO) const;
                 nonvirtual  String  Replace (const String& string2SearchFor, const String& with, CompareOptions co = eWithCase_CO) const;

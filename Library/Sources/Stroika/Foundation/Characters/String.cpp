@@ -13,7 +13,7 @@
 #include    "../Containers/Common.h"
 #include    "../Math/Common.h"
 
-#include	"RegularExpression.h"
+#include    "RegularExpression.h"
 #include    "TString.h"
 
 #include    "String.h"
@@ -36,14 +36,14 @@ namespace   {
      *  UnsupportedFeatureException_
      *
      *          Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support
-	 *		any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
-	 *		that supports everything todo that.
+     *      any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
+     *      that supports everything todo that.
      *
      *          We COULD have done this by having a SUPPORTSX() predicate method called on each rep before
-	 *		each all, or have an extra return value about if it succeeded. But - that would be alot of
-	 *		overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one tries
-	 *		to change a string that happened to come from a 'readonly' source. We can handle that internally,
-	 *		and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
+     *      each all, or have an extra return value about if it succeeded. But - that would be alot of
+     *      overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one tries
+     *      to change a string that happened to come from a 'readonly' source. We can handle that internally,
+     *      and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
      */
     class   UnsupportedFeatureException_ {};
 }
@@ -759,35 +759,35 @@ bool    String::Match (const RegularExpression& regEx, CompareOptions co) const
     return regex_match (tmp.begin(), tmp.end(), wregex (regEx.GetAsStr ().As<wstring> ()));
 }
 
-vector<pair<size_t,size_t>>  String::Search (const String& string2SearchFor, CompareOptions co) const
+vector<pair<size_t, size_t>>  String::Search (const String& string2SearchFor, CompareOptions co) const
 {
-    vector<pair<size_t,size_t>>  result;
-	AssertNotImplemented ();
+    vector<pair<size_t, size_t>>  result;
+    AssertNotImplemented ();
     return result;
 }
 
-namespace	{
-	regex_constants::syntax_option_type	mkOption_ (RegularExpression::SyntaxType st)
-	{
-		regex_constants::syntax_option_type	f	=	(st == RegularExpression::eECMAScript? regex_constants::ECMAScript: regex_constants::basic);
-		return f;
-	}
+namespace   {
+    regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
+    {
+        regex_constants::syntax_option_type f   =   (st == RegularExpression::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
+        return f;
+    }
 }
-vector<pair<size_t,size_t>>  String::Search (const RegularExpression& regEx, CompareOptions co) const
+vector<pair<size_t, size_t>>  String::Search (const RegularExpression& regEx, CompareOptions co) const
 {
-    vector<pair<size_t,size_t>>  result;
-#if		qCompilerAndStdLib_Supports_regex_replace
-    wstring			tmp     =   As<wstring> ();
-	wregex			regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
-    std::wsmatch	res;
+    vector<pair<size_t, size_t>>  result;
+#if     qCompilerAndStdLib_Supports_regex_replace
+    wstring         tmp     =   As<wstring> ();
+    wregex          regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
+    std::wsmatch    res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
-	size_t	nMatches	=	res.size ();
-	for (size_t mi = 0; mi < nMatches; ++mi) {
-		result.push_back (pair<size_t,size_t> (res.position (mi), res.length (mi)));
-	}
+    size_t  nMatches    =   res.size ();
+    for (size_t mi = 0; mi < nMatches; ++mi) {
+        result.push_back (pair<size_t, size_t> (res.position (mi), res.length (mi)));
+    }
 #else
-	AssertNotImplemented ();
+    AssertNotImplemented ();
 #endif
     return result;
 }
@@ -796,7 +796,7 @@ vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co)
 {
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
-	wregex  regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
+    wregex  regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
     std::wsmatch res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
@@ -808,7 +808,7 @@ vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co)
 
 vector<String>  String::Find (const String& string2SearchFor, CompareOptions co) const
 {
-	AssertNotReached ();
+    AssertNotReached ();
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
     wregex  regExp  =   wregex (string2SearchFor.As<wstring> ());
@@ -823,17 +823,17 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
 
 String  String::Replace (const RegularExpression& regEx, const String& with, CompareOptions co) const
 {
-#if		qCompilerAndStdLib_Supports_regex_replace
-	return String (regex_replace (As<wstring> (), wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ())), with.As<wstring> ()));
+#if     qCompilerAndStdLib_Supports_regex_replace
+    return String (regex_replace (As<wstring> (), wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ())), with.As<wstring> ()));
 #else
-	AssertNotImplemented ();
-	return String ();
+    AssertNotImplemented ();
+    return String ();
 #endif
 }
 
 String  String::Replace (const String& string2SearchFor, const String& with, CompareOptions co) const
 {
-	AssertNotImplemented ();
+    AssertNotImplemented ();
     return String (regex_replace (As<wstring> (), wregex (string2SearchFor.As<wstring> ()), with.As<wstring> ()));
 }
 

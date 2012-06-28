@@ -10,7 +10,7 @@
 #include    <string>
 
 #if     qCompilerAndStdLib_Supports_stdchrono
-#include	<chrono>
+#include    <chrono>
 #endif
 
 #if     qPlatform_Windows
@@ -73,9 +73,9 @@ namespace   Stroika {
                 explicit Duration (int32_t duration);
                 explicit Duration (int64_t duration);
                 explicit Duration (double duration);
-                #if     qCompilerAndStdLib_Supports_stdchrono
+#if     qCompilerAndStdLib_Supports_stdchrono
                 Duration (const std::chrono::duration<double>& d);
-                #endif
+#endif
 
             public:
                 nonvirtual  void    clear ();

@@ -33,12 +33,12 @@
 #if     qDebug
 #if     defined (NDEBUG)
 // NB #warning is a non-standard extension - maybe we shouldnt use?
-static_assert (false,"INCONSISTENT DEFINES (NDEBUG and qDebug=1)");
+static_assert (false, "INCONSISTENT DEFINES (NDEBUG and qDebug=1)");
 #endif
 #else
 #if     defined(_DEBUG)
 // NB #warning is a non-standard extension - maybe we shouldnt use?
-static_assert (false,"INCONSISTENT DEFINES (_DEBUG and qDebug=0)");
+static_assert (false, "INCONSISTENT DEFINES (_DEBUG and qDebug=0)");
 #endif
 #endif
 

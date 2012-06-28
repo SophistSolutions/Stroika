@@ -24,7 +24,7 @@ using   Stroika::Foundation::Time::Duration;
  *
  *          In particular, on the surface, it looks like the mutex locks in Wait() and signal should prevent things
  *          form working (deadlock). But they apparently do not cause a deadlock because
- *              "pthread_cond_wait() blocks the calling thread until the specified condition is signalled. 
+ *              "pthread_cond_wait() blocks the calling thread until the specified condition is signalled.
  *               This routine should be called while mutex is locked, and it will automatically release the
  *               mutex while it waits. After signal is received and thread is awakened, mutex will be
  *               automatically locked for use by the thread. The programmer is then responsible for
@@ -92,9 +92,9 @@ Again:
         if (remaining >= k1Day) {
             remaining = k1Day;
         }
-        #if     qEVENT_GCCTHREADS_LINUX_WAITBUG
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
         remaining = min (remaining, 5.0);       // hack to force quick wakeup shutting down threadpool (and other threads waiting on a semaphore)
-        #endif
+#endif
         if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> ()) == std::cv_status::timeout) {
             // No need for this, since could be caught next time through the loop...
             // And it interferes with the bounding of the 'remaining' count used to avoid overflows
