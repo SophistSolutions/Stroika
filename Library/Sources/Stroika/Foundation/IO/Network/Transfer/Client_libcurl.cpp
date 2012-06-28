@@ -70,7 +70,7 @@ private:
     void*               fCurlHandle_;
     string              fCURLCache_URL_;    // cuz of quirky memory management policies of libcurl
     vector<Byte>        fResponseData_;
-    map<String, String>  fResponseHeaders_;
+    map<String, String>	fResponseHeaders_;
     curl_slist*         fSavedHeaders_;
 };
 #endif
