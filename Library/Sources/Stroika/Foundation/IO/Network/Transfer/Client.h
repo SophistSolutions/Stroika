@@ -31,7 +31,7 @@
  *
  *      (o)     Progress Callbacks?
  *
- *      (o)		ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+ *      (o)     ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
  *
  *      (o)     Fixup Requqest/Response code to just be driven off fHeaders  list - and have Get/Set ContentType, etc - and other fields -
  *              which map to that list. MAYBE move request/repsonse stuff to HTTP module- so re-usable in framework code which does webserver??
@@ -41,7 +41,7 @@
  *      (o)     Add Client side certs
  *
  *      (o)     Refine server-side-cert checking mechanism (review LIBCURL to see what makes sense)
- *				PROBABLY just a callback mechanism - with a few default callabcks you can plugin (like reject bad certs)
+ *              PROBABLY just a callback mechanism - with a few default callabcks you can plugin (like reject bad certs)
  *              MAYBE just add FLAG saying whether to VALIDATE_HOST? Maybe callback API"?
  *
  *                        //  This COULD be expanded to include either a BOOL to CHECK remote SSL info, or a callback (which can throw)
@@ -69,12 +69,12 @@ namespace   Stroika {
                         map<String, String> fOverrideHeaders;
                         vector<Byte>        fData;  // usually empty, but provided for some methods like POST
 
-						// scans fOverrideHeaders
+                        // scans fOverrideHeaders
                         nonvirtual  InternetMediaType   GetContentType () const;
-						// updates fOverrideHeaders
-                        nonvirtual  void				SetContentType (const InternetMediaType& ct);
+                        // updates fOverrideHeaders
+                        nonvirtual  void                SetContentType (const InternetMediaType& ct);
 
-						struct  Options {
+                        struct  Options {
                             Options ();
                             bool    fReturnSSLInfo;
                         };

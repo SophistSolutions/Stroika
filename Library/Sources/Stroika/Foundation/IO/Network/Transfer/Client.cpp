@@ -60,16 +60,16 @@ Request::Request ()
 
 InternetMediaType   Request::GetContentType () const
 {
-	map<String, String>::const_iterator	i	=	fOverrideHeaders.find (HTTP::HeaderName::kContentType);
-	if (i != fOverrideHeaders.end ()) {
+    map<String, String>::const_iterator i   =   fOverrideHeaders.find (HTTP::HeaderName::kContentType);
+    if (i != fOverrideHeaders.end ()) {
         return InternetMediaType (i->second);
-	}
+    }
     return InternetMediaType ();
 }
 
-void	Request::SetContentType (const InternetMediaType& ct)
+void    Request::SetContentType (const InternetMediaType& ct)
 {
-	fOverrideHeaders[HTTP::HeaderName::kContentType] = ct.As<String> ();
+    fOverrideHeaders[HTTP::HeaderName::kContentType] = ct.As<String> ();
 }
 
 
@@ -116,10 +116,10 @@ Response::Response ()
 
 InternetMediaType   Response::GetContentType () const
 {
-	map<String, String>::const_iterator	i	=	fHeaders.find (HTTP::HeaderName::kContentType);
-	if (i != fHeaders.end ()) {
+    map<String, String>::const_iterator i   =   fHeaders.find (HTTP::HeaderName::kContentType);
+    if (i != fHeaders.end ()) {
         return InternetMediaType (i->second);
-	}
+    }
     return InternetMediaType ();
 }
 
@@ -147,7 +147,7 @@ Response    Connection::Post (const vector<Byte>& data, const InternetMediaType&
     r.fMethod = HTTP::Methods::kPost;
     r.fOverrideHeaders = extraHeaders;
     r.fData = data;
-	r.SetContentType (contentType);
+    r.SetContentType (contentType);
     return SendAndRequest (r);
 }
 
@@ -165,7 +165,7 @@ Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& 
     r.fMethod = HTTP::Methods::kPut;
     r.fOverrideHeaders = extraHeaders;
     r.fData = data;
-	r.SetContentType (contentType);
+    r.SetContentType (contentType);
     return SendAndRequest (r);
 }
 
