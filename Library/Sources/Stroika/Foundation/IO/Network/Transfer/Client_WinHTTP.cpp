@@ -8,12 +8,20 @@
 #include    <Winhttp.h>
 #endif
 
+#include    <list>
+
 #include    "../../../Characters/Format.h"
+#include    "../../../Characters/StringUtils.h"
+#include    "../../../Containers/VectorUtils.h"
+#include    "../../../Time/Date.h"
+#include    "../../../Time/DateTime.h"
 #include    "../../../Execution/Exceptions.h"
 #if     qPlatform_Windows
 #include    "../../../Execution/Platform/Windows/Exception.h"
+#include    "../../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include	"../../../Memory/Optional.h"
+#include    "../../../Memory/Optional.h"
+#include    "../HTTP/Exception.h"
 #include    "../HTTP/Headers.h"
 
 #include    "Client_WinHTTP.h"
@@ -24,7 +32,9 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::IO::Network::HTTP;
 using   namespace   Stroika::Foundation::IO::Network::Transfer;
-using	namespace	Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::Time;
+
 
 
 #if     qPlatform_Windows
@@ -34,35 +44,38 @@ using   Stroika::Foundation::Memory::SmallStackBuffer;
 
 
 
-////TODO: ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+/*
+ *  TODO:
+ *
+ */
+
+
+
 
 
 #if     qHasFeature_WinHTTP
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
-		//		COMMENT FROM HEALTHFRAME - BUT MUST RETEST IF/TO WHAT DEGREE THIS IS TRUE STILL -- LGP 2012-06-26
-#pragma comment(lib, "Winhttp.lib")
+//      COMMENT FROM HEALTHFRAME - BUT MUST RETEST IF/TO WHAT DEGREE THIS IS TRUE STILL -- LGP 2012-06-26
+//#pragma comment(lib, "Winhttp.lib")
 
-namespace	{
-	struct	AutoWinHINTERNET {
-		HINTERNET	fHandle;
-		explicit AutoWinHINTERNET (HINTERNET handle)
-			: fHandle (handle)
-		{
-			ThrowIfFalseGetLastError (fHandle != nullptr);
-		}
-		~AutoWinHINTERNET ()
-		{
-			Verify (::WinHttpCloseHandle (fHandle));
-		}
-		operator HINTERNET ()
-		{
-			return fHandle;
-		}
-	private:
-		NO_COPY_CONSTRUCTOR (AutoWinHINTERNET);
-		NO_ASSIGNMENT_OPERATOR (AutoWinHINTERNET);
-	};
+namespace   {
+    struct  AutoWinHINTERNET {
+        HINTERNET   fHandle;
+        explicit AutoWinHINTERNET (HINTERNET handle)
+            : fHandle (handle) {
+            ThrowIfFalseGetLastError (fHandle != nullptr);
+        }
+        ~AutoWinHINTERNET () {
+            Verify (::WinHttpCloseHandle (fHandle));
+        }
+        operator HINTERNET () {
+            return fHandle;
+        }
+    private:
+        NO_COPY_CONSTRUCTOR (AutoWinHINTERNET);
+        NO_ASSIGNMENT_OPERATOR (AutoWinHINTERNET);
+    };
 }
 #endif
 
@@ -94,10 +107,11 @@ private:
     nonvirtual  void    AssureHasConnectionHandle_ ();
 
 private:
-	URL								fURL_;
-	shared_ptr<AutoWinHINTERNET>	fSessionHandle_;
-	String							fSessionHandle_UserAgent_;
-	shared_ptr<AutoWinHINTERNET>	fConnectionHandle_;
+    DurationSecondsType             fTimeout_;
+    URL                             fURL_;
+    shared_ptr<AutoWinHINTERNET>    fSessionHandle_;
+    String                          fSessionHandle_UserAgent_;
+    shared_ptr<AutoWinHINTERNET>    fConnectionHandle_;
 };
 #endif
 
@@ -139,6 +153,8 @@ namespace   {
 
 
 
+
+
 #if     qHasFeature_WinHTTP
 /*
  ********************************************************************************
@@ -146,53 +162,56 @@ namespace   {
  ********************************************************************************
  */
 Connection_WinHTTP::Rep_::Rep_ ()
-    : fURL_ ()
-	, fSessionHandle_ ()
-	, fSessionHandle_UserAgent_ ()
+    : fTimeout_ (Time::kInfinite)
+    , fURL_ ()
+    , fSessionHandle_ ()
+    , fSessionHandle_UserAgent_ ()
     , fConnectionHandle_ ()
 {
 }
 
 Connection_WinHTTP::Rep_::~Rep_ ()
 {
-	fConnectionHandle_.reset ();
-	fSessionHandle_.reset ();
+    fConnectionHandle_.reset ();
+    fSessionHandle_.reset ();
 }
 
 DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const override
 {
-    AssertNotImplemented ();
-    return 0;
+    return fTimeout_;
 }
 
 void    Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout) override
 {
-    AssertNotImplemented ();
+    fTimeout_ = timeout;    // affects subsequent calls to send...
 }
 
 URL     Connection_WinHTTP::Rep_::GetURL () const override
 {
-	return fURL_;
+    return fURL_;
 }
 
 void    Connection_WinHTTP::Rep_::SetURL (const URL& url) override
 {
-	if (fURL_ != url) {
-		fConnectionHandle_.reset ();
-		fURL_ = url;
-	}
+    if (fURL_ != url) {
+        fConnectionHandle_.reset ();
+        fURL_ = url;
+    }
 }
 
 void    Connection_WinHTTP::Rep_::Close ()  override
 {
-	fConnectionHandle_.reset ();
-	fSessionHandle_.reset ();
+    fConnectionHandle_.reset ();
+    fSessionHandle_.reset ();
 }
 
 Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   override
 {
-    Close ();//tmphack
     Response    response;
+
+    Time::DurationSecondsType   startOfSendAt   =   Time::GetTickCount ();
+    Time::DurationSecondsType   endBy           =   fTimeout_ == Time::kInfinite ? Time::kInfinite : (startOfSendAt + fTimeout_);
+
 
     /*
      * Though we could create a DIFFERNT API - that managed a session object - like the WinHTTP session object, for now,
@@ -227,17 +246,15 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   
         }
     }
 
-	AssureHasSessionHandle_ (userAgent);
-	Assert (fSessionHandle_.get () != nullptr);
-	AssureHasConnectionHandle_ ();
-	Assert (fConnectionHandle_.get () != nullptr);
+    AssureHasSessionHandle_ (userAgent);
+    Assert (fSessionHandle_.get () != nullptr);
+    AssureHasConnectionHandle_ ();
+    Assert (fConnectionHandle_.get () != nullptr);
 
     bool    useSecureHTTP   =   fURL_.fProtocol == L"https";
 
-// Lots more work todo to adapt this code...
-#if 0
     AutoWinHINTERNET   hRequest (
-        ::WinHttpOpenRequest (hConnection, method.c_str (), crackedURL.fRelPath.c_str (),
+        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.fRelPath.c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
                               useSecureHTTP ? WINHTTP_FLAG_SECURE : 0
@@ -248,6 +265,9 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   
 RetryWithNoCERTCheck:
 
     const   bool    kAllowBadCerts  =   true;   // may want to make this a param passed in!
+    //
+    // REALLY - dont want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesnt do rest of fetch...
+    //      TODO!!!
     if (kAllowBadCerts and sslExceptionProblem) {
         DWORD          dwOptions   =
             SECURITY_FLAG_IGNORE_CERT_CN_INVALID
@@ -258,19 +278,19 @@ RetryWithNoCERTCheck:
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
     }
 
-    ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.35f);
+    //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.35f);
+
     try {
-        string  bodyAsUTF8  =   WideStringToUTF8 (body);
-        ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
+        //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
         ThrowIfFalseGetLastError (::WinHttpSendRequest (
                                       hRequest,
-                                      useHeaderStrBuf.c_str (), 0,
-                                      (LPVOID)bodyAsUTF8.c_str (), bodyAsUTF8.size (),
-                                      bodyAsUTF8.size (),
+                                      useHeaderStrBuf.c_str (), -1,
+                                      const_cast<Byte*> (Containers::Start (request.fData)), request.fData.size (),
+                                      request.fData.size (),
                                       NULL
                                   )
                                  );
-        ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
+        //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
 
         // this must be called before the 'body' goes out of scope!
         ThrowIfFalseGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
@@ -284,7 +304,8 @@ RetryWithNoCERTCheck:
         }
         Execution::DoReThrow ();
     }
-    ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.4f);
+
+    //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.4f);
 
     list<vector<Byte> > bytesRead;
     unsigned int totalBytes =   0;
@@ -296,11 +317,12 @@ RetryWithNoCERTCheck:
             if (percentUpTo < .9f) {
                 percentUpTo += 0.05f;
             }
-            if (Time::GetTickCount () > startOfSendAt + timeout) {
+            if (Time::GetTickCount () > endBy) {
                 DbgTrace (_T ("throwing Timeout"));
                 Execution::DoThrow (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
             }
-            ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, percentUpTo);
+
+            //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, percentUpTo);
 
             // Check for available data.
             dwSize = 0;
@@ -316,7 +338,8 @@ RetryWithNoCERTCheck:
         while (dwSize > 0);
     }
 
-    ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.95f);
+//    ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.95f);
+
 
     // Here - we must convert the chunks of bytes to a big blob and a string
     // This API assumes the HTTP-result is a string
@@ -328,20 +351,21 @@ RetryWithNoCERTCheck:
         for (list<vector<Byte> >::const_iterator i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             Containers::Append2Vector (&bytesArray, *i);
         }
-        result.fBody = MapUNICODETextWithMaybeBOMTowstring (reinterpret_cast<char*> (Containers::Start (bytesArray)), reinterpret_cast<char*> (Containers::End (bytesArray)));
+        response.fData = bytesArray;
     }
 
     {
-        wstring statusStr   =       Extract_WinHttpHeader (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
-        wstring statusText  =       Extract_WinHttpHeader (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
+        wstring statusStr   =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
+        wstring statusText  =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         int     status      =       _wtoi (statusStr.c_str ());
         DbgTrace (_T ("Status = %d"), status);
-        if (not HTTPException::IsHTTPStatusOK (status)) {
+        if (not HTTP::Exception::IsHTTPStatusOK (status)) {
             if (WINHTTP_ERROR_BASE <= status and status <= WINHTTP_ERROR_BASE) {
                 Execution::DoThrow (Execution::Platform::Windows::HRESULTErrorException (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_INTERNET, status)));
             }
-            HTTPException::DoThrowIfError (status, statusText, result.fBody);
+            HTTP::Exception::DoThrowIfError (status, statusText);
         }
+        response.fStatus = status;
     }
 
 
@@ -351,45 +375,46 @@ RetryWithNoCERTCheck:
      * return that info - we could use this. BUT - we need to manually figure out if its expired or
      * whatever.
      */
-    if (useSecureHTTP) {
+    if (useSecureHTTP and request.fOptions.fReturnSSLInfo) {
         WINHTTP_CERTIFICATE_INFO   certInfo;
         memset (&certInfo, 0, sizeof (certInfo));
         DWORD          dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize = sizeof (certInfo);
         ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
 
-        result.fSSLInfo.fValidationStatus = sslExceptionProblem ?
-                                            SSLResultInfo::eSSLFailure :
-                                            SSLResultInfo::eSSLOK
-                                            ;
+        Response::SSLResultInfo resultSSLInfo;
+        resultSSLInfo.fValidationStatus = sslExceptionProblem ?
+                                          Response::SSLResultInfo::eSSLFailure :
+                                          Response::SSLResultInfo::eSSLOK
+                                          ;
         if (certInfo.lpszSubjectInfo != nullptr) {
             wstring subject =   certInfo.lpszSubjectInfo;
-            result.fSSLInfo.fSubjectCommonName = subject;
+            resultSSLInfo.fSubjectCommonName = subject;
             {
                 size_t i = subject.find ('\r');
                 if (i != wstring::npos) {
-                    result.fSSLInfo.fSubjectCommonName = result.fSSLInfo.fSubjectCommonName.substr (0, i);
+                    resultSSLInfo.fSubjectCommonName = resultSSLInfo.fSubjectCommonName.substr (0, i);
                 }
             }
         }
         if (certInfo.lpszIssuerInfo != nullptr) {
-            result.fSSLInfo.fIssuer = certInfo.lpszIssuerInfo;
+            resultSSLInfo.fIssuer = certInfo.lpszIssuerInfo;
         }
         // check dates
         Date    startCertDate   =   DateTime (certInfo.ftStart).GetDate ();
         Date    endCertDate     =   DateTime (certInfo.ftExpiry).GetDate ();
         Date    now             =   DateTime::GetToday ();
         if (now < startCertDate) {
-            result.fSSLInfo.fValidationStatus = SSLResultInfo::eCertNotYetValid;
+            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::eCertNotYetValid;
         }
         else if (endCertDate < now) {
-            result.fSSLInfo.fValidationStatus = SSLResultInfo::eCertExpired;
+            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::eCertExpired;
         }
 
-        if (not Characters::StringsCIEqual (crackedURL.fHost, result.fSSLInfo.fSubjectCommonName) and
-                not Characters::StringsCIEqual (crackedURL.fHost, L"www." + result.fSSLInfo.fSubjectCommonName)
+        if (not Characters::StringsCIEqual (fURL_.fHost, resultSSLInfo.fSubjectCommonName) and
+                not Characters::StringsCIEqual (fURL_.fHost, L"www." + resultSSLInfo.fSubjectCommonName)
            ) {
-            result.fSSLInfo.fValidationStatus = SSLResultInfo::eHostnameMismatch;
+            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::eHostnameMismatch;
         }
         if (certInfo.lpszSubjectInfo != nullptr) {
             ::LocalFree (certInfo.lpszSubjectInfo);
@@ -406,12 +431,13 @@ RetryWithNoCERTCheck:
         if (certInfo.lpszSignatureAlgName != nullptr) {
             ::LocalFree (certInfo.lpszSignatureAlgName);
         }
-    }
 
+        response.fServerEndpointSSLInfo = resultSSLInfo;
+    }
 
     // copy/fill in result.fHeaders....
     {
-        wstring rr  =   Extract_WinHttpHeader (hRequest, WINHTTP_QUERY_RAW_HEADERS_CRLF, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
+        wstring rr  =   Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_RAW_HEADERS_CRLF, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         // now break into lines
         for (size_t i = 0; i < rr.length ();) {
             size_t  endOfRegion =   rr.find_first_of (L"\r\n", i);
@@ -427,39 +453,35 @@ RetryWithNoCERTCheck:
                     wstring key =   Characters::Trim (thisLine.substr (0, colonI));
                     wstring val =   Characters::Trim (thisLine.substr (colonI + 1));
                     if (not key.empty ()) {
-                        result.fHeaders.insert (map<wstring, wstring>::value_type (key, val));
+                        response.fHeaders.insert (map<wstring, wstring>::value_type (key, val));
                     }
                 }
             }
             i = endOfRegion + 1;
         }
     }
-#endif
 
     return response;
 }
 
 void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
 {
-	if (fSessionHandle_UserAgent_ != userAgent) {
-		fConnectionHandle_.reset ();
-		fSessionHandle_.reset ();
-	}
-	if (fSessionHandle_.get () == nullptr) {
-		fSessionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)));
-	}
+    if (fSessionHandle_UserAgent_ != userAgent) {
+        fConnectionHandle_.reset ();
+        fSessionHandle_.reset ();
+    }
+    if (fSessionHandle_.get () == nullptr) {
+        fSessionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)));
+    }
 }
 
 void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
-	RequireNotNull (fSessionHandle_.get ());
-	if (fConnectionHandle_.get () == nullptr) {
-		fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.fHost.c_str (), fURL_.GetEffectivePortNumber (), 0)));
-	}
+    RequireNotNull (fSessionHandle_.get ());
+    if (fConnectionHandle_.get () == nullptr) {
+        fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.fHost.c_str (), fURL_.GetEffectivePortNumber (), 0)));
+    }
 }
-
-    nonvirtual  void    AssureHasConnectionHandle_ (const String& url);
-
 #endif
 
 

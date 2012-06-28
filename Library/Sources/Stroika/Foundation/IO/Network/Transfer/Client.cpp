@@ -30,6 +30,19 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
+/*
+ ********************************************************************************
+ *********************** Transfer::Request::Options *****************************
+ ********************************************************************************
+ */
+Request::Options::Options ()
+    : fReturnSSLInfo (false)
+{
+}
+
+
+
+
 
 
 /*
@@ -41,9 +54,47 @@ Request::Request ()
     : fMethod ()
     , fOverrideHeaders ()
     , fData ()
-    , fContentType ()
+    , fOptions ()
 {
 }
+
+InternetMediaType   Request::GetContentType () const
+{
+	map<String, String>::const_iterator	i	=	fOverrideHeaders.find (HTTP::HeaderName::kContentType);
+	if (i != fOverrideHeaders.end ()) {
+        return InternetMediaType (i->second);
+	}
+    return InternetMediaType ();
+}
+
+void	Request::SetContentType (const InternetMediaType& ct)
+{
+	fOverrideHeaders[HTTP::HeaderName::kContentType] = ct.As<String> ();
+}
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************** Transfer::Response::SSLResultInfo ***************************
+ ********************************************************************************
+ */
+
+Response::SSLResultInfo::SSLResultInfo ()
+    : fSubjectCommonName ()
+    , fSubjectCompanyName ()
+    , fStyleOfValidation ()
+    , fIssuer ()
+    , fValidationStatus (eNoSSL)
+{
+}
+
+
+
 
 
 
@@ -58,17 +109,18 @@ Response::Response ()
     : fData ()
     , fHeaders ()
     , fStatus ()
+    , fServerEndpointSSLInfo ()
+
 {
 }
 
 InternetMediaType   Response::GetContentType () const
 {
-	for (map<String, String>::const_iterator i = fHeaders.begin (); i != fHeaders.end (); ++i) {
-		if (i->first == HTTP::HeaderName::kContentType) {
-			return InternetMediaType (i->second);
-		}
+	map<String, String>::const_iterator	i	=	fHeaders.find (HTTP::HeaderName::kContentType);
+	if (i != fHeaders.end ()) {
+        return InternetMediaType (i->second);
 	}
-	return InternetMediaType ();
+    return InternetMediaType ();
 }
 
 
@@ -95,7 +147,7 @@ Response    Connection::Post (const vector<Byte>& data, const InternetMediaType&
     r.fMethod = HTTP::Methods::kPost;
     r.fOverrideHeaders = extraHeaders;
     r.fData = data;
-    r.fContentType = contentType;
+	r.SetContentType (contentType);
     return SendAndRequest (r);
 }
 
@@ -113,7 +165,7 @@ Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& 
     r.fMethod = HTTP::Methods::kPut;
     r.fOverrideHeaders = extraHeaders;
     r.fData = data;
-    r.fContentType = contentType;
+	r.SetContentType (contentType);
     return SendAndRequest (r);
 }
 

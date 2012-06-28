@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../HTTP/Exception.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
@@ -18,13 +20,13 @@ namespace   Stroika {
 
 
                     // class Response
-					inline	bool	Response::GetSucceeded () const
-					{
-						return 200 <= fStatus and fStatus <= 299;
-					}
+                    inline  bool    Response::GetSucceeded () const
+                    {
+                        return HTTP::Exception::IsHTTPStatusOK (fStatus);
+                    }
 
-					
-					// class Connection::_IRep
+
+                    // class Connection::_IRep
                     inline  Connection::_IRep::_IRep ()
                     {
                     }

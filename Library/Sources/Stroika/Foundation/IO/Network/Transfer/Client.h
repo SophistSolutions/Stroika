@@ -12,6 +12,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Characters/String.h"
 #include    "../../../DataExchangeFormat/InternetMediaType.h"
+#include    "../../../Memory/Optional.h"
 #include    "../URL.h"
 #include    "../HTTP/Status.h"
 
@@ -24,14 +25,28 @@
 /*
  * TODO:
  *
+ *
+ *      (o)     Decide on and DOCUMENT threading policy. For example - do we need locks internally in the connection object or DEFINE that its
+ *              the callers resposabiltiy. PROBABLY best to do in the Connection object itself?
+ *
+ *      (o)     Progress Callbacks?
+ *
+ *      (o)		ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+ *
  *      (o)     Fixup Requqest/Response code to just be driven off fHeaders  list - and have Get/Set ContentType, etc - and other fields -
  *              which map to that list. MAYBE move request/repsonse stuff to HTTP module- so re-usable in framework code which does webserver??
  *
- *      (o)     Probably princiapply a wrapper on CURL - but also support wrapper on WinHTTP
  *      (o)     Redo response / src API using streams?
+ *
  *      (o)     Add Client side certs
- *      (o)     Add server-side-cert checking mechanism (review LIBCURL to see what makes sense)
- *      (o)     Add TIMEOUT property on Connection object as background for requests - or maybe make it part of request object? (param to requests)?
+ *
+ *      (o)     Refine server-side-cert checking mechanism (review LIBCURL to see what makes sense)
+ *				PROBABLY just a callback mechanism - with a few default callabcks you can plugin (like reject bad certs)
+ *              MAYBE just add FLAG saying whether to VALIDATE_HOST? Maybe callback API"?
+ *
+ *                        //  This COULD be expanded to include either a BOOL to CHECK remote SSL info, or a callback (which can throw)
+ *                        //  if invalid SSL INFO from server side. Thats probably best. callback whcih throws, and set it to such a callback by default!
+ *                        //      -- LGP 2012-06-26
  *
  */
 
@@ -51,25 +66,64 @@ namespace   Stroika {
                         Request ();
 
                         String              fMethod;
-                        map<String, String>	fOverrideHeaders;
+                        map<String, String> fOverrideHeaders;
                         vector<Byte>        fData;  // usually empty, but provided for some methods like POST
-                        InternetMediaType   fContentType;
 
+						// scans fOverrideHeaders
+                        nonvirtual  InternetMediaType   GetContentType () const;
+						// updates fOverrideHeaders
+                        nonvirtual  void				SetContentType (const InternetMediaType& ct);
+
+						struct  Options {
+                            Options ();
+                            bool    fReturnSSLInfo;
+                        };
+                        Options             fOptions;
                     };
+
+
+
+
                     struct  Response {
+                        struct  SSLResultInfo;
                         Response ();
 
-                        vector<Byte>        fData;  // usually empty, but provided for some methods like POST
-                        map<String, String> fHeaders;
-                        HTTP::Status        fStatus;
+                        vector<Byte>                    fData;  // usually empty, but provided for some methods like POST
+                        map<String, String>             fHeaders;
+                        HTTP::Status                    fStatus;
+                        Memory::Optional<SSLResultInfo> fServerEndpointSSLInfo;
 
-						nonvirtual	bool				GetSucceeded () const;
+                        nonvirtual  bool                GetSucceeded () const;
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
                     };
 
+                    // This info is returned only for secure connections - and is an indicator of whether or
+                    // not the SSL connection was valid
+                    //
+                    // This system allows invalid SSL certs as the target - by default - and returns that info, so its up
+                    // to the caller to decide whether or not to accept the data from an invalid SSL cert
+                    struct  Response::SSLResultInfo {
+                        SSLResultInfo ();
+
+                        wstring fSubjectCommonName;     // hostname declared
+                        wstring fSubjectCompanyName;
+                        wstring fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
+                        wstring fIssuer;
+                        enum ValidationStatus {
+                            eNoSSL,
+                            eSSLOK,
+                            eCertNotYetValid,   // start date too soon
+                            eCertExpired,
+                            eHostnameMismatch,
+                            eSSLFailure         // generic - typically bad CERT - or bad trust
+                        };
+                        ValidationStatus    fValidationStatus;
+                    };
+
+
 
                     // TODO:
-                    //      Unclear about copyability - maybe if its a smartpr OK to copy - but would be copy-by-reference?
+                    //      Unclear about copyability - maybe if its a smartptr OK to copy - but would be copy-by-reference?
                     //      Could be confusing! CONSIDER
                     class   Connection {
                     protected:
