@@ -259,32 +259,10 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/Makefile");
 		system ("ln -s ../../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
-		mkdir "$intermediateFiles/$platform/$target/Test1";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test1 $intermediateFiles/$platform/$target/Test1/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test2";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test2 $intermediateFiles/$platform/$target/Test2/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test3";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test3 $intermediateFiles/$platform/$target/Test3/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test4";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test4 $intermediateFiles/$platform/$target/Test4/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test5";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test5 $intermediateFiles/$platform/$target/Test5/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test6";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test6 $intermediateFiles/$platform/$target/Test6/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test7";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test7 $intermediateFiles/$platform/$target/Test7/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test8";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test8 $intermediateFiles/$platform/$target/Test8/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test9";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test9 $intermediateFiles/$platform/$target/Test9/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test10";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test10 $intermediateFiles/$platform/$target/Test10/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test11";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test11 $intermediateFiles/$platform/$target/Test11/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test12";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test12 $intermediateFiles/$platform/$target/Test12/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Test13";
-		system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test13 $intermediateFiles/$platform/$target/Test13/Makefile");
+		foreach $tst (GetAllTests ()) {
+			mkdir "$intermediateFiles/$platform/$target/Test$tst";
+			system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test$tst $intermediateFiles/$platform/$target/Test$tst/Makefile");
+		}
 	}
 }
 
