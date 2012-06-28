@@ -40,15 +40,8 @@ namespace	{
 namespace	{
 	void	DoRegressionTests_ ()
 		{
-			// NOT WORKING YET..
-			//		-- LGP 2012-06-26
-#if     qHasFeature_WinHTTP
-			///VERY PRELIM WINDOWS VERSION SORT OF WORKING...
-			// -- LGP 2012-06-26
-
 			Test_1_SimpleFetch_Google_C_ (CreateConnection ());
 			Test_2_SimpleFetch_SSL_Google_C_ (CreateConnection ());
-#endif
 		}
 }
 
