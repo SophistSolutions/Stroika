@@ -821,7 +821,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     return result;
 }
 
-String  String::Replace (const RegularExpression& regEx, const String& with, CompareOptions co) const
+String  String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const
 {
 #if     qCompilerAndStdLib_Supports_regex_replace
     return String (regex_replace (As<wstring> (), wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ())), with.As<wstring> ()));
@@ -831,7 +831,7 @@ String  String::Replace (const RegularExpression& regEx, const String& with, Com
 #endif
 }
 
-String  String::Replace (const String& string2SearchFor, const String& with, CompareOptions co) const
+String  String::ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co) const
 {
     AssertNotImplemented ();
     return String (regex_replace (As<wstring> (), wregex (string2SearchFor.As<wstring> ()), with.As<wstring> ()));

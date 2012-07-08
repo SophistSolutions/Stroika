@@ -663,6 +663,12 @@ namespace	{
 				VerifyTestResult (testStr2Search.Search (regExp).size () == 1);
 				VerifyTestResult ((testStr2Search.Search (regExp)[0] == pair<size_t,size_t> (0, 3)));
 			}
+			{
+				// Test replace crlfs
+				String	stringWithCRLFs	=	L"abc\r\ndef\r\n";
+				String	replaced		=	stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*"), L"");
+				VerifyTestResult (replaced == L"abcdef");
+			}
 #if 0
 // not sure why this didn't work! - 
 			{
@@ -693,7 +699,7 @@ namespace	{
 			VerifyTestResult (String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::eECMAScript)).size () == 1);
 			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::eECMAScript));
 			VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
-			VerifyTestResult (String (L"Hello world").Replace (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
+			VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
 		#endif
 		}
 }

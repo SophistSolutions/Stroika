@@ -339,8 +339,8 @@ namespace   Stroika {
                 * See regex_replace () for definition of the regEx language
                 *       TODO: GIVE EXAMPLES
                  */
-                nonvirtual  String  Replace (const RegularExpression& regEx, const String& with, CompareOptions co = eWithCase_CO) const;
-                nonvirtual  String  Replace (const String& string2SearchFor, const String& with, CompareOptions co = eWithCase_CO) const;
+                nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = eWithCase_CO) const;
+                nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = eWithCase_CO) const;
 
             public:
 #if     !qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
