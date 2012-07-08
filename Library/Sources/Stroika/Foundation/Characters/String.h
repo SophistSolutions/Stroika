@@ -52,6 +52,10 @@
  *          separate logically and have trivial wrappers here.
  *
  *          UNCLEAR.
+ *				o   Probably add td::tr1::regex_constants::icase support, so there is an option
+ *
+ *
+ *		o	MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
  *
  *
