@@ -48,6 +48,12 @@
  * TODO:
  *
  *
+ *		o	CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
+ *			MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
+ *			not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
+ *			Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
+ *			not totally clear what name is best (split or tokenize()).
+ *
  *      o   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
  *          separate logically and have trivial wrappers here.
  *
