@@ -657,6 +657,7 @@ namespace	{
 		}
 	void	Test17_RegExp_Search_ ()
 		{
+#if		qCompilerAndStdLib_Supports_regex_replace
 			{
 				RegularExpression	regExp (L"abc");
 				String				testStr2Search	=	String (L"abc");	
@@ -669,6 +670,7 @@ namespace	{
 				String	replaced		=	stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*"), L"");
 				VerifyTestResult (replaced == L"abcdef");
 			}
+#endif
 #if 0
 // not sure why this didn't work! - 
 			{
@@ -684,18 +686,7 @@ namespace	{
 		{
 			Test17_RegExp_Match_ ();
 			Test17_RegExp_Search_ ();
-
-// CLEANUP AP - WE NEED MAYBE SEARCH (returns pair<start/end> offsets - or iteartor of such
-// and use that to repalce find. ANd dfebug issues with this stuff on GCC!!!
-#ifndef qCompilerAndStdLib_Bug_regexpr_
-#if     defined (__GNUC__)
-#define qCompilerAndStdLib_Bug_regexpr_  1
-#else
-#define qCompilerAndStdLib_Bug_regexpr_  0
-#endif
-#endif
-
-		#if		!qCompilerAndStdLib_Bug_regexpr_
+		#if		qCompilerAndStdLib_Supports_regex_replace
 			VerifyTestResult (String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::eECMAScript)).size () == 1);
 			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::eECMAScript));
 			VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
