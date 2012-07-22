@@ -5,6 +5,9 @@
 #define _Stroika_Foundation_Containers_Collection_h_    1
 
 
+
+/// SOON OBSOLETE
+
 /*
  *
  * Description:
