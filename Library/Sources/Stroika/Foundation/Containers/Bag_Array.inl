@@ -233,7 +233,7 @@ namespace   Stroika {
             template    <typename T>    Bag_Array<T>::Bag_Array (const Bag<T>& bag) :
                 Bag<T> (new Bag_ArrayRep<T> ())
             {
-                SetSlotsAlloced (bag.GetLength ());
+                SetCapacity (bag.GetLength ());
                 operator+= (bag);
             }
 
@@ -241,7 +241,7 @@ namespace   Stroika {
                 Bag<T> (new Bag_ArrayRep<T> ())
             {
 				size_t	size	=		end-start;
-                SetSlotsAlloced (size);
+                SetCapacity (size);
                 AddItems (items, size);
             }
 
@@ -265,14 +265,14 @@ namespace   Stroika {
                 return ((Bag_ArrayRep<T>*) Bag<T>::GetRep ());
             }
 
-            template    <typename T>    size_t  Bag_Array<T>::GetSlotsAlloced () const
+            template    <typename T>    size_t  Bag_Array<T>::GetCapacity () const
             {
-                return (GetRep ()->fData.GetSlotsAlloced ());
+                return (GetRep ()->fData.GetCapacity ());
             }
 
-            template    <typename T>    void    Bag_Array<T>::SetSlotsAlloced (size_t slotsAlloced)
+            template    <typename T>    void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
             {
-                GetRep ()->fData.SetSlotsAlloced (slotsAlloced);
+                GetRep ()->fData.SetCapacity (slotsAlloced);
             }
 
             template    <typename T>    BagRep<T>*  Bag_ArrayRep<T>::Clone () const

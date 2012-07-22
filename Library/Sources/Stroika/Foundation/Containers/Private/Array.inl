@@ -78,14 +78,14 @@ namespace   Stroika {
                 return (fLength);
             }
 
-            template    <class  T>  inline  size_t  Array<T>::GetSlotsAlloced () const
+            template    <class  T>  inline  size_t  Array<T>::GetCapacity () const
             {
                 return (fSlotsAllocated);
             }
 
             template    <class  T>  inline  void    Array<T>::Compact ()
             {
-                SetSlotsAlloced (GetLength ());
+                SetCapacity (GetLength ());
             }
 
 
@@ -592,7 +592,7 @@ namespace   Stroika {
                 Invariant ();
                 PatchViewsRemove (index);
                 Array<T>::RemoveAt (index);
-                // Dont call PatchViewsRealloc () since removeat does not do a setslotsalloced, it
+                // Dont call PatchViewsRealloc () since removeat does not do a SetCapacity, it
                 // just destructs things.
                 Invariant ();
             }
@@ -602,14 +602,14 @@ namespace   Stroika {
                 Invariant ();
                 Array<T>::RemoveAll ();
                 PatchViewsRemoveAll ();     // PatchRealloc not needed cuz removeall just destructs things,
-                // it does not realloc pointers (ie does not call setslotsalloced).
+                // it does not realloc pointers (ie does not call SetCapacity).
                 Invariant ();
             }
 
-            template    <class  T>  inline  void    Array_Patch<T>::SetSlotsAlloced (size_t slotsAlloced)
+            template    <class  T>  inline  void    Array_Patch<T>::SetCapacity (size_t slotsAlloced)
             {
                 Invariant ();
-                Array<T>::SetSlotsAlloced (slotsAlloced);
+                Array<T>::SetCapacity (slotsAlloced);
                 PatchViewsRealloc ();
                 Invariant ();
             }
@@ -850,7 +850,7 @@ namespace   Stroika {
                 fItems (nullptr)
             {
                 from.Invariant ();
-                SetSlotsAlloced (from.GetSlotsAlloced ());
+                SetCapacity (from.GetCapacity ());
 
                 /*
                  *  Construct the new items in-place into the new memory.
@@ -949,7 +949,7 @@ namespace   Stroika {
                 return (false);
             }
 
-            template    <typename T>    void    Array<T>::SetSlotsAlloced (size_t slotsAlloced)
+            template    <typename T>    void    Array<T>::SetCapacity (size_t slotsAlloced)
             {
                 Require (GetLength () <= slotsAlloced);
                 Invariant ();
@@ -985,7 +985,7 @@ namespace   Stroika {
                  *  but must be sure we are big enuf. Do this before we store any pointers
                  *  cuz it could invalidate them.
                  */
-                SetSlotsAlloced (Max (GetSlotsAlloced (), newLength));
+                SetCapacity (Max (GetCapacity (), newLength));
 
                 /*
                  * Copy array elements where both sides where constructed.
@@ -1069,9 +1069,9 @@ namespace   Stroika {
                      *  our arithmetic + 16.
                      *
                      */
-                    //SetSlotsAlloced (Max (newLength+(64/sizeof (T)), size_t (newLength*1.1)));
+                    //SetCapacity (Max (newLength+(64/sizeof (T)), size_t (newLength*1.1)));
                     // Based on the above arithmatic, we can take a shortcut...
-                    SetSlotsAlloced ((newLength > 160) ? size_t (newLength * 1.1) : (newLength + (64 / sizeof (T))));
+                    SetCapacity ((newLength > 160) ? size_t (newLength * 1.1) : (newLength + (64 / sizeof (T))));
                 }
                 ArrayNode<T>*   cur =   &fItems[fLength];   // point 1 past first guy
                 ArrayNode<T>*   end =   &fItems[newLength]; // point 1 past last guy

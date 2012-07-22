@@ -285,14 +285,14 @@ namespace   Stroika {
             template    <typename T>    Tally_Array<T>::Tally_Array (const T* items, size_t size) :
                 Tally<T> (new Tally_ArrayRep<T> ())
             {
-                SetSlotsAlloced (size);
+                SetCapacity (size);
                 AddItems (items, size);
             }
 
             template    <typename T>    Tally_Array<T>::Tally_Array (const Tally<T>& src) :
                 Tally<T> (new Tally_ArrayRep<T> ())
             {
-                SetSlotsAlloced (src.GetLength ());
+                SetCapacity (src.GetLength ());
                 operator+= (src);
             }
 
@@ -306,14 +306,14 @@ namespace   Stroika {
                 return ((Tally_ArrayRep<T>*) Tally<T>::GetRep ());
             }
 
-            template    <typename T>    size_t  Tally_Array<T>::GetSlotsAlloced () const
+            template    <typename T>    size_t  Tally_Array<T>::GetCapacity () const
             {
-                return (GetRep ()->fData.GetSlotsAlloced ());
+                return (GetRep ()->fData.GetCapacity ());
             }
 
-            template    <typename T>    void    Tally_Array<T>::SetSlotsAlloced (size_t slotsAlloced)
+            template    <typename T>    void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
             {
-                GetRep ()->fData.SetSlotsAlloced (slotsAlloced);
+                GetRep ()->fData.SetCapacity (slotsAlloced);
             }
 
         }

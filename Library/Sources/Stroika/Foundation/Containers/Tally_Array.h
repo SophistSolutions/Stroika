@@ -26,8 +26,8 @@ namespace   Stroika {
 
                 nonvirtual  Tally_Array<T>& operator= (const Tally_Array<T>& src);
 
-                nonvirtual  size_t  GetSlotsAlloced () const;
-                nonvirtual  void    SetSlotsAlloced (size_t slotsAlloced);
+                nonvirtual  size_t  GetCapacity () const;
+                nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
             private:
                 nonvirtual  const Tally_ArrayRep<T>*    GetRep () const;

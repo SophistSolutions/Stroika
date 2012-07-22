@@ -24,8 +24,8 @@ namespace   Stroika {
 
                 nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 
-                nonvirtual  size_t  GetSlotsAlloced () const;
-                nonvirtual  void    SetSlotsAlloced (size_t slotsAlloced);
+                nonvirtual  size_t  GetCapacity () const;
+                nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
             private:
                 nonvirtual  const Bag_ArrayRep<T>*  GetRep () const;
