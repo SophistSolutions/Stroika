@@ -12,6 +12,22 @@
  *
  *
  * TODO:
+
+
+ >>>>PLACEHOLDER - WILL NOT HAVE COLLECTION CLASS!!!!
+
+
+	>>> INSTEAD - have class ITERABLE<T> and probably MUTABLE<T>.
+
+	>>>> AND MAYBE OTHERS FOR STUFF ABOUT CONCEPTS/CONSTRAINTS CLASSES.
+
+	>>>> Keep this around for a while til we milk out the useufl utilities like APPLY()
+
+			-- LGP 2012-07-22
+
+
+
+
  *
  *      (o)     Rough draft - ready for Sterl to REVIEW
  *

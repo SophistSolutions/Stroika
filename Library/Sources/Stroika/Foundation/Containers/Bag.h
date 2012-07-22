@@ -50,6 +50,7 @@
 #include    "../Memory/SharedByValue.h"
 
 #include    "Iterator.h"
+#include    "Iterable.h"
 
 
 
