@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#include "Private/LinkedList.h"
+#include "../Private/LinkedList.h"
 
-#include "../Memory/BlockAllocated.h"
+#include "../../Memory/BlockAllocated.h"
 
 
 
@@ -13,6 +13,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+	        namespace   Concrete {
 
             template    <typename T>    class   Bag_LinkedListMutatorRep;
             template    <typename T>    class   Bag_LinkedListRep : public BagRep<T> {
@@ -212,6 +213,7 @@ namespace   Stroika {
                 fIterator.RemoveCurrent ();
             }
 
+	        }
         }
     }
 }

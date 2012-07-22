@@ -7,7 +7,7 @@
 #include    "../Debug/Assertions.h"
 #include "Tally.h"
 
-#include "Tally_Array.h"  // needed for default constructor
+#include "Concrete/Tally_Array.h"  // needed for default constructor
 
 
 namespace   Stroika {

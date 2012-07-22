@@ -14,13 +14,14 @@
 #include	"../TestHarness/SimpleClass.h"
 #include	"../TestHarness/TestHarness.h"
 
-#include    "Stroika/Foundation/Containers/Bag_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Bag_LinkedList.h"
 
 using   namespace   Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
 
-
+using	Concrete::Bag_Array;
+using	Concrete::Bag_LinkedList;
 
 namespace	{
 

@@ -9,8 +9,8 @@
 
 
 #include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Tally_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
 
@@ -25,6 +25,8 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
 
 
+using	Concrete::Tally_Array;
+using	Concrete::Tally_LinkedList;
 
 
 

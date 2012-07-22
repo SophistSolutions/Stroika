@@ -5,7 +5,7 @@
 #define _Stroika_Foundation_Containers_Bag_inl_
 
 #include    "../Debug/Assertions.h"
-#include "Bag_Array.h"  // needed for default constructor
+#include "Concrete/Bag_Array.h"  // needed for default constructor
 
 
 

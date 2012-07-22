@@ -1,20 +1,20 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Tally_Array_h_
-#define _Stroika_Foundation_Containers_Tally_Array_h_   1
+#ifndef _Stroika_Foundation_Containers_Concrete_Tally_Array_h_
+#define _Stroika_Foundation_Containers_Concrete_Tally_Array_h_   1
 
 
-#include    "../StroikaPreComp.h"
+#include    "../../StroikaPreComp.h"
 
-
-#include    "Tally.h"
+#include    "../Tally.h"
 
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+	        namespace   Concrete {
 
             template    <typename T>    class   Tally_ArrayRep;
             template    <typename T>    class   Tally_Array : public Tally<T> {
@@ -35,6 +35,7 @@ namespace   Stroika {
             };
 
 
+	        }
         }
     }
 }
@@ -43,7 +44,7 @@ namespace   Stroika {
 
 
 
-#endif  /*_Stroika_Foundation_Containers_Tally_Array_h_*/
+#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
 
 
 

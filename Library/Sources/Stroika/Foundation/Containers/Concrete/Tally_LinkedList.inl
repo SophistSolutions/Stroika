@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Tally_LinkedList_inl_
-#define _Stroika_Foundation_Containers_Tally_LinkedList_inl_    1
+#ifndef _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_inl_
+#define _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_inl_    1
 
 
 
-#include "Private/LinkedList.h"
+#include	"../Private/LinkedList.h"
 
-#include "../Memory/BlockAllocated.h"
+#include	"../../Memory/BlockAllocated.h"
 
 
 
@@ -18,6 +18,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+	        namespace   Concrete {
 
 
 
@@ -296,9 +297,10 @@ namespace   Stroika {
                 operator+= (src);
             }
 
+	        }
         }
     }
 }
 
 
-#endif /* _Stroika_Foundation_Containers_Tally_LinkedList_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_inl_ */
