@@ -242,7 +242,7 @@ namespace   Stroika {
             {
 				size_t	size	=		end-start;
                 SetCapacity (size);
-                AddItems (items, size);
+                AddItems (start, size);
             }
 
             template    <typename T>    inline  const Bag_ArrayRep<T>*  Bag_Array<T>::GetRep () const
