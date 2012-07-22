@@ -5,12 +5,8 @@
 #define _Stroika_Foundation_Containers_LinkedList_inl_  1
 
 
-
-
-
-#include "../../Debug/Assertions.h"
-
-#include "../../Memory/BlockAllocated.h"
+#include "../../../Debug/Assertions.h"
+#include "../../../Memory/BlockAllocated.h"
 
 
 

@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#include "../Private/Array.h"
+#include "Private/Array.h"
 
 #include "../../Memory/BlockAllocated.h"
 

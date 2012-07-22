@@ -22,11 +22,11 @@
  */
 
 
-#include    "../../StroikaPreComp.h"
+#include    "../../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
+#include    "../../../Configuration/Common.h"
 
-#include "../Common.h"
+#include	"../../Common.h"
 
 
 

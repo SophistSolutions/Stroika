@@ -76,9 +76,6 @@
     <Filter Include="Sources\Linguistics">
       <UniqueIdentifier>{6b1b3bae-d077-420d-82ed-25b7c63afda2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Containers\Private">
-      <UniqueIdentifier>{43e8aa54-497b-45a2-9fe6-33c7074b93a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\IO\Network\Transfer">
       <UniqueIdentifier>{695f0de1-3dbf-43e4-b9d9-07b4cd35924b}</UniqueIdentifier>
     </Filter>
@@ -102,6 +99,9 @@
     </Filter>
     <Filter Include="Sources\Containers\Concrete">
       <UniqueIdentifier>{3bb34cbe-2bf5-4022-b9a1-35ab90dd9979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Containers\Concrete\Private">
+      <UniqueIdentifier>{4efb2a46-73e0-4d5f-a760-ed730600bacc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -660,17 +660,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\Array.h">
-      <Filter>Sources\Containers\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\LinkedList.h">
-      <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h">
       <Filter>Sources\Containers</Filter>
@@ -867,6 +861,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.h">
+      <Filter>Sources\Containers\Concrete\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.h">
+      <Filter>Sources\Containers\Concrete\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1046,9 +1046,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\Array.inl">
-      <Filter>Sources\Containers\Private</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -1057,9 +1054,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl">
       <Filter>Sources\IO\Network</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\LinkedList.inl">
-      <Filter>Sources\Containers\Private</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally.inl">
       <Filter>Sources\Containers</Filter>
@@ -1171,6 +1165,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.inl">
+      <Filter>Sources\Containers\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl">
+      <Filter>Sources\Containers\Concrete\Private</Filter>
     </None>
   </ItemGroup>
 </Project>
