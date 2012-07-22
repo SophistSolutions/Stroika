@@ -15,6 +15,8 @@
  *
  *      (o)     Must add more types - for other sorts of containers
  *
+ *		(o)		Probbaly RENAME to "ElementTraits" - and automatically because of scope/context applies to all containers...
+ *
  *
  * Notes:
  *
