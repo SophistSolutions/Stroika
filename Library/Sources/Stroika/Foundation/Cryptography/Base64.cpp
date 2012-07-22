@@ -282,7 +282,7 @@ string  Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBrea
     base64_encodestate state (lb);
     size_t srcLen = end - start;
     size_t bufSize = 4 * srcLen;
-    Assert (bufSize > srcLen);  // no overflow!
+    Assert (bufSize >= srcLen);  // no overflow!
     SmallStackBuffer<char>  data (bufSize);
     size_t mostBytesCopied =     base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
