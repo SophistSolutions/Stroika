@@ -9,6 +9,10 @@
  *       
  *
  *  TODO:
+ *
+ *			(o)			CLARIFY AND ENFORCE ISNULL semantics. Either treat as EMPTY - or ILLEGAL - but either way make clear
+ *						and ENFORCE. See existing pattern with existing containers for hint of which way to go...
+ *
  *			(o)			Consider adding class Mutable<T> to add reference to mutator stuff? Maybe no point?
  *
  *			(o)			Move APPLYISH APIs that can be into here (stuff purely based on iterating)
@@ -48,6 +52,7 @@ namespace   Stroika {
 						public:
 							virtual Iterator<T>		MakeIterator () const   = 0;
 							virtual	size_t			GetLength () const	=	0;
+							virtual	bool			IsEmpty () const	=	0;
 					};
 
 				public:
@@ -61,7 +66,18 @@ namespace   Stroika {
 
 				public:
 					nonvirtual Iterator<T>		MakeIterator () const;
-					virtual	size_t				GetLength () const;
+					nonvirtual	size_t			GetLength () const;
+					nonvirtual	bool			IsEmpty () const;
+
+				public:
+					// STL-ish alias for IsEmpty ()
+					nonvirtual	bool	empty () const;
+				public:
+					// STL-ish alias for GetLength ()
+					nonvirtual	size_t	length () const;
+				public:
+					// STL-ish alias for GetLength ()
+					nonvirtual	size_t	size () const;
 
 				public:
 					// Support for ranged for, and stl syntax in general

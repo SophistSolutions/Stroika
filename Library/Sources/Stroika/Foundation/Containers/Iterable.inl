@@ -58,7 +58,29 @@ namespace   Stroika {
 						RequireNotNull (_fRep.get ());
 						return _fRep.get ()->GetLength ();
 					}
-            template    <typename T>
+			template    <typename T>
+				inline	bool	Iterable<T>::IsEmpty () const
+					{
+						RequireNotNull (_fRep.get ());
+						return _fRep.get ()->IsEmpty ();
+					}
+			template    <typename T>
+				inline	bool	Iterable<T>::empty () const
+					{
+						RequireNotNull (_fRep.get ());
+						return IsEmpty ();
+					}
+			template    <typename T>
+				inline	size_t	Iterable<T>::length () const
+					{
+						return GetLength ();
+					}
+			template    <typename T>
+				inline	size_t	Iterable<T>::size () const
+					{
+						return GetLength ();
+					}
+			template    <typename T>
 				inline	Iterator<T>	Iterable<T>::begin () const
 					{
 						RequireNotNull (_fRep.get ());
