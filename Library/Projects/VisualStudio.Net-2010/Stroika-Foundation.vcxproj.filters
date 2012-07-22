@@ -702,9 +702,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
@@ -866,6 +863,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.h">
       <Filter>Sources\Containers\Concrete\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.h">
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1082,9 +1082,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
@@ -1171,6 +1168,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl">
       <Filter>Sources\Containers\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>

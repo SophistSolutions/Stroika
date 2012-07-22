@@ -362,7 +362,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.h" />
@@ -370,6 +369,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h" />
@@ -520,7 +520,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.inl" />
@@ -528,6 +527,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />
