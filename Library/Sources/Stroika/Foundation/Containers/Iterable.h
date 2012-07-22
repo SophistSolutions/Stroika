@@ -22,6 +22,9 @@
  *
  *          (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
  *
+ *			(o)			Apply/ApplyUntilTrue() should also take overload with function object (STL). Also, consider
+ *						providing a IREP version - to implement LOCKING logic promised in the API.
+ *
  *
  */
 
