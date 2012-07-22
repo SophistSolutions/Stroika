@@ -48,20 +48,20 @@
  * TODO:
  *
  *
- *		o	CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
- *			MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
- *			not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
- *			Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
- *			not totally clear what name is best (split or tokenize()).
+ *      o   CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
+ *          MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
+ *          not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
+ *          Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
+ *          not totally clear what name is best (split or tokenize()).
  *
  *      o   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
  *          separate logically and have trivial wrappers here.
  *
  *          UNCLEAR.
- *				o   Probably add td::tr1::regex_constants::icase support, so there is an option
+ *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
  *
  *
- *		o	MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
+ *      o   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
  *
  *
@@ -154,9 +154,9 @@
  *          but pretty sure we want some sort of String_stdwstring().
  *
  *
- *		o	Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
- *			Maybe use per-thread global LOCALE settings. Discuss with KDJ.
- *			KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
+ *      o   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
+ *          Maybe use per-thread global LOCALE settings. Discuss with KDJ.
+ *          KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  *
  */
 

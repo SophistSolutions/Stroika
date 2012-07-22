@@ -20,13 +20,13 @@
  >>>>PLACEHOLDER - WILL NOT HAVE COLLECTION CLASS!!!!
 
 
-	>>> INSTEAD - have class ITERABLE<T> and probably MUTABLE<T>.
+    >>> INSTEAD - have class ITERABLE<T> and probably MUTABLE<T>.
 
-	>>>> AND MAYBE OTHERS FOR STUFF ABOUT CONCEPTS/CONSTRAINTS CLASSES.
+    >>>> AND MAYBE OTHERS FOR STUFF ABOUT CONCEPTS/CONSTRAINTS CLASSES.
 
-	>>>> Keep this around for a while til we milk out the useufl utilities like APPLY()
+    >>>> Keep this around for a while til we milk out the useufl utilities like APPLY()
 
-			-- LGP 2012-07-22
+            -- LGP 2012-07-22
 
 
 

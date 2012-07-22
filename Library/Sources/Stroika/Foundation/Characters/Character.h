@@ -26,9 +26,9 @@
  *              (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
  *              of Character.
  *
- *		(o)		ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
- *				We COULD change return value, or simply document that issue here and define ToLower() of STRING todo
- *				the right thing for queer cases like this, and use this API for hte most common cases.
+ *      (o)     ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
+ *              We COULD change return value, or simply document that issue here and define ToLower() of STRING todo
+ *              the right thing for queer cases like this, and use this API for hte most common cases.
  */
 
 

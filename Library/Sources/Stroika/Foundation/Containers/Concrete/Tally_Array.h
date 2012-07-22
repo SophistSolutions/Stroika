@@ -14,28 +14,28 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-	        namespace   Concrete {
+            namespace   Concrete {
 
-            template    <typename T>    class   Tally_ArrayRep;
-            template    <typename T>    class   Tally_Array : public Tally<T> {
-            public:
-                Tally_Array ();
-                Tally_Array (const Tally<T>& src);
-                Tally_Array (const Tally_Array<T>& src);
-                Tally_Array (const T* items, size_t size);
+                template    <typename T>    class   Tally_ArrayRep;
+                template    <typename T>    class   Tally_Array : public Tally<T> {
+                public:
+                    Tally_Array ();
+                    Tally_Array (const Tally<T>& src);
+                    Tally_Array (const Tally_Array<T>& src);
+                    Tally_Array (const T* items, size_t size);
 
-                nonvirtual  Tally_Array<T>& operator= (const Tally_Array<T>& src);
+                    nonvirtual  Tally_Array<T>& operator= (const Tally_Array<T>& src);
 
-                nonvirtual  size_t  GetCapacity () const;
-                nonvirtual  void    SetCapacity (size_t slotsAlloced);
+                    nonvirtual  size_t  GetCapacity () const;
+                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
-            private:
-                nonvirtual  const Tally_ArrayRep<T>*    GetRep () const;
-                nonvirtual  Tally_ArrayRep<T>*          GetRep ();
-            };
+                private:
+                    nonvirtual  const Tally_ArrayRep<T>*    GetRep () const;
+                    nonvirtual  Tally_ArrayRep<T>*          GetRep ();
+                };
 
 
-	        }
+            }
         }
     }
 }

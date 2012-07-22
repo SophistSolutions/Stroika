@@ -8,8 +8,8 @@
 
 
 ////TODO:
-///			o	Add Reader/Writer API like with JSON - using tree of Variants! - this produces essentially the same thing as a DOM reader/writer, but you can
-//				go back and forth with JSON or XML this way...
+///         o   Add Reader/Writer API like with JSON - using tree of Variants! - this produces essentially the same thing as a DOM reader/writer, but you can
+//              go back and forth with JSON or XML this way...
 
 
 

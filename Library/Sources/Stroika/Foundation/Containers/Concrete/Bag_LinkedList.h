@@ -13,19 +13,19 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-			namespace   Concrete {
+            namespace   Concrete {
 
-				template    <typename T> class  Bag_LinkedList : public Bag<T> {
-				public:
-					Bag_LinkedList ();
-					Bag_LinkedList (const T* items, size_t size);
-					Bag_LinkedList (const Bag<T>& bag);
-					Bag_LinkedList (const Bag_LinkedList<T>& bag);
+                template    <typename T> class  Bag_LinkedList : public Bag<T> {
+                public:
+                    Bag_LinkedList ();
+                    Bag_LinkedList (const T* items, size_t size);
+                    Bag_LinkedList (const Bag<T>& bag);
+                    Bag_LinkedList (const Bag_LinkedList<T>& bag);
 
-					nonvirtual  Bag_LinkedList<T>&  operator= (const Bag_LinkedList<T>& bag);
-				};
+                    nonvirtual  Bag_LinkedList<T>&  operator= (const Bag_LinkedList<T>& bag);
+                };
 
-	        }
+            }
         }
     }
 }

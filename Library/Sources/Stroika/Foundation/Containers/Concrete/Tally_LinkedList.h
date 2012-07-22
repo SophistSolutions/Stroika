@@ -15,20 +15,20 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-	        namespace   Concrete {
+            namespace   Concrete {
 
 
-				template    <typename T> class  Tally_LinkedList : public Tally<T> {
-				public:
-					Tally_LinkedList ();
-					Tally_LinkedList (const Tally<T>& src);
-					Tally_LinkedList (const Tally_LinkedList<T>& src);
-					Tally_LinkedList (const T* items, size_t size);
+                template    <typename T> class  Tally_LinkedList : public Tally<T> {
+                public:
+                    Tally_LinkedList ();
+                    Tally_LinkedList (const Tally<T>& src);
+                    Tally_LinkedList (const Tally_LinkedList<T>& src);
+                    Tally_LinkedList (const T* items, size_t size);
 
-					nonvirtual  Tally_LinkedList<T>& operator= (const Tally_LinkedList<T>& src);
-				};
+                    nonvirtual  Tally_LinkedList<T>& operator= (const Tally_LinkedList<T>& src);
+                };
 
-	        }
+            }
         }
     }
 }
@@ -37,5 +37,5 @@ namespace   Stroika {
 #endif  /*_Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_ */
 
 
-#include	"Tally_LinkedList.inl"
+#include    "Tally_LinkedList.inl"
 

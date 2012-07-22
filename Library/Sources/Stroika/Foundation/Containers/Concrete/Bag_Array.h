@@ -13,27 +13,27 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-			namespace	Concrete {
+            namespace   Concrete {
 
-				template    <class T>   class   Bag_ArrayRep;
-				template    <class T>   class   Bag_Array : public Bag<T> {
-				public:
-					Bag_Array ();
-					Bag_Array (const Bag<T>& bag);
-					Bag_Array (const Bag_Array<T>& bag);
-					Bag_Array (const T* start, const T* end);
+                template    <class T>   class   Bag_ArrayRep;
+                template    <class T>   class   Bag_Array : public Bag<T> {
+                public:
+                    Bag_Array ();
+                    Bag_Array (const Bag<T>& bag);
+                    Bag_Array (const Bag_Array<T>& bag);
+                    Bag_Array (const T* start, const T* end);
 
-					nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
+                    nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 
-					nonvirtual  size_t  GetCapacity () const;
-					nonvirtual  void    SetCapacity (size_t slotsAlloced);
+                    nonvirtual  size_t  GetCapacity () const;
+                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
-				private:
-					nonvirtual  const Bag_ArrayRep<T>*  GetRep () const;
-					nonvirtual  Bag_ArrayRep<T>*        GetRep ();
-				};
+                private:
+                    nonvirtual  const Bag_ArrayRep<T>*  GetRep () const;
+                    nonvirtual  Bag_ArrayRep<T>*        GetRep ();
+                };
 
-			}
+            }
         }
     }
 }
