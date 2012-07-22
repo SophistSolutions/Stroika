@@ -154,6 +154,10 @@
  *          but pretty sure we want some sort of String_stdwstring().
  *
  *
+ *		o	Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
+ *			Maybe use per-thread global LOCALE settings. Discuss with KDJ.
+ *			KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
+ *
  */
 
 

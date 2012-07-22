@@ -7,6 +7,13 @@
 #include    "../../StroikaPreComp.h"
 
 
+////TODO:
+///			o	Add Reader/Writer API like with JSON - using tree of Variants! - this produces essentially the same thing as a DOM reader/writer, but you can
+//				go back and forth with JSON or XML this way...
+
+
+
+
 /*
 @CONFIGVAR:     qHasLibrary_Xerces
 @DESCRIPTION:   <p>Stroika currently depends on Xerces to provide SAX-reader services./p>
