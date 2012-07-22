@@ -69,13 +69,13 @@ namespace   Stroika {
             template    <typename T> Tally<T>::Tally () :
                 fRep (0)
             {
-                *this = Tally_Array<T> ();
+                *this = Concrete::Tally_Array<T> ();
             }
 
             template    <typename T> Tally<T>::Tally (const T* items, size_t size) :
                 fRep (0)
             {
-                *this = Tally_Array<T> (items, size);
+                *this = Concrete::Tally_Array<T> (items, size);
             }
 
             template    <typename T> void   Tally<T>::RemoveAll (T item)
