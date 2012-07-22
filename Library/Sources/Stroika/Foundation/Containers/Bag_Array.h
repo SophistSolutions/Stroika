@@ -20,7 +20,7 @@ namespace   Stroika {
                 Bag_Array ();
                 Bag_Array (const Bag<T>& bag);
                 Bag_Array (const Bag_Array<T>& bag);
-                Bag_Array (const T* items, size_t size);
+                Bag_Array (const T* start, const T* end);
 
                 nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 

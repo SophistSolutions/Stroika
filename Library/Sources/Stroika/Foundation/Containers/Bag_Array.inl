@@ -237,9 +237,10 @@ namespace   Stroika {
                 operator+= (bag);
             }
 
-            template    <typename T>    Bag_Array<T>::Bag_Array (const T* items, size_t size) :
+            template    <typename T>    Bag_Array<T>::Bag_Array (const T* start, const T* end) :
                 Bag<T> (new Bag_ArrayRep<T> ())
             {
+				size_t	size	=		end-start;
                 SetSlotsAlloced (size);
                 AddItems (items, size);
             }

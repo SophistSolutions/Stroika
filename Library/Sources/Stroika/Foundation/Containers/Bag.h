@@ -89,7 +89,7 @@ namespace   Stroika {
             public:
                 Bag ();
                 Bag (const Bag<T>& bag);
-                Bag (const T* items, size_t size);
+                Bag (const T* start, const T* end);
 
             protected:
                 Bag (BagRep<T>* rep);

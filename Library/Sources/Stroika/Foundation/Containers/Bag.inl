@@ -30,10 +30,10 @@ namespace   Stroika {
                 *this = Bag_Array<T> ();
             }
 
-            template    <class T>   Bag<T>::Bag (const T* items, size_t size) :
+            template    <class T>   Bag<T>::Bag (const T* start, const T* end) :
                 fRep (0)
             {
-                *this = Bag_Array<T> (items, size);
+                *this = Bag_Array<T> (start, end);
             }
 
             template    <typename T>    inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
