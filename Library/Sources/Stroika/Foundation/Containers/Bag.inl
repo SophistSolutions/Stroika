@@ -27,13 +27,13 @@ namespace   Stroika {
             template    <class T>   Bag<T>::Bag () :
                 fRep (0)
             {
-                *this = Bag_Array<T> ();
+                *this = Concrete::Bag_Array<T> ();
             }
 
             template    <class T>   Bag<T>::Bag (const T* start, const T* end) :
                 fRep (0)
             {
-                *this = Bag_Array<T> (start, end);
+                *this = Concrete::Bag_Array<T> (start, end);
             }
 
             template    <typename T>    inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
