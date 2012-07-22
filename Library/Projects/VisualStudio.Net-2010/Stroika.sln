@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-
 	ProjectSection(SolutionItems) = preProject
 		..\Linux\checkall.pl = ..\Linux\checkall.pl
 		..\Linux\Makefile-Foundation = ..\Linux\Makefile-Foundation
+		..\Linux\Makefile-Foundation-Cache = ..\Linux\Makefile-Foundation-Cache
 		..\Linux\Makefile-Foundation-Characters = ..\Linux\Makefile-Foundation-Characters
 		..\Linux\Makefile-Foundation-Configuration = ..\Linux\Makefile-Foundation-Configuration
 		..\Linux\Makefile-Foundation-Containers = ..\Linux\Makefile-Foundation-Containers

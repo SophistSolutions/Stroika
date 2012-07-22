@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_TimedCache_h_
-#define _Stroika_Foundation_Containers_TimedCache_h_    1
+#ifndef _Stroika_Foundation_Cache_TimedCache_h_
+#define _Stroika_Foundation_Cache_TimedCache_h_    1
 
 #include    "../StroikaPreComp.h"
 
@@ -17,12 +17,14 @@
 
 
 
-/// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
+/// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA Cache WORKING
+
+/// NOT TOTALLY SURE WHY - REVIEW - THIS MAYBE USEFUL - SEE WHERE USED?
 
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Containers {
+        namespace   Cache {
 
             using Stroika::Foundation::Characters::TChar;
 
@@ -91,7 +93,7 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_TimedCache_h_*/
+#endif  /*_Stroika_Foundation_Cache_TimedCache_h_*/
 
 
 

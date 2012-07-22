@@ -4,8 +4,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#ifndef _Stroika_Foundation_Containers_TimedCache_inl_
-#define _Stroika_Foundation_Containers_TimedCache_inl_  1
+#ifndef _Stroika_Foundation_Cache_TimedCache_inl_
+#define _Stroika_Foundation_Cache_TimedCache_inl_  1
 
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
@@ -13,7 +13,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Containers {
+        namespace   Cache {
 
 
             template    <typename   KEY, typename RESULT>
@@ -120,4 +120,4 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_TimedCache_inl_*/
+#endif  /*_Stroika_Foundation_Cache_TimedCache_inl_*/

@@ -221,6 +221,7 @@ sub MakeUnixDirs {
 		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/$target/Library/SharedBuildRules.mk");
 		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles/$platform/$target/Library/SharedMakeVariables.mk");
 
+		mkDirWithLinks("Foundation/Cache", "Makefile-Foundation-Cache");
 		mkDirWithLinks("Foundation/Characters", "Makefile-Foundation-Characters");
 		mkDirWithLinks("Foundation/Configuration", "Makefile-Foundation-Configuration");
 		mkDirWithLinks("Foundation/Containers", "Makefile-Foundation-Containers");
@@ -374,12 +375,12 @@ sub WriteStroikaConfigCHeader
 	print (OUT "//Out of alphabetic order because other defaults depend on qDebug\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Assertions_.h\"\n");
 	print (OUT "\n");
+	print (OUT "#include	\"Private/Defaults_Cache_LRUCache_.h\"\n");
+	print (OUT "#include	\"Private/Defaults_Cache_TimedCache_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_Character_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_StringUtils_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_TChar_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_CompilerAndStdLib_.h\"\n");
-	print (OUT "#include	\"Private/Defaults_Containers_LRUCache_.h\"\n");
-	print (OUT "#include	\"Private/Defaults_Containers_TimedCache_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Cryptography_SSL_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Database_ODBCClient_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_DataExchangeFormat_XML_Common_.h\"\n");

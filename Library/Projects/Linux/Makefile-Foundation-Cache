@@ -1,0 +1,14 @@
+include ../../Configuration.mk
+include	../../SharedMakeVariables.mk
+include	../../SharedBuildRules.mk
+
+
+RelPathToStroikaDevRoot		=	../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cache/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+
+
+all:	$(Objs)

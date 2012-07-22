@@ -6,7 +6,7 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Containers/LRUCache.h"
+#include    "../../Foundation/Cache/LRUCache.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -356,7 +356,7 @@ namespace   Stroika {
                     friend  struct  CacheEltLRUCacheTraits;
                     friend  class   PartitioningTextImager::MeasureTextCache;
                 };
-                struct  CacheEltLRUCacheTraits : Foundation::Containers::LRUCacheDefaultTraits<CacheElt, CacheElt::COMPARE_ITEM> {
+                struct  CacheEltLRUCacheTraits : Foundation::Cache::LRUCacheDefaultTraits<CacheElt, CacheElt::COMPARE_ITEM> {
                     static  KeyType ExtractKey (const ElementType& e) {
                         return e.fValidFor;
                     }
@@ -370,7 +370,7 @@ namespace   Stroika {
                 };
 
             private:
-                mutable Foundation::Containers::LRUCache<CacheElt, CacheEltLRUCacheTraits>  fCache;
+                mutable Foundation::Cache::LRUCache<CacheElt, CacheEltLRUCacheTraits>  fCache;
 
             public:
                 nonvirtual  void            ClearAll ();

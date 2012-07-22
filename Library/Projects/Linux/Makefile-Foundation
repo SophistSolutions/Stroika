@@ -9,6 +9,7 @@ SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/
 VPATH		=	$(SrcDir) $(StroikaLibDir)
 
 SubDirs=				\
+	Cache				\
 	Characters			\
 	Configuration		\
 	Containers			\

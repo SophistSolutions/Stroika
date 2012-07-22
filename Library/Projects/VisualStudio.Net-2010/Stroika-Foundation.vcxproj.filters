@@ -97,6 +97,9 @@
     <Filter Include="Sources\Cryptography\SSL">
       <UniqueIdentifier>{e5bc13d3-660a-4be2-95df-297eba6a4330}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Cache">
+      <UniqueIdentifier>{d2eadc00-4e81-4df2-be06-55d6391cb34b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -465,9 +468,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h">
       <Filter>Sources\Cryptography</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
@@ -476,9 +476,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h">
       <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.h">
-      <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
       <Filter>Sources\Execution</Filter>
@@ -550,12 +547,6 @@
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Configuration_Common_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Containers_LRUCache_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Containers_TimedCache_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Assertions_.h">
@@ -858,6 +849,21 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SubProcess.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h">
+      <Filter>Sources\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.h">
+      <Filter>Sources\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h">
+      <Filter>Sources\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_LRUCache_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_TimedCache_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -913,12 +919,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\LRUCache.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\TimedCache.inl">
-      <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl">
       <Filter>Sources\Characters</Filter>
@@ -1159,6 +1159,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl">
+      <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl">
+      <Filter>Sources\Cache</Filter>
     </None>
   </ItemGroup>
 </Project>

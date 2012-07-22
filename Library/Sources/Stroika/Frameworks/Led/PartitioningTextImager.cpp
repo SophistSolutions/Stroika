@@ -15,7 +15,7 @@ using   namespace   Stroika::Foundation;
 
 
 
-using   Stroika::Foundation::Containers::LRUCache;
+using   Stroika::Foundation::Cache::LRUCache;
 
 
 
