@@ -363,7 +363,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag_LinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\BloomFilter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\CollectionElementTraits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />

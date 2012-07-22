@@ -843,9 +843,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\BloomFilter.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SubProcess.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
