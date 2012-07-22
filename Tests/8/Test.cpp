@@ -6,7 +6,6 @@
 #include	<iostream>
 #include	<sstream>
 
-
 #include    "Stroika/Foundation/Containers/Concrete/Private/Array.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
@@ -22,6 +21,7 @@ using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
 
+using	Concrete::Private::Array;
 
 
 

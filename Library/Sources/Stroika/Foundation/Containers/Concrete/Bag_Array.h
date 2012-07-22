@@ -4,9 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Bag_Array_h_
 #define _Stroika_Foundation_Containers_Concrete_Bag_Array_h_
 
-#include    "../StroikaPreComp.h"
+#include    "../../StroikaPreComp.h"
 
-#include    "Bag.h"
+#include    "../Bag.h"
 
 
 

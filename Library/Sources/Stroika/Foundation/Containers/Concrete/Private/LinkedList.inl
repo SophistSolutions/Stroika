@@ -1,20 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_LinkedList_inl_
-#define _Stroika_Foundation_Containers_LinkedList_inl_  1
+#ifndef _Stroika_Foundation_Containers_Concrete_Private_LinkedList_inl_
+#define _Stroika_Foundation_Containers_Concrete_Private_LinkedList_inl_  1
 
 
-#include "../../../Debug/Assertions.h"
-#include "../../../Memory/BlockAllocated.h"
-
-
+#include	"../../../Debug/Assertions.h"
+#include	"../../../Memory/BlockAllocated.h"
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace Private {
+	        namespace   Concrete {
+	            namespace	Private {
 
                 // class Link<T>
                 template    <class T>   inline  Link<T>::Link (T item, Link<T>* next) :
@@ -728,10 +727,11 @@ namespace   Stroika {
                 }
 
 
+	            }
             }
         }
     }
 }
 
 
-#endif /* _Stroika_Foundation_Containers_LinkedList_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_Private_LinkedList_inl_ */
