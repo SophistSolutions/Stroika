@@ -78,7 +78,7 @@ namespace   Stroika {
             }
 
             template    <typename T>    
-			inline  Bag<T>::operator Iterator<T> () const
+			inline  Iterator<T>	Bag<T>::MakeIterator () const
             {
                 Iterator<T> it (const_cast<Bag<T> *> (this)->fRep->MakeIterator ());
                 ++it;
@@ -88,7 +88,7 @@ namespace   Stroika {
             template    <typename T>    
 			inline  Iterator<T>    Bag<T>::begin () const
             {
-                return operator Iterator<T> ();
+                return MakeIterator ();
             }
 
             template    <typename T>    

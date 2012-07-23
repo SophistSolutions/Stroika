@@ -99,7 +99,7 @@ namespace   Stroika {
                 nonvirtual  bool    Contains (T item) const;
                 nonvirtual  void    RemoveAll ();
                 nonvirtual  void    Compact ();
-                nonvirtual  operator Iterator<T> () const;
+                nonvirtual  Iterator<T> MakeIterator () const;
 
             public:
                 nonvirtual  void    Add (T item);
