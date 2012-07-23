@@ -54,7 +54,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
-#include    "CollectionElementTraits.h"
+#include    "ElementTraits.h"
 #include    "Iterator.h"
 
 
