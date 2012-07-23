@@ -10,21 +10,21 @@
  *
  *  TODO:
  *
- *          (o)         CLARIFY AND ENFORCE ISNULL semantics. Either treat as EMPTY - or ILLEGAL - but
- *                      either way make clear and ENFORCE. See existing pattern with existing containers
- *                      for hint of which way to go...
+ *		(o)         CLARIFY AND ENFORCE ISNULL semantics. Either treat as EMPTY - or ILLEGAL - but
+ *                  either way make clear and ENFORCE. See existing pattern with existing containers
+ *                  for hint of which way to go...
  *
- *          (o)         Consider adding class Mutable<T> to add reference to mutator stuff? Maybe no point?
+ *      (o)         Consider adding class Mutable<T> to add reference to mutator stuff? Maybe no point?
  *
- *          (o)         Move APPLYISH APIs that can be into here (stuff purely based on iterating)
+ *      (o)         Move APPLYISH APIs that can be into here (stuff purely based on iterating)
  *
- *          (o)         Stack<T> should NOT be ITERABLE, but other types like Bag<> and Tally<> sb iterable
- *                      (but tally probably Iterable<TallyEntry<T>>.
+ *      (o)         Stack<T> should NOT be ITERABLE, but other types like Bag<> and Tally<> sb iterable
+ *                  (but tally probably Iterable<TallyEntry<T>>.
  *
- *          (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
+ *      (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
  *
- *          (o)         Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
- *                      consider providing a IREP version - to implement LOCKING logic promised in the API.
+ *      (o)         Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
+ *                  consider providing a IREP version - to implement LOCKING logic promised in the API.
  *
  *
  */
@@ -59,15 +59,17 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Create an iterator object which can be used to traverse the 'Iterable' - this object - and visit each element.
+                 * Create an iterator object which can be used to traverse the 'Iterable' - this object -
+				 * and visit each element.
                  */
                 nonvirtual Iterator<T>      MakeIterator () const;
 
             public:
                 /*
-                 * GetLength () returns the number of elements in this 'Iterable' object. Its defined to be the same number of
-                 * elements you would visit if you created an iterator (MakeIterator()) and visited all items. In practice, as
-                 * the actual number might vary as the underlying iterable could change while being iterated over.
+                 * GetLength () returns the number of elements in this 'Iterable' object. Its defined to be
+				 * the same number of elements you would visit if you created an iterator (MakeIterator())
+				 * and visited all items. In practice, as the actual number might vary as the underlying
+				 * iterable could change while being iterated over.
                  */
                 nonvirtual  size_t          GetLength () const;
 
@@ -75,15 +77,17 @@ namespace   Stroika {
                 /*
                  * Returns true iff GetLength () == 0
                  */
-                nonvirtual  bool            IsEmpty () const;
+                nonvirtual  bool	IsEmpty () const;
 
             public:
                 // STL-ish alias for IsEmpty ()
                 nonvirtual  bool    empty () const;
-            public:
+
+			public:
                 // STL-ish alias for GetLength ()
                 nonvirtual  size_t  length () const;
-            public:
+
+			public:
                 // STL-ish alias for GetLength ()
                 nonvirtual  size_t  size () const;
 
@@ -98,7 +102,7 @@ namespace   Stroika {
                  *  is equivilent to:
                  *
                  *      for (Iterator<T> i = begin (); i != end (); ++i) {
-                 *          (doToElement) (item);
+                 *          (doToElement) (*i);
                  *      }
                  *
                  *  However, in threading scenarios, this maybe preferable, since it counts as an atomic
@@ -111,29 +115,29 @@ namespace   Stroika {
 
             public:
                 /*
-                *   Take the given function argument, and call it for each element of the Collection. This is
-                *   equivilent to:
-                *
-                *      for (Iterator<T> i = begin (); i != end (); ++i) {
-                *          if ((doToElement) (item)) {
-                *              return it;
-                *          }
-                *      }
-                *      return end();
-                *
-                *   However, in threading scenarios, this maybe preferable, since it counts as an atomic
-                *   operation that will happen to each element without other
-                *   threads intervening to modify the container.
-                *
-                *   This function returns an iteartor pointing to the element that triggered the abrupt loop
-                *   end (for example the element you were searching for?). It returns the specail iterator
-                *   end () to indicate no doToElemet() functions returned true.
-                *
-                *   Also, note that this function does NOT change any elements of the Iterable.
-                */
+                 *   Take the given function argument, and call it for each element of the Collection. This is
+                 *   equivilent to:
+                 *
+                 *      for (Iterator<T> i = begin (); i != end (); ++i) {
+                 *          if ((doToElement) (*i)) {
+                 *              return it;
+                 *          }
+                 *      }
+                 *      return end();
+                 *
+                 *   However, in threading scenarios, this maybe preferable, since it counts as an atomic
+                 *   operation that will happen to each element without other
+                 *   threads intervening to modify the container.
+                 *
+                 *   This function returns an iteartor pointing to the element that triggered the abrupt loop
+                 *   end (for example the element you were searching for?). It returns the specail iterator
+                 *   end () to indicate no doToElemet() functions returned true.
+                 *
+                 *   Also, note that this function does NOT change any elements of the Iterable.
+                 */
                 nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
 
-            protected:
+			protected:
                 Memory::SharedByValue<IRep>     _fRep;
             };
 

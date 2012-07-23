@@ -56,11 +56,13 @@ namespace   Stroika {
             inline  Iterable<T>::Iterable (const Memory::SharedByValue<IRep>& rep)
                 : _fRep (rep)
             {
+                RequireNotNull (_fRep.get ());
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (const Iterable<T>& from)
                 : _fRep (from._fRep)
             {
+                RequireNotNull (_fRep.get ());
             }
             template    <typename T>
             inline  Iterable<T>::~Iterable ()
@@ -77,25 +79,25 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
-                RequireNotNull (_fRep.get ());
+                AssertNotNull (_fRep.get ());
                 return _fRep.get ()->MakeIterator ();
             }
             template    <typename T>
             inline  size_t  Iterable<T>::GetLength () const
             {
-                RequireNotNull (_fRep.get ());
+                AssertNotNull (_fRep.get ());
                 return _fRep.get ()->GetLength ();
             }
             template    <typename T>
             inline  bool    Iterable<T>::IsEmpty () const
             {
-                RequireNotNull (_fRep.get ());
+                AssertNotNull (_fRep.get ());
                 return _fRep.get ()->IsEmpty ();
             }
             template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
-                RequireNotNull (_fRep.get ());
+                AssertNotNull (_fRep.get ());
                 return IsEmpty ();
             }
             template    <typename T>
@@ -111,7 +113,6 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T> Iterable<T>::begin () const
             {
-                RequireNotNull (_fRep.get ());
                 return MakeIterator ();
             }
             template    <typename T>
