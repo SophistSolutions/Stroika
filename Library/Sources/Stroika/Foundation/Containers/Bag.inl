@@ -275,7 +275,7 @@ namespace   Stroika {
                  * this cast is safe. We could have kept an extra var of the right
                  * static type, but this would have been a waste of time and memory.
                  */
-                return &(dynamic_cast<BagMutatorRep&> (*fIterator));
+                return &(dynamic_cast<BagMutatorRep&> (*this->fIterator));
             }
 
             template    <typename T>    
@@ -290,23 +290,21 @@ namespace   Stroika {
                 GetMutatorRep_ ()->UpdateCurrent (newValue);
             }
 
-            // class BagRep<T>
+            
+			// class BagRep<T>
             template    <typename T>    
 			inline  Bag<T>::BagRep::BagRep ()
             {
             }
-
             template    <typename T>    
 			inline  Bag<T>::BagRep::~BagRep ()
             {
             }
-
             template    <typename T>    
-			inline  typename	const Bag<T>::BagRep*    Bag<T>::GetRep () const
+			inline  const typename	Bag<T>::BagRep*    Bag<T>::GetRep () const
             {
                 return (fRep.GetPointer ());
             }
-
             template    <typename T>    
 			inline  typename	Bag<T>::BagRep*  Bag<T>::GetRep ()
             {
