@@ -27,7 +27,6 @@ namespace   Stroika {
                     virtual BagRep<T>*  Clone () const override;
 
                     virtual typename Iterator<T>::Rep*      MakeIterator () override;
-                    virtual BagIteratorRep<T>*  MakeBagIterator () override;
                     virtual BagMutatorRep<T>*   MakeBagMutator () override;
 
                     virtual void    Add (T item) override;
@@ -118,11 +117,6 @@ namespace   Stroika {
                 }
 
                 template    <typename T>    typename Iterator<T>::Rep*  Bag_LinkedListRep<T>::MakeIterator ()
-                {
-                    return (new Bag_LinkedListMutatorRep<T> (*this));
-                }
-
-                template    <typename T>    BagIteratorRep<T>*  Bag_LinkedListRep<T>::MakeBagIterator ()
                 {
                     return (new Bag_LinkedListMutatorRep<T> (*this));
                 }

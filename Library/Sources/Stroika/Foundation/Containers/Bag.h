@@ -60,44 +60,47 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-            template    <typename T>    class   Bag;
-            template    <typename T>    class   BagRep;
-            template    <typename T>    class   BagIteratorRep;
-            template    <typename T>    class   BagMutatorRep;
+            template    <typename T>
+            class   Bag;
+            template    <typename T>
+            class   BagRep;
+            template    <typename T>
+            class   BagMutatorRep;
 
-            template    <typename T>    bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
-            template    <typename T>    bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs);
+            template    <typename T>
+            bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
+            template    <typename T>
+            bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
-            template    <typename T>    class   BagIterator : public Iterator<T> {
+            template    <typename T>
+            class   BagMutator : public Iterator<T> {
             public:
-                BagIterator (BagIteratorRep<T>* it);
+                explicit BagMutator (BagMutatorRep<T>* it);
+
+            public:
+                nonvirtual  void    RemoveCurrent ();
+                nonvirtual  void    UpdateCurrent (T newValue);
+
+            private:
+                nonvirtual  BagMutatorRep<T>*   GetMutatorRep_ ();
             };
 
-            template    <typename T>    class   BagMutator : public Iterator<T> {
-            public:
-                BagMutator (BagMutatorRep<T>* it);
 
-            public:
-                void    RemoveCurrent ();
-                void    UpdateCurrent (T newValue);
-
-            protected:
-                nonvirtual  BagMutatorRep<T>*   GetMutatorRep ();
-            };
-
-            template    <typename T>    class   Bag {
+            template    <typename T>
+            class   Bag {
             public:
                 Bag ();
                 Bag (const Bag<T>& bag);
                 Bag (const T* start, const T* end);
 
             protected:
-                Bag (BagRep<T>* rep);
+                explicit Bag (BagRep<T>* rep);
 
             public:
                 nonvirtual  Bag<T>& operator= (const Bag<T>& bag);
 
+            public:
                 nonvirtual  size_t  GetLength () const;
                 nonvirtual  bool    IsEmpty () const;
                 nonvirtual  bool    Contains (T item) const;
@@ -135,9 +138,9 @@ namespace   Stroika {
                  *  Build BagIterators or Mutators.
                  */
             public:
-                nonvirtual  operator BagIterator<T> () const;
-                nonvirtual  operator BagMutator<T> ();
+                nonvirtual  BagMutator<T> MakeMutator ();
 
+            public:
                 // Support for ranged for, and stl syntax in general
                 nonvirtual  Iterator<T> begin () const;
                 nonvirtual  Iterator<T> end () const;
@@ -174,13 +177,7 @@ namespace   Stroika {
             template    <typename T>    Bag<T>  operator- (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
-
-            template    <typename T>    class   BagIteratorRep : public Iterator<T>::Rep {
-            protected:
-                BagIteratorRep ();
-            };
-
-            template    <typename T>    class   BagMutatorRep : public BagIteratorRep<T> {
+            template    <typename T>    class   BagMutatorRep : public Iterator<T>::Rep {
             protected:
                 BagMutatorRep ();
 
@@ -207,7 +204,6 @@ namespace   Stroika {
                 virtual void        Remove (T item)                 =   0;
 
                 virtual typename Iterator<T>::Rep*      MakeIterator ()         =   0;
-                virtual BagIteratorRep<T>*  MakeBagIterator ()      =   0;
                 virtual BagMutatorRep<T>*   MakeBagMutator ()       =   0;
             };
 
