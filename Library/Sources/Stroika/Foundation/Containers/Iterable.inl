@@ -12,7 +12,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-
+            // Class Iterable<T>::IRep
             template    <typename T>
             inline  Iterable<T>::IRep::IRep ()
             {
@@ -21,11 +21,39 @@ namespace   Stroika {
             inline  Iterable<T>::IRep::~IRep ()
             {
             }
-
-
-
             template    <typename T>
-            inline  Iterable<T>::Iterable (const Memory::SharedByValue<IRep, Memory::SharedByValue_CopyByFunction<IRep>>& rep)
+            inline  bool    Iterable<T>::IRep::_IsEmpty () const
+            {
+                RequireNotNull (_fRep.get ());
+                return GetLength () == 0;
+            }
+            template    <typename T>
+            inline  void    Iterable<T>::IRep::_Apply (void (*doToElement) (const T& item)) const
+            {
+                RequireNotNull (doToElement);
+                for (Iterator<T> i = begin (); i != end (); ++i) {
+                    (doToElement) (*i);
+                }
+            }
+            template    <typename T>
+            inline  Iterator<T>    Iterable<T>::IRep::_ApplyUntilTrue (bool (*doToElement) (const T& item)) const
+            {
+                RequireNotNull (doToElement);
+                for (Iterator<T> i = begin (); i != end (); ++i) {
+                    if ((doToElement) (*i)) {
+                        return i;
+                    }
+                }
+                return end ();
+            }
+
+
+
+
+
+            // Class Iterable<T>
+            template    <typename T>
+            inline  Iterable<T>::Iterable (const Memory::SharedByValue<IRep>& rep)
                 : _fRep (rep)
             {
             }
@@ -92,24 +120,20 @@ namespace   Stroika {
                 return (Iterator<T>::GetSentinal ());
             }
             template    <typename T>
-            inline  void    Iterable<T>::Apply (void (*doToElement) (T item)) const
+            inline  void    Iterable<T>::Apply (void (*doToElement) (const T& item)) const
             {
+                RequireNotNull (_fRep.get ());
                 RequireNotNull (doToElement);
-                for (Iterator<T> i = begin (); i != end (); ++i) {
-                    (doToElement) (*i);
-                }
+                return _fRep.get ()->Apply (doToElement);
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (bool (*doToElement) (T item)) const
+            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (bool (*doToElement) (const T& item)) const
             {
+                RequireNotNull (_fRep.get ());
                 RequireNotNull (doToElement);
-                for (Iterator<T> i = begin (); i != end (); ++i) {
-                    if ((doToElement) (*i)) {
-                        return i;
-                    }
-                }
-                return end ();
+                return _fRep.get ()->ApplyUntilTrue (doToElement);
             }
+
 
         }
     }
