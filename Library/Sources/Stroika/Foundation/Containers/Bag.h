@@ -70,8 +70,15 @@ namespace   Stroika {
 
 
 
-
+			/// NEEDED TEMPORARILY FOR BELOW FRIEND DECLARATION TIL I CAN FIND A BETTER WAY? - GCC ONLY ISSUE
+			/// -- LGP 2012-07-22
+			template    <typename T>
+            class   Bag;
             template    <typename T>
+            bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
+
+			
+			template    <typename T>
             class   Bag {
 
 			protected:
@@ -177,7 +184,6 @@ namespace   Stroika {
                 // SSW 9/16/2011: note weird syntax needed for friend declaration (and had to be forwarded above)
                 friend  bool    operator==<T> (const Bag<T>& lhs, const Bag<T>& rhs);   // friend to check if reps equal...
             };
-
 
             template    <typename T>
             bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);

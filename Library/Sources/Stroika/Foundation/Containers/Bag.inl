@@ -144,14 +144,12 @@ namespace   Stroika {
                 ++it;
                 return it;
             }
-
             template    <class T>
-            void  Bag<T>::Add (T item)
+            inline	void	Bag<T>::Add (T item)
             {
                 GetRep ()->Add (item);
                 Ensure (not IsEmpty ());
             }
-
             template    <class T>
             void  Bag<T>::Add (Bag<T> items)
             {
@@ -159,13 +157,11 @@ namespace   Stroika {
                     GetRep ()->Add (it.Current ());
                 }
             }
-
             template    <class T>
-            void  Bag<T>::Remove (T item)
+            inline	void  Bag<T>::Remove (T item)
             {
                 GetRep ()->Remove (item);
             }
-
             template    <class T>
             void  Bag<T>::Remove (const Bag<T>& items)
             {
@@ -178,7 +174,6 @@ namespace   Stroika {
                     }
                 }
             }
-
             template    <class T>
             size_t    Bag<T>::TallyOf (T item) const
             {
@@ -190,7 +185,6 @@ namespace   Stroika {
                 }
                 return (count);
             }
-
             template    <class T>
             void  Bag<T>::AddItems (const T* items, size_t size)
             {
@@ -198,7 +192,6 @@ namespace   Stroika {
                     Add (items[i]);
                 }
             }
-
             template    <class T>
             typename Bag<T>::BagRep*  Bag<T>::Clone (const typename Bag<T>::BagRep& rep)
             {
@@ -214,7 +207,8 @@ namespace   Stroika {
              ************************************ operators *********************************
              ********************************************************************************
              */
-            template    <class T> bool  operator== (const Bag<T>& lhs, const Bag<T>& rhs)
+            template    <class T> 
+			bool  operator== (const Bag<T>& lhs, const Bag<T>& rhs)
             {
                 if (lhs.GetRep () == rhs.GetRep ()) {
                     return (true);
@@ -232,14 +226,16 @@ namespace   Stroika {
                 return (true);
             }
 
-            template    <class T> Bag<T>    operator+ (const Bag<T>& lhs, const Bag<T>& rhs)
+            template    <class T> 
+			Bag<T>    operator+ (const Bag<T>& lhs, const Bag<T>& rhs)
             {
                 Bag<T>  temp    = lhs;
                 temp += rhs;
                 return (temp);
             }
 
-            template    <class T> Bag<T>    operator- (const Bag<T>& lhs, const Bag<T>& rhs)
+            template    <class T> 
+			Bag<T>    operator- (const Bag<T>& lhs, const Bag<T>& rhs)
             {
                 Bag<T>  temp    = lhs;
                 temp -= rhs;
@@ -247,7 +243,8 @@ namespace   Stroika {
             }
 
             // operator!=
-            template    <typename T>    inline  bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs)
+            template    <typename T>    
+			inline  bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs)
             {
                 return (not operator== (lhs, rhs));
             }
@@ -260,13 +257,13 @@ namespace   Stroika {
             {
             }
 
-            // class Bag<T>::BagMutator
+
+			// class Bag<T>::Mutator
             template    <typename T>    
 			inline  Bag<T>::Mutator::Mutator (typename Bag<T>::BagMutatorRep* it) :
                 Iterator<T> (it)
             {
             }
-
             template    <typename T>    
 			inline  typename	Bag<T>::BagMutatorRep* Bag<T>::Mutator::GetMutatorRep_ ()
             {
@@ -277,20 +274,21 @@ namespace   Stroika {
                  */
                 return &(dynamic_cast<BagMutatorRep&> (*this->fIterator));
             }
-
             template    <typename T>    
 			inline  void    Bag<T>::Mutator::RemoveCurrent ()
             {
                 GetMutatorRep_ ()->RemoveCurrent ();
             }
-
             template    <typename T>    
 			inline  void    Bag<T>::Mutator::UpdateCurrent (T newValue)
             {
                 GetMutatorRep_ ()->UpdateCurrent (newValue);
             }
 
-            
+
+
+
+
 			// class BagRep<T>
             template    <typename T>    
 			inline  Bag<T>::BagRep::BagRep ()
