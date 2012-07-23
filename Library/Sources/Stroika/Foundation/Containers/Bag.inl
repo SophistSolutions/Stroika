@@ -5,7 +5,8 @@
 #define _Stroika_Foundation_Containers_Bag_inl_
 
 #include    "../Debug/Assertions.h"
-#include "Concrete/Bag_Array.h"  // needed for default constructor
+
+#include	"Concrete/Bag_Array.h"  // needed for default constructor
 
 
 
@@ -14,114 +15,132 @@ namespace   Stroika {
         namespace   Containers {
 
             // class Bag<T>
-            template    <typename T>    inline  Bag<T>::Bag (const Bag<T>& bag) :
-                fRep (bag.fRep)
+            template    <typename T>    
+			inline  Bag<T>::Bag (const Bag<T>& bag)
+                : fRep (bag.fRep)
             {
             }
 
-            template    <typename T>    inline  Bag<T>::Bag (BagRep<T>* rep) :
-                fRep (rep)
+            template    <typename T>    
+			inline  Bag<T>::Bag (typename Bag<T>::BagRep* rep)
+                : fRep (rep)
             {
             }
 
-            template    <class T>   Bag<T>::Bag () :
-                fRep (0)
+            template    <class T>   
+			Bag<T>::Bag ()
+                : fRep (0)
             {
                 *this = Concrete::Bag_Array<T> ();
             }
 
-            template    <class T>   Bag<T>::Bag (const T* start, const T* end) :
-                fRep (0)
+            template    <class T>   Bag<T>::Bag (const T* start, const T* end)
+                : fRep (0)
             {
                 *this = Concrete::Bag_Array<T> (start, end);
             }
 
-            template    <typename T>    inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
+            template    <typename T>    
+			inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
             {
                 fRep = bag.fRep;
                 return (*this);
             }
 
-            template    <typename T>    inline  size_t  Bag<T>::GetLength () const
+            template    <typename T>    
+			inline  size_t  Bag<T>::GetLength () const
             {
                 return (fRep->GetLength ());
             }
 
-            template    <typename T>    inline  bool    Bag<T>::IsEmpty () const
+            template    <typename T>    
+			inline  bool    Bag<T>::IsEmpty () const
             {
                 return (bool (GetLength () == 0));
             }
 
-            template    <typename T>    inline  bool    Bag<T>::Contains (T item) const
+            template    <typename T>    
+			inline  bool    Bag<T>::Contains (T item) const
             {
                 return (fRep->Contains (item));
             }
 
-            template    <typename T>    inline  void    Bag<T>::RemoveAll ()
+            template    <typename T>    
+			inline  void    Bag<T>::RemoveAll ()
             {
                 fRep->RemoveAll ();
             }
 
-            template    <typename T>    inline  void    Bag<T>::Compact ()
+            template    <typename T>    
+			inline  void    Bag<T>::Compact ()
             {
                 fRep->Compact ();
             }
 
-            template    <typename T>    inline  Bag<T>::operator Iterator<T> () const
+            template    <typename T>    
+			inline  Bag<T>::operator Iterator<T> () const
             {
                 Iterator<T> it (const_cast<Bag<T> *> (this)->fRep->MakeIterator ());
                 ++it;
                 return it;
             }
 
-            template    <typename T>    inline  Iterator<T>    Bag<T>::begin () const
+            template    <typename T>    
+			inline  Iterator<T>    Bag<T>::begin () const
             {
                 return operator Iterator<T> ();
             }
 
-            template    <typename T>    inline  Iterator<T>    Bag<T>::end () const
+            template    <typename T>    
+			inline  Iterator<T>    Bag<T>::end () const
             {
                 return (Iterator<T>::GetSentinal ());
             }
 
-            template    <typename T>    inline  BagMutator<T>    Bag<T>::begin ()
+            template    <typename T>    
+			inline  typename Bag<T>::Mutator    Bag<T>::begin ()
             {
                 return MakeMutator ();
             }
 
-            template    <typename T>    inline  BagMutator<T>    Bag<T>::end ()
+            template    <typename T>   
+			inline  typename Bag<T>::Mutator    Bag<T>::end ()
             {
-                return (BagMutator<T> (nullptr));
+                return (Bag<T>::Mutator (nullptr));
             }
 
-            template    <typename T>    inline  Bag<T>& Bag<T>::operator+= (T item)
+            template    <typename T>    
+			inline  Bag<T>& Bag<T>::operator+= (T item)
             {
                 Add (item);
                 return (*this);
             }
 
-            template    <typename T>    inline  Bag<T>& Bag<T>::operator+= (const Bag<T>& items)
+            template    <typename T>    
+			inline  Bag<T>& Bag<T>::operator+= (const Bag<T>& items)
             {
                 Add (items);
                 return (*this);
             }
 
-            template    <typename T>    inline  Bag<T>& Bag<T>::operator-= (T item)
+            template    <typename T>    
+			inline  Bag<T>& Bag<T>::operator-= (T item)
             {
                 Remove (item);
                 return (*this);
             }
 
-            template    <typename T>    inline  Bag<T>& Bag<T>::operator-= (const Bag<T>& items)
+            template    <typename T>    
+			inline  Bag<T>& Bag<T>::operator-= (const Bag<T>& items)
             {
                 Remove (items);
                 return (*this);
             }
 
             template    <typename T>
-            inline   BagMutator<T>  Bag<T>::MakeMutator ()
+            inline   typename	Bag<T>::Mutator  Bag<T>::MakeMutator ()
             {
-                BagMutator<T> it = BagMutator<T> (fRep->MakeBagMutator ());
+                Bag<T>::Mutator it = Bag<T>::Mutator (fRep->MakeBagMutator ());
                 ++it;
                 return it;
             }
@@ -181,7 +200,7 @@ namespace   Stroika {
             }
 
             template    <class T>
-            BagRep<T>*  Bag<T>::Clone (const BagRep<T>& rep)
+            typename Bag<T>::BagRep*  Bag<T>::Clone (typename const Bag<T>::BagRep& rep)
             {
                 return (rep.Clone ());
             }
@@ -233,61 +252,63 @@ namespace   Stroika {
                 return (not operator== (lhs, rhs));
             }
 
-#if 0
-            // class BagIteratorRep<T>
-            template    <typename T>    inline  BagIteratorRep<T>::BagIteratorRep () :
-                Iterator<T>::Rep ()
-            {
-            }
-#endif
 
             // class BagMutatorRep<T>
-            template    <typename T>    inline  BagMutatorRep<T>::BagMutatorRep () :
+            template    <typename T>    
+			inline  Bag<T>::BagMutatorRep::BagMutatorRep () :
                 Rep ()
             {
             }
 
-            // class BagMutator<T>
-            template    <typename T>    inline  BagMutator<T>::BagMutator (BagMutatorRep<T>* it) :
+            // class Bag<T>::BagMutator
+            template    <typename T>    
+			inline  Bag<T>::Mutator::Mutator (typename Bag<T>::BagMutatorRep* it) :
                 Iterator<T> (it)
             {
             }
 
-            template    <typename T>    inline  BagMutatorRep<T>* BagMutator<T>::GetMutatorRep_ ()
+            template    <typename T>    
+			inline  typename	Bag<T>::BagMutatorRep* Bag<T>::Mutator::GetMutatorRep_ ()
             {
                 /*
-                 * Because of the way we construct BagMutators, it is guaranteed that
+                 * Because of the way we construct Mutators, it is guaranteed that
                  * this cast is safe. We could have kept an extra var of the right
                  * static type, but this would have been a waste of time and memory.
                  */
-                return &(dynamic_cast<BagMutatorRep<T>&> (*fIterator));
+                return &(dynamic_cast<BagMutatorRep&> (*fIterator));
             }
 
-            template    <typename T>    inline  void    BagMutator<T>::RemoveCurrent ()
+            template    <typename T>    
+			inline  void    Bag<T>::Mutator::RemoveCurrent ()
             {
                 GetMutatorRep_ ()->RemoveCurrent ();
             }
 
-            template    <typename T>    inline  void    BagMutator<T>::UpdateCurrent (T newValue)
+            template    <typename T>    
+			inline  void    Bag<T>::Mutator::UpdateCurrent (T newValue)
             {
                 GetMutatorRep_ ()->UpdateCurrent (newValue);
             }
 
             // class BagRep<T>
-            template    <typename T>    inline  BagRep<T>::BagRep ()
+            template    <typename T>    
+			inline  Bag<T>::BagRep::BagRep ()
             {
             }
 
-            template    <typename T>    inline  BagRep<T>::~BagRep ()
+            template    <typename T>    
+			inline  Bag<T>::BagRep::~BagRep ()
             {
             }
 
-            template    <typename T>    inline  const BagRep<T>*    Bag<T>::GetRep () const
+            template    <typename T>    
+			inline  typename	const Bag<T>::BagRep*    Bag<T>::GetRep () const
             {
                 return (fRep.GetPointer ());
             }
 
-            template    <typename T>    inline  BagRep<T>*  Bag<T>::GetRep ()
+            template    <typename T>    
+			inline  typename	Bag<T>::BagRep*  Bag<T>::GetRep ()
             {
                 return (fRep.GetPointer ());
             }
