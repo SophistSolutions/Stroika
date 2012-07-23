@@ -200,7 +200,7 @@ namespace   Stroika {
             }
 
             template    <class T>
-            typename Bag<T>::BagRep*  Bag<T>::Clone (typename const Bag<T>::BagRep& rep)
+            typename Bag<T>::BagRep*  Bag<T>::Clone (const typename Bag<T>::BagRep& rep)
             {
                 return (rep.Clone ());
             }
@@ -256,7 +256,7 @@ namespace   Stroika {
             // class BagMutatorRep<T>
             template    <typename T>    
 			inline  Bag<T>::BagMutatorRep::BagMutatorRep () :
-                Rep ()
+                Iterator<T>::Rep ()
             {
             }
 
