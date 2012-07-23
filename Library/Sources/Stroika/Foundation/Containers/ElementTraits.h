@@ -41,7 +41,7 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  TWithCompareEquals {
-				bool    opererator== (const T& lhs, const T& rhs);
+                bool    opererator == (const T& lhs, const T& rhs);
             };
 
 
@@ -68,7 +68,7 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  TWithCompareEqualsAndLessOrEquals : TWithCompareEquals {
-                bool    opererator<= (const T& lhs, const T& rhs);
+                bool    opererator <= (const T& lhs, const T& rhs);
             };
 
 

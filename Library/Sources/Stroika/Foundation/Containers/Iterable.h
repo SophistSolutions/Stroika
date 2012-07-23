@@ -22,8 +22,8 @@
  *
  *          (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
  *
- *			(o)			Apply/ApplyUntilTrue() should also take overload with function object (STL). Also, consider
- *						providing a IREP version - to implement LOCKING logic promised in the API.
+ *          (o)         Apply/ApplyUntilTrue() should also take overload with function object (STL). Also, consider
+ *                      providing a IREP version - to implement LOCKING logic promised in the API.
  *
  *
  */
@@ -96,33 +96,33 @@ namespace   Stroika {
                     *
                     *  However, in threading scenarios, this maybe preferable, since it counts as an atomic operation that will happen to each element without other
                     *  threads intervening to modify the container.
-					*
-					*	Also, note that this function does NOT change any elements of the Iterable.
+                    *
+                    *   Also, note that this function does NOT change any elements of the Iterable.
                     */
                 nonvirtual  void    Apply (void (*doToElement) (T item)) const;
 
             public:
-				/*
-					* Take the given function argument, and call it for each element of the Collection. This is equivilent to:
-					*      for (Iterator<T> i = begin (); i != end (); ++i) {
-					*          if ((doToElement) (item)) {
-					*              return it;
-					*          }
-					*      }
-					*      return end();
-					*
-					*  However, in threading scenarios, this maybe preferable, since it counts as an atomic operation that will happen to each element without other
-					*  threads intervening to modify the container.
-					*
-					*  This function returns an iteartor pointing to the element that triggered the abrupt loop end (for example the element you were searching for?).
-					*  It returns the specail iterator end () to indicate no doToElemet() functions returned true.
-					*
-					*	Also, note that this function does NOT change any elements of the Iterable.
-					*/
-				nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (T item)) const;
+                /*
+                    * Take the given function argument, and call it for each element of the Collection. This is equivilent to:
+                    *      for (Iterator<T> i = begin (); i != end (); ++i) {
+                    *          if ((doToElement) (item)) {
+                    *              return it;
+                    *          }
+                    *      }
+                    *      return end();
+                    *
+                    *  However, in threading scenarios, this maybe preferable, since it counts as an atomic operation that will happen to each element without other
+                    *  threads intervening to modify the container.
+                    *
+                    *  This function returns an iteartor pointing to the element that triggered the abrupt loop end (for example the element you were searching for?).
+                    *  It returns the specail iterator end () to indicate no doToElemet() functions returned true.
+                    *
+                    *   Also, note that this function does NOT change any elements of the Iterable.
+                    */
+                nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (T item)) const;
 
-			
-			protected:
+
+            protected:
                 Memory::SharedByValue<IRep, Memory::SharedByValue_CopyByFunction<IRep>> _fRep;
             };
 

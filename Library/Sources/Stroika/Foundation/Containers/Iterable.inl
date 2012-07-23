@@ -94,7 +94,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Iterable<T>::Apply (void (*doToElement) (T item)) const
             {
-				RequireNotNull (doToElement);
+                RequireNotNull (doToElement);
                 for (Iterator<T> i = begin (); i != end (); ++i) {
                     (doToElement) (*i);
                 }
@@ -102,7 +102,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (bool (*doToElement) (T item)) const
             {
-				RequireNotNull (doToElement);
+                RequireNotNull (doToElement);
                 for (Iterator<T> i = begin (); i != end (); ++i) {
                     if ((doToElement) (*i)) {
                         return i;
