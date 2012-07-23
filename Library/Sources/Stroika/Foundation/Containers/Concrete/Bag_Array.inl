@@ -91,43 +91,44 @@ namespace   Stroika {
                  ********************************************************************************
                  */
 
-                template    <class  T>  inline  void*   Bag_ArrayMutatorRep<T>::operator new (size_t size)
+                template    <class  T>  
+				inline  void*   Bag_ArrayMutatorRep<T>::operator new (size_t size)
                 {
                     return (Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator new (size));
                 }
-
-                template    <class  T>  inline  void    Bag_ArrayMutatorRep<T>::operator delete (void* p)
+                template    <class  T>  
+				inline  void    Bag_ArrayMutatorRep<T>::operator delete (void* p)
                 {
                     Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator delete (p);
                 }
-
-                template    <class  T>  Bag_ArrayMutatorRep<T>::Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner)
-                    : BagMutatorRep ()
+                template    <class  T>  
+				Bag_ArrayMutatorRep<T>::Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner)
+                    : Bag<T>::BagMutatorRep ()
                     , fIterator (owner.fData)
                 {
                 }
-
-                template    <class  T>  bool    Bag_ArrayMutatorRep<T>::More (T* current, bool advance)
+                template    <class  T>  
+				bool    Bag_ArrayMutatorRep<T>::More (T* current, bool advance)
                 {
                     return (fIterator.More (current, advance));
                 }
-
-                template    <class  T>  T   Bag_ArrayMutatorRep<T>::Current () const
+                template    <class  T>  
+				T   Bag_ArrayMutatorRep<T>::Current () const
                 {
                     return (fIterator.Current());
                 }
-
-                template    <typename T>    typename Iterator<T>::Rep*  Bag_ArrayMutatorRep<T>::Clone () const
+                template    <typename T>    
+				typename Iterator<T>::Rep*  Bag_ArrayMutatorRep<T>::Clone () const
                 {
                     return (new Bag_ArrayMutatorRep<T> (*this));
                 }
-
-                template    <class  T>  void    Bag_ArrayMutatorRep<T>::RemoveCurrent ()
+                template    <class  T>  
+				void    Bag_ArrayMutatorRep<T>::RemoveCurrent ()
                 {
                     fIterator.RemoveCurrent ();
                 }
-
-                template    <class  T>  void    Bag_ArrayMutatorRep<T>::UpdateCurrent (T newValue)
+                template    <class  T>  
+				void    Bag_ArrayMutatorRep<T>::UpdateCurrent (T newValue)
                 {
                     fIterator.UpdateCurrent (newValue);
                 }
