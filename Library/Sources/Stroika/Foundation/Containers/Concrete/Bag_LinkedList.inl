@@ -15,11 +15,11 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-                template    <typename T>    
-				class   Bag_LinkedListMutatorRep;
+                template    <typename T>
+                class   Bag_LinkedListMutatorRep;
 
-                template    <typename T>    
-				class   Bag_LinkedListRep : public Bag<T>::BagRep {
+                template    <typename T>
+                class   Bag_LinkedListRep : public Bag<T>::BagRep {
                 public:
                     Bag_LinkedListRep ();
                     Bag_LinkedListRep (const Bag_LinkedListRep<T>& from);
@@ -27,7 +27,7 @@ namespace   Stroika {
                     virtual size_t      GetLength () const override;
                     virtual bool        Contains (T item) const override;
                     virtual void        Compact () override;
-                    virtual typename	Bag<T>::BagRep*  Clone () const override;
+                    virtual typename    Bag<T>::BagRep*  Clone () const override;
 
                     virtual typename Iterator<T>::Rep*      MakeIterator () override;
                     virtual typename Bag<T>::BagMutatorRep*   MakeBagMutator () override;
@@ -47,8 +47,8 @@ namespace   Stroika {
 
 
 
-                template    <typename T> 
-				class  Bag_LinkedListMutatorRep : public Bag<T>::BagMutatorRep {
+                template    <typename T>
+                class  Bag_LinkedListMutatorRep : public Bag<T>::BagMutatorRep {
                 public:
                     Bag_LinkedListMutatorRep (Bag_LinkedListRep<T>& owner);
                     Bag_LinkedListMutatorRep (Bag_LinkedListMutatorRep<T>& from);
@@ -105,49 +105,49 @@ namespace   Stroika {
                     return (fData.GetLength ());
                 }
 
-                template    <typename T>    
-				void    Bag_LinkedListRep<T>::Compact ()
+                template    <typename T>
+                void    Bag_LinkedListRep<T>::Compact ()
                 {
                 }
 
-                template    <typename T>    
-				typename	Bag<T>::BagRep*  Bag_LinkedListRep<T>::Clone () const
+                template    <typename T>
+                typename    Bag<T>::BagRep*  Bag_LinkedListRep<T>::Clone () const
                 {
                     return (new Bag_LinkedListRep<T> (*this));
                 }
 
-                template    <class  T>  
-				bool    Bag_LinkedListRep<T>::Contains (T item) const
+                template    <class  T>
+                bool    Bag_LinkedListRep<T>::Contains (T item) const
                 {
                     return (fData.Contains (item));
                 }
 
-                template    <typename T>    
-				typename Iterator<T>::Rep*  Bag_LinkedListRep<T>::MakeIterator ()
+                template    <typename T>
+                typename Iterator<T>::Rep*  Bag_LinkedListRep<T>::MakeIterator ()
                 {
                     return (new Bag_LinkedListMutatorRep<T> (*this));
                 }
 
-                template    <typename T>    
-				typename	Bag<T>::BagMutatorRep*   Bag_LinkedListRep<T>::MakeBagMutator ()
+                template    <typename T>
+                typename    Bag<T>::BagMutatorRep*   Bag_LinkedListRep<T>::MakeBagMutator ()
                 {
                     return (new Bag_LinkedListMutatorRep<T> (*this));
                 }
 
-                template    <typename T>    
-				void    Bag_LinkedListRep<T>::Add (T item)
+                template    <typename T>
+                void    Bag_LinkedListRep<T>::Add (T item)
                 {
                     fData.Prepend (item);
                 }
 
-                template    <typename T>    
-				void    Bag_LinkedListRep<T>::Remove (T item)
+                template    <typename T>
+                void    Bag_LinkedListRep<T>::Remove (T item)
                 {
                     fData.Remove (item);
                 }
 
-                template    <typename T>   
-				void    Bag_LinkedListRep<T>::RemoveAll ()
+                template    <typename T>
+                void    Bag_LinkedListRep<T>::RemoveAll ()
                 {
                     fData.RemoveAll ();
                 }

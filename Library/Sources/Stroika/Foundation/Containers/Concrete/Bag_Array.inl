@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#include	"../../Memory/BlockAllocated.h"
+#include    "../../Memory/BlockAllocated.h"
 
-#include	"Private/Array.h"
+#include    "Private/Array.h"
 
 
 namespace   Stroika {
@@ -28,10 +28,10 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>    
-				class   Bag_ArrayMutatorRep;
-                template    <typename T>    
-				class   Bag_ArrayRep : public Bag<T>::BagRep {
+                template    <typename T>
+                class   Bag_ArrayMutatorRep;
+                template    <typename T>
+                class   Bag_ArrayRep : public Bag<T>::BagRep {
                 public:
                     Bag_ArrayRep ();
                     ~Bag_ArrayRep ();
@@ -39,10 +39,10 @@ namespace   Stroika {
                     virtual size_t      GetLength () const override;
                     virtual bool        Contains (T item) const override;
                     virtual void        Compact () override;
-                    virtual typename Bag<T>::BagRep*		Clone () const override;
+                    virtual typename Bag<T>::BagRep*        Clone () const override;
 
-                    virtual typename Iterator<T>::Rep*			MakeIterator () override;
-                    virtual typename Bag<T>::BagMutatorRep*		MakeBagMutator () override;
+                    virtual typename Iterator<T>::Rep*          MakeIterator () override;
+                    virtual typename Bag<T>::BagMutatorRep*     MakeBagMutator () override;
 
                     virtual void    Add (T item) override;
                     virtual void    Remove (T item) override;
@@ -61,7 +61,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-				class  Bag_ArrayMutatorRep : public Bag<T>::BagMutatorRep {
+                class  Bag_ArrayMutatorRep : public Bag<T>::BagMutatorRep {
                 public:
                     Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner);
 
@@ -91,44 +91,44 @@ namespace   Stroika {
                  ********************************************************************************
                  */
 
-                template    <class  T>  
-				inline  void*   Bag_ArrayMutatorRep<T>::operator new (size_t size)
+                template    <class  T>
+                inline  void*   Bag_ArrayMutatorRep<T>::operator new (size_t size)
                 {
                     return (Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator new (size));
                 }
-                template    <class  T>  
-				inline  void    Bag_ArrayMutatorRep<T>::operator delete (void* p)
+                template    <class  T>
+                inline  void    Bag_ArrayMutatorRep<T>::operator delete (void* p)
                 {
                     Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator delete (p);
                 }
-                template    <class  T>  
-				Bag_ArrayMutatorRep<T>::Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner)
+                template    <class  T>
+                Bag_ArrayMutatorRep<T>::Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner)
                     : Bag<T>::BagMutatorRep ()
                     , fIterator (owner.fData)
                 {
                 }
-                template    <class  T>  
-				bool    Bag_ArrayMutatorRep<T>::More (T* current, bool advance)
+                template    <class  T>
+                bool    Bag_ArrayMutatorRep<T>::More (T* current, bool advance)
                 {
                     return (fIterator.More (current, advance));
                 }
-                template    <class  T>  
-				T   Bag_ArrayMutatorRep<T>::Current () const
+                template    <class  T>
+                T   Bag_ArrayMutatorRep<T>::Current () const
                 {
                     return (fIterator.Current());
                 }
-                template    <typename T>    
-				typename Iterator<T>::Rep*  Bag_ArrayMutatorRep<T>::Clone () const
+                template    <typename T>
+                typename Iterator<T>::Rep*  Bag_ArrayMutatorRep<T>::Clone () const
                 {
                     return (new Bag_ArrayMutatorRep<T> (*this));
                 }
-                template    <class  T>  
-				void    Bag_ArrayMutatorRep<T>::RemoveCurrent ()
+                template    <class  T>
+                void    Bag_ArrayMutatorRep<T>::RemoveCurrent ()
                 {
                     fIterator.RemoveCurrent ();
                 }
-                template    <class  T>  
-				void    Bag_ArrayMutatorRep<T>::UpdateCurrent (T newValue)
+                template    <class  T>
+                void    Bag_ArrayMutatorRep<T>::UpdateCurrent (T newValue)
                 {
                     fIterator.UpdateCurrent (newValue);
                 }
@@ -163,45 +163,45 @@ namespace   Stroika {
                 {
                 }
 
-                template    <typename T>    
-				size_t  Bag_ArrayRep<T>::GetLength () const
+                template    <typename T>
+                size_t  Bag_ArrayRep<T>::GetLength () const
                 {
                     return (fData.GetLength ());
                 }
 
-                template    <typename T>    
-				void    Bag_ArrayRep<T>::Compact ()
+                template    <typename T>
+                void    Bag_ArrayRep<T>::Compact ()
                 {
                     fData.Compact ();
                 }
 
-                template    <typename T> 
-				bool Bag_ArrayRep<T>::Contains (T item) const
+                template    <typename T>
+                bool Bag_ArrayRep<T>::Contains (T item) const
                 {
                     return (fData.Contains (item));
                 }
 
-                template    <typename T>    
-				typename Iterator<T>::Rep*  Bag_ArrayRep<T>:: MakeIterator ()
+                template    <typename T>
+                typename Iterator<T>::Rep*  Bag_ArrayRep<T>:: MakeIterator ()
                 {
                     return (new Bag_ArrayMutatorRep<T> (*this));
                 }
 
-                template    <typename T>    
-				typename Bag<T>::BagMutatorRep*   Bag_ArrayRep<T>::MakeBagMutator ()
+                template    <typename T>
+                typename Bag<T>::BagMutatorRep*   Bag_ArrayRep<T>::MakeBagMutator ()
                 {
                     return (new Bag_ArrayMutatorRep<T> (*this));
                 }
 
-                template    <typename T>    
-				void    Bag_ArrayRep<T>::Add (T item)
+                template    <typename T>
+                void    Bag_ArrayRep<T>::Add (T item)
                 {
                     fData.InsertAt (item, GetLength ());
                 }
 
 
-                template    <typename T>    
-				void    Bag_ArrayRep<T>::Remove (T item)
+                template    <typename T>
+                void    Bag_ArrayRep<T>::Remove (T item)
                 {
                     /*
                      *      Iterate backwards since removing from the end of an array
@@ -272,20 +272,20 @@ namespace   Stroika {
                     return ((Bag_ArrayRep<T>*) Bag<T>::GetRep ());
                 }
 
-                template    <typename T>    
-				size_t  Bag_Array<T>::GetCapacity () const
+                template    <typename T>
+                size_t  Bag_Array<T>::GetCapacity () const
                 {
                     return (GetRep ()->fData.GetCapacity ());
                 }
 
-                template    <typename T>    
-				void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
+                template    <typename T>
+                void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
                     GetRep ()->fData.SetCapacity (slotsAlloced);
                 }
 
-                template    <typename T>    
-				typename Bag<T>::BagRep*  Bag_ArrayRep<T>::Clone () const
+                template    <typename T>
+                typename Bag<T>::BagRep*  Bag_ArrayRep<T>::Clone () const
                 {
                     return (new Bag_ArrayRep<T> (*this));
                 }
