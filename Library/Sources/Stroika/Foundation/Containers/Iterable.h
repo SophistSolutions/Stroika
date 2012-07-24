@@ -10,21 +10,15 @@
  *
  *  TODO:
  *
- *      (o)         CLARIFY AND ENFORCE ISNULL semantics. Either treat as EMPTY - or ILLEGAL - but
- *                  either way make clear and ENFORCE. See existing pattern with existing containers
- *                  for hint of which way to go...
- *
  *      (o)         Consider adding class Mutable<T> to add reference to mutator stuff? Maybe no point?
  *
- *      (o)         Move APPLYISH APIs that can be into here (stuff purely based on iterating)
- *
- *      (o)         Stack<T> should NOT be ITERABLE, but other types like Bag<> and Tally<> sb iterable
- *                  (but tally probably Iterable<TallyEntry<T>>.
+ *      (o)         Consider adding class ???<T> to add Iterable<T> like functions - where we can count on "T"
+ *                  having TWithCompareEquals<T>
  *
  *      (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
  *
  *      (o)         Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
- *                  consider providing a IREP version - to implement LOCKING logic promised in the API.
+ *                  consider providing a _IRep version - to implement LOCKING logic promised in the API.
  *
  *
  */
@@ -43,13 +37,27 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+            /*
+             *  Iterable<T> which supports the Iterator<T> API, and allows for the creation of an Iterator.
+             *
+             *  The Stroika iterators can be used either directly, or in the STL begin/end style - and this
+             *  class supports both styles of usage.
+             *
+             *  Iterable<T> also supports read-only applicative operations on the contained data.
+             *
+             *  Iterable<T> is much like idea of 'abstract readonly container'.
+             */
             template    <typename T>
             class  Iterable {
             protected:
-                class  IRep;
+                /*
+                 * Abstract class used in subclasses which extend the idea of Iterable. Most abstract Containers in Stroika
+                 * subclass of Iterable<T>.
+                 */
+                class  _IRep;
 
             protected:
-                explicit Iterable (const Memory::SharedByValue<IRep>& rep);
+                explicit Iterable (const Memory::SharedByValue<_IRep>& rep);
 
             public:
                 Iterable (const Iterable<T>& from);
@@ -138,17 +146,17 @@ namespace   Stroika {
                 nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
 
             protected:
-                Memory::SharedByValue<IRep>     _fRep;
+                Memory::SharedByValue<_IRep>     _fRep;
             };
 
 
             template    <typename T>
-            class  Iterable<T>::IRep {
+            class  Iterable<T>::_IRep {
             protected:
-                IRep ();
+                _IRep ();
 
             public:
-                virtual ~IRep ();
+                virtual ~_IRep ();
 
             public:
                 virtual Iterator<T>     MakeIterator () const                                       =   0;
@@ -166,6 +174,7 @@ namespace   Stroika {
                 nonvirtual  void        _Apply (void (*doToElement) (const T& item)) const;
                 nonvirtual  Iterator<T> _ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
             };
+
         }
     }
 }
@@ -179,5 +188,4 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-
-#include "Iterable.inl"
+#include    "Iterable.inl"

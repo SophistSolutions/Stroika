@@ -13,7 +13,13 @@
 #include    "Iterator.h"
 #include    "Iterable.h"
 
-
+/*
+ *
+ *  TODO:
+ *
+ *      (o)         Tally<T> probably Iterable<TallyEntry<T>>.
+ *
+ */
 
 namespace   Stroika {
     namespace   Foundation {

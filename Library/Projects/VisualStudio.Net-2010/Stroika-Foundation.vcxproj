@@ -377,6 +377,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sortable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
@@ -542,6 +543,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sortable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />

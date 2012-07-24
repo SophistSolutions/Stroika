@@ -13,6 +13,8 @@
  *      (o)         Implement first draft of code based on
  *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Sequence.hh
  *
+ *      (o)         Should inherit from Iterable<T>
+ *
  *
  */
 

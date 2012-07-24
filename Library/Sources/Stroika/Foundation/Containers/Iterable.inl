@@ -12,23 +12,23 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-            // Class Iterable<T>::IRep
+            // Class Iterable<T>::_IRep
             template    <typename T>
-            inline  Iterable<T>::IRep::IRep ()
+            inline  Iterable<T>::_IRep::_IRep ()
             {
             }
             template    <typename T>
-            inline  Iterable<T>::IRep::~IRep ()
+            inline  Iterable<T>::_IRep::~_IRep ()
             {
             }
             template    <typename T>
-            inline  bool    Iterable<T>::IRep::_IsEmpty () const
+            inline  bool    Iterable<T>::_IRep::_IsEmpty () const
             {
                 RequireNotNull (_fRep.get ());
                 return GetLength () == 0;
             }
             template    <typename T>
-            inline  void    Iterable<T>::IRep::_Apply (void (*doToElement) (const T& item)) const
+            inline  void    Iterable<T>::_IRep::_Apply (void (*doToElement) (const T& item)) const
             {
                 RequireNotNull (doToElement);
                 for (Iterator<T> i = begin (); i != end (); ++i) {
@@ -36,7 +36,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::IRep::_ApplyUntilTrue (bool (*doToElement) (const T& item)) const
+            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (bool (*doToElement) (const T& item)) const
             {
                 RequireNotNull (doToElement);
                 for (Iterator<T> i = begin (); i != end (); ++i) {
@@ -53,7 +53,7 @@ namespace   Stroika {
 
             // Class Iterable<T>
             template    <typename T>
-            inline  Iterable<T>::Iterable (const Memory::SharedByValue<IRep>& rep)
+            inline  Iterable<T>::Iterable (const Memory::SharedByValue<_IRep>& rep)
                 : _fRep (rep)
             {
                 RequireNotNull (_fRep.get ());

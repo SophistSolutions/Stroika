@@ -14,6 +14,9 @@
  *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Stack.hh
  *
  *
+ *      (o)         Stack<T> should NOT be ITERABLE, but other types like Bag<> and Tally<> sb iterable
+ *                  (but tally probably Iterable<TallyEntry<T>>.
+ *
  */
 
 

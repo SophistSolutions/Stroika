@@ -6,6 +6,13 @@
 
 #include    "../Debug/Assertions.h"
 
+/*
+ *
+ *  TODO:
+ *
+ *      (o)         PriorityQueue<T> probably Iterable<T,PRIORITYI>.
+ *
+ */
 
 
 namespace   Stroika {
