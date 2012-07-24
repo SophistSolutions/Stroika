@@ -609,6 +609,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />

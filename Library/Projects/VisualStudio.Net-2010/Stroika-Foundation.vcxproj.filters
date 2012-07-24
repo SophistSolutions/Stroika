@@ -1223,5 +1223,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl">
       <Filter>Sources\Containers\STL</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\ReadMe.txt" />
   </ItemGroup>
 </Project>
