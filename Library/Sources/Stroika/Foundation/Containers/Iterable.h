@@ -10,7 +10,7 @@
  *
  *  TODO:
  *
- *		(o)         CLARIFY AND ENFORCE ISNULL semantics. Either treat as EMPTY - or ILLEGAL - but
+ *      (o)         CLARIFY AND ENFORCE ISNULL semantics. Either treat as EMPTY - or ILLEGAL - but
  *                  either way make clear and ENFORCE. See existing pattern with existing containers
  *                  for hint of which way to go...
  *
@@ -60,16 +60,16 @@ namespace   Stroika {
             public:
                 /*
                  * Create an iterator object which can be used to traverse the 'Iterable' - this object -
-				 * and visit each element.
+                 * and visit each element.
                  */
                 nonvirtual Iterator<T>      MakeIterator () const;
 
             public:
                 /*
                  * GetLength () returns the number of elements in this 'Iterable' object. Its defined to be
-				 * the same number of elements you would visit if you created an iterator (MakeIterator())
-				 * and visited all items. In practice, as the actual number might vary as the underlying
-				 * iterable could change while being iterated over.
+                 * the same number of elements you would visit if you created an iterator (MakeIterator())
+                 * and visited all items. In practice, as the actual number might vary as the underlying
+                 * iterable could change while being iterated over.
                  */
                 nonvirtual  size_t          GetLength () const;
 
@@ -77,17 +77,17 @@ namespace   Stroika {
                 /*
                  * Returns true iff GetLength () == 0
                  */
-                nonvirtual  bool	IsEmpty () const;
+                nonvirtual  bool    IsEmpty () const;
 
             public:
                 // STL-ish alias for IsEmpty ()
                 nonvirtual  bool    empty () const;
 
-			public:
+            public:
                 // STL-ish alias for GetLength ()
                 nonvirtual  size_t  length () const;
 
-			public:
+            public:
                 // STL-ish alias for GetLength ()
                 nonvirtual  size_t  size () const;
 
@@ -137,7 +137,7 @@ namespace   Stroika {
                  */
                 nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
 
-			protected:
+            protected:
                 Memory::SharedByValue<IRep>     _fRep;
             };
 
