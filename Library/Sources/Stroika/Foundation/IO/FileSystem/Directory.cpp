@@ -21,7 +21,7 @@
 #include    "../../Characters/StringUtils.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Containers/Common.h"
-#include    "../../Containers/SetUtils.h"
+#include    "../../Containers/STL/SetUtils.h"
 #include    "../../Debug/Trace.h"
 #include    "../../IO/FileAccessException.h"
 #include    "../../Memory/SmallStackBuffer.h"

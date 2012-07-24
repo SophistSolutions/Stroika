@@ -378,11 +378,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sortable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
@@ -544,11 +544,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sortable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.inl" />

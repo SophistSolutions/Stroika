@@ -103,6 +103,9 @@
     <Filter Include="Sources\Containers\Concrete\Private">
       <UniqueIdentifier>{4efb2a46-73e0-4d5f-a760-ed730600bacc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\STL">
+      <UniqueIdentifier>{cca08cd0-c7a1-47fd-80fd-3540cc2c48ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -436,12 +439,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.h">
-      <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h">
       <Filter>Sources\Time</Filter>
@@ -891,6 +888,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h">
+      <Filter>Sources\Containers\STL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h">
+      <Filter>Sources\Containers\STL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -919,12 +922,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl">
       <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\SetUtils.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\VectorUtils.inl">
-      <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
       <Filter>Sources\Time</Filter>
@@ -1219,6 +1216,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl">
+      <Filter>Sources\Containers\STL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl">
+      <Filter>Sources\Containers\STL</Filter>
     </None>
   </ItemGroup>
 </Project>

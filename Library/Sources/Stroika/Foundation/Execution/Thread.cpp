@@ -14,7 +14,7 @@
 #include    "../Debug/Trace.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/StringUtils.h"
-#include    "../Containers/VectorUtils.h"
+#include    "../Containers/STL/VectorUtils.h"
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
@@ -673,7 +673,7 @@ void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsT
         }
     }
     if (thread != nullptr) {
-        Platform::Windows::WaitAndPumpMessages (nullptr, Containers::mkV<HANDLE> (thread), timeToPump);
+        Platform::Windows::WaitAndPumpMessages (nullptr, Containers::STL::mkV<HANDLE> (thread), timeToPump);
     }
 #else
     AssertNotImplemented ();

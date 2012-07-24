@@ -12,7 +12,7 @@
 
 #include    "../../../Characters/Format.h"
 #include    "../../../Characters/StringUtils.h"
-#include    "../../../Containers/VectorUtils.h"
+#include    "../../../Containers/STL/VectorUtils.h"
 #include    "../../../Time/Date.h"
 #include    "../../../Time/DateTime.h"
 #include    "../../../Execution/Exceptions.h"
@@ -349,7 +349,7 @@ RetryWithNoCERTCheck:
         vector<Byte>    bytesArray;
         bytesArray.reserve (totalBytes);
         for (list<vector<Byte> >::const_iterator i = bytesRead.begin (); i != bytesRead.end (); ++i) {
-            Containers::Append2Vector (&bytesArray, *i);
+            Containers::STL::Append2Vector (&bytesArray, *i);
         }
         response.fData = bytesArray;
     }

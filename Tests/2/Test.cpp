@@ -6,7 +6,7 @@
 #include	<iostream>
 #include	<sstream>
 
-#include	"Stroika/Foundation/Containers/VectorUtils.h"
+#include	"Stroika/Foundation/Containers/STL/VectorUtils.h"
 #include	"Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
 #include	"Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
@@ -75,7 +75,7 @@ namespace	{
 				map<wstring,VariantValue>	v;
 				v[L"Arg1"] = 32;
 				v[L"Arg2"] = L"Cookies";
-				v[L"Arg3"] = Containers::mkV<VariantValue> (19);
+				v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
 				VariantValue	v1 =	v;
 				CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}");
 			}
@@ -123,7 +123,7 @@ namespace	{
 				map<wstring,VariantValue>	v;
 				v[L"Arg1"] = 32;
 				v[L"Arg2"] = L"Cookies";
-				v[L"Arg3"] = Containers::mkV<VariantValue> (19);
+				v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
 				VariantValue	v1 =	v;
 				CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
 			}

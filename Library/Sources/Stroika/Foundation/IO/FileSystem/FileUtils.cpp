@@ -25,7 +25,7 @@
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Containers/Common.h"
-#include    "../../Containers/SetUtils.h"
+#include    "../../Containers/STL/SetUtils.h"
 #include    "../../Debug/Trace.h"
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
@@ -40,6 +40,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Containers::STL;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
