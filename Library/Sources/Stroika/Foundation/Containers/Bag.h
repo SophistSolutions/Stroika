@@ -49,8 +49,9 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
-#include    "Iterator.h"
 #include    "Iterable.h"
+#include    "Iterator.h"
+
 
 
 /*
@@ -80,13 +81,11 @@ namespace   Stroika {
 
             template    <typename T>
             class   Bag {
-
             protected:
             public:
 // See about making these PROTECTED
                 class   BagRep;
                 class   BagMutatorRep;
-
 
 
             public:
@@ -102,32 +101,41 @@ namespace   Stroika {
 
             public:
                 nonvirtual  size_t  GetLength () const;
+
+			public:
                 nonvirtual  bool    IsEmpty () const;
+
+			public:
                 nonvirtual  bool    Contains (T item) const;
+
+			public:
                 nonvirtual  void    RemoveAll ();
+
+			public:
                 nonvirtual  void    Compact ();
+
+			public:
                 nonvirtual  Iterator<T> MakeIterator () const;
 
             public:
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (Bag<T> items);
 
-
+            public:
                 /*
                  * It is legal to remove something that is not there.
                  */
-            public:
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (const Bag<T>& items);
 
                 // Have Bag_Difference/Union/Interesection??? methods/??
 
 
+            public:
                 /*
                  *      +=/-= are equivilent Add() and Remove(). They
                  *  are just syntactic sugar.
                  */
-            public:
                 nonvirtual  Bag<T>& operator+= (T item);
                 nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
                 nonvirtual  Bag<T>& operator-= (T item);

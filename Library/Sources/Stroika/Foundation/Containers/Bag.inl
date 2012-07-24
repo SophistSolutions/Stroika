@@ -20,63 +20,54 @@ namespace   Stroika {
                 : fRep (bag.fRep)
             {
             }
-
             template    <typename T>
             inline  Bag<T>::Bag (typename Bag<T>::BagRep* rep)
                 : fRep (rep)
             {
             }
-
             template    <class T>
             Bag<T>::Bag ()
                 : fRep (0)
             {
                 *this = Concrete::Bag_Array<T> ();
             }
-
-            template    <class T>   Bag<T>::Bag (const T* start, const T* end)
+            template    <class T>
+			Bag<T>::Bag (const T* start, const T* end)
                 : fRep (0)
             {
                 *this = Concrete::Bag_Array<T> (start, end);
             }
-
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
             {
                 fRep = bag.fRep;
                 return (*this);
             }
-
             template    <typename T>
             inline  size_t  Bag<T>::GetLength () const
             {
                 return (fRep->GetLength ());
             }
-
             template    <typename T>
             inline  bool    Bag<T>::IsEmpty () const
             {
                 return (bool (GetLength () == 0));
             }
-
             template    <typename T>
             inline  bool    Bag<T>::Contains (T item) const
             {
                 return (fRep->Contains (item));
             }
-
             template    <typename T>
             inline  void    Bag<T>::RemoveAll ()
             {
                 fRep->RemoveAll ();
             }
-
             template    <typename T>
             inline  void    Bag<T>::Compact ()
             {
                 fRep->Compact ();
             }
-
             template    <typename T>
             inline  Iterator<T> Bag<T>::MakeIterator () const
             {
@@ -84,59 +75,50 @@ namespace   Stroika {
                 ++it;
                 return it;
             }
-
             template    <typename T>
             inline  Iterator<T>    Bag<T>::begin () const
             {
                 return MakeIterator ();
             }
-
             template    <typename T>
             inline  Iterator<T>    Bag<T>::end () const
             {
                 return (Iterator<T>::GetSentinal ());
             }
-
             template    <typename T>
             inline  typename Bag<T>::Mutator    Bag<T>::begin ()
             {
                 return MakeMutator ();
             }
-
             template    <typename T>
             inline  typename Bag<T>::Mutator    Bag<T>::end ()
             {
                 return (Bag<T>::Mutator (nullptr));
             }
-
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)
             {
                 Add (item);
                 return (*this);
             }
-
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (const Bag<T>& items)
             {
                 Add (items);
                 return (*this);
             }
-
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator-= (T item)
             {
                 Remove (item);
                 return (*this);
             }
-
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator-= (const Bag<T>& items)
             {
                 Remove (items);
                 return (*this);
             }
-
             template    <typename T>
             inline   typename   Bag<T>::Mutator  Bag<T>::MakeMutator ()
             {
@@ -225,7 +207,6 @@ namespace   Stroika {
                 }
                 return (true);
             }
-
             template    <class T>
             Bag<T>    operator+ (const Bag<T>& lhs, const Bag<T>& rhs)
             {
@@ -233,7 +214,6 @@ namespace   Stroika {
                 temp += rhs;
                 return (temp);
             }
-
             template    <class T>
             Bag<T>    operator- (const Bag<T>& lhs, const Bag<T>& rhs)
             {
@@ -241,8 +221,6 @@ namespace   Stroika {
                 temp -= rhs;
                 return (temp);
             }
-
-            // operator!=
             template    <typename T>
             inline  bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs)
             {
@@ -250,7 +228,8 @@ namespace   Stroika {
             }
 
 
-            // class BagMutatorRep<T>
+
+			// class BagMutatorRep<T>
             template    <typename T>
             inline  Bag<T>::BagMutatorRep::BagMutatorRep () :
                 Iterator<T>::Rep ()
@@ -308,7 +287,9 @@ namespace   Stroika {
             {
                 return (fRep.GetPointer ());
             }
-        }
+
+
+		}
     }
 }
 
