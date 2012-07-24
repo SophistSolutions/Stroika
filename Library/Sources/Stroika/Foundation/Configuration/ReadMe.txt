@@ -1,1 +1,1 @@
-This Folder contains the Foundation::Containers source code.
+This Folder contains the Foundation::Configuration source code.

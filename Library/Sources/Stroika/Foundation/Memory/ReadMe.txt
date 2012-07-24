@@ -1,1 +1,1 @@
-This Folder contains the Foundation::Time source code.
+This Folder contains the Foundation::Memory source code.
