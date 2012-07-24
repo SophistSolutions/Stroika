@@ -87,7 +87,6 @@ namespace   Stroika {
                 class   BagRep;
                 class   BagMutatorRep;
 
-
             public:
                 Bag ();
                 Bag (const Bag<T>& bag);
@@ -119,7 +118,9 @@ namespace   Stroika {
 
             public:
                 nonvirtual  void    Add (T item);
-                nonvirtual  void    Add (Bag<T> items);
+                nonvirtual  void    Add (const Bag<T>& items);
+                nonvirtual  void    Add (const T* begin, const T* end);
+
 
             public:
                 /*
@@ -157,7 +158,7 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  Build BagIterators or Mutators.
+                 *  Create a mutators : an Iterator<T> which also allows for updates/changes.
                  */
                 nonvirtual  Mutator MakeMutator ();
 
@@ -173,8 +174,6 @@ namespace   Stroika {
                 nonvirtual  size_t  TallyOf (T item) const;
 
             protected:
-                nonvirtual  void    AddItems (const T* items, size_t size);
-
                 // Are these allowed to return 0??? If not, add asserts!!!
                 nonvirtual  const BagRep*    GetRep () const;
                 nonvirtual  BagRep*          GetRep ();
@@ -185,7 +184,7 @@ namespace   Stroika {
                         return Bag::Clone (t);
                     }
                 };
-                Memory::SharedByValue<BagRep, Rep_Cloner_>    fRep;
+                Memory::SharedByValue<BagRep, Rep_Cloner_>    fRep_;
 
                 static  BagRep*  Clone (const BagRep& rep);
 

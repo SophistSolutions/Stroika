@@ -18,7 +18,7 @@ namespace   Stroika {
                 template    <typename T> class  Bag_LinkedList : public Bag<T> {
                 public:
                     Bag_LinkedList ();
-                    Bag_LinkedList (const T* items, size_t size);
+                    Bag_LinkedList (const T* start, const T* end);
                     Bag_LinkedList (const Bag<T>& bag);
                     Bag_LinkedList (const Bag_LinkedList<T>& bag);
 
