@@ -9,11 +9,17 @@
  *
  * Description:
  *
+ *		THis code MAY end up being a TRAITs mechanism for defining traits in various templates (like hashing etc). Or
+ *		It maybe a 'CONCEPT' - like feature to generate better error messages and documentation about requiremnts on T
+ *		for given types.
  *
  *
  * TODO:
  *
- *      (o)     Must add more types - for other sorts of containers
+ *      (o)     Must add more types - for other sorts of containers.
+ *
+ *		(o)		Consider separating out traits types - so no direct inheritance (or put combined ones in separate ns?)
+ *				This will depend on how we end up using thse.
  *
  *
  * Notes:
