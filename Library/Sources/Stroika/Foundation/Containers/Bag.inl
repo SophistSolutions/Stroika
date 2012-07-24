@@ -32,7 +32,7 @@ namespace   Stroika {
                 *this = Concrete::Bag_Array<T> ();
             }
             template    <class T>
-			Bag<T>::Bag (const T* start, const T* end)
+            Bag<T>::Bag (const T* start, const T* end)
                 : fRep_ (0)
             {
                 *this = Concrete::Bag_Array<T> (start, end);
@@ -135,18 +135,18 @@ namespace   Stroika {
             template    <class T>
             void  Bag<T>::Add (const Bag<T>& items)
             {
-				if (this == &items) {
-					// Copy - so we don't update this while we are copying from it...
-					Bag<T>	copiedItems	=	items;
-					For (it, copiedItems) {
-						GetRep ()->Add (it.Current ());
-					}
-				}
-				else {
-					For (it, items) {
-						GetRep ()->Add (it.Current ());
-					}
-				}
+                if (this == &items) {
+                    // Copy - so we don't update this while we are copying from it...
+                    Bag<T>  copiedItems =   items;
+                    For (it, copiedItems) {
+                        GetRep ()->Add (it.Current ());
+                    }
+                }
+                else {
+                    For (it, items) {
+                        GetRep ()->Add (it.Current ());
+                    }
+                }
             }
             template    <class T>
             void  Bag<T>::Add (const T* begin, const T* end)
@@ -238,7 +238,7 @@ namespace   Stroika {
 
 
 
-			// class BagMutatorRep<T>
+            // class BagMutatorRep<T>
             template    <typename T>
             inline  Bag<T>::BagMutatorRep::BagMutatorRep () :
                 Iterator<T>::Rep ()
@@ -298,7 +298,7 @@ namespace   Stroika {
             }
 
 
-		}
+        }
     }
 }
 

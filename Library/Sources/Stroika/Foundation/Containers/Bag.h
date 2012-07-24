@@ -101,19 +101,19 @@ namespace   Stroika {
             public:
                 nonvirtual  size_t  GetLength () const;
 
-			public:
+            public:
                 nonvirtual  bool    IsEmpty () const;
 
-			public:
+            public:
                 nonvirtual  bool    Contains (T item) const;
 
-			public:
+            public:
                 nonvirtual  void    RemoveAll ();
 
-			public:
+            public:
                 nonvirtual  void    Compact ();
 
-			public:
+            public:
                 nonvirtual  Iterator<T> MakeIterator () const;
 
             public:
