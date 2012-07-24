@@ -59,7 +59,12 @@
  *
  *      o   use pthread_kill (use native_handle() from threadobj) - to send the signal.
  *
- *      o
+ *      o   MAJOR REWRITE OF THREAD DOCUMENTAITON ON INTERUPTION:
+ *          >>  I THINK these are all - both posix and windows - really cooperative.
+ *          >>  VEIRYF thats the case on Windows - under the debugger.
+ *          >>  Changes or really clarifications on the ad interruption design. Test mt theory with long loop being interopted with and without debugger on windiws
+ *          >>  I THINK we can just document all cooperative interuption and clearly document
+            >>      that deisgn choice
  *
  *
  *      o   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling - calling detatch when a thread is never waited for.

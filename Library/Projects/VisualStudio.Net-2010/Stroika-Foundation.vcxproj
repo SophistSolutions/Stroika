@@ -513,18 +513,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl" />
@@ -533,8 +536,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Deque.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.inl" />
@@ -542,6 +547,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sortable.inl" />
@@ -549,13 +555,18 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.txt" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
@@ -578,6 +589,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
@@ -599,13 +611,17 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.txt" />
+    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
@@ -614,12 +630,14 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.txt" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
   </ItemGroup>

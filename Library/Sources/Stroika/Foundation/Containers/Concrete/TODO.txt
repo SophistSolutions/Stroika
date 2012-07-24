@@ -1,3 +1,9 @@
 TODO (Foundation::Containers::Concrete)
 
-	o	x
+	o	MAJOR and most important thing todo is copy forward Stroika 1.0 Archive concrete
+		implemenations and update them for Stroika 2.0
+
+	o	Implement THREAINDG support/control
+
+	o	Perhaps add STL-concrete variations - like Sequence_vector<>
+
