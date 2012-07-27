@@ -69,13 +69,14 @@ namespace   Stroika {
         namespace   Containers {
 
 
-
+#if 0
             /// NEEDED TEMPORARILY FOR BELOW FRIEND DECLARATION TIL I CAN FIND A BETTER WAY? - GCC ONLY ISSUE
             /// -- LGP 2012-07-22
             template    <typename T>
             class   Bag;
             template    <typename T>
             bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
+#endif
 
 
             template    <typename T>
@@ -136,17 +137,7 @@ namespace   Stroika {
 
 
             public:
-                class   Mutator : public Iterator<T> {
-                public:
-                    explicit Mutator (_IMutatorRep* it);
-
-                public:
-                    nonvirtual  void    RemoveCurrent ();
-                    nonvirtual  void    UpdateCurrent (T newValue);
-
-                private:
-                    nonvirtual  _IMutatorRep*   GetMutatorRep_ ();
-                };
+                class   Mutator;
 
             public:
                 /*
@@ -197,6 +188,24 @@ namespace   Stroika {
 
 
 			/*
+			 *	A Bag<T>::Mutator is an iterator, which also allows updating its owning bag.
+			 */
+            template    <typename T>
+            class   Bag<T>::Mutator : public Iterator<T> {
+            public:
+                explicit Mutator (_IMutatorRep* it);
+
+            public:
+                nonvirtual  void    RemoveCurrent ();
+                nonvirtual  void    UpdateCurrent (T newValue);
+
+            private:
+                nonvirtual  _IMutatorRep*   GetMutatorRep_ ();
+            };
+
+
+
+			/*
 			 *	Protected abstract interface to support concrete implementations of
 			 *	the Bag<T> container API.
 			 */
@@ -209,7 +218,7 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual _IRep*     Clone () const                  =   0;
+                virtual _IRep*		Clone () const                  =   0;
                 virtual bool        Contains (T item) const         =   0;
                 virtual size_t      GetLength () const              =   0;
                 virtual void        Compact ()                      =   0;
@@ -218,7 +227,7 @@ namespace   Stroika {
                 virtual void        Add (T item)                    =   0;
                 virtual void        Remove (T item)                 =   0;
 
-                virtual typename Iterator<T>::Rep*      MakeIterator ()         =   0;
+                virtual typename Iterator<T>::Rep*     MakeIterator ()         =   0;
                 virtual _IMutatorRep*                  MakeBagMutator ()       =   0;
             };
 
