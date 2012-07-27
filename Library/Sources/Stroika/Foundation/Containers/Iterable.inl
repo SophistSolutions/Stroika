@@ -53,7 +53,7 @@ namespace   Stroika {
 
             // Class Iterable<T>
             template    <typename T>
-            inline  Iterable<T>::Iterable (const Memory::SharedByValue<_IRep>& rep)
+            inline  Iterable<T>::Iterable (const _SharedByValueRepType& rep)
                 : fRep_ (rep)
             {
                 RequireNotNull (fRep_.get ());
@@ -76,6 +76,11 @@ namespace   Stroika {
                     fRep_ = rhs.fRep_;
                 }
                 return *this;
+            }
+            template    <typename T>
+            inline	typename Iterable<T>::_IRep*  Iterable<T>::Clone_ (const typename Iterable<T>::_IRep& rep)
+            {
+                return (rep.Clone ());
             }
             template    <typename T>
             inline  typename Iterable<T>::_IRep&         Iterable<T>::_GetRep ()
@@ -142,7 +147,7 @@ namespace   Stroika {
                 return _GetRep ().ApplyUntilTrue (doToElement);
             }
             template    <typename T>
-            void    Iterable<T>::_SetRep (Memory::SharedByValue<_IRep> rep)
+            void    Iterable<T>::_SetRep (_SharedByValueRepType rep)
             {
                 RequireNotNull (rep.get ());
                 if (rep.get () != fRep_.get ()) {
