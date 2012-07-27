@@ -117,7 +117,7 @@ namespace   Stroika {
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  const T&    SharedByValue<T, COPIER, SHARED_IMLP>::operator* () const
             {
-                T*  ptr =   GetPointer ();
+                const T*  ptr =   GetPointer ();
                 EnsureNotNull (ptr);
                 return (*ptr);
             }
