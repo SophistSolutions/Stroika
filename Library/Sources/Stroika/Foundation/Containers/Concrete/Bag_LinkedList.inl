@@ -33,7 +33,7 @@ namespace   Stroika {
                     virtual typename    Bag<T>::_IRep*  Clone () const override;
 
                     virtual typename Iterator<T>::Rep*          MakeIterator () override;
-                    virtual typename Bag<T>::BagMutatorRep*     MakeBagMutator () override;
+                    virtual typename Bag<T>::_IMutatorRep*     MakeBagMutator () override;
 
                     virtual void    Add (T item) override;
                     virtual void    Remove (T item) override;
@@ -49,7 +49,7 @@ namespace   Stroika {
 
 				// One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
                 template    <typename T>
-                class  Bag_LinkedList<T>::MutatorRep_ : public Bag<T>::BagMutatorRep {
+                class  Bag_LinkedList<T>::MutatorRep_ : public Bag<T>::_IMutatorRep {
                 public:
                     MutatorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
                     MutatorRep_ (typename Bag_LinkedList<T>::MutatorRep_& from);
@@ -122,7 +122,7 @@ namespace   Stroika {
                     return (new Bag_LinkedList<T>::MutatorRep_ (*this));
                 }
                 template    <typename T>
-                typename    Bag<T>::BagMutatorRep*   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
+                typename    Bag<T>::_IMutatorRep*   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
                 {
                     return (new Bag_LinkedList<T>::MutatorRep_ (*this));
                 }

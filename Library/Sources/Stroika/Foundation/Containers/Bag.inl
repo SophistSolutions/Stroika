@@ -238,9 +238,9 @@ namespace   Stroika {
 
 
 
-            // class BagMutatorRep<T>
+            // class Bag<T>::_IMutatorRep<T>
             template    <typename T>
-            inline  Bag<T>::BagMutatorRep::BagMutatorRep () :
+            inline  Bag<T>::_IMutatorRep::_IMutatorRep () :
                 Iterator<T>::Rep ()
             {
             }
@@ -248,19 +248,19 @@ namespace   Stroika {
 
             // class Bag<T>::Mutator
             template    <typename T>
-            inline  Bag<T>::Mutator::Mutator (typename Bag<T>::BagMutatorRep* it) :
+            inline  Bag<T>::Mutator::Mutator (typename Bag<T>::_IMutatorRep* it) :
                 Iterator<T> (it)
             {
             }
             template    <typename T>
-            inline  typename    Bag<T>::BagMutatorRep* Bag<T>::Mutator::GetMutatorRep_ ()
+            inline  typename    Bag<T>::_IMutatorRep* Bag<T>::Mutator::GetMutatorRep_ ()
             {
                 /*
                  * Because of the way we construct Mutators, it is guaranteed that
                  * this cast is safe. We could have kept an extra var of the right
                  * static type, but this would have been a waste of time and memory.
                  */
-                return &(dynamic_cast<BagMutatorRep&> (*this->fIterator));
+                return &(dynamic_cast<_IMutatorRep&> (*this->fIterator));
             }
             template    <typename T>
             inline  void    Bag<T>::Mutator::RemoveCurrent ()

@@ -82,10 +82,10 @@ namespace   Stroika {
             template    <typename T>
             class   Bag {
             protected:
-// See about making these PROTECTED
                 class   _IRep;
-            public:
-                class   BagMutatorRep;
+//            public:
+// See about making these PROTECTED
+                class   _IMutatorRep;
 
             public:
                 Bag ();
@@ -146,14 +146,14 @@ namespace   Stroika {
             public:
                 class   Mutator : public Iterator<T> {
                 public:
-                    explicit Mutator (BagMutatorRep* it);
+                    explicit Mutator (_IMutatorRep* it);
 
                 public:
                     nonvirtual  void    RemoveCurrent ();
                     nonvirtual  void    UpdateCurrent (T newValue);
 
                 private:
-                    nonvirtual  BagMutatorRep*   GetMutatorRep_ ();
+                    nonvirtual  _IMutatorRep*   GetMutatorRep_ ();
                 };
 
             public:
@@ -206,9 +206,9 @@ namespace   Stroika {
 
 
             template    <typename T>
-            class   Bag<T>::BagMutatorRep : public Iterator<T>::Rep {
+            class   Bag<T>::_IMutatorRep : public Iterator<T>::Rep {
             protected:
-                BagMutatorRep ();
+                _IMutatorRep ();
 
             public:
                 virtual void    RemoveCurrent ()            =   0;
@@ -234,7 +234,7 @@ namespace   Stroika {
                 virtual void        Remove (T item)                 =   0;
 
                 virtual typename Iterator<T>::Rep*      MakeIterator ()         =   0;
-                virtual BagMutatorRep*                  MakeBagMutator ()       =   0;
+                virtual _IMutatorRep*                  MakeBagMutator ()       =   0;
             };
 
         }
