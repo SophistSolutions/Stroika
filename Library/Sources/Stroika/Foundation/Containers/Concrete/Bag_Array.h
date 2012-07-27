@@ -15,6 +15,10 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+
+				/*
+				 * Bag_Array<T> is an Array-based concrete implementation of the Bag<T> container pattern.
+				 */
                 template    <class T>  
 				class   Bag_Array : public Bag<T> {
                 public:

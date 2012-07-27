@@ -15,6 +15,9 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+				/*
+				 * Bag_LinkedList<T> is an LinkedList-based concrete implementation of the Bag<T> container pattern.
+				 */
                 template    <typename T>
 				class  Bag_LinkedList : public Bag<T> {
                 public:
@@ -25,9 +28,7 @@ namespace   Stroika {
 
                     nonvirtual  Bag_LinkedList<T>&  operator= (const Bag_LinkedList<T>& bag);
 
-				
-                public:
-                public:
+                private:
 					class   Rep_;
 					class   MutatorRep_;
 				};
