@@ -171,8 +171,8 @@ namespace   Stroika {
                 virtual Iterator<T>     MakeIterator () const                                       =   0;
                 virtual size_t          GetLength () const                                          =   0;
                 virtual bool            IsEmpty () const                                            =   0;
-                virtual  void           Apply (void (*doToElement) (const T& item)) const           =   0;
-                virtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (const T& item)) const  =   0;
+                virtual void            Apply (void (*doToElement) (const T& item)) const           =   0;
+                virtual Iterator<T>     ApplyUntilTrue (bool (*doToElement) (const T& item)) const  =   0;
 
             protected:
                 /*
