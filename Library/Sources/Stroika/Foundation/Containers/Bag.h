@@ -37,6 +37,10 @@
  *
  *      +   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
  *
+ *		o	Because of the definition of operator== (Bag,Bag), we have an expensive implemenation.
+ *			The underlying IRep should be enhanced to allow if we are talking to two like implementations
+ *			we can produce a more efficient comparison.
+ *
  *
  * Notes:
  *
@@ -55,12 +59,6 @@
 
 
 
-/*
- * TODO:
- *
- *      (o)
- */
-
 
 
 
@@ -69,9 +67,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-#if 0
-            /// NEEDED TEMPORARILY FOR BELOW FRIEND DECLARATION TIL I CAN FIND A BETTER WAY? - GCC ONLY ISSUE
-            /// -- LGP 2012-07-22
+#if		qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
             template    <typename T>
             class   Bag;
             template    <typename T>
@@ -79,6 +75,32 @@ namespace   Stroika {
 #endif
 
 
+			/*
+			 *	A Bag<T> is a container pattern to manage an un-ordered collection of items. This is both an abstract interface, and
+			 *	but the Bag<T> class it actually concrete because it automatically binds to a default implementation.
+			 *
+			 *      A Bag is the simplest kind of collection. It allows addition and
+			 *  removal of elements, but makes no guarantees about element ordering. Two
+			 *  bags are considered equal if they contain the same items, even if iteration
+			 *  order is different.
+			 *
+			 *      Bags are typically designed to optimize item addition and iteration.
+			 *  They are fairly slow at item access (as they have no keys). Removing items
+			 *  is usually slow, except in the context of a Bag<T>::Mutator, where it is usually
+			 *  very fast. Bag comparison (operator==) is often very slow in the worst
+			 *  case (n^2) and this worst case is the relatively common case of identical
+			 *  bags.
+			 *
+			 *      Although Bag has an TallyOf () method, it is nonvirtual, and therefore
+			 *  not optimized for the various backends. There is a separate class, Tally,
+			 *  for cases where you are primarily interested in keeping an summary count
+			 *  of the occurences of each item.
+			 *
+			 *      Bags allow calls to Remove with an item not contained within the bag.
+			 *
+			 *      As syntactic sugar, using either functional (Add, Remove) or
+			 *  operator (+,-) is allowed.
+			 */
             template    <typename T>
             class   Bag {
             protected:

@@ -198,6 +198,20 @@
 
 
 
+
+// Not totally clear what compiler is wrong, but I'm not sure why I would need to pre-declare the
+// template the way GCC 4.6.3 appears to require		-- LGP 2012-07-27
+#ifndef qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
+#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 0
+#else
+#define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 1
+#endif
+#endif
+
+
+
+
 #ifndef qCompilerAndStdLib_Supports_TemplateUsingEquals
 // Unclear if my usage is right, and what compiler purports to support it. Definetely not msvc 2010
 #define qCompilerAndStdLib_Supports_TemplateUsingEquals 0
