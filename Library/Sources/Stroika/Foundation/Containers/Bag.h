@@ -57,9 +57,7 @@
 /*
  * TODO:
  *
- *      (o)                     // See about making these PROTECTED
-                class   BagRep;
-                class   BagMutatorRep;
+ *      (o)
  */
 
 
@@ -83,8 +81,6 @@ namespace   Stroika {
             class   Bag {
             protected:
                 class   _IRep;
-//            public:
-// See about making these PROTECTED
                 class   _IMutatorRep;
 
             public:
