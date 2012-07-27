@@ -95,10 +95,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-            template    <typename T> class  Iterator {
+            template    <typename T>
+			class  Iterator {
             public:
                 class   Rep;
-                //class RepSentinal;
             public:
                 explicit    Iterator (Rep* it);
                 Iterator (const Iterator<T>& from);
@@ -117,10 +117,10 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (Iterator rhs) const;
                 nonvirtual  bool    operator== (Iterator rhs) const;
 
+            public:
                 // Synonyms for above, sometimes making code more readable
                 // Current -> operator*
                 // Done -> (it != container.end ())
-            public:
                 nonvirtual  T       Current () const;
                 nonvirtual  bool    Done () const;
 
@@ -153,7 +153,8 @@ namespace   Stroika {
                         (note that for performance and safety reasons the iterator envelope actually
                         passes fCurrent into More when implenenting ++it
             */
-            template    <typename T> class  Iterator<T>::Rep {
+            template    <typename T>
+			class  Iterator<T>::Rep {
             protected:
                 Rep ();
 
