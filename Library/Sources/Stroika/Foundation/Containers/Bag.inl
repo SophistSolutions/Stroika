@@ -21,7 +21,7 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  Bag<T>::Bag (typename Bag<T>::BagRep* rep)
+            inline  Bag<T>::Bag (typename Bag<T>::_IRep* rep)
                 : fRep_ (rep)
             {
             }
@@ -184,7 +184,7 @@ namespace   Stroika {
                 return (count);
             }
             template    <class T>
-            typename Bag<T>::BagRep*  Bag<T>::Clone (const typename Bag<T>::BagRep& rep)
+            typename Bag<T>::_IRep*  Bag<T>::Clone_ (const typename Bag<T>::_IRep& rep)
             {
                 return (rep.Clone ());
             }
@@ -277,22 +277,22 @@ namespace   Stroika {
 
 
 
-            // class BagRep<T>
+            // class _IRep<T>
             template    <typename T>
-            inline  Bag<T>::BagRep::BagRep ()
+            inline  Bag<T>::_IRep::_IRep ()
             {
             }
             template    <typename T>
-            inline  Bag<T>::BagRep::~BagRep ()
+            inline  Bag<T>::_IRep::~_IRep ()
             {
             }
             template    <typename T>
-            inline  const typename  Bag<T>::BagRep*    Bag<T>::GetRep () const
+            inline  const typename  Bag<T>::_IRep*    Bag<T>::GetRep () const
             {
                 return (fRep_.GetPointer ());
             }
             template    <typename T>
-            inline  typename    Bag<T>::BagRep*  Bag<T>::GetRep ()
+            inline  typename    Bag<T>::_IRep*  Bag<T>::GetRep ()
             {
                 return (fRep_.GetPointer ());
             }

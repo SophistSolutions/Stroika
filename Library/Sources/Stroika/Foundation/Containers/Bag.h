@@ -82,9 +82,9 @@ namespace   Stroika {
             template    <typename T>
             class   Bag {
             protected:
-            public:
 // See about making these PROTECTED
-                class   BagRep;
+                class   _IRep;
+            public:
                 class   BagMutatorRep;
 
             public:
@@ -93,7 +93,7 @@ namespace   Stroika {
                 explicit Bag (const T* start, const T* end);
 
             protected:
-                explicit Bag (BagRep* rep);
+                explicit Bag (_IRep* rep);
 
             public:
                 nonvirtual  Bag<T>& operator= (const Bag<T>& bag);
@@ -175,19 +175,21 @@ namespace   Stroika {
 
             protected:
                 // Are these allowed to return 0??? If not, add asserts!!!
-                nonvirtual  const BagRep*    GetRep () const;
-                nonvirtual  BagRep*          GetRep ();
+                nonvirtual  const _IRep*    GetRep () const;
+                nonvirtual  _IRep*          GetRep ();
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  BagRep*  Copy (const BagRep& t) {
-                        return Bag::Clone (t);
+                    inline  static  _IRep*  Copy (const _IRep& t) {
+                        return Bag::Clone_ (t);
                     }
                 };
-                Memory::SharedByValue<BagRep, Rep_Cloner_>    fRep_;
+                Memory::SharedByValue<_IRep, Rep_Cloner_>    fRep_;
 
-                static  BagRep*  Clone (const BagRep& rep);
+            private:
+                static  _IRep*  Clone_ (const _IRep& rep);
 
+            private:
                 // SSW 9/16/2011: note weird syntax needed for friend declaration (and had to be forwarded above)
                 friend  bool    operator==<T> (const Bag<T>& lhs, const Bag<T>& rhs);   // friend to check if reps equal...
             };
@@ -214,15 +216,15 @@ namespace   Stroika {
             };
 
             template    <typename T>
-            class   Bag<T>::BagRep {
+            class   Bag<T>::_IRep {
             protected:
-                BagRep ();
+                _IRep ();
 
             public:
-                virtual ~BagRep ();
+                virtual ~_IRep ();
 
             public:
-                virtual BagRep*     Clone () const                  =   0;
+                virtual _IRep*     Clone () const                  =   0;
                 virtual bool        Contains (T item) const         =   0;
                 virtual size_t      GetLength () const              =   0;
                 virtual void        Compact ()                      =   0;
