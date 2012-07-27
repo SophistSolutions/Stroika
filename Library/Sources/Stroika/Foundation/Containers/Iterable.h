@@ -144,8 +144,8 @@ namespace   Stroika {
 
 
             protected:
-                nonvirtual  Iterable<T>::_IRep&         _GetRep ();
-                nonvirtual  const Iterable<T>::_IRep&   _GetRep () const;
+                nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
+                nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             protected:
                 nonvirtual  void                        _SetRep (Memory::SharedByValue<_IRep> rep);
