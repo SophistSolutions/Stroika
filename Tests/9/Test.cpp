@@ -337,12 +337,73 @@ namespace	{
 }
 
 
+
+
+
+
+
+namespace	{
+	namespace	Test3_Equals_ {
+
+		template	<typename	CONCRETE_TYPE, typename	ELEMENT_TYPE>
+		void	SimpleOpEqualsTest_ ()
+		{
+			CONCRETE_TYPE	bag;
+			ELEMENT_TYPE	t1	=	1;
+			ELEMENT_TYPE	t2	=	2;
+			ELEMENT_TYPE	t3	=	3;
+			VerifyTestResult (bag.IsEmpty());
+			bag.Add (t1);
+			bag.Add (t1);
+			{
+				CONCRETE_TYPE	bag2	=	bag;
+				VerifyTestResult (bag2 == bag);
+				VerifyTestResult (not (bag2 != bag));
+				bag.Add (t1);
+				VerifyTestResult (not (bag2 == bag));
+				VerifyTestResult (bag2 != bag);
+			}
+
+			VerifyTestResult (bag.GetLength () == 3);
+			bag.Add (t3);
+			bag.Add (t1);
+			bag.Add (t1);
+			bag.Add (t3);
+			{
+				CONCRETE_TYPE	bag2	=	bag;
+				VerifyTestResult (bag2 == bag);
+				VerifyTestResult (not (bag2 != bag));
+				bag.Add (t1);
+				VerifyTestResult (not (bag2 == bag));
+				VerifyTestResult (bag2 != bag);
+				bag.Remove (t1);
+				VerifyTestResult (bag2 == bag);
+				VerifyTestResult (not (bag2 != bag));
+			}
+
+		}
+
+		void	RunBasicBagTestsOnEachConcreteType_ ()
+		{
+			SimpleOpEqualsTest_<Bag<size_t>,size_t> ();
+			SimpleOpEqualsTest_<Bag<SimpleClass>,SimpleClass> ();
+			SimpleOpEqualsTest_<Bag_LinkedList<size_t>,size_t> ();
+			SimpleOpEqualsTest_<Bag_LinkedList<SimpleClass>,SimpleClass> ();
+			SimpleOpEqualsTest_<Bag_Array<size_t>,size_t> ();
+			SimpleOpEqualsTest_<Bag_Array<SimpleClass>,SimpleClass> ();
+		}
+
+	}
+}
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
 	{
 		Test1_::RunBasicBagTestsOnEachConcreteType_ ();
 		Test2_TallyOf_::RunBasicBagTestsOnEachConcreteType_ ();
+		Test3_Equals_::RunBasicBagTestsOnEachConcreteType_ ();
 	}
 
 }
