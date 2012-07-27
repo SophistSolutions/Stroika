@@ -296,6 +296,45 @@ namespace	{
 
 
 
+namespace	{
+	namespace	Test2_TallyOf_ {
+
+
+		template	<typename	CONCRETE_TYPE, typename	ELEMENT_TYPE>
+		void	SimpleTallyTest_ ()
+		{
+			CONCRETE_TYPE	bag;
+			ELEMENT_TYPE	t1	=	1;
+			ELEMENT_TYPE	t2	=	2;
+			ELEMENT_TYPE	t3	=	3;
+			VerifyTestResult (bag.IsEmpty());
+			bag.Add (t1);
+			bag.Add (t1);
+			VerifyTestResult (not bag.IsEmpty());
+			VerifyTestResult (bag.TallyOf (t3) == 0);
+			VerifyTestResult (bag.TallyOf (t1) == 2);
+			{
+				CONCRETE_TYPE	bag2	=	bag;
+				VerifyTestResult (bag2.TallyOf (t3) == 0);
+				VerifyTestResult (bag2.TallyOf (t1) == 2);
+				bag.Add (t1);
+				VerifyTestResult (bag2.TallyOf (t1) == 2);
+				VerifyTestResult (bag.TallyOf (t1) == 3);
+			}
+		}
+
+		void	RunBasicBagTestsOnEachConcreteType_ ()
+		{
+			SimpleTallyTest_<Bag<size_t>,size_t> ();
+			SimpleTallyTest_<Bag<SimpleClass>,SimpleClass> ();
+			SimpleTallyTest_<Bag_LinkedList<size_t>,size_t> ();
+			SimpleTallyTest_<Bag_LinkedList<SimpleClass>,SimpleClass> ();
+			SimpleTallyTest_<Bag_Array<size_t>,size_t> ();
+			SimpleTallyTest_<Bag_Array<SimpleClass>,SimpleClass> ();
+		}
+
+	}
+}
 
 
 namespace	{
@@ -303,6 +342,7 @@ namespace	{
 	void	DoRegressionTests_ ()
 	{
 		Test1_::RunBasicBagTestsOnEachConcreteType_ ();
+		Test2_TallyOf_::RunBasicBagTestsOnEachConcreteType_ ();
 	}
 
 }
