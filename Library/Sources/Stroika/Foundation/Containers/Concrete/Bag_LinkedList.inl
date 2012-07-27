@@ -16,7 +16,7 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-				template    <typename T>
+                template    <typename T>
                 class   Bag_LinkedList<T>::Rep_ : public Bag<T>::_IRep {
                 public:
                     Rep_ ();
@@ -40,14 +40,14 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    LinkedList_Patch<T>	fData_;
+                    LinkedList_Patch<T> fData_;
 
                 private:
-                    friend  class	Bag_LinkedList<T>::MutatorRep_;
+                    friend  class   Bag_LinkedList<T>::MutatorRep_;
                 };
 
 
-				// One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
+                // One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
                 template    <typename T>
                 class  Bag_LinkedList<T>::MutatorRep_ : public Bag<T>::_IMutatorRep {
                 public:
@@ -76,7 +76,7 @@ namespace   Stroika {
 
 
 
-				//	class	Bag_LinkedList<T>::Rep_
+                //  class   Bag_LinkedList<T>::Rep_
                 template    <typename  T>
                 inline  void*   Bag_LinkedList<T>::Rep_::operator new (size_t size)
                 {

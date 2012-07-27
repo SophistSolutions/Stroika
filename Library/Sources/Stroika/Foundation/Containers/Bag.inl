@@ -44,16 +44,16 @@ namespace   Stroika {
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
             {
-				RequireNotNull (bag.fRep_.GetPointer ());
-				if (fRep_.GetPointer () != bag.fRep_.GetPointer ()) {
-					fRep_ = bag.fRep_;
-				}
+                RequireNotNull (bag.fRep_.GetPointer ());
+                if (fRep_.GetPointer () != bag.fRep_.GetPointer ()) {
+                    fRep_ = bag.fRep_;
+                }
                 return (*this);
             }
             template    <typename T>
             inline  size_t  Bag<T>::GetLength () const
             {
-				EnsureNotNull (fRep_.GetPointer ());
+                EnsureNotNull (fRep_.GetPointer ());
                 return (fRep_->GetLength ());
             }
             template    <typename T>
@@ -64,25 +64,25 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Bag<T>::Contains (T item) const
             {
-				EnsureNotNull (fRep_.GetPointer ());
+                EnsureNotNull (fRep_.GetPointer ());
                 return (fRep_->Contains (item));
             }
             template    <typename T>
             inline  void    Bag<T>::RemoveAll ()
             {
-				EnsureNotNull (fRep_.GetPointer ());
+                EnsureNotNull (fRep_.GetPointer ());
                 fRep_->RemoveAll ();
             }
             template    <typename T>
             inline  void    Bag<T>::Compact ()
             {
-				EnsureNotNull (fRep_.GetPointer ());
+                EnsureNotNull (fRep_.GetPointer ());
                 fRep_->Compact ();
             }
             template    <typename T>
             inline  Iterator<T> Bag<T>::MakeIterator () const
             {
-				EnsureNotNull (fRep_.GetPointer ());
+                EnsureNotNull (fRep_.GetPointer ());
                 Iterator<T> it (const_cast<Bag<T> *> (this)->fRep_->MakeIterator ());
                 ++it;
                 return it;
@@ -134,7 +134,7 @@ namespace   Stroika {
             template    <typename T>
             inline   typename   Bag<T>::Mutator  Bag<T>::MakeMutator ()
             {
-				EnsureNotNull (fRep_.GetPointer ());
+                EnsureNotNull (fRep_.GetPointer ());
                 Bag<T>::Mutator it = Bag<T>::Mutator (fRep_->MakeBagMutator ());
                 ++it;
                 return it;
@@ -302,14 +302,14 @@ namespace   Stroika {
             template    <typename T>
             inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
             {
-				EnsureNotNull (fRep_.GetPointer ());
-				return *fRep_;
+                EnsureNotNull (fRep_.GetPointer ());
+                return *fRep_;
             }
             template    <typename T>
             inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
             {
-				EnsureNotNull (fRep_.GetPointer ());
-				return *fRep_;
+                EnsureNotNull (fRep_.GetPointer ());
+                return *fRep_;
             }
 
 

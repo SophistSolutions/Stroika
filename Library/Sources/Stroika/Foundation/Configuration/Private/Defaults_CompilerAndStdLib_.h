@@ -200,7 +200,7 @@
 
 
 // Not totally clear what compiler is wrong, but I'm not sure why I would need to pre-declare the
-// template the way GCC 4.6.3 appears to require		-- LGP 2012-07-27
+// template the way GCC 4.6.3 appears to require        -- LGP 2012-07-27
 #ifndef qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
 #if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 1
