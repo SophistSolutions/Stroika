@@ -26,15 +26,20 @@ namespace   Stroika {
                     static  void*   operator new (size_t size);
                     static  void    operator delete (void* p);
 
-                public:
-                    virtual size_t      GetLength () const override;
+				// Iterable<T>::_IRep overrides
+				public:
+                    virtual typename Iterable<T>::_IRep*	Clone () const override;
+					virtual Iterator<T>						MakeIterator () const override;
+					virtual size_t							GetLength () const override;
+					virtual bool							IsEmpty () const override;
+					virtual void							Apply (void (*doToElement) (const T& item)) const override;
+					virtual Iterator<T>						ApplyUntilTrue (bool (*doToElement) (const T& item)) const override;
+
+				// WILL BE SOON DEFINED BAG<T>::_IRep overrides&&&
+				public:
                     virtual bool        Contains (T item) const override;
                     virtual void        Compact () override;
-                    virtual typename    Bag<T>::_IRep*  Clone () const override;
-
-                    virtual Iterator<T>	MakeIterator () const override;
                     virtual typename Bag<T>::_IMutatorRep*     MakeBagMutator () override;
-
                     virtual void    Add (T item) override;
                     virtual void    Remove (T item) override;
                     virtual void    RemoveAll () override;
@@ -98,23 +103,9 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                size_t  Bag_LinkedList<T>::Rep_::GetLength () const
-                {
-                    return (fData_.GetLength ());
-                }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::Compact ()
-                {
-                }
-                template    <typename T>
-                typename    Bag<T>::_IRep*  Bag_LinkedList<T>::Rep_::Clone () const
+                typename    Iterable<T>::_IRep*  Bag_LinkedList<T>::Rep_::Clone () const
                 {
                     return (new Rep_ (*this));
-                }
-                template    <typename  T>
-                bool    Bag_LinkedList<T>::Rep_::Contains (T item) const
-                {
-                    return (fData_.Contains (item));
                 }
                 template    <typename T>
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
@@ -123,9 +114,38 @@ namespace   Stroika {
                     return Iterator<T> (new Bag_LinkedList<T>::MutatorRep_ (*NON_CONST_THIS));
                 }
                 template    <typename T>
+                size_t  Bag_LinkedList<T>::Rep_::GetLength () const
+                {
+                    return (fData_.GetLength ());
+                }
+                template    <typename T>
+                bool  Bag_LinkedList<T>::Rep_::IsEmpty () const
+                {
+                    return (fData_.GetLength () == 0);
+                }
+                template    <typename T>
+				void      Bag_LinkedList<T>::Rep_::Apply (void (*doToElement) (const T& item)) const override
+				{
+					return _Apply (doToElement);
+				}
+                template    <typename T>
+				Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (bool (*doToElement) (const T& item)) const override
+				{
+					return ApplyUntilTrue (doToElement);
+				}
+                template    <typename T>
+                void    Bag_LinkedList<T>::Rep_::Compact ()
+                {
+                }
+                template    <typename  T>
+                bool    Bag_LinkedList<T>::Rep_::Contains (T item) const
+                {
+                    return (fData_.Contains (item));
+                }
+                template    <typename T>
                 typename    Bag<T>::_IMutatorRep*   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
                 {
-                    return (new Bag_LinkedList<T>::MutatorRep_ (*this));
+                    return (new MutatorRep_ (*this));
                 }
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Add (T item)

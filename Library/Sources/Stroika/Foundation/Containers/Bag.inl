@@ -17,73 +17,50 @@ namespace   Stroika {
             // class Bag<T>
             template    <typename T>
             inline  Bag<T>::Bag (const Bag<T>& bag)
-                : fRep_ (bag.fRep_)
+                : Iterable<T> (bag)
             {
-                RequireNotNull (bag.fRep_.get ());
             }
             template    <typename T>
             inline  Bag<T>::Bag (typename Bag<T>::_IRep* rep)
-                : fRep_ (rep)
+                : Iterable<T> (Memory::SharedByValue<Iterable<T>::_IRep> (rep))
             {
                 RequireNotNull (rep);
             }
             template    <typename T>
             Bag<T>::Bag ()
-                : fRep_ ()
+                : Iterable<T> (Concrete::Bag_Array<T> ())
             {
-                *this = Concrete::Bag_Array<T> ();
-                AssertNotNull (fRep_.get ());
             }
             template    <typename T>
             Bag<T>::Bag (const T* start, const T* end)
-                : fRep_ ()
+                : Iterable<T> (Concrete::Bag_Array<T> (start, end))
             {
-                *this = Concrete::Bag_Array<T> (start, end);
-                AssertNotNull (fRep_.get ());
             }
             template    <typename T>
-            inline  Bag<T>& Bag<T>::operator= (const Bag<T>& bag)
+            inline  Bag<T>& Bag<T>::operator= (const Bag<T>& rhs)
             {
-                RequireNotNull (bag.fRep_.GetPointer ());
-                if (fRep_.GetPointer () != bag.fRep_.GetPointer ()) {
-                    fRep_ = bag.fRep_;
-                }
+				(void)::Iterable<T>::operator= (rhs);
                 return (*this);
-            }
-            template    <typename T>
-            inline  size_t  Bag<T>::GetLength () const
-            {
-                EnsureNotNull (fRep_.GetPointer ());
-                return (fRep_->GetLength ());
-            }
-            template    <typename T>
-            inline  bool    Bag<T>::IsEmpty () const
-            {
-                return (bool (GetLength () == 0));
             }
             template    <typename T>
             inline  bool    Bag<T>::Contains (T item) const
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                return (fRep_->Contains (item));
+                return (_GetRep ().Contains (item));
             }
             template    <typename T>
             inline  void    Bag<T>::RemoveAll ()
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                fRep_->RemoveAll ();
+                _GetRep ().RemoveAll ();
             }
             template    <typename T>
             inline  void    Bag<T>::Compact ()
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                fRep_->Compact ();
+                _GetRep ().Compact ();
             }
             template    <typename T>
             inline  Iterator<T> Bag<T>::MakeIterator () const
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                Iterator<T> it (const_cast<Bag<T> *> (this)->fRep_->MakeIterator ());
+                Iterator<T> it (const_cast<Bag<T> *> (this)->_GetRep ().MakeIterator ());
                 ++it;
                 return it;
             }
@@ -134,8 +111,7 @@ namespace   Stroika {
             template    <typename T>
             inline   typename   Bag<T>::Mutator  Bag<T>::MakeMutator ()
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                Bag<T>::Mutator it = Bag<T>::Mutator (fRep_->MakeBagMutator ());
+                Bag<T>::Mutator it = Bag<T>::Mutator (_GetRep ().MakeBagMutator ());
                 ++it;
                 return it;
             }
@@ -195,11 +171,6 @@ namespace   Stroika {
                     }
                 }
                 return (count);
-            }
-            template    <typename T>
-            typename Bag<T>::_IRep*  Bag<T>::Clone_ (const typename Bag<T>::_IRep& rep)
-            {
-                return (rep.Clone ());
             }
 
 
@@ -302,14 +273,16 @@ namespace   Stroika {
             template    <typename T>
             inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                return *fRep_;
+				// Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+				EnsureNotNull (dynamic_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
+                return *static_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
             template    <typename T>
             inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
             {
-                EnsureNotNull (fRep_.GetPointer ());
-                return *fRep_;
+				// Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+				EnsureNotNull (dynamic_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
+                return *static_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
 
 

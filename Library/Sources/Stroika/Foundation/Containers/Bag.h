@@ -102,7 +102,7 @@ namespace   Stroika {
              *  operator (+,-) is allowed.
              */
             template    <typename T>
-            class   Bag {
+            class   Bag : public Iterable<T> {
             protected:
                 class   _IRep;
                 class   _IMutatorRep;
@@ -116,13 +116,7 @@ namespace   Stroika {
                 explicit Bag (_IRep* rep);
 
             public:
-                nonvirtual  Bag<T>& operator= (const Bag<T>& bag);
-
-            public:
-                nonvirtual  size_t  GetLength () const;
-
-            public:
-                nonvirtual  bool    IsEmpty () const;
+                nonvirtual  Bag<T>& operator= (const Bag<T>& rhs);
 
             public:
                 nonvirtual  bool    Contains (T item) const;
@@ -183,17 +177,6 @@ namespace   Stroika {
                 nonvirtual  _IRep&          _GetRep ();
 
             private:
-                struct  Rep_Cloner_ {
-                    inline  static  _IRep*  Copy (const _IRep& t) {
-                        return Bag::Clone_ (t);
-                    }
-                };
-                Memory::SharedByValue<_IRep, Rep_Cloner_>    fRep_;
-
-            private:
-                static  _IRep*  Clone_ (const _IRep& rep);
-
-            private:
                 friend  bool    operator==<T> (const Bag<T>& lhs, const Bag<T>& rhs);   // friend to check if reps equal...
             };
 
@@ -233,7 +216,7 @@ namespace   Stroika {
              *  the Bag<T> container API.
              */
             template    <typename T>
-            class   Bag<T>::_IRep {
+            class   Bag<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 
@@ -241,9 +224,7 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual _IRep*      Clone () const                  =   0;
                 virtual bool        Contains (T item) const         =   0;
-                virtual size_t      GetLength () const              =   0;
                 virtual void        Compact ()                      =   0;
                 virtual void        RemoveAll ()                    =   0;
 
