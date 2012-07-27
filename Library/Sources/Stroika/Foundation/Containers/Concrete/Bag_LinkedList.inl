@@ -43,7 +43,7 @@ namespace   Stroika {
                     LinkedList_Patch<T>	fData_;
 
                 private:
-                    friend  typename	Bag_LinkedList<T>::MutatorRep_;
+                    friend  class	Bag_LinkedList<T>::MutatorRep_;
                 };
 
 

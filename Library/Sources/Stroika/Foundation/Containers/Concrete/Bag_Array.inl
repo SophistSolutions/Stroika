@@ -40,7 +40,7 @@ namespace   Stroika {
 
                 private:
                     Array_Patch<T>  fData_;
-                    friend	MutatorRep_;
+                    friend	class Bag_Array<T>::MutatorRep_;
                 };
 
 
@@ -243,12 +243,12 @@ namespace   Stroika {
                 template    <typename T>
                 inline	size_t  Bag_Array<T>::GetCapacity () const
                 {
-                    return (GetRep ().fData_.GetCapacity ());
+                    return (GetRep_ ().fData_.GetCapacity ());
                 }
                 template    <typename T>
                 inline	void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep ().fData_.SetCapacity (slotsAlloced);
+                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename T>
                 typename Bag<T>::BagRep*  Bag_Array<T>::Rep_::Clone () const
