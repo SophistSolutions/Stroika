@@ -203,9 +203,9 @@
 // template the way GCC 4.6.3 appears to require		-- LGP 2012-07-27
 #ifndef qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
 #if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
-#define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 0
-#else
 #define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 1
+#else
+#define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 0
 #endif
 #endif
 
