@@ -15,15 +15,18 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-                template    <typename T>
-                class   Bag_LinkedListMutatorRep;
 
-                template    <typename T>
-                class   Bag_LinkedListRep : public Bag<T>::BagRep {
+				template    <typename T>
+                class   Bag_LinkedList<T>::Rep_ : public Bag<T>::BagRep {
                 public:
-                    Bag_LinkedListRep ();
-                    Bag_LinkedListRep (const Bag_LinkedListRep<T>& from);
+                    Rep_ ();
+                    Rep_ (const Rep_& from);
 
+                public:
+                    static  void*   operator new (size_t size);
+                    static  void    operator delete (void* p);
+
+                public:
                     virtual size_t      GetLength () const override;
                     virtual bool        Contains (T item) const override;
                     virtual void        Compact () override;
@@ -36,23 +39,26 @@ namespace   Stroika {
                     virtual void    Remove (T item) override;
                     virtual void    RemoveAll () override;
 
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
+                private:
+                    LinkedList_Patch<T>	fData_;
 
                 private:
-                    LinkedList_Patch<T> fData;
-
-                    friend  class   Bag_LinkedListMutatorRep<T>;
+                    friend  typename	Bag_LinkedList<T>::MutatorRep_;
                 };
 
 
-
+				// One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
                 template    <typename T>
-                class  Bag_LinkedListMutatorRep : public Bag<T>::BagMutatorRep {
+                class  Bag_LinkedList<T>::MutatorRep_ : public Bag<T>::BagMutatorRep {
                 public:
-                    Bag_LinkedListMutatorRep (Bag_LinkedListRep<T>& owner);
-                    Bag_LinkedListMutatorRep (Bag_LinkedListMutatorRep<T>& from);
+                    MutatorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
+                    MutatorRep_ (typename Bag_LinkedList<T>::MutatorRep_& from);
 
+                public:
+                    static  void*   operator new (size_t size);
+                    static  void    operator delete (void* p);
+
+                public:
                     virtual bool    More (T* current, bool advance) override;
 
                     virtual typename Iterator<T>::Rep*      Clone () const override;
@@ -60,12 +66,8 @@ namespace   Stroika {
                     virtual void    RemoveCurrent () override;
                     virtual void    UpdateCurrent (T newValue) override;
 
-
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
-
                 private:
-                    LinkedListMutator_Patch<T>  fIterator;
+                    LinkedListMutator_Patch<T>  fIterator_;
                 };
 
 
@@ -73,94 +75,135 @@ namespace   Stroika {
 
 
 
-                // Bag_LinkedList
-                template    <typename T>
-                inline  Bag_LinkedList<T>& Bag_LinkedList<T>::operator= (const Bag_LinkedList<T>& bag)
+
+				//	class	Bag_LinkedList<T>::Rep_
+                template    <typename  T>
+                inline  void*   Bag_LinkedList<T>::Rep_::operator new (size_t size)
                 {
-                    Bag<T>::operator= (bag);
-                    return (*this);
+                    return (Memory::BlockAllocated<Rep_>::operator new (size));
                 }
-                template    <class  T>
-                inline  void*   Bag_LinkedListRep<T>::operator new (size_t size)
+                template    <typename  T>
+                inline  void    Bag_LinkedList<T>::Rep_::operator delete (void* p)
                 {
-                    return (Memory::BlockAllocated<Bag_LinkedListRep<T> >::operator new (size));
-                }
-                template    <class  T>
-                inline  void    Bag_LinkedListRep<T>::operator delete (void* p)
-                {
-                    Memory::BlockAllocated<Bag_LinkedListRep<T> >::operator delete (p);
+                    Memory::BlockAllocated<Rep_>::operator delete (p);
                 }
                 template    <typename T>
-                inline  Bag_LinkedListRep<T>::Bag_LinkedListRep ()
-                    : fData ()
+                inline  Bag_LinkedList<T>::Rep_::Rep_ ()
+                    : fData_ ()
                 {
                 }
                 template    <typename T>
-                inline  Bag_LinkedListRep<T>::Bag_LinkedListRep (const Bag_LinkedListRep<T>& from)
-                    : fData (from.fData)
+                inline  Bag_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
+                    : fData_ (from.fData_)
                 {
                 }
                 template    <typename T>
-                size_t  Bag_LinkedListRep<T>::GetLength () const
+                size_t  Bag_LinkedList<T>::Rep_::GetLength () const
                 {
-                    return (fData.GetLength ());
+                    return (fData_.GetLength ());
                 }
                 template    <typename T>
-                void    Bag_LinkedListRep<T>::Compact ()
+                void    Bag_LinkedList<T>::Rep_::Compact ()
                 {
                 }
                 template    <typename T>
-                typename    Bag<T>::BagRep*  Bag_LinkedListRep<T>::Clone () const
+                typename    Bag<T>::BagRep*  Bag_LinkedList<T>::Rep_::Clone () const
                 {
-                    return (new Bag_LinkedListRep<T> (*this));
+                    return (new Rep_ (*this));
                 }
-                template    <class  T>
-                bool    Bag_LinkedListRep<T>::Contains (T item) const
+                template    <typename  T>
+                bool    Bag_LinkedList<T>::Rep_::Contains (T item) const
                 {
-                    return (fData.Contains (item));
-                }
-                template    <typename T>
-                typename Iterator<T>::Rep*  Bag_LinkedListRep<T>::MakeIterator ()
-                {
-                    return (new Bag_LinkedListMutatorRep<T> (*this));
+                    return (fData_.Contains (item));
                 }
                 template    <typename T>
-                typename    Bag<T>::BagMutatorRep*   Bag_LinkedListRep<T>::MakeBagMutator ()
+                typename Iterator<T>::Rep*  Bag_LinkedList<T>::Rep_::MakeIterator ()
                 {
-                    return (new Bag_LinkedListMutatorRep<T> (*this));
+                    return (new Bag_LinkedList<T>::MutatorRep_ (*this));
                 }
                 template    <typename T>
-                void    Bag_LinkedListRep<T>::Add (T item)
+                typename    Bag<T>::BagMutatorRep*   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
                 {
-                    fData.Prepend (item);
+                    return (new Bag_LinkedList<T>::MutatorRep_ (*this));
                 }
                 template    <typename T>
-                void    Bag_LinkedListRep<T>::Remove (T item)
+                void    Bag_LinkedList<T>::Rep_::Add (T item)
                 {
-                    fData.Remove (item);
+                    fData_.Prepend (item);
                 }
                 template    <typename T>
-                void    Bag_LinkedListRep<T>::RemoveAll ()
+                void    Bag_LinkedList<T>::Rep_::Remove (T item)
                 {
-                    fData.RemoveAll ();
+                    fData_.Remove (item);
                 }
+                template    <typename T>
+                void    Bag_LinkedList<T>::Rep_::RemoveAll ()
+                {
+                    fData_.RemoveAll ();
+                }
+
+
+
+                //Bag_LinkedList<T>::MutatorRep_
+                template    <typename  T>
+                inline  void*   Bag_LinkedList<T>::MutatorRep_::operator new (size_t size)
+                {
+                    return (Memory::BlockAllocated<MutatorRep_>::operator new (size));
+                }
+                template    <typename  T>
+                inline  void    Bag_LinkedList<T>::MutatorRep_::operator delete (void* p)
+                {
+                    Memory::BlockAllocated<MutatorRep_>::operator delete (p);
+                }
+                template    <typename T>
+                Bag_LinkedList<T>::MutatorRep_::MutatorRep_ (typename Bag_LinkedList<T>::Rep_& owner) :
+                    fIterator_ (owner.fData_)
+                {
+                }
+                template    <typename T>
+                Bag_LinkedList<T>::MutatorRep_::MutatorRep_ (MutatorRep_& from)
+                    : fIterator_ (from.fIterator_)
+                {
+                }
+                template    <typename T>
+                bool    Bag_LinkedList<T>::MutatorRep_::More (T* current, bool advance)
+                {
+                    return (fIterator_.More (current, advance));
+                }
+                template    <typename T>
+                typename Iterator<T>::Rep*  Bag_LinkedList<T>::MutatorRep_::Clone () const
+                {
+                    return (new MutatorRep_ (*const_cast<MutatorRep_*> (this)));
+                }
+                template    <typename  T>
+                void    Bag_LinkedList<T>::MutatorRep_::UpdateCurrent (T newValue)
+                {
+                    fIterator_.UpdateCurrent (newValue);
+                }
+                template    <typename  T>
+                void    Bag_LinkedList<T>::MutatorRep_::RemoveCurrent ()
+                {
+                    fIterator_.RemoveCurrent ();
+                }
+
+
 
 
                 // Bag_LinkedList
                 template    <typename T>
                 Bag_LinkedList<T>::Bag_LinkedList ()
-                    : Bag<T> (new Bag_LinkedListRep<T> ())
+                    : Bag<T> (new Rep_ ())
                 {
                 }
                 template    <typename T>
                 Bag_LinkedList<T>::Bag_LinkedList (const T* start, const T* end)
-                    : Bag<T> (new Bag_LinkedListRep<T> ())
+                    : Bag<T> (new Rep_ ())
                 {
                     Add (start, end);
                 }
                 template    <typename T>
                 Bag_LinkedList<T>::Bag_LinkedList (const Bag<T>& src)
-                    : Bag<T> (new Bag_LinkedListRep<T> ())
+                    : Bag<T> (new Rep_ ())
                 {
                     operator+= (src);
                 }
@@ -169,48 +212,11 @@ namespace   Stroika {
                     : Bag<T> (src)
                 {
                 }
-
-
-                //Bag_LinkedListMutatorRep
-                template    <class  T>
-                inline  void*   Bag_LinkedListMutatorRep<T>::operator new (size_t size)
-                {
-                    return (Memory::BlockAllocated<Bag_LinkedListMutatorRep<T> >::operator new (size));
-                }
-                template    <class  T>
-                inline  void    Bag_LinkedListMutatorRep<T>::operator delete (void* p)
-                {
-                    Memory::BlockAllocated<Bag_LinkedListMutatorRep<T> >::operator delete (p);
-                }
                 template    <typename T>
-                Bag_LinkedListMutatorRep<T>::Bag_LinkedListMutatorRep (Bag_LinkedListRep<T>& owner) :
-                    fIterator (owner.fData)
+                inline  Bag_LinkedList<T>& Bag_LinkedList<T>::operator= (const Bag_LinkedList<T>& bag)
                 {
-                }
-                template    <typename T>
-                Bag_LinkedListMutatorRep<T>::Bag_LinkedListMutatorRep (Bag_LinkedListMutatorRep<T>& from) :
-                    fIterator (from.fIterator)
-                {
-                }
-                template    <typename T>
-                bool    Bag_LinkedListMutatorRep<T>::More (T* current, bool advance)
-                {
-                    return (fIterator.More(current, advance));
-                }
-                template    <typename T>
-                typename Iterator<T>::Rep*  Bag_LinkedListMutatorRep<T>::Clone () const
-                {
-                    return (new Bag_LinkedListMutatorRep<T> (*const_cast<Bag_LinkedListMutatorRep<T>*> (this)));
-                }
-                template    <class  T>
-                void    Bag_LinkedListMutatorRep<T>::UpdateCurrent (T newValue)
-                {
-                    fIterator.UpdateCurrent (newValue);
-                }
-                template    <class  T>
-                void    Bag_LinkedListMutatorRep<T>::RemoveCurrent ()
-                {
-                    fIterator.RemoveCurrent ();
+                    Bag<T>::operator= (bag);
+                    return (*this);
                 }
 
             }

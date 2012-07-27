@@ -15,7 +15,8 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-                template    <typename T> class  Bag_LinkedList : public Bag<T> {
+                template    <typename T>
+				class  Bag_LinkedList : public Bag<T> {
                 public:
                     Bag_LinkedList ();
                     Bag_LinkedList (const T* start, const T* end);
@@ -23,7 +24,13 @@ namespace   Stroika {
                     Bag_LinkedList (const Bag_LinkedList<T>& bag);
 
                     nonvirtual  Bag_LinkedList<T>&  operator= (const Bag_LinkedList<T>& bag);
-                };
+
+				
+                public:
+                public:
+					class   Rep_;
+					class   MutatorRep_;
+				};
 
             }
         }
@@ -34,12 +41,12 @@ namespace   Stroika {
 #endif  /*_Stroika_Foundation_Containers_Concrete_Bag_LinkedList_h_ */
 
 
+
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-
-#include "Bag_LinkedList.inl"
+#include	"Bag_LinkedList.inl"
 
 
