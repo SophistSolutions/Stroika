@@ -194,16 +194,17 @@ namespace   Stroika {
                 static  _IRep*  Clone_ (const _IRep& rep);
 
             private:
-                // SSW 9/16/2011: note weird syntax needed for friend declaration (and had to be forwarded above)
                 friend  bool    operator==<T> (const Bag<T>& lhs, const Bag<T>& rhs);   // friend to check if reps equal...
             };
 
-            template    <typename T>
+
+			template    <typename T>
             bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
             template    <typename T>
             bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs);
 
-            template    <typename T>
+            
+			template    <typename T>
             Bag<T>  operator+ (const Bag<T>& lhs, const Bag<T>& rhs);
             template    <typename T>
             Bag<T>  operator- (const Bag<T>& lhs, const Bag<T>& rhs);
