@@ -32,7 +32,7 @@ namespace   Stroika {
                     virtual void        Compact () override;
                     virtual typename    Bag<T>::_IRep*  Clone () const override;
 
-                    virtual Iterator<T>	MakeIterator () override;
+                    virtual Iterator<T>	MakeIterator () const override;
                     virtual typename Bag<T>::_IMutatorRep*     MakeBagMutator () override;
 
                     virtual void    Add (T item) override;
@@ -117,9 +117,10 @@ namespace   Stroika {
                     return (fData_.Contains (item));
                 }
                 template    <typename T>
-                Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator ()
+                Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
                 {
-                    return Iterator<T> (new Bag_LinkedList<T>::MutatorRep_ (*this));
+					Rep_*	NON_CONST_THIS	=	const_cast<Rep_*> (this);		// logically const, but non-const cast cuz re-using iterator API
+                    return Iterator<T> (new Bag_LinkedList<T>::MutatorRep_ (*NON_CONST_THIS));
                 }
                 template    <typename T>
                 typename    Bag<T>::_IMutatorRep*   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
