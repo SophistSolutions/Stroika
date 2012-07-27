@@ -37,6 +37,7 @@
  *
  *      +   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
  *
+ *
  * Notes:
  *
  *
@@ -117,7 +118,6 @@ namespace   Stroika {
                 nonvirtual  void    Add (const Bag<T>& items);
                 nonvirtual  void    Add (const T* begin, const T* end);
 
-
             public:
                 /*
                  * It is legal to remove something that is not there.
@@ -125,13 +125,9 @@ namespace   Stroika {
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (const Bag<T>& items);
 
-                // Have Bag_Difference/Union/Interesection??? methods/??
-
-
             public:
                 /*
-                 *      +=/-= are equivilent Add() and Remove(). They
-                 *  are just syntactic sugar.
+                 *      +=/-= are equivilent Add() and Remove(). They are just syntactic sugar.
                  */
                 nonvirtual  Bag<T>& operator+= (T item);
                 nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
@@ -170,9 +166,8 @@ namespace   Stroika {
                 nonvirtual  size_t  TallyOf (T item) const;
 
             protected:
-                // Are these allowed to return 0??? If not, add asserts!!!
-                nonvirtual  const _IRep*    GetRep () const;
-                nonvirtual  _IRep*          GetRep ();
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
 
             private:
                 struct  Rep_Cloner_ {
@@ -201,16 +196,10 @@ namespace   Stroika {
             Bag<T>  operator- (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
-            template    <typename T>
-            class   Bag<T>::_IMutatorRep : public Iterator<T>::Rep {
-            protected:
-                _IMutatorRep ();
-
-            public:
-                virtual void    RemoveCurrent ()            =   0;
-                virtual void    UpdateCurrent (T newValue)  =   0;
-            };
-
+			/*
+			 *	Protected abstract interface to support concrete implementations of
+			 *	the Bag<T> container API.
+			 */
             template    <typename T>
             class   Bag<T>::_IRep {
             protected:
@@ -231,6 +220,21 @@ namespace   Stroika {
 
                 virtual typename Iterator<T>::Rep*      MakeIterator ()         =   0;
                 virtual _IMutatorRep*                  MakeBagMutator ()       =   0;
+            };
+
+
+			/*
+			 *	Protected abstract interface to support concrete implementations of
+			 *	the Bag<T> container API.
+			 */
+            template    <typename T>
+            class   Bag<T>::_IMutatorRep : public Iterator<T>::Rep {
+            protected:
+                _IMutatorRep ();
+
+            public:
+                virtual void    RemoveCurrent ()            =   0;
+                virtual void    UpdateCurrent (T newValue)  =   0;
             };
 
         }

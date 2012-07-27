@@ -228,7 +228,7 @@ namespace   Stroika {
                      * to this type. We could keep extra pointer, but that would cost space and time,
                      * and with care we don't need to.
                      */
-                    return *(static_cast<const Rep_*> (Bag<T>::GetRep ()));
+                    return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
                 }
                 template    <typename T>    
 				inline  typename Bag_Array<T>::Rep_&    Bag_Array<T>::GetRep_ ()
@@ -238,7 +238,7 @@ namespace   Stroika {
                      * to this type. We could keep extra pointer, but that would cost space and time,
                      * and with care we don't need to.
                      */
-                    return *(static_cast<const Rep_*> (Bag<T>::GetRep ()));
+                    return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
                 }
                 template    <typename T>
                 inline	size_t  Bag_Array<T>::GetCapacity () const
