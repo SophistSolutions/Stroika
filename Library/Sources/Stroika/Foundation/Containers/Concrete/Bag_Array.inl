@@ -14,30 +14,18 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-
-                using namespace Private;
-
-
-                // class Bag_Array<T>
-                template    <typename T>    inline  Bag_Array<T>::Bag_Array (const Bag_Array<T>& bag) :
-                    Bag<T> (bag)
-                {
-                }
-                template    <typename T>    inline  Bag_Array<T>&   Bag_Array<T>::operator= (const Bag_Array<T>& bag)
-                {
-                    Bag<T>::operator= (bag);
-                    return (*this);
-                }
-
-
+                
                 template    <typename T>
-                class   Bag_ArrayMutatorRep;
-                template    <typename T>
-                class   Bag_ArrayRep : public Bag<T>::BagRep {
+                class   Bag_Array<T>::Rep_ : public Bag<T>::BagRep {
                 public:
-                    Bag_ArrayRep ();
-                    ~Bag_ArrayRep ();
+                    Rep_ ();
+                    ~Rep_ ();
 
+                public:
+                    static  void*   operator new (size_t size);
+                    static  void    operator delete (void* p);
+
+                public:
                     virtual size_t      GetLength () const override;
                     virtual bool        Contains (T item) const override;
                     virtual void        Compact () override;
@@ -50,22 +38,16 @@ namespace   Stroika {
                     virtual void    Remove (T item) override;
                     virtual void    RemoveAll () override;
 
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
-
                 private:
-                    Array_Patch<T>  fData;
-
-                    friend  class   Bag_Array<T>;
-                    friend  class   Bag_ArrayMutatorRep<T>;
+                    Array_Patch<T>  fData_;
+                    friend	MutatorRep_;
                 };
 
 
-
                 template    <typename T>
-                class  Bag_ArrayMutatorRep : public Bag<T>::BagMutatorRep {
+                class  Bag_Array<T>::MutatorRep_ : public Bag<T>::BagMutatorRep {
                 public:
-                    Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner);
+                    MutatorRep_ (typename Bag_Array<T>::Rep_& owner);
 
                     virtual bool    More (T* current, bool advance) override;
                     virtual T       Current () const override;
@@ -79,60 +61,55 @@ namespace   Stroika {
                     static  void    operator delete (void* p);
 
                 private:
-                    ForwardArrayMutator_Patch<T>    fIterator;
-                    friend  class   Bag_ArrayRep<T>;
+                    ForwardArrayMutator_Patch<T>    fIterator_;
+                    friend  class   Rep_;
                 };
 
 
 
 
 
-                /*
-                 ********************************************************************************
-                 ******************************* Bag_ArrayMutatorRep ****************************
-                 ********************************************************************************
-                 */
-
+				//	class	Bag_Array<T>::MutatorRep_<T>
                 template    <class  T>
-                inline  void*   Bag_ArrayMutatorRep<T>::operator new (size_t size)
+                inline  void*   Bag_Array<T>::MutatorRep_::operator new (size_t size)
                 {
-                    return (Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator new (size));
+                    return (Memory::BlockAllocated<MutatorRep_>::operator new (size));
                 }
                 template    <class  T>
-                inline  void    Bag_ArrayMutatorRep<T>::operator delete (void* p)
+                inline  void    Bag_Array<T>::MutatorRep_::operator delete (void* p)
                 {
-                    Memory::BlockAllocated<Bag_ArrayMutatorRep<T> >::operator delete (p);
+                    Memory::BlockAllocated<MutatorRep_>::operator delete (p);
                 }
                 template    <class  T>
-                Bag_ArrayMutatorRep<T>::Bag_ArrayMutatorRep (Bag_ArrayRep<T>& owner)
+                Bag_Array<T>::MutatorRep_::MutatorRep_ (typename Bag_Array<T>::Rep_& owner)
                     : Bag<T>::BagMutatorRep ()
-                    , fIterator (owner.fData)
+                    , fIterator_ (owner.fData_)
                 {
                 }
                 template    <class  T>
-                bool    Bag_ArrayMutatorRep<T>::More (T* current, bool advance)
+                bool    Bag_Array<T>::MutatorRep_::More (T* current, bool advance)
                 {
-                    return (fIterator.More (current, advance));
+                    return (fIterator_.More (current, advance));
                 }
                 template    <class  T>
-                T   Bag_ArrayMutatorRep<T>::Current () const
+                T   Bag_Array<T>::MutatorRep_::Current () const
                 {
-                    return (fIterator.Current());
+                    return (fIterator_.Current());
                 }
                 template    <typename T>
-                typename Iterator<T>::Rep*  Bag_ArrayMutatorRep<T>::Clone () const
+                typename Iterator<T>::Rep*  Bag_Array<T>::MutatorRep_::Clone () const
                 {
-                    return (new Bag_ArrayMutatorRep<T> (*this));
+                    return (new MutatorRep_ (*this));
                 }
                 template    <class  T>
-                void    Bag_ArrayMutatorRep<T>::RemoveCurrent ()
+                void    Bag_Array<T>::MutatorRep_::RemoveCurrent ()
                 {
-                    fIterator.RemoveCurrent ();
+                    fIterator_.RemoveCurrent ();
                 }
                 template    <class  T>
-                void    Bag_ArrayMutatorRep<T>::UpdateCurrent (T newValue)
+                void    Bag_Array<T>::MutatorRep_::UpdateCurrent (T newValue)
                 {
-                    fIterator.UpdateCurrent (newValue);
+                    fIterator_.UpdateCurrent (newValue);
                 }
 
 
@@ -140,162 +117,144 @@ namespace   Stroika {
 
 
 
-                /*
-                 ********************************************************************************
-                 ********************************* Bag_ArrayRep *********************************
-                 ********************************************************************************
-                 */
-
-                template    <class  T>  inline  void*   Bag_ArrayRep<T>::operator new (size_t size)
+				//	class	Bag_Array<T>::Rep_
+                template    <class  T>
+				inline  void*   Bag_Array<T>::Rep_::operator new (size_t size)
                 {
-                    return (Memory::BlockAllocated<Bag_ArrayRep<T> >::operator new (size));
+                    return (Memory::BlockAllocated<Rep_>::operator new (size));
                 }
-
-                template    <class  T>  inline  void    Bag_ArrayRep<T>::operator delete (void* p)
+                template    <class  T>
+				inline  void    Bag_Array<T>::Rep_::operator delete (void* p)
                 {
-                    Memory::BlockAllocated<Bag_ArrayRep<T> >::operator delete (p);
+                    Memory::BlockAllocated<Rep_>::operator delete (p);
                 }
-
-                template    <typename T>    inline  Bag_ArrayRep<T>::Bag_ArrayRep () :
-                    fData ()
-                {
-                }
-
-                template    <typename T>    Bag_ArrayRep<T>::~Bag_ArrayRep ()
-                {
-                }
-
                 template    <typename T>
-                size_t  Bag_ArrayRep<T>::GetLength () const
+				inline  Bag_Array<T>::Rep_::Rep_ () :
+                    fData_ ()
                 {
-                    return (fData.GetLength ());
                 }
-
                 template    <typename T>
-                void    Bag_ArrayRep<T>::Compact ()
+				Bag_Array<T>::Rep_::~Rep_ ()
                 {
-                    fData.Compact ();
                 }
-
                 template    <typename T>
-                bool Bag_ArrayRep<T>::Contains (T item) const
+                size_t	Bag_Array<T>::Rep_::GetLength () const
                 {
-                    return (fData.Contains (item));
+                    return (fData_.GetLength ());
                 }
-
                 template    <typename T>
-                typename Iterator<T>::Rep*  Bag_ArrayRep<T>:: MakeIterator ()
+                void    Bag_Array<T>::Rep_::Compact ()
                 {
-                    return (new Bag_ArrayMutatorRep<T> (*this));
+                    fData_.Compact ();
                 }
-
                 template    <typename T>
-                typename Bag<T>::BagMutatorRep*   Bag_ArrayRep<T>::MakeBagMutator ()
+                bool	Bag_Array<T>::Rep_::Contains (T item) const
                 {
-                    return (new Bag_ArrayMutatorRep<T> (*this));
+                    return (fData_.Contains (item));
                 }
-
                 template    <typename T>
-                void    Bag_ArrayRep<T>::Add (T item)
+                typename	Iterator<T>::Rep*  Bag_Array<T>::Rep_::MakeIterator ()
                 {
-                    fData.InsertAt (item, GetLength ());
+                    return (new MutatorRep_ (*this));
                 }
-
-
                 template    <typename T>
-                void    Bag_ArrayRep<T>::Remove (T item)
+                typename	Bag<T>::BagMutatorRep*   Bag_Array<T>::Rep_::MakeBagMutator ()
+                {
+                    return (new MutatorRep_ (*this));
+                }
+                template    <typename T>
+                void    Bag_Array<T>::Rep_::Add (T item)
+                {
+					// Appending is fastest
+                    fData_.InsertAt (item, GetLength ());
+                }
+                template    <typename T>
+                void    Bag_Array<T>::Rep_::Remove (T item)
                 {
                     /*
                      *      Iterate backwards since removing from the end of an array
                      *  will be faster.
                      */
-
-                    for (BackwardArrayIterator<T> it (fData); it.More (nullptr, true);) {
+                    for (BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
                         if (it.Current () == item) {
-                            fData.RemoveAt (it.CurrentIndex ());
+                            fData_.RemoveAt (it.CurrentIndex ());
                             return;
                         }
                     }
                 }
-
-                template    <typename T>    void    Bag_ArrayRep<T>::RemoveAll ()
+                template    <typename T>
+				void    Bag_Array<T>::Rep_::RemoveAll ()
                 {
-                    fData.RemoveAll ();
+                    fData_.RemoveAll ();
                 }
 
 
 
 
-
-
-                /*
-                 ********************************************************************************
-                 ************************************** Bag_Array *******************************
-                 ********************************************************************************
-                 */
-
-                template    <typename T>    Bag_Array<T>::Bag_Array () :
-                    Bag<T> (new Bag_ArrayRep<T> ())
+				//	class	Bag_Array<T>
+                template    <typename T>    Bag_Array<T>::Bag_Array ()
+                    : Bag<T> (new Rep_ ())
                 {
                 }
-
-                template    <typename T>    Bag_Array<T>::Bag_Array (const Bag<T>& bag) :
-                    Bag<T> (new Bag_ArrayRep<T> ())
+                template    <typename T>    Bag_Array<T>::Bag_Array (const Bag<T>& bag)
+                    : Bag<T> (new Rep_ ())
                 {
                     SetCapacity (bag.GetLength ());
                     operator+= (bag);
                 }
-
-                template    <typename T>    Bag_Array<T>::Bag_Array (const T* start, const T* end) :
-                    Bag<T> (new Bag_ArrayRep<T> ())
+                template    <typename T>    Bag_Array<T>::Bag_Array (const T* start, const T* end)
+                    : Bag<T> (new Rep_ ())
                 {
                     size_t  size    =       end - start;
                     SetCapacity (size);
                     AddItems (start, size);
                 }
-
-                template    <typename T>    inline  const Bag_ArrayRep<T>*  Bag_Array<T>::GetRep () const
+                template    <typename T>    
+				inline  Bag_Array<T>::Bag_Array (const Bag_Array<T>& bag) :
+                    Bag<T> (bag)
+                {
+                }
+                template    <typename T>    
+				inline  Bag_Array<T>&   Bag_Array<T>::operator= (const Bag_Array<T>& bag)
+                {
+                    Bag<T>::operator= (bag);
+                    return (*this);
+                }
+                template    <typename T>    
+				inline  const typename Bag_Array<T>::Rep_&  Bag_Array<T>::GetRep_ () const
                 {
                     /*
                      * This cast is safe since we are very careful to assure we always have a pointer
                      * to this type. We could keep extra pointer, but that would cost space and time,
                      * and with care we don't need to.
                      */
-                    return ((const Bag_ArrayRep<T>*) Bag<T>::GetRep ());
+                    return *(static_cast<const Rep_*> (Bag<T>::GetRep ()));
                 }
-
-                template    <typename T>    inline  Bag_ArrayRep<T>*    Bag_Array<T>::GetRep ()
+                template    <typename T>    
+				inline  typename Bag_Array<T>::Rep_&    Bag_Array<T>::GetRep_ ()
                 {
                     /*
                      * This cast is safe since we are very careful to assure we always have a pointer
                      * to this type. We could keep extra pointer, but that would cost space and time,
                      * and with care we don't need to.
                      */
-                    return ((Bag_ArrayRep<T>*) Bag<T>::GetRep ());
+                    return *(static_cast<const Rep_*> (Bag<T>::GetRep ()));
                 }
-
                 template    <typename T>
-                size_t  Bag_Array<T>::GetCapacity () const
+                inline	size_t  Bag_Array<T>::GetCapacity () const
                 {
-                    return (GetRep ()->fData.GetCapacity ());
+                    return (GetRep ().fData_.GetCapacity ());
                 }
-
                 template    <typename T>
-                void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
+                inline	void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep ()->fData.SetCapacity (slotsAlloced);
+                    GetRep ().fData_.SetCapacity (slotsAlloced);
                 }
-
                 template    <typename T>
-                typename Bag<T>::BagRep*  Bag_ArrayRep<T>::Clone () const
+                typename Bag<T>::BagRep*  Bag_Array<T>::Rep_::Clone () const
                 {
-                    return (new Bag_ArrayRep<T> (*this));
+                    return (new Rep_ (*this));
                 }
-
-
-
-
-
 
 
             }

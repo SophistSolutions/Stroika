@@ -15,8 +15,8 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-                template    <class T>   class   Bag_ArrayRep;
-                template    <class T>   class   Bag_Array : public Bag<T> {
+                template    <class T>  
+				class   Bag_Array : public Bag<T> {
                 public:
                     Bag_Array ();
                     Bag_Array (const Bag<T>& bag);
@@ -25,19 +25,27 @@ namespace   Stroika {
 
                     nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 
+                public:
+					/*
+					 * This optional API allows pre-reserving space as an optimizaiton.
+					 */
                     nonvirtual  size_t  GetCapacity () const;
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
-                    nonvirtual  const Bag_ArrayRep<T>*  GetRep () const;
-                    nonvirtual  Bag_ArrayRep<T>*        GetRep ();
+					class	Rep_;
+                private:
+                    nonvirtual  const Rep_&  GetRep_ () const;
+                    nonvirtual  Rep_&        GetRep_ ();
+
+                private:
+	                class   MutatorRep_;
                 };
 
             }
         }
     }
 }
-
 
 
 
@@ -51,7 +59,7 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include "Bag_Array.inl"
+#include	"Bag_Array.inl"
 
 
 
