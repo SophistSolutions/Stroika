@@ -99,7 +99,7 @@ namespace   Stroika {
             public:
                 // Support for ranged for, and stl syntax in general
                 nonvirtual  Iterator<T> begin () const;
-                nonvirtual  Iterator<T> end () const;
+                static Iterator<T> end ();
 
             public:
                 /*

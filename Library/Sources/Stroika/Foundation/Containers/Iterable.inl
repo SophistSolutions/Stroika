@@ -31,7 +31,7 @@ namespace   Stroika {
             inline  void    Iterable<T>::_IRep::_Apply (void (*doToElement) (const T& item)) const
             {
                 RequireNotNull (doToElement);
-                for (Iterator<T> i = begin (); i != end (); ++i) {
+                for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
                     (doToElement) (*i);
                 }
             }
@@ -39,7 +39,7 @@ namespace   Stroika {
             inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (bool (*doToElement) (const T& item)) const
             {
                 RequireNotNull (doToElement);
-                for (Iterator<T> i = begin (); i != end (); ++i) {
+                for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
                     if ((doToElement) (*i)) {
                         return i;
                     }
@@ -125,7 +125,7 @@ namespace   Stroika {
                 return MakeIterator ();
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::end () const
+            inline  Iterator<T>    Iterable<T>::end ()
             {
                 return (Iterator<T>::GetSentinal ());
             }
