@@ -1278,5 +1278,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.txt">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.txt">
+      <Filter>Sources\Containers\STL</Filter>
+    </None>
   </ItemGroup>
 </Project>
