@@ -1,3 +1,3 @@
 TODO (Foundation::Containers)
 
-	o	x
+	(o)		Consider adding class Mutable<T> to add reference to mutator stuff? Maybe no point?

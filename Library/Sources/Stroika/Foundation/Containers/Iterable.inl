@@ -24,7 +24,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Iterable<T>::_IRep::_IsEmpty () const
             {
-                RequireNotNull (_fRep.get ());
+                RequireNotNull (fRep_.get ());
                 return GetLength () == 0;
             }
             template    <typename T>
@@ -54,15 +54,15 @@ namespace   Stroika {
             // Class Iterable<T>
             template    <typename T>
             inline  Iterable<T>::Iterable (const Memory::SharedByValue<_IRep>& rep)
-                : _fRep (rep)
+                : fRep_ (rep)
             {
-                RequireNotNull (_fRep.get ());
+                RequireNotNull (fRep_.get ());
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (const Iterable<T>& from)
-                : _fRep (from._fRep)
+                : fRep_ (from.fRep_)
             {
-                RequireNotNull (_fRep.get ());
+                RequireNotNull (fRep_.get ());
             }
             template    <typename T>
             inline  Iterable<T>::~Iterable ()
@@ -72,32 +72,41 @@ namespace   Stroika {
             inline  Iterable<T>&    Iterable<T>::operator= (const Iterable<T>& rhs)
             {
                 if (this != &rhs) {
-                    _fRep = rhs._fRep;
+                    RequireNotNull (rhs.fRep_.get ());
+                    fRep_ = rhs.fRep_;
                 }
                 return *this;
             }
             template    <typename T>
+            inline  Iterable<T>::_IRep&         Iterable<T>::_GetRep ()
+            {
+                EnsureNotNull (fRep_.get ());
+                return *fRep_;
+            }
+            template    <typename T>
+            inline  const Iterable<T>::_IRep&   Iterable<T>::_GetRep () const
+            {
+                EnsureNotNull (fRep_.get ());
+                return *fRep_;
+            }
+            template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
-                AssertNotNull (_fRep.get ());
-                return _fRep.get ()->MakeIterator ();
+                return _GetRep ().MakeIterator ();
             }
             template    <typename T>
             inline  size_t  Iterable<T>::GetLength () const
             {
-                AssertNotNull (_fRep.get ());
-                return _fRep.get ()->GetLength ();
+                return _GetRep ().GetLength ();
             }
             template    <typename T>
             inline  bool    Iterable<T>::IsEmpty () const
             {
-                AssertNotNull (_fRep.get ());
-                return _fRep.get ()->IsEmpty ();
+                return _GetRep ().IsEmpty ();
             }
             template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
-                AssertNotNull (_fRep.get ());
                 return IsEmpty ();
             }
             template    <typename T>
@@ -123,19 +132,24 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Iterable<T>::Apply (void (*doToElement) (const T& item)) const
             {
-                RequireNotNull (_fRep.get ());
                 RequireNotNull (doToElement);
-                return _fRep.get ()->Apply (doToElement);
+                return _GetRep ().Apply (doToElement);
             }
             template    <typename T>
             inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (bool (*doToElement) (const T& item)) const
             {
-                RequireNotNull (_fRep.get ());
                 RequireNotNull (doToElement);
-                return _fRep.get ()->ApplyUntilTrue (doToElement);
+                return _GetRep ().ApplyUntilTrue (doToElement);
             }
-
-
+            template    <typename T>
+            void    Iterable<T>::_SetRep (Memory::SharedByValue<_IRep> rep)
+            {
+                RequireNotNull (rep.get ());
+                if (rep.get () != fRep_.get ()) {
+                    fRep_ = rep;
+                }
+                EnsureNotNull (rep.get ());
+            }
         }
     }
 }

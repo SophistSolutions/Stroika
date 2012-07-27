@@ -12,6 +12,15 @@
 #include    "Exceptions.h"
 
 
+/*
+ *  TODO:
+ *      o   Consider rename this module to 'RunExternalProcess'
+ *          The term subprocess COULD mean other things. Its shorter, but that matters little unless you use it alot.
+ *          MAYBE "ExternalProcessRunner". Or "SubProcessRunner".
+ *
+ */
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {

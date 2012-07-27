@@ -10,10 +10,7 @@
  *
  *  TODO:
  *
- *      (o)         Consider adding class Mutable<T> to add reference to mutator stuff? Maybe no point?
- *
- *      (o)         Consider adding class ???<T> to add Iterable<T> like functions - where we can count on "T"
- *                  having TWithCompareEquals<T>
+ *      (o)         Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
  *
  *      (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
  *
@@ -139,17 +136,29 @@ namespace   Stroika {
                  *
                  *   This function returns an iteartor pointing to the element that triggered the abrupt loop
                  *   end (for example the element you were searching for?). It returns the specail iterator
-                 *   end () to indicate no doToElemet() functions returned true.
+                 *   end () to indicate no doToElement() functions returned true.
                  *
                  *   Also, note that this function does NOT change any elements of the Iterable.
                  */
                 nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
 
+
             protected:
-                Memory::SharedByValue<_IRep>     _fRep;
+                nonvirtual  Iterable<T>::_IRep&         _GetRep ();
+                nonvirtual  const Iterable<T>::_IRep&   _GetRep () const;
+
+            protected:
+                nonvirtual  void                        _SetRep (Memory::SharedByValue<_IRep> rep);
+
+            private:
+                Memory::SharedByValue<_IRep>     fRep_;
             };
 
 
+
+            /*
+             * Protected API for subclasses (implementations of) Iterable<T>
+             */
             template    <typename T>
             class  Iterable<T>::_IRep {
             protected:
