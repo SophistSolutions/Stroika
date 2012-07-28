@@ -41,6 +41,8 @@
  *          The underlying IRep should be enhanced to allow if we are talking to two like implementations
  *          we can produce a more efficient comparison.
  *
+ *		o	 Bag<T>::Add (T item) - debug why this->... in assert...
+ *
  *
  * Notes:
  *

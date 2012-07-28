@@ -119,6 +119,9 @@ namespace   Stroika {
             inline  void    Bag<T>::Add (T item)
             {
                 _GetRep ().Add (item);
+				// this-> required for gcc 4.6.3. I don't THINK this is a bug because I think its cuz its an inherite dmethod.
+				// I must re-read C++ template docs for clarificaiton...
+				//		-- LGP 2012-07-28
                 Ensure (not this->IsEmpty ());
             }
             template    <typename T>
