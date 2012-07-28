@@ -96,7 +96,7 @@ namespace   Stroika {
         namespace   Containers {
 
             template    <typename T>
-			class  Iterator {
+            class  Iterator {
             public:
                 class   Rep;
             public:
@@ -154,7 +154,7 @@ namespace   Stroika {
                         passes fCurrent into More when implenenting ++it
             */
             template    <typename T>
-			class  Iterator<T>::Rep {
+            class  Iterator<T>::Rep {
             protected:
                 Rep ();
 

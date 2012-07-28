@@ -59,14 +59,14 @@ namespace   Stroika {
                         return Iterable<T>::Clone_ (t);
                     }
                 };
-				typedef	Memory::SharedByValue<_IRep, _Rep_Cloner>	_SharedByValueRepType;
-            
+                typedef Memory::SharedByValue<_IRep, _Rep_Cloner>   _SharedByValueRepType;
+
             public:
                 Iterable (const Iterable<T>& from);
             protected:
                 explicit Iterable (const _SharedByValueRepType& rep);
 
-			public:
+            public:
                 ~Iterable ();
             public:
                 nonvirtual  Iterable<T>&    operator= (const Iterable<T>& rhs);
@@ -157,9 +157,9 @@ namespace   Stroika {
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             protected:
-				// Not sure this is ever used, but it maybe, for example, for automatic type morphing.
-				// In principle - we can support having an Iterator<T> more its rep...
-                nonvirtual  void	_SetRep (_SharedByValueRepType rep);
+                // Not sure this is ever used, but it maybe, for example, for automatic type morphing.
+                // In principle - we can support having an Iterator<T> more its rep...
+                nonvirtual  void    _SetRep (_SharedByValueRepType rep);
 
             private:
                 static  _IRep*  Clone_ (const _IRep& rep);
@@ -182,7 +182,7 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual _IRep*			Clone () const												=   0;
+                virtual _IRep*          Clone () const                                              =   0;
                 virtual Iterator<T>     MakeIterator () const                                       =   0;
                 virtual size_t          GetLength () const                                          =   0;
                 virtual bool            IsEmpty () const                                            =   0;

@@ -39,7 +39,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator= (const Bag<T>& rhs)
             {
-				(void)::Iterable<T>::operator= (rhs);
+                (void)::Iterable<T>::operator= (rhs);
                 return (*this);
             }
             template    <typename T>
@@ -273,15 +273,15 @@ namespace   Stroika {
             template    <typename T>
             inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
             {
-				// Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-				EnsureNotNull (dynamic_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
+                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+                EnsureNotNull (dynamic_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
                 return *static_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
             template    <typename T>
             inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
             {
-				// Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-				EnsureNotNull (dynamic_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
+                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+                EnsureNotNull (dynamic_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
                 return *static_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
 

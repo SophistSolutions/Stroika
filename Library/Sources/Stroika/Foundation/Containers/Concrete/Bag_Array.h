@@ -11,7 +11,7 @@
 
 /*
  * TODO:
- *		o	I THINK there are BLOCKALLOCATED macros I can use to simpfiy the oeprator new stuff in this impl?
+ *      o   I THINK there are BLOCKALLOCATED macros I can use to simpfiy the oeprator new stuff in this impl?
  */
 
 

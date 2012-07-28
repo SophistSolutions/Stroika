@@ -26,17 +26,17 @@ namespace   Stroika {
                     static  void*   operator new (size_t size);
                     static  void    operator delete (void* p);
 
-				// Iterable<T>::_IRep overrides
-				public:
-                    virtual typename Iterable<T>::_IRep*	Clone () const override;
-					virtual Iterator<T>						MakeIterator () const override;
-					virtual size_t							GetLength () const override;
-					virtual bool							IsEmpty () const override;
-					virtual void							Apply (void (*doToElement) (const T& item)) const override;
-					virtual Iterator<T>						ApplyUntilTrue (bool (*doToElement) (const T& item)) const override;
+                    // Iterable<T>::_IRep overrides
+                public:
+                    virtual typename Iterable<T>::_IRep*    Clone () const override;
+                    virtual Iterator<T>                     MakeIterator () const override;
+                    virtual size_t                          GetLength () const override;
+                    virtual bool                            IsEmpty () const override;
+                    virtual void                            Apply (void (*doToElement) (const T& item)) const override;
+                    virtual Iterator<T>                     ApplyUntilTrue (bool (*doToElement) (const T& item)) const override;
 
-				// WILL BE SOON DEFINED BAG<T>::_IRep overrides&&&
-				public:
+                    // WILL BE SOON DEFINED BAG<T>::_IRep overrides&&&
+                public:
                     virtual bool        Contains (T item) const override;
                     virtual void        Compact () override;
                     virtual typename Bag<T>::_IMutatorRep*     MakeBagMutator () override;
@@ -110,7 +110,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
                 {
-					Rep_*	NON_CONST_THIS	=	const_cast<Rep_*> (this);		// logically const, but non-const cast cuz re-using iterator API
+                    Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                     return Iterator<T> (new Bag_LinkedList<T>::MutatorRep_ (*NON_CONST_THIS));
                 }
                 template    <typename T>
@@ -124,15 +124,15 @@ namespace   Stroika {
                     return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
-				void      Bag_LinkedList<T>::Rep_::Apply (void (*doToElement) (const T& item)) const override
-				{
-					return _Apply (doToElement);
-				}
+                void      Bag_LinkedList<T>::Rep_::Apply (void (*doToElement) (const T& item)) const override
+                {
+                    return _Apply (doToElement);
+                }
                 template    <typename T>
-				Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (bool (*doToElement) (const T& item)) const override
-				{
-					return ApplyUntilTrue (doToElement);
-				}
+                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (bool (*doToElement) (const T& item)) const override
+                {
+                    return ApplyUntilTrue (doToElement);
+                }
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Compact ()
                 {

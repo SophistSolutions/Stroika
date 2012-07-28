@@ -231,7 +231,7 @@ namespace   Stroika {
                 virtual void        Add (T item)                    =   0;
                 virtual void        Remove (T item)                 =   0;
 
-                virtual Iterator<T>	MakeIterator () const			=   0;
+                virtual Iterator<T> MakeIterator () const           =   0;
                 virtual _IMutatorRep*                  MakeBagMutator ()       =   0;
             };
 
