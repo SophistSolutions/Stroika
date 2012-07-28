@@ -22,7 +22,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Bag<T>::Bag (typename Bag<T>::_IRep* rep)
-                : Iterable<T> (Memory::SharedByValue<Iterable<T>::_IRep> (rep))
+                : Iterable<T> (_SharedByValueRepType (rep))
             {
                 RequireNotNull (rep);
             }
@@ -39,7 +39,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator= (const Bag<T>& rhs)
             {
-                (void)::Iterable<T>::operator= (rhs);
+                (void)Iterable<T>::operator= (rhs);
                 return (*this);
             }
             template    <typename T>
@@ -119,7 +119,7 @@ namespace   Stroika {
             inline  void    Bag<T>::Add (T item)
             {
                 _GetRep ().Add (item);
-                Ensure (not IsEmpty ());
+                Ensure (not this->IsEmpty ());
             }
             template    <typename T>
             void  Bag<T>::Add (const Bag<T>& items)
