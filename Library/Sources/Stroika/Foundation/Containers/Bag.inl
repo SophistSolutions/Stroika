@@ -121,7 +121,7 @@ namespace   Stroika {
             template    <typename T>
             void  Bag<T>::Add (const Bag<T>& items)
             {
-                if (this == &items) {
+                if (&_GetRep () == &items._GetRep ()) {
                     // Copy - so we don't update this while we are copying from it...
                     Bag<T>  copiedItems =   items;
                     For (it, copiedItems) {
@@ -161,7 +161,7 @@ namespace   Stroika {
             template    <typename T>
             size_t    Bag<T>::TallyOf (T item) const
             {
-                size_t count = 0;
+                size_t  count = 0;
                 For (it, (*this)) {
                     if (it.Current () == item) {
                         count++;
@@ -227,6 +227,7 @@ namespace   Stroika {
             }
 
 
+
             // class Bag<T>::Mutator
             template    <typename T>
             inline  Bag<T>::Mutator::Mutator (typename Bag<T>::_IMutatorRep* it) :
@@ -234,24 +235,24 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  typename    Bag<T>::_IMutatorRep* Bag<T>::Mutator::GetMutatorRep_ ()
+            inline  typename    Bag<T>::_IMutatorRep& Bag<T>::Mutator::GetMutatorRep_ ()
             {
                 /*
                  * Because of the way we construct Mutators, it is guaranteed that
                  * this cast is safe. We could have kept an extra var of the right
                  * static type, but this would have been a waste of time and memory.
                  */
-                return &(dynamic_cast<_IMutatorRep&> (*this->fIterator));
+                return (dynamic_cast<_IMutatorRep&> (*this->fIterator));
             }
             template    <typename T>
             inline  void    Bag<T>::Mutator::RemoveCurrent ()
             {
-                GetMutatorRep_ ()->RemoveCurrent ();
+                GetMutatorRep_ ().RemoveCurrent ();
             }
             template    <typename T>
             inline  void    Bag<T>::Mutator::UpdateCurrent (T newValue)
             {
-                GetMutatorRep_ ()->UpdateCurrent (newValue);
+                GetMutatorRep_ ().UpdateCurrent (newValue);
             }
 
 

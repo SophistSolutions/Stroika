@@ -225,7 +225,7 @@ namespace   Stroika {
                 nonvirtual  void    UpdateCurrent (T newValue);
 
             private:
-                nonvirtual  _IMutatorRep*   GetMutatorRep_ ();
+                nonvirtual  _IMutatorRep&   GetMutatorRep_ ();
             };
 
 
