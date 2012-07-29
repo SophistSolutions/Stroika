@@ -20,6 +20,8 @@
 #include    "../../Execution/Sleep.h"
 #include    "../../Execution/Thread.h"
 #include    "../../Execution/ErrNoException.h"
+#include    "../../Memory/BlockAllocated.h"
+
 
 #include    "Socket.h"
 

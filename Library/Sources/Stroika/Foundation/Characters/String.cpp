@@ -11,7 +11,10 @@
 #include    <regex>
 
 #include    "../Containers/Common.h"
+#include    "../Execution/Exceptions.h"
 #include    "../Math/Common.h"
+#include    "../Memory/Common.h"
+#include	"../Memory/BlockAllocated.h"
 
 #include    "RegularExpression.h"
 #include    "TString.h"
