@@ -33,15 +33,14 @@ namespace   Stroika {
                     virtual void                            Apply (void (*doToElement) (const T& item)) const override;
                     virtual Iterator<T>                     ApplyUntilTrue (bool (*doToElement) (const T& item)) const override;
 
-                    // WILL BE SOON DEFINED BAG<T>::_IRep overrides&&&
+                // Bag<T>::_IRep overrides
                 public:
-                    virtual bool        Contains (T item) const override;
-                    virtual void        Compact () override;
-
-                    virtual typename Bag<T>::_IMutatorRep*     MakeBagMutator () override;
-                    virtual void    Add (T item) override;
-                    virtual void    Remove (T item) override;
-                    virtual void    RemoveAll () override;
+                    virtual void						Compact () override;
+                    virtual bool						Contains (T item) const override;
+                    virtual typename Bag<T>::Mutator	MakeBagMutator () override;
+                    virtual void						Add (T item) override;
+                    virtual void						Remove (T item) override;
+                    virtual void						RemoveAll () override;
 
                 private:
                     Array_Patch<T>  fData_;
@@ -165,9 +164,9 @@ namespace   Stroika {
                     return (fData_.Contains (item));
                 }
                 template    <typename T>
-                typename    Bag<T>::_IMutatorRep*   Bag_Array<T>::Rep_::MakeBagMutator ()
+                typename    typename Bag<T>::Mutator   Bag_Array<T>::Rep_::MakeBagMutator ()
                 {
-                    return (new MutatorRep_ (*this));
+                    return Mutator (new MutatorRep_ (*this));
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Add (T item)
