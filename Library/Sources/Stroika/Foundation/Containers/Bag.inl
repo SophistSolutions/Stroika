@@ -22,7 +22,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Bag<T>::Bag (typename Bag<T>::_IRep* rep)
-                : Iterable<T> (_SharedByValueRepType (rep))
+                : Iterable<T> (typename Iterable<T>::_SharedByValueRepType (rep))
             {
                 RequireNotNull (rep);
             }
