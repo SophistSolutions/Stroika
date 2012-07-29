@@ -232,11 +232,11 @@ namespace   Stroika {
                 template    <typename T>    Bag_Array<T>::Bag_Array (const T* start, const T* end)
                     : Bag<T> (new Rep_ ())
                 {
-					Require ((start == end) or (start != nullptr and end != nullptr));
-					if (start != end) {
-						SetCapacity (end - start);
-						Add (start, end);
-					}
+                    Require ((start == end) or (start != nullptr and end != nullptr));
+                    if (start != end) {
+                        SetCapacity (end - start);
+                        Add (start, end);
+                    }
                 }
                 template    <typename T>
                 inline  Bag_Array<T>::Bag_Array (const Bag_Array<T>& bag) :

@@ -41,7 +41,7 @@
  *          The underlying IRep should be enhanced to allow if we are talking to two like implementations
  *          we can produce a more efficient comparison.
  *
- *		o	 Bag<T>::Add (T item) - debug why this->... in assert...
+ *      o    Bag<T>::Add (T item) - debug why this->... in assert...
  *
  *
  * Notes:
@@ -121,12 +121,22 @@ namespace   Stroika {
                 nonvirtual  Bag<T>& operator= (const Bag<T>& rhs);
 
             public:
+                /*
+                 * Compares items with operator==, and returns true if any match.
+                 */
                 nonvirtual  bool    Contains (T item) const;
 
             public:
+                /*
+                 * Produces an empty bag.
+                 */
                 nonvirtual  void    RemoveAll ();
 
             public:
+                /*
+                 * This has no semantics, no observable behavior. But depending on the representation of the concrete
+                 * bag, calling this may save memory.
+                 */
                 nonvirtual  void    Compact ();
 
             public:
@@ -166,10 +176,9 @@ namespace   Stroika {
             public:
                 // Support for ranged for, and stl syntax in general
                 nonvirtual  Iterator<T> begin () const;
+                nonvirtual  Mutator     begin ();
                 nonvirtual  Iterator<T> end () const;
-
-                nonvirtual  Mutator begin ();
-                nonvirtual  Mutator end ();
+                nonvirtual  Mutator     end ();
 
             public:
                 nonvirtual  size_t  TallyOf (T item) const;
@@ -226,15 +235,15 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool        Contains (T item) const         =   0;
-                virtual void        Compact ()                      =   0;
-                virtual void        RemoveAll ()                    =   0;
+                virtual bool            Contains (T item) const         =   0;
+                virtual void            Compact ()                      =   0;
+                virtual void            RemoveAll ()                    =   0;
 
-                virtual void        Add (T item)                    =   0;
-                virtual void        Remove (T item)                 =   0;
+                virtual void            Add (T item)                    =   0;
+                virtual void            Remove (T item)                 =   0;
 
-                virtual Iterator<T> MakeIterator () const           =   0;
-                virtual _IMutatorRep*                  MakeBagMutator ()       =   0;
+                virtual Iterator<T>     MakeIterator () const           =   0;
+                virtual _IMutatorRep*   MakeBagMutator ()               =   0;
             };
 
 
