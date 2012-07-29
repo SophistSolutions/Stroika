@@ -22,8 +22,7 @@ namespace   Stroika {
                     ~Rep_ ();
 
                 public:
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -55,6 +54,10 @@ namespace   Stroika {
                 public:
                     MutatorRep_ (typename Bag_Array<T>::Rep_& owner);
 
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
+
+                public:
                     virtual bool    More (T* current, bool advance) override;
                     virtual T       Current () const override;
 
@@ -62,9 +65,6 @@ namespace   Stroika {
 
                     virtual void    RemoveCurrent () override;
                     virtual void    UpdateCurrent (T newValue) override;
-
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
 
                 private:
                     ForwardArrayMutator_Patch<T>    fIterator_;
@@ -76,16 +76,6 @@ namespace   Stroika {
 
 
                 //  class   Bag_Array<T>::MutatorRep_<T>
-                template    <class  T>
-                inline  void*   Bag_Array<T>::MutatorRep_::operator new (size_t size)
-                {
-                    return (Memory::BlockAllocated<MutatorRep_>::operator new (size));
-                }
-                template    <class  T>
-                inline  void    Bag_Array<T>::MutatorRep_::operator delete (void* p)
-                {
-                    Memory::BlockAllocated<MutatorRep_>::operator delete (p);
-                }
                 template    <class  T>
                 Bag_Array<T>::MutatorRep_::MutatorRep_ (typename Bag_Array<T>::Rep_& owner)
                     : Bag<T>::_IMutatorRep ()
@@ -124,16 +114,6 @@ namespace   Stroika {
 
 
                 //  class   Bag_Array<T>::Rep_
-                template    <class  T>
-                inline  void*   Bag_Array<T>::Rep_::operator new (size_t size)
-                {
-                    return (Memory::BlockAllocated<Rep_>::operator new (size));
-                }
-                template    <class  T>
-                inline  void    Bag_Array<T>::Rep_::operator delete (void* p)
-                {
-                    Memory::BlockAllocated<Rep_>::operator delete (p);
-                }
                 template    <typename T>
                 inline  Bag_Array<T>::Rep_::Rep_ () :
                     fData_ ()

@@ -23,8 +23,7 @@ namespace   Stroika {
                     Rep_ (const Rep_& from);
 
                 public:
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -60,8 +59,7 @@ namespace   Stroika {
                     MutatorRep_ (typename Bag_LinkedList<T>::MutatorRep_& from);
 
                 public:
-                    static  void*   operator new (size_t size);
-                    static  void    operator delete (void* p);
+                    DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
 
                 public:
                     virtual bool    More (T* current, bool advance) override;
@@ -82,16 +80,6 @@ namespace   Stroika {
 
 
                 //  class   Bag_LinkedList<T>::Rep_
-                template    <typename  T>
-                inline  void*   Bag_LinkedList<T>::Rep_::operator new (size_t size)
-                {
-                    return (Memory::BlockAllocated<Rep_>::operator new (size));
-                }
-                template    <typename  T>
-                inline  void    Bag_LinkedList<T>::Rep_::operator delete (void* p)
-                {
-                    Memory::BlockAllocated<Rep_>::operator delete (p);
-                }
                 template    <typename T>
                 inline  Bag_LinkedList<T>::Rep_::Rep_ ()
                     : fData_ ()
@@ -166,16 +154,6 @@ namespace   Stroika {
 
 
                 //Bag_LinkedList<T>::MutatorRep_
-                template    <typename  T>
-                inline  void*   Bag_LinkedList<T>::MutatorRep_::operator new (size_t size)
-                {
-                    return (Memory::BlockAllocated<MutatorRep_>::operator new (size));
-                }
-                template    <typename  T>
-                inline  void    Bag_LinkedList<T>::MutatorRep_::operator delete (void* p)
-                {
-                    Memory::BlockAllocated<MutatorRep_>::operator delete (p);
-                }
                 template    <typename T>
                 Bag_LinkedList<T>::MutatorRep_::MutatorRep_ (typename Bag_LinkedList<T>::Rep_& owner) :
                     fIterator_ (owner.fData_)
@@ -227,7 +205,7 @@ namespace   Stroika {
                 Bag_LinkedList<T>::Bag_LinkedList (const Bag<T>& src)
                     : Bag<T> (new Rep_ ())
                 {
-                    operator+= (src);
+                    Bag<T>::operator+= (src);
                 }
                 template    <typename T>
                 Bag_LinkedList<T>::Bag_LinkedList (const Bag_LinkedList<T>& src)
