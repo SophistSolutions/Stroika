@@ -220,6 +220,7 @@ namespace   Stroika {
                 Bag_LinkedList<T>::Bag_LinkedList (const T* start, const T* end)
                     : Bag<T> (new Rep_ ())
                 {
+					Require ((start == end) or (start != nullptr and end != nullptr));
                     Add (start, end);
                 }
                 template    <typename T>
