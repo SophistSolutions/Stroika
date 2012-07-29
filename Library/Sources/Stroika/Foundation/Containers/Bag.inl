@@ -58,13 +58,6 @@ namespace   Stroika {
                 _GetRep ().Compact ();
             }
             template    <typename T>
-            inline  Iterator<T> Bag<T>::MakeIterator () const
-            {
-                Iterator<T> it (const_cast<Bag<T> *> (this)->_GetRep ().MakeIterator ());
-                ++it;
-                return it;
-            }
-            template    <typename T>
             inline  Iterator<T>    Bag<T>::begin () const
             {
                 return MakeIterator ();
@@ -111,6 +104,7 @@ namespace   Stroika {
             template    <typename T>
             inline   typename   Bag<T>::Mutator  Bag<T>::MakeMutator ()
             {
+                // Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
                 Bag<T>::Mutator it = Bag<T>::Mutator (_GetRep ().MakeBagMutator ());
                 ++it;
                 return it;

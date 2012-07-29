@@ -97,7 +97,11 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
-                return _GetRep ().MakeIterator ();
+                //return _GetRep ().MakeIterator ();
+                // Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
+                Iterator<T> it  = _GetRep ().MakeIterator ();
+                ++it;
+                return it;
             }
             template    <typename T>
             inline  size_t  Iterable<T>::GetLength () const

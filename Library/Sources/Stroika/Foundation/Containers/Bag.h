@@ -43,13 +43,15 @@
  *
  *      o    Bag<T>::Add (T item) - debug why this->... in assert...
  *
+ *      o   Add more efficent-for-tally implementation of bag (like multimap?). Low priority since you can
+ *          always use a Tally<T>...
+ *
  *
  * Notes:
  *
  *
  *
  */
-
 
 #include    "../StroikaPreComp.h"
 
@@ -78,8 +80,9 @@ namespace   Stroika {
 
 
             /*
-             *  A Bag<T> is a container pattern to manage an un-ordered collection of items. This is both an abstract interface, and
-             *  but the Bag<T> class it actually concrete because it automatically binds to a default implementation.
+             *      A Bag<T> is a container pattern to manage an un-ordered collection of items.
+             *  This is both an abstract interface, and but the Bag<T> class it actually concrete because
+             *  it automatically binds to a default implementation.
              *
              *      A Bag is the simplest kind of collection. It allows addition and
              *  removal of elements, but makes no guarantees about element ordering. Two
@@ -140,9 +143,10 @@ namespace   Stroika {
                 nonvirtual  void    Compact ();
 
             public:
-                nonvirtual  Iterator<T> MakeIterator () const;
-
-            public:
+                /*
+                 * Add the given item(s) to this Bag<T>. Note - if the given items are already present, another
+                 * copy will be added.
+                 */
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (const Bag<T>& items);
                 nonvirtual  void    Add (const T* begin, const T* end);
@@ -181,6 +185,10 @@ namespace   Stroika {
                 nonvirtual  Mutator     end ();
 
             public:
+                /*
+                 * Since items can appear more than once, this function traverses the bag and returns the
+                 * count of times the given item appears.
+                 */
                 nonvirtual  size_t  TallyOf (T item) const;
 
             protected:
@@ -238,11 +246,8 @@ namespace   Stroika {
                 virtual bool            Contains (T item) const         =   0;
                 virtual void            Compact ()                      =   0;
                 virtual void            RemoveAll ()                    =   0;
-
                 virtual void            Add (T item)                    =   0;
                 virtual void            Remove (T item)                 =   0;
-
-                virtual Iterator<T>     MakeIterator () const           =   0;
                 virtual _IMutatorRep*   MakeBagMutator ()               =   0;
             };
 
@@ -265,8 +270,8 @@ namespace   Stroika {
     }
 }
 
-
 #endif  /*_Stroika_Foundation_Containers_Bag_h_ */
+
 
 
 /*

@@ -10,6 +10,10 @@
  *
  *  TODO:
  *
+ *      (o)         Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
+ *                  Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
+ *                  More()...
+ *
  *      (o)         Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
  *
  *      (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
