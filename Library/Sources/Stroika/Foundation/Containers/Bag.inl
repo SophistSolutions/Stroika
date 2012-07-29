@@ -60,12 +60,12 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>    Bag<T>::begin () const
             {
-                return MakeIterator ();
+                return Iterable<T>::begin ();
             }
             template    <typename T>
             inline  Iterator<T>    Bag<T>::end () const
             {
-                return (Iterator<T>::GetSentinal ());
+                return Iterable<T>::end ();
             }
             template    <typename T>
             inline  typename Bag<T>::Mutator    Bag<T>::begin ()
