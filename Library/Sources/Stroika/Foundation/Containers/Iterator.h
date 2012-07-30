@@ -162,8 +162,10 @@ namespace   Stroika {
                 virtual ~Rep ();
 
             public:
-                virtual bool    More (T* current, bool advance)   = 0;
-                virtual Rep*    Clone () const      = 0;
+                virtual Rep*    Clone () const                      = 0;
+                virtual bool    More (T* current, bool advance)     = 0;
+
+            public:
                 nonvirtual bool Done () const;
             };
 

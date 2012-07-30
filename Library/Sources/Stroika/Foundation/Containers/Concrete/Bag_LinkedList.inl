@@ -61,11 +61,13 @@ namespace   Stroika {
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
 
+                    // Iterator<T>::Rep
                 public:
-                    virtual bool    More (T* current, bool advance) override;
-
                     virtual typename Iterator<T>::Rep*      Clone () const override;
+                    virtual bool                            More (T* current, bool advance) override;
 
+                    // Bag<T>::_IMutatorRep
+                public:
                     virtual void    RemoveCurrent () override;
                     virtual void    UpdateCurrent (T newValue) override;
 
