@@ -68,6 +68,8 @@ namespace   Stroika {
 
                 private:
                     ForwardArrayMutator_Patch<T>    fIterator_;
+                
+				private:
                     friend  class   Rep_;
                 };
 
@@ -76,13 +78,13 @@ namespace   Stroika {
 
 
                 //  class   Bag_Array<T>::MutatorRep_<T>
-                template    <class  T>
+                template    <typename T>
                 Bag_Array<T>::MutatorRep_::MutatorRep_ (typename Bag_Array<T>::Rep_& owner)
                     : Bag<T>::_IMutatorRep ()
                     , fIterator_ (owner.fData_)
                 {
                 }
-                template    <class  T>
+                template    <typename T>
                 bool    Bag_Array<T>::MutatorRep_::More (T* current, bool advance)
                 {
                     return (fIterator_.More (current, advance));
@@ -92,12 +94,12 @@ namespace   Stroika {
                 {
                     return (new MutatorRep_ (*this));
                 }
-                template    <class  T>
+                template    <typename T>
                 void    Bag_Array<T>::MutatorRep_::RemoveCurrent ()
                 {
                     fIterator_.RemoveCurrent ();
                 }
-                template    <class  T>
+                template    <typename T>
                 void    Bag_Array<T>::MutatorRep_::UpdateCurrent (T newValue)
                 {
                     fIterator_.UpdateCurrent (newValue);
@@ -110,8 +112,8 @@ namespace   Stroika {
 
                 //  class   Bag_Array<T>::Rep_
                 template    <typename T>
-                inline  Bag_Array<T>::Rep_::Rep_ () :
-                    fData_ ()
+                inline  Bag_Array<T>::Rep_::Rep_ ()
+                    : fData_ ()
                 {
                 }
                 template    <typename T>
@@ -193,17 +195,20 @@ namespace   Stroika {
 
 
                 //  class   Bag_Array<T>
-                template    <typename T>    Bag_Array<T>::Bag_Array ()
+                template    <typename T>    
+				Bag_Array<T>::Bag_Array ()
                     : Bag<T> (new Rep_ ())
                 {
                 }
-                template    <typename T>    Bag_Array<T>::Bag_Array (const Bag<T>& bag)
+                template    <typename T>    
+				Bag_Array<T>::Bag_Array (const Bag<T>& bag)
                     : Bag<T> (new Rep_ ())
                 {
                     SetCapacity (bag.GetLength ());
                     operator+= (bag);
                 }
-                template    <typename T>    Bag_Array<T>::Bag_Array (const T* start, const T* end)
+                template    <typename T>    
+				Bag_Array<T>::Bag_Array (const T* start, const T* end)
                     : Bag<T> (new Rep_ ())
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
