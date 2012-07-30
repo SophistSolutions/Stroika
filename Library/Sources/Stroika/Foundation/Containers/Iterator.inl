@@ -132,12 +132,12 @@ namespace   Stroika {
                 fIterator_->More (&fCurrent_, true);
             }
             template    <typename T>
-            inline bool   Iterator<T>::operator!= (Iterator rhs)  const
+            inline bool   Iterator<T>::operator!= (const Iterator& rhs)  const
             {
                 return not operator== (rhs);
             }
             template    <typename T>
-            inline  bool   Iterator<T>::operator== (Iterator rhs)  const
+            inline  bool   Iterator<T>::operator== (const Iterator& rhs)  const
             {
                 bool    lDone   =   Done ();
                 bool    rDone   =   rhs.Done ();
@@ -151,7 +151,7 @@ namespace   Stroika {
                 Assert (not lDone and not rDone);
                 // assigning to local variables to ensure const version called
                 const   Iterator<T>::IRep* lhsRep = fIterator_.GetPointer ();
-                const   Iterator<T>::IRep* rhsRep = fIterator_.GetPointer ();
+                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.GetPointer ();
                 return (lhsRep == rhsRep);
             }
             template    <typename T>

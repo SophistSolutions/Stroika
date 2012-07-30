@@ -175,13 +175,13 @@ namespace   Stroika {
                  *  would be dramatically more performance costly, and would serve little practical purpose I can see
                  *  right now.
                  */
-                nonvirtual  bool    operator== (Iterator rhs) const;
+                nonvirtual  bool    operator== (const Iterator& rhs) const;
 
             public:
                 /*
                  * See the definition of operator==
                  */
-                nonvirtual  bool    operator!= (Iterator rhs) const;
+                nonvirtual  bool    operator!= (const Iterator& rhs) const;
 
             public:
                 // Synonyms for above, sometimes making code more readable
