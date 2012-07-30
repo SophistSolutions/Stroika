@@ -67,6 +67,8 @@
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
  *          for copying iterators. On balance, probably best to bag it!!!
  *
+ *		o	Rename GetSentinal() to something like GetSpecialAlwaysEndIterator () and docuemnt its use in a!=b syntax.
+ *
  *
  */
 
