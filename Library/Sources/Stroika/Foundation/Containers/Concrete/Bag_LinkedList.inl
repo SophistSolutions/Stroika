@@ -119,7 +119,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (bool (*doToElement) (const T& item)) const override
                 {
-                    return ApplyUntilTrue (doToElement);
+                    return _ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Compact ()
@@ -133,7 +133,7 @@ namespace   Stroika {
                 template    <typename T>
                 typename    Bag<T>::Mutator   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
                 {
-                    return Mutator (new MutatorRep_ (*this));
+                    return typename Bag<T>::Mutator (new MutatorRep_ (*this));
                 }
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Add (T item)

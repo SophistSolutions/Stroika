@@ -166,7 +166,7 @@ namespace   Stroika {
                 template    <typename T>
                 typename    typename Bag<T>::Mutator   Bag_Array<T>::Rep_::MakeBagMutator ()
                 {
-                    return Mutator (new MutatorRep_ (*this));
+                    return typename Bag<T>::Mutator (new MutatorRep_ (*this));
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Add (T item)
