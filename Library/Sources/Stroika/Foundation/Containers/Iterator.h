@@ -110,9 +110,11 @@ namespace   Stroika {
 
 
             /*
-             *		An Iterator<T> is a copyable object which can safely be used to capture the state of
-			 *	iteration (copy) and continue iterating from that spot. If the underlying object is
-			 *	modified, the iterator will be automatically
+             *		An Iterator<T> is an object which is associated with some container (that is being iterated over) 
+			 *	and which allows traversal of that object from start to finish (the iterator itself essentially provides
+			 *	A notion of START to FINISH). An Iterator<T> is a copyable object which can safely be used to capture
+			 *	the state of iteration (copy) and continue iterating from that spot. If the underlying object is
+			 *	modified, the iterator will be automatically updated to logically account for that update (FILL IN DETAILS - SEE ABOVE COMMENTARY)
              */
             template    <typename T>
             class  Iterator {
