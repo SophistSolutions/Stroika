@@ -50,6 +50,12 @@ namespace   Stroika {
              */
             template    <typename T>
             class  Iterable {
+            public:
+                /*
+                 * ElementType is just a handly copy of the "T" template type which parameterizes this Iterable<T>.
+                 */
+                typedef T   ElementType;
+
             protected:
                 /*
                  * Abstract class used in subclasses which extend the idea of Iterable. Most abstract Containers in Stroika

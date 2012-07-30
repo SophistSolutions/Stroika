@@ -98,6 +98,12 @@ namespace   Stroika {
             template    <typename T>
             class  Iterator {
             public:
+                /*
+                 * ElementType is just a handly copy of the "T" template type which parameterizes this Iterator<T>.
+                 */
+                typedef T   ElementType;
+
+            public:
                 class   Rep;
             public:
                 explicit    Iterator (Rep* it);
