@@ -80,7 +80,7 @@ namespace   Stroika {
                     virtual bool    More (T* current, bool advance) override {
                         return false;
                     }
-                    virtual IRep*    Clone () const override {
+                    virtual typename Iterator<T>::IRep*    Clone () const override {
                         RequireNotReached ();
                         return nullptr;
                     }
