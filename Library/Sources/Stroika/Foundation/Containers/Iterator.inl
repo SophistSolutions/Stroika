@@ -74,6 +74,7 @@ namespace   Stroika {
             template    <typename T>
             inline Iterator<T>::Iterator (IRep* it)
                 : fIterator_ (it, &Clone_)
+                , fCurrent_ ()
             {
                 RequireNotNull (it);
             }
@@ -136,19 +137,22 @@ namespace   Stroika {
                 return not operator== (rhs);
             }
             template    <typename T>
-            inline bool   Iterator<T>::operator== (Iterator rhs)  const
+            inline  bool   Iterator<T>::operator== (Iterator rhs)  const
             {
-                if (rhs.Done ()) {
-                    return Done ();
-                }
-                else if (not Done ()) {
+                bool    lDone   =   Done ();
+                bool    rDone   =   rhs.Done ();
+                if (lDone != rDone) {
                     return false;
                 }
-
+                if (lDone) {
+                    Assert (rDone);
+                    return true;
+                }
+                Assert (not lDone and not rDone);
                 // assigning to local variables to ensure const version called
                 const   Iterator<T>::IRep* lhsRep = fIterator_.GetPointer ();
                 const   Iterator<T>::IRep* rhsRep = fIterator_.GetPointer ();
-                return (lhsRep == rhsRep and fCurrent_ == rhs.fCurrent_);
+                return (lhsRep == rhsRep);
             }
             template    <typename T>
             inline  typename Iterator<T>::IRep*   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)

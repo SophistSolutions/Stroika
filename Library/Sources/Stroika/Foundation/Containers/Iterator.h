@@ -62,7 +62,7 @@
  *          in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more typest that require Iterable<T> / Iterator<T>.
  *
- *      o	Merge Current virtual call into More() call? Trouble is constructing
+ *      o   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
  *          for copying iterators. On balance, probably best to bag it!!!
  */
@@ -135,24 +135,54 @@ namespace   Stroika {
                 // support for Range based for, and stl style iteration in general (containers must also support begin, end)
             public:
                 nonvirtual  T       operator* () const;
-			
-			public:
+
+            public:
                 nonvirtual  void    operator++ ();
                 nonvirtual  void    operator++ (int);
-			
-			public:
-				/*
-				 * Two iterators are considered EQUAL if they are BOTH Done (). Otherwise, they are both equal if they are the
-				 * exact same rep,and have the same 'current' value.
-				 */
+
+            public:
+                /*
+                 *      Two iterators are considered EQUAL if they are BOTH Done (). If one is done, but the other not,
+                 *  they are not equal. If they are both not done, they are both equal if they are the
+                 *  exact same rep.
+                 *
+                 *      Note - this is a STRONG definition of equality. The following assertion will fail:
+                 *
+                 *          Iterator<T> x = getIterator();
+                 *          Iterator<T> y = x;
+                 *          x++;
+                 *          y++;
+                 *          Assert (x == y);    // This MAY succeed or MAY fail! - it will succeed IFF x.Done()
+                 *
+                 *
+                 *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between the
+                 *  iterators, so they can never be equal again.
+                 *
+                 *  This definition was chosen to be sufficient to provide for efficient implementaiton of STL-style iteration.
+                 *
+                 *      Iterator<T> i   =   getIterator();
+                 *      Iterator<T> e   =   end ();
+                 *
+                 *      for (; i != e; ++i) {
+                 *      }
+                 *
+                 *      This style works because e.Done () is always true, (and the Rep for e is always different than the rep for i).
+                 *      and so the only way for the iterators to become equal is for i.Done () to be true.
+                 *
+                 *  A Deeper notion of Iterator Equality might be achievable, by first checking that the LHS and RHS both were
+                 *  iterating over the same container (came from the same source), and then calling a virtual method on one (since they
+                 *  would be the same dynamic type) - and have that dynamically check for equality. But this form of equality testing
+                 *  would be dramatically more performance costly, and would serve little practical purpose I can see
+                 *  right now.
+                 */
                 nonvirtual  bool    operator== (Iterator rhs) const;
 
-			public:
-				/*
-				 * See the definition of operator==
-				 */
+            public:
+                /*
+                 * See the definition of operator==
+                 */
                 nonvirtual  bool    operator!= (Iterator rhs) const;
-            
+
             public:
                 // Synonyms for above, sometimes making code more readable
                 // Current -> operator*
@@ -161,11 +191,11 @@ namespace   Stroika {
                 nonvirtual  bool    Done () const;
 
             public:
-				/*
-				 *	GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
-				 *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
-				 */
-                static  Iterator<T>		GetEmptyIterator ();
+                /*
+                 *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
+                 *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
+                 */
+                static  Iterator<T>     GetEmptyIterator ();
 
             protected:
                 nonvirtual  IRep&               _GetRep ();
@@ -209,7 +239,7 @@ namespace   Stroika {
                 virtual ~IRep ();
 
             public:
-                virtual IRep*    Clone () const                     = 0;
+                virtual IRep*   Clone () const                      = 0;
                 virtual bool    More (T* current, bool advance)     = 0;
 
             public:
