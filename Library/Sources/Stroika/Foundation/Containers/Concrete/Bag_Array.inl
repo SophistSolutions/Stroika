@@ -168,7 +168,7 @@ namespace   Stroika {
                 void    Bag_Array<T>::Rep_::Add (T item)
                 {
                     // Appending is fastest
-                    fData_.InsertAt (item, GetLength ());
+                    fData_.InsertAt (item, fData_.GetLength ());
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Remove (T item)
