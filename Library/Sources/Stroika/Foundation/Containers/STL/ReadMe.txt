@@ -1,6 +1,3 @@
-This folder contains all the Stroika Library Foundation::Containers::Concrete source code.
+This folder contains all the Stroika Library Foundation::Containers::STL source code.
 
-	The Concrete modules are particular implementations of a high level container access
-	pattern, such as using a B-Tree, or HashTable. Selectable here are also different thread
-	locking patterns.
-
+	This is for utility code which directly supports use of STL containers.

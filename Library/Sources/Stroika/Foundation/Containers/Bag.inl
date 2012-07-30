@@ -53,6 +53,11 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename T>
+            inline  void    Bag<T>::clear ()
+            {
+                RemoveAll ();
+            }
+            template    <typename T>
             inline  void    Bag<T>::Compact ()
             {
                 _GetRep ().Compact ();

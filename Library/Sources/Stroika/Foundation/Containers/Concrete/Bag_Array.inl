@@ -174,8 +174,7 @@ namespace   Stroika {
                 void    Bag_Array<T>::Rep_::Remove (T item)
                 {
                     /*
-                     *      Iterate backwards since removing from the end of an array
-                     *  will be faster.
+                     *  Iterate backwards since removing from the end of an array will be faster.
                      */
                     for (BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
                         if (it.Current () == item) {

@@ -46,6 +46,15 @@
  *      o   Add more efficent-for-tally implementation of bag (like multimap?). Low priority since you can
  *          always use a Tally<T>...
  *
+ *		o	Consider adding RetainAll (Set<T>) API - like in Collection.h, and Java. Key diff is was force
+ *			use of SET as arg - not another Bag? Or maybe overload with differnt container types as args?
+ *			COULD do 2 versions - one with Iterable<T> and one with Set<T>. trick is to get definition
+ *			to work without untoward dependencies between set and bag code? I think that means
+ *			most of the check impl needs to be in the envelope to avoid always building it through vtables.
+ *
+ *		o	Consider adding smarter implementation with keys - some btree indexing impl - to make stuff that
+ *			looks up by value quicker.
+ *
  *
  * Notes:
  *
@@ -134,6 +143,12 @@ namespace   Stroika {
                  * Produces an empty bag.
                  */
                 nonvirtual  void    RemoveAll ();
+
+            public:
+                /*
+                 * STL-ish alias for RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
 
             public:
                 /*
