@@ -300,9 +300,10 @@ namespace	{
 	namespace	Test2_TallyOf_ {
 
 
-		template	<typename	CONCRETE_TYPE, typename	ELEMENT_TYPE>
+		template	<typename	CONCRETE_TYPE>
 		void	SimpleTallyTest_ ()
 		{
+			typedef	typename CONCRETE_TYPE::ElementType	ELEMENT_TYPE;
 			CONCRETE_TYPE	bag;
 			ELEMENT_TYPE	t1	=	1;
 			ELEMENT_TYPE	t2	=	2;
@@ -325,12 +326,12 @@ namespace	{
 
 		void	RunBasicBagTestsOnEachConcreteType_ ()
 		{
-			SimpleTallyTest_<Bag<size_t>,size_t> ();
-			SimpleTallyTest_<Bag<SimpleClass>,SimpleClass> ();
-			SimpleTallyTest_<Bag_LinkedList<size_t>,size_t> ();
-			SimpleTallyTest_<Bag_LinkedList<SimpleClass>,SimpleClass> ();
-			SimpleTallyTest_<Bag_Array<size_t>,size_t> ();
-			SimpleTallyTest_<Bag_Array<SimpleClass>,SimpleClass> ();
+			SimpleTallyTest_<Bag<size_t>> ();
+			SimpleTallyTest_<Bag<SimpleClass>> ();
+			SimpleTallyTest_<Bag_LinkedList<size_t>> ();
+			SimpleTallyTest_<Bag_LinkedList<SimpleClass>> ();
+			SimpleTallyTest_<Bag_Array<size_t>> ();
+			SimpleTallyTest_<Bag_Array<SimpleClass>> ();
 		}
 
 	}
@@ -345,9 +346,10 @@ namespace	{
 namespace	{
 	namespace	Test3_Equals_ {
 
-		template	<typename	CONCRETE_TYPE, typename	ELEMENT_TYPE>
+		template	<typename	CONCRETE_TYPE>
 		void	SimpleOpEqualsTest_ ()
 		{
+			typedef	typename CONCRETE_TYPE::ElementType	ELEMENT_TYPE;
 			CONCRETE_TYPE	bag;
 			ELEMENT_TYPE	t1	=	1;
 			ELEMENT_TYPE	t2	=	2;
@@ -385,12 +387,12 @@ namespace	{
 
 		void	RunBasicBagTestsOnEachConcreteType_ ()
 		{
-			SimpleOpEqualsTest_<Bag<size_t>,size_t> ();
-			SimpleOpEqualsTest_<Bag<SimpleClass>,SimpleClass> ();
-			SimpleOpEqualsTest_<Bag_LinkedList<size_t>,size_t> ();
-			SimpleOpEqualsTest_<Bag_LinkedList<SimpleClass>,SimpleClass> ();
-			SimpleOpEqualsTest_<Bag_Array<size_t>,size_t> ();
-			SimpleOpEqualsTest_<Bag_Array<SimpleClass>,SimpleClass> ();
+			SimpleOpEqualsTest_<Bag<size_t>> ();
+			SimpleOpEqualsTest_<Bag<SimpleClass>> ();
+			SimpleOpEqualsTest_<Bag_LinkedList<size_t>> ();
+			SimpleOpEqualsTest_<Bag_LinkedList<SimpleClass>> ();
+			SimpleOpEqualsTest_<Bag_Array<size_t>> ();
+			SimpleOpEqualsTest_<Bag_Array<SimpleClass>> ();
 		}
 
 	}
@@ -477,7 +479,7 @@ namespace	{
 
 
 
-int main (int argc, const char* argv[])
+int	main (int argc, const char* argv[])
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
