@@ -64,7 +64,7 @@
  *          FIX THIS before supporting more typest that require Iterable<T> / Iterator<T>.
  *
  *      ->  Merge Current virtual call into More() call? Trouble is constructing
- *          T. We could make fields char fCurrent[sizeof(T)] but that poses problems
+ *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
  *          for copying iterators. On balance, probably best to bag it!!!
  *
  *
@@ -151,7 +151,7 @@ namespace   Stroika {
                 static  Iterator<T>         GetSentinal ();
 
             protected:
-                nonvirtual  typename Rep&       _GetRep ();
+                nonvirtual  Rep&				_GetRep ();
                 nonvirtual  const Rep&          _GetRep () const;
 
             private:
@@ -159,7 +159,7 @@ namespace   Stroika {
                 Memory::SharedByValue<Rep, Memory::SharedByValue_CopyByFunction<Rep>>    fIterator_;
 
             private:
-                T       fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
+                T       fCurrent_;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
                 static  Rep*    Clone_ (const Rep& rep);
@@ -181,7 +181,7 @@ namespace   Stroika {
                         Done -> More (null, false)
 
                         (note that for performance and safety reasons the iterator envelope actually
-                        passes fCurrent into More when implenenting ++it
+                        passes fCurrent_ into More when implenenting ++it
             */
             template    <typename T>
             class  Iterator<T>::Rep {
