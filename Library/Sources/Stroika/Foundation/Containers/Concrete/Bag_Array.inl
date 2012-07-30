@@ -164,7 +164,7 @@ namespace   Stroika {
                     return (fData_.Contains (item));
                 }
                 template    <typename T>
-                typename    typename Bag<T>::Mutator   Bag_Array<T>::Rep_::MakeMutator ()
+                typename Bag<T>::Mutator   Bag_Array<T>::Rep_::MakeMutator ()
                 {
                     return typename Bag<T>::Mutator (new MutatorRep_ (*this));
                 }
