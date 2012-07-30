@@ -136,7 +136,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>    Iterable<T>::end ()
             {
-                return (Iterator<T>::GetSentinal ());
+                return (Iterator<T>::GetEmptyIterator ());
             }
             template    <typename T>
             inline  void    Iterable<T>::Apply (void (*doToElement) (const T& item)) const

@@ -37,7 +37,7 @@ namespace   Stroika {
                 }
 
                 IteratorClass end () const {
-                    return (IteratorClass::GetSentinal ());
+                    return (IteratorClass::GetEmptyIterator ());
                 }
 
             private:
@@ -76,12 +76,6 @@ namespace   Stroika {
                 : fIterator_ (it, &Clone_)
             {
                 RequireNotNull (it);
-#if 0
-                if (it == nullptr) {
-                    fIterator_ = GetSentinal ().fIterator_;
-                }
-                EnsureNotNull (fIterator_);
-#endif
             }
             template    <typename T>
             inline Iterator<T>::~Iterator ()
@@ -162,7 +156,7 @@ namespace   Stroika {
                 return rep.Clone ();
             }
             template    <typename T>
-            Iterator<T> Iterator<T>::GetSentinal ()
+            Iterator<T> Iterator<T>::GetEmptyIterator ()
             {
                 class   RepSentinal_ : public Iterator<T>::IRep  {
                 public:

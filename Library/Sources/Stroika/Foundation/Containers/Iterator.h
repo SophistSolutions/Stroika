@@ -58,18 +58,13 @@
  *
  *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass from Iterable<TallyEntry<T>>?
  *
- *
  *      o   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
  *          in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more typest that require Iterable<T> / Iterator<T>.
  *
- *      ->  Merge Current virtual call into More() call? Trouble is constructing
+ *      o	Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
  *          for copying iterators. On balance, probably best to bag it!!!
- *
- *      o   Rename GetSentinal() to something like GetSpecialAlwaysEndIterator () and docuemnt its use in a!=b syntax.
- *
- *
  */
 
 
@@ -137,14 +132,27 @@ namespace   Stroika {
 
                 nonvirtual  Iterator<T>&    operator= (const Iterator<T>& rhs);
 
-            public:
                 // support for Range based for, and stl style iteration in general (containers must also support begin, end)
+            public:
                 nonvirtual  T       operator* () const;
+			
+			public:
                 nonvirtual  void    operator++ ();
                 nonvirtual  void    operator++ (int);
-                nonvirtual  bool    operator!= (Iterator rhs) const;
+			
+			public:
+				/*
+				 * Two iterators are considered EQUAL if they are BOTH Done (). Otherwise, they are both equal if they are the
+				 * exact same rep,and have the same 'current' value.
+				 */
                 nonvirtual  bool    operator== (Iterator rhs) const;
 
+			public:
+				/*
+				 * See the definition of operator==
+				 */
+                nonvirtual  bool    operator!= (Iterator rhs) const;
+            
             public:
                 // Synonyms for above, sometimes making code more readable
                 // Current -> operator*
@@ -153,7 +161,11 @@ namespace   Stroika {
                 nonvirtual  bool    Done () const;
 
             public:
-                static  Iterator<T>         GetSentinal ();
+				/*
+				 *	GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
+				 *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
+				 */
+                static  Iterator<T>		GetEmptyIterator ();
 
             protected:
                 nonvirtual  IRep&               _GetRep ();
