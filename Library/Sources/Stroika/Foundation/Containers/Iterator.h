@@ -55,6 +55,14 @@
  *
  *  TODO:
  *
+ *
+ *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass from Iterable<TallyEntry<T>>?
+ *
+ *
+ *      o   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
+ *          in the wrong state and requiring an initial ++.
+ *          FIX THIS before supporting more typest that require Iterable<T> / Iterator<T>.
+ *
  *      ->  Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent[sizeof(T)] but that poses problems
  *          for copying iterators. On balance, probably best to bag it!!!
@@ -72,6 +80,9 @@
 
 // SSW 9/19/2011: remove this restriction for more efficiency and flexibility
 #define qIteratorsRequireNoArgContructorForT    1
+
+
+
 
 /*
  *      Iterator are used primarily to get auto-destruction
@@ -95,6 +106,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
+            /*
+             *  An Iterator<T> is a copyable object which can safely be used to capture the state of iteration (copy) and continue iterating from that spot.
+             *  If the underlying object is modified, the iterator will be automatically
+             */
             template    <typename T>
             class  Iterator {
             public:
@@ -105,15 +121,16 @@ namespace   Stroika {
 
             public:
                 class   Rep;
+
+            private:
+                NO_DEFAULT_CONSTRUCTOR (Iterator);
             public:
-                explicit    Iterator (Rep* it);
+                explicit Iterator (Rep* it);
+            public:
                 Iterator (const Iterator<T>& from);
                 ~Iterator ();
 
                 nonvirtual  Iterator<T>&    operator= (const Iterator<T>& rhs);
-
-            private:
-                Iterator ();    // Never implemented - illegal
 
             public:
                 // support for Range based for, and stl style iteration in general (containers must also support begin, end)
@@ -134,10 +151,17 @@ namespace   Stroika {
                 static  Iterator<T>         GetSentinal ();
 
             protected:
+                nonvirtual  typename Rep&       _GetRep ();
+                nonvirtual  const Rep&          _GetRep () const;
+
+            private:
                 // probably should not need to use SharedByValue_CopyByFunction....
-                Memory::SharedByValue<Rep, Memory::SharedByValue_CopyByFunction<Rep>>    fIterator;
+                Memory::SharedByValue<Rep, Memory::SharedByValue_CopyByFunction<Rep>>    fIterator_;
+
+            private:
                 T       fCurrent;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
+            private:
                 static  Rep*    Clone_ (const Rep& rep);
             };
 
