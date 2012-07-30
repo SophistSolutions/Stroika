@@ -105,7 +105,7 @@ namespace   Stroika {
             inline   typename   Bag<T>::Mutator  Bag<T>::MakeMutator ()
             {
                 // Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
-                Bag<T>::Mutator it = _GetRep ().MakeBagMutator ();
+                Bag<T>::Mutator it = _GetRep ().MakeMutator ();
                 ++it;
                 return it;
             }

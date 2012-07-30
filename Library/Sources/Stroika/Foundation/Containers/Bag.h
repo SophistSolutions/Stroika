@@ -243,12 +243,12 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void						Compact ()                      =   0;
-                virtual bool						Contains (T item) const         =   0;
-                virtual void						Add (T item)                    =   0;
-                virtual void						Remove (T item)                 =   0;
-                virtual void						RemoveAll ()                    =   0;
-                virtual typename Bag<T>::Mutator	MakeBagMutator ()               =   0;
+                virtual void                        Compact ()                      =   0;
+                virtual bool                        Contains (T item) const         =   0;
+                virtual typename Bag<T>::Mutator    MakeMutator ()                  =   0;
+                virtual void                        Add (T item)                    =   0;
+                virtual void                        Remove (T item)                 =   0;
+                virtual void                        RemoveAll ()                    =   0;
             };
 
 

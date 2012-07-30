@@ -34,14 +34,14 @@ namespace   Stroika {
                     virtual void                            Apply (void (*doToElement) (const T& item)) const override;
                     virtual Iterator<T>                     ApplyUntilTrue (bool (*doToElement) (const T& item)) const override;
 
-                // Bag<T>::_IRep overrides
+                    // Bag<T>::_IRep overrides
                 public:
-                    virtual void						Compact () override;
-                    virtual bool						Contains (T item) const override;
-                    virtual typename Bag<T>::Mutator	MakeBagMutator () override;
-                    virtual void						Add (T item) override;
-                    virtual void						Remove (T item) override;
-                    virtual void						RemoveAll () override;
+                    virtual void                        Compact () override;
+                    virtual bool                        Contains (T item) const override;
+                    virtual typename Bag<T>::Mutator    MakeMutator () override;
+                    virtual void                        Add (T item) override;
+                    virtual void                        Remove (T item) override;
+                    virtual void                        RemoveAll () override;
 
                 private:
                     LinkedList_Patch<T> fData_;
@@ -131,7 +131,7 @@ namespace   Stroika {
                     return (fData_.Contains (item));
                 }
                 template    <typename T>
-                typename    Bag<T>::Mutator   Bag_LinkedList<T>::Rep_::MakeBagMutator ()
+                typename    Bag<T>::Mutator   Bag_LinkedList<T>::Rep_::MakeMutator ()
                 {
                     return typename Bag<T>::Mutator (new MutatorRep_ (*this));
                 }
