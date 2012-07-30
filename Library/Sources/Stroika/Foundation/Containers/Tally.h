@@ -43,25 +43,25 @@ namespace   Stroika {
 
 
             template    <typename T>
-			class  Tally;
+            class  Tally;
             template    <typename T>
-			class  TallyRep;
+            class  TallyRep;
             template    <typename T>
-			class  TallyIteratorRep;
+            class  TallyIteratorRep;
             template    <typename T>
-			class  TallyMutatorRep;
+            class  TallyMutatorRep;
 
             template    <typename T>
-			bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
+            bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
 
-            template    <typename T>    
-			bool    operator== (const Tally<T>& lhs, const Tally<T>& rhs);
-            template    <typename T>    
-			bool    operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
+            template    <typename T>
+            bool    operator== (const Tally<T>& lhs, const Tally<T>& rhs);
+            template    <typename T>
+            bool    operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
 
-            template    <typename T> 
-			class  TallyMutator : public Iterator<TallyEntry<T>> {
+            template    <typename T>
+            class  TallyMutator : public Iterator<TallyEntry<T>> {
             public:
                 TallyMutator (TallyMutatorRep<T>* it);
 

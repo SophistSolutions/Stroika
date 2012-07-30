@@ -260,13 +260,13 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-				typename Iterator<TallyEntry<T> >::IRep*    Tally_LinkedListRep<T>::MakeTallyIterator ()
+                typename Iterator<TallyEntry<T> >::IRep*    Tally_LinkedListRep<T>::MakeTallyIterator ()
                 {
                     return (new Tally_LinkedListMutatorRep<T> (*this));
                 }
 
                 template    <typename T>
-				TallyMutatorRep<T>*    Tally_LinkedListRep<T>::MakeTallyMutator ()
+                TallyMutatorRep<T>*    Tally_LinkedListRep<T>::MakeTallyMutator ()
                 {
                     return (new Tally_LinkedListMutatorRep<T> (*this));
                 }

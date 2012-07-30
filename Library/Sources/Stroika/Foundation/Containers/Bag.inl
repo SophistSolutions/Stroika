@@ -75,7 +75,24 @@ namespace   Stroika {
             template    <typename T>
             inline  typename Bag<T>::Mutator    Bag<T>::end ()
             {
-                return (Bag<T>::Mutator (nullptr));
+                class   RepSentinal_ : public Bag<T>::_IMutatorRep  {
+                public:
+                    virtual bool    More (T* current, bool advance) override {
+                        return false;
+                    }
+                    virtual IRep*    Clone () const override {
+                        RequireNotReached ();
+                        return nullptr;
+                    }
+                    virtual void    RemoveCurrent () override {
+                        RequireNotReached ();
+                    }
+                    virtual void    UpdateCurrent (T newValue) override {
+                        RequireNotReached ();
+                    }
+                };
+                static  Bag<T>::Mutator kSentinal = Bag<T>::Mutator (new RepSentinal_ ());
+                return kSentinal;
             }
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)

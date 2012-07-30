@@ -37,7 +37,7 @@ namespace   Stroika {
                 }
 
                 IteratorClass end () const {
-                    return (IteratorClass (nullptr));
+                    return (IteratorClass::GetSentinal ());
                 }
 
             private:
@@ -46,7 +46,7 @@ namespace   Stroika {
 
 
 
-			// class IRep<T>
+            // class IRep<T>
             template    <typename T>
             inline Iterator<T>::IRep::IRep ()
             {
@@ -69,16 +69,19 @@ namespace   Stroika {
                 : fIterator_ (from.fIterator_, &Clone_)
                 , fCurrent_ (from.fCurrent_)
             {
-                RequireNotNull (from.fIterator_);
+                RequireNotNull (from.fIterator_.GetPointer ());
             }
             template    <typename T>
             inline Iterator<T>::Iterator (IRep* it)
                 : fIterator_ (it, &Clone_)
             {
+                RequireNotNull (it);
+#if 0
                 if (it == nullptr) {
                     fIterator_ = GetSentinal ().fIterator_;
                 }
                 EnsureNotNull (fIterator_);
+#endif
             }
             template    <typename T>
             inline Iterator<T>::~Iterator ()
@@ -87,6 +90,7 @@ namespace   Stroika {
             template    <typename T>
             inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs)
             {
+                RequireNotNull (rhs.fIterator_.GetPointer ());
                 fIterator_ = rhs.fIterator_;
                 fCurrent_ = rhs.fCurrent_;
                 return (*this);
@@ -160,9 +164,7 @@ namespace   Stroika {
             template    <typename T>
             Iterator<T> Iterator<T>::GetSentinal ()
             {
-                class   RepSentinal : public Iterator<T>::IRep  {
-                public:
-                    RepSentinal () {}
+                class   RepSentinal_ : public Iterator<T>::IRep  {
                 public:
                     virtual bool    More (T* current, bool advance) override {
                         return false;
@@ -172,8 +174,8 @@ namespace   Stroika {
                         return nullptr;
                     }
                 };
-                static  Iterator<T> kSentinal = Iterator<T> (new RepSentinal ());
-                return Iterator<T> (kSentinal);
+                static  Iterator<T> kSentinal = Iterator<T> (new RepSentinal_ ());
+                return kSentinal;
             }
 
 
