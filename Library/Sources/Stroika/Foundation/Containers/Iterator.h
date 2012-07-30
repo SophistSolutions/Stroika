@@ -110,8 +110,9 @@ namespace   Stroika {
 
 
             /*
-             *  An Iterator<T> is a copyable object which can safely be used to capture the state of iteration (copy) and continue iterating from that spot.
-             *  If the underlying object is modified, the iterator will be automatically
+             *		An Iterator<T> is a copyable object which can safely be used to capture the state of
+			 *	iteration (copy) and continue iterating from that spot. If the underlying object is
+			 *	modified, the iterator will be automatically
              */
             template    <typename T>
             class  Iterator {
@@ -122,12 +123,12 @@ namespace   Stroika {
                 typedef T   ElementType;
 
             public:
-                class   Rep;
+                class   IRep;
 
             private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);
             public:
-                explicit Iterator (Rep* it);
+                explicit Iterator (IRep* it);
             public:
                 Iterator (const Iterator<T>& from);
                 ~Iterator ();
@@ -153,18 +154,18 @@ namespace   Stroika {
                 static  Iterator<T>         GetSentinal ();
 
             protected:
-                nonvirtual  Rep&				_GetRep ();
-                nonvirtual  const Rep&          _GetRep () const;
+                nonvirtual  IRep&				_GetRep ();
+                nonvirtual  const IRep&         _GetRep () const;
 
             private:
                 // probably should not need to use SharedByValue_CopyByFunction....
-                Memory::SharedByValue<Rep, Memory::SharedByValue_CopyByFunction<Rep>>    fIterator_;
+                Memory::SharedByValue<IRep, Memory::SharedByValue_CopyByFunction<IRep>>    fIterator_;
 
             private:
                 T       fCurrent_;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
-                static  Rep*    Clone_ (const Rep& rep);
+                static  IRep*    Clone_ (const IRep& rep);
             };
 
 
@@ -186,15 +187,15 @@ namespace   Stroika {
                         passes fCurrent_ into More when implenenting ++it
             */
             template    <typename T>
-            class  Iterator<T>::Rep {
+            class  Iterator<T>::IRep {
             protected:
-                Rep ();
+                IRep ();
 
             public:
-                virtual ~Rep ();
+                virtual ~IRep ();
 
             public:
-                virtual Rep*    Clone () const                      = 0;
+                virtual IRep*    Clone () const                     = 0;
                 virtual bool    More (T* current, bool advance)     = 0;
 
             public:

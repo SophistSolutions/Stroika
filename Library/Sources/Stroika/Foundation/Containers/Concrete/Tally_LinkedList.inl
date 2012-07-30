@@ -38,7 +38,7 @@ namespace   Stroika {
                     virtual void    Remove (T item, size_t count) override;
                     virtual size_t  TallyOf (T item) const override;
 
-                    virtual typename Iterator<TallyEntry<T> >::Rep* MakeTallyIterator () override;
+                    virtual typename Iterator<TallyEntry<T> >::IRep* MakeTallyIterator () override;
                     virtual TallyMutatorRep<T>*             MakeTallyMutator () override;
 
                     static  void*   operator new (size_t size);
@@ -57,7 +57,7 @@ namespace   Stroika {
 
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
 
-                    virtual typename Iterator<TallyEntry<T> >::Rep* Clone () const override;
+                    virtual typename Iterator<TallyEntry<T> >::IRep* Clone () const override;
 
                     virtual void    RemoveCurrent () override;
                     virtual void    UpdateCount (size_t newCount) override;
@@ -122,7 +122,7 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_LinkedListMutatorRep<T>::Clone () const
+                template    <typename T>    typename Iterator<TallyEntry<T> >::IRep* Tally_LinkedListMutatorRep<T>::Clone () const
                 {
                     return (new Tally_LinkedListMutatorRep<T> (*this));
                 }
@@ -259,12 +259,14 @@ namespace   Stroika {
                     return (0);
                 }
 
-                template    <typename T> typename Iterator<TallyEntry<T> >::Rep*    Tally_LinkedListRep<T>::MakeTallyIterator ()
+                template    <typename T>
+				typename Iterator<TallyEntry<T> >::IRep*    Tally_LinkedListRep<T>::MakeTallyIterator ()
                 {
                     return (new Tally_LinkedListMutatorRep<T> (*this));
                 }
 
-                template    <typename T> TallyMutatorRep<T>*    Tally_LinkedListRep<T>::MakeTallyMutator ()
+                template    <typename T>
+				TallyMutatorRep<T>*    Tally_LinkedListRep<T>::MakeTallyMutator ()
                 {
                     return (new Tally_LinkedListMutatorRep<T> (*this));
                 }

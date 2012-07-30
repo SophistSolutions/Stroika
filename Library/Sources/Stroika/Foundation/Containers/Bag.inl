@@ -222,7 +222,7 @@ namespace   Stroika {
             // class Bag<T>::_IMutatorRep<T>
             template    <typename T>
             inline  Bag<T>::_IMutatorRep::_IMutatorRep () :
-                Iterator<T>::Rep ()
+                Iterator<T>::IRep ()
             {
             }
 

@@ -259,7 +259,7 @@ namespace   Stroika {
              *  the Bag<T> container API.
              */
             template    <typename T>
-            class   Bag<T>::_IMutatorRep : public Iterator<T>::Rep {
+            class   Bag<T>::_IMutatorRep : public Iterator<T>::IRep {
             protected:
                 _IMutatorRep ();
 

@@ -34,13 +34,13 @@ namespace   Stroika {
                 virtual void    Remove (T item, size_t count)                   =   0;
                 virtual size_t  TallyOf (T item) const                          =   0;
 
-                nonvirtual  typename Iterator<T>::Rep*              MakeIterator ();
-                virtual typename Iterator<TallyEntry<T> >::Rep* MakeTallyIterator ()    =   0;
+                nonvirtual  typename Iterator<T>::IRep*              MakeIterator ();
+                virtual typename Iterator<TallyEntry<T> >::IRep* MakeTallyIterator ()    =   0;
                 virtual TallyMutatorRep<T>*             MakeTallyMutator ()     =   0;
             };
 
 
-            template    <typename T> class  TallyMutatorRep : public Iterator<TallyEntry<T> >::Rep {
+            template    <typename T> class  TallyMutatorRep : public Iterator<TallyEntry<T> >::IRep {
             protected:
                 TallyMutatorRep ();
 
@@ -49,16 +49,16 @@ namespace   Stroika {
                 virtual void    UpdateCount (size_t newCount)   =   0;
             };
 
-            template    <typename T> class  TallyIterateOnTRep : public Iterator<T>::Rep {
+            template    <typename T> class  TallyIterateOnTRep : public Iterator<T>::IRep {
             public:
-                TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::Rep* it);
+                TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::IRep* it);
                 ~TallyIterateOnTRep ();
 
                 virtual bool            More (T* current, bool advance) override;
-                virtual typename Iterator<T>::Rep*  Clone () const override;
+                virtual typename Iterator<T>::IRep*  Clone () const override;
 
             private:
-                typename Iterator<TallyEntry<T> >::Rep* fIt;
+                typename Iterator<TallyEntry<T> >::IRep* fIt;
             };
 
 
@@ -248,7 +248,7 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            typename Iterator<T>::Rep* TallyRep<T>::MakeIterator ()
+            typename Iterator<T>::IRep* TallyRep<T>::MakeIterator ()
             {
                 return (new TallyIterateOnTRep<T> (MakeTallyIterator ()));
             }
@@ -337,12 +337,12 @@ namespace   Stroika {
             // typename TallyMutatorRep<T>
             template    <typename T>
             inline TallyMutatorRep<T>::TallyMutatorRep () :
-                Iterator<TallyEntry<T> >::Rep ()
+                Iterator<TallyEntry<T> >::IRep ()
             {
             }
             // typename TallyIterateOnTRep<T>
             template    <typename T>
-            TallyIterateOnTRep<T>::TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::Rep* it) :
+            TallyIterateOnTRep<T>::TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::IRep* it) :
                 fIt (it)
             {
                 RequireNotNull (fIt);
@@ -367,7 +367,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline typename Iterator<T>::Rep*  TallyIterateOnTRep<T>::Clone () const
+            inline typename Iterator<T>::IRep*  TallyIterateOnTRep<T>::Clone () const
             {
                 RequireNotNull (fIt);
                 return (new TallyIterateOnTRep<T> (fIt->Clone ()));

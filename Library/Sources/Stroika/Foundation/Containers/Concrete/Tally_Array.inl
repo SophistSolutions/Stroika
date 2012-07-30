@@ -37,7 +37,7 @@ namespace   Stroika {
                     virtual void    Remove (T item, size_t count) override;
                     virtual size_t  TallyOf (T item) const override;
 
-                    virtual typename Iterator<TallyEntry<T> >::Rep* MakeTallyIterator () override;
+                    virtual typename Iterator<TallyEntry<T> >::IRep* MakeTallyIterator () override;
                     virtual TallyMutatorRep<T>*     MakeTallyMutator () override;
 
                     nonvirtual  void    RemoveAt (size_t index);
@@ -63,7 +63,7 @@ namespace   Stroika {
 
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
 
-                    virtual typename Iterator<TallyEntry<T> >::Rep* Clone () const override;
+                    virtual typename Iterator<TallyEntry<T> >::IRep* Clone () const override;
 
                     virtual void    RemoveCurrent () override;
                     virtual void    UpdateCount (size_t newCount) override;
@@ -124,7 +124,7 @@ namespace   Stroika {
                     return (fIterator.More(current, advance));
                 }
 
-                template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_ArrayMutatorRep<T>::Clone () const
+                template    <typename T>    typename Iterator<TallyEntry<T> >::IRep* Tally_ArrayMutatorRep<T>::Clone () const
                 {
                     return (new Tally_ArrayMutatorRep<T> (*this));
                 }
@@ -239,7 +239,7 @@ namespace   Stroika {
                     return (tmp.fCount);
                 }
 
-                template    <typename T>    typename Iterator<TallyEntry<T> >::Rep* Tally_ArrayRep<T>::MakeTallyIterator ()
+                template    <typename T>    typename Iterator<TallyEntry<T> >::IRep* Tally_ArrayRep<T>::MakeTallyIterator ()
                 {
                     return (new Tally_ArrayMutatorRep<T> (*this));
                 }

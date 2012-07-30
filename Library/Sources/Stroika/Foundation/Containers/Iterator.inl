@@ -46,19 +46,19 @@ namespace   Stroika {
 
 
 
-			// class Rep<T>
+			// class IRep<T>
             template    <typename T>
-            inline Iterator<T>::Rep::Rep ()
+            inline Iterator<T>::IRep::IRep ()
             {
             }
             template    <typename T>
-            inline Iterator<T>::Rep::~Rep ()
+            inline Iterator<T>::IRep::~IRep ()
             {
             }
             template    <typename T>
-            inline bool    Iterator<T>::Rep::Done () const
+            inline bool    Iterator<T>::IRep::Done () const
             {
-                return not const_cast<Rep*> (this)->More (nullptr, false);
+                return not const_cast<IRep*> (this)->More (nullptr, false);
             }
 
 
@@ -72,7 +72,7 @@ namespace   Stroika {
                 RequireNotNull (from.fIterator_);
             }
             template    <typename T>
-            inline Iterator<T>::Iterator (Rep* it)
+            inline Iterator<T>::Iterator (IRep* it)
                 : fIterator_ (it, &Clone_)
             {
                 if (it == nullptr) {
@@ -92,13 +92,13 @@ namespace   Stroika {
                 return (*this);
             }
             template    <typename T>
-            inline  typename    Iterator<T>::Rep&         Iterator<T>::_GetRep ()
+            inline  typename    Iterator<T>::IRep&         Iterator<T>::_GetRep ()
             {
                 EnsureNotNull (fIterator_.get ());
                 return *fIterator_;
             }
             template    <typename T>
-            inline  const typename Iterator<T>::Rep&   Iterator<T>::_GetRep () const
+            inline  const typename Iterator<T>::IRep&   Iterator<T>::_GetRep () const
             {
                 EnsureNotNull (fIterator_.get ());
                 return *fIterator_;
@@ -148,26 +148,26 @@ namespace   Stroika {
                 }
 
                 // assigning to local variables to ensure const version called
-                const   Iterator<T>::Rep* lhsRep = fIterator_.GetPointer ();
-                const   Iterator<T>::Rep* rhsRep = fIterator_.GetPointer ();
+                const   Iterator<T>::IRep* lhsRep = fIterator_.GetPointer ();
+                const   Iterator<T>::IRep* rhsRep = fIterator_.GetPointer ();
                 return (lhsRep == rhsRep and fCurrent_ == rhs.fCurrent_);
             }
             template    <typename T>
-            inline  typename Iterator<T>::Rep*   Iterator<T>::Clone_ (const typename Iterator<T>::Rep& rep)
+            inline  typename Iterator<T>::IRep*   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
             {
                 return rep.Clone ();
             }
             template    <typename T>
             Iterator<T> Iterator<T>::GetSentinal ()
             {
-                class   RepSentinal : public Iterator<T>::Rep  {
+                class   RepSentinal : public Iterator<T>::IRep  {
                 public:
                     RepSentinal () {}
                 public:
                     virtual bool    More (T* current, bool advance) override {
                         return false;
                     }
-                    virtual Rep*    Clone () const override {
+                    virtual IRep*    Clone () const override {
                         RequireNotReached ();
                         return nullptr;
                     }

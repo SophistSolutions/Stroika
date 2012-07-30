@@ -56,9 +56,9 @@ namespace   Stroika {
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
 
-                    // Iterator<T>::Rep
+                    // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::Rep*      Clone () const override;
+                    virtual typename Iterator<T>::IRep*     Clone () const override;
                     virtual bool                            More (T* current, bool advance) override;
 
                     // Bag<T>::_IMutatorRep
@@ -88,7 +88,7 @@ namespace   Stroika {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                typename Iterator<T>::Rep*  Bag_Array<T>::MutatorRep_::Clone () const
+                typename Iterator<T>::IRep*  Bag_Array<T>::MutatorRep_::Clone () const
                 {
                     return (new MutatorRep_ (*this));
                 }
