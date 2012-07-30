@@ -153,7 +153,9 @@ namespace   Stroika {
 
             public:
                 /*
-                 * It is legal to remove something that is not there.
+                 * It is legal to remove something that is not there. This function removes the first instance of item
+				 * (or each item for the 'items' overload), meaning that another instance of item could still be in the
+				 * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  */
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (const Bag<T>& items);
