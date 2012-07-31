@@ -72,7 +72,8 @@ namespace   Stroika {
             };
 
 
-            template    <typename T> class  Tally {
+            template    <typename T>
+            class  Tally {
             public:
                 Tally ();
                 Tally (const Tally<T>& src);
@@ -94,6 +95,7 @@ namespace   Stroika {
 
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (T item, size_t count);
+                nonvirtual  void    Add (const T* begin, const T* end);
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (T item, size_t count);
                 nonvirtual  void    RemoveAll (T item);
@@ -122,7 +124,6 @@ namespace   Stroika {
                 typedef RangedForIterator<Tally<T>, Iterator<TallyEntry<T>> >   It;
 
             protected:
-                nonvirtual  void    AddItems (const T* items, size_t size);
 
                 nonvirtual  const TallyRep<T>*  GetRep () const;
                 nonvirtual  TallyRep<T>*        GetRep ();
@@ -135,8 +136,10 @@ namespace   Stroika {
                 };
                 Memory::SharedByValue<TallyRep<T>, Rep_Cloner_>  fRep;
 
+            private:
                 static  TallyRep<T>*    Clone (const TallyRep<T>& rep);
 
+            private:
                 friend  bool    operator==<T> (const Tally<T>& lhs, const Tally<T>& rhs);
             };
 
