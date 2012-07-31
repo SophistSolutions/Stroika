@@ -1001,7 +1001,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md">
       <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl">
@@ -1223,62 +1223,62 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl">
       <Filter>Sources\Containers\STL</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\ReadMe.txt" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.md">
       <Filter>Sources\Cache</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md">
       <Filter>Sources\Configuration</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md">
       <Filter>Sources\Cryptography</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md">
       <Filter>Sources\Database</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ReadMe.md">
       <Filter>Sources\DataExchangeFormat</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md">
       <Filter>Sources\Debug</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md">
       <Filter>Sources\IO</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\ReadMe.md">
       <Filter>Sources\Linguistics</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md">
       <Filter>Sources\Math</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md">
       <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md">
       <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.txt">
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md">
       <Filter>Sources\Containers\STL</Filter>
     </None>
   </ItemGroup>
