@@ -1,8 +1,10 @@
 Overview
+--------
   This folder contains all the Stroika Library Foundation::Containers source code.
 
 
 Rejected Ideas
+--------------
 	Make KEYs a UNIFYING concept for containers
 		o	Think about somehow making KEYs a UNIFYING concept for containers? Special case of unsticky keys – like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact, an interator is somewhat better htan a key. 
 			o	We may wany Find() to (optionally) return an iterator positioned at the first entry (unclear what ++ would do).
