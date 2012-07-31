@@ -68,8 +68,8 @@ namespace   Stroika {
 
                 private:
                     ForwardArrayMutator_Patch<T>    fIterator_;
-                
-				private:
+
+                private:
                     friend  class   Rep_;
                 };
 
@@ -195,20 +195,20 @@ namespace   Stroika {
 
 
                 //  class   Bag_Array<T>
-                template    <typename T>    
-				Bag_Array<T>::Bag_Array ()
+                template    <typename T>
+                Bag_Array<T>::Bag_Array ()
                     : Bag<T> (new Rep_ ())
                 {
                 }
-                template    <typename T>    
-				Bag_Array<T>::Bag_Array (const Bag<T>& bag)
+                template    <typename T>
+                Bag_Array<T>::Bag_Array (const Bag<T>& bag)
                     : Bag<T> (new Rep_ ())
                 {
                     SetCapacity (bag.GetLength ());
                     operator+= (bag);
                 }
-                template    <typename T>    
-				Bag_Array<T>::Bag_Array (const T* start, const T* end)
+                template    <typename T>
+                Bag_Array<T>::Bag_Array (const T* start, const T* end)
                     : Bag<T> (new Rep_ ())
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));

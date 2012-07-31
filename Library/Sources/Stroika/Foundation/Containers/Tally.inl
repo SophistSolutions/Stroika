@@ -184,7 +184,24 @@ namespace   Stroika {
 
             template    <typename T>    inline  TallyMutator<T>    Tally<T>::end ()
             {
-                return (TallyMutator<T> (nullptr));
+                class   RepSentinal_ : public TallyMutatorRep<T>  {
+                public:
+                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
+                        return false;
+                    }
+                    virtual typename Iterator<TallyEntry<T>>::IRep*    Clone () const override {
+                        RequireNotReached ();
+                        return nullptr;
+                    }
+                    virtual void    RemoveCurrent () override {
+                        RequireNotReached ();
+                    }
+                    virtual void    UpdateCount (size_t newCount) override {
+                        RequireNotReached ();
+                    }
+                };
+                static  TallyMutator<T> kSentinal = TallyMutator<T> (new RepSentinal_ ());
+                return kSentinal;
             }
 
             template    <typename T>    inline  void    Tally<T>::Add (T item)
