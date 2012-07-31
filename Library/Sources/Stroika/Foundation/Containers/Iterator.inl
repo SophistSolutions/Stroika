@@ -66,14 +66,14 @@ namespace   Stroika {
             // class Iterator<T>
             template    <typename T>
             inline Iterator<T>::Iterator (const Iterator<T>& from)
-                : fIterator_ (from.fIterator_, &Clone_)
+                : fIterator_ (from.fIterator_)
                 , fCurrent_ (from.fCurrent_)
             {
                 RequireNotNull (from.fIterator_.GetPointer ());
             }
             template    <typename T>
             inline Iterator<T>::Iterator (IRep* it)
-                : fIterator_ (it, &Clone_)
+                : fIterator_ (it)
                 , fCurrent_ ()
             {
                 RequireNotNull (it);

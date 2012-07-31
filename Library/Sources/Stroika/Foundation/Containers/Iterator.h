@@ -123,6 +123,15 @@ namespace   Stroika {
                 class   IRep;
 
             private:
+                struct  Rep_Cloner_ {
+                    inline  static  IRep*  Copy (const IRep& t) {
+                        return Iterator<T>::Clone_ (t);
+                    }
+                };
+            public:
+                typedef Memory::SharedByValue<IRep, Rep_Cloner_>   SharedByValueRepType;
+
+			private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);
             public:
                 explicit Iterator (IRep* it);
@@ -203,7 +212,8 @@ namespace   Stroika {
 
             private:
                 // probably should not need to use SharedByValue_CopyByFunction....
-                Memory::SharedByValue<IRep, Memory::SharedByValue_CopyByFunction<IRep>>    fIterator_;
+                //Memory::SharedByValue<IRep, Memory::SharedByValue_CopyByFunction<IRep>>    fIterator_;
+				SharedByValueRepType	fIterator_;
 
             private:
                 T       fCurrent_;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
