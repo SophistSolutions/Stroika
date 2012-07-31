@@ -61,12 +61,12 @@ namespace   Stroika {
                 return *reinterpret_cast<ACTUAL_MODULE_INITIALIZER*> (&sActualModuleInitializer_Storage);
             }
             template    <typename ACTUAL_MODULE_INITIALIZER>
-            Byte                                    ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::sActualModuleInitializer_Storage[sizeof (ACTUAL_MODULE_INITIALIZER)]; // avoid actual memory allocation call - since only one of these
+            Byte	ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::sActualModuleInitializer_Storage[sizeof (ACTUAL_MODULE_INITIALIZER)]; // avoid actual memory allocation call - since only one of these
             template    <typename ACTUAL_MODULE_INITIALIZER>
             unsigned    short   ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::sInitCnt;
+
 
         }
     }
 }
 #endif  /*_Stroika_Foundation_Execution_ModuleInit_inl_*/
-
