@@ -15,8 +15,8 @@ namespace   Stroika {
         namespace   Execution {
 
             template    <typename T>
-            inline  SingletonObjActualInitializer<T>::SingletonObjActualInitializer ():
-                fThe ()
+            inline  SingletonObjActualInitializer<T>::SingletonObjActualInitializer ()
+                : fThe ()
             {
             }
             template    <typename T>
