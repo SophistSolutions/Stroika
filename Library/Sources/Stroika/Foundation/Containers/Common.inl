@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Basics_inl_
-#define _Stroika_Foundation_Containers_Basics_inl_  1
+#ifndef _Stroika_Foundation_Containers_Common_inl_
+#define _Stroika_Foundation_Containers_Common_inl_  1
 
 
 /*
@@ -12,6 +12,7 @@
  */
 
 #include    <algorithm>
+
 #include    "../Math/Common.h"
 
 
@@ -87,7 +88,5 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Basics_inl_*/
-
-
+#endif  /*_Stroika_Foundation_Containers_Common_inl_*/
 

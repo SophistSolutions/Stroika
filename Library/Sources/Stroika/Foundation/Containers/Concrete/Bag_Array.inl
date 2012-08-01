@@ -218,8 +218,8 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                inline  Bag_Array<T>::Bag_Array (const Bag_Array<T>& bag) :
-                    Bag<T> (bag)
+                inline  Bag_Array<T>::Bag_Array (const Bag_Array<T>& bag)
+                    : Bag<T> (bag)
                 {
                 }
                 template    <typename T>

@@ -17,8 +17,6 @@
  *      (o)         Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
  *                  Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
  *
- *      (o)         When this code matures, plan is to OBSOLETE/DELETE the Collection code...
- *
  *      (o)         Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
  *                  consider providing a _IRep version - to implement LOCKING logic promised in the API.
  *

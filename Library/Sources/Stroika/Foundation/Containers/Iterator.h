@@ -56,7 +56,8 @@
  *  TODO:
  *
  *
- *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass from Iterable<TallyEntry<T>>?
+ *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
+ *			from Iterable<TallyEntry<T>>?
  *
  *      o   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
  *          in the wrong state and requiring an initial ++.
@@ -109,7 +110,9 @@ namespace   Stroika {
              *  and which allows traversal of that object from start to finish (the iterator itself essentially provides
              *  A notion of START to FINISH). An Iterator<T> is a copyable object which can safely be used to capture
              *  the state of iteration (copy) and continue iterating from that spot. If the underlying object is
-             *  modified, the iterator will be automatically updated to logically account for that update (FILL IN DETAILS - SEE ABOVE COMMENTARY)
+             *  modified, the iterator will be automatically updated to logically account for that update 
+			 *
+			 *		(FILL IN DETAILS - SEE ABOVE COMMENTARY)
              */
             template    <typename T>
             class  Iterator {
@@ -141,11 +144,12 @@ namespace   Stroika {
 
                 nonvirtual  Iterator<T>&    operator= (const Iterator<T>& rhs);
 
-                // support for Range based for, and stl style iteration in general (containers must also support begin, end)
             public:
+                // support for Range based for, and stl style iteration in general (containers must also support begin, end)
                 nonvirtual  T       operator* () const;
 
             public:
+                // support for Range based for, and stl style iteration in general (containers must also support begin, end)
                 nonvirtual  void    operator++ ();
                 nonvirtual  void    operator++ (int);
 
@@ -164,10 +168,11 @@ namespace   Stroika {
                  *          Assert (x == y);    // This MAY succeed or MAY fail! - it will succeed IFF x.Done()
                  *
                  *
-                 *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between the
-                 *  iterators, so they can never be equal again.
+                 *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between
+                 *  the iterators, so they can never be equal again.
                  *
-                 *  This definition was chosen to be sufficient to provide for efficient implementaiton of STL-style iteration.
+                 *  This definition was chosen to be sufficient to provide for efficient implementaiton of STL-style
+				 *	iteration.
                  *
                  *      Iterator<T> i   =   getIterator();
                  *      Iterator<T> e   =   end ();
@@ -175,14 +180,14 @@ namespace   Stroika {
                  *      for (; i != e; ++i) {
                  *      }
                  *
-                 *      This style works because e.Done () is always true, (and the Rep for e is always different than the rep for i).
-                 *      and so the only way for the iterators to become equal is for i.Done () to be true.
+                 *	This style works because e.Done () is always true, (and the Rep for e is always different than
+				 *	the rep for i). and so the only way for the iterators to become equal is for i.Done () to be true.
                  *
-                 *  A Deeper notion of Iterator Equality might be achievable, by first checking that the LHS and RHS both were
-                 *  iterating over the same container (came from the same source), and then calling a virtual method on one (since they
-                 *  would be the same dynamic type) - and have that dynamically check for equality. But this form of equality testing
-                 *  would be dramatically more performance costly, and would serve little practical purpose I can see
-                 *  right now.
+                 *  A Deeper notion of Iterator Equality might be achievable, by first checking that the LHS and RHS
+				 *	both were iterating over the same container (came from the same source), and then calling a
+				 *	virtual method on one (since they would be the same dynamic type) - and have that dynamically
+				 *	check for equality. But this form of equality testing would be dramatically more performance costly,
+				 *	and would serve little practical purpose I can see right now.
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
