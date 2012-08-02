@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
-#include    "../Memory/BlockAllocated.h"		// #include here because the CPP module depends on BlockAllocated, and this #include needed assure ModuleInit<> proper order
+#include    "../Memory/BlockAllocated.h"        // #include here because the CPP module depends on BlockAllocated, and this #include needed assure ModuleInit<> proper order
 
 
 namespace   Stroika {

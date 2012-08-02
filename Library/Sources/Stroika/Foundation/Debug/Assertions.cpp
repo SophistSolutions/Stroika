@@ -58,21 +58,21 @@ void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType as
 
 void    Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 {
-	static	bool	s_InTrap	=	false;
-	if (s_InTrap) {
-		// prevent infinite looping if we get an assertion triggered while processing an assertion.
-		// And ignore threading issues, because we are pragmatically aborting at this stage anyhow...
-		abort ();
-	}
-	s_InTrap = true;
-	try {
-		(sAssertFailureHandler_) (assertCategory, assertionText, fileName, lineNum, functionName);
-		s_InTrap = false;	// in case using some sort of assertion handler that allows for continuation
-	}
-	catch (...) {
-		s_InTrap = false;	// in case using some sort of assertion handler that allows for continuation
-		throw;
-	}
+    static  bool    s_InTrap    =   false;
+    if (s_InTrap) {
+        // prevent infinite looping if we get an assertion triggered while processing an assertion.
+        // And ignore threading issues, because we are pragmatically aborting at this stage anyhow...
+        abort ();
+    }
+    s_InTrap = true;
+    try {
+        (sAssertFailureHandler_) (assertCategory, assertionText, fileName, lineNum, functionName);
+        s_InTrap = false;   // in case using some sort of assertion handler that allows for continuation
+    }
+    catch (...) {
+        s_InTrap = false;   // in case using some sort of assertion handler that allows for continuation
+        throw;
+    }
 }
 #endif
 
