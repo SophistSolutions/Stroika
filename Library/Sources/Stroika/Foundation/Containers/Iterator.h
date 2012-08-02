@@ -57,7 +57,7 @@
  *
  *
  *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
- *			from Iterable<TallyEntry<T>>?
+ *          from Iterable<TallyEntry<T>>?
  *
  *      o   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
  *          in the wrong state and requiring an initial ++.
@@ -110,9 +110,9 @@ namespace   Stroika {
              *  and which allows traversal of that object from start to finish (the iterator itself essentially provides
              *  A notion of START to FINISH). An Iterator<T> is a copyable object which can safely be used to capture
              *  the state of iteration (copy) and continue iterating from that spot. If the underlying object is
-             *  modified, the iterator will be automatically updated to logically account for that update 
-			 *
-			 *		(FILL IN DETAILS - SEE ABOVE COMMENTARY)
+             *  modified, the iterator will be automatically updated to logically account for that update
+             *
+             *      (FILL IN DETAILS - SEE ABOVE COMMENTARY)
              */
             template    <typename T>
             class  Iterator {
@@ -155,24 +155,25 @@ namespace   Stroika {
 
             public:
                 /*
-                 *      Two iterators are considered EQUAL if they are BOTH Done (). If one is done, but the other not,
+                 *      Two iterators are considered WeakEquals if they are BOTH Done (). If one is done, but the other not,
                  *  they are not equal. If they are both not done, they are both equal if they are the
                  *  exact same rep.
                  *
-                 *      Note - this is a STRONG definition of equality. The following assertion will fail:
+                 *      Note - for WeakEquals. The following assertion will fail:
                  *
                  *          Iterator<T> x = getIterator();
                  *          Iterator<T> y = x;
                  *          x++;
                  *          y++;
-                 *          Assert (x == y);    // This MAY succeed or MAY fail! - it will succeed IFF x.Done()
+                 *          Assert (WeakEquals (x, y));    // This MAY succeed or MAY fail! - it will succeed IFF x.Done()
+                 *                                         // See StrongEquals ()
                  *
                  *
                  *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between
                  *  the iterators, so they can never be equal again.
                  *
                  *  This definition was chosen to be sufficient to provide for efficient implementaiton of STL-style
-				 *	iteration.
+                 *  iteration (note that operator== is an alias for WeakEquals).
                  *
                  *      Iterator<T> i   =   getIterator();
                  *      Iterator<T> e   =   end ();
@@ -180,14 +181,52 @@ namespace   Stroika {
                  *      for (; i != e; ++i) {
                  *      }
                  *
-                 *	This style works because e.Done () is always true, (and the Rep for e is always different than
-				 *	the rep for i). and so the only way for the iterators to become equal is for i.Done () to be true.
+                 *  This style works because e.Done () is always true, (and the Rep for e is always different than
+                 *  the rep for i). and so the only way for the iterators to become equal is for i.Done () to be true.
                  *
-                 *  A Deeper notion of Iterator Equality might be achievable, by first checking that the LHS and RHS
-				 *	both were iterating over the same container (came from the same source), and then calling a
-				 *	virtual method on one (since they would be the same dynamic type) - and have that dynamically
-				 *	check for equality. But this form of equality testing would be dramatically more performance costly,
-				 *	and would serve little practical purpose I can see right now.
+                 *  Note that WeakEquals is COMMUTATIVE.
+                 *
+                 *  See also StrongEquals ().
+                 */
+                nonvirtual  bool    WeakEquals (const Iterator& rhs) const;
+
+            public:
+                /*
+                 *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
+                 *  definition of Iterator<T> equality.
+                 *
+                 *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
+                 *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
+                 *  are considered StrongEquals (). This is mainly because we use a differnt representation for 'done' iterators.
+                 *  They are kind-of-fake iterator objects.
+                 *
+                 *  NB:
+                 *      if (a.StrongEquals (b)) {
+                 *          Assert (a.WeakEquals (b));
+                 *      }
+                 *  HOWEVER:
+                 *      if (a.WeakEquals (b)) {
+                 *          Assert (a.StrongEquals (b) OR not a.StrongEquals (b));  // all bets are off
+                 *      }
+                 *
+                 *  Note - for StrongEquals. The following assertion will succeed:
+                 *
+                 *          Iterator<T> x = getIterator();
+                 *          Iterator<T> y = x;
+                 *          x++;
+                 *          y++;
+                 *          Assert (StrongEquals (x, y));    // will always succeed (x++ and y++ may fail if iterator already at end)
+                 *                                           // See WeakEquals ()
+                 *
+                 *  Note that StrongEquals is COMMUTATIVE.
+                 */
+                nonvirtual  bool    StrongEquals (const Iterator& rhs) const;
+
+            public:
+                /*
+                 *      Because the weak definition of Equals (WeakEquals) is generally adequate, and generally more
+                 *  efficient, and because its fully adequate for the STL iterator pattern (used in scoped iteration)
+                 *  operator== just maps trivially to WeakEquals ().
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
@@ -256,6 +295,7 @@ namespace   Stroika {
             public:
                 virtual IRep*   Clone () const                      = 0;
                 virtual bool    More (T* current, bool advance)     = 0;
+                virtual bool    StrongEquals (IRep* rhs)            = 0;
 
             public:
                 nonvirtual bool Done () const;

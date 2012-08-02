@@ -33,6 +33,9 @@
  *
  *
  * TODO:
+ *
+ *      o   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *
  *      +   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      +   Have Bag_Difference/Union/Interesection??? methods/?? Do research....

@@ -197,6 +197,10 @@ namespace   Stroika {
                         RequireNotReached ();
                         return nullptr;
                     }
+                    virtual bool    StrongEquals (typename Iterator<TallyEntry<T>>::IRep* rhs) override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
                     virtual void    RemoveCurrent () override {
                         RequireNotReached ();
                     }

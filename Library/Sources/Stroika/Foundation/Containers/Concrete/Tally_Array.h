@@ -9,6 +9,10 @@
 
 #include    "../Tally.h"
 
+/*
+ *  TODO:
+ *      o   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ */
 
 
 namespace   Stroika {

@@ -56,6 +56,7 @@ namespace   Stroika {
                     Tally_LinkedListMutatorRep (const Tally_LinkedListMutatorRep<T>& from);
 
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
+                    virtual bool            StrongEquals (typename Iterator<TallyEntry<T> >::IRep* rhs) override;
 
                     virtual typename Iterator<TallyEntry<T> >::IRep* Clone () const override;
 
@@ -119,6 +120,12 @@ namespace   Stroika {
                 template    <typename T>    bool    Tally_LinkedListMutatorRep<T>::More (TallyEntry<T>* current, bool advance)
                 {
                     return (fIterator.More (current, advance));
+                }
+                template    <typename T>
+                bool    Tally_LinkedListMutatorRep<T>::StrongEquals (typename Iterator<TallyEntry<T> >::IRep* rhs) override
+                {
+                    AssertNotImplemented ();
+                    return false;
                 }
 
 

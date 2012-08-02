@@ -18,6 +18,7 @@
  *  TODO:
  *
  *      (o)         Tally<T> probably Iterable<TallyEntry<T>>.
+ *      o           Correctly implement override of Iterator<T>::IRep::StrongEquals ()
  *
  */
 
