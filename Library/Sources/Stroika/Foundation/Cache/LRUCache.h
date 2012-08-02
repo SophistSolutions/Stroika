@@ -72,7 +72,7 @@ namespace   Stroika {
                 // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                 enum    { HASH_TABLE_SIZE   =   1 };
                 static  KeyType ExtractKey (const ElementType& e);
-                // If KeyType differnt type than ElementType we need a hash for that too
+                // If KeyType different type than ElementType we need a hash for that too
                 static  size_t  Hash (const KeyType& e);
                 // defaults to using default CTOR for ElementType and copying over
                 static  void    Clear (ElementType* element);

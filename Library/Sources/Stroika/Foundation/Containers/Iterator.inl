@@ -154,7 +154,7 @@ namespace   Stroika {
             {
                 /*
                  *  StrongEquals is checked by first checking handling the case of special 'done' iterators. If two
-                 *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special - even if from differnt sources)
+                 *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special - even if from different sources)
                  *  they are considered equal).
                  *
                  *  But then - we check that they are the same dynamic type, and if so, hand to one, and let it do the dynamic/concrete type

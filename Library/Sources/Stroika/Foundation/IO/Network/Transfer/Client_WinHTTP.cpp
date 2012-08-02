@@ -214,7 +214,7 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   
 
 
     /*
-     * Though we could create a DIFFERNT API - that managed a session object - like the WinHTTP session object, for now,
+     * Though we could create a DIFFERENT API - that managed a session object - like the WinHTTP session object, for now,
      * just KISS. We DONT cache a single session, because this code could be used by multiple 'users' -
      * when called within HealthFrameWorks - for example.
      *

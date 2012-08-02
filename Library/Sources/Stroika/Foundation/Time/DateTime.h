@@ -91,7 +91,7 @@ namespace   Stroika {
             class   DateTime {
             public:
                 /*
-                 * Most of the time applications will utilize localtime. But occasionally its useful to use differnt timezones, and our approach to this
+                 * Most of the time applications will utilize localtime. But occasionally its useful to use different timezones, and our approach to this
                  * is to simply convert everything to GMT.
                  *
                  * eUnknown_TZ - for the most part - is treated as if it were localtime (except with compare). However - the "Kind" function

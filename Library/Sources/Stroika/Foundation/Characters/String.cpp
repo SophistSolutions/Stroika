@@ -440,7 +440,7 @@ public:
     }
     virtual _Rep*   Clone () const override {
         /*
-         * Subtle point - but since this code involves SHARING buffer space, we cannot have two DIFFERNT string reps both sharing the same pointer. Only
+         * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
          * one can use it, and the other must make a copy.
          */
         return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
@@ -459,7 +459,7 @@ public:
 namespace   {
     // For now - disable this class cuz its broken - run regression tests to see.
     // I'm not clear on how this is supposed to work. While read-only, it works FINE. But if anyone ever makes ANY modifications (removall, etc),
-    // we REALLY want to switch to a differnt REP!!! Like o flength goes zero - we want to return the global kEmptyStringRep (maybe not).
+    // we REALLY want to switch to a different REP!!! Like o flength goes zero - we want to return the global kEmptyStringRep (maybe not).
     // But we more likely want to swithc the the string buffered rep or something. Maybe have virtual methods like InsertAt<>(in rep) return shared_ptr<Rep> so it can be changed?
     // Or take ref-param of that guy so it can be changed???
 #define qString_SubStringClassWorks 0

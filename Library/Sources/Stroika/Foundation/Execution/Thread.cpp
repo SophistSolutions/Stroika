@@ -522,7 +522,7 @@ void    Thread::Abort ()
 
 
 #if         qUseThreads_WindowsNative
-    // I'm not sure this is 100% thread-friendly, in case two people from two differnt threads tried
+    // I'm not sure this is 100% thread-friendly, in case two people from two different threads tried
     // to stop the same (third) thread at the same time. But its probably good enough for starters.
     //      -- LGP 2009-01-14
 

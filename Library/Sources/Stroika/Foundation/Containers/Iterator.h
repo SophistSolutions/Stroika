@@ -197,7 +197,7 @@ namespace   Stroika {
                  *
                  *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
                  *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
-                 *  are considered StrongEquals (). This is mainly because we use a differnt representation for 'done' iterators.
+                 *  are considered StrongEquals (). This is mainly because we use a different representation for 'done' iterators.
                  *  They are kind-of-fake iterator objects.
                  *
                  *  NB:

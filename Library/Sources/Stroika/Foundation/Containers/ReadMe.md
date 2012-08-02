@@ -18,6 +18,6 @@ Rejected Ideas
 		*	Reason Rejected:
 			This really only applies to randomly accessed containers (so not stack, deque etc).
 			Though its possible to define for them, not usefully. Its probably better to just keep key as a
-			'key' concept for Map<>, and use 'index' - which is analagous - but differnt -
+			'key' concept for Map<>, and use 'index' - which is analagous - but different -
 			for sequence (important difference is stickiness of assocation when container is modified).
 

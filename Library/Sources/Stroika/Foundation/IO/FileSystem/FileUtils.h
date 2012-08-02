@@ -51,7 +51,7 @@ namespace   Stroika {
 
 
                 // doesn't actually open the file. It's purely advisory. But its helpful to assure
-                // a consistent set of error reporting across differnt styles of opens. Just call this first,
+                // a consistent set of error reporting across different styles of opens. Just call this first,
                 // and it will throw exceptions if the file doesn't exist, or has access privileges issues.
                 void    CheckFileAccess (const TString& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
 

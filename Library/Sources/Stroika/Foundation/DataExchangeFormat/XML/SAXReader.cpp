@@ -217,7 +217,7 @@ namespace   {
     DOMImplementation&  GetDOMIMPL_ ()
     {
         // safe to save in a static var? -- LGP 2007-05-20
-        // from perusing implementation - this appears safe to cache and re-use in differnt threads
+        // from perusing implementation - this appears safe to cache and re-use in different threads
         static  DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
         AssertNotNull (impl);
         return *impl;

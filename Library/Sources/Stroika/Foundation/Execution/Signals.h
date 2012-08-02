@@ -136,7 +136,7 @@ namespace   Stroika {
                  * signals, so that errors get neatly logged. A common use is to provide a handler that uses the LogMgr to record the crash.
                  *
                  * NB:  SIGABRT intentionally omitted from this list because it prevents abort() from functioning properly. We COULD
-                 *      disable SIGABRT upon receipt of that signal (SIG_DFL) but that would be differnt than other signals handled, raise
+                 *      disable SIGABRT upon receipt of that signal (SIG_DFL) but that would be different than other signals handled, raise
                  *      re-entrancy issues etc. Didn't seem owrh while.
                  */
                 nonvirtual  void                    SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
