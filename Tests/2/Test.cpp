@@ -7,6 +7,7 @@
 #include	<sstream>
 
 #include	"Stroika/Foundation/Containers/STL/VectorUtils.h"
+#include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
 #include	"Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
 #include	"Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
@@ -141,11 +142,31 @@ namespace	{
 
 
 namespace	{
+	void	CheckCanReadFromSmallBadSrc_ ()
+		{
+			stringstream	tmp;
+			tmp << "n";
+			try {
+				VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
+				VerifyTestResult (false);	// should get exception
+			}
+			catch (const DataExchangeFormat::BadFormatException&) {
+				// GOOD
+			}
+			catch (...) {
+				VerifyTestResult (false);	// should get BadFormatException
+			}
+		}
+}
+
+
+namespace	{
 
 	void	DoRegressionTests_ ()
 		{
 			DoRegressionTests_Writer_ ();
 			DoRegressionTests_Reader_ ();
+			CheckCanReadFromSmallBadSrc_ ();
 		}
 }
 
