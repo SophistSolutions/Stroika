@@ -213,21 +213,6 @@
 
 
 
-#ifndef qCompilerAndStdLib_Bug_constexprPreDeclareTemplate
-#if     defined (__GNUC__)
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ == 5))
-#define qCompilerAndStdLib_Bug_constexprPreDeclareTemplate  1
-#else
-#define qCompilerAndStdLib_Bug_constexprPreDeclareTemplate  0
-#endif
-#else
-// Guess TRUE, but only so we get an appropriate error compiling if false, and we can easily correct it here
-#define qCompilerAndStdLib_Bug_constexprPreDeclareTemplate  0
-#endif
-#endif
-
-
-
 
 
 
