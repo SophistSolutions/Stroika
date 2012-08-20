@@ -28,20 +28,20 @@
 
 #if     defined (__GNUC__)
 
-	#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
-		#pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
-	#endif
+#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
+#pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
+#endif
 
 #elif     defined (_MSC_VER)
 
-	#define	_MS_VS_2k10_VER_	1600
-	#if      _MSC_VER < _MS_VS_2k10_VER_
-		#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2010")
-	#endif
+#define _MS_VS_2k10_VER_    1600
+#if      _MSC_VER < _MS_VS_2k10_VER_
+#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2010")
+#endif
 
 #else
 
-	#pragma message ("Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler.")
+#pragma message ("Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler.")
 
 #endif
 
@@ -101,10 +101,10 @@
 */
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    1
 #else
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear	0
+#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    0
 #endif
 
 #endif
@@ -146,7 +146,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  0
 #else
 #define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
@@ -167,7 +167,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_constexpr   0
 #else
 #define qCompilerAndStdLib_Supports_constexpr   1
@@ -241,7 +241,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_noexcept
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_noexcept    0
 #else
 #define qCompilerAndStdLib_Supports_noexcept    1
@@ -273,7 +273,7 @@
 //
 #ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 0
 #else
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
@@ -338,7 +338,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_threads
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_threads 0
 #else
 #define qCompilerAndStdLib_Supports_threads 1
@@ -417,10 +417,10 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdchrono)
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
-#define qCompilerAndStdLib_Supports_stdchrono		0
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#define qCompilerAndStdLib_Supports_stdchrono       0
 #else
-#define qCompilerAndStdLib_Supports_stdchrono		1
+#define qCompilerAndStdLib_Supports_stdchrono       1
 #endif
 
 #endif
@@ -435,7 +435,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdthreads)
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_stdthreads  0
 #else
 #define qCompilerAndStdLib_Supports_stdthreads  1
@@ -456,7 +456,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_varadic_templates)
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_varadic_templates  0
 #else
 #define qCompilerAndStdLib_Supports_varadic_templates  1
@@ -479,7 +479,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdatomic)
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_stdatomic   0
 #else
 #define qCompilerAndStdLib_Supports_stdatomic   1
@@ -496,11 +496,11 @@
 #if     !defined (qCompilerAndStdLib_Supports_override)
 
 #if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
-#define qCompilerAndStdLib_Supports_override	0
-#elif	defined (_MSC_VER) && _MSC_VER <= 1600
-#define qCompilerAndStdLib_Supports_override	0
+#define qCompilerAndStdLib_Supports_override    0
+#elif   defined (_MSC_VER) && _MSC_VER <= 1600
+#define qCompilerAndStdLib_Supports_override    0
 #else
-#define qCompilerAndStdLib_Supports_override	1
+#define qCompilerAndStdLib_Supports_override    1
 #endif
 
 #endif
@@ -542,7 +542,7 @@
 */
 #ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
 
-#if		defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   0
 #else
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
