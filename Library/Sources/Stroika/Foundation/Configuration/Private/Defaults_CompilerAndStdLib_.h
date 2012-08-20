@@ -21,7 +21,7 @@
  * CHECK / WARN about supported compilers/versions.
  */
 #if     defined (__GNUC__)
-	#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6))
+	#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
 		#pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
 	#endif
 #elif     defined (_MSC_VER)
