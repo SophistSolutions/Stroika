@@ -3091,7 +3091,7 @@ SkipNavigation:
                             <p>On windows I recall that it USED to be standard that an edit text would suddenly
                         spawn a scrollbar when needed. This doesn't appear to be the case any longer.
                         I always hated this behavior, but since I didn't know better, I implemented it.</p>
-                            <p>Even though this behavior is no longer particularly standared or common, it is sometimes
+                            <p>Even though this behavior is no longer particularly standard or common, it is sometimes
                         desired, and so supported.</p>
                             <p>NB: You need not turn on the WS_V/HSCROLL styles to make the scrollbars appear/disapear.
                         When this is on, it is handled automagically.</p>

@@ -113,7 +113,7 @@ public:\
 
 
             /*
-             *  The StandaredC++ mechanism of commenting out unused parameters isn't good enuf
+             *  The Standard C++ mechanism of commenting out unused parameters isn't good enuf
              *  in the case where the parameters might be used conditionally. This hack is
              *  to shutup compiler warnings in those cases.
              */
