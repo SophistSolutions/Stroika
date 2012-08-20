@@ -439,29 +439,13 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_nullptr
-@DESCRIPTION:   <p>Controls whether or not the compiler supports the nullptr value (added in C++11).</p>
-*/
-#if     !defined (qCompilerAndStdLib_Supports_nullptr)
-#if     defined (__GNUC__)
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
-#define qCompilerAndStdLib_Supports_nullptr 1
-#else
-#define qCompilerAndStdLib_Supports_nullptr 0
-#endif
-#elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_nullptr     1
-#else
-// GUESS
-#define qCompilerAndStdLib_Supports_nullptr 1
-#endif
-#endif
 
 
-#if     !qCompilerAndStdLib_Supports_nullptr
-#define nullptr NULL
-#endif
+
+
+
+
+
 
 
 
