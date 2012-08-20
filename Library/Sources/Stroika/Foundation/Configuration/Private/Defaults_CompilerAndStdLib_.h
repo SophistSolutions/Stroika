@@ -51,6 +51,16 @@
 #endif
 
 
+
+
+
+
+
+
+
+
+
+
 //NEED DOCS SOMPEPLACE
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
 #if     defined (__GNUC__)
@@ -62,6 +72,11 @@
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   0
 #endif
 #endif
+
+
+
+
+
 
 
 
@@ -78,6 +93,10 @@
 #endif
 #endif
 
+
+
+
+
 //NEED DOCS SOMPEPLACE
 #ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 #if     defined (__GNUC__)
@@ -93,17 +112,15 @@
 
 
 
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_constexpr
 @DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr
 #if     defined (__GNUC__)
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 5))
 #define qCompilerAndStdLib_Supports_constexpr   1
-#else
-#define qCompilerAndStdLib_Supports_constexpr   0
-#endif
 #elif   defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_constexpr   0
 #else
@@ -111,6 +128,8 @@
 #define qCompilerAndStdLib_Supports_constexpr   1
 #endif
 #endif
+
+
 
 
 
@@ -133,6 +152,8 @@
 #define qCompilerAndStdLib_Supports_regex_search    1
 #endif
 #endif
+
+
 
 
 
@@ -160,17 +181,15 @@
 
 
 
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_noexcept
 @DESCRIPTION:   <p>Defined true if the compiler supports noexcept</p>
 */
 #ifndef qCompilerAndStdLib_Supports_noexcept
 #if     defined (__GNUC__)
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
 #define qCompilerAndStdLib_Supports_noexcept    1
-#else
-#define qCompilerAndStdLib_Supports_noexcept    0
-#endif
 #elif   defined (_MSC_VER) && _MSC_VER <= 1600
 #define qCompilerAndStdLib_Supports_noexcept    0
 #else
@@ -179,10 +198,17 @@
 #endif
 #endif
 
+
+
 // SHOULD GO ELSEWHERE -- LGP 2011-10-27
 #if     !qCompilerAndStdLib_Supports_noexcept
 #define noexcept    throw  ()
 #endif
+
+
+
+
+
 
 
 #ifndef qCompilerAndStdLib_Bug_constexprPreDeclareTemplate
@@ -197,6 +223,10 @@
 #define qCompilerAndStdLib_Bug_constexprPreDeclareTemplate  0
 #endif
 #endif
+
+
+
+
 
 
 
@@ -238,6 +268,8 @@
 #define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 0
 #endif
 #endif
+
+
 
 
 
