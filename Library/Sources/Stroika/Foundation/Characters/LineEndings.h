@@ -21,7 +21,7 @@ namespace   Stroika {
             using   std::basic_string;
 
 
-#if     qCompilerAndStdLib_Supports_constexpr && !qCompilerAndStdLib_Bug_constexprPreDeclareTemplate
+#if     qCompilerAndStdLib_Supports_constexpr
             template    <typename T>
             constexpr const T*  GetEOL ();
             template    <>
