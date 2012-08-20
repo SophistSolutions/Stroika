@@ -14,6 +14,36 @@
 #if     defined(__cplusplus)
 
 
+
+
+
+/*
+ * CHECK / WARN about supported compilers/versions.
+ */
+#if     defined (__GNUC__)
+	#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6))
+		#pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
+	#endif
+#elif     defined (_MSC_VER)
+	#define	_MS_VS_2k10_VER_	1600
+	#if      _MSC_VER < _MS_VS_2k10_VER_
+		#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2010")
+	#endif
+#else
+	#pragma message ("Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler.")
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
 //tmphack - goes someplace else...
 // LGP 2011-09-27
 #ifndef qHas_Syslog
