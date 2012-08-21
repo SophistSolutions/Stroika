@@ -10,7 +10,8 @@ foreach $i (@ARGV) {
 		lc ($i) eq "rebuild" ||
 		lc ($i) eq "rebuild+" ||
 		lc ($i) eq "all" ||
-		lc ($i) eq "all+" 
+		lc ($i) eq "all+" ||
+		lc ($i) eq "docs" 
 		) {
 		$BLD_TRG = $i;
 	}
@@ -27,9 +28,10 @@ foreach $i (@ARGV) {
 }
 
 
+
 my $useExtraConfigDefines	=	"--default-for-platform";
 
-
+my $buildDocs = 0;
 
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
@@ -50,7 +52,22 @@ if (lc ($BLD_TRG) eq 'rebuild+') {
 }
 
 
-my $isBuildingMode = not ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean"));
+if ((lc ($BLD_TRG) eq 'docs') or (lc ($BLD_TRG) eq 'all') or (lc ($BLD_TRG) eq 'all+')
+	or (lc ($BLD_TRG) eq 'build') or (lc ($BLD_TRG) eq 'rebuild+')
+	) {
+	$buildDocs = 1;
+}
+
+
+my $isBuildingMode  = 0;
+if ((lc ($BLD_TRG) eq 'all') or (lc ($BLD_TRG) eq 'all+') or
+    (lc ($BLD_TRG) eq 'build') or (lc ($BLD_TRG) eq 'build+') or
+    (lc ($BLD_TRG) eq 'rebuild') or (lc ($BLD_TRG) eq 'rebuild+')
+    ) {
+	$isBuildingMode = 1;
+}
+
+
 
 
 print ("**************************** STARTING Stroika ****************************\n");
@@ -81,6 +98,10 @@ if ($isBuildingMode) {
 	system ("cd Library; perl buildall.pl $useBld");
 	system ("cd Tools; perl buildall.pl $useBld");
 	system ("cd Tests; perl buildall.pl $useBld");
+}
+
+if ($buildDocs) {
+	system ("cd Documentation; cd Doxygen; perl ./RunDoxygen.pl");
 }
 
 system ("sh -c 'date'");
