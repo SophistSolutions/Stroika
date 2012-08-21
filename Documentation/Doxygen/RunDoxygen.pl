@@ -17,7 +17,7 @@ if ("$^O" eq "cygwin") {
 
 my $doxyArgs = "Stroika-Library.cfg";
 
-
+$doxyArgs = $doxyArgs . ">doxygen.stdout 2>doxygen.stderr";
 
 #foreach $i (@ARGV) {
 #	$runFile = $i;
@@ -25,7 +25,7 @@ my $doxyArgs = "Stroika-Library.cfg";
 
 system ("rm -rf IntermediateFiles");
 system ("$doxygen $doxyArgs");
-system ("cd IntermediateFiles && cd latex && $latexMake");
+system ("cd IntermediateFiles; cd latex; cmd /C $latexMake");
 
 #### # INSTALL LATEX ...
 #### # USE IT TO GENERATE PDF
