@@ -31,12 +31,18 @@
 #if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
 #pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
 #endif
+#if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 6))
+#pragma message ("Info: Stroika untested with this version of GCC")
+#endif
 
 #elif     defined (_MSC_VER)
 
 #define _MS_VS_2k10_VER_    1600
 #if      _MSC_VER < _MS_VS_2k10_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2010")
+#endif
+#if      _MSC_VER > _MS_VS_2k10_VER_
+#pragma message ("Info: Stroika untested with this version of Microsoft Visual Studio.net")
 #endif
 
 #else
@@ -182,22 +188,17 @@
 
 
 
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_regex_search
 @DESCRIPTION:   <p>Defined true if the compiler supports regex_search</p>
 */
 #ifndef qCompilerAndStdLib_Supports_regex_search
 
-#if     defined (__GNUC__)
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7))
-#define qCompilerAndStdLib_Supports_regex_search    1
+#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#define qCompilerAndStdLib_Supports_regex_search            0
 #else
-#define qCompilerAndStdLib_Supports_regex_search    0
-#endif
-#elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_regex_search    1
-#else
-#define qCompilerAndStdLib_Supports_regex_search    1
+#define qCompilerAndStdLib_Supports_regex_search            1
 #endif
 
 #endif
@@ -215,16 +216,10 @@
 */
 #ifndef qCompilerAndStdLib_Supports_regex_replace
 
-#if     defined (__GNUC__)
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7))
-#define qCompilerAndStdLib_Supports_regex_replace    1
+#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#define qCompilerAndStdLib_Supports_regex_replace       0
 #else
-#define qCompilerAndStdLib_Supports_regex_replace    0
-#endif
-#elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_regex_replace    1
-#else
-#define qCompilerAndStdLib_Supports_regex_replace    1
+#define qCompilerAndStdLib_Supports_regex_replace       1
 #endif
 
 #endif
