@@ -37,7 +37,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-            /*
+            /**
              *  Iterable<T> which supports the Iterator<T> API, and allows for the creation of an Iterator.
              *
              *  The Stroika iterators can be used either directly, or in the STL begin/end style - and this
@@ -50,13 +50,13 @@ namespace   Stroika {
             template    <typename T>
             class  Iterable {
             public:
-                /*
+                /**
                  * ElementType is just a handly copy of the "T" template type which parameterizes this Iterable<T>.
                  */
                 typedef T   ElementType;
 
             protected:
-                /*
+                /**
                  * Abstract class used in subclasses which extend the idea of Iterable. Most abstract Containers in Stroika
                  * subclass of Iterable<T>.
                  */
@@ -81,14 +81,14 @@ namespace   Stroika {
                 nonvirtual  Iterable<T>&    operator= (const Iterable<T>& rhs);
 
             public:
-                /*
+                /**
                  * Create an iterator object which can be used to traverse the 'Iterable' - this object -
                  * and visit each element.
                  */
                 nonvirtual Iterator<T>      MakeIterator () const;
 
             public:
-                /*
+                /**
                  * GetLength () returns the number of elements in this 'Iterable' object. Its defined to be
                  * the same number of elements you would visit if you created an iterator (MakeIterator())
                  * and visited all items. In practice, as the actual number might vary as the underlying
@@ -97,7 +97,7 @@ namespace   Stroika {
                 nonvirtual  size_t          GetLength () const;
 
             public:
-                /*
+                /**
                  * Returns true iff GetLength () == 0
                  */
                 nonvirtual  bool    IsEmpty () const;
@@ -120,7 +120,7 @@ namespace   Stroika {
                 static Iterator<T> end ();
 
             public:
-                /*
+                /**
                  *  Take the given function argument, and call it for each element of the Collection. This
                  *  is equivilent to:
                  *
@@ -137,7 +137,7 @@ namespace   Stroika {
                 nonvirtual  void    Apply (void (*doToElement) (const T& item)) const;
 
             public:
-                /*
+                /**
                  *   Take the given function argument, and call it for each element of the Collection. This is
                  *   equivilent to:
                  *
@@ -179,7 +179,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              * Protected API for subclasses (implementations of) Iterable<T>
              */
             template    <typename T>
