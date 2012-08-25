@@ -4,67 +4,18 @@
 #ifndef _Stroika_Foundation_Containers_Iterator_h_
 #define _Stroika_Foundation_Containers_Iterator_h_  1
 
-/*
+/**
  *
- *	\file
+ *  \file
  *
- *  Iterators allow ordered traversal of a Collection. In general, the only
- *  guarantee about iteration order is that it will remain the same as long as
- *  the Collection has not been modified. Difference subclasses of Collection
- *  more narrowly specify the details of traversal order: for example a Stack
- *  will always iterate from the top-most to the bottom-most item.
- *
- *	Iterators are robust against changes to their collection. Adding or
- *  removing items from a collection will not invalidate the iteration. The
- *  only exception is that removing the item currently being iterated over
- *  will invalidate the results of the Current () method (until the next call
- *  to the Next () method). Subclasses of Collection can make further
- *  guarantees about the behavior of iterators in the presence of Collection
- *  modifications. For example a SequenceIterator will always traverse any
- *  items added after the current traversal index, and will never traverse
- *  items added with an index before the current traversal index.
- *
- *
- *  Note that we utilize a for-loop based approach to iteration. A
- *  somewhat popular alternative is modeled on Lisp usage: iterating over a
- *  passed in function. This style is sometimes refereed to as "passive"
- *  iteration. However, given C++ lack of support for lambda expressions
- *  (anonymous code blocks) the for-loop based approach seems superior,
- *  since it is always at least as convenient and at least as efficient,
- *  and often is slightly more convenient and slightly more convenient.
- *  DieHards can write ForEach style macros to support the passive style.
- *		For example:
- *			#define Apply(T,Init,F)\
-				for (IteratorRep<T> it (Init); not it.Done (); it.Next ())  { (*F) (it.Current ()); }
- *		allows usages like Apply(int, fList, PrintInt);
- *
- *
- *
- * MORE RULES ABOUT ITERATORS (TO BE INTEGRATED INTO DOCS BETTER)
- *
- *      (1)     What is Done() cannot be UnDone()
- *              That is, once an iterator is done, it cannot be restarted.
- *      (2)     Iterators can be copied. They always refer to the same
- *              place they did before the copy, and the old iterator is unaffected
- *              by iteration in the new (though it can be affected indirectly
- *              thru mutations).
- *      (3)     Whether or not you encounter items added after an addition is
- *              undefined.
- *      (4)     A consequence of the above, is that items added after you are done,
- *              are not encountered. I'm not sure if this is currently true. We
- *              may want to rethink definitions, or somehow make this true.
- *
- *
- *  TODO:
- *
- *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
+ *  @todo   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
  *          from Iterable<TallyEntry<T>>?
  *
- *      o   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
+ *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
  *          in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more typest that require Iterable<T> / Iterator<T>.
  *
- *      o   Merge Current virtual call into More() call? Trouble is constructing
+ *  @todo   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
  *          for copying iterators. On balance, probably best to bag it!!!
  */
@@ -83,23 +34,7 @@
 
 
 
-/*
- *      Iterator are used primarily to get auto-destruction
- *  at the end of a scope where they are used. They can be used directly,
- *  or using ranged for syntax (currently imitated by For macro)
- *
- *  Current is a synonym for operator*. Done is a synonym for iterator != container.end ()
- *  Current can be called at anytime not Done. The value of
- *  Current is guaranteed to be valid if it was called before Done, even if that value
- *  was removed from the container at some point after Current was called.
- *
- *  The value of Current is undefined if called when Done.
- *
- *  Operator++ can be called anytime. If not done, then it iterates to the next
- *  item in the collection (i.e. it changes the value returned by Current).
- *
- *
- */
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -107,24 +42,71 @@ namespace   Stroika {
 
 
             /**
-			 *	\brief	
-			 *		An Iterator<T> is a copyable object which allows traversing the contents of some container.
-			 *
-             *	An Iterator<T> is an object which is associated with some container (that is being iterated over)
-             *	and which allows traversal of that object from start to finish.
-			 *	(The iterator itself essentially provides A notion of *start* to *finish*).
-			 *
-			 *	An Iterator<T> is a copyable object which can safely be used to capture
+             *  \brief
+             *      An Iterator<T> is a copyable object which allows traversing the contents of some container.
+             *
+             *  An Iterator<T> is an object which is associated with some logical container (that is being iterated over)
+             *  and which allows traversal of that object from start to finish.
+             *  (The iterator itself essentially provides A notion of *start* to *finish*).
+             *
+             *  There need not actually be a 'container' object. Other 'iterators' can be created, so long as they
+             *  act like an iterator.
+             *
+             *  An Iterator<T> is a copyable object which can safely be used to capture
              *  the state of iteration (copy) and continue iterating from that spot. If the underlying object is
              *  modified, the iterator will be automatically updated to logically account for that update
              *
-             *      (FILL IN DETAILS - SEE ABOVE COMMENTARY)
+             *  Iterators allow ordered traversal of a Collection. In general, the only
+             *  guarantee about iteration order is that it will remain the same as long as
+             *  the Collection has not been modified. Difference subclasses of Collection
+             *  more narrowly specify the details of traversal order: for example a Stack
+             *  will always iterate from the top-most to the bottom-most item.
+             *
+             *  Iterators are robust against changes to their collection. Adding or
+             *  removing items from a collection will not invalidate the iteration. The
+             *  only exception is that removing the item currently being iterated over
+             *  will invalidate the results of the Current () method (until the next call
+             *  to the Next () method). Subclasses of Collection can make further
+             *  guarantees about the behavior of iterators in the presence of Collection
+             *  modifications. For example a SequenceIterator will always traverse any
+             *  items added after the current traversal index, and will never traverse
+             *  items added with an index before the current traversal index.
+             *
+             *  Note that we utilize a for-loop based approach to iteration. A
+             *  somewhat popular alternative is modeled on Lisp usage: iterating over a
+             *  passed in function. This style is sometimes refereed to as "passive"
+             *  iteration. However, given C++ lack of support for lambda expressions
+             *  (anonymous code blocks) the for-loop based approach seems superior,
+             *  since it is always at least as convenient and at least as efficient,
+             *  and often is slightly more convenient and slightly more convenient.
+             *  DieHards can write ForEach style macros to support the passive style.
+             *
+             *      For example:
+             *          for (Iterator<T> it = container.MakeIterator (); not it.Done (); it.Next ())  {
+             *              f (it.Current ());
+             *          }
+             *
+             *
+             * Some Rules about Iterators:
+             *
+             *      (1)     What is Done() cannot be UnDone()
+             *              That is, once an iterator is done, it cannot be restarted.
+             *      (2)     Iterators can be copied. They always refer to the same
+             *              place they did before the copy, and the old iterator is unaffected
+             *              by iteration in the new (though it can be affected indirectly
+             *              thru mutations).
+             *      (3)     Whether or not you encounter items added after an addition is
+             *              undefined.
+             *      (4)     A consequence of the above, is that items added after you are done,
+             *              are not encountered.
+             *
+             *  @see Iterable<T>.
              */
             template    <typename T>
             class  Iterator {
             public:
                 /**
-                 * ElementType is just a handly copy of the *T* template type which this Iterator<T> parameterizes.
+                 *      \brief  ElementType is just a handly copy of the *T* template type which this Iterator<T> parameterizes access to.
                  */
                 typedef T   ElementType;
 
@@ -138,42 +120,70 @@ namespace   Stroika {
                     }
                 };
             public:
-				/**
-				 *	\brief	Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
-				 */
+                /**
+                 *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
+                 */
                 typedef Memory::SharedByValue<IRep, Rep_Cloner_>   SharedByValueRepType;
 
             private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);
             public:
+                /**
+                 *  \brief
+                 *  This overload is usually not called directly. Instead, iterators are
+                 *  usually created from a container (eg. Bag<T>::begin()).
+                 */
                 explicit Iterator (IRep* it);
+
             public:
+                /**
+                 *  \brief  Iterators are safely copyable, preserving their current position.
+                 */
                 Iterator (const Iterator<T>& from);
+
+            public:
                 ~Iterator ();
 
+            public:
+                /**
+                 *  \brief  Iterators are safely copyable, preserving their current position.
+                 */
                 nonvirtual  Iterator<T>&    operator= (const Iterator<T>& rhs);
 
             public:
-				/**
-				 *	\brief	
-				 *		Support for Range based for, and stl style iteration in general (containers must also support begin, end).
-				 */
+                /**
+                 *  \brief
+                 *      Support for Range based for, and stl style iteration in general (containers must also support begin, end).
+                 */
                 nonvirtual  T       operator* () const;
 
             public:
-				/**
-				 *	\brief	
-				 *		Support for Range based for, and stl style iteration in general (containers must also support begin, end)
-				 */
+                /**
+                 *  \brief
+                 *      Support for Range based for, and stl style iteration in general (containers must also support begin, end).
+                 *
+                 *  Support for Range based for, and stl style iteration in general (containers must also support begin, end).
+                 *
+                 *  operator++ can be called anytime. If not done, then it iterates to the next
+                 *  item in the collection (i.e. it changes the value returned by Current).
+                 *
+                 *
+                 */
                 nonvirtual  void    operator++ ();
+                /**
+                 *  \brief
+                 *      Support for Range based for, and stl style iteration in general (containers must also support begin, end).
+                 *
+                 *  @see operator++
+                 */
                 nonvirtual  void    operator++ (int);
 
             public:
                 /**
-				 *	\brief	
-				 *		WeakEquals() provides a limited notion of equality suitable for stl-style iteration and iterator comparison.
+                 *  \brief
+                 *  Provides a limited notion of equality suitable for stl-style iteration and iterator comparison.
                  *
-				 *  Two iterators are considered WeakEquals if they are BOTH Done (). If one is done, but the other not,
+                 *  Two iterators are considered WeakEquals if they are BOTH Done (). If one is done, but the other not,
                  *  they are not equal. If they are both not done, they are both equal if they are the
                  *  exact same rep.
                  *
@@ -184,7 +194,6 @@ namespace   Stroika {
                  *          x++;
                  *          y++;
                  *          Assert (WeakEquals (x, y));    // This MAY succeed or MAY fail! - it will succeed IFF x.Done()
-                 *                                         // See StrongEquals ()
                  *
                  *
                  *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between
@@ -204,14 +213,14 @@ namespace   Stroika {
                  *
                  *  Note that WeakEquals is *commutative*.
                  *
-                 *		See also StrongEquals ().
+                 *  @see StrongEquals ().
                  */
                 nonvirtual  bool    WeakEquals (const Iterator& rhs) const;
 
             public:
                 /**
-				 *	\brief	
-				 *		StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
+                 *  \brief
+                 *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
                  *  definition of Iterator<T> equality.
                  *
                  *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
@@ -222,16 +231,18 @@ namespace   Stroika {
                  *  are considered StrongEquals (). This is mainly because we use a different representation for 'done' iterators.
                  *  They are kind-of-fake iterator objects.
                  *
-                 *		NB:
+                 *  NB:
+                 *
                  *      if (a.StrongEquals (b)) {
                  *          Assert (a.WeakEquals (b));
                  *      }
-                 *		HOWEVER:
+                 *      HOWEVER:
                  *      if (a.WeakEquals (b)) {
                  *          Assert (a.StrongEquals (b) OR not a.StrongEquals (b));  // all bets are off
                  *      }
                  *
-                 *	Note - for StrongEquals. The following assertion will succeed:
+                 *  Note - for StrongEquals. The following assertion will succeed:
+                 *
                  *          Iterator<T> x = getIterator();
                  *          Iterator<T> y = x;
                  *          x++;
@@ -240,6 +251,8 @@ namespace   Stroika {
                  *                                           // See WeakEquals ()
                  *
                  *  Note that StrongEquals is *commutative*.
+                 *
+                 *  @see WeakEquals ().
                  */
                 nonvirtual  bool    StrongEquals (const Iterator& rhs) const;
 
@@ -248,29 +261,50 @@ namespace   Stroika {
                  *  Because the weak definition of Equals (WeakEquals) is generally adequate, and generally more
                  *  efficient, and because its fully adequate for the STL iterator pattern (used in scoped iteration)
                  *  operator== just maps trivially to WeakEquals ().
+                 *
+                 *  @see WeakEquals ().
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
             public:
                 /**
-                 * See the definition of operator==
+                 *  \brief
+                 *  See the definition of operator==
+                 *
+                 *  @see operator== ().
                  */
                 nonvirtual  bool    operator!= (const Iterator& rhs) const;
 
             public:
                 /**
-                 * Current () is a synonym for operator*
+                 *  \brief
+                 *  Current () is a synonym for operator*
+                 *
+                 *  The value of Current is undefined if called when Done.
+                 *
+                 *  Current is a synonym for operator*. Done is a synonym for iterator != container.end ()
+                 *  Current can be called at anytime not Done. The value of
+                 *  Current is guaranteed to be valid if it was called before Done, even if that value
+                 *  was removed from the container at some point after Current was called.
+                 *
                  */
                 nonvirtual  T       Current () const;
 
-			public:
+            public:
                 /**
-                 * Done () is a synonym for (it != container.end ())
+                 *  \brief
+                 *      Done () means there is nothing left in this iteration (a synonym for (it == container.end ()).
+                 *
+                 *  Done () means there is nothing left in this iteration (a synonym for (it == container.end ()). Once an
+                 *  iterator is Done (), it can never transition to 'Not Done ()'.
                  */
                 nonvirtual  bool    Done () const;
 
             public:
                 /**
+                 *  \brief
+                 *  Same as *somecontainer*::end ()
+                 *
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
                  */
@@ -291,23 +325,29 @@ namespace   Stroika {
             };
 
 
-            /*
-                Subclassed by front-end container writers.
-                Most of the work is done in More, which does a lot of work because it is the
-                only virtual function called during iteration, and will need to lock its
-                container when doing "safe" iteration. More does the following:
-                    iterate to the next container value if advance is true
-                    (then) copy the current value into current, if current is not null
-                    return true if iteration can continue (not done iterating)
-
-                    typical uses:
-                        it++ -> More (null, true)
-                        *it -> More (&v, false); return v;
-                        Done -> More (null, false)
-
-                        (note that for performance and safety reasons the iterator envelope actually
-                        passes fCurrent_ into More when implenenting ++it
-            */
+            /**
+             *
+             *  \brief  Implementation detail for iterator implementors.
+             *
+             *  IRep is a support class used to implement the @ref Iterator<T> pattern.
+             *
+             *  Subclassed by front-end container writers.
+             *  Most of the work is done in More, which does a lot of work because it is the
+             *  only virtual function called during iteration, and will need to lock its
+             *  container when doing "safe" iteration. More does the following:
+             *  iterate to the next container value if advance is true
+             *  (then) copy the current value into current, if current is not null
+             *  return true if iteration can continue (not done iterating)
+             *
+             *  typical uses:
+             *
+             *          it++ -> More (null, true)
+             *          *it -> More (&v, false); return v;
+             *          Done -> More (null, false)
+             *
+             *          (note that for performance and safety reasons the iterator envelope actually
+             *           passes fCurrent_ into More when implenenting ++it
+             */
             template    <typename T>
             class  Iterator<T>::IRep {
             protected:
@@ -332,7 +372,7 @@ namespace   Stroika {
              This will be removed when compilers support ranged for. Just replace For with for, and the comma with a colon
              For (it, myBag) with for (it : myBag)
 
-			 ****OBSOLETE*****
+             ****OBSOLETE*****
              */
 #define For(_it,_Container)         for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
 
