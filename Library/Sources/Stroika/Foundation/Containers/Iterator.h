@@ -6,13 +6,15 @@
 
 /*
  *
- *      Iterators allow ordered traversal of a Collection. In general, the only
+ *	\file
+ *
+ *  Iterators allow ordered traversal of a Collection. In general, the only
  *  guarantee about iteration order is that it will remain the same as long as
  *  the Collection has not been modified. Difference subclasses of Collection
  *  more narrowly specify the details of traversal order: for example a Stack
  *  will always iterate from the top-most to the bottom-most item.
  *
- *      Iterators are robust against changes to their collection. Adding or
+ *	Iterators are robust against changes to their collection. Adding or
  *  removing items from a collection will not invalidate the iteration. The
  *  only exception is that removing the item currently being iterated over
  *  will invalidate the results of the Current () method (until the next call
@@ -23,7 +25,7 @@
  *  items added with an index before the current traversal index.
  *
  *
- *      Note that we utilize a for-loop based approach to iteration. A
+ *  Note that we utilize a for-loop based approach to iteration. A
  *  somewhat popular alternative is modeled on Lisp usage: iterating over a
  *  passed in function. This style is sometimes refereed to as "passive"
  *  iteration. However, given C++ lack of support for lambda expressions
@@ -31,10 +33,10 @@
  *  since it is always at least as convenient and at least as efficient,
  *  and often is slightly more convenient and slightly more convenient.
  *  DieHards can write ForEach style macros to support the passive style.
- *  For example:
- *      #define Apply(T,Init,F)\
-            for (IteratorRep<T> it (Init); not it.Done (); it.Next ())  { (*F) (it.Current ()); }
- *  allows usages like Apply(int, fList, PrintInt);
+ *		For example:
+ *			#define Apply(T,Init,F)\
+				for (IteratorRep<T> it (Init); not it.Done (); it.Next ())  { (*F) (it.Current ()); }
+ *		allows usages like Apply(int, fList, PrintInt);
  *
  *
  *
@@ -54,7 +56,6 @@
  *
  *
  *  TODO:
- *
  *
  *      o   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
  *          from Iterable<TallyEntry<T>>?
@@ -105,10 +106,15 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            /*
-             *      An Iterator<T> is an object which is associated with some container (that is being iterated over)
-             *  and which allows traversal of that object from start to finish (the iterator itself essentially provides
-             *  A notion of START to FINISH). An Iterator<T> is a copyable object which can safely be used to capture
+            /**
+			 *	\brief	
+			 *		An Iterator<T> is a copyable object which allows traversing the contents of some container.
+			 *
+             *	An Iterator<T> is an object which is associated with some container (that is being iterated over)
+             *	and which allows traversal of that object from start to finish.
+			 *	(The iterator itself essentially provides A notion of *start* to *finish*).
+			 *
+			 *	An Iterator<T> is a copyable object which can safely be used to capture
              *  the state of iteration (copy) and continue iterating from that spot. If the underlying object is
              *  modified, the iterator will be automatically updated to logically account for that update
              *
@@ -117,8 +123,8 @@ namespace   Stroika {
             template    <typename T>
             class  Iterator {
             public:
-                /*
-                 * ElementType is just a handly copy of the "T" template type which parameterizes this Iterator<T>.
+                /**
+                 * ElementType is just a handly copy of the *T* template type which this Iterator<T> parameterizes.
                  */
                 typedef T   ElementType;
 
@@ -132,6 +138,9 @@ namespace   Stroika {
                     }
                 };
             public:
+				/**
+				 *	\brief	Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
+				 */
                 typedef Memory::SharedByValue<IRep, Rep_Cloner_>   SharedByValueRepType;
 
             private:
@@ -145,21 +154,30 @@ namespace   Stroika {
                 nonvirtual  Iterator<T>&    operator= (const Iterator<T>& rhs);
 
             public:
-                // support for Range based for, and stl style iteration in general (containers must also support begin, end)
+				/**
+				 *	\brief	
+				 *		Support for Range based for, and stl style iteration in general (containers must also support begin, end).
+				 */
                 nonvirtual  T       operator* () const;
 
             public:
-                // support for Range based for, and stl style iteration in general (containers must also support begin, end)
+				/**
+				 *	\brief	
+				 *		Support for Range based for, and stl style iteration in general (containers must also support begin, end)
+				 */
                 nonvirtual  void    operator++ ();
                 nonvirtual  void    operator++ (int);
 
             public:
-                /*
-                 *      Two iterators are considered WeakEquals if they are BOTH Done (). If one is done, but the other not,
+                /**
+				 *	\brief	
+				 *		WeakEquals() provides a limited notion of equality suitable for stl-style iteration and iterator comparison.
+                 *
+				 *  Two iterators are considered WeakEquals if they are BOTH Done (). If one is done, but the other not,
                  *  they are not equal. If they are both not done, they are both equal if they are the
                  *  exact same rep.
                  *
-                 *      Note - for WeakEquals. The following assertion will fail:
+                 *  Note - for WeakEquals. The following assertion will fail:
                  *
                  *          Iterator<T> x = getIterator();
                  *          Iterator<T> y = x;
@@ -184,14 +202,18 @@ namespace   Stroika {
                  *  This style works because e.Done () is always true, (and the Rep for e is always different than
                  *  the rep for i). and so the only way for the iterators to become equal is for i.Done () to be true.
                  *
-                 *  Note that WeakEquals is COMMUTATIVE.
+                 *  Note that WeakEquals is *commutative*.
                  *
-                 *  See also StrongEquals ().
+                 *		See also StrongEquals ().
                  */
                 nonvirtual  bool    WeakEquals (const Iterator& rhs) const;
 
             public:
-                /*
+                /**
+				 *	\brief	
+				 *		StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
+                 *  definition of Iterator<T> equality.
+                 *
                  *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
                  *  definition of Iterator<T> equality.
                  *
@@ -200,17 +222,16 @@ namespace   Stroika {
                  *  are considered StrongEquals (). This is mainly because we use a different representation for 'done' iterators.
                  *  They are kind-of-fake iterator objects.
                  *
-                 *  NB:
+                 *		NB:
                  *      if (a.StrongEquals (b)) {
                  *          Assert (a.WeakEquals (b));
                  *      }
-                 *  HOWEVER:
+                 *		HOWEVER:
                  *      if (a.WeakEquals (b)) {
                  *          Assert (a.StrongEquals (b) OR not a.StrongEquals (b));  // all bets are off
                  *      }
                  *
-                 *  Note - for StrongEquals. The following assertion will succeed:
-                 *
+                 *	Note - for StrongEquals. The following assertion will succeed:
                  *          Iterator<T> x = getIterator();
                  *          Iterator<T> y = x;
                  *          x++;
@@ -218,33 +239,38 @@ namespace   Stroika {
                  *          Assert (StrongEquals (x, y));    // will always succeed (x++ and y++ may fail if iterator already at end)
                  *                                           // See WeakEquals ()
                  *
-                 *  Note that StrongEquals is COMMUTATIVE.
+                 *  Note that StrongEquals is *commutative*.
                  */
                 nonvirtual  bool    StrongEquals (const Iterator& rhs) const;
 
             public:
-                /*
-                 *      Because the weak definition of Equals (WeakEquals) is generally adequate, and generally more
+                /**
+                 *  Because the weak definition of Equals (WeakEquals) is generally adequate, and generally more
                  *  efficient, and because its fully adequate for the STL iterator pattern (used in scoped iteration)
                  *  operator== just maps trivially to WeakEquals ().
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
             public:
-                /*
+                /**
                  * See the definition of operator==
                  */
                 nonvirtual  bool    operator!= (const Iterator& rhs) const;
 
             public:
-                // Synonyms for above, sometimes making code more readable
-                // Current -> operator*
-                // Done -> (it != container.end ())
+                /**
+                 * Current () is a synonym for operator*
+                 */
                 nonvirtual  T       Current () const;
+
+			public:
+                /**
+                 * Done () is a synonym for (it != container.end ())
+                 */
                 nonvirtual  bool    Done () const;
 
             public:
-                /*
+                /**
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
                  */
@@ -255,8 +281,6 @@ namespace   Stroika {
                 nonvirtual  const IRep&         _GetRep () const;
 
             private:
-                // probably should not need to use SharedByValue_CopyByFunction....
-                //Memory::SharedByValue<IRep, Memory::SharedByValue_CopyByFunction<IRep>>    fIterator_;
                 SharedByValueRepType    fIterator_;
 
             private:
@@ -307,6 +331,8 @@ namespace   Stroika {
              For macro:
              This will be removed when compilers support ranged for. Just replace For with for, and the comma with a colon
              For (it, myBag) with for (it : myBag)
+
+			 ****OBSOLETE*****
              */
 #define For(_it,_Container)         for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
 
