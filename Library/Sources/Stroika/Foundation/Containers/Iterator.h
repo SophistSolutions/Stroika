@@ -105,6 +105,10 @@ namespace   Stroika {
              *              But internally, Stroika just checks i.Done(), and so can users of Stroika
              *              iterators.
              *
+             *      4.      Stroika iterators are not 'random access'. They just go forwards, one step at a
+             *              time. In STL, some kinds of iterators act more like pointers where you can do
+             *              address arithmatic.
+             *
              *
              * Some Rules about Iterators:
              *
