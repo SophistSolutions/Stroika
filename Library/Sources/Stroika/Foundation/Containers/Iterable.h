@@ -60,6 +60,7 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
+			private:
                 struct  _Rep_Cloner {
                     inline  static  _IRep*  Copy (const _IRep& t) {
                         return Iterable<T>::Clone_ (t);
