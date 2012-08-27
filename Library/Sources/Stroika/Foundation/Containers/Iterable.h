@@ -86,6 +86,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 * \brief Create an iterator object which can be used to traverse the 'Iterable'.
+                 *
                  * Create an iterator object which can be used to traverse the 'Iterable' - this object -
                  * and visit each element.
                  */
@@ -93,6 +95,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 * \brief Returns the number of items contained.
+                 *
                  * GetLength () returns the number of elements in this 'Iterable' object. Its defined to be
                  * the same number of elements you would visit if you created an iterator (MakeIterator())
                  * and visited all items. In practice, as the actual number might vary as the underlying
@@ -102,25 +106,25 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Returns true iff GetLength () == 0
+                 * \brief Returns true iff GetLength() == 0
                  */
                 nonvirtual  bool    IsEmpty () const;
 
             public:
                 /**
-                 * STL-ish alias for IsEmpty ()
+                 * \brief STL-ish alias for IsEmpty()
                  */
                 nonvirtual  bool    empty () const;
 
             public:
                 /**
-                 * STL-ish alias for GetLength ()
+                 * \brief STL-ish alias for GetLength()
                  */
                 nonvirtual  size_t  length () const;
 
             public:
                 /**
-                 * STL-ish alias for GetLength ()
+                 * \brief STL-ish alias for GetLength()
                  */
                 nonvirtual  size_t  size () const;
 
@@ -155,8 +159,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *   Take the given function argument, and call it for each element of the Collection. This is
-                 *   equivilent to:
+                 *  Take the given function argument, and call it for each element of the Collection. This is
+                 *  equivilent to:
                  *
                  *      for (Iterator<T> i = begin (); i != end (); ++i) {
                  *          if ((doToElement) (*i)) {
@@ -165,13 +169,13 @@ namespace   Stroika {
                  *      }
                  *      return end();
                  *
-                 *   However, in threading scenarios, this maybe preferable, since it counts as an atomic
-                 *   operation that will happen to each element without other
-                 *   threads intervening to modify the container.
+                 *  However, in threading scenarios, this maybe preferable, since it counts as an atomic
+                 *  operation that will happen to each element without other
+                 *  threads intervening to modify the container.
                  *
-                 *   This function returns an iteartor pointing to the element that triggered the abrupt loop
-                 *   end (for example the element you were searching for?). It returns the specail iterator
-                 *   end () to indicate no doToElement() functions returned true.
+                 *  This function returns an iteartor pointing to the element that triggered the abrupt loop
+                 *  end (for example the element you were searching for?). It returns the specail iterator
+                 *  end() to indicate no doToElement() functions returned true.
                  *
                  *   Also, note that this function does NOT change any elements of the Iterable.
                  */
@@ -183,8 +187,10 @@ namespace   Stroika {
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             protected:
-                // Not sure this is ever used, but it maybe, for example, for automatic type morphing.
-                // In principle - we can support having an Iterator<T> more its rep...
+                /**
+                 * Not sure this is ever used, but it maybe, for example, for automatic type morphing.
+                 * In principle - we can support having an Iterator<T> more its rep...
+                 */
                 nonvirtual  void    _SetRep (_SharedByValueRepType rep);
 
             private:
@@ -197,6 +203,8 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  Implementation detail for iterator implementors.
+             *
              * Abstract class used in subclasses which extend the idea of Iterable. Most abstract Containers in Stroika
              * subclass of Iterable<T>.
              */
