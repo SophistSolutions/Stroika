@@ -19,7 +19,7 @@
  *
  *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
  *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
- *				this API works fully with lambdas - even bound...
+ *              this API works fully with lambdas - even bound...
  *
  *
  */
@@ -59,9 +59,8 @@ namespace   Stroika {
             protected:
                 class  _IRep;
 
-            protected:
-			private:
-                struct  _Rep_Cloner {
+            private:
+                struct  Rep_Cloner_ {
                     inline  static  _IRep*  Copy (const _IRep& t) {
                         return Iterable<T>::Clone_ (t);
                     }
@@ -71,19 +70,27 @@ namespace   Stroika {
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  */
-                typedef Memory::SharedByValue<_IRep, _Rep_Cloner>   _SharedByValueRepType;
+                typedef Memory::SharedByValue<_IRep, Rep_Cloner_>   _SharedByValueRepType;
 
             public:
                 /**
                  *  \brief  Iterable are safely copyable (by value).
                  */
                 Iterable (const Iterable<T>& from);
+
             protected:
+                /**
+                 *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
+                 */
                 explicit Iterable (const _SharedByValueRepType& rep);
 
             public:
                 ~Iterable ();
+
             public:
+                /**
+                 *  \brief  Iterable are safely copyable (by value).
+                 */
                 nonvirtual  Iterable<T>&    operator= (const Iterable<T>& rhs);
 
             public:
