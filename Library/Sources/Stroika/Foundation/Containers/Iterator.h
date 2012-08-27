@@ -14,9 +14,9 @@
  *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
  *          in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
- *			MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
- *			to assure right behavior when not constructed. Be careful about MOVE semantics...
- *			TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
+ *          MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
+ *          to assure right behavior when not constructed. Be careful about MOVE semantics...
+ *          TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
  *
  *  @todo   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
@@ -118,7 +118,7 @@ namespace   Stroika {
              *
              *      3.      Whether or not you encounter items added after an addition is
              *              undefined (by Iterator<T> but often defined in specifically for
-			 *				particular container subtypes).
+             *              particular container subtypes).
              *
              *      4.      A consequence of the above, is that items added after you are done,
              *              are not encountered.
@@ -167,7 +167,7 @@ namespace   Stroika {
             private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);
 
-			public:
+            public:
                 /**
                  *  \brief
                  *  This overload is usually not called directly. Instead, iterators are
@@ -283,10 +283,10 @@ namespace   Stroika {
                  *      if (a.StrongEquals (b)) {
                  *          Assert (a.WeakEquals (b));
                  *      }
-				 *
-                 *	HOWEVER:
-				 *
-				 *      if (a.WeakEquals (b)) {
+                 *
+                 *  HOWEVER:
+                 *
+                 *      if (a.WeakEquals (b)) {
                  *          Assert (a.StrongEquals (b) OR not a.StrongEquals (b));  // all bets are off
                  *      }
                  *
@@ -310,15 +310,15 @@ namespace   Stroika {
                  *  \brief  WeakEquals(): this is normally used to compare two iterators already known to be from the same source.
                  *
                  *  operator==() just maps trivially to WeakEquals().
-				 *
-				 *	In fact, the definition of WeakEquals() was chosen to most efficiently, but adequately make STL-style
-				 *	iterator usage work properly.
+                 *
+                 *  In fact, the definition of WeakEquals() was chosen to most efficiently, but adequately make STL-style
+                 *  iterator usage work properly.
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
             public:
                 /**
-                 *  \brief	Returns not (operator==())
+                 *  \brief  Returns not (operator==())
                  */
                 nonvirtual  bool    operator!= (const Iterator& rhs) const;
 
@@ -334,24 +334,24 @@ namespace   Stroika {
                  *      *   Done()  (or any similar functions, NotDone() operator==(), operator!=(), or any of the
                  *          range-based-for code which implicitly calls these methods.
                  *
-                 *  Because of this, two subsequent calls to it.Current () *cannot* return different values with no 
-				 *	intervening calls on the iterator, even if the underlying container changes.
+                 *  Because of this, two subsequent calls to it.Current () *cannot* return different values with no
+                 *  intervening calls on the iterator, even if the underlying container changes.
                  *
                  *  So even in multithread scenarios, its always safe to say:
                  *
                  *      if (not it.Done ()) {
                  *          T v = it.Current ();
                  *      }
-				 *
-				 *	and moreover, even in multithreaded scenarios, where another thread is randomly and rapidly modifying
-				 *	a container:
+                 *
+                 *  and moreover, even in multithreaded scenarios, where another thread is randomly and rapidly modifying
+                 *  a container:
                  *
                  *      if (not it.Done ()) {
                  *          T v1 = it.Current ();
-				 *			sleep(1);
+                 *          sleep(1);
                  *          T v2 = it.Current ();
-				 *			Assert (v1 == v2);		// they refer to the same value - this COULD fail 
-				 *									// if you defined a queer operator== that had operator==(x,x) return false)
+                 *          Assert (v1 == v2);      // they refer to the same value - this COULD fail
+                 *                                  // if you defined a queer operator== that had operator==(x,x) return false)
                  *      }
                  *
                  *  The value of Current is undefined (Assertion error) if called when Done().
@@ -381,8 +381,8 @@ namespace   Stroika {
                  *      NB: There are *no* modifications to an underlying container which will directly change
                  *      the value of Done(). This value only changes the next time the cursor is advanced
                  *      via a call to operator++();
-                 *  
-				 *		if it comes from container, then (it == container.end ()) is true iff it.Done()
+                 *
+                 *      if it comes from container, then (it == container.end ()) is true iff it.Done()
                  */
                 nonvirtual  bool    Done () const;
 
