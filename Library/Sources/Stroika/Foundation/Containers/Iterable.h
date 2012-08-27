@@ -10,15 +10,15 @@
  *
  *  TODO:
  *
- *      (o)         Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
- *                  Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
- *                  More()...
+ *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
+ *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
+ *              More()...
  *
- *      (o)         Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
- *                  Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
+ *      @todo   Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
+ *              Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
  *
- *      (o)         Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
- *                  consider providing a _IRep version - to implement LOCKING logic promised in the API.
+ *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
+ *              consider providing a _IRep version - to implement LOCKING logic promised in the API.
  *
  *
  */
@@ -38,7 +38,7 @@ namespace   Stroika {
         namespace   Containers {
 
             /**
-             *  Iterable<T> which supports the Iterator<T> API, and allows for the creation of an Iterator.
+             *  Iterable<T> which supports the @ref Iterator<T> API, and allows for the creation of an Iterator.
              *
              *  The Stroika iterators can be used either directly, or in the STL begin/end style - and this
              *  class supports both styles of usage.
@@ -56,10 +56,6 @@ namespace   Stroika {
                 typedef T   ElementType;
 
             protected:
-                /**
-                 * Abstract class used in subclasses which extend the idea of Iterable. Most abstract Containers in Stroika
-                 * subclass of Iterable<T>.
-                 */
                 class  _IRep;
 
             protected:
@@ -68,9 +64,17 @@ namespace   Stroika {
                         return Iterable<T>::Clone_ (t);
                     }
                 };
+
+            protected:
+                /**
+                 *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
+                 */
                 typedef Memory::SharedByValue<_IRep, _Rep_Cloner>   _SharedByValueRepType;
 
             public:
+                /**
+                 *  \brief  Iterable are safely copyable (by value).
+                 */
                 Iterable (const Iterable<T>& from);
             protected:
                 explicit Iterable (const _SharedByValueRepType& rep);
@@ -103,20 +107,33 @@ namespace   Stroika {
                 nonvirtual  bool    IsEmpty () const;
 
             public:
-                // STL-ish alias for IsEmpty ()
+                /**
+                 * STL-ish alias for IsEmpty ()
+                 */
                 nonvirtual  bool    empty () const;
 
             public:
-                // STL-ish alias for GetLength ()
+                /**
+                 * STL-ish alias for GetLength ()
+                 */
                 nonvirtual  size_t  length () const;
 
             public:
-                // STL-ish alias for GetLength ()
+                /**
+                 * STL-ish alias for GetLength ()
+                 */
                 nonvirtual  size_t  size () const;
 
             public:
-                // Support for ranged for, and stl syntax in general
+                /**
+                 * Support for ranged for, and stl syntax in general
+                 */
                 nonvirtual  Iterator<T> begin () const;
+
+            public:
+                /**
+                 * Support for ranged for, and stl syntax in general
+                 */
                 static Iterator<T> end ();
 
             public:
@@ -180,7 +197,8 @@ namespace   Stroika {
 
 
             /**
-             * Protected API for subclasses (implementations of) Iterable<T>
+             * Abstract class used in subclasses which extend the idea of Iterable. Most abstract Containers in Stroika
+             * subclass of Iterable<T>.
              */
             template    <typename T>
             class  Iterable<T>::_IRep {
