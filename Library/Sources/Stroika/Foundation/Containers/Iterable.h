@@ -18,7 +18,8 @@
  *              Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
  *
  *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
- *              consider providing a _IRep version - to implement LOCKING logic promised in the API.
+ *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
+ *				this API works fully with lambdas - even bound...
  *
  *
  */
