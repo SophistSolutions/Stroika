@@ -13,7 +13,10 @@
  *
  *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
  *          in the wrong state and requiring an initial ++.
- *          FIX THIS before supporting more typest that require Iterable<T> / Iterator<T>.
+ *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
+ *			MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
+ *			to assure right behavior when not constructed. Be careful about MOVE semantics...
+ *			TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
  *
  *  @todo   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
@@ -114,7 +117,8 @@ namespace   Stroika {
              *              thru mutations).
              *
              *      3.      Whether or not you encounter items added after an addition is
-             *              undefined.
+             *              undefined (by Iterator<T> but often defined in specifically for
+			 *				particular container subtypes).
              *
              *      4.      A consequence of the above, is that items added after you are done,
              *              are not encountered.
@@ -135,16 +139,7 @@ namespace   Stroika {
              *          and probabe virtual function calls, the current approach of freezing / copying
              *          on iteration seemed better.
              *
-             *  @see Iterable<T>.
-             */
-            /*
-             *  OBSOLETE TEXT TO DELETE:
-             *      Iterators allow ordered traversal of a Collection. In general, the only
-             *      guarantee about iteration order is that it will remain the same as long as
-             *      the Collection has not been modified. Different subclasses of Collection
-             *      more narrowly specify the details of traversal order: for example a Stack
-             *      will always iterate from the top-most to the bottom-most item.
-             *
+             *  @see Iterable<T>
              */
             template    <typename T>
             class  Iterator {
@@ -171,7 +166,8 @@ namespace   Stroika {
 
             private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);
-            public:
+
+			public:
                 /**
                  *  \brief
                  *  This overload is usually not called directly. Instead, iterators are
@@ -233,9 +229,9 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
-                 *  Provides a limited notion of equality suitable for stl-style iteration and iterator comparison.
+                 *  Provides a limited notion of equality suitable for STL-style iteration and iterator comparison.
                  *
-                 *  Two iterators are considered WeakEquals if they are BOTH Done (). If one is done, but the other not,
+                 *  Two iterators are considered WeakEquals() if they are BOTH Done(). If one is done, but the other not,
                  *  they are not equal. If they are both not done, they are both equal if they are the
                  *  exact same rep.
                  *
@@ -287,8 +283,10 @@ namespace   Stroika {
                  *      if (a.StrongEquals (b)) {
                  *          Assert (a.WeakEquals (b));
                  *      }
-                 *      HOWEVER:
-                 *      if (a.WeakEquals (b)) {
+				 *
+                 *	HOWEVER:
+				 *
+				 *      if (a.WeakEquals (b)) {
                  *          Assert (a.StrongEquals (b) OR not a.StrongEquals (b));  // all bets are off
                  *      }
                  *
@@ -309,22 +307,18 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  WeakEquals(): this is normally used to compare two iterators already known to be from the same source
+                 *  \brief  WeakEquals(): this is normally used to compare two iterators already known to be from the same source.
                  *
-                 *  Because the weak definition of equality - WeakEquals () - is generally adequate, and generally more
-                 *  efficient, and because its fully adequate for the STL iterator pattern (used in scoped iteration)
-                 *  operator==() just maps trivially to WeakEquals ().
-                 *
-                 *  @see WeakEquals ();
+                 *  operator==() just maps trivially to WeakEquals().
+				 *
+				 *	In fact, the definition of WeakEquals() was chosen to most efficiently, but adequately make STL-style
+				 *	iterator usage work properly.
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
             public:
                 /**
-                 *  \brief
-                 *  See the definition of operator==()
-                 *
-                 *  @see operator==();
+                 *  \brief	Returns not (operator==())
                  */
                 nonvirtual  bool    operator!= (const Iterator& rhs) const;
 
@@ -335,27 +329,34 @@ namespace   Stroika {
                  *
                  *  Current() returns the value of the current item visited by the Iterator<T>.
                  *
-                 *  Several things can change the current value of Current():
+                 *  Two things can change the current value of Current():
                  *      *   operator++()
                  *      *   Done()  (or any similar functions, NotDone() operator==(), operator!=(), or any of the
                  *          range-based-for code which implicitly calls these methods.
                  *
-                 *  Because of this, two subsequent calls to it.Current () *could* return differnt
-                 *  results with no intervening calls on the iterator.
-                 *
-                 *  Current is guaranteed to be valid if it was called when Done() is not true.
-                 *  Even if the underlying container is changed after that point, if no call to update the iterator
-                 *  is made (no operator++()), the value of Current () remains valid.
+                 *  Because of this, two subsequent calls to it.Current () *cannot* return different values with no 
+				 *	intervening calls on the iterator, even if the underlying container changes.
                  *
                  *  So even in multithread scenarios, its always safe to say:
                  *
                  *      if (not it.Done ()) {
                  *          T v = it.Current ();
                  *      }
+				 *
+				 *	and moreover, even in multithreaded scenarios, where another thread is randomly and rapidly modifying
+				 *	a container:
+                 *
+                 *      if (not it.Done ()) {
+                 *          T v1 = it.Current ();
+				 *			sleep(1);
+                 *          T v2 = it.Current ();
+				 *			Assert (v1 == v2);		// they refer to the same value - this COULD fail 
+				 *									// if you defined a queer operator== that had operator==(x,x) return false)
+                 *      }
                  *
                  *  The value of Current is undefined (Assertion error) if called when Done().
                  *
-                 *  Current is a synonym for operator*.
+                 *  operator*() is a common synonym for Current().
                  *
                  *  @see operator*()
                  *  @see operator++()
@@ -368,8 +369,7 @@ namespace   Stroika {
                  *  \brief
                  *      Done () means there is nothing left in this iterator (a synonym for (it == container.end ()).
                  *
-                 *  Done () means there is nothing left to visit in this iterator
-                 *  (a synonym for (it == container.end ()).
+                 *  Done () means there is nothing left to visit in this iterator.
                  *
                  *  Once an iterator is Done(), it can never transition to 'not Done()'.
                  *
@@ -381,6 +381,8 @@ namespace   Stroika {
                  *      NB: There are *no* modifications to an underlying container which will directly change
                  *      the value of Done(). This value only changes the next time the cursor is advanced
                  *      via a call to operator++();
+                 *  
+				 *		if it comes from container, then (it == container.end ()) is true iff it.Done()
                  */
                 nonvirtual  bool    Done () const;
 

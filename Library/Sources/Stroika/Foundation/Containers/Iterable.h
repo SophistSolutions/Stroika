@@ -39,20 +39,23 @@ namespace   Stroika {
         namespace   Containers {
 
             /**
-             *  Iterable<T> which supports the @ref Iterator<T> API, and allows for the creation of an Iterator.
+             *  \brief Iterable<T> is a base class for containers which easily produce an Iterator<T> to traverse them.
+             *
+             *  Iterable<T> is a base class for containers which easily produce an Iterator<T> to traverse them.
              *
              *  The Stroika iterators can be used either directly, or in the STL begin/end style - and this
              *  class supports both styles of usage.
              *
              *  Iterable<T> also supports read-only applicative operations on the contained data.
              *
-             *  Iterable<T> is much like idea of 'abstract readonly container'.
+             *  Iterable<T> is much like idea of 'abstract readonly container', but which only supports an exceedingly simplistic pattern
+             *  of access.
              */
             template    <typename T>
             class  Iterable {
             public:
                 /**
-                 * ElementType is just a handly copy of the "T" template type which parameterizes this Iterable<T>.
+                 *      \brief  ElementType is just a handly copy of the *T* template type which this Iterable<T> parameterizes access to.
                  */
                 typedef T   ElementType;
 
@@ -139,20 +142,22 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Support for ranged for, and stl syntax in general
+                 * \brief Support for ranged for, and STL syntax in general
                  */
                 nonvirtual  Iterator<T> begin () const;
 
             public:
                 /**
-                 * Support for ranged for, and stl syntax in general
+                 * \brief Support for ranged for, and STL syntax in general
                  */
                 static Iterator<T> end ();
 
             public:
                 /**
-                 *  Take the given function argument, and call it for each element of the Collection. This
-                 *  is equivilent to:
+                 *  \brief  Run the argument function (or lambda) on each element of the container.
+                 *
+                 *  Take the given function argument, and call it for each element of the container. This
+                 *  is equivalent to:
                  *
                  *      for (Iterator<T> i = begin (); i != end (); ++i) {
                  *          (doToElement) (*i);
@@ -168,8 +173,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Take the given function argument, and call it for each element of the Collection. This is
-                 *  equivilent to:
+                 *  \brief  Run the argument bool-returning function (or lambda) on each element of the container, and return an iterator pointing at the first element found true.
+                 *
+                 *  Take the given function argument, and call it for each element of the container. This is
+                 *  equivalent to:
                  *
                  *      for (Iterator<T> i = begin (); i != end (); ++i) {
                  *          if ((doToElement) (*i)) {
