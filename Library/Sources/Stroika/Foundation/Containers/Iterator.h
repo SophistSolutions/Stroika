@@ -27,6 +27,10 @@
  *          Or does it instantly go 'empty'?
  *
  *          Not sure it matters much which but we must document this clearly.
+ *
+ *  @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
+ *          has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
+ *          for SharedByValue<> template.
  */
 
 
