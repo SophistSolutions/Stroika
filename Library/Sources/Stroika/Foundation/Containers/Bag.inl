@@ -268,7 +268,7 @@ namespace   Stroika {
                  * this cast is safe. We could have kept an extra var of the right
                  * static type, but this would have been a waste of time and memory.
                  */
-                return (dynamic_cast<_IMutatorRep&> (this->_GetRep ()));
+                return (dynamic_cast<_IMutatorRep&> (this->GetRep ()));
             }
             template    <typename T>
             inline  void    Bag<T>::Mutator::RemoveCurrent ()

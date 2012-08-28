@@ -405,9 +405,16 @@ namespace   Stroika {
                  */
                 static  Iterator<T>     GetEmptyIterator ();
 
-            protected:
-                nonvirtual  IRep&               _GetRep ();
-                nonvirtual  const IRep&         _GetRep () const;
+            public:
+                /**
+                 *  \brief
+                 *  Get a reference to the IRep owned by the iterator. This is an implementation detail, mainly intended for implementors.
+                 *  
+				 *	Get a reference to the IRep owned by the iterator.
+				 *	This is an implementation detail, mainly intended for implementors.
+                 */
+                nonvirtual  IRep&               GetRep ();
+                nonvirtual  const IRep&         GetRep () const;
 
             private:
                 SharedByValueRepType    fIterator_;

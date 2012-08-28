@@ -352,12 +352,12 @@ namespace   Stroika {
             template    <typename T>
             inline  void    TallyMutator<T>::RemoveCurrent ()
             {
-                dynamic_cast<TallyMutatorRep<T>&> (this->_GetRep ()).RemoveCurrent ();
+                dynamic_cast<TallyMutatorRep<T>&> (this->GetRep ()).RemoveCurrent ();
             }
             template    <typename T>
             inline  void    TallyMutator<T>::UpdateCount (size_t newCount)
             {
-                dynamic_cast<TallyMutatorRep<T>&> (this->_GetRep ()).UpdateCount (newCount);
+                dynamic_cast<TallyMutatorRep<T>&> (this->GetRep ()).UpdateCount (newCount);
             }
 
 

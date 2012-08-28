@@ -91,13 +91,13 @@ namespace   Stroika {
                 return (*this);
             }
             template    <typename T>
-            inline  typename    Iterator<T>::IRep&         Iterator<T>::_GetRep ()
+            inline  typename    Iterator<T>::IRep&         Iterator<T>::GetRep ()
             {
                 EnsureNotNull (fIterator_.get ());
                 return *fIterator_;
             }
             template    <typename T>
-            inline  const typename Iterator<T>::IRep&   Iterator<T>::_GetRep () const
+            inline  const typename Iterator<T>::IRep&   Iterator<T>::GetRep () const
             {
                 EnsureNotNull (fIterator_.get ());
                 return *fIterator_;
