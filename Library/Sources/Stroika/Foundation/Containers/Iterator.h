@@ -166,6 +166,7 @@ namespace   Stroika {
                         return Iterator<T>::Clone_ (t);
                     }
                 };
+
             public:
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).

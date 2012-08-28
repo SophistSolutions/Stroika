@@ -240,9 +240,8 @@ namespace   Stroika {
                 inline  const typename Bag_Array<T>::Rep_&  Bag_Array<T>::GetRep_ () const
                 {
                     /*
-                     * This cast is safe since we are very careful to assure we always have a pointer
-                     * to this type. We could keep extra pointer, but that would cost space and time,
-                     * and with care we don't need to.
+                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
+					 * the type of rep our CTOR bases to Iterable<T>.
                      */
                     return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
                 }
@@ -250,9 +249,8 @@ namespace   Stroika {
                 inline  typename Bag_Array<T>::Rep_&    Bag_Array<T>::GetRep_ ()
                 {
                     /*
-                     * This cast is safe since we are very careful to assure we always have a pointer
-                     * to this type. We could keep extra pointer, but that would cost space and time,
-                     * and with care we don't need to.
+                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
+					 * the type of rep our CTOR bases to Iterable<T>.
                      */
                     return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
                 }

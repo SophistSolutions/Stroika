@@ -150,15 +150,6 @@ namespace   Stroika {
                 RequireNotNull (doToElement);
                 return _GetRep ().ApplyUntilTrue (doToElement);
             }
-            template    <typename T>
-            void    Iterable<T>::_SetRep (_SharedByValueRepType rep)
-            {
-                RequireNotNull (rep.get ());
-                if (rep.get () != fRep_.get ()) {
-                    fRep_ = rep;
-                }
-                EnsureNotNull (rep.get ());
-            }
         }
     }
 }
