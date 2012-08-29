@@ -155,15 +155,15 @@ namespace   Stroika {
             @METHOD:        AssertMember
             @DESCRIPTION:   <p>See @'GetAssertionHandler'</p>
             */
-#define AssertMember(p,c)   Assert (dynamic_cast<c*>(p) != nullptr)
+#define AssertMember(p,c)   Assert (dynamic_cast<const c*>(p) != nullptr)
             /*
             @DESCRIPTION:   <p>See @'GetAssertionHandler'</p>
             */
-#define RequireMember(p,c)  Require (dynamic_cast<c*>(p) != nullptr)
+#define RequireMember(p,c)  Require (dynamic_cast<const c*>(p) != nullptr)
             /*
             @DESCRIPTION:   <p>See @'GetAssertionHandler'</p>
             */
-#define EnsureMember(p,c)   Ensure (dynamic_cast<c*>(p) != nullptr)
+#define EnsureMember(p,c)   Ensure (dynamic_cast<const c*>(p) != nullptr)
 
             /*
             @DESCRIPTION:   <p>See @'GetAssertionHandler'</p>
