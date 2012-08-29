@@ -152,7 +152,7 @@ namespace   Stroika {
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Remove (const Iterator<T>& i)
                 {
-                    const Iterator<T>::IRep&    ir  =   i.GetRep ();
+                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
                     mir.fIterator_.RemoveCurrent ();
