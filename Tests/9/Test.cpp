@@ -79,9 +79,8 @@ namespace	{
 				VerifyTestResult(s.GetLength() == kTestSize);
 				{
 					For (it, s) {
-						it.RemoveCurrent();
+						s.Remove(it);
 					}
-
 					VerifyTestResult(s.IsEmpty());
 					VerifyTestResult(s.GetLength() == 0);
 				}
@@ -111,8 +110,8 @@ namespace	{
 				For(it, s) {
 					For(it2, s) {
 						For(it3, s) {
-							it3.UpdateCurrent(i);
-							it3.RemoveCurrent();
+							s.Update (it3, i);
+							s.Remove(it3);
 							s.Add(i);
 							s.Remove(i);
 							i++;

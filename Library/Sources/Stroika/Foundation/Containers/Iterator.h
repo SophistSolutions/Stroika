@@ -409,9 +409,9 @@ namespace   Stroika {
                 /**
                  *  \brief
                  *  Get a reference to the IRep owned by the iterator. This is an implementation detail, mainly intended for implementors.
-                 *  
-				 *	Get a reference to the IRep owned by the iterator.
-				 *	This is an implementation detail, mainly intended for implementors.
+                 *
+                 *  Get a reference to the IRep owned by the iterator.
+                 *  This is an implementation detail, mainly intended for implementors.
                  */
                 nonvirtual  IRep&               GetRep ();
                 nonvirtual  const IRep&         GetRep () const;

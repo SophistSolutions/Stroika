@@ -38,9 +38,10 @@ namespace   Stroika {
                 public:
                     virtual void                        Compact () override;
                     virtual bool                        Contains (T item) const override;
-                    virtual typename Bag<T>::Mutator    MakeMutator () override;
                     virtual void                        Add (T item) override;
+                    virtual void                        Update (const Iterator<T>& i, T newValue) override;
                     virtual void                        Remove (T item) override;
+                    virtual void                        Remove (const Iterator<T>& i) override;
                     virtual void                        RemoveAll () override;
 
                 private:
@@ -50,7 +51,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                class  Bag_Array<T>::MutatorRep_ : public Bag<T>::_IMutatorRep {
+                class  Bag_Array<T>::MutatorRep_ : public Iterator<T>::IRep {
                 public:
                     MutatorRep_ (typename Bag_Array<T>::Rep_& owner);
 
@@ -63,13 +64,8 @@ namespace   Stroika {
                     virtual bool                            More (T* current, bool advance) override;
                     virtual bool                            StrongEquals (typename Iterator<T>::IRep* rhs) override;
 
-                    // Bag<T>::_IMutatorRep
-                public:
-                    virtual void    RemoveCurrent () override;
-                    virtual void    UpdateCurrent (T newValue) override;
-
                 private:
-                    ForwardArrayMutator_Patch<T>    fIterator_;
+                    mutable ForwardArrayMutator_Patch<T>    fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -82,7 +78,7 @@ namespace   Stroika {
                 //  class   Bag_Array<T>::MutatorRep_<T>
                 template    <typename T>
                 Bag_Array<T>::MutatorRep_::MutatorRep_ (typename Bag_Array<T>::Rep_& owner)
-                    : Bag<T>::_IMutatorRep ()
+                    : Iterator<T>::IRep ()
                     , fIterator_ (owner.fData_)
                 {
                 }
@@ -101,16 +97,6 @@ namespace   Stroika {
                 typename Iterator<T>::IRep*  Bag_Array<T>::MutatorRep_::Clone () const
                 {
                     return (new MutatorRep_ (*this));
-                }
-                template    <typename T>
-                void    Bag_Array<T>::MutatorRep_::RemoveCurrent ()
-                {
-                    fIterator_.RemoveCurrent ();
-                }
-                template    <typename T>
-                void    Bag_Array<T>::MutatorRep_::UpdateCurrent (T newValue)
-                {
-                    fIterator_.UpdateCurrent (newValue);
                 }
 
 
@@ -170,15 +156,18 @@ namespace   Stroika {
                     return (fData_.Contains (item));
                 }
                 template    <typename T>
-                typename Bag<T>::Mutator   Bag_Array<T>::Rep_::MakeMutator ()
-                {
-                    return typename Bag<T>::Mutator (new MutatorRep_ (*this));
-                }
-                template    <typename T>
                 void    Bag_Array<T>::Rep_::Add (T item)
                 {
                     // Appending is fastest
                     fData_.InsertAt (item, fData_.GetLength ());
+                }
+                template    <typename T>
+                void    Bag_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
+                {
+                    const Iterator<T>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, MutatorRep_);
+                    const typename Bag_Array<T>::MutatorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::MutatorRep_&> (ir);
+                    mir.fIterator_.UpdateCurrent (newValue);
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Remove (T item)
@@ -192,6 +181,14 @@ namespace   Stroika {
                             return;
                         }
                     }
+                }
+                template    <typename T>
+                void    Bag_Array<T>::Rep_::Remove (const Iterator<T>& i)
+                {
+                    const Iterator<T>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, MutatorRep_);
+                    const typename Bag_Array<T>::MutatorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::MutatorRep_&> (ir);
+                    mir.fIterator_.RemoveCurrent ();
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::RemoveAll ()
@@ -241,7 +238,7 @@ namespace   Stroika {
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-					 * the type of rep our CTOR bases to Iterable<T>.
+                     * the type of rep our CTOR bases to Iterable<T>.
                      */
                     return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
                 }
@@ -250,7 +247,7 @@ namespace   Stroika {
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-					 * the type of rep our CTOR bases to Iterable<T>.
+                     * the type of rep our CTOR bases to Iterable<T>.
                      */
                     return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
                 }

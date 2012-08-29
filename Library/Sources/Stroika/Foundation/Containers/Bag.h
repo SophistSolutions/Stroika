@@ -122,7 +122,6 @@ namespace   Stroika {
             class   Bag : public Iterable<T> {
             protected:
                 class   _IRep;
-                class   _IMutatorRep;
 
             public:
                 Bag ();
@@ -171,6 +170,14 @@ namespace   Stroika {
 
             public:
                 /*
+                 * This function requires that the iterator 'i' came from this container.
+                 *
+                 * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
+                 */
+                nonvirtual  void    Update (const Iterator<T>& i, T newValue);
+
+            public:
+                /*
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
                  * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
@@ -180,29 +187,20 @@ namespace   Stroika {
 
             public:
                 /*
+                 * This function requires that the iterator 'i' came from this container.
+                 *
+                 * The value pointed to by 'i' is removed.
+                 */
+                nonvirtual  void    Remove (const Iterator<T>& i);
+
+            public:
+                /*
                  *      +=/-= are equivilent Add() and Remove(). They are just syntactic sugar.
                  */
                 nonvirtual  Bag<T>& operator+= (T item);
                 nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
                 nonvirtual  Bag<T>& operator-= (T item);
                 nonvirtual  Bag<T>& operator-= (const Bag<T>& items);
-
-
-            public:
-                class   Mutator;
-
-            public:
-                /*
-                 *  Create a mutators : an Iterator<T> which also allows for updates/changes.
-                 */
-                nonvirtual  Mutator MakeMutator ();
-
-            public:
-                // Support for ranged for, and stl syntax in general
-                nonvirtual  Iterator<T> begin () const;
-                nonvirtual  Mutator     begin ();
-                nonvirtual  Iterator<T> end () const;
-                nonvirtual  Mutator     end ();
 
             public:
                 /*
@@ -232,22 +230,6 @@ namespace   Stroika {
             Bag<T>  operator- (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
-            /*
-             *  A Bag<T>::Mutator is an iterator, which also allows updating its owning bag.
-             */
-            template    <typename T>
-            class   Bag<T>::Mutator : public Iterator<T> {
-            public:
-                explicit Mutator (_IMutatorRep* it);
-
-            public:
-                nonvirtual  void    RemoveCurrent ();
-                nonvirtual  void    UpdateCurrent (T newValue);
-
-            private:
-                nonvirtual  _IMutatorRep&   GetMutatorRep_ ();
-            };
-
 
 
             /*
@@ -263,28 +245,15 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void                        Compact ()                      =   0;
-                virtual bool                        Contains (T item) const         =   0;
-                virtual typename Bag<T>::Mutator    MakeMutator ()                  =   0;
-                virtual void                        Add (T item)                    =   0;
-                virtual void                        Remove (T item)                 =   0;
-                virtual void                        RemoveAll ()                    =   0;
+                virtual void                        Compact ()                                  =   0;
+                virtual bool                        Contains (T item) const                     =   0;
+                virtual void                        Add (T item)                                =   0;
+                virtual void                        Update (const Iterator<T>& i, T newValue)   =   0;
+                virtual void                        Remove (T item)                             =   0;
+                virtual void                        Remove (const Iterator<T>& i)               =   0;
+                virtual void                        RemoveAll ()                                =   0;
             };
 
-
-            /*
-             *  Protected abstract interface to support concrete implementations of
-             *  the Bag<T> container API.
-             */
-            template    <typename T>
-            class   Bag<T>::_IMutatorRep : public Iterator<T>::IRep {
-            protected:
-                _IMutatorRep ();
-
-            public:
-                virtual void    RemoveCurrent ()            =   0;
-                virtual void    UpdateCurrent (T newValue)  =   0;
-            };
 
         }
     }

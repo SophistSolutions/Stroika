@@ -50,16 +50,16 @@ namespace   Stroika {
              *
              *  Iterable<T> is much like idea of 'abstract readonly container', but which only supports an exceedingly simplistic pattern
              *  of access.
-			 *
-			 *	*Important Design Note*:
-			 *
-			 *		We have no:
-			 *			nonvirtual  void    _SetRep (_SharedByValueRepType rep);
-			 *
-			 *		because allowing a _SetRep() method would complicate the efforts of subclasses of Iterable<T>
-			 *		to assure that the underlying type is of the appropriate subtype.
-			 *
-			 *		For example - see Bag_Array<T>::GetRep_().
+             *
+             *  *Important Design Note*:
+             *
+             *      We have no:
+             *          nonvirtual  void    _SetRep (_SharedByValueRepType rep);
+             *
+             *      because allowing a _SetRep() method would complicate the efforts of subclasses of Iterable<T>
+             *      to assure that the underlying type is of the appropriate subtype.
+             *
+             *      For example - see Bag_Array<T>::GetRep_().
              */
             template    <typename T>
             class  Iterable {

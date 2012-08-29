@@ -63,47 +63,6 @@ namespace   Stroika {
                 _GetRep ().Compact ();
             }
             template    <typename T>
-            inline  Iterator<T>    Bag<T>::begin () const
-            {
-                return Iterable<T>::begin ();
-            }
-            template    <typename T>
-            inline  Iterator<T>    Bag<T>::end () const
-            {
-                return Iterable<T>::end ();
-            }
-            template    <typename T>
-            inline  typename Bag<T>::Mutator    Bag<T>::begin ()
-            {
-                return MakeMutator ();
-            }
-            template    <typename T>
-            inline  typename Bag<T>::Mutator    Bag<T>::end ()
-            {
-                class   RepSentinal_ : public Bag<T>::_IMutatorRep  {
-                public:
-                    virtual bool    More (T* current, bool advance) override {
-                        return false;
-                    }
-                    virtual bool    StrongEquals (typename Iterator<T>::IRep* rhs) override {
-                        RequireNotNull (rhs);
-                        return (rhs == this) or rhs->Done ();
-                    }
-                    virtual typename Iterator<T>::IRep*    Clone () const override {
-                        RequireNotReached ();
-                        return nullptr;
-                    }
-                    virtual void    RemoveCurrent () override {
-                        RequireNotReached ();
-                    }
-                    virtual void    UpdateCurrent (T newValue) override {
-                        RequireNotReached ();
-                    }
-                };
-                static  Bag<T>::Mutator kSentinal = Bag<T>::Mutator (new RepSentinal_ ());
-                return kSentinal;
-            }
-            template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)
             {
                 Add (item);
@@ -126,14 +85,6 @@ namespace   Stroika {
             {
                 Remove (items);
                 return (*this);
-            }
-            template    <typename T>
-            inline   typename   Bag<T>::Mutator  Bag<T>::MakeMutator ()
-            {
-                // Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
-                Bag<T>::Mutator it = _GetRep ().MakeMutator ();
-                ++it;
-                return it;
             }
             template    <typename T>
             inline  void    Bag<T>::Add (T item)
@@ -168,6 +119,11 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
+            inline  void    Bag<T>::Update (const Iterator<T>& i, T newValue)
+            {
+                _GetRep ().Update (i, newValue);
+            }
+            template    <typename T>
             inline  void  Bag<T>::Remove (T item)
             {
                 _GetRep ().Remove (item);
@@ -183,6 +139,11 @@ namespace   Stroika {
                         _GetRep ().Remove (it.Current ());
                     }
                 }
+            }
+            template    <typename T>
+            inline  void    Bag<T>::Remove (const Iterator<T>& i)
+            {
+                _GetRep ().Remove (i);
             }
             template    <typename T>
             size_t    Bag<T>::TallyOf (T item) const
@@ -243,43 +204,6 @@ namespace   Stroika {
                 return (not operator== (lhs, rhs));
             }
 
-
-
-            // class Bag<T>::_IMutatorRep<T>
-            template    <typename T>
-            inline  Bag<T>::_IMutatorRep::_IMutatorRep () :
-                Iterator<T>::IRep ()
-            {
-            }
-
-
-
-            // class Bag<T>::Mutator
-            template    <typename T>
-            inline  Bag<T>::Mutator::Mutator (typename Bag<T>::_IMutatorRep* it) :
-                Iterator<T> (it)
-            {
-            }
-            template    <typename T>
-            inline  typename    Bag<T>::_IMutatorRep& Bag<T>::Mutator::GetMutatorRep_ ()
-            {
-                /*
-                 * Because of the way we construct Mutators, it is guaranteed that
-                 * this cast is safe. We could have kept an extra var of the right
-                 * static type, but this would have been a waste of time and memory.
-                 */
-                return (dynamic_cast<_IMutatorRep&> (this->GetRep ()));
-            }
-            template    <typename T>
-            inline  void    Bag<T>::Mutator::RemoveCurrent ()
-            {
-                GetMutatorRep_ ().RemoveCurrent ();
-            }
-            template    <typename T>
-            inline  void    Bag<T>::Mutator::UpdateCurrent (T newValue)
-            {
-                GetMutatorRep_ ().UpdateCurrent (newValue);
-            }
 
 
 
