@@ -4,9 +4,8 @@
 #ifndef _Stroika_Foundation_Containers_Iterable_h_
 #define _Stroika_Foundation_Containers_Iterable_h_  1
 
-/*
- *
- *
+/**
+ *	\file
  *
  *  TODO:
  *

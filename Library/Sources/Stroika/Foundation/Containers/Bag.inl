@@ -222,14 +222,14 @@ namespace   Stroika {
             inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureNotNull (dynamic_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
+                EnsureMember (&Iterable<T>::_GetRep (), Bag<T>::_IRep);
                 return *static_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
             template    <typename T>
             inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureNotNull (dynamic_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ()));
+                EnsureMember (&Iterable<T>::_GetRep (), Bag<T>::_IRep);
                 return *static_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
 

@@ -9,9 +9,11 @@
 #include    "../Bag.h"
 
 
-/*
+/**
+ *  \file
+ *
  *  TODO:
- *      o   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  */
 
 
@@ -21,8 +23,8 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                /*
-                 * Bag_Array<T> is an Array-based concrete implementation of the Bag<T> container pattern.
+                /**
+                 * \brief   Bag_Array<T> is an Array-based concrete implementation of the Bag<T> container pattern.
                  */
                 template    <class T>
                 class   Bag_Array : public Bag<T> {

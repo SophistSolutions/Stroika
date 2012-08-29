@@ -8,9 +8,11 @@
 
 #include    "../Bag.h"
 
-/*
+/**
+ *  \file
+ *
  *  TODO:
- *      o   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  */
 
 
@@ -19,8 +21,8 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-                /*
-                 * Bag_LinkedList<T> is an LinkedList-based concrete implementation of the Bag<T> container pattern.
+                /**
+                 * \brief Bag_LinkedList<T> is an LinkedList-based concrete implementation of the Bag<T> container pattern.
                  */
                 template    <typename T>
                 class  Bag_LinkedList : public Bag<T> {
