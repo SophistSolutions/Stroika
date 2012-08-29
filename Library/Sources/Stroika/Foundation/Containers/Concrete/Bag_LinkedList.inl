@@ -48,19 +48,19 @@ namespace   Stroika {
                     LinkedList_Patch<T> fData_;
 
                 private:
-                    friend  class   Bag_LinkedList<T>::MutatorRep_;
+                    friend  class   Bag_LinkedList<T>::IteratorRep_;
                 };
 
 
                 // One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
                 template    <typename T>
-                class  Bag_LinkedList<T>::MutatorRep_ : public Iterator<T>::IRep {
+                class  Bag_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {
                 public:
-                    MutatorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
-                    MutatorRep_ (typename Bag_LinkedList<T>::MutatorRep_& from);
+                    IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
+                    IteratorRep_ (typename Bag_LinkedList<T>::IteratorRep_& from);
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
@@ -100,7 +100,7 @@ namespace   Stroika {
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
                 {
                     Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    return Iterator<T> (new Bag_LinkedList<T>::MutatorRep_ (*NON_CONST_THIS));
+                    return Iterator<T> (new Bag_LinkedList<T>::IteratorRep_ (*NON_CONST_THIS));
                 }
                 template    <typename T>
                 size_t  Bag_LinkedList<T>::Rep_::GetLength () const
@@ -139,9 +139,9 @@ namespace   Stroika {
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
-                    const Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, MutatorRep_);
-                    const typename Bag_LinkedList<T>::MutatorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::MutatorRep_&> (ir);
+                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, IteratorRep_);
+                    const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
                     mir.fIterator_.UpdateCurrent (newValue);
                 }
                 template    <typename T>
@@ -153,8 +153,8 @@ namespace   Stroika {
                 void    Bag_LinkedList<T>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, MutatorRep_);
-                    const typename Bag_LinkedList<T>::MutatorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::MutatorRep_&> (ir);
+                    AssertMember (&ir, IteratorRep_);
+                    const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
                     mir.fIterator_.RemoveCurrent ();
                 }
                 template    <typename T>
@@ -165,32 +165,32 @@ namespace   Stroika {
 
 
 
-                //Bag_LinkedList<T>::MutatorRep_
+                //Bag_LinkedList<T>::IteratorRep_
                 template    <typename T>
-                Bag_LinkedList<T>::MutatorRep_::MutatorRep_ (typename Bag_LinkedList<T>::Rep_& owner) :
+                Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner) :
                     fIterator_ (owner.fData_)
                 {
                 }
                 template    <typename T>
-                Bag_LinkedList<T>::MutatorRep_::MutatorRep_ (MutatorRep_& from)
+                Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (IteratorRep_& from)
                     : fIterator_ (from.fIterator_)
                 {
                 }
                 template    <typename T>
-                bool    Bag_LinkedList<T>::MutatorRep_::More (T* current, bool advance)
+                bool    Bag_LinkedList<T>::IteratorRep_::More (T* current, bool advance)
                 {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_LinkedList<T>::MutatorRep_::StrongEquals (typename Iterator<T>::IRep*  rhs) override
+                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (typename Iterator<T>::IRep*  rhs) override
                 {
                     AssertNotImplemented ();
                     return false;
                 }
                 template    <typename T>
-                typename Iterator<T>::IRep*  Bag_LinkedList<T>::MutatorRep_::Clone () const
+                typename Iterator<T>::IRep*  Bag_LinkedList<T>::IteratorRep_::Clone () const
                 {
-                    return (new MutatorRep_ (*const_cast<MutatorRep_*> (this)));
+                    return (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
                 }
 
 

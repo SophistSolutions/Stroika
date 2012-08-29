@@ -48,7 +48,7 @@ namespace   Stroika {
                     nonvirtual  Rep_&        GetRep_ ();
 
                 private:
-                    class   MutatorRep_;
+                    class   IteratorRep_;
                 };
 
             }

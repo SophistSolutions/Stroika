@@ -34,7 +34,7 @@ namespace   Stroika {
 
                 private:
                     class   Rep_;
-                    class   MutatorRep_;
+                    class   IteratorRep_;
                 };
 
             }

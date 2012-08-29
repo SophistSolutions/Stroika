@@ -46,17 +46,17 @@ namespace   Stroika {
 
                 private:
                     Array_Patch<T>  fData_;
-                    friend  class Bag_Array<T>::MutatorRep_;
+                    friend  class Bag_Array<T>::IteratorRep_;
                 };
 
 
                 template    <typename T>
-                class  Bag_Array<T>::MutatorRep_ : public Iterator<T>::IRep {
+                class  Bag_Array<T>::IteratorRep_ : public Iterator<T>::IRep {
                 public:
-                    MutatorRep_ (typename Bag_Array<T>::Rep_& owner);
+                    IteratorRep_ (typename Bag_Array<T>::Rep_& owner);
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
@@ -75,28 +75,28 @@ namespace   Stroika {
 
 
 
-                //  class   Bag_Array<T>::MutatorRep_<T>
+                //  class   Bag_Array<T>::IteratorRep_<T>
                 template    <typename T>
-                Bag_Array<T>::MutatorRep_::MutatorRep_ (typename Bag_Array<T>::Rep_& owner)
+                Bag_Array<T>::IteratorRep_::IteratorRep_ (typename Bag_Array<T>::Rep_& owner)
                     : Iterator<T>::IRep ()
                     , fIterator_ (owner.fData_)
                 {
                 }
                 template    <typename T>
-                bool    Bag_Array<T>::MutatorRep_::More (T* current, bool advance)
+                bool    Bag_Array<T>::IteratorRep_::More (T* current, bool advance)
                 {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_Array<T>::MutatorRep_::StrongEquals (typename Iterator<T>::IRep* rhs) override
+                bool    Bag_Array<T>::IteratorRep_::StrongEquals (typename Iterator<T>::IRep* rhs) override
                 {
                     AssertNotImplemented ();
                     return false;
                 }
                 template    <typename T>
-                typename Iterator<T>::IRep*  Bag_Array<T>::MutatorRep_::Clone () const
+                typename Iterator<T>::IRep*  Bag_Array<T>::IteratorRep_::Clone () const
                 {
-                    return (new MutatorRep_ (*this));
+                    return (new IteratorRep_ (*this));
                 }
 
 
@@ -123,7 +123,7 @@ namespace   Stroika {
                 Iterator<T>  Bag_Array<T>::Rep_::MakeIterator () const
                 {
                     Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    return Iterator<T> (new MutatorRep_ (*NON_CONST_THIS));
+                    return Iterator<T> (new IteratorRep_ (*NON_CONST_THIS));
                 }
                 template    <typename T>
                 size_t  Bag_Array<T>::Rep_::GetLength () const
@@ -164,9 +164,9 @@ namespace   Stroika {
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
-                    const Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, MutatorRep_);
-                    const typename Bag_Array<T>::MutatorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::MutatorRep_&> (ir);
+                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, IteratorRep_);
+                    const typename Bag_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::IteratorRep_&> (ir);
                     mir.fIterator_.UpdateCurrent (newValue);
                 }
                 template    <typename T>
@@ -186,8 +186,8 @@ namespace   Stroika {
                 void    Bag_Array<T>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, MutatorRep_);
-                    const typename Bag_Array<T>::MutatorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::MutatorRep_&> (ir);
+                    AssertMember (&ir, IteratorRep_);
+                    const typename Bag_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::IteratorRep_&> (ir);
                     mir.fIterator_.RemoveCurrent ();
                 }
                 template    <typename T>
