@@ -20,7 +20,6 @@ namespace   Stroika {
                 class   Bag_LinkedList<T>::Rep_ : public Bag<T>::_IRep {
                 public:
                     Rep_ ();
-                    Rep_ (const Rep_& from);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -56,8 +55,8 @@ namespace   Stroika {
                 template    <typename T>
                 class  Bag_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {
                 public:
-                    IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
-                    IteratorRep_ (typename Bag_LinkedList<T>::IteratorRep_& from);
+                    explicit IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
+                    explicit IteratorRep_ (typename Bag_LinkedList<T>::IteratorRep_& from);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
@@ -84,11 +83,6 @@ namespace   Stroika {
                 template    <typename T>
                 inline  Bag_LinkedList<T>::Rep_::Rep_ ()
                     : fData_ ()
-                {
-                }
-                template    <typename T>
-                inline  Bag_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
-                    : fData_ (from.fData_)
                 {
                 }
                 template    <typename T>
@@ -167,8 +161,8 @@ namespace   Stroika {
 
                 //Bag_LinkedList<T>::IteratorRep_
                 template    <typename T>
-                Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner) :
-                    fIterator_ (owner.fData_)
+                Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner)
+                    : fIterator_ (owner.fData_)
                 {
                 }
                 template    <typename T>

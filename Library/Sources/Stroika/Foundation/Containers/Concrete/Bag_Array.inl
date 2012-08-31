@@ -53,7 +53,7 @@ namespace   Stroika {
                 template    <typename T>
                 class  Bag_Array<T>::IteratorRep_ : public Iterator<T>::IRep {
                 public:
-                    IteratorRep_ (typename Bag_Array<T>::Rep_& owner);
+                    explicit IteratorRep_ (typename Bag_Array<T>::Rep_& owner);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
@@ -261,6 +261,7 @@ namespace   Stroika {
                 {
                     GetRep_ ().fData_.SetCapacity (slotsAlloced);
                 }
+
 
             }
         }
