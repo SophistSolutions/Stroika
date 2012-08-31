@@ -29,13 +29,13 @@ public:
         : fCriticalSection_ ()
         , fData_ (end - start)
         , fCursor_ () {
-		if (start == end) {
-			fCursor_ = fData_.end ();
-		}
-		else {
-			memcpy (fData_.begin (), start, end - start);
-			fCursor_ = fData_.begin ();
-		}
+        if (start == end) {
+            fCursor_ = fData_.end ();
+        }
+        else {
+            memcpy (fData_.begin (), start, end - start);
+            fCursor_ = fData_.begin ();
+        }
     }
 
     virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override {

@@ -37,15 +37,13 @@ public:
         , fSD_ (sd) {
     }
 
-    virtual size_t      Read (Byte* intoStart, Byte* intoEnd) override
-	{
-		return fSD_.Read (intoStart, intoEnd);
-	}
+    virtual size_t      Read (Byte* intoStart, Byte* intoEnd) override {
+        return fSD_.Read (intoStart, intoEnd);
+    }
 
-    virtual void     Write (const Byte* start, const Byte* end) override
-	{
-		fSD_.Write (start, end);
-	}
+    virtual void     Write (const Byte* start, const Byte* end) override {
+        fSD_.Write (start, end);
+    }
 
 private:
     Socket  fSD_;

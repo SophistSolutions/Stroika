@@ -32,20 +32,20 @@ namespace   Stroika {
             /**
              *  \brief  BinaryStream is an abstract class defining the interface to a binary source/sink of data.
              *
-			 *	BinaryStream is probably nearly useless (from a users point of view), in and of itself, 
-			 *	but it helps to tie together and facilitate mixing BinaryInputStream and BinaryOutputStream 
-			 *	classes together (given reference counting).
-			 *
-			 *	Note:
-			 *
-			 *		Subclasses (e.g. BinaryInputStream and BinaryOutputStream) use direct inheritance
-			 *		instead of virtual inheritance for a number of reasons. Because of the semantics of
-			 *		constructors with virtual base classes, its a bit of a pain to pass in the initial
-			 *		value of the shared_ptr<> rep. Also (less clear - review - it may cause issues with
-			 *		dynamic cast across virtual base?).
+             *  BinaryStream is probably nearly useless (from a users point of view), in and of itself,
+             *  but it helps to tie together and facilitate mixing BinaryInputStream and BinaryOutputStream
+             *  classes together (given reference counting).
+             *
+             *  Note:
+             *
+             *      Subclasses (e.g. BinaryInputStream and BinaryOutputStream) use direct inheritance
+             *      instead of virtual inheritance for a number of reasons. Because of the semantics of
+             *      constructors with virtual base classes, its a bit of a pain to pass in the initial
+             *      value of the shared_ptr<> rep. Also (less clear - review - it may cause issues with
+             *      dynamic cast across virtual base?).
              */
             class   BinaryStream {
-			protected:
+            protected:
                 class   _IRep;
 
             protected:
@@ -91,10 +91,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *	Requires (IsSeekable ());
+                 *  Requires (IsSeekable ());
                  *
-                 *	The new position, measured in bytes, is obtained by adding offset bytes to the
-				 *	position specified by whence.
+                 *  The new position, measured in bytes, is obtained by adding offset bytes to the
+                 *  position specified by whence.
                  */
                 nonvirtual  void        Seek (SeekOffsetType offset);
                 nonvirtual  void        Seek (Whence whence, SeekOffsetType offset);

@@ -29,8 +29,8 @@ namespace   Stroika {
                  * The only real conneciton is that they share a common socket, and if IT is closed, then the whole SocketStream will stop working.
                  */
                 class   SocketStream : public Streams::BinaryInputOutputStream {
-				private:
-					class   IRep_;
+                private:
+                    class   IRep_;
                 public:
                     // Note - socket is CLOSED (filesystem close for now) in DTOR
                     // TODO:

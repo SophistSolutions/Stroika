@@ -39,8 +39,8 @@
  *              typedef shared_ptr<BinaryInputStream>   BinaryInputStreamPtr;
  *              or just use direct classes. Very unclear.
  *
- *		@todo	Perhaps add a GetBytesAvailable() method. This is effectively like converting
- *				blocking to safe read calls...
+ *      @todo   Perhaps add a GetBytesAvailable() method. This is effectively like converting
+ *              blocking to safe read calls...
  *
  */
 

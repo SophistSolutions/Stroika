@@ -198,7 +198,7 @@ namespace   Stroika {
                 State                                   fState_;
                 Status                                  fStatus_;
                 String                                  fStatusOverrideReason_;
-                Streams::BinaryOutputStream				fUnderlyingOutStream_;
+                Streams::BinaryOutputStream             fUnderlyingOutStream_;
                 Streams::BufferedBinaryOutputStream     fUseOutStream_;
                 map<String, String>                     fHeaders_;
                 InternetMediaType                       fContentType_;

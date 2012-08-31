@@ -18,9 +18,9 @@ namespace   Stroika {
 
 
             /**
-			 *	When seeking, you can see an offset from the start (typical/start) or from the end of the stream,
-			 *	or from the current position)
-			 */
+             *  When seeking, you can see an offset from the start (typical/start) or from the end of the stream,
+             *  or from the current position)
+             */
             enum    Whence {
                 FromStart_W,
                 FromCurrent_W,
@@ -29,8 +29,8 @@ namespace   Stroika {
 
 
             /**
-			 * Offset is signed, because you can use a negative # from the end or from the current position.
-			 */
+             * Offset is signed, because you can use a negative # from the end or from the current position.
+             */
             typedef int64_t SeekOffsetType;
 
 
@@ -64,7 +64,7 @@ namespace   Stroika {
             public:
                 nonvirtual  SeekOffsetType  GetOffset () const;
             protected:
-                virtual SeekOffsetType  _GetOffset () const										=   0;
+                virtual SeekOffsetType  _GetOffset () const                                     =   0;
 
             public:
                 /**

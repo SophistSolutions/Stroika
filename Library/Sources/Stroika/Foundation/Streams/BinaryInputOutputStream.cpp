@@ -21,9 +21,9 @@ using   namespace   Stroika::Foundation::Streams;
  ********************************************************************************
  */
 BinaryInputOutputStream::BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep)
-	: Streams::BinaryInputStream (dynamic_pointer_cast<BinaryInputStream::_IRep> (rep))
-	, Streams::BinaryOutputStream (dynamic_pointer_cast<BinaryOutputStream::_IRep> (rep))
+    : Streams::BinaryInputStream (dynamic_pointer_cast<BinaryInputStream::_IRep> (rep))
+    , Streams::BinaryOutputStream (dynamic_pointer_cast<BinaryOutputStream::_IRep> (rep))
 {
-	RequireNotNull (dynamic_pointer_cast<BinaryInputStream::_IRep> (rep).get ());
-	RequireNotNull (dynamic_pointer_cast<BinaryOutputStream::_IRep> (rep).get ());
+    RequireNotNull (dynamic_pointer_cast<BinaryInputStream::_IRep> (rep).get ());
+    RequireNotNull (dynamic_pointer_cast<BinaryOutputStream::_IRep> (rep).get ());
 }

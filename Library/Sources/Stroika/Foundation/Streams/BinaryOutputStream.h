@@ -63,7 +63,7 @@ namespace   Stroika {
             /**
              *
              */
-			class   BinaryOutputStream::_IRep : public virtual BinaryStream::_IRep {
+            class   BinaryOutputStream::_IRep : public virtual BinaryStream::_IRep {
             public:
                 _IRep ();
                 NO_COPY_CONSTRUCTOR(_IRep);
