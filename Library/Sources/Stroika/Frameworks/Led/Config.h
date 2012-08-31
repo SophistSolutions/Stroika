@@ -1791,17 +1791,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-/*
-@CONFIGVAR:     qAllowBlockAllocation
-@DESCRIPTION:   <p>Allow use of block-allocation. The main reason to
-    disable it indescriminantly is for debugging purposes (looking for
-    memory leaks). But others may have other reasons.</p>
-        <p>Defaults to true.</p>
- */
-#ifndef qAllowBlockAllocation
-#define qAllowBlockAllocation                       1
-#endif
-
 
 
 
