@@ -177,6 +177,8 @@ namespace   Stroika {
                  *  threads intervening to modify the container.
                  *
                  *  Also, note that this function does NOT change any elements of the Iterable.
+                 *
+                 *  \pre    doToElement != nullptr
                  */
                 nonvirtual  void    Apply (void (*doToElement) (const T& item)) const;
 
