@@ -37,13 +37,12 @@ namespace   Stroika {
              * in the BufferedBinaryOutputStream::DTOR - because the underlying stream could have an exceptin writing, and its illegal to propagate
              * exceptions through destructors.
              */
-#if 1
             class   BufferedBinaryOutputStream : public BinaryOutputStream {
             private:
                 class   IRep_;
 
             public:
-                BufferedBinaryOutputStream (const _SharedIRep& realOut);
+                BufferedBinaryOutputStream (const BinaryOutputStream& realOut);
 
             public:
                 nonvirtual  size_t  GetBufferSize () const;
@@ -57,41 +56,6 @@ namespace   Stroika {
             public:
                 nonvirtual  void    Flush ();
             };
-#else
-            class   BufferedBinaryOutputStream : public BinaryOutputStream {
-            public:
-                NO_DEFAULT_CONSTRUCTOR (BufferedBinaryOutputStream);
-                NO_COPY_CONSTRUCTOR (BufferedBinaryOutputStream);
-                NO_ASSIGNMENT_OPERATOR (BufferedBinaryOutputStream);
-
-            public:
-                BufferedBinaryOutputStream (const _SharedIRep& realOut);
-                ~BufferedBinaryOutputStream ();
-
-            public:
-                nonvirtual  size_t  GetBufferSize () const;
-                nonvirtual  void    SetBufferSize (size_t bufSize);
-
-            public:
-                // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
-                nonvirtual  void    Abort ();
-
-                //
-                nonvirtual  void    Flush ();
-
-            protected:
-                // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
-                // Writes always succeed fully or throw.
-                virtual void            _Write (const Byte* start, const Byte* end) override;
-
-            private:
-                vector<Byte>        fBuffer_;
-                BinaryOutputStream& fRealOut_;
-#if     qDebug
-                bool                fAborted_;
-#endif
-            };
-#endif
 
 
 

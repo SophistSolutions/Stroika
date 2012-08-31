@@ -23,7 +23,7 @@ namespace   {
 
 class   BufferedBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep {
 public:
-    IRep_ (const BinaryOutputStream::_SharedIRep& realOut)
+    IRep_ (const BinaryOutputStream& realOut)
         : BinaryOutputStream::_IRep ()
         , fBuffer_ ()
         , fRealOut_ (realOut)
@@ -62,7 +62,7 @@ public:
     nonvirtual  void    Flush () {
         Require (not fAborted_ or fBuffer_.empty ());
         if (not fBuffer_.empty ()) {
-            fRealOut_->Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
+            fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
             fBuffer_.clear ();
         }
         Ensure (fBuffer_.empty ());
@@ -109,13 +109,13 @@ public:
             fBuffer_.insert (fBuffer_.end (), start + copy2Buffer, end);
         }
         else {
-            fRealOut_->Write (start + copy2Buffer, end);
+            fRealOut_.Write (start + copy2Buffer, end);
         }
     }
 
 private:
     vector<Byte>        fBuffer_;
-    _SharedIRep         fRealOut_;
+    BinaryOutputStream  fRealOut_;
 #if     qDebug
     bool                fAborted_;
 #endif
@@ -130,7 +130,7 @@ private:
  *********************** Streams::BinaryOutputStream ****************************
  ********************************************************************************
  */
-BufferedBinaryOutputStream::BufferedBinaryOutputStream (const _SharedIRep& realOut)
+BufferedBinaryOutputStream::BufferedBinaryOutputStream (const BinaryOutputStream& realOut)
     : BinaryOutputStream (_SharedIRep (new IRep_ (realOut)))
 {
 }

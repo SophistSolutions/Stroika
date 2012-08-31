@@ -53,7 +53,7 @@ namespace   Stroika {
              */
             struct  HTTPResponse {
             public:
-                HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream& outStream, const InternetMediaType& ct);
+                HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream outStream, const InternetMediaType& ct);
 
                 // Reponse must be completed (OK to Abort ()) before being destroyed
                 ~HTTPResponse ();
@@ -198,9 +198,9 @@ namespace   Stroika {
                 State                                   fState_;
                 Status                                  fStatus_;
                 String                                  fStatusOverrideReason_;
-                Streams::BinaryOutputStream&            fUnderlyingOutStream_;
+                Streams::BinaryOutputStream				fUnderlyingOutStream_;
                 Streams::BufferedBinaryOutputStream     fUseOutStream_;
-                map<String, String>                      fHeaders_;
+                map<String, String>                     fHeaders_;
                 InternetMediaType                       fContentType_;
                 Characters::CodePage                    fCodePage_;
                 vector<Byte>                            fBytes_;

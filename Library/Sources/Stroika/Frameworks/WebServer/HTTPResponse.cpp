@@ -59,7 +59,7 @@ namespace   {
     const   size_t  kResponseBufferReallocChunkSizeReserve_ =   16 * 1024;
 }
 
-HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream& outStream, const InternetMediaType& ct)
+HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream outStream, const InternetMediaType& ct)
     : fSocket_ (s)
     , fUnderlyingOutStream_ (outStream)
     , fUseOutStream_ (outStream)
