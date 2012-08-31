@@ -1,8 +1,8 @@
 [1]	Foundation::Memory
-[2]	Foundation::DataExchangeFormat::JSON
-[3]	Foundation::Execution::Threads
-[4]	Foundation::Execution::Exceptions
-[5]	Foundation::Characters::Strings
+[2]	Foundation::Execution::Threads
+[3]	Foundation::Execution::Exceptions
+[4]	Foundation::Characters::Strings
+[5]	Foundation::DataExchangeFormat::JSON
 [6]	Foundation::DataExchangeFormat::XML::SaxParser
 [7]	Foundation::Time::Date
 [8]	Foundation::Containers::Private::Array

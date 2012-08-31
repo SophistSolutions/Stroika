@@ -6,27 +6,27 @@
 #include	<iostream>
 #include	<sstream>
 
-#include	"Stroika/Foundation/Containers/STL/VectorUtils.h"
-#include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
-#include	"Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
-#include	"Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
-#include	"Stroika/Foundation/Debug/Assertions.h"
-#include	"Stroika/Foundation/Memory/VariantValue.h"
+#include	"Stroika/Foundation/Execution/CriticalSection.h"
+#include	"Stroika/Foundation/Execution/Event.h"
+#include	"Stroika/Foundation/Execution/Lockable.h"
+#include	"Stroika/Foundation/Execution/Sleep.h"
+#include	"Stroika/Foundation/Execution/SimpleRunnable.h"
+#include	"Stroika/Foundation/Execution/Thread.h"
+#include	"Stroika/Foundation/Execution/ThreadPool.h"
+#include	"Stroika/Foundation/Execution/WaitTimedOutException.h"
 
 #include	"../TestHarness/TestHarness.h"
 
 
 using	namespace	Stroika::Foundation;
 
-using	Memory::VariantValue;
 
-
-
-
-/*
- * Validating JSON parse results:
- *		http://json.parser.online.fr/
- */
+using	Execution::CriticalSection;
+using	Execution::Lockable;
+using	Execution::AutoCriticalSection;
+using	Execution::SimpleRunnable;
+using	Execution::Thread;
+using	Execution::ThreadPool;
 
 
 
@@ -35,146 +35,485 @@ using	Memory::VariantValue;
 
 
 namespace	{
-	void	CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
+	void	RegressionTest1_ ()
 		{
-			stringstream	out;
-			DataExchangeFormat::JSON::PrettyPrint (v, out);
-			string x = out.str ();
-			for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
-				if (x[i] != expected[i]) {
-					VerifyTestResult (false);
-				}
-			}
-			VerifyTestResult (out.str () == expected);
-		}
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest1_"));
+			struct	FRED {
+				static	void	DoIt (void* ignored)
+					{
+						for (int i = 1; i < 10; i++) {
+							Execution::Sleep (.01);
+						}
+					}
+			};
 
-	void	DoRegressionTests_Writer_ ()
-		{
-			{
-				VariantValue	v1 = L"hello world";
-				CheckMatchesExpected_WRITER_ (v1, "\"hello world\"");
-			}
-			{
-				VariantValue	v1 =	3;
-				CheckMatchesExpected_WRITER_ (v1, "3");
-			}
-			{
-				VariantValue	v1 =	4.7;
-				CheckMatchesExpected_WRITER_ (v1, "4.7");
-			}
-			{
-				// array
-				vector<VariantValue>	v;
-				v.push_back (3);
-				v.push_back (7);
-				v.push_back (L"cookie");
-				VariantValue	v1 =	v;
-				CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]");
-			}
-			{
-				// object
-				map<wstring,VariantValue>	v;
-				v[L"Arg1"] = 32;
-				v[L"Arg2"] = L"Cookies";
-				v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
-				VariantValue	v1 =	v;
-				CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}");
-			}
+			Thread	thread (&FRED::DoIt, const_cast<char*> ("foo"));
+			thread.Start ();
+			thread.WaitForDone ();
 		}
 }
 
 
 
 
+
+
+
 namespace	{
-	void	CheckMatchesExpected_READER_ (const string& v, const VariantValue& expected)
+	CriticalSection	sharedCriticalSection_;
+	void	RegressionTest2_ ()
 		{
-			stringstream	tmp;
-			tmp << v;
-			VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
-			VerifyTestResult (v1.GetType () == expected.GetType ());
-			VerifyTestResult (v1 == expected);
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest2_"));
+
+			// Make 2 concurrent threads, which share a critical section object to take turns updating a variable
+			struct	FRED {
+				static	void	DoIt (void* ignored)
+					{
+						int*	argP	=	reinterpret_cast<int*> (ignored);
+						for (int i = 0; i < 10; i++) {
+							AutoCriticalSection	critSect (sharedCriticalSection_);
+							int	tmp = *argP;
+							Execution::Sleep (.01);
+							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							*argP = tmp + 1;
+						}
+					}
+			};
+
+			int	updaterValue	=	0;
+			Thread	thread1 (&FRED::DoIt, &updaterValue);
+			Thread	thread2 (&FRED::DoIt, &updaterValue);
+			thread1.Start ();
+			thread2.Start ();
+			thread1.WaitForDone ();
+			thread2.WaitForDone ();
+			VerifyTestResult (updaterValue == 2 * 10);
 		}
+}
 
-	void	DoRegressionTests_Reader_ ()
+
+
+
+
+
+namespace	{
+	Execution::Event	sRegTest3Event_T1_;
+	Execution::Event	sRegTest3Event_T2_;
+    namespace   WAITABLE_EVENTS_ {
+	    void	NOTIMEOUTS_ ()
+		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("pingpong threads with event.wait(NOTIMEOUTS)"));
+			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+			    struct	FRED1 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T1_.Wait ();
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+                                // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                                VerifyTestResult (tmp % 2 == 0);
+							    //DbgTrace ("FRED1: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T2_.Set ();
+						    }
+					    }
+			    };
+			    struct	FRED2 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T2_.Wait ();
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+							    //DbgTrace ("FRED2: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T1_.Set ();
+						    }
+					    }
+			    };
+
+			    sRegTest3Event_T1_.Reset ();
+			    sRegTest3Event_T2_.Reset ();
+			    int	updaterValue	=	0;
+			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    Thread	thread2 (&FRED2::DoIt, &updaterValue);
+			    thread1.Start ();
+			    thread2.Start ();
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+			    sRegTest3Event_T1_.Set ();
+			    thread1.WaitForDone ();
+			    thread2.WaitForDone ();
+			    //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+			    VerifyTestResult (updaterValue == 2 * 10);
+		    }
+	    void	PingBackAndForthWithSimpleTimeouts_ ()
+		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("pingpong threads with event.wait(WITHTIMEOUT)"));
+			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+			    struct	FRED1 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T1_.Wait (5.0);
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+                                // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                                VerifyTestResult (tmp % 2 == 0);
+							    //DbgTrace ("FRED1: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T2_.Set ();
+						    }
+					    }
+			    };
+			    struct	FRED2 {
+				    static	void	DoIt (void* ignored)
+					    {
+						    int*	argP	=	reinterpret_cast<int*> (ignored);
+						    for (int i = 0; i < 10; i++) {
+							    sRegTest3Event_T2_.Wait (5.0);
+							    int	tmp = *argP;
+							    Execution::Sleep (.01);
+							    //DbgTrace ("FRED2: Updating value in of %d", tmp);
+							    *argP = tmp + 1;
+							    sRegTest3Event_T1_.Set ();
+						    }
+					    }
+			    };
+
+			    sRegTest3Event_T1_.Reset ();
+			    sRegTest3Event_T2_.Reset ();
+			    int	updaterValue	=	0;
+			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    Thread	thread2 (&FRED2::DoIt, &updaterValue);
+			    thread1.Start ();
+			    thread2.Start ();
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+			    sRegTest3Event_T1_.Set ();
+			    thread1.WaitForDone ();
+			    thread2.WaitForDone ();
+			    //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+			    VerifyTestResult (updaterValue == 2 * 10);
+		    }
+	    void	TEST_TIMEOUT_EXECPETIONS_ ()
+		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("event wiat timeouts"));
+                bool    passed  =   false;
+			    sRegTest3Event_T1_.Reset ();
+			    try {
+                    sRegTest3Event_T1_.Wait (0.5);  // should timeout
+                }
+                catch (const Execution::WaitTimedOutException&) {
+                    passed = true;
+                }
+                catch (...) {
+                }
+                VerifyTestResult (passed);
+		    }
+	    void	TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ()
+		    {
+                Debug::TraceContextBumper traceCtx (TSTR ("deadlock block on waitable event and abort thread (thread cancelation)"));
+			    // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+			    struct	FRED1 {
+				    static	void	DoIt (void* ignored)
+					    {
+							sRegTest3Event_T1_.Wait (60.0);     // just has to be much more than the waits below
+					    }
+			    };
+
+			    sRegTest3Event_T1_.Reset ();
+			    int	updaterValue	=	0;
+			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    thread1.Start ();
+
+                // At this point the thread SHOULD block and wait 30 seconds
+                {
+                    const   Time::DurationSecondsType   kMargingOfError  =   .5;
+                    const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
+                    Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
+                    Time::DurationSecondsType   caughtExceptAt  =   0;
+
+                    try {
+                        thread1.WaitForDone (kWaitOnAbortFor);
+                    }
+                    catch (const Execution::WaitTimedOutException&) {
+                        caughtExceptAt =  Time::GetTickCount ();
+                    }
+                    Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
+                    VerifyTestResult (expectedEndAt - kMargingOfError <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfError);
+                }
+
+                // Now ABORT and WAITFORDONE - that should kill it nearly immediately
+                {
+                    const   Time::DurationSecondsType   kMargingOfError  =   .5;
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
+                    const   Time::DurationSecondsType   kWaitOnAbortFor  =   5.0;	// because of BWA we used
+#else
+                    const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
+#endif
+                    Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
+                    try {
+                        thread1.AbortAndWaitForDone (kWaitOnAbortFor);
+                    }
+                    catch (const Execution::WaitTimedOutException&) {
+                        VerifyTestResult (false);   // shouldn't fail to wait cuz we did abort
+                    }
+                    Time::DurationSecondsType   doneAt          =   Time::GetTickCount ();;
+                    Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
+                    VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError);
+                }
+                
+                // Thread MUST be done/terminated by this point
+                VerifyTestResult (thread1.GetStatus () == Thread::eCompleted);
+		    }
+    }
+	void	RegressionTest3_WaitableEvents_ ()
 		{
-			{
-				VariantValue	v1 = L"hello world";
-				CheckMatchesExpected_READER_ ("\"hello world\"", v1);
-			}
-			{
-				VariantValue	v1 =	3;
-				CheckMatchesExpected_READER_ ("3", v1);
-			}
-			{
-				VariantValue	v1 =	4.7;
-				CheckMatchesExpected_READER_ ("4.7", v1);
-			}
-			{
-				// array
-				vector<VariantValue>	v;
-				v.push_back (3);
-				v.push_back (7);
-				v.push_back (L"cookie");
-				VariantValue	v1 =	v;
-				CheckMatchesExpected_READER_ ("[\n    3,\n    7,\n    \"cookie\"\n]", v1);
-			}
-			{
-				// object
-				map<wstring,VariantValue>	v;
-				v[L"Arg1"] = 32;
-				v[L"Arg2"] = L"Cookies";
-				v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
-				VariantValue	v1 =	v;
-				CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
-			}
-			{
-				// Bug found in another JSON reader (sent me by Ryan - 2011-07-27)
-				const	string	kExample	=	"{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
-				stringstream	tmp;
-				tmp << kExample;
-				VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
-				VerifyTestResult (v1.GetType () == VariantValue::eMap);
-			}
-
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest3_WaitableEvents_"));
+            WAITABLE_EVENTS_::NOTIMEOUTS_ ();
+            WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
+            WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
+            WAITABLE_EVENTS_::TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ();
 		}
 }
 
 
 namespace	{
-	void	CheckCanReadFromSmallBadSrc_ ()
+	struct	data_ {};
+	void	RegressionTest4_Lockable_ ()
 		{
-			stringstream	tmp;
-			tmp << "n";
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest4_Lockable_"));
+			{
+				Lockable<data_>	x;
+				Lockable<data_>	y = data_ ();
+				x = data_ ();
+			}
+			{
+				Lockable<int>	x;
+				Lockable<int>	y = 3;
+				x = 4;
+			}
+			{
+				// Make 2 concurrent threads, which update a lockable variable
+				struct	FRED {
+					static	void	DoIt (void* ignored)
+						{
+							Lockable<int>*	argP	=	reinterpret_cast<Lockable<int>*> (ignored);
+							for (int i = 0; i < 10; i++) {
+								AutoCriticalSection	critSect (*argP);
+								int	tmp = *argP;
+								Execution::Sleep (.01);
+								//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+								*argP = tmp + 1;
+							}
+						}
+				};
+				Lockable<int>	updaterValue	=	0;
+				Thread	thread1 (&FRED::DoIt, &updaterValue);
+				Thread	thread2 (&FRED::DoIt, &updaterValue);
+				thread1.Start ();
+				thread2.Start ();
+				thread1.WaitForDone ();
+				thread2.WaitForDone ();
+				VerifyTestResult (updaterValue == 2 * 10);
+			}
+		}
+}
+
+
+namespace	{
+	void	RegressionTest5_Aborting_ ()
+		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest5_Aborting_"));
+			struct	FRED {
+				static	void	DoIt ()
+					{
+						while (true) {
+							Execution::CheckForThreadAborting ();
+						}
+					}
+			};
+			Thread	thread (&FRED::DoIt);
+			thread.Start ();
 			try {
-				VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
-				VerifyTestResult (false);	// should get exception
+				thread.WaitForDone (1.0);	// should timeout
+				VerifyTestResult (false);
 			}
-			catch (const DataExchangeFormat::BadFormatException&) {
+			catch (const Execution::WaitTimedOutException&) {
 				// GOOD
 			}
 			catch (...) {
-				VerifyTestResult (false);	// should get BadFormatException
+				VerifyTestResult (false);
+			}
+			// Now - abort it, and wait
+			thread.AbortAndWaitForDone ();
+		}
+}
+
+
+
+
+namespace	{
+	void	RegressionTest6_ThreadWaiting_ ()
+		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest6_ThreadWaiting_"));
+			struct	FRED {
+				static	void	DoIt ()
+					{
+						Execution::Sleep (0.1);
+					}
+			};
+
+			// Normal usage
+			{
+				Thread	thread (&FRED::DoIt);
+				thread.Start ();
+				thread.WaitForDone ();
+			}
+
+			// OK to never wait
+			for (int i = 0; i < 100; ++i) {
+				Thread	thread (&FRED::DoIt);
+				thread.Start ();
+			}
+
+			// OK to wait and wait
+			{
+				Thread	thread (&FRED::DoIt);
+				thread.Start ();
+				thread.WaitForDone ();
+				thread.WaitForDone (1.0);		// doesn't matter how long cuz its already DONE
+				thread.WaitForDone ();
+				thread.WaitForDone ();
 			}
 		}
 }
+
+
+namespace	{
+	void	RegressionTest7_SimpleThreadPool_ ()
+		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest7_SimpleThreadPool_"));
+			{
+				ThreadPool	p;
+				p.SetPoolSize (1);
+				p.Abort ();
+				p.WaitForDone ();
+			}
+			{
+				ThreadPool	p;
+				p.SetPoolSize (1);
+				struct	FRED {
+					static	void	DoIt (void* arg)
+						{
+							int*	p	=	reinterpret_cast<int*> (arg);
+							(*p)++;
+						}
+				};
+				int	intVal	=	3;
+				shared_ptr<Execution::IRunnable>	task	=	SimpleRunnable::MAKE (FRED::DoIt, &intVal);
+				p.AddTask (task);
+				p.WaitForTask (task);
+				p.AbortAndWaitForDone ();
+				VerifyTestResult (intVal == 4);
+			}
+		}
+}
+
+
+
+namespace	{
+	void	RegressionTest8_ThreadPool_ ()
+		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest8_ThreadPool_"));
+			// Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
+			struct	FRED {
+				static	void	DoIt (void* ignored)
+					{
+						int*	argP	=	reinterpret_cast<int*> (ignored);
+						for (int i = 0; i < 10; i++) {
+							AutoCriticalSection	critSect (sharedCriticalSection_);
+							int	tmp = *argP;
+							Execution::Sleep (.01);
+							//DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+							*argP = tmp + 1;
+						}
+					}
+			};
+
+			for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
+				ThreadPool	p;
+				p.SetPoolSize (threadPoolSize);
+				int	updaterValue	=	0;
+				shared_ptr<Execution::IRunnable>	task1	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				shared_ptr<Execution::IRunnable>	task2	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				p.AddTask (task1);
+				p.AddTask (task2);
+				p.WaitForTask (task1);
+				p.WaitForTask (task2);
+				p.AbortAndWaitForDone ();
+				VerifyTestResult (updaterValue == 2 * 10);
+			}
+		}
+}
+
+
+namespace	{
+	void	RegressionTest9_ThreadsAbortingEarly_ ()
+		{
+            Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest9_ThreadsAbortingEarly_"));
+			// I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
+			// between the create of thread and Abort
+			struct	FRED {
+				static	void	DoItInnerThread ()
+					{
+						Execution::Sleep (.1);
+					}
+				static	void	DoOuterThread ()
+					{
+						while (true) {
+							Thread t (DoItInnerThread);
+							Execution::Sleep (.2);
+							t.Start ();
+						}
+					}
+			};
+			Thread	thread (&FRED::DoOuterThread);
+			thread.Start ();
+			Execution::Sleep (5);
+			thread.AbortAndWaitForDone ();
+		}
+}
+
 
 
 namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			DoRegressionTests_Writer_ ();
-			DoRegressionTests_Reader_ ();
-			CheckCanReadFromSmallBadSrc_ ();
+			RegressionTest1_ ();
+			RegressionTest2_ ();
+			RegressionTest3_WaitableEvents_ ();
+			RegressionTest4_Lockable_ ();
+			RegressionTest5_Aborting_ ();
+			RegressionTest6_ThreadWaiting_ ();
+			RegressionTest7_SimpleThreadPool_ ();
+			RegressionTest8_ThreadPool_ ();
+			RegressionTest9_ThreadsAbortingEarly_ ();
 		}
 }
 
 
 
-
 #if qOnlyOneMain
-extern  int TestJSON ()
+extern  int TestThreads ()
 #else
 int main (int argc, const char* argv[])
 #endif
