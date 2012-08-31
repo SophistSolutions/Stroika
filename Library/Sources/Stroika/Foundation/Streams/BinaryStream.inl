@@ -40,7 +40,7 @@ namespace   Stroika {
             {
                 return fRep_.get () == nullptr;
             }
-            void    BinaryStream::clear ()
+            inline	void    BinaryStream::clear ()
             {
                 fRep_.reset ();
                 fIsSeekable_ = false;
