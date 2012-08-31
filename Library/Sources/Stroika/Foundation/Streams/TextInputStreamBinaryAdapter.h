@@ -14,11 +14,13 @@
 
 
 
-/*
- * TODO:
- *          o   Must use either stdc++ multibyte code or Stroika CodePage code - currnetly a hack assuming input is ascii.
+/**
+ *	\file
  *
- *          o   CONSIDER REDOING USE shared_ptr<> - to make lifetime stuff workout better...
+ * TODO:
+ *		@todo	Must use either stdc++ multibyte code or Stroika CodePage code - currnetly a hack assuming input is ascii.
+ *
+ *		@todo	CONSIDER REDOING USE shared_ptr<> - to make lifetime stuff workout better...
  */
 
 namespace   Stroika {
@@ -31,7 +33,7 @@ namespace   Stroika {
              */
             class   TextInputStreamBinaryAdapter : public virtual TextInputStream, public virtual Seekable {
             public:
-                TextInputStreamBinaryAdapter (BinaryInputStream& src);
+                TextInputStreamBinaryAdapter (BinaryInputStream src);
 
             protected:
                 virtual size_t          _Read (Character* intoStart, Character* intoEnd) override;
@@ -39,7 +41,7 @@ namespace   Stroika {
                 virtual void            _Seek (Whence whence, SeekOffsetType offset) override;
 
             private:
-                BinaryInputStream&  fSource_;
+                BinaryInputStream  fSource_;
             };
 
         }

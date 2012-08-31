@@ -23,7 +23,7 @@ using   namespace   Stroika::Foundation::Streams;
  ************************** Streams::TextInputStream ****************************
  ********************************************************************************
  */
-TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (BinaryInputStream& src)
+TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (BinaryInputStream src)
     : fSource_ (src)
 {
 }
