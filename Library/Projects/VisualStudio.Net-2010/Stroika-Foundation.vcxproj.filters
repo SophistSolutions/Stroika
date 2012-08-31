@@ -405,6 +405,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -894,6 +900,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h">
       <Filter>Sources\Containers\STL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1280,6 +1292,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md">
       <Filter>Sources\Containers\STL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
 </Project>

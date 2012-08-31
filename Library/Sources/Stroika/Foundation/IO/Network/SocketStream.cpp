@@ -29,16 +29,39 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-SocketStream::~SocketStream ()
-{
-}
+class   SocketStream::IRep_ : public virtual BinaryInputStream::_IRep, public virtual BinaryOutputStream::_IRep {
+public:
+    IRep_ (Socket sd)
+        : BinaryInputStream::_IRep ()
+        , BinaryOutputStream::_IRep ()
+        , fSD_ (sd) {
+    }
 
-size_t  SocketStream::_Read (Byte* intoStart, Byte* intoEnd) override
-{
-    return fSD_.Read (intoStart, intoEnd);
-}
+    virtual size_t      Read (Byte* intoStart, Byte* intoEnd) override
+	{
+		return fSD_.Read (intoStart, intoEnd);
+	}
 
-void    SocketStream::_Write (const Byte* start, const Byte* end) override
+    virtual void     Write (const Byte* start, const Byte* end) override
+	{
+		fSD_.Write (start, end);
+	}
+
+private:
+    Socket  fSD_;
+};
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Streams::SocketStream *****************************
+ ********************************************************************************
+ */
+SocketStream::SocketStream (Socket sd)
+    : BinaryInputOutputStream (shared_ptr<BinaryStream::_IRep> (new IRep_ (sd)))
 {
-    fSD_.Write (start, end);
 }

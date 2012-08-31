@@ -16,18 +16,25 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            inline  BinaryInputStream::BinaryInputStream ()
+
+            //  class   BinaryInputStream
+            inline  BinaryInputStream::BinaryInputStream (const _SharedIRep& rep)
+                : BinaryStream (rep)
             {
             }
-            inline  BinaryInputStream::~BinaryInputStream ()
+            inline  BinaryInputStream::_SharedIRep  BinaryInputStream::GetRep () const
             {
+                return dynamic_pointer_cast<BinaryInputStream::_IRep> (BinaryStream::GetRep ());
             }
             inline  size_t  BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd)
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                return _Read (intoStart, intoEnd);
+                RequireNotNull (fRep_.get ());
+                return GetRep ()->Read (intoStart, intoEnd);
             }
+
+
         }
     }
 }

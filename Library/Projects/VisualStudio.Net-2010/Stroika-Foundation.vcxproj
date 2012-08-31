@@ -307,8 +307,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.cpp" />
@@ -490,8 +492,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.h" />
@@ -627,8 +631,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md" />

@@ -15,15 +15,20 @@
 
 
 /*
+ *  \file
+ *
  *  TODO:
  *
- *      o Not actually implemented. Must think out if this should mixin Seekable or not. I THINK it must.
- *          I THINK if one SEEKS this, but the underlying class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
+ *      @todo   Not actually implemented. Must think out if this should mixin Seekable or not. I THINK it must.
+ *              I THINK if one SEEKS this, but the underlying class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
+ *              BufferedBinaryInputStream::IRep_ IMPLEMENTATION NEEDED
  *
- *      o   Examine other choices in stream class. Decide between using the shared_ptr<> pattern, or just using references (and count on coding styles
- *          to manage lifetime issues).
+ *      @todo   Examine other choices in stream class. Decide between using the shared_ptr<> pattern, or just using references (and count on coding styles
+ *              to manage lifetime issues).
+ *
  *
  */
+
 
 
 namespace   Stroika {
@@ -31,19 +36,16 @@ namespace   Stroika {
         namespace   Streams {
 
 
-            /*
+            /**
              *
              */
             class   BufferedBinaryInputStream : public BinaryInputStream {
-            public:
-                BufferedBinaryInputStream (const shared_ptr<BinaryInputStream>& realIn);
-
-            protected:
-                virtual size_t          _Read (Byte* intoStart, Byte* intoEnd) override;
-
             private:
-                shared_ptr<BinaryInputStream>    fRealIn_;
+                class   IRep_;
+            public:
+                BufferedBinaryInputStream (const BinaryInputStream::_SharedIRep& realIn);
             };
+
 
         }
     }

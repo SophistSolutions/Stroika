@@ -34,22 +34,11 @@ namespace   Stroika {
                  * @THREADSAFETY:   BinaryInputStreamFromIStreamAdapter is not necessarily thread safe. Its roughly as safe as the underlying istream implementation, except
                  *  that we call read, followed by gcount () - which could be a race.
                  */
-                class   BinaryInputStreamFromIStreamAdapter : public virtual BinaryInputStream, public virtual Seekable {
-                public:
-                    NO_DEFAULT_CONSTRUCTOR(BinaryInputStreamFromIStreamAdapter);
-                    NO_COPY_CONSTRUCTOR(BinaryInputStreamFromIStreamAdapter);
-                    NO_ASSIGNMENT_OPERATOR(BinaryInputStreamFromIStreamAdapter);
-
+                class   BinaryInputStreamFromIStreamAdapter : public BinaryInputStream {
+                private:
+                    class   IRep_;
                 public:
                     BinaryInputStreamFromIStreamAdapter (istream& originalStream);
-
-                protected:
-                    virtual size_t          _Read (Byte* intoStart, Byte* intoEnd) override;
-                    virtual SeekOffsetType  _GetOffset () const override;
-                    virtual void            _Seek (Whence whence, SeekOffsetType offset) override;
-
-                private:
-                    istream&    fOriginalStream_;
                 };
 
             }

@@ -9,6 +9,29 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Streams;
+
+
+
+
+class   BufferedBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
+public:
+    IRep_ (const BinaryInputStream::_SharedIRep& realIn)
+        : BinaryInputStream::_IRep ()
+        , fRealIn_ (realIn) {
+    }
+
+    virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override {
+        return fRealIn_->Read (intoStart, intoEnd);
+    }
+
+private:
+    BinaryInputStream::_SharedIRep    fRealIn_;
+};
+
+
+
+
 
 
 /*
@@ -16,3 +39,7 @@ using   namespace   Stroika::Foundation;
  ************************ Streams::BinaryInputStream ****************************
  ********************************************************************************
  */
+BufferedBinaryInputStream::BufferedBinaryInputStream (const shared_ptr<BinaryInputStream::_IRep>& realIn)
+    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (realIn)))
+{
+}

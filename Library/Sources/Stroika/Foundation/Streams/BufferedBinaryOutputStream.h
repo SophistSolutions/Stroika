@@ -15,10 +15,13 @@
 /*
  * TODO:
  *
- *      o make threadsafe
+ *      o   make threadsafe
  *
  *      o   Think out Seekable. Probably MUST mixin Seekable, and properly handle (vai throw OperaitonNotSupported) if one constructs a BufferedBinaryOutputStream
  *          and tries to SEEK wihout the undelrying stream being seekable.
+ *
+ *      o   BufferedBinaryOutputStream NOW must properly support SEEKABLE! if arg is seekable, we must override seek methods, and
+ *          forward them, and adjust buffer as appropriate.
  *
  */
 
@@ -34,6 +37,27 @@ namespace   Stroika {
              * in the BufferedBinaryOutputStream::DTOR - because the underlying stream could have an exceptin writing, and its illegal to propagate
              * exceptions through destructors.
              */
+#if 1
+            class   BufferedBinaryOutputStream : public BinaryOutputStream {
+            private:
+                class   IRep_;
+
+            public:
+                BufferedBinaryOutputStream (const _SharedIRep& realOut);
+
+            public:
+                nonvirtual  size_t  GetBufferSize () const;
+                nonvirtual  void    SetBufferSize (size_t bufSize);
+
+            public:
+                // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
+                nonvirtual  void    Abort ();
+
+                //
+            public:
+                nonvirtual  void    Flush ();
+            };
+#else
             class   BufferedBinaryOutputStream : public BinaryOutputStream {
             public:
                 NO_DEFAULT_CONSTRUCTOR (BufferedBinaryOutputStream);
@@ -41,7 +65,7 @@ namespace   Stroika {
                 NO_ASSIGNMENT_OPERATOR (BufferedBinaryOutputStream);
 
             public:
-                BufferedBinaryOutputStream (BinaryOutputStream& realOut);
+                BufferedBinaryOutputStream (const _SharedIRep& realOut);
                 ~BufferedBinaryOutputStream ();
 
             public:
@@ -67,6 +91,9 @@ namespace   Stroika {
                 bool                fAborted_;
 #endif
             };
+#endif
+
+
 
         }
     }

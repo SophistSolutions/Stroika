@@ -7,8 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Streams/BinaryInputStream.h"
-#include    "../../Streams/BinaryOutputStream.h"
+#include    "../../Streams/BinaryInputOutputStream.h"
 #include    "Socket.h"
 
 
@@ -17,8 +16,10 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
+#if 0
                 // Platform Socket descriptor - file descriptor on unix (something like this on windoze)
                 typedef int SocketDescriptor;
+#endif
 
 
                 /*
@@ -27,7 +28,9 @@ namespace   Stroika {
                  *
                  * The only real conneciton is that they share a common socket, and if IT is closed, then the whole SocketStream will stop working.
                  */
-                class   SocketStream : public virtual Streams::BinaryInputStream, public virtual Streams::BinaryOutputStream {
+                class   SocketStream : public Streams::BinaryInputOutputStream {
+				private:
+					class   IRep_;
                 public:
                     // Note - socket is CLOSED (filesystem close for now) in DTOR
                     // TODO:
@@ -35,14 +38,6 @@ namespace   Stroika {
                     //  away!
                     //
                     explicit SocketStream (Socket sd);
-                    ~SocketStream ();
-
-                protected:
-                    virtual size_t                  _Read (Byte* intoStart, Byte* intoEnd) override;
-                    virtual void                    _Write (const Byte* start, const Byte* end) override;
-
-                private:
-                    Socket  fSD_;
                 };
 
             }
