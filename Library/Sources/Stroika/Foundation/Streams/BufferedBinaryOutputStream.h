@@ -13,14 +13,14 @@
 
 
 /**
- *	\file
+ *  \file
  *
  * TODO:
  *
  *      o   make threadsafe
  *
  *      o   Think out Seekable. Probably MUST mixin Seekable, and properly handle (vai throw OperaitonNotSupported)
- *			if one constructs a BufferedBinaryOutputStream and tries to SEEK wihout the undelrying stream being seekable.
+ *          if one constructs a BufferedBinaryOutputStream and tries to SEEK wihout the undelrying stream being seekable.
  *
  *      o   BufferedBinaryOutputStream NOW must properly support SEEKABLE! if arg is seekable, we must override seek methods, and
  *          forward them, and adjust buffer as appropriate.
@@ -53,13 +53,13 @@ namespace   Stroika {
 
             public:
                 /**
-				 * Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
-				 */
+                 * Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
+                 */
                 nonvirtual  void    Abort ();
 
             public:
                 /**
-				 */
+                 */
                 nonvirtual  void    Flush ();
             };
 
