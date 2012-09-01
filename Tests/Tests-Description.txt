@@ -12,3 +12,4 @@
 [12]	Foundation::Signals
 [13]	Foundation::Cryptography
 [14]	Foundation::IO::Network::Transfer
+[15]	Foundation::Streams

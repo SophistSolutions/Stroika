@@ -1,2 +1,0 @@
-TEST_NUM=2
-include	../../../../Tests/Projects/Linux/Makefile-Test-Template.mk

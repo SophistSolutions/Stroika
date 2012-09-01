@@ -262,7 +262,7 @@ sub MakeUnixDirs {
 
 		foreach $tst (GetAllTests ()) {
 			mkdir "$intermediateFiles/$platform/$target/Test$tst";
-			system ("ln -s ../../../../Tests/Projects/Linux/Makefile-Test$tst $intermediateFiles/$platform/$target/Test$tst/Makefile");
+			system ("ln -s ../../../../Tests/Projects/Linux/$tst/Makefile $intermediateFiles/$platform/$target/Test$tst/Makefile");
 		}
 	}
 }

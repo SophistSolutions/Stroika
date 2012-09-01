@@ -1,0 +1,69 @@
+/*
+ * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
+ */
+#include	"Stroika/Foundation/StroikaPreComp.h"
+
+#include	"Stroika/Foundation/Streams/MemoryBinaryInputStream.h"
+
+#include	"../TestHarness/TestHarness.h"
+
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Streams;
+
+
+
+
+
+namespace	{
+	namespace	MemoryBinaryInputStream_ {
+
+		void	TestBasicConstruction_ ()
+		{
+			{
+				MemoryBinaryInputStream	s (nullptr, nullptr);
+				VerifyTestResult (not s.empty ());
+				VerifyTestResult (s.IsSeekable ());
+			}
+			{
+				const char	kData[]	=	"1";
+				MemoryBinaryInputStream	s (reinterpret_cast<const Byte*> (StartOfArray(kData)), reinterpret_cast<const Byte*> (EndOfArray(kData)));
+				VerifyTestResult (not s.empty ());
+				VerifyTestResult (s.IsSeekable ());
+				Byte	result[100] = { 0 };
+				VerifyTestResult (s.Read (StartOfArray (result), EndOfArray (result)) == 2);
+				VerifyTestResult (result[0] == '1');
+				VerifyTestResult (result[1] == '\0');
+			}
+		}
+
+
+		void	Tests_ ()
+		{
+			TestBasicConstruction_ ();
+		}
+	}
+}
+
+
+
+
+
+
+
+namespace	{
+	void	DoRegressionTests_ ()
+		{
+			MemoryBinaryInputStream_::Tests_ ();
+		}
+}
+
+
+
+
+
+int main (int argc, const char* argv[])
+{
+	Stroika::TestHarness::Setup ();
+	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+	return EXIT_SUCCESS;
+}
