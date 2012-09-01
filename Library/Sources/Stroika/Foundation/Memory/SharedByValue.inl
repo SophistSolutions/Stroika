@@ -81,12 +81,12 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer () const
+            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::get () const
             {
                 return (fSharedImpl_.get ());
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            T* SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer ()
+            T* SharedByValue<T, COPIER, SHARED_IMLP>::get ()
             {
                 T*  ptr =   fSharedImpl_.get ();
                 /*
@@ -111,19 +111,19 @@ namespace   Stroika {
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  T* SharedByValue<T, COPIER, SHARED_IMLP>::operator-> ()
             {
-                return GetPointer ();
+                return get ();
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  const T&    SharedByValue<T, COPIER, SHARED_IMLP>::operator* () const
             {
-                const T*  ptr =   GetPointer ();
+                const T*  ptr =   get ();
                 EnsureNotNull (ptr);
                 return (*ptr);
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             T& SharedByValue<T, COPIER, SHARED_IMLP>::operator* ()
             {
-                T*  ptr =   GetPointer ();
+                T*  ptr =   get ();
                 /*
                  * For non-const dereferencing, we must clone ourselves (if there are
                  * extra referneces).

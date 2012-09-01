@@ -69,7 +69,7 @@ namespace   Stroika {
                 : fIterator_ (from.fIterator_)
                 , fCurrent_ (from.fCurrent_)
             {
-                RequireNotNull (from.fIterator_.GetPointer ());
+                RequireNotNull (from.fIterator_.get ());
             }
             template    <typename T>
             inline Iterator<T>::Iterator (IRep* it)
@@ -85,7 +85,7 @@ namespace   Stroika {
             template    <typename T>
             inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs)
             {
-                RequireNotNull (rhs.fIterator_.GetPointer ());
+                RequireNotNull (rhs.fIterator_.get ());
                 fIterator_ = rhs.fIterator_;
                 fCurrent_ = rhs.fCurrent_;
                 return (*this);
@@ -145,8 +145,8 @@ namespace   Stroika {
                 }
                 Assert (not lDone and not rDone);
                 // assigning to local variables to ensure const version called
-                const   Iterator<T>::IRep* lhsRep = fIterator_.GetPointer ();
-                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.GetPointer ();
+                const   Iterator<T>::IRep* lhsRep = fIterator_.get ();
+                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.get ();
                 return (lhsRep == rhsRep);
             }
             template    <typename T>
@@ -171,8 +171,8 @@ namespace   Stroika {
                 }
                 Assert (not lDone and not rDone);
                 // assigning to local variables to ensure const version called
-                const   Iterator<T>::IRep* lhsRep = fIterator_.GetPointer ();
-                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.GetPointer ();
+                const   Iterator<T>::IRep* lhsRep = fIterator_.get ();
+                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.get ();
                 if (typeid (lhsRep) != typeid (rhsRep)) {
                     return false;
                 }

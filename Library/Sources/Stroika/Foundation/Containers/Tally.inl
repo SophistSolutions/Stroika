@@ -245,12 +245,12 @@ namespace   Stroika {
             template    <typename T>
             inline  const TallyRep<T>*  Tally<T>::GetRep () const
             {
-                return fRep.GetPointer ();
+                return fRep.get ();
             }
             template    <typename T>
             inline  TallyRep<T>*        Tally<T>::GetRep ()
             {
-                return (fRep.GetPointer ());
+                return (fRep.get ());
             }
 
 

@@ -83,16 +83,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 * GetPointer () returns the real underlying ptr we store. It can be nullptr. This should
+                 * get () returns the real underlying ptr we store. It can be nullptr. This should
                  * rarely be used - use operator-> in preference. This is only for dealing with cases where
                  * the ptr could legitimately be nil.
                  */
-                nonvirtual  const T*    GetPointer () const;
-                nonvirtual  T*          GetPointer ();
-
-
-                nonvirtual  const T*    get () const { return GetPointer (); }
-                nonvirtual  T*          get () { return GetPointer (); }
+                nonvirtual  const T*    get () const;
+                nonvirtual  T*          get ();
 
             public:
                 /*
