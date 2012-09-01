@@ -51,44 +51,44 @@ namespace   Stroika {
 
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue ()
-                : SHARED_IMLP ()
-                , fCopier_ (COPIER ())
+                : fCopier_ (COPIER ())
+                , fSharedImpl_ ()
             {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from)
-                : SHARED_IMLP (from)
-                , fCopier_ (from.fCopier_)
+                : fCopier_ (from.fCopier_)
+                , fSharedImpl_ (from.fSharedImpl_)
             {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SHARED_IMLP& from, const COPIER& copier)
-                : SHARED_IMLP (from)
-                , fCopier_ (copier)
+                : fCopier_ (copier)
+                , fSharedImpl_ (from.fSharedImpl_)
             {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (T* from, const COPIER& copier)
-                : SHARED_IMLP (from)
-                , fCopier_ (copier)
+                : fCopier_ (copier)
+                , fSharedImpl_ (from)
             {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>& SharedByValue<T, COPIER, SHARED_IMLP>::operator= (const SharedByValue<T, COPIER, SHARED_IMLP>& src)
             {
-                SHARED_IMLP::operator= (src);
                 fCopier_ = src.fCopier_;
+                fSharedImpl_ = src.fSharedImpl_;
                 return *this;
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer () const
             {
-                return (SHARED_IMLP::get ());
+                return (fSharedImpl_.get ());
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             T* SharedByValue<T, COPIER, SHARED_IMLP>::GetPointer ()
             {
-                T*  ptr =   SHARED_IMLP::get ();
+                T*  ptr =   fSharedImpl_.get ();
                 /*
                  * For non-const pointing, we must clone ourselves (if there are
                  * extra referneces). If we are a nullptr pointer, nobody could actually
@@ -99,14 +99,14 @@ namespace   Stroika {
                     return nullptr;
                 }
                 Assure1Reference ();
-                ptr = SHARED_IMLP::get ();
+                ptr = fSharedImpl_.get ();
                 EnsureNotNull (ptr);
                 return (ptr);
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::operator-> () const
             {
-                return (SHARED_IMLP::get ());
+                return (fSharedImpl_.get ());
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  T* SharedByValue<T, COPIER, SHARED_IMLP>::operator-> ()
@@ -135,14 +135,14 @@ namespace   Stroika {
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  void    SharedByValue<T, COPIER, SHARED_IMLP>::Assure1Reference ()
             {
-                if (!SHARED_IMLP::unique ()) {
+                if (!fSharedImpl_.unique ()) {
                     BreakReferences_ ();
                 }
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
             void    SharedByValue<T, COPIER, SHARED_IMLP>::BreakReferences_ ()
             {
-                T*  ptr =   SHARED_IMLP::get ();
+                T*  ptr =   fSharedImpl_.get ();
                 RequireNotNull (ptr);
                 /*
                  *      For a valid pointer that is reference counted and multiply shared,
@@ -159,7 +159,7 @@ namespace   Stroika {
                 // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
                 // value and it should go away.
                 *this = SharedByValue<T, COPIER, SHARED_IMLP> (fCopier_.Copy (*ptr), fCopier_);
-                Ensure (SHARED_IMLP::unique ());
+                Ensure (fSharedImpl_.unique ());
             }
 
         }

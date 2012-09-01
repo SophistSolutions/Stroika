@@ -548,20 +548,20 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ())
+    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ()))
 {
     RequireNotNull (cString);
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (from, to), _Rep_Cloner ())
+    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (from, to), _Rep_Cloner ()))
 {
     Require (from <= to);
     Require (from != nullptr or from == to);
 }
 
 String::String (const Character* from, const Character* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ())
+    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ()))
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
     Require (from <= to);
@@ -569,7 +569,7 @@ String::String (const Character* from, const Character* to)
 }
 
 String::String (const std::wstring& r)
-    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ())
+    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ()))
 {
 }
 

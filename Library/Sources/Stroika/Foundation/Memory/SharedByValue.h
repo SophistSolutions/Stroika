@@ -26,11 +26,11 @@ namespace   Stroika {
 
 
             /**
-			 *	\brief	SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
-			 *
-             *	SharedByValue_CopyByFunction is a simple copying mechanism used by SharedByValue<>.
-             *	It is not the most efficient approach (since it stores an actual pointer for the
-             *	copy function. But its very simple and usually adequate.
+             *  \brief  SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
+             *
+             *  SharedByValue_CopyByFunction is a simple copying mechanism used by SharedByValue<>.
+             *  It is not the most efficient approach (since it stores an actual pointer for the
+             *  copy function. But its very simple and usually adequate.
              */
             template    <typename   T>
             struct  SharedByValue_CopyByFunction {
@@ -46,8 +46,8 @@ namespace   Stroika {
 
 
             /**
-			 *	\brief	SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
-			 *
+             *  \brief  SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
+             *
              * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
              * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
              */
@@ -58,10 +58,10 @@ namespace   Stroika {
 
 
             /**
-			 *	\brief	SharedByValue is a utility class to implement Copy-On-Write.
-			 *
+             *  \brief  SharedByValue is a utility class to implement Copy-On-Write.
+             *
              *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
-             *	to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
+             *  to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
              *  data structures.
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
@@ -69,7 +69,7 @@ namespace   Stroika {
              *  This class template was originally called CopyOnWrite.
             */
             template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = shared_ptr<T> >
-            class   SharedByValue : public SHARED_IMLP {
+            class   SharedByValue {
             public:
                 SharedByValue ();
                 SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from);
@@ -90,6 +90,10 @@ namespace   Stroika {
                 nonvirtual  const T*    GetPointer () const;
                 nonvirtual  T*          GetPointer ();
 
+
+                nonvirtual  const T*    get () const { return GetPointer (); }
+                nonvirtual  T*          get () { return GetPointer (); }
+
             public:
                 /*
                  * These operators require that the underlying ptr is non-nil.
@@ -98,6 +102,21 @@ namespace   Stroika {
                 nonvirtual  T*          operator-> ();
                 nonvirtual  const T&    operator* () const;
                 nonvirtual  T&          operator* ();
+
+
+            public:
+                bool operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const {
+                    return fSharedImpl_ == rhs.fSharedImpl_;
+                }
+                bool operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const {
+                    return fSharedImpl_ != rhs.fSharedImpl_;
+                }
+                bool    unique () const {
+                    return fSharedImpl_.unique ();
+                }
+
+            private:
+                SHARED_IMLP fSharedImpl_;
 
             private:
                 COPIER  fCopier_;
