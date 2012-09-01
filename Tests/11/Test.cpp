@@ -7,242 +7,106 @@
 #include	<sstream>
 
 
+#include    "Stroika/Foundation/Containers/Concrete/Private/LinkedList.h"
 
-#include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
-
 
 #include	"../TestHarness/SimpleClass.h"
 #include	"../TestHarness/TestHarness.h"
 
 
 
-using   namespace   Stroika;
+
+
+using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
+using	namespace	Stroika::Foundation::Containers::Concrete::Private;
 
-
-using	Concrete::Tally_Array;
-using	Concrete::Tally_LinkedList;
 
 
 
 namespace	{
-
-
-static	void	TallyIteratorTests(Tally<size_t>& s)
+static	void	Test1()
 {
-	const	size_t	kTestSize	=	6;
-
-	VerifyTestResult (s.GetLength () == 0);
-
-	For (it, s ) {
-		VerifyTestResult (false);
-	}
-
-	/*
-	 * Try removes while iterating forward.
-	 */
-	{
-		for (size_t i = 1; i <= kTestSize; i++) {
-			s.Add (i);
-		}
+	LinkedList_Patch<size_t>	someLL;
+	const	size_t	kBigSize	=	1001;
 
 
-		For (it, s) {
-			it.UpdateCount (1);
-		}
 
-		VerifyTestResult (s.GetLength () == kTestSize);
+	Assert (kBigSize > 100);
+	VerifyTestResult(someLL.GetLength() == 0);
+	{ for (size_t i = 1; i <= kBigSize; i++) { someLL.Prepend (0); } }
+	someLL.RemoveAll();
+	{ for (size_t i = 1; i <= kBigSize; i++) { someLL.Prepend (0); } }
+	{ for (size_t i = 1; i <= kBigSize-10; i++) { someLL.RemoveFirst (); } }
+	someLL.RemoveAll();														//	someLL.SetLength(kBigSize, 0);
+	{ for (size_t i = 1; i <= kBigSize; i++) { someLL.Prepend (0); } }
 
-		{
-			For (it, s) {
-				for (size_t i = 1; i <= kTestSize; i++) {
-					VerifyTestResult (s.Contains (i));
-					VerifyTestResult (s.GetLength () == kTestSize - i + 1);
-					s.Remove (i);
-					VerifyTestResult (not s.Contains (i-1));
-				}
-			}
-			VerifyTestResult (s.IsEmpty ());
-			VerifyTestResult (s.GetLength () == 0);
-		}
 
-		for (size_t i = 1; i <= kTestSize; i++) {
-			s.Add (i);
-		}
-		VerifyTestResult (s.GetLength () == kTestSize);
-		{
-			For (it, s) {
-				it.RemoveCurrent ();
-			}
-			VerifyTestResult (s.IsEmpty ());
-			VerifyTestResult (s.GetLength () == 0);
-		}
+	VerifyTestResult(someLL.GetLength() == kBigSize);
+	someLL.SetAt (55, 55);																										//	someLL [55] = 55;
+	VerifyTestResult (someLL.GetAt (55) == 55);																					//	VerifyTestResult(someArray [55] == 55);
+	VerifyTestResult (someLL.GetAt (55) != 56);																					//	VerifyTestResult(someArray [55] != 56);
+	{ size_t i = 1; size_t cur; for (LinkedListMutator_Patch<size_t> it (someLL); it.More(&cur, true); i++) { if (i==100) {it.AddAfter (1); break;} } }//	someLL.InsertAt(1, 100);
 
-		for (size_t i = 1; i <= kTestSize; i++) {
-			s.Add (i);
-		}
-		VerifyTestResult (s.GetLength () == kTestSize);
-		For (it2, s) {
-			s.Remove (it2.Current ().fItem);
-		}
-		VerifyTestResult (s.GetLength () == 0);
-	}
+	VerifyTestResult(someLL.GetLength() == kBigSize+1);
+	VerifyTestResult (someLL.GetAt (100) == 1);																					//	VerifyTestResult(someArray [100] == 1);
 
-	/*
-	 * Try removes multiple iterators present.
-	 */
-	{
-		s.RemoveAll ();
-		VerifyTestResult (s.GetLength () == 0);
-		for (size_t i = 1; i <= kTestSize; i++) {
-			s.Add (i);
-		}
-		VerifyTestResult (s.GetLength () == kTestSize);
-		size_t i =	1;
+	someLL.SetAt (someLL.GetAt (100) + 5, 101);
 
-		For (it, s) {
-			For (it2, s) {
-				For (it3, s) {
-					if (s.GetLength () != 0) {
-						it3.UpdateCount (3);
-						it3.RemoveCurrent ();
-						s.Add (i);
-						s.Remove (i);
-					}
-				}
-			}
-		}
-	}
+	VerifyTestResult (someLL.GetAt (101) == 6);
+	someLL.RemoveFirst ();
+	VerifyTestResult (someLL.GetAt (100) == 6);
 }
 
-void	SimpleTallyTests (Tally<size_t>& s)
-
+static	void	Test2()
 {
-	size_t	three = 3;
+	LinkedList_Patch<SimpleClass>	someLL;
+	const	size_t	kBigSize	=	1000;
 
-	Tally<size_t>	s1 (s);
+	VerifyTestResult(someLL.GetLength() == 0);
 
-	VerifyTestResult (s1 == s);
-	VerifyTestResult (s1 == s);
-	Tally<size_t>	s2 = s1;
+	Assert (kBigSize > 10);
+	VerifyTestResult(someLL.GetLength() == 0);
+	{ for (size_t i = 1; i <= kBigSize; i++) { someLL.Prepend (0); } }
+	someLL.RemoveAll();
+	{ for (size_t i = 1; i <= kBigSize; i++) { someLL.Prepend (0); } }
+	{ for (size_t i = 1; i <= kBigSize-10; i++) { someLL.RemoveFirst (); } }
+	someLL.RemoveAll();														//	someLL.SetLength(kBigSize, 0);
+	{ for (size_t i = 1; i <= kBigSize; i++) { someLL.Prepend (0); } }
 
-	VerifyTestResult (s2 == s);
-	VerifyTestResult (s2 == s1);
-	s2.Add (three);
-	VerifyTestResult (s1 == s);
-	VerifyTestResult (s2 != s1);
 
-	TallyIteratorTests (s);
+	VerifyTestResult(someLL.GetLength() == kBigSize);
 
-	const	size_t	K = 500;
+	someLL.SetAt (55, 55);																										//	someLL [55] = 55;
+	VerifyTestResult(someLL.GetAt (55) == 55);
+	VerifyTestResult(not(someLL.GetAt(55) == 56));
 
-	VerifyTestResult (s.IsEmpty ());
-	s.Add (three);
-	VerifyTestResult (s.GetLength () == 1);
-	s += three;
-	VerifyTestResult (s.GetLength () == 1);
-	VerifyTestResult (s.Contains (three));
-	VerifyTestResult (s.TallyOf (three) == 2);
-	s.Remove (three);
-	VerifyTestResult (s.GetLength () == 1);
-	VerifyTestResult (s.Contains (three));
-	VerifyTestResult (s.TallyOf (three) == 1);
-	s.Remove (three);
-	VerifyTestResult (s.IsEmpty ());
-	s.RemoveAll ();
-	VerifyTestResult (s.IsEmpty ());
-	for (size_t i = 1; i <= K; i++) {
-		s.Add (i);
+	someLL.RemoveAll ();
+	VerifyTestResult(someLL.GetLength() == 0);
+
+	for (size_t i = kBigSize; i >= 1; --i) {
+		VerifyTestResult(not someLL.Contains(i));
+		someLL.Prepend(i);
+		VerifyTestResult(someLL.GetFirst () == i);
+		VerifyTestResult(someLL.Contains(i));
 	}
-
-	for (size_t i = 1; i <= s.GetLength (); i++) {
-		VerifyTestResult (s.Contains (i));
-		VerifyTestResult (not s.Contains (0));
+	for (size_t i = 1; i <= kBigSize; ++i) {
+		VerifyTestResult(someLL.GetFirst () == i);
+		someLL.RemoveFirst ();
+		VerifyTestResult(not someLL.Contains(i));
 	}
+	VerifyTestResult(someLL.GetLength() == 0);
 
-	for (size_t i = 1; i <= s.GetLength (); i++) {
-		For (it, s) {
-			if (it.Current ().fItem == i) {
-				break;
-			}
-		}
+	for (size_t i = kBigSize; i >= 1; --i) {
+		someLL.Prepend(i);
 	}
-	For (it, Tally<size_t>::It (s)) {
-		For (it1, s) {
-			s.RemoveAll ();
-		}
+	for (size_t i = kBigSize; i >= 1; --i) {
+//cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
+		VerifyTestResult(someLL.GetAt(i-1) == i);
 	}
-	VerifyTestResult (s.IsEmpty ());
-	VerifyTestResult (s.GetLength () == 0);
-
-	For (it1, s) {
-		For (it2, s) {
-			VerifyTestResult (false);
-		}
-	}
-	VerifyTestResult (s.IsEmpty ());
-
-
-	for (size_t i = 1; i <= K; i++) {
-		s.Add (i);
-		VerifyTestResult (s.Contains (i));
-		VerifyTestResult (s.TallyOf (i) == 1);
-		VerifyTestResult (s.GetLength () == i);
-	}
-	for (size_t i = K; i > 0; i--) {
-		s.Remove (i);
-		VerifyTestResult (not s.Contains (i));
-		VerifyTestResult (s.GetLength () == (i-1));
-	}
-	VerifyTestResult (s.IsEmpty ());
-
-	for (size_t i = 1; i <= K/2; i++) {
-		s += 1;
-		VerifyTestResult (s.TallyOf (1) == i);
-	}
-	size_t oldLength = s.GetLength ();
-	size_t oldTotal = s.TotalTally ();
-	s += s;
-	VerifyTestResult (s.GetLength () == oldLength);
-	VerifyTestResult (s.TotalTally () == oldTotal*2);
-}
-
-void	SimpleTallyTests (Tally<SimpleClass>& s)
-{
-	SimpleClass	three = 3;
-
-	Tally<SimpleClass>	s1 (s);
-
-	VerifyTestResult (s1 == s);
-	VerifyTestResult (s1 == s);
-	Tally<SimpleClass>	s2 = s1;
-
-	VerifyTestResult (s2 == s);
-	VerifyTestResult (s2 == s1);
-	s2.Add (three);
-	VerifyTestResult (s1 == s);
-	VerifyTestResult (s2 != s1);
-
-	VerifyTestResult (s.IsEmpty ());
-	s.Add (three);
-	VerifyTestResult (s.GetLength () == 1);
-	s += three;
-	VerifyTestResult (s.GetLength () == 1);
-	VerifyTestResult (s.Contains (three));
-	VerifyTestResult (s.TallyOf (three) == 2);
-	s.Remove (three);
-	VerifyTestResult (s.GetLength () == 1);
-	VerifyTestResult (s.Contains (three));
-	VerifyTestResult (s.TallyOf (three) == 1);
-	s.Remove (three);
-	VerifyTestResult (s.IsEmpty ());
-	s.RemoveAll ();
-	VerifyTestResult (s.IsEmpty ());
 }
 
 }
@@ -252,38 +116,15 @@ namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-
-            {
-            Tally_LinkedList<size_t>	s;
-			SimpleTallyTests (s);
-            }
-
-			{
-            Tally_LinkedList<SimpleClass>	s;
-			SimpleTallyTests (s);
-            }
-
-			{
-            Tally_Array<size_t>	s;
-			SimpleTallyTests (s);
-            }
-
-            {
- 		    Tally_Array<SimpleClass>	s;
-			SimpleTallyTests (s);
-            }
-
-            {
-            	// just proof that they can be constructed
-				Tally<size_t> t;
-				Tally<SimpleClass>	s1;
-            }
-	}
+		    Test1();
+		    Test2();
+		}
 }
 
 
+
 #if qOnlyOneMain
-extern  int Test_Tallys ()
+extern  int Test_LinkedList ()
 #else
 int main (int argc, const char* argv[])
 #endif
@@ -292,4 +133,6 @@ int main (int argc, const char* argv[])
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 	return EXIT_SUCCESS;
 }
+
+
 

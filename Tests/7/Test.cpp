@@ -3,247 +3,143 @@
  */
 #include	"Stroika/Foundation/StroikaPreComp.h"
 
-#if     qCompilerAndStdLib_Supports_stdchrono
-#include	<chrono>
-#endif
-
 #include	<iostream>
 #include	<sstream>
 
+#include	"Stroika/Foundation/Containers/Common.h"
+#include	"Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h"
+#include	"Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
-#include	"Stroika/Foundation/Execution/Sleep.h"
-#include	"Stroika/Foundation/Time/Date.h"
-#include	"Stroika/Foundation/Time/DateTime.h"
-#include	"Stroika/Foundation/Time/Duration.h"
+#include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include	"Stroika/Foundation/Time/Realtime.h"
 
 #include	"../TestHarness/TestHarness.h"
 
 
 using	namespace	Stroika::Foundation;
-using	namespace	Stroika::Foundation::Time;
+using	namespace	Stroika::Foundation::Characters;
+using	namespace	Stroika::Foundation::DataExchangeFormat;
+using	namespace	Stroika::Foundation::DataExchangeFormat::XML;
 
 using	Stroika::Foundation::Debug::TraceContextBumper;
 
 
 
+
 namespace	{
 
-	void	Test_1_TestTickCountGrowsMonotonically_ ()
+
+	//
+	// PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
+	//	void	StreamUtils::WriteTextStream (const wstring& w, ostream& out)
+	void	WriteTextStream_ (const wstring& w, ostream& out)
 		{
-			DurationSecondsType	start	=	Time::GetTickCount ();
-			Execution::Sleep (0.1);
-			VerifyTestResult (start <= Time::GetTickCount ());
+			CodePageConverter	cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+			size_t				sz	=		cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
+			Memory::SmallStackBuffer<char>	buf (sz + 1);
+			size_t	charCnt	=	sz;
+			cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
+			Assert (charCnt <= sz);
+			out.write (buf, charCnt);
 		}
+
 
 }
 
 
 namespace	{
-
-	void	Test_2_TestTimeOfDay_ ()
+	void	Test_1_SAXParser_ ()
 		{
-			{
-				TimeOfDay	t;
-				VerifyTestResult (t.empty ());
-				TimeOfDay	t2 (2);
-				VerifyTestResult (t < t2);
-				VerifyTestResult (t.GetAsSecondsCount () == 0);
-				VerifyTestResult (not t2.empty ());
-				VerifyTestResult (t.Format ().empty ());
-				VerifyTestResult (not t2.Format ().empty ());
-				VerifyTestResult (t2.GetHours () == 0);
-				VerifyTestResult (t2.GetMinutes () == 0);
-				VerifyTestResult (t2.GetSeconds () == 2);
-			}
-			{
-				TimeOfDay	t2 (5 * 60 * 60 + 3 * 60 + 49);
-				VerifyTestResult (t2.GetHours () == 5);
-				VerifyTestResult (t2.GetMinutes () == 3);
-				VerifyTestResult (t2.GetSeconds () == 49);
-			}
-			{
-				TimeOfDay	t2 (25 * 60 * 60);
-				VerifyTestResult (t2.GetHours () == 23);
-				VerifyTestResult (t2.GetMinutes () == 59);
-				VerifyTestResult (t2.GetSeconds () == 59);
-				VerifyTestResult (t2 == TimeOfDay::kMax);
-			}
-			{
-				VerifyTestResult (TimeOfDay::Parse (L"3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
-			}
-			{
-				// Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
-				//		-- LGP 2011-10-08
-				VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 15 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 16 * 60 * 60);
-			}
+			TraceContextBumper ctx (TSTR ("Test_1_SAXParser_"));
+			const wstring	kNSTest	=	L"Test-NAMESPACE";
+			//NYI
+			//Schema	gSchema		=	Schema (kNSTest);
+			wstring	newDocXML	=
+					L"<PHRModel xmlns=\"" + wstring (kNSTest) + L"\">\n"
+					L"	<BasicInformation id=\"id=101\">\n"
+					L"		<ContactInfo>\n"
+					L"			<PersonName/>\n"
+					L"			<Locations>\n"
+				;
+			newDocXML +=
+				L"				<Location id=\"id=102\">\n"
+				L"					<Name>Primary Residence</Name>\n"
+				L"					<Address/>\n"
+				L"				</Location>\n"
+			;
+			newDocXML +=
+				L"				<Location id=\"id=103\">\n"
+				L"					<Name>Residence2</Name>\n"
+				L"					<Address/>\n"
+				L"				</Location>\n"
+			;
+			newDocXML +=
+					L"			</Locations>\n"
+					L"		</ContactInfo>\n";
+			newDocXML +=
+				L"		<AdvanceDirectives id=\"id=104\"/>\n"
+				L"		<BirthInfo id=\"id=105\"/>\n"
+			;
+			newDocXML +=
+					L"	</BasicInformation>\n"
+					L"	<Calendar/>\n"
+					L"	<FamilyMembers/>\n"
+					L"	<ProviderOrganizations/>\n"
+					L"	<Providers/>\n"
+					L"	<Activities/>\n"
+					L"	<Allergies/>\n"
+					L"	<Attachments/>\n"
+					L"	<Communications/>\n"
+					L"	<Conditions/>\n"
+					L"	<Devices/>\n"
+					L"	<Expenses/>\n"
+					L"	<InsurancePolicies/>\n"
+					L"	<Journals/>\n"
+					L"	<JournalEntries/>\n"
+					L"	<Links/>\n"
+					L"	<Medications/>\n"
+					L"	<Tests/>\n"
+					L"	<Treatments/>\n"
+					L"	<Immunizations/>\n"
+					L"	<Visits/>\n"
+					L"	<PageCustomizations/>\n"
+					L"</PHRModel>\n"
+				;
 
-			{
-				#if		qPlatform_Windows
-					const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-				#endif
-				TimeOfDay	threePM	=	TimeOfDay::Parse (L"3pm", locale::classic ());
-				#if		qPlatform_Windows
-				VerifyTestResult (threePM.Format (kUS_ENGLISH_LOCALE) == L"3 PM");
-				#endif
-				//VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
-				VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00");	// UGH!!!
-			}
-
+			class	MyCallback : public SAXCallbackInterface {
+				public:
+					virtual	void	StartDocument () override
+						{
+							fEltDepthCount = 0;
+						}
+					virtual	void	EndDocument () override
+						{
+							Assert (fEltDepthCount == 0);
+						}
+					virtual	void	StartElement (const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+						{
+							fEltDepthCount++;
+							fEltStack.push_back (uri + L"/" + localName + L"/" + qname);
+						}
+					virtual	void	EndElement (const String& uri, const String& localName, const String& qname) override
+						{
+							Assert (fEltStack.back () == uri + L"/" + localName + L"/" + qname);
+							fEltStack.pop_back ();
+							fEltDepthCount--;
+						}
+					virtual	void	CharactersInsideElement (const String& text) override
+						{
+						}
+					unsigned int	fEltDepthCount;
+					vector<String>	fEltStack;
+			};
+			stringstream tmpStrm;
+			WriteTextStream_ (newDocXML, tmpStrm);
+			MyCallback	myCallback;
+			XML::SAXParse (tmpStrm, myCallback);
+			//SAX::Parse (tmpStrm, gSchema, myCallback);
 		}
-
-}
-
-
-namespace	{
-	void	VERIFY_ROUNDTRIP_XML_ (const Date& d) 
-		{
-			VerifyTestResult (Date::Parse (d.Format (Date::eXML_PF), Date::eXML_PF) == d);
-		}
-
-	void	Test_3_TestDate_ ()
-		{
-			{
-				Date	d (Year (1903), eApril, DayOfMonth (4));
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
-				VERIFY_ROUNDTRIP_XML_ (d);
-				d.AddDays (4);
-				VERIFY_ROUNDTRIP_XML_ (d);
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-08");
-				d.AddDays (-4);
-				VERIFY_ROUNDTRIP_XML_ (d);
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
-			}
-			{
-				Date	d	=	Date::Parse (L"09/14/1752", locale::classic ());
-				VerifyTestResult (not d.empty ());
-				VerifyTestResult (d == Date::kMin);
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-			}
-			{
-				Date	d;
-				VerifyTestResult (d.empty ());
-				VerifyTestResult (d < DateTime::GetToday ());
-				VerifyTestResult (DateTime::GetToday () > d);
-			}
-			{
-				Date	d	=	Date::kMin;
-				VerifyTestResult (not d.empty ());
-				VerifyTestResult (d < DateTime::Now ().GetDate ());
-				VerifyTestResult (not (DateTime::Now ().GetDate () < d));
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-			}
-			#if		qPlatform_Windows
-			{
-				wstring	testCase	=	L"6/1/2005";
-				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-			}
-			{
-				wstring	testCase	=	L"4/20/1964";
-				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-			}
-			{
-				wstring	testCase	=	L"7/4/1776";
-				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) < Date::kMax);
-				VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) >= Date::kMin);
-			}
-			{
-				wstring	testCase	=	L"7/4/2076";
-				//	TODO:
-				//		Fails - debug soon -- LGP 2011-10-08
-				//VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-			}
-			#endif
-			{
-				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF) == Date (Year (2001), Time::eNovember, DayOfMonth (1)));
-				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF).Format (Date::eJavascript_PF) == L"11/01/2001");
-			}
-			{
-				VerifyTestResult (Date::kMin < Date::kMax);
-				VerifyTestResult (Date::kMin <= Date::kMax);
-				VerifyTestResult (not (Date::kMin > Date::kMax));
-				VerifyTestResult (not (Date::kMin >= Date::kMax));
-			}
-		}
-
-}
-
-
-namespace	{
-
-	void	Test_4_TestDateTime_ ()
-		{
-			{
-				DateTime	d	=	Date (Year (1903), eApril, DayOfMonth (4));
-				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1903-04-04");
-			}
-			{
-				DateTime	d;
-				VerifyTestResult (d.empty ());
-				VerifyTestResult (d < DateTime::Now ());
-				VerifyTestResult (DateTime::Now () > d);
-			}
-			{
-				DateTime	d	=	DateTime::kMin;
-				VerifyTestResult (not d.empty ());
-				VerifyTestResult (d < DateTime::Now ());
-				VerifyTestResult (DateTime::Now () > d);
-				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::eUTC_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
-				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00Z");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-			}
-			#if		qPlatform_Windows
-			{
-				const	LCID	kUS_ENGLISH_LOCALE	=	MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-				wstring	testCase	=	L"2010-01-01";
-				//TODO: FIX SO THIS WORKS... (or come up with better test)
-				//VerifyTestResult (DateTime::Parse (testCase, kUS_ENGLISH_LOCALE) == DateTime::Parse (testCase, locale::classic ()));
-			}
-			#endif
-		}
-
-}
-
-
-
-namespace	{
-
-	void	Test_5_DateTimeTimeT_ ()
-		{
-			{
-				DateTime	d	=	Date (Year (2000), eApril, DayOfMonth (20));
-				VerifyTestResult (d.As<time_t> () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
-			}
-			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", locale ()));
-				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
-			}
-			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
-				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
-			}
-			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3am", TimeOfDay::eCurrentLocale_PF));
-				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
-			}
-			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
-				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
-			}
-			{
-				const	time_t	kTEST	=	802234800;
-				DateTime	d	=	DateTime (kTEST);
-				VerifyTestResult (d.As<time_t> () == kTEST);	// source - http://www.onlineconversion.com/unix_time.htm
-			}
-		}
-
 }
 
 
@@ -252,186 +148,114 @@ namespace	{
 
 
 namespace	{
-
-	void	Test_6_DateTimeStructTM_ ()
-		{
+	struct	Person_ {
+		String firstName;
+		String lastName;
+		Memory::Optional<String> middleName;
+	};
+	struct PersonReader_ : public ComplexObjectReader<Person_> {
+		PersonReader_ (Person_* v, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ()):
+			ComplexObjectReader<Person_> (v)
 			{
-				struct	tm	x;
-				memset (&x, 0, sizeof (x));
-				x.tm_hour = 3;
-				x.tm_min = 30;
-				x.tm_year = 80;
-				x.tm_mon = 3;
-				x.tm_mday = 15;
-				DateTime	d	=	DateTime (x);
-				struct	tm	x2	=	d.As<struct tm> ();
-				VerifyTestResult (x.tm_hour == x2.tm_hour);
-				VerifyTestResult (x.tm_min == x2.tm_min);
-				VerifyTestResult (x.tm_sec == x2.tm_sec);
-				VerifyTestResult (x.tm_year == x2.tm_year);
-				VerifyTestResult (x.tm_mday == x2.tm_mday);
 			}
-		}
-
-}
-
-
-
-
-
-
-namespace	{
-
-	void	Test_7_Duration_ ()
-		{
-			const	int	kSecondsPerDay		=	TimeOfDay::kMaxSecondsPerDay;
+		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
 			{
-				const	Duration	k30Days		=	Duration (L"P30D");
-				VerifyTestResult (k30Days.As<time_t> () == 30 * kSecondsPerDay);
-			}
-			{
-				const	Duration	k6Months		=	Duration (L"P6M");
-				VerifyTestResult (k6Months.As<time_t> () == 6 * 30 * kSecondsPerDay);
-			}
-			{
-				const	Duration	kP1Y		=	Duration (L"P1Y");
-				VerifyTestResult (kP1Y.As<time_t> () == 365 * kSecondsPerDay);
-			}
-			{
-				const	Duration	kP2Y		=	Duration (L"P2Y");
-				VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
-				VerifyTestResult (Duration (2 * 365 * kSecondsPerDay).As<wstring> () == L"P2Y");
-			}
-			{
-				const	Duration	kHalfMinute		=	Duration (L"PT0.5M");
-				VerifyTestResult (kHalfMinute.As<time_t> () == 30);
-			}
-			{
-				const	Duration	kD		=	Duration (L"PT0.1S");
-				VerifyTestResult (kD.As<time_t> () == 0);
-				VerifyTestResult (kD.As<double> () == 0.1);
-			}
-			{
-				const	Duration	kHalfMinute		=	Duration (L"PT0.5M");
-				VerifyTestResult (kHalfMinute.PrettyPrint () == L"30 seconds");
-			}
-			{
-				const	Duration	k3MS		=	Duration (L"PT0.003S");
-				VerifyTestResult (k3MS.PrettyPrint () == L"3 ms");
-			}
-			{
-				const	Duration	kD		=	Duration (L"PT1.003S");
-				VerifyTestResult (kD.PrettyPrint () == L"1.003 seconds");
-			}
-			{
-				const	Duration	kD		=	Duration (L"PT0.000045S");
-				VerifyTestResult (kD.PrettyPrint () == L"45 µs");
-			}
-			{
-				const	Duration	kD		=	Duration (L"PT0.000045S");
-				VerifyTestResult (kD.PrettyPrint () == L"45 µs");
-				VerifyTestResult ((-kD).PrettyPrint () == L"-45 µs");
-				VerifyTestResult ((-kD).As<wstring> () == L"-PT0.000045S");
-			}
-			VerifyTestResult (Duration (L"P30S").As<time_t> () == 30);
-			VerifyTestResult (Duration (L"PT30S").As<time_t> () == 30);
-			VerifyTestResult (Duration (60).As<wstring> () == L"PT1M");
-			VerifyTestResult (Duration (L"-PT1H1S").As<time_t> () == -3601);
-			VerifyTestResult (-Duration (L"-PT1H1S").As<time_t> () == 3601);
-
-			for (time_t i = -45; i < 60 * 3 * 60 + 99; ++i) {
-				VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
-			}
-			for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += 263) {
-				VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
-			}
-		}
-
-}
-
-
-
-namespace	{
-
-	void	Test_8_DateTimeWithDuration_ ()
-		{
-			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
-				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
-				const	Duration	k30Days		=	Duration (L"P30D");
-				DateTime	d2	=	d + k30Days;
-				VerifyTestResult (d2.GetDate ().GetYear () == Year (1995));
-				VerifyTestResult (d2.GetDate ().GetMonth () == eJuly);
-				VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth (4));
-				VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
-			}
-		}
-
-}
-
-
-
-
-
-
-
-namespace	{
-
-	void	Test_9_TZOffsetAndDaylightSavingsTime_ ()
-		{
-			/*
-			 * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
-			 * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
-			 *
-			 * This test wont always work, but at least for now seems to work on the systems i test on.
-			 */
-			{
-				DateTime	n	=	DateTime (Date (Year (2011), eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()));
-				bool		isDst	=	IsDaylightSavingsTime (n);
-				DateTime	n2	=	n.AddDays (180);
-				VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
-			}
-			{
-				DateTime	n	=	DateTime::Now ();
-				bool		isDst	=	IsDaylightSavingsTime (n);
-				DateTime	n2	=	n.AddDays (60);
-				if (IsDaylightSavingsTime (n) == IsDaylightSavingsTime (n2)) {
-					int breakhere=1;
+				RequireNotNull (fValuePtr);
+				if (localName == L"FirstName") {
+					_PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
+				}
+				else if (localName == L"LastName") {
+					_PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->lastName));
+				}
+				else if (localName == L"MiddleName") {
+					_PushNewObjPtr (r, new OptionalTypesReader<String> (&fValuePtr->middleName));
+				}
+				else {
+					ThrowUnRecognizedStartElt (uri, localName);
 				}
 			}
+	};
+	struct	Appointment_ {
+		Time::DateTime	when;
+		Person_			withWhom;
+	};
+	struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
+		AppointmentReader_ (Appointment_* v, const map<String,Memory::VariantValue>& attrs = map<String,Memory::VariantValue> ()):
+			ComplexObjectReader<Appointment_> (v, attrs)
+			{
+			}
+		virtual	void	HandleChildStart (SAXObjectReader &r, const String& uri, const String& localName, const String& qname, const map<String,Memory::VariantValue>& attrs) override
+			{
+				if (localName == L"When") {
+					_PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
+				}
+				else if (localName == L"WithWhom") {
+					_PushNewObjPtr (r, new PersonReader_ (&fValuePtr->withWhom));
+				}
+				else {
+					ThrowUnRecognizedStartElt (uri, localName);
+				}
+			}
+	};
+	typedef	vector<Appointment_>	CalendarType_;
+	struct	CalendarReaderTraits_ {
+		typedef	Appointment_		ElementType;
+		typedef	AppointmentReader_	ReaderType;
+		static	const wchar_t		ElementName[];
+	};
+	const wchar_t	CalendarReaderTraits_::ElementName[]		=	L"Appointment";
+	typedef	ListOfObjectReader<CalendarReaderTraits_>		CalendarReader_;
+
+	void	Test_2_SAXObjectReader_ ()
+		{
+			TraceContextBumper ctx (TSTR ("Test_2_SAXObjectReader_"));
+			const wstring	kNSTest	=	L"Test-NAMESPACE";
+			wstring	newDocXML	=
+					L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
+					L"  <Appointment>\n"
+					L"	  <When>2005-06-01T13:00:00-05:00</When>"
+					L"	  <WithWhom>\n"
+					L"		  <FirstName>Jim</FirstName>"
+					L"		  <LastName>Smith</LastName>"
+					L"		  <MiddleName>Up</MiddleName>"
+					L"	  </WithWhom>\n"
+					L"  </Appointment>\n"
+					L"  <Appointment>\n"
+					L"	  <When>2005-08-01T13:00:00-05:00</When>"
+					L"	  <WithWhom>\n"
+					L"		  <FirstName>Fred</FirstName>"
+					L"		  <LastName>Down</LastName>"
+					L"	  </WithWhom>\n"
+					L"  </Appointment>\n"
+					L"</Calendar>\n"
+				;
+			stringstream tmpStrm;
+			WriteTextStream_ (newDocXML, tmpStrm);
+
+			SAXObjectReader	reader;
+			#if		qDefaultTracingOn
+				reader.fTraceThisReader = true;	// handy to debug these SAX-object trees...
+			#endif
+			CalendarType_		calendar;
+			reader.Run (shared_ptr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), tmpStrm);
+			VerifyTestResult (calendar.size () == 2);
+			VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+			VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+			VerifyTestResult (calendar[0].withWhom.middleName == L"Up");
+			VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::eJune, Time::DayOfMonth (1)));
+			VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+			VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
 		}
-
 }
 
-
-
-namespace   {
-    void    Test_10_std_duration_ ()
-        {
-            #if     qCompilerAndStdLib_Supports_stdchrono
-			    const	Duration	k30Seconds		=	Duration (30.0);
-			    VerifyTestResult (k30Seconds.As<time_t> () == 30);
-                VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == std::chrono::duration<double> (30.0));
-                VerifyTestResult (Duration (std::chrono::duration<double> (4)).As<time_t> () == 4);
-            #endif
-        }
-}
 
 
 namespace	{
 
 	void	DoRegressionTests_ ()
 		{
-			Test_1_TestTickCountGrowsMonotonically_ ();
-			Test_2_TestTimeOfDay_ ();
-			Test_3_TestDate_ ();
-			Test_4_TestDateTime_ ();
-			Test_5_DateTimeTimeT_ ();
-			Test_6_DateTimeStructTM_ ();
-			Test_7_Duration_ ();
-			Test_8_DateTimeWithDuration_ ();
-			Test_9_TZOffsetAndDaylightSavingsTime_ ();
-			Test_10_std_duration_ ();
+			Test_1_SAXParser_ ();
+			Test_2_SAXObjectReader_ ();
 		}
 }
 
@@ -439,7 +263,7 @@ namespace	{
 
 
 #if qOnlyOneMain
-extern  int TestDateAndTime ()
+extern  int TextXML_SaxParser ()
 #else
 int main (int argc, const char* argv[])
 #endif

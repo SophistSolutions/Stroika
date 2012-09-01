@@ -1,487 +1,139 @@
 /*
-* Copyright(c) Sophist Solutions Inc. 1990-2011.  All rights reserved
-*/
+ * Copyright(c) Sophist Solutions Inc. 1990-2011.  All rights reserved
+ */
 #include	"Stroika/Foundation/StroikaPreComp.h"
 
 #include	<iostream>
 #include	<sstream>
 
-#include    "Stroika/Foundation/Containers/Bag.h"
+#include    "Stroika/Foundation/Containers/Concrete/Private/Array.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Debug/Trace.h"
 
 #include	"../TestHarness/SimpleClass.h"
 #include	"../TestHarness/TestHarness.h"
 
-#include    "Stroika/Foundation/Containers/Concrete/Bag_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Bag_LinkedList.h"
 
 
-using   namespace   Stroika;
+
+
+using	namespace	Stroika;
 using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::Containers;
 
-using	Concrete::Bag_Array;
-using	Concrete::Bag_LinkedList;
+using	Concrete::Private::Array;
+
+
 
 
 
 
 namespace	{
-	namespace	Test1_ {
-		void	Test1_BagIteratorTests_ (Bag<size_t>& s)
-		{
-			const	size_t	kTestSize	= 100;
+static	void	Test1()
+{
+    Array<size_t>	someArray;
 
-			const	Bag<size_t>& sCont = s;
+	const	size_t	kBigSize	=	1001;
 
-			VerifyTestResult(s.GetLength() == 0);
-			/*
-			* Try removes while iterating forward.
-			*/
-			{
-				for(size_t i = 1; i <= kTestSize; i++) {
-					s.Add(i);
-					VerifyTestResult(s.Contains(i));
-				}
+	VerifyTestResult(someArray.GetLength() == 0);
 
-				VerifyTestResult(s.GetLength() == kTestSize);
-				For (it, sCont) {
-					size_t	oldLength = s.GetLength ();
-					VerifyTestResult(s.Contains(it.Current ()));
-					VerifyTestResult(s.Contains(s.GetLength ()));
-					s.Remove (s.GetLength ());
-					VerifyTestResult(s.GetLength () == oldLength-1);
-				}
+	someArray.SetLength(kBigSize, 0);
+	someArray.RemoveAll();
+	someArray.SetLength(kBigSize, 0);
+	someArray.SetLength(10, 0);
+	someArray.SetLength(kBigSize, 0);
 
-				s.RemoveAll ();
-				for(size_t i = 1; i <= kTestSize; i++) {
-					s.Add(i);
-				}
+	VerifyTestResult(someArray.GetLength() == kBigSize);
+	someArray [55] = 55;
+	VerifyTestResult(someArray [55] == 55);
+	VerifyTestResult(someArray [55] != 56);
 
-				{
-					For (it, s) {
-						for(size_t i = 1; i <= kTestSize; i++) {
-							VerifyTestResult(s.Contains(i));
-							VerifyTestResult(s.GetLength() == kTestSize - i + 1);
-							s.Remove(i);
-							VerifyTestResult(not s.Contains(i-1));
-							VerifyTestResult(s.GetLength() == kTestSize - i);
-						}
-					}
-					VerifyTestResult(s.IsEmpty());
-					VerifyTestResult(s.GetLength() == 0);
-				}
+	someArray.InsertAt(1, 100);
+	VerifyTestResult(someArray.GetLength() == kBigSize+1);
+	VerifyTestResult(someArray [100] == 1);
 
-				for(size_t i = 1; i <= kTestSize; i++) {
-					s.Add(i);
-				}
-				VerifyTestResult(s.GetLength() == kTestSize);
-				{
-					For (it, s) {
-						s.Remove(it);
-					}
-					VerifyTestResult(s.IsEmpty());
-					VerifyTestResult(s.GetLength() == 0);
-				}
+	someArray [101] = someArray [100] + 10;
+    VerifyTestResult(someArray [101] == 11);
+	someArray.RemoveAt(0);
+	VerifyTestResult(someArray [100] == 11);
+	someArray.RemoveAt(1);
 
-				for(size_t i = 1; i <= kTestSize; i++) {
-					s.Add(i);
-				}
-				VerifyTestResult(s.GetLength() == kTestSize);
-
-				For(it2, s) {
-					s.Remove(it2.Current());
-				}
-				VerifyTestResult(s.GetLength() == 0);
-			}
-			/*
-			* Try removes multiple iterators present.
-			*/
-			{
-				s.RemoveAll();
-				VerifyTestResult(s.GetLength() == 0);
-				for(size_t i = 1; i <= kTestSize; i++) {
-					s.Add(i);
-				}
-				VerifyTestResult(s.GetLength() == kTestSize);
-
-				size_t i =	1;
-				For(it, s) {
-					For(it2, s) {
-						For(it3, s) {
-							s.Update (it3, i);
-							s.Remove(it3);
-							s.Add(i);
-							s.Remove(i);
-							i++;
-						}
-					}
-				}
-			}
-
-			s.RemoveAll ();
-		}
-
-		void	Test1_BagTimings_ (Bag<size_t>& s)
-		{
-#if		qPrintTimings
-			Time t = GetCurrentTime();
-			cout << tab << "testing Bag<size_t> of length " << s.GetLength() << endl;
-#endif
-
-			for(size_t i = 1; i <= s.GetLength(); i++) {
-				VerifyTestResult(s.Contains(i));
-				VerifyTestResult(not s.Contains(0));
-			}
-
-			for(size_t i = 1; i <= s.GetLength(); i++) {
-				For(it, s) {
-					if(it.Current() == i) {
-						break;
-					}
-				}
-			}
-			For(it, s) {
-				For(it1, s) {
-					s.RemoveAll();
-				}
-			}
-			VerifyTestResult(s.IsEmpty());
-			VerifyTestResult(s.GetLength() == 0);
-
-			For(it1, s) {
-				For(it2, s) {
-					VerifyTestResult(false);
-				}
-			}
-
-#if		qPrintTimings
-			t = GetCurrentTime() - t;
-			cout << tab << "finished testing Bag<size_t>; time elapsed = " << t << endl;
-#endif
-		}
-
-		void	Test1_On_Container_ (Bag<size_t>& s)
-		{
-			size_t	three = 3;
-
-			Bag<size_t>	s1(s);
-
-			VerifyTestResult(s1 == s);
-			VerifyTestResult(s1 == s);
-
-			Bag<size_t>	s2 = s1;
-
-			VerifyTestResult(s2 == s);
-			VerifyTestResult(s2 == s1);
-
-			s2.Add(three);
-			VerifyTestResult(s1 == s);
-			VerifyTestResult(s2 != s1);
-
-			Test1_BagIteratorTests_ (s);
-
-#if		qDebug
-			const	size_t	K = 200;
-#else
-			const	size_t	K = 500;
-#endif
-			size_t i;
-
-			VerifyTestResult(s.IsEmpty());
-			s.Add(three);
-			VerifyTestResult(s.GetLength() == 1);
-			s += three;
-			VerifyTestResult(s.GetLength() == 2);
-			VerifyTestResult(s.Contains(three));
-			s.Remove(three);
-			VerifyTestResult(s.GetLength() == 1);
-			s -= three;
-			VerifyTestResult(s.IsEmpty());
-			s.RemoveAll();
-			VerifyTestResult(s.IsEmpty());
-
-			for(i = 1; i <= K; i++) {
-				s.Add(i);
-			}
-			Test1_BagTimings_(s);
-			VerifyTestResult(s.IsEmpty());
-
-#if		qPrintTimings
-			Time t = GetCurrentTime();
-			cout << tab << "testing Bag<size_t>..." << endl;
-#endif
-
-			for(i = 1; i <= K; i++) {
-				s.Add(i);
-				VerifyTestResult(s.Contains(i));
-				VerifyTestResult(s.TallyOf(i) == 1);
-				VerifyTestResult(s.GetLength() == i);
-			}
-			for(i = K; i > 0; i--) {
-				s -= i;
-				VerifyTestResult(not s.Contains(i));
-				VerifyTestResult(s.GetLength() ==(i-1));
-			}
-			VerifyTestResult(s.IsEmpty());
-
-			for(i = 1; i <= K/2; i++) {
-				s += 1;
-				VerifyTestResult(s.TallyOf(1) == i);
-			}
-			size_t oldLength = s.GetLength();
-			s += s;
-			VerifyTestResult(s.GetLength() == oldLength*2);
-			s -= s;
-			VerifyTestResult(s.GetLength() == 0);
-
-#if		qPrintTimings
-			t = GetCurrentTime() - t;
-			cout << tab << "finished testing Bag<size_t>; time elapsed = " << t << endl;
-#endif
-		}
-
-		void	Test1_On_Container_ (Bag<SimpleClass>& s)
-		{
-			SimpleClass	three = 3;
-
-			Bag<SimpleClass>	s1(s);
-
-			VerifyTestResult(s1 == s);
-			VerifyTestResult(s1 == s);
-
-			Bag<SimpleClass>	s2 = s1;
-
-			VerifyTestResult(s2 == s);
-			VerifyTestResult(s2 == s1);
-			s2.Add(three);
-			VerifyTestResult(s1 == s);
-			VerifyTestResult(s2 != s1);
-
-			VerifyTestResult(s.IsEmpty());
-			s.Add(three);
-			VerifyTestResult(s.GetLength() == 1);
-			s.Add(three);
-			VerifyTestResult(s.GetLength() >= 1);
-			VerifyTestResult(s.Contains(three));
-			s.Remove(three);
-			VerifyTestResult(s.GetLength() <= 1);
-			s.RemoveAll();
-			VerifyTestResult(s.IsEmpty());
-		}
-
-		template	<typename	CONCRETE_TYPE>
-		void	RunBasicBagTestsOnEachConcreteType_ ()
-		{
-			CONCRETE_TYPE	s;
-			Test1_On_Container_ (s);
-		}
-
-		void	RunBasicBagTestsOnEachConcreteType_ ()
-		{
-			RunBasicBagTestsOnEachConcreteType_<Bag<size_t>> ();
-			RunBasicBagTestsOnEachConcreteType_<Bag<SimpleClass>> ();
-			RunBasicBagTestsOnEachConcreteType_<Bag_LinkedList<size_t>> ();
-			RunBasicBagTestsOnEachConcreteType_<Bag_LinkedList<SimpleClass>> ();
-			RunBasicBagTestsOnEachConcreteType_<Bag_Array<size_t>> ();
-			RunBasicBagTestsOnEachConcreteType_<Bag_Array<SimpleClass>> ();
-		}
-
-	}
+	VerifyTestResult(someArray [99] == 11);
 }
 
-
-
-
-
-namespace	{
-	namespace	Test2_TallyOf_ {
-
-
-		template	<typename	CONCRETE_TYPE>
-		void	SimpleTallyTest_ ()
-		{
-			typedef	typename CONCRETE_TYPE::ElementType	ELEMENT_TYPE;
-			CONCRETE_TYPE	bag;
-			ELEMENT_TYPE	t1	=	1;
-			ELEMENT_TYPE	t2	=	2;
-			ELEMENT_TYPE	t3	=	3;
-			VerifyTestResult (bag.IsEmpty());
-			bag.Add (t1);
-			bag.Add (t1);
-			VerifyTestResult (not bag.IsEmpty());
-			VerifyTestResult (bag.TallyOf (t3) == 0);
-			VerifyTestResult (bag.TallyOf (t1) == 2);
-			{
-				CONCRETE_TYPE	bag2	=	bag;
-				VerifyTestResult (bag2.TallyOf (t3) == 0);
-				VerifyTestResult (bag2.TallyOf (t1) == 2);
-				bag.Add (t1);
-				VerifyTestResult (bag2.TallyOf (t1) == 2);
-				VerifyTestResult (bag.TallyOf (t1) == 3);
-			}
-		}
-
-		void	RunBasicBagTestsOnEachConcreteType_ ()
-		{
-			SimpleTallyTest_<Bag<size_t>> ();
-			SimpleTallyTest_<Bag<SimpleClass>> ();
-			SimpleTallyTest_<Bag_LinkedList<size_t>> ();
-			SimpleTallyTest_<Bag_LinkedList<SimpleClass>> ();
-			SimpleTallyTest_<Bag_Array<size_t>> ();
-			SimpleTallyTest_<Bag_Array<SimpleClass>> ();
-		}
-
+static	void	Test2()
+{
+ 	{
+ 	    Array<SimpleClass>	someArray;
+ 	    someArray.InsertAt(100, 0);
+// for (size_t i = 0; i < someArray.GetLength (); ++i) { cerr << "someArray[" << i << "] = " << someArray[i].GetValue () << endl; }
+	    someArray.RemoveAt(0);
+ 	    someArray.InsertAt(2, 0);
+ 	    someArray.InsertAt(1, 0);
+  	    someArray.InsertAt(3, 0);
+  	    someArray.InsertAt(4, someArray.GetLength ());
+        someArray.RemoveAt(someArray.GetLength ()-1);
+        someArray.RemoveAt(1);
 	}
+
+	Array<SimpleClass>	someArray;
+
+	const	size_t	kBigSize	=	1001;
+
+	VerifyTestResult(someArray.GetLength() == 0);
+	someArray.SetLength(kBigSize, 0);
+	someArray.SetLength(0, 0);
+	someArray.SetLength(kBigSize, 0);
+	someArray.SetLength(10, 0);
+	someArray.SetLength(kBigSize, 0);
+
+	VerifyTestResult(someArray.GetLength() == kBigSize);
+	someArray [55] = 55;
+	VerifyTestResult(someArray [55] == 55);
+	VerifyTestResult(not(someArray [55] == 56));
+
+
+	someArray.RemoveAt(100);
+
+	while(someArray.GetLength() > 0) {
+		someArray.RemoveAt(0);
+	}
+	while(someArray.GetLength() < kBigSize) {
+		someArray.InsertAt(1, someArray.GetLength());
+	}
+
+	someArray.InsertAt(1, 100);
+	VerifyTestResult(someArray.GetLength() == kBigSize+1);
+	VerifyTestResult(someArray [100] == 1);
+	someArray [101] = 1 + someArray [100].GetValue();
+	someArray.RemoveAt(1);
+	VerifyTestResult(someArray [100].GetValue() == 2);
 }
 
-
-
-
-
-
-
-namespace	{
-	namespace	Test3_Equals_ {
-
-		template	<typename	CONCRETE_TYPE>
-		void	SimpleOpEqualsTest_ ()
-		{
-			typedef	typename CONCRETE_TYPE::ElementType	ELEMENT_TYPE;
-			CONCRETE_TYPE	bag;
-			ELEMENT_TYPE	t1	=	1;
-			ELEMENT_TYPE	t2	=	2;
-			ELEMENT_TYPE	t3	=	3;
-			VerifyTestResult (bag.IsEmpty());
-			bag.Add (t1);
-			bag.Add (t1);
-			{
-				CONCRETE_TYPE	bag2	=	bag;
-				VerifyTestResult (bag2 == bag);
-				VerifyTestResult (not (bag2 != bag));
-				bag.Add (t1);
-				VerifyTestResult (not (bag2 == bag));
-				VerifyTestResult (bag2 != bag);
-			}
-
-			VerifyTestResult (bag.GetLength () == 3);
-			bag.Add (t3);
-			bag.Add (t1);
-			bag.Add (t1);
-			bag.Add (t3);
-			{
-				CONCRETE_TYPE	bag2	=	bag;
-				VerifyTestResult (bag2 == bag);
-				VerifyTestResult (not (bag2 != bag));
-				bag.Add (t1);
-				VerifyTestResult (not (bag2 == bag));
-				VerifyTestResult (bag2 != bag);
-				bag.Remove (t1);
-				VerifyTestResult (bag2 == bag);
-				VerifyTestResult (not (bag2 != bag));
-			}
-
-		}
-
-		void	RunBasicBagTestsOnEachConcreteType_ ()
-		{
-			SimpleOpEqualsTest_<Bag<size_t>> ();
-			SimpleOpEqualsTest_<Bag<SimpleClass>> ();
-			SimpleOpEqualsTest_<Bag_LinkedList<size_t>> ();
-			SimpleOpEqualsTest_<Bag_LinkedList<SimpleClass>> ();
-			SimpleOpEqualsTest_<Bag_Array<size_t>> ();
-			SimpleOpEqualsTest_<Bag_Array<SimpleClass>> ();
-		}
-
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-namespace	{
-	namespace	Test4_IteratorsBasics_ {
-
-		template	<typename	CONCRETE_TYPE>
-		void	BasicIteratorTest_ ()
-		{
-			CONCRETE_TYPE	bag;
-			typename CONCRETE_TYPE::ElementType	t1	=	1;
-			typename CONCRETE_TYPE::ElementType	t2	=	2;
-			typename CONCRETE_TYPE::ElementType	t3	=	3;
-			VerifyTestResult (bag.IsEmpty());
-			bag.Add (t1);
-			bag.Add (t1);
-			{
-				CONCRETE_TYPE	bb	=	bag;
-				VerifyTestResult (bb.MakeIterator () != bag.MakeIterator ());
-				VerifyTestResult (bb.MakeIterator () != bb.MakeIterator ());		// WE may want to change the definition so this is allowed (-- LGP 2012-07-30)
-			}
-			{
-				Iterator<typename CONCRETE_TYPE::ElementType>	i	=	bag.begin ();
-				Iterator<typename CONCRETE_TYPE::ElementType>	ii	=	i;
-				VerifyTestResult (i == ii);
-				VerifyTestResult (i != bag.end ());	// because bag wasn't empty
-				++i;
-				++ii;
-				VerifyTestResult (i != ii);		// because bag wasn't empty and because of quirky (efficient) definition of Iterator<T>::operator== - may want to change this -- LGP 2012-07-30
-			}
-			{
-				VerifyTestResult (bag.size () == 2);	// cuz we said so above
-				Iterator<typename CONCRETE_TYPE::ElementType>	i	=	bag.begin ();
-				VerifyTestResult (not i.Done ());
-				VerifyTestResult (i != bag.end ());
-				++i;
-				VerifyTestResult (not i.Done ());
-				VerifyTestResult (i != bag.end ());
-				++i;
-				VerifyTestResult (i.Done ());
-				VerifyTestResult (i == bag.end ());
-			}
-		}
-
-		void	RunBasicBagTestsOnEachConcreteType_ ()
-		{
-			BasicIteratorTest_<Bag<size_t>> ();
-			BasicIteratorTest_<Bag<SimpleClass>> ();
-			BasicIteratorTest_<Bag_LinkedList<size_t>> ();
-			BasicIteratorTest_<Bag_LinkedList<SimpleClass>> ();
-			BasicIteratorTest_<Bag_Array<size_t>> ();
-			BasicIteratorTest_<Bag_Array<SimpleClass>> ();
-		}
-
-	}
 }
 
 
 namespace	{
 
 	void	DoRegressionTests_ ()
-	{
-		Test1_::RunBasicBagTestsOnEachConcreteType_ ();
-		Test2_TallyOf_::RunBasicBagTestsOnEachConcreteType_ ();
-		Test3_Equals_::RunBasicBagTestsOnEachConcreteType_ ();
-		Test4_IteratorsBasics_::RunBasicBagTestsOnEachConcreteType_ ();
-	}
-	
+		{
+		    Test1();
+		    Test2();
+		}
 }
 
 
 
-
-int	main (int argc, const char* argv[])
+#if qOnlyOneMain
+extern  int Test_Arrays ()
+#else
+int main (int argc, const char* argv[])
+#endif
 {
 	Stroika::TestHarness::Setup ();
 	Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 	return EXIT_SUCCESS;
 }
+
+
 
