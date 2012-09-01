@@ -40,12 +40,12 @@ namespace   Stroika {
              *  is for debugging purposes (looking for memory leaks). But others may have other
              *  reasons.
              *
-             *      Defaults to true
+             *      Defaults to 1
              *
              *  \hideinitializer
              */
 #if		defined (__Doxygen__)
-#define qAllowBlockAllocation   1
+#define qAllowBlockAllocation
 #endif
 
 
