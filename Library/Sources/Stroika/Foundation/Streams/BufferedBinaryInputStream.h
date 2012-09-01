@@ -19,12 +19,13 @@
  *
  *  TODO:
  *
- *      @todo   Not actually implemented. Must think out if this should mixin Seekable or not. I THINK it must.
- *              I THINK if one SEEKS this, but the underlying class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
+ *      @todo   Not actually implemented. Must think out if this should mixin
+ *              Seekable or not. I THINK it must. I THINK if one SEEKS this, but the underlying
+ *              class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
  *              BufferedBinaryInputStream::IRep_ IMPLEMENTATION NEEDED
  *
- *      @todo   Examine other choices in stream class. Decide between using the shared_ptr<> pattern, or just using references (and count on coding styles
- *              to manage lifetime issues).
+ *      @todo   Examine other choices in stream class. Decide between using the shared_ptr<> pattern,
+ *              or just using references (and count on coding styles to manage lifetime issues).
  *
  *
  */

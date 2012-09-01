@@ -17,7 +17,6 @@
 /*
  *  \file
  *
- * TODO:
  *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
  */
 
@@ -29,8 +28,17 @@ namespace   Stroika {
         namespace   Streams {
 
             /**
+             *  \brief  MemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream (copies)
              *
-             * This class is threadsafe - meaning _Read() can safely be called from multiple threads at a time freely.
+             *  MemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream. It copies the
+             *  data - so after construction, there is no requirement on the data bounded by start/end.
+             *
+             *  MemoryBinaryInputStream is threadsafe - meaning Read() can safely be called from
+             *  multiple threads at a time freely.
+             *
+             *  This BinaryInputStream is Seekable.
+             *
+             *  @see ExternallyOwnedMemoryBinaryInputStream
              */
             class   MemoryBinaryInputStream : public BinaryInputStream {
             private:

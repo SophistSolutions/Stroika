@@ -15,17 +15,17 @@
 /**
  *  \file
  *
- * TODO:
+ *      @todo   make threadsafe
  *
- *      o   make threadsafe
+ *      @todo   Think out Seekable. Probably MUST mixin Seekable, and properly handle
+ *              (vai throw OperaitonNotSupported) if one constructs a BufferedBinaryOutputStream
+ *              and tries to SEEK wihout the undelrying stream being seekable.
  *
- *      o   Think out Seekable. Probably MUST mixin Seekable, and properly handle (vai throw OperaitonNotSupported)
- *          if one constructs a BufferedBinaryOutputStream and tries to SEEK wihout the undelrying stream being seekable.
- *
- *      o   BufferedBinaryOutputStream NOW must properly support SEEKABLE! if arg is seekable, we must override seek methods, and
- *          forward them, and adjust buffer as appropriate.
+ *      @todo   BufferedBinaryOutputStream NOW must properly support SEEKABLE! if arg
+ *              is seekable, we must override seek methods, and forward them, and adjust buffer as appropriate.
  *
  */
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -33,12 +33,13 @@ namespace   Stroika {
 
 
             /**
-             * A BufferedBinaryOutputStream wraps an argument stream (which must have lifetime > this BufferedBinaryOutputStream)
-             * and will buffer up writes to it.
+             *  A BufferedBinaryOutputStream wraps an argument stream
+             *  (which must have lifetime > this BufferedBinaryOutputStream) and will buffer up writes to it.
              *
-             * NOTE - its is REQUIRED to call Flush before destruction if any pending data has not yet been flushed. It is NOT done
-             * in the BufferedBinaryOutputStream::DTOR - because the underlying stream could have an exceptin writing, and its illegal to propagate
-             * exceptions through destructors.
+             *  NOTE - its is REQUIRED to call Flush before destruction if any pending data has not
+             *  yet been flushed. It is NOT done in the BufferedBinaryOutputStream::DTOR -
+             *  because the underlying stream could have an exceptin writing, and its illegal to propagate
+             *  exceptions through destructors.
              */
             class   BufferedBinaryOutputStream : public BinaryOutputStream {
             private:
@@ -53,7 +54,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
+                 *  Throws away all data about to be written (buffered). Once this is called,
+                 *  its illegal to call Flush or another write
                  */
                 nonvirtual  void    Abort ();
 

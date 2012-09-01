@@ -18,7 +18,7 @@
 /**
  *  \file
  *
- *  TODO:
+ *      @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
  *
  *
  */
@@ -65,13 +65,19 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  empty () doesn't check the data in the stream, but instead checks if the BinaryStream smart pointer
+                 *  references any actual stream.
                  *
+                 *  @see clear()
                  */
                 nonvirtual  bool    empty () const;
 
             public:
                 /**
+                 *  clear () doesn't clear the data in the stream, but unreferences the BinaryStream smart pointer,
+                 *  so that.
                  *
+                 *  @see empty()
                  */
                 nonvirtual  void    clear ();
 
@@ -84,13 +90,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Requires (IsSeekable ());
+                 * \req (not empty ());
+                 * \req (IsSeekable ());
                  */
                 nonvirtual  SeekOffsetType  GetOffset () const;
 
             public:
                 /**
-                 *  Requires (IsSeekable ());
+                 * \req (not empty ());
+                 * \req (IsSeekable ());
                  *
                  *  The new position, measured in bytes, is obtained by adding offset bytes to the
                  *  position specified by whence.

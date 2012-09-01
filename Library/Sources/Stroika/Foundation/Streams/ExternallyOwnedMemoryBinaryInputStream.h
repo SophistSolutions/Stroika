@@ -13,9 +13,9 @@
 #include    "Seekable.h"
 
 
-/*
- * TODO:
- *          o   Re-implemnt using atomics to avoid critical section (cheaper).
+/**
+ *  \file
+ *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
  */
 
 
@@ -24,12 +24,16 @@ namespace   Stroika {
         namespace   Streams {
 
             /**
-             *  ExternallyOwnedMemoryBinaryInputStream is a subtype of BinaryInputStream but the creator must gaurantee, so long as the memory pointed to
-             * in the argument has a
+             *  \brief  ExternallyOwnedMemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream (references)
+             *
+             *  ExternallyOwnedMemoryBinaryInputStream is a subtype of BinaryInputStream but the
+             *  creator must gaurantee, so long as the memory pointed to in the argument has a
              *      o   lifetime > lifetime of the ExternallyOwnedMemoryBinaryInputStream object,
              *      o   and data never changes value
              *
-             * This class is threadsafe - meaning _Read() can safely be called from multiple threads at a time freely.
+             *  This class is threadsafe - meaning Read() can safely be called from multiple threads at a time freely.
+             *
+             *  ExternallyOwnedMemoryBinaryInputStream is Seekable.
              */
             class   ExternallyOwnedMemoryBinaryInputStream : public BinaryInputStream {
             private:

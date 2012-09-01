@@ -19,9 +19,6 @@
 /**
  *  \file
  *
- *  TODO:
- *
- *
  */
 
 
@@ -31,8 +28,16 @@ namespace   Stroika {
         namespace   Streams {
 
             /**
-             *  \brief  BinaryInputOutputStream ...
+             *  \brief  BinaryInputOutputStream is a stream that has BOTH a BinaryInputStream and an BinaryOutputStream.
              *
+             *  BinaryInputOutputStream could have inherited from BinaryInputOutputStream and BinaryOutputStream, but then
+             *  it would have had two copies of the shared_ptr. It seemed more economical to have just one such base,
+             *  and make it easy to convert (conversion operator).
+             *
+             *  A BinaryInputOutputStream is a *combined* input and output stream. That means they are somehow related.
+             *  If the BinaryInputOutputStream is seekable, then the same seek offset applies to BOTH the input and
+             *  output sides. If you wish to have separate seek offsets, maintain two separate input and output stream
+             *  objects.
              */
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:
@@ -62,13 +67,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form binaryinputstream and that was like this but stronger)
+                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form binaryinputstream
+                 *  and that was like this but stronger)
                  */
                 nonvirtual  operator BinaryInputStream () const;
 
             public:
                 /**
-                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form BinaryOutputStream and that was like this but stronger)
+                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form BinaryOutputStream
+                 *  and that was like this but stronger)
                  */
                 nonvirtual  operator BinaryOutputStream () const;
 
@@ -78,13 +85,17 @@ namespace   Stroika {
                  *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
                  *  BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *  without prjudice about how much more is available.
+                 *
+                 *  \req (not empty())
                  */
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
 
             public:
                 /**
-                 * pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
+                 * Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                  * Writes always succeed fully or throw.
+                 *
+                 *  \req (not empty())
                  */
                 nonvirtual  void    Write (const Byte* start, const Byte* end);
             };
