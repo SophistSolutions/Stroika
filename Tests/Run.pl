@@ -2,6 +2,8 @@
 
 require ("ScriptsLib/TestsList.pl");
 
+print ("Running Tests...\n");
+
 my $checkallDir;
 if ("$^O" eq "linux") {
     $checkallDir  = "Projects/Linux/";
