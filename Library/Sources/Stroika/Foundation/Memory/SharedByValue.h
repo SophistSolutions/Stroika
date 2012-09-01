@@ -61,8 +61,8 @@ namespace   Stroika {
              *  \brief  SharedByValue is a utility class to implement Copy-On-Write.
              *
              *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
-             *  to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
-             *  data structures.
+             *  to facilitiate implementing the copy-on-write semantics which are often handy in providing
+			 *	high-performance data structures.
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              *
