@@ -1,9 +1,10 @@
 #!/usr/bin/perl 
 
-### FROM WINDOWS - MOVE TOWARDS THIS - SO PRINTS NAMES OF TESTS
-####require "../../../ScriptsLib/test-Run-template.pl";
-###
-####DoRun (NNN);
+require "../../../ScriptsLib/test-Run-template.pl";
+DoRun (NNN);
+
+exit(0);
+
 
 require "../../../ScriptsLib/SimpleRun.pl";
 
