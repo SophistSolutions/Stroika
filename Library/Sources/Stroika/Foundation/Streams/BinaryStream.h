@@ -29,6 +29,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             /**
              *  \brief  BinaryStream is an abstract class defining the interface to a binary source/sink of data.
              *
@@ -36,13 +37,15 @@ namespace   Stroika {
              *  but it helps to tie together and facilitate mixing BinaryInputStream and BinaryOutputStream
              *  classes together (given reference counting).
              *
-             *  Note:
+             *  Note that BinaryStream is logically a 'smart pointer' - to an actual stream. This is then true
+             *  of all its subclasses (e.g. BinaryInputStream, etc). This is very important to understand when
+             *  assigning/copying BinaryStream (and subclass) objects.
              *
-             *      Subclasses (e.g. BinaryInputStream and BinaryOutputStream) use direct inheritance
-             *      instead of virtual inheritance for a number of reasons. Because of the semantics of
-             *      constructors with virtual base classes, its a bit of a pain to pass in the initial
-             *      value of the shared_ptr<> rep. Also (less clear - review - it may cause issues with
-             *      dynamic cast across virtual base?).
+             *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
+             *          subclassing behavior...
+             *
+             *  @todo   probably repalce BOOL fSeekable with actual Seekable* ptr...
+             *
              */
             class   BinaryStream {
             protected:
