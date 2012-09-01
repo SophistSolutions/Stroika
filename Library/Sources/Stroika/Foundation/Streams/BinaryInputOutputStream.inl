@@ -31,6 +31,16 @@ namespace   Stroika {
                 return result;
             }
 
+            inline  BinaryInputOutputStream::operator BinaryInputStream () const
+            {
+                return BinaryInputStream (_GetInputRep ());
+            }
+
+            inline  BinaryInputOutputStream::operator BinaryOutputStream () const
+            {
+                return BinaryOutputStream (_GetOutputRep ());
+            }
+
 
         }
     }

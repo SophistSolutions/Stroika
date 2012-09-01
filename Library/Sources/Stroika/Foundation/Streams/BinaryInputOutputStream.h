@@ -61,16 +61,16 @@ namespace   Stroika {
                 nonvirtual  _SharedOutputIRep _GetOutputRep () const;
 
             public:
-				nonvirtual	operator BinaryInputStream () const
-				{
-					return BinaryInputStream (_GetInputRep ());
-				}
+                /**
+                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form binaryinputstream and that was like this but stronger)
+                 */
+                nonvirtual  operator BinaryInputStream () const;
 
             public:
-				nonvirtual	operator BinaryOutputStream () const
-				{
-					return BinaryOutputStream (_GetOutputRep ());
-				}
+                /**
+                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form BinaryOutputStream and that was like this but stronger)
+                 */
+                nonvirtual  operator BinaryOutputStream () const;
 
             public:
                 /**

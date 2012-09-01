@@ -42,7 +42,7 @@ namespace   Stroika {
                 NO_ASSIGNMENT_OPERATOR (HTTPRequest);
 
             public:
-                Streams::BinaryInputStream				fInputStream;
+                Streams::BinaryInputStream              fInputStream;
                 Streams::TextInputStreamBinaryAdapter   fInputTextStream;
 
             public:
