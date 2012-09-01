@@ -150,6 +150,7 @@ namespace   Stroika {
              */
 #define Assert(c)           {if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }}
 
+
             /**
              *  \def Require(c)
              *
@@ -158,6 +159,7 @@ namespace   Stroika {
              *  \hideinitializer
              */
 #define Require(c)          {if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }}
+
 
             /**
              *  \def Ensure(c)
@@ -183,12 +185,14 @@ namespace   Stroika {
              */
 #define AssertMember(p,c)   Assert (dynamic_cast<const c*>(p) != nullptr)
 
+
             /**
              *  \def RequireMember(p,c)
              *
              *  @see GetAssertionHandler
              */
 #define RequireMember(p,c)  Require (dynamic_cast<const c*>(p) != nullptr)
+
 
             /**
              *  \def EnsureMember(p,c)
@@ -197,6 +201,7 @@ namespace   Stroika {
              */
 #define EnsureMember(p,c)   Ensure (dynamic_cast<const c*>(p) != nullptr)
 
+
             /**
              *  \def AssertNotNull(p)
              *
@@ -204,12 +209,14 @@ namespace   Stroika {
              */
 #define AssertNotNull(p)        Assert (p!=nullptr)
 
+
             /**
              *  \def RequireNotNull(p)
              *
              *  @see GetAssertionHandler
              */
 #define RequireNotNull(p)   Require (p!=nullptr)
+
 
             /**
              *  \def EnsureNotNull(p)
@@ -221,6 +228,7 @@ namespace   Stroika {
 
 
 #if     qDebug
+
             /**
              *  \def AssertNotReached(p)
              *
@@ -229,6 +237,7 @@ namespace   Stroika {
              *  \hideinitializer
              */
 #define AssertNotReached()      Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+
 
             /**
              *  \def RequireNotReached(p)
@@ -239,6 +248,7 @@ namespace   Stroika {
              */
 #define RequireNotReached()     Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
+
             /**
              *  \def EnsureNotReached(p)
              *
@@ -247,6 +257,7 @@ namespace   Stroika {
              *  \hideinitializer
              */
 #define EnsureNotReached()      Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+
 
             /**
              *  \def AssertNotImplemented()
