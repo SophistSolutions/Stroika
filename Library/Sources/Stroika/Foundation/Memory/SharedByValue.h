@@ -62,7 +62,7 @@ namespace   Stroika {
              *
              *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
              *  to facilitiate implementing the copy-on-write semantics which are often handy in providing
-			 *	high-performance data structures.
+             *  high-performance data structures.
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              *
@@ -103,22 +103,22 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual	bool operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
+                nonvirtual  bool operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual	bool operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
+                nonvirtual  bool operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
 
             public:
                 /**
                  * Returns true if there is exactly one object referenced. Note that if empty () - then not unique().
                  */
-                nonvirtual	bool    unique () const;
+                nonvirtual  bool    unique () const;
 
             private:
-                SHARED_IMLP	fSharedImpl_;
-                COPIER		fCopier_;
+                SHARED_IMLP fSharedImpl_;
+                COPIER      fCopier_;
 
             public:
                 /**
