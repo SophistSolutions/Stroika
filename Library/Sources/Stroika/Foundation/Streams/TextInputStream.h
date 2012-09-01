@@ -16,8 +16,6 @@
 /**
  *  \file
  *
- *  TODO:
- *
  *      @todo   Maybe do the same factoring into IRep and smartpointer stuff for TextInputStream code we did
  *              for BinaryInputStream and BinaryOutputStream.
  *              Symetry is compelling. MIGHT not be needed? Cuz this COULD basically be used as a wrapper (TExtReader/TextWriter) on a more
@@ -33,7 +31,7 @@ namespace   Stroika {
 
             using   Characters::Character;
 
-            /*
+            /**
              * Design Overview:
              *
              *      o   All read's on a TextInputStream are BLOCKING. If there is a desire to have a non-blocking read, then create a new mixin interface
