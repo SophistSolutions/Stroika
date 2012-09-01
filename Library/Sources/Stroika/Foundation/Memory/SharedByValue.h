@@ -26,9 +26,11 @@ namespace   Stroika {
 
 
             /**
-             * SharedByValue_CopyByFunction is the a simple copying mechanism used by SharedByValue<>.
-             * It is not the most efficient approach (since it stores an actual pointer for the
-             * copy function. But its very simple and usually adequate.
+			 *	\brief	SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
+			 *
+             *	SharedByValue_CopyByFunction is a simple copying mechanism used by SharedByValue<>.
+             *	It is not the most efficient approach (since it stores an actual pointer for the
+             *	copy function. But its very simple and usually adequate.
              */
             template    <typename   T>
             struct  SharedByValue_CopyByFunction {
@@ -39,11 +41,13 @@ namespace   Stroika {
                 SharedByValue_CopyByFunction (T * (*copier) (const T&) = DefaultElementCopier_);
 #endif
                 nonvirtual  T*  Copy (const T& t) const;
-                T*      (*fCopier_) (const T&);
+                T*      (*fCopier) (const T&);
             };
 
 
             /**
+			 *	\brief	SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
+			 *
              * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
              * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
              */
@@ -55,10 +59,10 @@ namespace   Stroika {
 
             /**
              *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
-             * to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
+             *	to facilitiate implementing the copy-on-write semantics which are often handy in providing high-performance
              *  data structures.
              *
-             *  This class should allow SHARED_IMLP to be either Memory::shared_ptr<> or std::shared_ptr
+             *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              *
              *  This class template was originally called CopyOnWrite.
             */

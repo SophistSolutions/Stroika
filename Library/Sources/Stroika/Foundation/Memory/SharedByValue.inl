@@ -29,13 +29,13 @@ namespace   Stroika {
 #endif
             template    <typename   T>
             inline  SharedByValue_CopyByFunction<T>::SharedByValue_CopyByFunction (T * (*copier) (const T&))
-                : fCopier_ (copier)
+                : fCopier (copier)
             {
             }
             template    <typename   T>
             inline  T*  SharedByValue_CopyByFunction<T>::Copy (const T& t) const
             {
-                return (*fCopier_) (t);
+                return (*fCopier) (t);
             }
 
 
