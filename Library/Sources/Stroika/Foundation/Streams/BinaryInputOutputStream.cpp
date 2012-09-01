@@ -23,6 +23,8 @@ using   namespace   Stroika::Foundation::Streams;
 BinaryInputOutputStream::BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep)
     : BinaryStream (rep)
 {
-    RequireNotNull (GetInputRep ().get ());
-    RequireNotNull (GetOutputRep ().get ());
+    RequireMember (rep.get (), _SharedInputIRep::element_type);
+    RequireMember (rep.get (), _SharedOutputIRep::element_type);
+    AssertNotNull (_GetInputRep ().get ());
+    AssertNotNull (_GetOutputRep ().get ());
 }

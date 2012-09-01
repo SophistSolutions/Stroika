@@ -37,25 +37,28 @@ namespace   Stroika {
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:
                 /**
-                 * IRep_ arg - MUST inherit from BOTH Streams::BinaryInputStream::_IRep AND Streams::BinaryOutputStream::_IRep.
+                 * BinaryStream::_SharedIRep arg - MUST inherit from BOTH Streams::BinaryInputStream::_IRep AND Streams::BinaryOutputStream::_IRep.
+				 *
+				 *	\req dynamic_cast(rep.get (), _SharedInputIRep::element_type) != nullptr
+				 *	\req dynamic_cast(rep.get (), _SharedOutputIRep::element_type) != nullptr
                  */
-                BinaryInputOutputStream (const Streams::BinaryStream::_SharedIRep& rep);
+                BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep);
 
             protected:
                 typedef BinaryInputStream::_SharedIRep      _SharedInputIRep;
                 typedef BinaryOutputStream::_SharedIRep     _SharedOutputIRep;
 
-            public:
+            protected:
                 /**
                  *
                  */
-                nonvirtual  _SharedInputIRep GetInputRep () const;
+                nonvirtual  _SharedInputIRep _GetInputRep () const;
 
-            public:
+            protected:
                 /**
                  *
                  */
-                nonvirtual  _SharedOutputIRep GetOutputRep () const;
+                nonvirtual  _SharedOutputIRep _GetOutputRep () const;
 
             public:
                 /**

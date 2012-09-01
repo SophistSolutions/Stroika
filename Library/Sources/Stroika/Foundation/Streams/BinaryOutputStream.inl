@@ -22,16 +22,16 @@ namespace   Stroika {
                 : BinaryStream (rep)
             {
             }
-            inline  BinaryOutputStream::_SharedIRep   BinaryOutputStream::GetRep () const
+            inline  BinaryOutputStream::_SharedIRep   BinaryOutputStream::_GetRep () const
             {
-                return dynamic_pointer_cast<_IRep> (BinaryStream::GetRep ());
+                return dynamic_pointer_cast<_IRep> (BinaryStream::_GetRep ());
             }
             inline  void    BinaryOutputStream::Write (const Byte* start, const Byte* end)
             {
                 RequireNotNull (start);
                 Require ((end - start) >= 1);
-                RequireNotNull (GetRep ().get ());
-                GetRep ()->Write (start, end);
+                RequireNotNull (_GetRep ().get ());
+                _GetRep ()->Write (start, end);
             }
 
 

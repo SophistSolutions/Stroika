@@ -32,7 +32,7 @@ namespace   Stroika {
                 , fIsSeekable_ (dynamic_cast<const Seekable*> (rep.get ()) != nullptr)
             {
             }
-            inline  BinaryStream::_SharedIRep  BinaryStream::GetRep () const
+            inline  BinaryStream::_SharedIRep  BinaryStream::_GetRep () const
             {
                 return fRep_;
             }

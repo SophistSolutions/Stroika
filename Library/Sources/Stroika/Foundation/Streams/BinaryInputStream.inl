@@ -22,16 +22,16 @@ namespace   Stroika {
                 : BinaryStream (rep)
             {
             }
-            inline  BinaryInputStream::_SharedIRep  BinaryInputStream::GetRep () const
+            inline  BinaryInputStream::_SharedIRep  BinaryInputStream::_GetRep () const
             {
-                return dynamic_pointer_cast<_IRep> (BinaryStream::GetRep ());
+                return dynamic_pointer_cast<_IRep> (BinaryStream::_GetRep ());
             }
             inline  size_t  BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd)
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                RequireNotNull (GetRep ().get ());
-                return GetRep ()->Read (intoStart, intoEnd);
+                RequireNotNull (_GetRep ().get ());
+                return _GetRep ()->Read (intoStart, intoEnd);
             }
 
 
