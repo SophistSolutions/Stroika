@@ -34,7 +34,7 @@ namespace   Stroika {
             /**
              *  \def qAllowBlockAllocation
              *
-             *  \brief  qAllowBlockAllocation
+             *  \brief  Allow use of block-allocation im classes which uses DECLARE_USE_BLOCK_ALLOCATION()
              *
              *  Allow use of block-allocation. The main reason to disable it indescriminantly
              *  is for debugging purposes (looking for memory leaks). But others may have other
@@ -44,6 +44,11 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
+#if		defined (__Doxygen__)
+#define qAllowBlockAllocation   1
+#endif
+
+
 #if     !defined (qAllowBlockAllocation)
 #error "qAllowBlockAllocation should normally be defined indirectly by StroikaConfig.h"
 #endif
@@ -57,11 +62,11 @@ namespace   Stroika {
               * BlockAllocated<T> is a templated class designed to allow easy use
               * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
               * size blocks (with the only problem being the storage is never - or almost never - returned to the
-              * free store - it doesn't leak - but cannot be used for other things). This is often a useful
+              * free store - it doesn't leak - but cannot be used for other things. This is often a useful
               * tradeoff for things you allocate a great number of.
               *
               * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
-              * while checking for memory leaks by shutting of the @'qAllowBlockAllocation' compile-time configuration variable.
+              * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
               *
               * Note also - you can avoid some of the uglines of the overload declarations by using the
               * DECLARE_USE_BLOCK_ALLOCATION() macro.
@@ -104,7 +109,7 @@ namespace   Stroika {
              *  </code>
              *
              *  @see DECLARE_DONT_USE_BLOCK_ALLOCATION()
-             *  @see BlockAllocated
+             *  @see Stroika::Foundation::Memory::BlockAllocated
              *
              *  \hideinitializer
              */
