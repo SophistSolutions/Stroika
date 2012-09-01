@@ -75,8 +75,8 @@ namespace   Stroika {
                 SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from);
 
             public:
-                SharedByValue (const SHARED_IMLP& from, const COPIER& copier = COPIER ());
-                SharedByValue (T* from, const COPIER& copier = COPIER ());
+                explicit SharedByValue (const SHARED_IMLP& from, const COPIER& copier = COPIER ());
+                explicit SharedByValue (T* from, const COPIER& copier = COPIER ());
 
             public:
                 nonvirtual  SharedByValue<T, COPIER, SHARED_IMLP>& operator= (const SharedByValue<T, COPIER, SHARED_IMLP>& src);
@@ -101,21 +101,24 @@ namespace   Stroika {
 
 
             public:
-                bool operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const {
-                    return fSharedImpl_ == rhs.fSharedImpl_;
-                }
-                bool operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const {
-                    return fSharedImpl_ != rhs.fSharedImpl_;
-                }
-                bool    unique () const {
-                    return fSharedImpl_.unique ();
-                }
+                /**
+                 */
+                nonvirtual	bool operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual	bool operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
+
+            public:
+                /**
+                 * Returns true if there is exactly one object referenced. Note that if empty () - then not unique().
+                 */
+                nonvirtual	bool    unique () const;
 
             private:
-                SHARED_IMLP fSharedImpl_;
-
-            private:
-                COPIER  fCopier_;
+                SHARED_IMLP	fSharedImpl_;
+                COPIER		fCopier_;
 
             public:
                 /**

@@ -133,6 +133,21 @@ namespace   Stroika {
                 return (*ptr);
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
+            bool SharedByValue<T, COPIER, SHARED_IMLP>::operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const
+            {
+                return fSharedImpl_ == rhs.fSharedImpl_;
+            }
+            template    <typename   T, typename COPIER, typename SHARED_IMLP>
+            bool SharedByValue<T, COPIER, SHARED_IMLP>::operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const
+            {
+                return fSharedImpl_ != rhs.fSharedImpl_;
+            }
+            template    <typename   T, typename COPIER, typename SHARED_IMLP>
+            bool    SharedByValue<T, COPIER, SHARED_IMLP>::unique () const
+            {
+                return fSharedImpl_.unique ();
+            }
+            template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  void    SharedByValue<T, COPIER, SHARED_IMLP>::Assure1Reference ()
             {
                 if (!fSharedImpl_.unique ()) {
