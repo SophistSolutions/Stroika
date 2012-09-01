@@ -20,6 +20,11 @@ if ("$^O" eq "linux") {
 	use Cwd;
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
+
+	chdir ("Projects/Linux");
+		system ("perl BuildProjectsFiles.pl");
+	chdir ($savedDir);
+
 	chdir ("../IntermediateFiles/Platform_Linux/Debug/");
 	if ($useBld eq "rebuild") {
 		foreach $tst (GetAllTests ()) {
