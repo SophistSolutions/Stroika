@@ -34,7 +34,7 @@ namespace   Stroika {
             // Maybe associated TextStream, and maybe readline method goes here
             struct  HTTPRequest {
             public:
-                HTTPRequest (Streams::BinaryInputStream& inStream);
+                HTTPRequest (const Streams::BinaryInputStream& inStream);
 
             private:
                 NO_DEFAULT_CONSTRUCTOR (HTTPRequest);
@@ -42,14 +42,14 @@ namespace   Stroika {
                 NO_ASSIGNMENT_OPERATOR (HTTPRequest);
 
             public:
-                Streams::BinaryInputStream&             fInputStream;
+                Streams::BinaryInputStream				fInputStream;
                 Streams::TextInputStreamBinaryAdapter   fInputTextStream;
 
             public:
                 String                                  fHTTPVersion;
                 String                                  fMethod;
                 IO::Network::URL                        fURL;
-                map<String, String>                      fHeaders;
+                map<String, String>                     fHeaders;
             };
 
         }

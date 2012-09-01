@@ -50,10 +50,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-			class   BinaryInputOutputStream;
+            class   BinaryInputOutputStream;
 
-			
-			/**
+
+            /**
              *  \brief  BinaryInputStream is an abstract class defining the interface to a binary source of data.
              *
              * Design Overview:
@@ -103,8 +103,8 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
 
-			private:
-				friend	class   BinaryInputOutputStream;
+            private:
+                friend  class   BinaryInputOutputStream;
             };
 
 

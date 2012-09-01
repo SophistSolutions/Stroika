@@ -28,7 +28,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
-			class   BinaryInputOutputStream;
+            class   BinaryInputOutputStream;
 
             /**
              * Design Overview:
@@ -58,13 +58,13 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
+                 *  pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                  * Writes always succeed fully or throw.
-				 */
+                 */
                 nonvirtual  void    Write (const Byte* start, const Byte* end);
 
-			private:
-				friend	class   BinaryInputOutputStream;
+            private:
+                friend  class   BinaryInputOutputStream;
             };
 
 
