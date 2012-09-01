@@ -56,6 +56,12 @@ namespace   Stroika {
             {
             }
             template    <typename   T, typename COPIER, typename SHARED_IMLP>
+            inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (nullptr_t n)
+                : fCopier_ (COPIER ())
+                , fSharedImpl_ ()
+            {
+            }
+            template    <typename   T, typename COPIER, typename SHARED_IMLP>
             inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from)
                 : fCopier_ (from.fCopier_)
                 , fSharedImpl_ (from.fSharedImpl_)

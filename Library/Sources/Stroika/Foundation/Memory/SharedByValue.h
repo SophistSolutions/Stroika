@@ -72,6 +72,7 @@ namespace   Stroika {
             class   SharedByValue {
             public:
                 SharedByValue ();
+                SharedByValue (nullptr_t n);
                 SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from);
 
             public:
