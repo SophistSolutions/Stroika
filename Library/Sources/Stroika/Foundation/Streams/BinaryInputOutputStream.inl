@@ -17,6 +17,20 @@ namespace   Stroika {
         namespace   Streams {
 
 
+			//	class	BinaryInputOutputStream
+            inline  BinaryInputOutputStream::_SharedInputIRep BinaryInputOutputStream::GetInputRep () const
+            {
+                _SharedInputIRep   result  =   dynamic_pointer_cast<_SharedInputIRep::element_type> (GetRep ());
+                RequireNotNull (result.get ());
+                return result;
+            }
+            inline  BinaryInputOutputStream::_SharedOutputIRep BinaryInputOutputStream::GetOutputRep () const
+            {
+                _SharedOutputIRep   result  =   dynamic_pointer_cast<_SharedOutputIRep::element_type> (GetRep ());
+                RequireNotNull (result.get ());
+                return result;
+            }
+
 
         }
     }

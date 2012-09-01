@@ -73,9 +73,11 @@ namespace   Stroika {
              */
             class   BinaryInputStream : public BinaryStream {
             protected:
+            public:
                 class   _IRep;
 
             protected:
+            public:
                 typedef shared_ptr<_IRep>   _SharedIRep;
 
             protected:
@@ -99,10 +101,6 @@ namespace   Stroika {
                  *  without prjudice about how much more is available.
                  */
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
-
-
-            private:
-                _SharedIRep fRep_;
             };
 
 

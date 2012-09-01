@@ -35,9 +35,11 @@ namespace   Stroika {
              */
             class   BinaryOutputStream : public BinaryStream {
             protected:
+            public:
                 class   _IRep;
 
             protected:
+            public:
                 typedef shared_ptr<_IRep>   _SharedIRep;
 
             protected:

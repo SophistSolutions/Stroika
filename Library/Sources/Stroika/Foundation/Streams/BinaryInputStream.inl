@@ -30,7 +30,7 @@ namespace   Stroika {
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                RequireNotNull (fRep_.get ());
+                RequireNotNull (GetRep ().get ());
                 return GetRep ()->Read (intoStart, intoEnd);
             }
 
