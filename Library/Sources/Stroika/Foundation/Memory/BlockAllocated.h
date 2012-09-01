@@ -44,7 +44,7 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#if		defined (__Doxygen__)
+#if     defined (__Doxygen__)
 #define qAllowBlockAllocation
 #endif
 
@@ -146,7 +146,7 @@ namespace   Stroika {
              *      };
              *  </pre>
              *  </code>
-			 *
+             *
              *  @see BlockAllocated
              *
              *  \hideinitializer
