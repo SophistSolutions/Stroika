@@ -11,7 +11,12 @@ sub DoRun {
 	chomp ($date);
 	print "Starting regression test #[$testNumber] $testName Test: $date ------------------------------\r\n";
 	
-	DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/Windows/", "Test$testNumber/Test$testNumber.exe");
+	if ("$^O" eq "linux") {
+		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/Platform_Linux/", "Test$testNumber");
+	}
+	else {
+		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/Windows/", "Test$testNumber/Test$testNumber.exe");
+	}
 	
 	local $date = `sh -c date`;
 	chomp ($date);
