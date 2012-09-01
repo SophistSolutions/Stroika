@@ -71,7 +71,7 @@ namespace   Stroika {
             //Tally
             template    <typename T>
             Tally<T>::Tally () :
-                fRep (0)
+                fRep (nullptr)
             {
                 *this = Concrete::Tally_Array<T> ();
             }
