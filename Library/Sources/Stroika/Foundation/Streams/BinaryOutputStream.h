@@ -27,6 +27,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
+			class   BinaryInputOutputStream;
+
             /**
              * Design Overview:
              *
@@ -39,25 +42,29 @@ namespace   Stroika {
                 class   _IRep;
 
             protected:
-            public:
                 typedef shared_ptr<_IRep>   _SharedIRep;
 
             protected:
                 /**
-                 * IRep_ arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
                 BinaryOutputStream (const _SharedIRep& rep);
 
-            public:
+            protected:
                 /**
                  *
                  */
                 nonvirtual  _SharedIRep GetRep () const;
 
             public:
-                // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
-                // Writes always succeed fully or throw.
+                /**
+				 *	pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
+                 * Writes always succeed fully or throw.
+				 */
                 nonvirtual  void    Write (const Byte* start, const Byte* end);
+
+			private:
+				friend	class   BinaryInputOutputStream;
             };
 
 

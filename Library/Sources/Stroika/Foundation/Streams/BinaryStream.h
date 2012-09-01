@@ -53,12 +53,11 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * IRep_ arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
                 BinaryStream (const _SharedIRep& rep);
 
-
-            public:
+            protected:
                 /**
                  *
                  */

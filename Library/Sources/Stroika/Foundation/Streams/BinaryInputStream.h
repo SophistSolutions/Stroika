@@ -50,7 +50,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            /**
+			class   BinaryInputOutputStream;
+
+			
+			/**
              *  \brief  BinaryInputStream is an abstract class defining the interface to a binary source of data.
              *
              * Design Overview:
@@ -73,21 +76,19 @@ namespace   Stroika {
              */
             class   BinaryInputStream : public BinaryStream {
             protected:
-            public:
                 class   _IRep;
 
             protected:
-            public:
                 typedef shared_ptr<_IRep>   _SharedIRep;
 
             protected:
                 /**
-                 * IRep_ arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
                 BinaryInputStream (const _SharedIRep& rep);
 
 
-            public:
+            protected:
                 /**
                  *
                  */
@@ -101,6 +102,9 @@ namespace   Stroika {
                  *  without prjudice about how much more is available.
                  */
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
+
+			private:
+				friend	class   BinaryInputOutputStream;
             };
 
 
