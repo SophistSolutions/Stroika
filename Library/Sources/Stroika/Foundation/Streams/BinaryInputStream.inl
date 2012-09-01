@@ -24,7 +24,7 @@ namespace   Stroika {
             }
             inline  BinaryInputStream::_SharedIRep  BinaryInputStream::GetRep () const
             {
-                return dynamic_pointer_cast<BinaryInputStream::_IRep> (BinaryStream::GetRep ());
+                return dynamic_pointer_cast<_IRep> (BinaryStream::GetRep ());
             }
             inline  size_t  BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd)
             {
