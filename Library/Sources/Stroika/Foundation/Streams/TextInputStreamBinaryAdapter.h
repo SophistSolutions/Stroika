@@ -18,8 +18,6 @@
  *  \file
  *
  *      @todo   Must use either stdc++ multibyte code or Stroika CodePage code - currnetly a hack assuming input is ascii.
- *
- *      @todo   CONSIDER REDOING USE shared_ptr<> - to make lifetime stuff workout better...
  */
 
 namespace   Stroika {
