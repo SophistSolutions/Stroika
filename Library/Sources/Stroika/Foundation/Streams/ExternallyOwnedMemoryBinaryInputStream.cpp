@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public virtual BinaryInputStream::_IRep, public virtual Seekable {
+class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable {
 public:
     NO_DEFAULT_CONSTRUCTOR(IRep_);
     NO_COPY_CONSTRUCTOR(IRep_);
