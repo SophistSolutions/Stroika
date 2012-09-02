@@ -18,7 +18,7 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 
 
 
-class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep {
+class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep, public Seekable {
 public:
     IRep_ (istream& originalStream)
         : fOriginalStream_ (originalStream) {
