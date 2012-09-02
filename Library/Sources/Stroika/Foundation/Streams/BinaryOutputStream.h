@@ -17,7 +17,6 @@
 /*
  *  \file
  *
- *  TODO:
  *      @todo   Consider/document approaches to timeouts. We COULD have a stream class where it was a PROPERTY OF THE CLASS (or alternate API)
  *              where writes timeout after a certain point.
  */
