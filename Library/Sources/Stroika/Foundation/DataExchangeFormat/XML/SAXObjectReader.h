@@ -40,7 +40,7 @@ namespace   Stroika {
 #if     qDefaultTracingOn
                 public:
                     bool    fTraceThisReader;       // very noisy - off by default even for tracemode
-                    wstring TraceLeader_ () const;
+                    nonvirtual  wstring TraceLeader_ () const;
 #endif
 
                 public:
@@ -119,21 +119,21 @@ namespace   Stroika {
                  *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has already occurred. The reaosn for Optional<>
                  *  part is because the caller had an optional element which might never have triggered the invocation of this class.
                  */
-                template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
-        class   OptionalTypesReader : public SAXObjectReader::ObjectBase {
-            public:
-                            OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                template    <typename   T, typename ACTUAL_READER = BuiltinReader<T> >
+                class   OptionalTypesReader : public SAXObjectReader::ObjectBase {
+                public:
+                    OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
 
-            private:
-                            Memory::Optional<T>*    value_;
-                            T                       proxyValue_;
-                            ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+                private:
+                    Memory::Optional<T>*    value_;
+                    T                       proxyValue_;
+                    ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
-            public:
-                            virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
-                            virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                            virtual void    HandleEndTag (SAXObjectReader& r) override;
-                        };
+                public:
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                };
 
 
 
@@ -142,12 +142,12 @@ namespace   Stroika {
                  * Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read. This is necessary to balance out
                  * the Start Tag / End Tag combinations.
                  */
-class   IgnoreNodeReader : public SAXObjectReader::ObjectBase {
-    public:
+                class   IgnoreNodeReader : public SAXObjectReader::ObjectBase {
+                public:
                     IgnoreNodeReader ();
-    private:
+                private:
                     int fDepth_;
-    public:
+                public:
                     virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
@@ -159,17 +159,17 @@ class   IgnoreNodeReader : public SAXObjectReader::ObjectBase {
                  * Helper class for reading complex (structured) objects.
                  */
                 template    <typename   T>
-class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
-    protected:
+                class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
+                protected:
                     ComplexObjectReader (T* vp, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
 
-    public:
+                public:
                     T*  fValuePtr;
 
-    public:
+                public:
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
-    protected:
+                protected:
                     nonvirtual  void    _PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push);
                 };
 
@@ -189,15 +189,15 @@ class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
                  *      };
                  */
                 template    <typename TRAITS>
-struct ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
-                            bool                            readingAT_;
-                            typename TRAITS::ElementType    curTReading_;
+                struct ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
+                    bool                            readingAT_;
+                    typename TRAITS::ElementType    curTReading_;
 
-                            ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
 
-                            virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
-                            virtual void HandleEndTag (SAXObjectReader& r) override;
-                        };
+                    virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void HandleEndTag (SAXObjectReader& r) override;
+                };
 
 
 
