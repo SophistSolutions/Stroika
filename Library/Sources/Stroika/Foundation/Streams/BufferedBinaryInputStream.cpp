@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Execution/CriticalSection.h"
+
 #include    "BufferedBinaryInputStream.h"
 
 
@@ -18,15 +20,18 @@ class   BufferedBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
 public:
     IRep_ (const BinaryInputStream::_SharedIRep& realIn)
         : BinaryInputStream::_IRep ()
+        , fCriticalSection_ ()
         , fRealIn_ (realIn) {
     }
 
     virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override {
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);
         return fRealIn_->Read (intoStart, intoEnd);
     }
 
 private:
-    BinaryInputStream::_SharedIRep    fRealIn_;
+    mutable Execution::CriticalSection          fCriticalSection_;
+    BinaryInputStream::_SharedIRep              fRealIn_;
 };
 
 

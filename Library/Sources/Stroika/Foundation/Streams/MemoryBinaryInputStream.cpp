@@ -53,6 +53,7 @@ public:
     }
 
     virtual SeekOffsetType  _GetOffset () const override {
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
@@ -98,10 +99,10 @@ public:
     }
 
 private:
-    Execution::CriticalSection          fCriticalSection_;
+    mutable Execution::CriticalSection          fCriticalSection_;
     // round size of usage up to around 1k (include vtableptr) - no real good reason - # doesnt matter much...
     Memory::SmallStackBuffer < Byte, (1024 - sizeof(Execution::CriticalSection) - 2 * sizeof(Byte*)) >    fData_;
-    const Byte*                         fCursor_;
+    const Byte*                                 fCursor_;
 };
 
 

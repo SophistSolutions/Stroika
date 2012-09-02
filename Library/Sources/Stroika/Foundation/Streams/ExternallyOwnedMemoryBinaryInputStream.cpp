@@ -31,7 +31,7 @@ public:
     }
 
 protected:
-    virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -46,6 +46,7 @@ protected:
     }
 
     virtual SeekOffsetType  _GetOffset () const override {
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);    // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
         return fCursor_ - fStart_;
     }
 
@@ -91,10 +92,10 @@ protected:
     }
 
 private:
-    Execution::CriticalSection  fCriticalSection_;
-    const Byte*                 fStart_;
-    const Byte*                 fEnd_;
-    const Byte*                 fCursor_;
+    mutable Execution::CriticalSection  fCriticalSection_;
+    const Byte*                         fStart_;
+    const Byte*                         fEnd_;
+    const Byte*                         fCursor_;
 };
 
 

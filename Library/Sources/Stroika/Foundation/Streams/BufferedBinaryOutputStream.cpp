@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Containers/Common.h"
+#include    "../Execution/CriticalSection.h"
 
 #include    "BufferedBinaryOutputStream.h"
 
@@ -25,6 +26,7 @@ class   BufferedBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep {
 public:
     IRep_ (const BinaryOutputStream& realOut)
         : BinaryOutputStream::_IRep ()
+        , fCriticalSection_ ()
         , fBuffer_ ()
         , fRealOut_ (realOut)
 #if     qDebug
@@ -39,9 +41,11 @@ public:
 
 public:
     nonvirtual  size_t  GetBufferSize () const {
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);
         return (fBuffer_.capacity ());
     }
     nonvirtual  void    SetBufferSize (size_t bufSize) {
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);
         bufSize = max (bufSize, kMinBufSize_);
         if (bufSize < fBuffer_.size ()) {
             Flush ();
@@ -52,6 +56,7 @@ public:
 public:
     // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
     nonvirtual  void    Abort () {
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);
 #if     qDebug
         fAborted_ = true;   // for debug sake track this
 #endif
@@ -61,6 +66,7 @@ public:
     //
     nonvirtual  void    Flush () {
         Require (not fAborted_ or fBuffer_.empty ());
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);
         if (not fBuffer_.empty ()) {
             fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
             fBuffer_.clear ();
@@ -73,6 +79,7 @@ public:
     virtual void            Write (const Byte* start, const Byte* end) override {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Require (not fAborted_);
+        Execution::AutoCriticalSection  critSec (fCriticalSection_);
         /*
          * Minimize the number of writes at the possible cost of extra copying.
          *
@@ -114,10 +121,11 @@ public:
     }
 
 private:
-    vector<Byte>        fBuffer_;
-    BinaryOutputStream  fRealOut_;
+    mutable Execution::CriticalSection  fCriticalSection_;
+    vector<Byte>                        fBuffer_;
+    BinaryOutputStream                  fRealOut_;
 #if     qDebug
-    bool                fAborted_;
+    bool                                fAborted_;
 #endif
 };
 
