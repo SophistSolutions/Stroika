@@ -52,19 +52,19 @@ namespace   Stroika {
             inline  SeekOffsetType  BinaryStream::GetOffset () const
             {
                 Require (IsSeekable ());
-				AssertNotNull (fSeekable_);
+                AssertNotNull (fSeekable_);
                 return fSeekable_->GetOffset ();
             }
             inline  void        BinaryStream::Seek (SeekOffsetType offset)
             {
                 Require (IsSeekable ());
-				AssertNotNull (fSeekable_);
+                AssertNotNull (fSeekable_);
                 fSeekable_->Seek (offset);
             }
             inline  void        BinaryStream::Seek (Whence whence, SeekOffsetType offset)
             {
                 Require (IsSeekable ());
-				AssertNotNull (fSeekable_);
+                AssertNotNull (fSeekable_);
                 fSeekable_->Seek (whence, offset);
             }
 

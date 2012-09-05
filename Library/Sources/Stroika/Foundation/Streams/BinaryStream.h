@@ -42,8 +42,8 @@ namespace   Stroika {
              *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
              *          subclassing behavior...
              *
-			 *	@todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
-			 *
+             *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
+             *
              */
             class   BinaryStream {
             protected:
@@ -85,9 +85,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \brief	Returns true iff this object was constructed with a seekable input stream rep.
-                 * 
-				 *	Returns true iff this object was constructed with a seekable input stream rep.
+                 * \brief   Returns true iff this object was constructed with a seekable input stream rep.
+                 *
+                 *  Returns true iff this object was constructed with a seekable input stream rep.
                  */
                 nonvirtual  bool    IsSeekable () const;
 
@@ -111,7 +111,7 @@ namespace   Stroika {
 
             private:
                 _SharedIRep fRep_;
-				Seekable*	fSeekable_;
+                Seekable*   fSeekable_;
             };
 
 
