@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'ActiveSpelledIt'
+		'ActiveSpelledIt.ocx'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}
