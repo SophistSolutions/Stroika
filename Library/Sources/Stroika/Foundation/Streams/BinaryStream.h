@@ -18,8 +18,6 @@
 /**
  *  \file
  *
- *      @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
- *
  *
  */
 
@@ -44,8 +42,8 @@ namespace   Stroika {
              *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
              *          subclassing behavior...
              *
-             *  @todo   probably repalce BOOL fSeekable with actual Seekable* ptr...
-             *
+			 *	@todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
+			 *
              */
             class   BinaryStream {
             protected:
@@ -68,7 +66,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  empty () doesn't check the data in the stream, but instead checks if the BinaryStream smart pointer
+                 *  empty() doesn't check the data in the stream, but instead checks if the BinaryStream smart pointer
                  *  references any actual stream.
                  *
                  *  @see clear()
@@ -87,21 +85,23 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Returns true iff this object was constructed with a seekable input stream rep.
+                 * \brief	Returns true iff this object was constructed with a seekable input stream rep.
+                 * 
+				 *	Returns true iff this object was constructed with a seekable input stream rep.
                  */
                 nonvirtual  bool    IsSeekable () const;
 
             public:
                 /**
-                 * \req (not empty ());
-                 * \req (IsSeekable ());
+                 * \pre not empty();
+                 * \pre IsSeekable();
                  */
                 nonvirtual  SeekOffsetType  GetOffset () const;
 
             public:
                 /**
-                 * \req (not empty ());
-                 * \req (IsSeekable ());
+                 * \pre not empty();
+                 * \pre IsSeekable();
                  *
                  *  The new position, measured in bytes, is obtained by adding offset bytes to the
                  *  position specified by whence.
@@ -111,7 +111,7 @@ namespace   Stroika {
 
             private:
                 _SharedIRep fRep_;
-                bool        fIsSeekable_;
+				Seekable*	fSeekable_;
             };
 
 

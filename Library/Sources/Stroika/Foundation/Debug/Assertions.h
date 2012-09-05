@@ -13,7 +13,7 @@
  *  \file
  *
  *      @todo   Find some way to map Require(), RequireNotNull(), etc to things picked up automatically
- *              by Doxygen. Right now - I must manually map them to \req statements in the function header.
+ *              by Doxygen. Right now - I must manually map them to \\pre statements in the function header.
  *
  */
 

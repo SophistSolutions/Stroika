@@ -29,7 +29,7 @@ namespace   Stroika {
             //  class   BinaryStream
             inline  BinaryStream::BinaryStream (const _SharedIRep& rep)
                 : fRep_ (rep)
-                , fIsSeekable_ (dynamic_cast<const Seekable*> (rep.get ()) != nullptr)
+                , fSeekable_ (dynamic_cast<Seekable*> (rep.get ()))
             {
             }
             inline  BinaryStream::_SharedIRep  BinaryStream::_GetRep () const
@@ -43,26 +43,29 @@ namespace   Stroika {
             inline  void    BinaryStream::clear ()
             {
                 fRep_.reset ();
-                fIsSeekable_ = false;
+                fSeekable_ = nullptr;
             }
             inline  bool    BinaryStream::IsSeekable () const
             {
-                return fIsSeekable_;
+                return fSeekable_ != nullptr;
             }
             inline  SeekOffsetType  BinaryStream::GetOffset () const
             {
                 Require (IsSeekable ());
-                return dynamic_cast<const Seekable*> (fRep_.get ())->GetOffset ();
+				AssertNotNull (fSeekable_);
+                return fSeekable_->GetOffset ();
             }
             inline  void        BinaryStream::Seek (SeekOffsetType offset)
             {
                 Require (IsSeekable ());
-                dynamic_cast<Seekable*> (fRep_.get ())->Seek (offset);
+				AssertNotNull (fSeekable_);
+                fSeekable_->Seek (offset);
             }
             inline  void        BinaryStream::Seek (Whence whence, SeekOffsetType offset)
             {
                 Require (IsSeekable ());
-                dynamic_cast<Seekable*> (fRep_.get ())->Seek (whence, offset);
+				AssertNotNull (fSeekable_);
+                fSeekable_->Seek (whence, offset);
             }
 
 

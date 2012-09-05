@@ -44,8 +44,8 @@ namespace   Stroika {
                 /**
                  * BinaryStream::_SharedIRep arg - MUST inherit from BOTH Streams::BinaryInputStream::_IRep AND Streams::BinaryOutputStream::_IRep.
                  *
-                 *  \req dynamic_cast(rep.get (), _SharedInputIRep::element_type) != nullptr
-                 *  \req dynamic_cast(rep.get (), _SharedOutputIRep::element_type) != nullptr
+                 *  \pre dynamic_cast(rep.get (), _SharedInputIRep::element_type) != nullptr
+                 *  \pre dynamic_cast(rep.get (), _SharedOutputIRep::element_type) != nullptr
                  */
                 BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep);
 
@@ -86,7 +86,7 @@ namespace   Stroika {
                  *  BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *  without prjudice about how much more is available.
                  *
-                 *  \req (not empty())
+                 *  \pre not empty()
                  */
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
 
@@ -95,7 +95,7 @@ namespace   Stroika {
                  * Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                  * Writes always succeed fully or throw.
                  *
-                 *  \req (not empty())
+                 *  \pre not empty()
                  */
                 nonvirtual  void    Write (const Byte* start, const Byte* end);
             };
