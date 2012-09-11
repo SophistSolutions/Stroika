@@ -1,6 +1,6 @@
 /* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
-#ifndef ____Led_OptionsSupport_h__
-#define ____Led_OptionsSupport_h__  1
+#ifndef _Stroika_Frameworks_Led_OptionsSupport_h_
+#define _Stroika_Frameworks_Led_OptionsSupport_h_  1
 
 /*
  * $Header: /cygdrive/k/CVSRoot/Led/Headers/LedOptionsSupport.h,v 2.7 2004/02/11 01:07:26 lewis Exp $
@@ -11,40 +11,6 @@
 @MODULE:    LedOptionsSupport
 @DESCRIPTION:
         <p></p>
- */
-
-/*
- * Changes:
- *  $Log: LedOptionsSupport.h,v $
- *  Revision 2.7  2004/02/11 01:07:26  lewis
- *  SPR#1635: work around bugs qDefaultValueInTemplateParemeterUsingTemplatedTypeBug and qMemberTemplateNeedsExplicitDeclarationForEachTypeBug
- *
- *  Revision 2.6  2003/12/31 03:36:17  lewis
- *  SPR#1602: major improvements. Added lots of overloaded set/get methods, including arrays
- *  of elts. Added method to compute new key with a path - construcing elts along the way.
- *  Support UNICODE/non-UNICODE strings much better
- *
- *  Revision 2.5  2002/05/06 21:33:26  lewis
- *  <=============================== Led 3.0.1 Released ==============================>
- *
- *  Revision 2.4  2001/11/27 00:29:39  lewis
- *  <=============== Led 3.0 Released ===============>
- *
- *  Revision 2.3  2001/10/17 00:30:50  lewis
- *  Doc Comments
- *
- *  Revision 2.2  2001/08/28 18:43:24  lewis
- *  *** empty log message ***
- *
- *  Revision 2.1  2001/04/12 18:57:18  lewis
- *  *** empty log message ***
- *
- *  Revision 2.1  2000/10/03 12:53:23  lewis
- *  added new LedOptionsSupport module for helper classes like Watermark
- *  drawing class that didnt really fit anyplace else
- *
- *
- *
  */
 
 
@@ -208,10 +174,4 @@ namespace   Stroika {
     }
 }
 
-#endif  /*____Led_OptionsSupport_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+#endif  /*_Stroika_Frameworks_Led_OptionsSupport_h_*/

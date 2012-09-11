@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __LedConfig_h__
-#define __LedConfig_h__ 1
+#ifndef _Stroika_Framework_Led_Config_h_
+#define _Stroika_Framework_Led_Config_h_ 1
 
 #include    "../../Foundation/StroikaPreComp.h"
 
@@ -2075,12 +2075,4 @@ namespace   Stroika {
 
 
 
-#endif  /*__LedConfig_h__*/
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-
+#endif  /*_Stroika_Framework_Led_Config_h_*/

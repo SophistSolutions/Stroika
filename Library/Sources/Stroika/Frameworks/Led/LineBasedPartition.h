@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __LineBasedPartition_h__
-#define __LineBasedPartition_h__    1
+#ifndef _Stroika_Frameworks_Led_LineBasedPartition_h_
+#define _Stroika_Frameworks_Led_LineBasedPartition_h_    1
 
 #include    "../../Foundation/StroikaPreComp.h"
 
@@ -69,7 +69,7 @@ namespace   Stroika {
 }
 
 
-#endif  /*__LineBasedPartition_h__*/
+#endif  /*_Stroika_Frameworks_Led_LineBasedPartition_h_*/
 
 // For gnuemacs:
 // Local Variables: ***

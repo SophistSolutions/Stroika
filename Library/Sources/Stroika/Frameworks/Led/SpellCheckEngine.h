@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __SpellCheckEngine_h__
-#define __SpellCheckEngine_h__  1
+#ifndef _Stroika_Frameworks_Led_SpellCheckEngine_h_
+#define _Stroika_Frameworks_Led_SpellCheckEngine_h_  1
 
 #include    "../../Foundation/StroikaPreComp.h"
 
@@ -222,10 +222,5 @@ namespace   Stroika {
 
 
 
-#endif  /*__SpellCheckEngine_h__*/
+#endif  /*_Stroika_Frameworks_Led_SpellCheckEngine_h_*/
 
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

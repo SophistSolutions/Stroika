@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __MarkerCover_h__
-#define __MarkerCover_h__   1
+#ifndef _Stroika_Frameworks_Led_MarkerCover_h_
+#define _Stroika_Frameworks_Led_MarkerCover_h_   1
 
 #include    "../../Foundation/StroikaPreComp.h"
 
@@ -872,7 +872,7 @@ namespace   Stroika {
 
 
 
-#endif  /*__MarkerCover_h__*/
+#endif  /*_Stroika_Frameworks_Led_MarkerCover_h_*/
 
 // For gnuemacs:
 // Local Variables: ***

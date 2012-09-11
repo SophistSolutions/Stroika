@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __StandardStyledTextInteractor_h__
-#define __StandardStyledTextInteractor_h__  1
+#ifndef _Stroika_Frameworks_Led_StandardStyledTextInteractor_h_
+#define _Stroika_Frameworks_Led_StandardStyledTextInteractor_h_  1
 
 #include    "../../Foundation/StroikaPreComp.h"
 
@@ -570,10 +570,4 @@ namespace   Stroika {
 #pragma warning (pop)
 #endif
 
-#endif  /*__StandardStyledTextInteractor_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+#endif  /*_Stroika_Frameworks_Led_StandardStyledTextInteractor_h_*/

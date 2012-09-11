@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __StyledTextIO_HTML_h__
-#define __StyledTextIO_HTML_h__ 1
+#ifndef _Stroika_Frameworks_Led_StyledTextIO_HTML_h_
+#define _Stroika_Frameworks_Led_StyledTextIO_HTML_h_ 1
 
 #include    "../../Foundation/StroikaPreComp.h"
 
@@ -384,7 +384,7 @@ namespace   Stroika {
 
 
 
-#endif  /*__StyledTextIO_HTML_h__*/
+#endif  /*_Stroika_Frameworks_Led_StyledTextIO_HTML_h_*/
 
 // For gnuemacs:
 // Local Variables: ***
