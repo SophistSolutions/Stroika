@@ -107,62 +107,62 @@ namespace   Stroika {
                 to internal data structures (the cached elements).
                 </p>
             */
-            template    <typename   ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT>>
-                    class   LRUCache {
+            template    <typename   ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT> >
+            class   LRUCache {
             public:
-                        typedef typename TRAITS::ElementType    ElementType;
-                        typedef typename TRAITS::KeyType        KeyType;
+                typedef typename TRAITS::ElementType    ElementType;
+                typedef typename TRAITS::KeyType        KeyType;
 
             public:
-                        LRUCache (size_t maxCacheSize);
+                LRUCache (size_t maxCacheSize);
 
             public:
-                        nonvirtual  size_t  GetMaxCacheSize () const;
-                        nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
+                nonvirtual  size_t  GetMaxCacheSize () const;
+                nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
 
             public:
-                        struct  CacheElement {
+                struct  CacheElement {
                 public:
-                            CacheElement ();
-
-                public:
-                            CacheElement*   fNext;
-                            CacheElement*   fPrev;
+                    CacheElement ();
 
                 public:
-                            ElementType     fElement;
-                        };
+                    CacheElement*   fNext;
+                    CacheElement*   fPrev;
+
+                public:
+                    ElementType     fElement;
+                };
 
             public:
-                        struct  CacheIterator;
-                        nonvirtual  CacheIterator   begin ();
-                        nonvirtual  CacheIterator   end ();
+                struct  CacheIterator;
+                nonvirtual  CacheIterator   begin ();
+                nonvirtual  CacheIterator   end ();
 
             public:
-                        nonvirtual  void    ClearCache ();
+                nonvirtual  void    ClearCache ();
 
             public:
-                        // NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
-                        // In TRAITS object.
-                        nonvirtual  ELEMENT*    AddNew (const KeyType& item);
-                        // NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
-                        // In TRAITS object.
-                        nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
+                // NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
+                // In TRAITS object.
+                nonvirtual  ELEMENT*    AddNew (const KeyType& item);
+                // NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
+                // In TRAITS object.
+                nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 
 #if     qKeepLRUCacheStats
             public:
-                        size_t      fCachedCollected_Hits;
-                        size_t      fCachedCollected_Misses;
+                size_t      fCachedCollected_Hits;
+                size_t      fCachedCollected_Misses;
 #endif
 
             private:
-                        vector<CacheElement>    fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-                        CacheElement*           fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
-                        CacheElement*           fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
+                vector<CacheElement>    fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
+                CacheElement*           fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
+                CacheElement*           fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
 
             private:
-                        nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement* b);
-                    };
+                nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement* b);
+            };
 
 
             /*
