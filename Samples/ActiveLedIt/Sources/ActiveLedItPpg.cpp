@@ -1,44 +1,6 @@
 /* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
 
-/*
- * $Header: /cygdrive/k/CVSRoot/ActiveLedIt/Sources/ActiveLedItPpg.cpp,v 2.6 2002/05/06 21:34:30 lewis Exp $
- *
- * Description:
- *		Implementation of the ActiveLedItPropPage property page class.
- *
- * TODO:
- *
- * Notes:
- *
- *
- * Changes:
- *	$Log: ActiveLedItPpg.cpp,v $
- *	Revision 2.6  2002/05/06 21:34:30  lewis
- *	<=============================== Led 3.0.1 Released ==============================>
- *	
- *	Revision 2.5  2001/11/27 00:32:37  lewis
- *	<=============== Led 3.0 Released ===============>
- *	
- *	Revision 2.4  2001/08/30 00:35:57  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.3  1997/12/24 04:44:53  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.2  1997/07/27  16:00:23  lewis
- *	<===== Led 2.2 Released =====>
- *
- *	Revision 2.1  1997/06/28  17:45:52  lewis
- *	*** empty log message ***
- *
- *	Revision 2.0  1997/06/18  03:25:57  lewis
- *	*** empty log message ***
- *
- *
- *
- *
- *
- */
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include	<afxctl.h>
 

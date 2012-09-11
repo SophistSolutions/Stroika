@@ -2,61 +2,12 @@
 #ifndef	__UserConfigCommands_h__
 #define	__UserConfigCommands_h__	1
 
-/*
- * $Header: /cygdrive/k/CVSRoot/ActiveLedIt/Headers/UserConfigCommands.h,v 2.9 2004/02/11 22:41:40 lewis Exp $
- *
- * Description:
- *
- * TODO:
- *
- * Notes:
- *
- *
- * Changes:
- *	$Log: UserConfigCommands.h,v $
- *	Revision 2.9  2004/02/11 22:41:40  lewis
- *	SPR#1576: update: added 'Replace Again' command to LedIt, LedLineItMFC, ActiveLedIt
- *	
- *	Revision 2.8  2004/02/07 01:32:36  lewis
- *	SPR#1629: update: Added font-color icon, and associated the icon with the color popup menu. Added support to ActiveLedIt_IconButtonToolbarElement to make that work. Including - changed ToggleButton property to a 'ButtonStyle' property - where one style was 'ICON/POPUP MENU'.
- *	
- *	Revision 2.7  2004/02/04 21:16:14  lewis
- *	SPR#1618: added justification and liststyle icons to standard icon bar (builtins). And allow different default internal/external cmd nmae s(BuiltinCmd class)
- *	
- *	Revision 2.6  2004/02/02 23:02:36  lewis
- *	SPR#1618: Started CommandEnabled support - and got associated command (to toolbar icon) code working - so for simple cases - at least - it invokes the command)
- *	
- *	Revision 2.5  2004/01/30 04:41:06  lewis
- *	Renamed ICurrentEventArguments->IALCurrentEventArguments
- *	
- *	Revision 2.4  2004/01/30 04:36:31  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.3  2004/01/25 21:51:44  lewis
- *	SPR#1284: Added new PasteText command (not part of default menus - but builtin. Added example
- *	of how to use this to the HTML test scriptCommandSupportTester.html). Add extra arg to
- *	_AcceleratorTable::Add () for position to insert. Added IndexOf () method (to COM API -
- *	for IALCommandList. Implement the IALCommandList::Remove method.
- *	
- *	Revision 2.2  2004/01/25 16:19:23  lewis
- *	SPR#1617: lose old resource-based contextmenu/accelerators, and use new COM-based
- *	accelerator mechanism (part of new COM-based command support)
- *	
- *	Revision 2.1  2004/01/23 23:11:18  lewis
- *	SPR#1617: Added preliminary (largely functional) implementation of OLE automation-based
- *	context menus. Tons of new OLE APIs. Can create context menus from scratch, or built
- *	from building blocks of existing submenus (like font menu).
- *	
- *
- *
- *
- *
- *
- */
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxctl.h>
 
-#include	"Led_ATL.h"
-#include	"TextInteractor.h"
+#include	"Stroika/Frameworks/Led/Platform/ATL.h"
+#include	"Stroika/Frameworks/Led/TextInteractor.h"
 
 #include	"ActiveLedItConfig.h"
 #include	"Resource.h"

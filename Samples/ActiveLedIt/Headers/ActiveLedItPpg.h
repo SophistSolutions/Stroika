@@ -3,41 +3,11 @@
 #define	__ActiveLedItPpg_h__	1
 
 /*
- * $Header: /cygdrive/k/CVSRoot/ActiveLedIt/Headers/ActiveLedItPpg.h,v 2.5 2002/05/06 21:34:19 lewis Exp $
- *
  * Description:
  *		Declaration of the ActiveLedItPropPage property page class.
- *
- * TODO:
- *
- * Notes:
- *
- *
- * Changes:
- *	$Log: ActiveLedItPpg.h,v $
- *	Revision 2.5  2002/05/06 21:34:19  lewis
- *	<=============================== Led 3.0.1 Released ==============================>
- *	
- *	Revision 2.4  2001/11/27 00:32:28  lewis
- *	<=============== Led 3.0 Released ===============>
- *	
- *	Revision 2.3  2001/08/30 00:35:56  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.2  1997/12/24 04:43:52  lewis
- *	*** empty log message ***
- *	
- *	Revision 2.1  1997/07/27  15:59:52  lewis
- *	<===== Led 2.2 Released =====>
- *
- *	Revision 2.0  1997/06/18  03:25:57  lewis
- *	*** empty log message ***
- *
- *
- *
- *
- *
  */
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxctl.h>
 
 #include	"Resource.h"

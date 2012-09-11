@@ -2,72 +2,14 @@
 #ifndef	__Toolbar_h__
 #define	__Toolbar_h__	1
 
-/*
- * $Header: /cygdrive/k/CVSRoot/ActiveLedIt/Headers/Toolbar.h,v 2.11 2004/02/10 03:20:02 lewis Exp $
- *
- * Description:
- *
- * TODO:
- *
- * Notes:
- *
- *
- * Changes:
- *	$Log: Toolbar.h,v $
- *	Revision 2.11  2004/02/10 03:20:02  lewis
- *	SPR#1634: add a few NonIdleContext calls around OLE AUT calls in ActiveLedIt (since they have similar effects to commands). SPR#1631: Used new OnEnterIdle (insead of SpendIdleTime()) to handle updating toolbars
- *	
- *	Revision 2.10  2004/02/08 14:09:10  lewis
- *	SPR#1640: fix display of multiple toolbars by creating a window (with toolbar edges) assocaited with the toolbar list, and get rid of edges with toolbar itself. Had to change some COM apis and way AL/Toolbarlist interaction/creation worked (make it more like toolbarlist/toolbar interaction). Seems to work pretty well now
- *	
- *	Revision 2.9  2004/02/07 21:20:13  lewis
- *	SPR#1627: add IALToolbar::MergeAdd () method - and use it internally, and in a bunch of samples in javascript. Also -
- *	fixed bug with popup menu handling enabling code (hierarchical menus) and tested that in javascript testing sample
- *	
- *	Revision 2.8  2004/02/07 01:32:35  lewis
- *	SPR#1629: update: Added font-color icon, and associated the icon with the color popup menu. Added support to
- *	ActiveLedIt_IconButtonToolbarElement to make that work. Including - changed ToggleButton property to a
- *	'ButtonStyle' property - where one style was 'ICON/POPUP MENU'.
- *	
- *	Revision 2.7  2004/02/06 16:12:16  lewis
- *	SPR#1629: Update: Lose private 'width' property for combobox class, and instead - autocompute the
- *	prefered width based on the attached menu. Improved the automatic LAYOUT code so that changes to the
- *	menu should resize the combobox.
- *	
- *	Revision 2.6  2004/02/06 01:36:00  lewis
- *	SPR#1629: added fairly functional (not perfect) ActiveLedIt_ComboBoxToolbarElement - and used that to
- *	implement first cut at fontname and fontsize combo boxes.
- *	
- *	Revision 2.5  2004/02/03 22:29:29  lewis
- *	SPR#1618: add ToggleButton property to IconButtonToolbarItem, and CommandChecked () method to ActiveLedIt -
- *	to support checked buttons - like BOLD, ITALIC, and UNDERLINE
- *	
- *	Revision 2.4  2004/02/03 14:51:29  lewis
- *	SPR#1618: added bold, italics, underline (fixed paste icon) to toolbar. Fixed SETFOCUS issue clicking
- *	on toolbar buttons
- *	
- *	Revision 2.3  2004/02/03 02:23:05  lewis
- *	SPR#1618: Added undo/redo buttons, and separator support
- *	
- *	Revision 2.2  2004/02/03 00:50:12  lewis
- *	SPR#1618: update enable state of buttons according to COMMAND-CHAIN OnUpdateCommand. May possibly need
- *	future OPTIMIZATION (to not call too often) - but empirically - seems OK for now
- *	
- *	Revision 2.1  2004/02/02 21:15:10  lewis
- *	SPR#1618: Added preliminary toolbar support. A small toolbar with a few icons appears - but no DO
- *	command or UPDATE_ENABLE_DISABLE CMD support yet (and just plain icon cmd items)
- *	
- *
- *
- *
- *
- */
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxctl.h>
 #include	<atlwin.h>
 
-#include	"IdleManager.h"
-#include	"Led_ATL.h"
-#include	"TextInteractor.h"
+#include	"Stroika/Frameworks/Led/IdleManager.h"
+#include	"Stroika/Frameworks/Led/Platform/ATL.h"
+#include	"Stroika/Frameworks/Led/TextInteractor.h"
 
 #include	"ActiveLedItConfig.h"
 #include	"Resource.h"

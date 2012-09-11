@@ -58,6 +58,8 @@
  *
  *
  */
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afx.h>
 
 #include	"ActiveLedItConfig.h"

@@ -99,6 +99,7 @@
  */
 
 #if		defined (__cplusplus)
+	#include    "Stroika/Foundation/StroikaPreComp.h"
 	#include	"Stroika/Frameworks/Led/Config.h"
 	#include	"Stroika/Frameworks/Led/Support.h"
 #endif
