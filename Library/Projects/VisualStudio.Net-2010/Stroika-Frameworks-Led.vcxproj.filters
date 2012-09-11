@@ -4,6 +4,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{a400f798-f166-4305-a490-077066805a74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Platform">
+      <UniqueIdentifier>{d2f77868-e7ea-49c9-be67-28d59bbefe7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp">
@@ -98,6 +101,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.cpp">
+      <Filter>Source\Platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +211,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.h">
+      <Filter>Source\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

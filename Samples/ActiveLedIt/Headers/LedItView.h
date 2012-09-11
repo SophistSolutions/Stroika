@@ -294,7 +294,7 @@
 
 #include	<atlbase.h>
 
-//#include	"Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
+#include	"Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
 //#include	"LedOptionsSupport.h"
 //#include	"Stroika/Frameworks/Led/Led_MFC_WordProcessor.h"
 #include	"Stroika/Frameworks/Led/WordProcessor.h"

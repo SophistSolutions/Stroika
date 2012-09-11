@@ -75,6 +75,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.cpp" />
@@ -87,6 +88,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Marker.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.cpp" />
@@ -109,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Command.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Config.h" />
@@ -122,6 +126,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.h" />
