@@ -66,6 +66,8 @@
 
 #include	"ActiveLedItConfig.h"
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
 
 const vector<Led_SDK_String>&	GetUsableFontNames ();
 Led_SDK_String					CmdNumToFontName (UINT cmdNum);
@@ -78,10 +80,3 @@ Led_SDK_String					CmdNumToFontName (UINT cmdNum);
  */
 
 #endif	/*__FontMenu_hh__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

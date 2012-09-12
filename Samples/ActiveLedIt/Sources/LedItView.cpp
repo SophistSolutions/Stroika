@@ -387,8 +387,8 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 		#if		qSupportAddNewTableDlg
 		bool	AddNewTableDialog (size_t* nRows, size_t* nCols)
 			{
-				Led_RequireNotNil (nRows);
-				Led_RequireNotNil (nCols);
+				RequireNotNull (nRows);
+				RequireNotNull (nCols);
 				Led_StdDialogHelper_AddNewTableDialog	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				infoDialog.fRows = *nRows;
 				infoDialog.fColumns = *nCols;
@@ -405,7 +405,7 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 		#if		qSupportEditTablePropertiesDlg
 		override	bool	EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties)
 			{
-				Led_RequireNotNil (tableProperties);
+				RequireNotNull (tableProperties);
 
 				typedef	Led_StdDialogHelper_EditTablePropertiesDialog	DLGTYPE;
 				#if		qMacOS

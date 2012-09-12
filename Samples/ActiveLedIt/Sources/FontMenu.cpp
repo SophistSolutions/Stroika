@@ -49,8 +49,8 @@ const vector<Led_SDK_String>&	GetUsableFontNames ()
  */
 Led_SDK_String	CmdNumToFontName (UINT cmdNum)
 {
-	Led_Require (cmdNum >= kBaseFontNameCmd);
-	Led_Require (cmdNum <= kLastFontNameCmd);
+	Require (cmdNum >= kBaseFontNameCmd);
+	Require (cmdNum <= kLastFontNameCmd);
 	const vector<Led_SDK_String>&	fontNames	=	GetUsableFontNames ();
 	return (fontNames[cmdNum-kBaseFontNameCmd]);
 }

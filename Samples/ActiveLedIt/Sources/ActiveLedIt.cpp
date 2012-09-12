@@ -28,7 +28,7 @@ inline	const	void*	LoadDLLResource (long resID, LPCTSTR resType)
 		AssertNotNull (hrsrc);
 		HGLOBAL	hglobal	=	::LoadResource (::AfxGetResourceHandle (), hrsrc);
 		const void*	lockedData	=	::LockResource (hglobal);
-		Led_EnsureNotNil (lockedData);
+		EnsureNotNull (lockedData);
 		return (lockedData);
 	}
 

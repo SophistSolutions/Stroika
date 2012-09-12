@@ -67,7 +67,7 @@
 
 
 
-const	kEditorWindowID		=	100;
+const	int	kEditorWindowID		=	100;
 
 
 
@@ -102,8 +102,8 @@ bool	COMBased_SpellCheckEngine::ScanForUndefinedWord (const Led_tChar* startBuf,
 									const Led_tChar** wordStartResult, const Led_tChar** wordEndResult
 							)
 {
-	Led_RequireNotNil (startBuf);
-	Led_Require (startBuf <= endBuf);
+	RequireNotNull (startBuf);
+	Require (startBuf <= endBuf);
 
 	if (fEngine != NULL) {
 		size_t	textBufLen	=	endBuf-startBuf;
@@ -575,7 +575,7 @@ TextStore*	ActiveLedItControl::PeekAtTextStore () const
 
 void	ActiveLedItControl::OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid)
 {
-	Led_RequireNotNil (pdc);
+	RequireNotNull (pdc);
 	TRACE ("ActiveLedItControl::OnDraw (rcBounds= (%d, %d, %d, %d), rcInvalid= (%d, %d, %d, %d))\n",
 			rcBounds.top, rcBounds.left, rcBounds.bottom, rcBounds.right,
 			rcInvalid.top, rcInvalid.left, rcInvalid.bottom, rcInvalid.right
@@ -637,7 +637,7 @@ void	ActiveLedItControl::OnDrawMetafile (CDC* pDC, const CRect& rcBounds)
 	 *	Override COleControl::OnDrawMetafile - to properly handle drawing to a metafile.
 	 *	See SPR#1447.
 	 */
-	Led_RequireNotNil (pDC);
+	RequireNotNull (pDC);
 	TRACE("ActiveLedItControl::OnDrawMetafile (rcBounds= (%d, %d, %d, %d))\n",
 			rcBounds.top, rcBounds.left, rcBounds.bottom, rcBounds.right
 		);
@@ -691,13 +691,13 @@ void	ActiveLedItControl::OnDrawMetafile (CDC* pDC, const CRect& rcBounds)
 
 BOOL	ActiveLedItControl::OnEraseBkgnd (CDC* pDC)
 {
-	Led_RequireNotNil (pDC);
+	RequireNotNull (pDC);
 	return true;	// cuz we erase our own background...
 }
 
 void	ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
 {
-	Led_RequireNotNil (pPX);
+	RequireNotNull (pPX);
 	ExchangeVersion (pPX, MAKELONG (_wVerMinor, _wVerMajor));
 	COleControl::DoPropExchange (pPX);
 	ExchangeTextAsRTFBlob (pPX);
@@ -798,7 +798,7 @@ DWORD	ActiveLedItControl::GetControlFlags ()
 
 void	ActiveLedItControl::OnGetControlInfo (LPCONTROLINFO pControlInfo)
 {
-	Led_RequireNotNil (pControlInfo);
+	RequireNotNull (pControlInfo);
 	::memset (pControlInfo, 0, sizeof (*pControlInfo));
 	pControlInfo->cb = sizeof (*pControlInfo);
 
@@ -817,7 +817,7 @@ void	ActiveLedItControl::OnGetControlInfo (LPCONTROLINFO pControlInfo)
 
 BOOL	ActiveLedItControl::PreTranslateMessage (MSG* pMsg)
 {
-	Led_RequireNotNil (pMsg);
+	RequireNotNull (pMsg);
 	switch (pMsg->message) {
 		case WM_KEYDOWN:
 		case WM_KEYUP:
@@ -923,7 +923,7 @@ void	ActiveLedItControl::OnResetState ()
 void	ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
 {
 	const	LPCTSTR	kTextAsRTFBlob	=	_T("TextAsRTFBlob");
-	Led_RequireNotNil (pPX);
+	RequireNotNull (pPX);
 	if (pPX->IsLoading ()) {
 		HGLOBAL	hglobal	=	NULL;
 		PX_Blob (pPX, kTextAsRTFBlob, hglobal);
@@ -1014,7 +1014,7 @@ void	ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<
 		(void)::_lseek (fd, 0, SEEK_SET);
 		int	nBytes	=	::_read (fd, *buffer, eof);
 		if (nBytes != eof) {
-			AfxThrowFileException (CFileException::generic, -1, filename);
+			AfxThrowFileException (CFileException::genericException, -1, filename);
 		}
 		(void)::_close (fd);
 	}
@@ -1036,7 +1036,7 @@ void	ActiveLedItControl::WriteBytesToFile (LPCTSTR filename, const void* buffer,
 		}
 		int	nBytes	=	::_write (fd, buffer, size);
 		if (nBytes != size) {
-			AfxThrowFileException (CFileException::generic, -1, filename);
+			AfxThrowFileException (CFileException::genericException, -1, filename);
 		}
 		(void)::_close (fd);
 	}

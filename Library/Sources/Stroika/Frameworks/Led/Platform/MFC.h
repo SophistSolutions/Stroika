@@ -785,7 +785,8 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Utility template to mix together Led_MFC an a <code>ChosenInteractor</code> which already has support
                     for a particular TextImager mixed in.</p>
                 */
-                template    <typename   ChosenInteractor, typename LEDMFC = Led_MFC>    class   Led_MFC_X :
+                template    <typename   ChosenInteractor, typename LEDMFC = Led_MFC>
+				class   Led_MFC_X :
 #if     qMFCRequiresCWndLeftmostBaseClass
                     public LEDMFC, public ChosenInteractor
 #else
