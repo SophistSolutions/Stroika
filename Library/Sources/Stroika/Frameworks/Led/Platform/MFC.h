@@ -25,7 +25,6 @@
 #include    <afxole.h>
 #include    <oleidl.h>
 
-
 #include    "../IdleManager.h"
 #include    "../TextInteractor.h"
 
@@ -466,7 +465,8 @@ namespace   Stroika {
                     I'm risk averse. I don't want to break the class library. And this is all that is needed to move out to meet the immediate
                     complaints.</p>
                 */
-                template    <typename   BASECLASS = Led_MFC_Helper<> >  class   Led_MFC_DragAndDropWindow :
+                template    <typename   BASECLASS = Led_MFC_Helper<> >
+                class   Led_MFC_DragAndDropWindow :
                     public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
@@ -587,7 +587,8 @@ namespace   Stroika {
                     define DoDeclare_Led_MFC_CViewHelper_MessageMap() to declare the actual message map for the template (unless its already done for yours
                     in Led_MFC.cpp).</p>
                 */
-                template    <typename   BASECLASS = Led_MFC_DragAndDropWindow<> >   class   Led_MFC_CViewHelper :
+                template    <typename   BASECLASS = Led_MFC_DragAndDropWindow<> >
+                class   Led_MFC_CViewHelper :
                     public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
@@ -693,7 +694,8 @@ namespace   Stroika {
                     define DoDeclare_Led_MFC_COleControlHelper_MessageMap() to declare the actual message map for the template (unless its already done for yours
                     in Led_MFC.cpp).</p>
                 */
-                template    <typename   BASECLASS = Led_MFC_DragAndDropWindow<> >   class   Led_MFC_COleControlHelper :
+                template    <typename   BASECLASS = Led_MFC_DragAndDropWindow<> >
+                class   Led_MFC_COleControlHelper :
                     public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
