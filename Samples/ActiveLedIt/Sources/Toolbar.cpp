@@ -123,7 +123,7 @@ namespace	{
 					MENUITEMINFO	menuItemInfo;
 					memset (&menuItemInfo, 0, sizeof (menuItemInfo));
 					menuItemInfo.cbSize = sizeof (menuItemInfo);
-					Led_Verify (::GetMenuItemInfo (menu, i, true, &menuItemInfo));
+					Verify (::GetMenuItemInfo (menu, i, true, &menuItemInfo));
 					if (menuItemInfo.hSubMenu != NULL) {
 						DoEnableDisableChecksEtcsOnMenu (al, menuItemInfo.hSubMenu);
 					}
@@ -837,7 +837,7 @@ STDMETHODIMP	ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
 				(void)fComboBox.SendMessage (CB_SETCURSEL, -1, 0);
 			}
 			else {
-				Led_Verify (fComboBox.SendMessage (CB_SETCURSEL, static_cast<int> (idxSelected), 0) != CB_ERR);
+				Verify (fComboBox.SendMessage (CB_SETCURSEL, static_cast<int> (idxSelected), 0) != CB_ERR);
 			}
 		}
 		return S_OK;
@@ -895,7 +895,7 @@ void	ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
 					Led_ThrowIfErrorHRESULT (alc->get_Name (&name));
 					fCommandListCache.push_back (alc);
 					Led_SDK_String	itemPrintName	=	Led_Wide2SDKString (wstring (name));
-					Led_Verify (fComboBox.SendMessage (CB_ADDSTRING, 0, reinterpret_cast<LPARAM> (itemPrintName.c_str ())) != CB_ERR);
+					Verify (fComboBox.SendMessage (CB_ADDSTRING, 0, reinterpret_cast<LPARAM> (itemPrintName.c_str ())) != CB_ERR);
 					SIZE	sz;
 					memset (&sz, 0, sizeof (sz));
 					::GetTextExtentPoint32 (hdc, itemPrintName.c_str (), itemPrintName.length (), &sz);

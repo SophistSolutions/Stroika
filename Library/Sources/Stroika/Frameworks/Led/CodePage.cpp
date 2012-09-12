@@ -170,7 +170,7 @@ namespace   Stroika {
 
                         outStream << "\t\t\t) {\n";
                         outStream << "\t\t\t#if		qTestMyISWXXXFunctions\n";
-                        outStream << "\t\t\tLed_Assert (" << origFunctionName << "(c));\n";
+                        outStream << "\t\t\tAssert (" << origFunctionName << "(c));\n";
                         outStream << "\t\t\t#endif\n";
                         outStream << "\t\t\treturn true;\n";
                         outStream << "\t\t}\n";
@@ -179,7 +179,7 @@ namespace   Stroika {
 
                     }
                     outStream << "\t#if		qTestMyISWXXXFunctions\n";
-                    outStream << "\tLed_Assert (!" << origFunctionName << "(c));\n";
+                    outStream << "\tAssert (!" << origFunctionName << "(c));\n";
                     outStream << "\t#endif\n";
                     outStream << "\treturn false;\n";
                     outStream << "}\n";

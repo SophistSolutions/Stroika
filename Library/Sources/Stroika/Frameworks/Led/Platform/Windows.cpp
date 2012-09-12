@@ -148,7 +148,7 @@ namespace   Stroika {
                     // Avoid splitting mbyte characters
 #if     qMultiByteCharacters
                     if (newSelStart > newRowStart) {
-                        Led_SmallStackBuffer<Led_tChar> buf (newRowLen);
+                        Memory::SmallStackBuffer<Led_tChar> buf (newRowLen);
                         ti.CopyOut (newRowStart, newRowLen, buf);
                         const   char*   text    =   buf;
                         size_t          index   =   newSelStart - newRowStart;

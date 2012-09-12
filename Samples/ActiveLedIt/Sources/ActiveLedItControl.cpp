@@ -611,7 +611,7 @@ void	ActiveLedItControl::OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& r
 			 *	window. -- LGP 2003-05-06
 			 */
 			RECT	editorWndRct;
-			Led_Verify (::GetWindowRect (m_hWnd, &editorWndRct));
+			Verify (::GetWindowRect (m_hWnd, &editorWndRct));
 			ScreenToClient (&editorWndRct);
 			newWinRect	+=	AsLedRect (rcBounds).GetOrigin () - AsLedRect (editorWndRct).GetOrigin ();
 		}
@@ -624,7 +624,7 @@ void	ActiveLedItControl::OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& r
 	catch (...) {
 		// Ignore exceptions on display. Would be had. Assert error if ever happens, but in release control,
 		// not much we can usefully do...
-		Led_Assert (false);
+		Assert (false);
 		fEditor.SetWindowRect (oldWinRect);
 	}
 }
@@ -680,7 +680,7 @@ void	ActiveLedItControl::OnDrawMetafile (CDC* pDC, const CRect& rcBounds)
 	catch (...) {
 		// Ignore exceptions on display. Would be had. Assert error if ever happens, but in release control,
 		// not much we can usefully do...
-		Led_Assert (false);
+		Assert (false);
 		fEditor.SetImageUsingOffscreenBitmaps (oldImageUsingOffscreenBitmapsFlag);
 		fEditor.fInDrawMetaFileMode = oldInDrawMetaFileMode;
 		fEditor.SetWindowRect (oldWinRect);
@@ -877,13 +877,13 @@ BOOL	ActiveLedItControl::OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClip
 {
 	#if		qDefaultTracingOn
 		if (lprcClipRect == NULL) {
-			LedDebugTrace (Led_SDK_TCHAROF ("ActiveLedItControl::OnSetObjectRects (m_bUIActive=%d, m_bInPlaceSiteWndless=%d, lprcPosRect=(%d, %d, %d, %d), NULL)\n"),
+			DbgTrace  (Led_SDK_TCHAROF ("ActiveLedItControl::OnSetObjectRects (m_bUIActive=%d, m_bInPlaceSiteWndless=%d, lprcPosRect=(%d, %d, %d, %d), NULL)\n"),
 					m_bUIActive, m_bInPlaceSiteWndless,
 					lprcPosRect->top, lprcPosRect->left, lprcPosRect->bottom, lprcPosRect->right
 				);
 		}
 		else {
-			LedDebugTrace (Led_SDK_TCHAROF ("ActiveLedItControl::OnSetObjectRects (m_bUIActive=%d, m_bInPlaceSiteWndless=%d, lprcPosRect=(%d, %d, %d, %d), lprcClipRect=(%d, %d, %d, %d))\n"),
+			DbgTrace  (Led_SDK_TCHAROF ("ActiveLedItControl::OnSetObjectRects (m_bUIActive=%d, m_bInPlaceSiteWndless=%d, lprcPosRect=(%d, %d, %d, %d), lprcClipRect=(%d, %d, %d, %d))\n"),
 					m_bUIActive, m_bInPlaceSiteWndless,
 					lprcPosRect->top, lprcPosRect->left, lprcPosRect->bottom, lprcPosRect->right,
 					lprcClipRect->top, lprcClipRect->left, lprcClipRect->bottom, lprcClipRect->right
@@ -952,7 +952,7 @@ void	ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
 			{
 				Led_StackBasedHandleLocker	hdl (hglobal);
 				void* pvBlob = hdl.GetPointer ();
-				Led_AssertNotNil (pvBlob);
+				AssertNotNull (pvBlob);
 				*(long*)pvBlob = len;
 				::memcpy (reinterpret_cast<char*> (pvBlob) + sizeof (size_t), s.c_str (), len);
 			}
@@ -994,7 +994,7 @@ Led_FileFormat	ActiveLedItControl::GuessFormatFromName (LPCTSTR name)
 	return format;
 }
 
-void	ActiveLedItControl::DoReadFile (LPCTSTR filename, Led_SmallStackBuffer<char>* buffer, size_t* size)
+void	ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<char>* buffer, size_t* size)
 {
 	int	fd	=	::_topen (filename, O_RDONLY | O_BINARY, _S_IREAD);
 	try {
@@ -1051,7 +1051,7 @@ void	ActiveLedItControl::LoadFile (LPCTSTR filename)
 	fCommandHandler.Commit ();
 	fEditor.Replace (0, fEditor.GetEnd (), LED_TCHAR_OF (""), 0);
 
-	Led_SmallStackBuffer<char>	buffer (0);
+	Memory::SmallStackBuffer<char>	buffer (0);
 	size_t						size	=	0;
 	DoReadFile (filename, &buffer, &size);
 
@@ -1134,7 +1134,7 @@ ReRead:
 		break;
 
 		default: {
-			Led_Assert (false);	// don't support reading that format (yet?)!
+			Assert (false);	// don't support reading that format (yet?)!
 		}
 		break;
 	}
@@ -1459,7 +1459,7 @@ void	ActiveLedItControl::OnAboutBoxCommand ()
 					// Place and fill in version information
 					{
 						HWND	w	=	::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_VersionFieldID);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						const	int	kVERWidth	=	230;
 						#if		qDemoMode
 							::MoveWindow (w, kPictWidth/2 - kVERWidth/2, 35, 230, 2*14, false);
@@ -1490,17 +1490,17 @@ void	ActiveLedItControl::OnAboutBoxCommand ()
 					// Place hidden buttons which map to URLs
 					{
 						HWND	w	=	::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_InfoLedFieldID);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						::MoveWindow (w, 15, 159, 142, 17, false);
 						w	=	::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_LedWebPageFieldID);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						::MoveWindow (w, 227, 159, 179, 17, false);
 					}
 
 					// Place OK button
 					{
 						HWND	w	=	::GetDlgItem (GetHWND (), IDOK);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						RECT	tmp;
 						::GetWindowRect (w, &tmp);
 						::MoveWindow (w, kButHSluff, kPictHeight - AsLedRect (tmp).GetHeight ()-kButVSluff, AsLedRect (tmp).GetWidth (), AsLedRect (tmp).GetHeight (), false);	// width/height we should presevere
@@ -1652,8 +1652,8 @@ int		ActiveLedItControl::OnCreate (LPCREATESTRUCT lpCreateStruct)
 
 void	ActiveLedItControl::OnWindowPosChanged (WINDOWPOS* lpwndpos)
 {
-	Led_RequireNotNil (lpwndpos);
-	LedDebugTrace (Led_SDK_TCHAROF ("ActiveLedItControl::OnWindowPosChanged (cx=%d, cy=%d, flags=0x%x)\n"), lpwndpos->cx, lpwndpos->cy, lpwndpos->flags);
+	RequireNotNull (lpwndpos);
+	DbgTrace  (Led_SDK_TCHAROF ("ActiveLedItControl::OnWindowPosChanged (cx=%d, cy=%d, flags=0x%x)\n"), lpwndpos->cx, lpwndpos->cy, lpwndpos->flags);
 
 	IdleManager::NonIdleContext	nonIdleContext;
 
@@ -1751,7 +1751,7 @@ BSTR	ActiveLedItControl::OLE_ShortVersionString ()
 		return CString (result.c_str ()).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false); /*NOTREACHED*/ return NULL;
+	Assert (false); /*NOTREACHED*/ return NULL;
 }
 
 BOOL	ActiveLedItControl::OLE_GetReadOnly ()
@@ -2022,7 +2022,7 @@ void	ActiveLedItControl::SetHasHorizontalScrollBar (UINT bNewValue)
 BSTR	ActiveLedItControl::GetBufferText () 
 {
 	size_t	len	=		fEditor.GetLength ();
-	Led_SmallStackBuffer<Led_tChar>	buf (len + 1);
+	Memory::SmallStackBuffer<Led_tChar>	buf (len + 1);
 	fEditor.CopyOut (0, len, buf);
 	buf[len] = '\0';
 	return CString (buf).AllocSysString ();
@@ -2036,7 +2036,7 @@ void	ActiveLedItControl::SetBufferText (LPCTSTR text)
 		fCommandHandler.Commit ();
 		#if		_UNICODE
 			size_t							len			=	text==NULL? 0: ::_tcslen (text);
-			Led_SmallStackBuffer<wchar_t>	buf (len+1);
+			Memory::SmallStackBuffer<wchar_t>	buf (len+1);
 			buf[0] = 0xfeff;
 			memcpy (&buf[1], text, len*sizeof (wchar_t));
 			StyledTextIOSrcStream_Memory				source (buf, (len+1)*sizeof (wchar_t));
@@ -2056,16 +2056,16 @@ BSTR	ActiveLedItControl::GetBufferTextCRLF ()
 {
 	try {
 		size_t	len	=		fEditor.GetLength ();
-		Led_SmallStackBuffer<Led_tChar>	buf (len + 1);
+		Memory::SmallStackBuffer<Led_tChar>	buf (len + 1);
 		fEditor.CopyOut (0, len, buf);
 		buf[len] = '\0';
-		Led_SmallStackBuffer<Led_tChar>	buf2 (2*len + 1);
+		Memory::SmallStackBuffer<Led_tChar>	buf2 (2*len + 1);
 		len = Led_NLToNative (buf, len, buf2, 2*len + 1);
 		buf2[len] = '\0';
 		return CString (buf2).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false); /*NOTREACHED*/ return NULL;
+	Assert (false); /*NOTREACHED*/ return NULL;
 }
 
 void	ActiveLedItControl::SetBufferTextCRLF (LPCTSTR text) 
@@ -2080,7 +2080,7 @@ BSTR	ActiveLedItControl::GetBufferTextAsRTF ()
 		return CString (GetBufferTextAsRTF_ ().c_str ()).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false); /*NOTREACHED*/ return NULL;
+	Assert (false); /*NOTREACHED*/ return NULL;
 }
 
 string	ActiveLedItControl::GetBufferTextAsRTF_ () 
@@ -2090,7 +2090,7 @@ string	ActiveLedItControl::GetBufferTextAsRTF_ ()
 	StyledTextIOWriter_RTF						textWriter (&source, &sink);
 	textWriter.Write ();
 	size_t	len	=	sink.GetLength ();
-	Led_SmallStackBuffer<char>	buf (len + 1);
+	Memory::SmallStackBuffer<char>	buf (len + 1);
 	memcpy (buf, sink.PeekAtData (), len);
 	buf[len] = '\0';
 	return string (static_cast<char*> (buf));
@@ -2123,13 +2123,13 @@ BSTR	ActiveLedItControl::GetBufferTextAsHTML ()
 		StyledTextIOWriter_HTML						textWriter (&source, &sink);
 		textWriter.Write ();
 		size_t	len	=	sink.GetLength ();
-		Led_SmallStackBuffer<char>	buf (len + 1);
+		Memory::SmallStackBuffer<char>	buf (len + 1);
 		memcpy (buf, sink.PeekAtData (), len);
 		buf[len] = '\0';
 		return CString (buf).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false); /*NOTREACHED*/ return NULL;
+	Assert (false); /*NOTREACHED*/ return NULL;
 }
 
 void	ActiveLedItControl::SetBufferTextAsHTML (LPCTSTR text) 
@@ -2209,7 +2209,7 @@ Again:
 				offscreenRect.right = rhsMargin;
 				if (++nTimes > 5) {
 					// don't think this can ever happen - but in case...
-					Led_Assert (false);
+					Assert (false);
 				}
 				else {
 					goto Again;
@@ -2218,9 +2218,9 @@ Again:
 		}
 
 		Led_Tablet_	memDC;
-		Led_Verify (memDC.CreateCompatibleDC (tablet));
-		Led_Verify (memoryBitmap.CreateCompatibleBitmap (tablet->m_hDC, offscreenRect.GetWidth (), offscreenRect.GetHeight ()));
-		Led_Verify (memDC.SelectObject (memoryBitmap));
+		Verify (memDC.CreateCompatibleDC (tablet));
+		Verify (memoryBitmap.CreateCompatibleBitmap (tablet->m_hDC, offscreenRect.GetWidth (), offscreenRect.GetHeight ()));
+		Verify (memDC.SelectObject (memoryBitmap));
 		(void)memDC.SetWindowOrg (offscreenRect.left, offscreenRect.top);
 
 		LedItView::TemporarilyUseTablet	tmpUseTablet (fEditor, &memDC, LedItView::TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
@@ -2239,13 +2239,13 @@ Again:
 //	#define	qCopyDIBToClipToTest	1
 	#if		qCopyDIBToClipToTest
 		{
-			Led_Verify (::OpenClipboard (fEditor.m_hWnd));
-			Led_Verify (::EmptyClipboard ());
+			Verify (::OpenClipboard (fEditor.m_hWnd));
+			Verify (::EmptyClipboard ());
 			HGLOBAL	dataHandle = ::GlobalAlloc (GMEM_DDESHARE, dibRAMSize);
-			Led_Verify (dataHandle);
+			Verify (dataHandle);
 			::memcpy (Led_StackBasedHandleLocker (dataHandle).GetPointer (), tmpDIB, dibRAMSize);
-			Led_Verify (::SetClipboardData (CF_DIB, dataHandle));
-			Led_Verify (::CloseClipboard ());
+			Verify (::SetClipboardData (CF_DIB, dataHandle));
+			Verify (::CloseClipboard ());
 			::GlobalFree (dataHandle);// MAYTBE must do a ::GlobalFree (dataHandle) here?? DOCS on SetClipboardData() are ambiguous... - but robert complained of mem-leak and this could be it! - LGP 2000-06-28
 		}
 	#endif
@@ -2427,7 +2427,7 @@ void	ActiveLedItControl::OLE_SetShowSecondaryHilight (BOOL bNewValue)
 BOOL	ActiveLedItControl::OLE_GetShowHidableText () 
 {
 	ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
-	Led_AssertNotNil (uhtmo);
+	AssertNotNull (uhtmo);
 	return !uhtmo->IsHidden ();
 }
 
@@ -2447,11 +2447,11 @@ OLE_COLOR	ActiveLedItControl::OLE_GetHidableTextColor ()
 {
 	try {
 		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
-		Led_AssertNotNil (uhtmo);
+		AssertNotNull (uhtmo);
 		return uhtmo->GetColor ().GetOSRep ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::OLE_SetHidableTextColor (OLE_COLOR color) 
@@ -2459,7 +2459,7 @@ void	ActiveLedItControl::OLE_SetHidableTextColor (OLE_COLOR color)
 	CHECK_DEMO_AND_BEEP_AND_RETURN();
 	try {
 		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
-		Led_AssertNotNil (uhtmo);
+		AssertNotNull (uhtmo);
 		uhtmo->SetColor (Led_Color (TranslateColor (color)));
 		fEditor.Refresh ();
 	}
@@ -2470,11 +2470,11 @@ BOOL	ActiveLedItControl::OLE_GetHidableTextColored ()
 {
 	try {
 		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
-		Led_AssertNotNil (uhtmo);
+		AssertNotNull (uhtmo);
 		return uhtmo->GetColored ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::OLE_SetHidableTextColored (BOOL bNewValue) 
@@ -2482,7 +2482,7 @@ void	ActiveLedItControl::OLE_SetHidableTextColored (BOOL bNewValue)
 	CHECK_DEMO_AND_BEEP_AND_RETURN();
 	try {
 		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
-		Led_AssertNotNil (uhtmo);
+		AssertNotNull (uhtmo);
 		uhtmo->SetColored (bNewValue);
 		fEditor.Refresh ();
 	}
@@ -2518,7 +2518,7 @@ void	ActiveLedItControl::OLE_SetSpellChecker (VARIANT& newValue)
 			ChangedSpellCheckerCOMObject ();
 		}
 
-		Led_Assert (fSpellChecker == NULL);
+		Assert (fSpellChecker == NULL);
 		VARIANT	tmpV;
 		::VariantInit (&tmpV);
 		if (::VariantChangeType (&tmpV, &newValue, 0, VT_DISPATCH) == S_OK) {
@@ -2538,7 +2538,7 @@ void	ActiveLedItControl::OLE_SetSpellChecker (VARIANT& newValue)
 					SUCCEEDED (hr = ::CLSIDFromString (tmpV.bstrVal, &theCLSID))
 					) {
 					hr	=	::CoCreateInstance (theCLSID, NULL, CLSCTX_ALL, IID_IDispatch, reinterpret_cast<LPVOID*> (&fSpellChecker));
-					Led_Assert (SUCCEEDED (hr) == (fSpellChecker != NULL));
+					Assert (SUCCEEDED (hr) == (fSpellChecker != NULL));
 				}
 			}
 			::VariantClear (&tmpV);
@@ -2743,7 +2743,7 @@ namespace	{
 				o->put_InternalName (CComBSTR (kName_FontNameMenu));
 
 				const vector<Led_SDK_String>&	fontNames	=	GetUsableFontNames ();
-				Led_Assert (fontNames.size () <=  kLastFontNameCmd-kBaseFontNameCmd+1);
+				Assert (fontNames.size () <=  kLastFontNameCmd-kBaseFontNameCmd+1);
 				for (size_t i = 0; i < fontNames.size (); i++) {
 					int	cmdNum	=	kBaseFontNameCmd + i;
 					if (cmdNum > kLastFontNameCmd) {
@@ -2982,10 +2982,10 @@ HACCEL	ActiveLedItControl::GetCurrentWin32AccelTable ()
 				if (fWin32AccelTable != NULL) {
 					size_t	accelTableSize	=	::CopyAcceleratorTable (fWin32AccelTable, NULL, 0);
 					if (accelTableSize == ::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0)) {
-						Led_SmallStackBuffer<ACCEL>	oldOne (accelTableSize);
-						Led_Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, accelTableSize) == accelTableSize);
-						Led_SmallStackBuffer<ACCEL>	newOne (accelTableSize);
-						Led_Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, accelTableSize) == accelTableSize);
+						Memory::SmallStackBuffer<ACCEL>	oldOne (accelTableSize);
+						Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, accelTableSize) == accelTableSize);
+						Memory::SmallStackBuffer<ACCEL>	newOne (accelTableSize);
+						Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, accelTableSize) == accelTableSize);
 						if (::memcmp (oldOne, newOne, accelTableSize * sizeof (ACCEL)) == 0) {
 							keepOld = true;
 						}
@@ -3584,13 +3584,13 @@ BSTR	ActiveLedItControl::GetSelText ()
 		size_t	e;
 		fEditor.GetSelection (&s, &e);
 		size_t	len	=		e-s;
-		Led_SmallStackBuffer<Led_tChar>	buf (len + 1);
+		Memory::SmallStackBuffer<Led_tChar>	buf (len + 1);
 		fEditor.CopyOut (s, len, buf);
 		buf[len] = '\0';
 		return CString (buf).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false); /*NOTREACHED*/ return NULL;
+	Assert (false); /*NOTREACHED*/ return NULL;
 }
 
 void	ActiveLedItControl::SetSelText (LPCTSTR text)
@@ -3598,7 +3598,7 @@ void	ActiveLedItControl::SetSelText (LPCTSTR text)
 	CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK(fEditor.GetHWND ());
 	try {
 		size_t	len	=	::_tcslen (text);
-		Led_SmallStackBuffer<Led_tChar>	buf (len + 1);
+		Memory::SmallStackBuffer<Led_tChar>	buf (len + 1);
 		len = Led_NativeToNL (Led_SDKString2tString (text).c_str (), len, buf, len + 1);
 		size_t	s;
 		size_t	e;
@@ -3619,13 +3619,13 @@ BSTR	ActiveLedItControl::GetSelTextAsRTF ()
 		StyledTextIOWriter_RTF						textWriter (&source, &sink);
 		textWriter.Write ();
 		size_t	len	=	sink.GetLength ();
-		Led_SmallStackBuffer<char>	buf (len + 1);
+		Memory::SmallStackBuffer<char>	buf (len + 1);
 		::memcpy (buf, sink.PeekAtData (), len);
 		buf[len] = '\0';
 		return CString (buf).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false); /*NOTREACHED*/ return NULL;
+	Assert (false); /*NOTREACHED*/ return NULL;
 }
 
 void	ActiveLedItControl::SetSelTextAsRTF (LPCTSTR text) 
@@ -3654,13 +3654,13 @@ BSTR	ActiveLedItControl::GetSelTextAsHTML ()
 		StyledTextIOWriter_HTML						textWriter (&source, &sink);
 		textWriter.Write ();
 		size_t	len	=	sink.GetLength ();
-		Led_SmallStackBuffer<char>	buf (len + 1);
+		Memory::SmallStackBuffer<char>	buf (len + 1);
 		::memcpy (buf, sink.PeekAtData (), len);
 		buf[len] = '\0';
 		return CString (buf).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelTextAsHTML (LPCTSTR text) 
@@ -3683,19 +3683,19 @@ void	ActiveLedItControl::SetSelTextAsHTML (LPCTSTR text)
 OLE_COLOR	ActiveLedItControl::GetSelColor () 
 {
 	try {
-		Led_Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
+		Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
 		size_t	selectionLength	=	fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
 	//HOW DO YOU SAY RETURNS ERROR??? LIKE YOU CAN WITH ATL???
 		if (not fsp.GetTextColor_Valid ()) {
 			//HACK!!!
 			fsp = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), 0);
-			Led_Assert (fsp.GetTextColor_Valid ());
+			Assert (fsp.GetTextColor_Valid ());
 		}
 		return fsp.GetTextColor ().GetOSRep ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelColor (OLE_COLOR color) 
@@ -3714,7 +3714,7 @@ void	ActiveLedItControl::SetSelColor (OLE_COLOR color)
 BSTR	ActiveLedItControl::GetSelFontFace () 
 {
 	try {
-		Led_Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
+		Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
 		size_t	selectionLength	=	fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
 		if (not fsp.GetFontNameSpecifier_Valid ()) {
@@ -3723,7 +3723,7 @@ BSTR	ActiveLedItControl::GetSelFontFace ()
 		return CString (fsp.GetFontName ().c_str ()).AllocSysString ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelFontFace (LPCTSTR fontFace) 
@@ -3742,7 +3742,7 @@ void	ActiveLedItControl::SetSelFontFace (LPCTSTR fontFace)
 long	ActiveLedItControl::GetSelFontSize () 
 {
 	try {
-		Led_Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
+		Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
 		size_t	selectionLength	=	fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
 		if (not fsp.GetPointSize_Valid ()) {
@@ -3751,7 +3751,7 @@ long	ActiveLedItControl::GetSelFontSize ()
 		return fsp.GetPointSize ();
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelFontSize (long size) 
@@ -3779,7 +3779,7 @@ long	ActiveLedItControl::GetSelBold ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		size_t	selectionLength	=	selEnd - selStart;
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
 		if (not fsp.GetStyle_Bold_Valid ()) {
@@ -3788,7 +3788,7 @@ long	ActiveLedItControl::GetSelBold ()
 		return fsp.GetStyle_Bold ()? 1: 0;
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelBold (long bold) 
@@ -3810,7 +3810,7 @@ long	ActiveLedItControl::GetSelItalic ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		size_t	selectionLength	=	selEnd - selStart;
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
 		if (not fsp.GetStyle_Italic_Valid ()) {
@@ -3819,7 +3819,7 @@ long	ActiveLedItControl::GetSelItalic ()
 		return fsp.GetStyle_Italic ()? 1: 0;
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelItalic (long italic) 
@@ -3841,7 +3841,7 @@ long	ActiveLedItControl::GetSelStrikeThru ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		size_t	selectionLength	=	selEnd - selStart;
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
 		if (not fsp.GetStyle_Strikeout_Valid ()) {
@@ -3850,7 +3850,7 @@ long	ActiveLedItControl::GetSelStrikeThru ()
 		return fsp.GetStyle_Strikeout ()? 1: 0;
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelStrikeThru (long strikeThru) 
@@ -3872,7 +3872,7 @@ long	ActiveLedItControl::GetSelUnderline ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		size_t	selectionLength	=	selEnd - selStart;
 		Led_IncrementalFontSpecification	fsp = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
 		if (not fsp.GetStyle_Underline_Valid ()) {
@@ -3881,7 +3881,7 @@ long	ActiveLedItControl::GetSelUnderline ()
 		return fsp.GetStyle_Underline ()? 1: 0;
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::SetSelUnderline (long underline) 
@@ -3904,7 +3904,7 @@ UINT	ActiveLedItControl::OLE_GetSelJustification ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		if (fEditor.GetJustification (selStart, selEnd, &justification)) {
 			switch (justification) {
 				case	eLeftJustify:	return eLeftJustification;
@@ -3919,7 +3919,7 @@ UINT	ActiveLedItControl::OLE_GetSelJustification ()
 		}
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::OLE_SetSelJustification (UINT justification)
@@ -3947,7 +3947,7 @@ UINT	ActiveLedItControl::OLE_GetSelListStyle ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		if (fEditor.GetListStyle (selStart, selEnd, &listStyle)) {
 			// take advantage of (assumption) that OLE list style enum is the same as the Led
 			// one... NB: cast REALLY not necessary as these are all cast to 'int' - but done
@@ -3959,7 +3959,7 @@ UINT	ActiveLedItControl::OLE_GetSelListStyle ()
 		}
 	}
 	CATCH_AND_HANDLE_EXCEPTIONS();
-	Led_Assert (false);	return 0;	// NOTREACHED
+	Assert (false);	return 0;	// NOTREACHED
 }
 
 void	ActiveLedItControl::OLE_SetSelListStyle (UINT listStyle)
@@ -3981,7 +3981,7 @@ UINT	ActiveLedItControl::OLE_GetSelHidable ()
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		if (fEditor.GetHidableTextDatabase ()->GetHidableRegionsContiguous (selStart, selEnd, true)) {
 			return true;
 		}
@@ -4001,7 +4001,7 @@ void	ActiveLedItControl::OLE_SetSelHidable (UINT hidable)
 		size_t	selStart;
 		size_t	selEnd;
 		fEditor.GetSelection (&selStart, &selEnd);
-		Led_Assert (selStart <= selEnd);
+		Assert (selStart <= selEnd);
 		if (hidable) {
 			fEditor.GetHidableTextDatabase ()->MakeRegionHidable (selStart, selEnd);
 		}

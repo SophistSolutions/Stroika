@@ -111,6 +111,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
@@ -219,6 +225,12 @@
       <Filter>Source\Platform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.h">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.h">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.h">
       <Filter>Source\Platform</Filter>
     </ClInclude>
   </ItemGroup>

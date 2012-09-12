@@ -232,7 +232,7 @@ UINT	UserCommandNameNumberRegistry::Enter (const wstring& internalName)
 		cmdNum = fNextUserCmdNum;
 		fNextUserCmdNum++;
 		if (fNextUserCmdNum > kLastOLEUserCmdCmdID) {
-			Led_Assert (false); // not a good thing - should deal with this more gracefully... probably wont ever happen - LGP 2004-01-21
+			Assert (false); // not a good thing - should deal with this more gracefully... probably wont ever happen - LGP 2004-01-21
 			fNextUserCmdNum = kFirstOLEUserCmdCmdID;
 		}
 	}
@@ -267,7 +267,7 @@ wstring	UserCommandNameNumberRegistry::Lookup (UINT cmdNum)
 {
 	wstring	name;
 	bool	r	=	Lookup (cmdNum, &name);
-	Led_Assert (r);
+	Assert (r);
 	return name;
 }
 
@@ -441,7 +441,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
 			Led_ThrowIfErrorHRESULT (alc->get_InternalName (&iName));
 			if (iName == internalName) {
 				*val = *i;
-				Led_AssertNotNil (*val);
+				AssertNotNull (*val);
 				(*val)->AddRef ();
 				return S_OK;
 			}
@@ -882,7 +882,7 @@ STDMETHODIMP	ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
 	try {
 		CComQIPtr<IALCommandList>	builtins	=	GenerateBuiltinCommandsObject ();
 		
-		Led_SmallStackBuffer<ACCEL>	accels (fAccelerators.size  ());
+		Memory::SmallStackBuffer<ACCEL>	accels (fAccelerators.size  ());
 		size_t						goodKeysFound	=	0;
 		for (vector<CComPtr<IDispatch> >::const_iterator i = fAccelerators.begin (); i != fAccelerators.end (); ++i) {
 			CComQIPtr<IALAcceleratorElement>	ae	=	*i;
@@ -1304,7 +1304,7 @@ CComPtr<IDispatch>	GenerateBuiltinCommandsObject ()
 	o->AppendBuiltinCmds (kAllCmds, kAllCmds + Led_NEltsOf (kAllCmds));
 	{
 		const vector<Led_SDK_String>&	fontNames	=	GetUsableFontNames ();
-		Led_Assert (fontNames.size () <=  kLastFontNameCmd-kBaseFontNameCmd+1);
+		Assert (fontNames.size () <=  kLastFontNameCmd-kBaseFontNameCmd+1);
 		for (size_t i = 0; i < fontNames.size (); i++) {
 			int	cmdNum	=	kBaseFontNameCmd + i;
 			if (cmdNum > kLastFontNameCmd) {
@@ -1341,7 +1341,7 @@ WORD	CmdObjOrName2Num (const VARIANT& cmdObjOrName)
 
 		if (lookForCmdName.length () > kFontNameCMDPrefix.length () and lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == ACP2WideString (kFontNameCMDPrefix)) {
 			const vector<Led_SDK_String>&	fontNames	=	GetUsableFontNames ();
-			Led_Assert (fontNames.size () <=  kLastFontNameCmd-kBaseFontNameCmd+1);
+			Assert (fontNames.size () <=  kLastFontNameCmd-kBaseFontNameCmd+1);
 			for (size_t i = 0; i < fontNames.size (); i++) {
 				int	cmdNum	=	kBaseFontNameCmd + i;
 				if (cmdNum > kLastFontNameCmd) {

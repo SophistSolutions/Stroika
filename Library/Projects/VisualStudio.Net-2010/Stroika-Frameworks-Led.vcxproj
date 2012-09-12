@@ -89,6 +89,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.cpp" />
@@ -127,6 +129,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.h" />

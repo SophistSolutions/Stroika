@@ -24,7 +24,7 @@
 inline	const	void*	LoadDLLResource (long resID, LPCTSTR resType)
 	{
 		HRSRC	hrsrc	=	::FindResource (::AfxGetResourceHandle (), MAKEINTRESOURCE (resID), resType);
-		Led_AssertNotNil (hrsrc);
+		AssertNotNull (hrsrc);
 		HGLOBAL	hglobal	=	::LoadResource (::AfxGetResourceHandle (), hrsrc);
 		const void*	lockedData	=	::LockResource (hglobal);
 		Led_EnsureNotNil (lockedData);
@@ -186,8 +186,8 @@ int	ActiveLedItApp::ExitInstance ()
 	#endif
 	_AFX_THREAD_STATE* pState = AfxGetThreadState();
 	ASSERT(pState != NULL);
-	Led_Assert (pState->m_nCtrlRef == 0);
-	Led_Assert (AfxGetModuleState ()->m_nObjectCount == 0)
+	Assert (pState->m_nCtrlRef == 0);
+	Assert (AfxGetModuleState ()->m_nObjectCount == 0)
 
 	return inherited::ExitInstance ();
 }

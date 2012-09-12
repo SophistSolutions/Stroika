@@ -190,12 +190,12 @@ namespace   Stroika {
                 // right object to right DC!!!! - LGP 950525
                 if (tablet->m_hDC != tablet->m_hAttribDC) {
                     fRestoreObject = ::SelectObject (tablet->m_hDC, imager->fCachedFont->m_hObject);
-                    // At one point i had Led_Asserts() here that fRestoreObject != nullptr - but at least for PrintDC's, apparently
+                    // At one point i had Asserts() here that fRestoreObject != nullptr - but at least for PrintDC's, apparently
                     // fRestoreObject can be nullptr, and apparently it isn't a problem...
                 }
                 if (tablet->m_hAttribDC != nullptr) {
                     fRestoreAttribObject = ::SelectObject (tablet->m_hAttribDC, imager->fCachedFont->m_hObject);
-                    // At one point i had Led_Asserts() here that fRestoreAttribObject != nullptr - but at least for PrintDC's, apparently
+                    // At one point i had Asserts() here that fRestoreAttribObject != nullptr - but at least for PrintDC's, apparently
                     // fRestoreAttribObject can be nullptr, and apparently it isn't a problem...
                 }
                 if (changed) {

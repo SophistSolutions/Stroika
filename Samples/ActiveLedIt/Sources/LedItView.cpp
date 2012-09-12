@@ -237,7 +237,7 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 					case	Led_StdDialogHelper_ReplaceDialog::eReplaceAll:				return eReplaceButton_ReplaceAll;
 					case	Led_StdDialogHelper_ReplaceDialog::eReplaceAllInSelection:	return eReplaceButton_ReplaceAllInSelection;
 				}
-				Led_Assert (false); return eReplaceButton_Cancel;
+				Assert (false); return eReplaceButton_Cancel;
 			}
 #endif
 #if		qSupportStdSpellCheckDlg
@@ -729,16 +729,16 @@ void	LedItView::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 	CCmdUI	state;
 	state.m_pSubMenu = NULL;
 	state.m_pMenu = pPopupMenu;
-	Led_Assert (state.m_pOther == NULL);
-	Led_Assert (state.m_pParentMenu == NULL);
+	Assert (state.m_pOther == NULL);
+	Assert (state.m_pParentMenu == NULL);
 
 	// Set the enable/disable state of each menu item.
 	state.m_nIndexMax = pPopupMenu->GetMenuItemCount ();
 	for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax; state.m_nIndex++) {
 		state.m_nID = pPopupMenu->GetMenuItemID (state.m_nIndex);
 		if (state.m_nID != 0) {
-			Led_Assert (state.m_pOther == NULL);
-			Led_Assert (state.m_pMenu != NULL);
+			Assert (state.m_pOther == NULL);
+			Assert (state.m_pMenu != NULL);
 			state.DoUpdate (this, true);
 		}
 	}
@@ -758,7 +758,7 @@ void	LedItView::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 				memset (&mInfo, 0, sizeof (mInfo));
 				mInfo.cbSize = sizeof (mInfo);
 				mInfo.fMask = MIIM_STATE;
-				Led_Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
+				Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
 				if (mInfo.fState & MFS_DISABLED) {
 					pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
 					state.m_nIndexMax--;
@@ -781,7 +781,7 @@ void	LedItView::OnContextMenu (CWnd* /*pWnd*/, CPoint pt)
 {
 	if (GetSupportContextMenu ()) {
 		CMenu menu;
-		Led_AssertNotNil (fController);
+		AssertNotNull (fController);
 		if (menu.Attach (fController->GenerateContextMenu ())) {
 			menu.TrackPopupMenu (TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, this);
 		}

@@ -50,18 +50,18 @@
  * to 'new' so it can be safely used in places where the global new operator would have been used.
  *      -- LGP 2009-05-25
  *
- *	If DEBUG_NEW is already defined (eg because of import of <afx.h> - MFC) - don't redefine, but just allow
- *	use of MFC version.
+ *  If DEBUG_NEW is already defined (eg because of import of <afx.h> - MFC) - don't redefine, but just allow
+ *  use of MFC version.
  */
-#if		 !defined (DEBUG_NEW)
+#if      !defined (DEBUG_NEW)
 #if     qMSVisualStudioCRTMemoryDebug
 #define     _CRTDBG_MAP_ALLOC
 #include    <crtdbg.h>
 #define DEBUG_NEW   new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#else	/*qMSVisualStudioCRTMemoryDebug*/
+#else   /*qMSVisualStudioCRTMemoryDebug*/
 #define DEBUG_NEW    new
-#endif	/*qMSVisualStudioCRTMemoryDebug*/
-#endif	/*!defined (DEBUG_NEW)*/
+#endif  /*qMSVisualStudioCRTMemoryDebug*/
+#endif  /*!defined (DEBUG_NEW)*/
 
 
 

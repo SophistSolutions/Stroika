@@ -445,6 +445,8 @@
 
 #include    <Windows.h>
 
+#include    "../../../Foundation/Memory/SmallStackBuffer.h"
+
 #include    "../CodePage.h"
 #include    "../TextInteractor.h"
 
@@ -1155,7 +1157,7 @@ namespace   Stroika {
 
                     if (hdc != NULL) {
                         RECT    boundsRect;
-                        Led_Verify (::GetClipBox (hdc, &boundsRect) != ERROR);
+                        Verify (::GetClipBox (hdc, &boundsRect) != ERROR);
                         Led_Tablet_ tablet (hdc, Led_Tablet_::eDoesntOwnDC);
                         try {
                             WindowDrawHelper (&tablet, AsLedRect (boundsRect), false);
@@ -1752,7 +1754,7 @@ namespace   Stroika {
                     AssertNotNull (hWnd);
                     if (::GetCapture () == hWnd) {
                         StopAutoscrollTimer ();
-                        Led_Verify (::ReleaseCapture ());
+                        Verify (::ReleaseCapture ());
                         WhileSimpleMouseTracking (Led_Point (y, x), fDragAnchor);
                     }
                 }
@@ -1784,7 +1786,7 @@ namespace   Stroika {
                 template    <typename   BASE_INTERACTOR>
                 void    Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (UINT nSBCode, UINT /*nPos*/, HWND /*hScrollBar*/)
                 {
-                    LedDebugTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode=%d,...)\n"), nSBCode);
+                    DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode=%d,...)\n"), nSBCode);
 
                     /*
                      *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
@@ -2057,7 +2059,7 @@ namespace   Stroika {
                     fAccumulatedWheelDelta %= WHEEL_DELTA;
 
                     int scrollLines =   3;  //default
-                    Led_Verify (::SystemParametersInfo (SPI_GETWHEELSCROLLLINES, 0, &scrollLines, 0));
+                    Verify (::SystemParametersInfo (SPI_GETWHEELSCROLLLINES, 0, &scrollLines, 0));
 
                     // Pin - cuz result can be 'WHEEL_PAGESCROLL' - or just exceed a single page - and we are only supposed to scroll a max of
                     // page per delta/WHEEL_DELTA, according to WM_MOUSEWHEEL docs.
@@ -2204,7 +2206,7 @@ namespace   Stroika {
                     Led_Rect    r;
                     {
                         HWND    hWnd    =   GetValidatedHWND ();
-                        Led_Verify (::GetClientRect (hWnd, &cr));
+                        Verify (::GetClientRect (hWnd, &cr));
                         r = AsLedRect (cr);
                     }
                     try {
@@ -2225,10 +2227,10 @@ namespace   Stroika {
                     if (r.left >= r.right) {
                         r.right = r.left + 1;
                     }
-                    LedDebugTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::OnSize_ (clientRect=(%d,%d,%d,%d), windowRect <= (%d,%d,%d,%d))\n"),
-                                   cr.top, cr.left, cr.bottom, cr.right,
-                                   r.top, r.left, r.bottom, r.right
-                                  );
+                    DbgTrace  (Led_SDK_TCHAROF ("Led_Win32_Helper<>::OnSize_ (clientRect=(%d,%d,%d,%d), windowRect <= (%d,%d,%d,%d))\n"),
+                               cr.top, cr.left, cr.bottom, cr.right,
+                               r.top, r.left, r.bottom, r.right
+                              );
                     SetWindowRect (r);
                 }
                 template    <typename   BASE_INTERACTOR>
@@ -2242,14 +2244,14 @@ namespace   Stroika {
                             case    eDelayedUpdate: {
                                     if (not windowRectArea.IsEmpty ()) {
                                         RECT    tmp =   AsRECT (windowRectArea);
-                                        Led_Verify (::InvalidateRect (hWnd, &tmp, true));
+                                        Verify (::InvalidateRect (hWnd, &tmp, true));
                                     }
                                 }
                                 break;
                             case    eImmediateUpdate: {
                                     if (not windowRectArea.IsEmpty ()) {
                                         RECT    tmp =   AsRECT (windowRectArea);
-                                        Led_Verify (::RedrawWindow (hWnd, &tmp, NULL, RDW_INVALIDATE | RDW_UPDATENOW));
+                                        Verify (::RedrawWindow (hWnd, &tmp, NULL, RDW_INVALIDATE | RDW_UPDATENOW));
                                     }
                                 }
                                 break;
@@ -2265,7 +2267,7 @@ namespace   Stroika {
                         HWND        hWnd    =   GetHWND ();
                         if (hWnd != NULL) {
                             Assert (::IsWindow (hWnd));
-                            Led_Verify (::RedrawWindow (hWnd, &tmp, NULL, RDW_UPDATENOW));
+                            Verify (::RedrawWindow (hWnd, &tmp, NULL, RDW_UPDATENOW));
                         }
                     }
                 }
@@ -2300,7 +2302,7 @@ namespace   Stroika {
                         Assert (::IsWindow (hWnd));
                         HDC hdc =   ::GetWindowDC (hWnd);
                         AssertNotNull (hdc);
-                        Led_Verify (fAllocatedTablet.Attach (hdc));
+                        Verify (fAllocatedTablet.Attach (hdc));
                     }
                     Assert (fAllocatedTablet.m_hDC != NULL);
                     Assert (fAllocatedTablet.m_hAttribDC != NULL);
@@ -2315,7 +2317,7 @@ namespace   Stroika {
                     fAcquireCount--;
                     Assert (tablet == fUpdateTablet or tablet == &fAllocatedTablet);
                     if (fAcquireCount == 0 and tablet == &fAllocatedTablet) {
-                        Led_Verify (::ReleaseDC (GetValidatedHWND (), fAllocatedTablet.Detach ()));
+                        Verify (::ReleaseDC (GetValidatedHWND (), fAllocatedTablet.Detach ()));
                     }
                 }
                 template    <typename   BASE_INTERACTOR>
@@ -2326,9 +2328,9 @@ namespace   Stroika {
                 */
                 void    Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
                 {
-                    LedDebugTrace(Led_SDK_TCHAROF ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))\n"),
-                                  subsetToDraw.top, subsetToDraw.left, subsetToDraw.bottom, subsetToDraw.right
-                                 );
+                    DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))\n"),
+                              subsetToDraw.top, subsetToDraw.left, subsetToDraw.bottom, subsetToDraw.right
+                             );
                     TemporarilyUseTablet    tmpUseTablet (*this, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
                     Draw (subsetToDraw, printing);
 
@@ -2547,7 +2549,7 @@ namespace   Stroika {
                     memset (&scrollInfo, 0, sizeof (scrollInfo));
                     scrollInfo.cbSize = sizeof (scrollInfo);
                     scrollInfo.fMask = nMask;
-                    Led_Verify (::GetScrollInfo (GetValidatedHWND (), SB_HORZ, &scrollInfo));
+                    Verify (::GetScrollInfo (GetValidatedHWND (), SB_HORZ, &scrollInfo));
                     return scrollInfo;
                 }
                 template    <typename   BASE_INTERACTOR>
@@ -2559,9 +2561,9 @@ namespace   Stroika {
                 {
                     bool    showBar =   TypeAndScrollInfoSBVisible (scrollbarAppears, scrollInfo);
 
-                    LedDebugTrace(Led_SDK_TCHAROF ("Led_Win32_Helper<>::SetHScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
-                                  scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar
-                                 );
+                    DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::SetHScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
+                              scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar
+                             );
 
                     /*
                      *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
@@ -2594,7 +2596,7 @@ namespace   Stroika {
                     memset (&scrollInfo, 0, sizeof (scrollInfo));
                     scrollInfo.cbSize = sizeof (scrollInfo);
                     scrollInfo.fMask = nMask;
-                    Led_Verify (::GetScrollInfo (GetValidatedHWND (), SB_VERT, &scrollInfo));
+                    Verify (::GetScrollInfo (GetValidatedHWND (), SB_VERT, &scrollInfo));
                     return scrollInfo;
                 }
                 template    <typename   BASE_INTERACTOR>
@@ -2605,9 +2607,9 @@ namespace   Stroika {
                 void        Led_Win32_Helper<BASE_INTERACTOR>::SetVScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
                 {
                     bool    showBar =   TypeAndScrollInfoSBVisible (scrollbarAppears, scrollInfo);
-                    LedDebugTrace(Led_SDK_TCHAROF ("Led_Win32_Helper<>::SetVScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
-                                  scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar
-                                 );
+                    DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::SetVScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
+                              scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar
+                             );
 
                     /*
                      *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
@@ -2726,9 +2728,9 @@ namespace   Stroika {
                 */
                 void    Led_Win32_Helper<BASE_INTERACTOR>::UpdateScrollBars ()
                 {
-                    LedDebugTrace(Led_SDK_TCHAROF ("Led_Win32_Helper<>::UpdateScrollBars () with winStart=%d, winEnd=%d)\n"),
-                                  GetMarkerPositionOfStartOfWindow (), GetMarkerPositionOfEndOfWindow ()
-                                 );
+                    DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::UpdateScrollBars () with winStart=%d, winEnd=%d)\n"),
+                              GetMarkerPositionOfStartOfWindow (), GetMarkerPositionOfEndOfWindow ()
+                             );
 
                     // Don't allow SetVScrollInfo/SetHScrollInfo () calls during a thumb track - because MS Windows scrollbar
                     // control SOMETIMES doesn't react well (npos not properly adjusted) when you reset the page size during
@@ -2847,14 +2849,14 @@ namespace   Stroika {
                     if (fAutoScrollTimerID == 0) {
                         const   int kTimeout    =   20; // 20 milliseconds - update autoscroll every 1/50
                         // second.
-                        Led_Verify (fAutoScrollTimerID = ::SetTimer (GetValidatedHWND (), eAutoscrollingTimerEventID, kTimeout, NULL));
+                        Verify (fAutoScrollTimerID = ::SetTimer (GetValidatedHWND (), eAutoscrollingTimerEventID, kTimeout, NULL));
                     }
                 }
                 template    <typename   BASE_INTERACTOR>
                 void    Led_Win32_Helper<BASE_INTERACTOR>::StopAutoscrollTimer ()
                 {
                     if (fAutoScrollTimerID != 0) {
-                        Led_Verify (::KillTimer (GetValidatedHWND (), eAutoscrollingTimerEventID));
+                        Verify (::KillTimer (GetValidatedHWND (), eAutoscrollingTimerEventID));
                         fAutoScrollTimerID = 0;
                     }
                 }
@@ -2868,7 +2870,7 @@ namespace   Stroika {
                     (void)::EmptyClipboard ();  // should we test for errors?
                     bool    result  =   inherited::OnCopyCommand_Before ();
                     if (not result) {
-                        Led_Verify (::CloseClipboard ());
+                        Verify (::CloseClipboard ());
                         return false;
                     }
                     return result;
@@ -2891,7 +2893,7 @@ namespace   Stroika {
                     }
                     bool    result  =   inherited::OnPasteCommand_Before ();
                     if (not result) {
-                        Led_Verify (::CloseClipboard ());
+                        Verify (::CloseClipboard ());
                         return false;
                     }
                     return result;
@@ -3071,10 +3073,10 @@ namespace   Stroika {
                     Require (cchTextMax > 0);   // cuz we require appending NUL character
 
                     size_t  len =   GetLength ();
-                    Led_SmallStackBuffer<Led_tChar> buf (len);
+                    Memory::SmallStackBuffer<Led_tChar> buf (len);
                     CopyOut (0, len, buf);
                     size_t  len2    =   2 * len;
-                    Led_SmallStackBuffer<Led_tChar> buf2 (len2);
+                    Memory::SmallStackBuffer<Led_tChar> buf2 (len2);
                     len2 = Led_NLToNative (buf, len, buf2, len2);
 #if     qWideCharacters
                     // Assume they want ANSI code page text?
@@ -3100,7 +3102,7 @@ namespace   Stroika {
                     Replace (0, GetEnd (), LED_TCHAR_OF (""), 0);
                     if (lpText != NULL) {
                         size_t  len =   ::strlen (lpText);
-                        Led_SmallStackBuffer<Led_tChar> buf (len);
+                        Memory::SmallStackBuffer<Led_tChar> buf (len);
 #if     qWideCharacters
                         // Assume they want ANSI code page text?
                         len =   ::MultiByteToWideChar (CP_ACP, 0, lpText, len, buf, len);
@@ -3287,7 +3289,7 @@ namespace   Stroika {
                     LPCTSTR text    =   (LPCTSTR)lParam;
 
                     size_t  len =   ::_tcslen (text);
-                    Led_SmallStackBuffer<Led_tChar> buf (len);
+                    Memory::SmallStackBuffer<Led_tChar> buf (len);
 
 #if     qWideCharacters == qSDK_UNICODE
                     ::_tcscpy (buf, text);
@@ -3357,15 +3359,15 @@ namespace   Stroika {
 
                     if (fDefaultFontCache.m_hObject != NULL) {      // Seeing if font changed...
                         Led_FontObject  tmpHackToTestFont;
-                        Led_Verify (tmpHackToTestFont.CreateFontIndirect (&defaultFontLF));
+                        Verify (tmpHackToTestFont.CreateFontIndirect (&defaultFontLF));
 
                         LOGFONT tmpHackToTestFontLF;
                         (void)::memset (&tmpHackToTestFontLF, 0, sizeof (tmpHackToTestFontLF));
-                        Led_Verify (tmpHackToTestFont.GetObject (sizeof (tmpHackToTestFontLF), &tmpHackToTestFontLF));
+                        Verify (tmpHackToTestFont.GetObject (sizeof (tmpHackToTestFontLF), &tmpHackToTestFontLF));
 
                         LOGFONT currentLF;
                         (void)::memset (&currentLF, 0, sizeof (currentLF));
-                        Led_Verify (fDefaultFontCache.GetObject (sizeof (currentLF), &currentLF));
+                        Verify (fDefaultFontCache.GetObject (sizeof (currentLF), &currentLF));
 
                         if (::memcmp (&currentLF, &tmpHackToTestFontLF, sizeof (currentLF)) != 0) {
                             fDefaultFontCache.DeleteObject ();
@@ -3665,7 +3667,7 @@ namespace   Stroika {
                     WINDOWPLACEMENT wp;
                     memset (&wp, 0, sizeof (wp));
                     wp.length = sizeof (wp);
-                    Led_Verify (::GetWindowPlacement (hWnd, &wp));
+                    Verify (::GetWindowPlacement (hWnd, &wp));
 
                     LOGFONT useFont;
                     bool    justUseSystemFont   =   true;
@@ -3692,7 +3694,7 @@ namespace   Stroika {
                     {
                         Led_FontObject  fontToUse;
                         if (not justUseSystemFont) {
-                            Led_Verify (fontToUse.CreateFontIndirect (&useFont));
+                            Verify (fontToUse.CreateFontIndirect (&useFont));
                         }
                         bool            redrawFlag  =   true;
                         (void)::SendMessage (GetValidatedHWND (), WM_SETFONT, justUseSystemFont ? NULL : reinterpret_cast<WPARAM> (static_cast<HFONT> (fontToUse)), redrawFlag);
