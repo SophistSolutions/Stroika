@@ -17,7 +17,7 @@
 #include    "StandardStyledTextImager.h"
 #include    "TextInteractor.h"
 
-#include    "StyledTextIO.h"
+#include    "StyledTextIO/StyledTextIO.h"
 
 
 
@@ -223,9 +223,9 @@ namespace   Stroika {
                 class. It knows about StyleDatabases, and ParagraphDatabases, and writes content to them from the
                 input reader class.</p>
             */
-            class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream : public virtual StyledTextIOReader::SinkStream {
+            class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream : public virtual StyledTextIO::StyledTextIOReader::SinkStream {
             private:
-                typedef StyledTextIOReader::SinkStream  inherited;
+                typedef StyledTextIO::StyledTextIOReader::SinkStream  inherited;
             public:
                 StandardStyledTextIOSinkStream (TextStore* textStore,
                                                 const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -295,9 +295,9 @@ namespace   Stroika {
                 class. It knows about StyleDatabases, and ParagraphDatabases, and gets content from them for the
                 output writer class.</p>
             */
-            class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream : public virtual StyledTextIOWriter::SrcStream {
+            class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream : public virtual StyledTextIO::StyledTextIOWriter::SrcStream {
             private:
-                typedef StyledTextIOWriter::SrcStream   inherited;
+                typedef StyledTextIO::StyledTextIOWriter::SrcStream   inherited;
             public:
                 StandardStyledTextIOSrcStream (TextStore* textStore,
                                                const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,

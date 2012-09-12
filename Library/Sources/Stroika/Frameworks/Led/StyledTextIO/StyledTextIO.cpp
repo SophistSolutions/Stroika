@@ -1,7 +1,7 @@
-/*
+/*/
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include    "../../../Foundation/StroikaPreComp.h"
 
 #include    <cctype>
 #include    <climits>
@@ -13,10 +13,10 @@
 #include    <TextEdit.h>        // for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
+#include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "StyledTextImager.h"
-#include    "StyledTextEmbeddedObjects.h"
+#include    "../StyledTextImager.h"
+#include    "../StyledTextEmbeddedObjects.h"
 
 #include    "StyledTextIO.h"
 
@@ -30,9 +30,6 @@
 
 
 
-using   namespace   Stroika::Foundation;
-
-
 #if     defined (CRTDBG_MAP_ALLOC_NEW)
 #define new CRTDBG_MAP_ALLOC_NEW
 #endif
@@ -42,6 +39,8 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
+
 
 
 

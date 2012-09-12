@@ -7,6 +7,9 @@
     <Filter Include="Source\Platform">
       <UniqueIdentifier>{d2f77868-e7ea-49c9-be67-28d59bbefe7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\StyledTextIO">
+      <UniqueIdentifier>{166fb1cf-a686-409d-b857-46afe84151b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp">
@@ -60,18 +63,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_HTML.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_PlainText.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_RTF.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Support.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -117,17 +108,29 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_LedNative.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_MIMETextEnriched.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_STYLText.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO.cpp">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_HTML.cpp">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.cpp">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.cpp">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.cpp">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.cpp">
+      <Filter>Source\StyledTextIO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,19 +218,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_RTF.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_PlainText.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_HTML.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h">
@@ -245,17 +236,29 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.h">
       <Filter>Source\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_LedNative.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_MIMETextEnriched.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_STYLText.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO.h">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_HTML.h">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.h">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.h">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.h">
+      <Filter>Source\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.h">
+      <Filter>Source\StyledTextIO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,10 @@
 /* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include    "../../../Foundation/StroikaPreComp.h"
 
 #include    <cctype>
 
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
+#include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include    "StyledTextIO_MIMETextEnriched.h"
 
@@ -18,7 +18,11 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
+
+
 
 using   Memory::SmallStackBuffer;
 

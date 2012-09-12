@@ -1,18 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include    "../../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
+#include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "CodePage.h"
+#include    "../CodePage.h"
 
 #include    "StyledTextIO_PlainText.h"
 
 
 
-
-using   namespace   Stroika::Foundation;
 
 
 #if     defined (CRTDBG_MAP_ALLOC_NEW)
@@ -25,6 +23,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 

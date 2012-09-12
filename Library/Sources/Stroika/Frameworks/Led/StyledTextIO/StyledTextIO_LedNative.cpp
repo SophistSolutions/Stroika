@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include    "../../../Foundation/StroikaPreComp.h"
 
 #include    <cctype>
 #include    <climits>
@@ -13,8 +13,8 @@
 #include    <TextEdit.h>        // for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
-#include    "CodePage.h"
-#include    "StyledTextEmbeddedObjects.h"
+#include    "../CodePage.h"
+#include    "../StyledTextEmbeddedObjects.h"
 
 #include    "StyledTextIO_LedNative.h"
 
@@ -27,9 +27,12 @@
 
 
 
-
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
+
+
 
 using   Memory::SmallStackBuffer;
 
@@ -836,7 +839,7 @@ void    StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
 #endif
         Led_tChar   buf[1024];
         size_t  bytesWritten    =   0;
-        while ( (bytesWritten = GetSrcStream ().readNTChars (buf, Led_NEltsOf (buf))) != 0 ) {
+        while ( (bytesWritten = GetSrcStream ().readNTChars (buf, NEltsOf (buf))) != 0 ) {
             write (buf, bytesWritten);
 #if     qDebug
             checkTotalWritten += bytesWritten;

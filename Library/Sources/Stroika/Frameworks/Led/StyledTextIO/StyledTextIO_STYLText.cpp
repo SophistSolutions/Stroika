@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include    "../../../Foundation/StroikaPreComp.h"
 
-#include    "CodePage.h"
+#include    "../CodePage.h"
 
 #include    "StyledTextIO_STYLText.h"
 
@@ -18,6 +18,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 
@@ -104,7 +105,7 @@ bool    StyledTextIOReader_STYLText::QuickLookAppearsToBeRightFormat ()
     SrcStreamSeekSaver  savePos (GetSrcStream ());
 
     Led_tChar   buf[1024];
-    size_t  bytesRead   = GetSrcStream ().read (buf, Led_NEltsOf (buf));
+    size_t  bytesRead   = GetSrcStream ().read (buf, NEltsOf (buf));
 
     return (ValidateTextForCharsetConformance (buf, bytesRead));
 }

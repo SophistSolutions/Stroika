@@ -22,8 +22,8 @@
 #include	<atlbase.h>
 
 //#include	"LedStdDialogs.h"
-#include	"Stroika/Frameworks/Led/StyledTextIO_PlainText.h"
-#include	"Stroika/Frameworks/Led/StyledTextIO_LedNative.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 
 #include	"ActiveLedIt.h"
 #include	"ActiveLedItPpg.h"
@@ -72,7 +72,10 @@ const	int	kEditorWindowID		=	100;
 
 
 
-
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks;
+using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 
@@ -3444,7 +3447,7 @@ IDispatch*	ActiveLedItControl::OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinTool
 	};
 
 	try {
-		for  (size_t i = 0; i < Led_NEltsOf (kToolBarIconSpecs); ++i) {
+		for  (size_t i = 0; i < NEltsOf (kToolBarIconSpecs); ++i) {
 			if (CComBSTR (builtinToolbarItemName) == CComBSTR (kToolBarIconSpecs[i].fIconName)) {
 				return mkIconElement (kToolBarIconSpecs[i]).Detach ();
 			}

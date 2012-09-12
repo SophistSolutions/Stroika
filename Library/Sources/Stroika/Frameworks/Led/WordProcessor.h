@@ -1076,9 +1076,9 @@ namespace   Stroika {
             @BASES:         @'StyledTextIOWriter::SrcStream::Table'
             @DESCRIPTION:   <p></p>
             */
-            class   WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper : public StyledTextIOWriter::SrcStream::Table {
+            class   WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper : public StyledTextIO::StyledTextIOWriter::SrcStream::Table {
             private:
-                typedef StyledTextIOWriter::SrcStream::Table    inherited;
+                typedef StyledTextIO::StyledTextIOWriter::SrcStream::Table    inherited;
             public:
                 TableIOMapper (WordProcessor::Table& realTable,
                                size_t startRow = 0, size_t endRow = static_cast<size_t> (-1),
@@ -1089,7 +1089,7 @@ namespace   Stroika {
                 virtual     size_t                          GetRows () const override;
                 virtual     size_t                          GetColumns (size_t row) const override;
                 virtual     void                            GetRowInfo (size_t row, vector<CellInfo>* cellInfos) override;
-                virtual     StyledTextIOWriter::SrcStream*  MakeCellSubSrcStream (size_t row, size_t column) override;
+                virtual     StyledTextIO::StyledTextIOWriter::SrcStream*  MakeCellSubSrcStream (size_t row, size_t column) override;
                 virtual     size_t                          GetOffsetEnd () const override;
                 virtual     Led_TWIPS_Rect                  GetDefaultCellMarginsForRow (size_t row) const override;
                 virtual     Led_TWIPS_Rect                  GetDefaultCellSpacingForRow (size_t row) const override;

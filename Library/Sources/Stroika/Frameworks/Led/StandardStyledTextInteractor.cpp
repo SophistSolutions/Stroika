@@ -4,8 +4,9 @@
 #include    "../../Foundation/StroikaPreComp.h"
 
 #include    "StyledTextEmbeddedObjects.h"
-#include    "StyledTextIO_HTML.h"
-#include    "StyledTextIO_RTF.h"
+
+#include    "StyledTextIO/StyledTextIO_HTML.h"
+#include    "StyledTextIO/StyledTextIO_RTF.h"
 
 #include    "StandardStyledTextInteractor.h"
 
@@ -13,7 +14,7 @@
 
 
 #if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-#include    "Led_StyledTextIO_LedNative.h"
+#include    "StyledTextIO/Led_StyledTextIO_LedNative.h"
 #endif
 
 
@@ -22,6 +23,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 

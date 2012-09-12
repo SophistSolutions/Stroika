@@ -1,23 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include    "../../../Foundation/StroikaPreComp.h"
 
 #include    <cctype>
 #include    <climits>
 #include    <cstdio>        // for a couple sprintf() calls - could pretty easily be avoided
 
-#include    "../../Foundation/Characters/StringUtils.h"
+#include    "../../../Foundation/Characters/StringUtils.h"
 
-#include    "Config.h"
+#include    "../Config.h"
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (4 : 4800)      //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #endif
 
-#include    "CodePage.h"
-#include    "Support.h"
+#include    "../CodePage.h"
+#include    "../Support.h"
 
 #include    "StyledTextIO_RTF.h"
 
@@ -56,7 +56,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
-
+using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 

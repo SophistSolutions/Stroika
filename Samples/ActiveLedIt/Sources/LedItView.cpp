@@ -262,8 +262,8 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 	public:
 		override	FontNameSpecifier	CmdNumToFontName (CommandNumber cmdNum)
 			{
-				Led_Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
-				Led_Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
+				Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
+				Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
 				return ::CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
 			}
 		#if		qSupportOtherFontSizeDlg
@@ -674,7 +674,7 @@ void	LedItView::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coo
 		Led_Coordinate	r	=	0;
 		inherited::GetLayoutMargins (row, &l, &r);
 		r = Led_Max (static_cast<Led_Coordinate> (GetWindowRect ().GetWidth ()), l+1);
-		Led_Ensure (r > l);
+		Ensure (r > l);
 		if (lhs != NULL) {
 			*lhs = l;
 		}

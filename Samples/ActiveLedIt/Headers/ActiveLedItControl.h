@@ -14,8 +14,8 @@
 #include	<afxctl.h>
 
 #include	"Stroika/Frameworks/Led/SpellCheckEngine.h"
-#include	"Stroika/Frameworks/Led/StyledTextIO_HTML.h"
-#include	"Stroika/Frameworks/Led/StyledTextIO_RTF.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_HTML.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_RTF.h"
 
 #include	"ActiveLedItConfig.h"
 #include	"LedItView.h"
@@ -420,8 +420,8 @@ class	ActiveLedItControl : public COleControl, public MarkerOwner, public LedItV
 
 	// Dispatch and event IDs
 	public:
-		LedItView		fEditor;
-		HTMLInfo		fHTMLInfo;
+		LedItView				fEditor;
+		StyledTextIO::HTMLInfo	fHTMLInfo;
 
 };
 

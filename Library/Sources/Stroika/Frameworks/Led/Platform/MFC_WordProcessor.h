@@ -28,7 +28,7 @@
 #include    <set>
 
 #include    "MFC.h"
-#include    "../StyledTextIO_RTF.h"
+#include    "../StyledTextIO/StyledTextIO_RTF.h"
 #include    "../WordProcessor.h"
 
 
@@ -167,7 +167,7 @@ namespace   Stroika {
                     want to allow for embedded OLE objects. (these docs could really use embellishing!).</p>
                         <p>NB: This also supports the embedding format @'RTFIO::RTFOLEEmbedding::kEmbeddingTag'.</p>
                 */
-                class   Led_MFC_ControlItem : public COleClientItem, public SimpleEmbeddedObjectStyleMarker, public RTFIO::RTFOLEEmbedding  {
+                class   Led_MFC_ControlItem : public COleClientItem, public SimpleEmbeddedObjectStyleMarker, public StyledTextIO::RTFIO::RTFOLEEmbedding  {
                 public:
                     static  const   Led_ClipFormat          kClipFormat;
                     static  const   Led_PrivateEmbeddingTag kEmbeddingTag;
