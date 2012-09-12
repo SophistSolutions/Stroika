@@ -23,7 +23,7 @@
 
 //#include	"LedStdDialogs.h"
 #include	"Stroika/Frameworks/Led/StyledTextIO_PlainText.h"
-//#include	"Stroika/Frameworks/Led/StyledTextIO_LedNative.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO_LedNative.h"
 
 #include	"ActiveLedIt.h"
 #include	"ActiveLedItPpg.h"

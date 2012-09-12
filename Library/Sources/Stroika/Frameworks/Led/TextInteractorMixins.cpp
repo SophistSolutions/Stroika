@@ -7,13 +7,7 @@
 
 
 
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks;
+using   namespace   Stroika::Frameworks::Led;
 

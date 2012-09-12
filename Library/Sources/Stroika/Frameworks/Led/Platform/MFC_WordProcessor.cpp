@@ -597,9 +597,6 @@ set<HWND>   Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupre
 
 
 
-#if     qLedUsesNamespaces
-}
-#endif
 
 
 // For gnuemacs:

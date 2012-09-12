@@ -81,6 +81,7 @@ namespace   Stroika {
             public:
                 static  EmbeddedObjectCreatorRegistry&  Get (); // build one if doesn't exist yet, and return ref to it
             private:
+            public://tmphack - til I can fix the code that references this... -- LGP 2012-09-11
                 static  EmbeddedObjectCreatorRegistry*  sThe;
 
             public:

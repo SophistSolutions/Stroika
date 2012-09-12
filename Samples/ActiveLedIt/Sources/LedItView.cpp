@@ -20,7 +20,7 @@
 
 
 #if		qDemoMode || qFunnyDisplayInDesignMode
-	#include	"LedHandySimple.h"
+	#include	"Stroika/Frameworks/Led/HandySimple.h"
 #endif
 
 

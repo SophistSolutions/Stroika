@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.cpp" />
@@ -100,8 +101,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_HTML.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_LedNative.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_MIMETextEnriched.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_PlainText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_RTF.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_STYLText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Support.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.cpp" />
@@ -120,6 +124,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Config.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\GDI.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\IdleManager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.h" />
@@ -140,8 +145,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_HTML.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_LedNative.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_MIMETextEnriched.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_PlainText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_RTF.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO_STYLText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Support.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.h" />

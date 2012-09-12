@@ -13,47 +13,31 @@
 #endif
 
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-            /*
-             ********************************************************************************
-             ******************************** SpellCheckEngine ******************************
-             ********************************************************************************
-             */
-            SpellCheckEngine::~SpellCheckEngine ()
-            {
-            }
-
-#if     qDebug
-            /*
-            @METHOD:        SpellCheckEngine::Invariant_
-            @DESCRIPTION:   <p>Default implementaiton for calls to @'SpellCheckEngine::Invariant'. Overridden in subclasses
-                    to check validity of SpellCheck engine.</p>
-            */
-            void    SpellCheckEngine::Invariant_ () const
-            {
-            }
-#endif
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks;
+using   namespace   Stroika::Frameworks::Led;
 
 
 
-        }
-    }
+/*
+ ********************************************************************************
+ ******************************** SpellCheckEngine ******************************
+ ********************************************************************************
+ */
+SpellCheckEngine::~SpellCheckEngine ()
+{
 }
 
+#if     qDebug
+/*
+@METHOD:        SpellCheckEngine::Invariant_
+@DESCRIPTION:   <p>Default implementaiton for calls to @'SpellCheckEngine::Invariant'. Overridden in subclasses
+        to check validity of SpellCheck engine.</p>
+*/
+void    SpellCheckEngine::Invariant_ () const
+{
+}
+#endif
 
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
 
 

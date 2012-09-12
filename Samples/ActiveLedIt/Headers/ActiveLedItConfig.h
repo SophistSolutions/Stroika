@@ -106,9 +106,6 @@
 	#include	"Stroika/Frameworks/Led/Support.h"
 #endif
 
-#if		qLedUsesNamespaces
-using	namespace	Led;
-#endif
 
 
 #if		defined (__cplusplus)
