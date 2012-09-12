@@ -1,5 +1,6 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
-
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ */
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include	<afxwin.h>

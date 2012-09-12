@@ -1,4 +1,6 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ */
 #ifndef	__FontMenu_hh__
 #define	__FontMenu_hh__	1
 

@@ -1,11 +1,10 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
-#ifndef __Led_MFC_WordProcessor_h__
-#define __Led_MFC_WordProcessor_h__ 1
-
 /*
- * $Header: /cygdrive/k/CVSRoot/Led/Headers/Led_MFC_WordProcessor.h,v 2.36 2003/12/31 16:52:30 lewis Exp $
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
+#ifndef _Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_
+#define _Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_ 1
 
+#include    "../../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    Led_MFC_WordProcessor
@@ -14,139 +13,6 @@
     classes (e.g. OLE embeddings)</p>.
  */
 
-
-
-/*
- * Changes:
- *  $Log: Led_MFC_WordProcessor.h,v $
- *  Revision 2.36  2003/12/31 16:52:30  lewis
- *  change DoWriteToOLE1Stream arg to Byte** from void** so we can avoid a cast before doing delete (and avoid warning of illegal delete of void*)
- *
- *  Revision 2.35  2003/05/08 00:07:18  lewis
- *  SPR#1467: added kSelectTableIntraCellAll_CmdID
- *
- *  Revision 2.34  2003/05/07 21:10:59  lewis
- *  SPR#1467: implemented various select commands (word/row/paragraph/table/cell/row/col)
- *
- *  Revision 2.33  2003/04/15 22:17:04  lewis
- *  SPR#1425: added kRemoveTableRows_CmdID/kRemoveTableColumns_CmdID support
- *
- *  Revision 2.32  2003/04/04 19:53:14  lewis
- *  SPR#1407: cleanup new command handling code
- *
- *  Revision 2.31  2003/04/04 14:41:41  lewis
- *  SPR#1407: More work cleaning up new template-free command update/dispatch code
- *
- *  Revision 2.30  2003/04/03 16:41:22  lewis
- *  SPR#1407: First cut at major change in command-processing classes. Instead of using templated
- *  command classes, just builtin to TextInteractor/WordProcessor (and instead of template params
- *  use new TextInteractor/WordProcessor::DialogSupport etc
- *
- *  Revision 2.29  2003/04/01 18:17:57  lewis
- *  SPR#1322: Added 'invalidRect' argument to StyledTextImager::StyleMarker::DrawSegment ()
- *  and subclasses to be able to do logical clipping in tables
- *
- *  Revision 2.28  2003/01/29 19:15:07  lewis
- *  SPR#1265- use the keyword typename instead of class in template declarations
- *
- *  Revision 2.27  2003/01/21 13:26:54  lewis
- *  SPR#1186 - first cut at Indents dialog support (MacOS dialog still not done)
- *
- *  Revision 2.26  2003/01/11 19:28:35  lewis
- *  *** empty log message ***
- *
- *  Revision 2.25  2002/12/16 20:31:29  lewis
- *  SPR#1209- fix arg to ControlItemContextInternalizer::CTOR
- *
- *  Revision 2.24  2002/11/27 15:58:21  lewis
- *  SPR#1183 - as part of BIDI effort - DrawSegment now replaces 'Led_tChar* text' argument with a
- *  'TextLayoutBlock& text' argument
- *
- *  Revision 2.23  2002/11/19 19:51:28  lewis
- *  SPR#1176 - Added insert row/col before/after commands and a few minor table fixups which were
- *  releated (not 100% - see spr#1177/78 for details)
- *
- *  Revision 2.22  2002/10/25 17:16:09  lewis
- *  SPR#1146 - Added 'Insert Symbol' menu item and fix Led_MFC D&D code so it worked with CharacterMap.exe
- *  (for some wierd reason - I need to hack it to pass along the full FORMATC???).
- *
- *  Revision 2.21  2002/10/22 00:38:45  lewis
- *  Add URL context/menu command - SPR#1136
- *
- *  Revision 2.20  2002/09/11 04:20:15  lewis
- *  SPR#1094- added VERY preliminary Table support - table class and new InsertTable command
- *
- *  Revision 2.19  2002/05/06 21:33:29  lewis
- *  <=============================== Led 3.0.1 Released ==============================>
- *
- *  Revision 2.18  2001/11/27 00:29:41  lewis
- *  <=============== Led 3.0 Released ===============>
- *
- *  Revision 2.17  2001/10/20 13:38:55  lewis
- *  tons of DocComment changes
- *
- *  Revision 2.16  2001/10/17 20:42:50  lewis
- *  Massive changes - cleaning up doccomments (mostly adding <p>/</p> as appropriate
- *
- *  Revision 2.15  2001/09/12 17:23:23  lewis
- *  *** empty log message ***
- *
- *  Revision 2.14  2001/08/31 21:04:35  lewis
- *  SPR#0995- Skip WordProcessorCommonCommandHelper_MFC<BASECLASS,CMD_INFO,CMD_ENABLER>::OnPaint ()
- *  handling when reading in OLE objects (but re-inval the area). Speed tweek.
- *
- *  Revision 2.13  2001/08/29 23:00:16  lewis
- *  *** empty log message ***
- *
- *  Revision 2.12  2001/08/28 18:43:26  lewis
- *  *** empty log message ***
- *
- *  Revision 2.11  2001/08/16 18:53:41  lewis
- *  SPR#0959- more work on 'GetInfo' support for embeddings.
- *
- *  Revision 2.10  2001/07/17 19:09:36  lewis
- *  SPR#0959- added preliminary RightClick-to-show-edit-embedding-properties support
- *
- *  Revision 2.9  2001/07/11 21:51:01  lewis
- *  SPR#0906- Partly implemented bullet/list support. Just did basic support (bullet lists,
- *  no other style lists). Did support indent levels (including new Increase/Decrease indent
- *  level commands). Still no RTF/HTML support, and a small display bug on following lines
- *  when I add bullet attribute.
- *
- *  Revision 2.8  2000/10/03 13:36:35  lewis
- *  SPR#0839- reorganize the WordProcessorCommonCommandHelper/TextInteractorCommonCommandHelper<> code.
- *  Now MFC wrapper support MUCH simpler, and all this stuff much easier to use from other platforms.
- *  OnPerformCommand/OnUpdateCommand simple virtual overrides, and _MSG simple single msg hooks for MFC.
- *
- *  Revision 2.7  2000/09/30 19:35:01  lewis
- *  Added TextInteractorCommandHelper_DefaultCmdInfo/TextInteractorCommonCommandHelper<BASECLASS,CMD_INFO,CMD_ENABLER>.
- *  Added TextInteractor::OnSelectAllCommand. Moved Led_MFC_TmpCmdUpdater to Led_MFC.h
- *
- *  Revision 2.6  2000/08/28 20:12:07  lewis
- *  Add OnUpdateHideSelectionCommands/OnHideSelection/OnUnHideSelection support
- *
- *  Revision 2.5  2000/06/13 22:13:55  lewis
- *  SPR#0785- map CMD_INFO::kParagraphSpacingCommand_CmdID to OnParagraphSpacingChangeCommand
- *
- *  Revision 2.4  2000/06/13 16:26:14  lewis
- *  SPR#0767 - last tidbit - unknown embeddings - and RTFOLE embeddings - must use Led_TWIPS_Point
- *
- *  Revision 2.3  2000/04/26 13:32:52  lewis
- *  fix DocContextDefiner to allow nested calls (as happens with sub internalize call with hidden text code
- *
- *  Revision 2.2  2000/04/24 19:44:35  lewis
- *  SPR#0744- overide MakeDefaultInternalizer () to create one that will build a Led_MFC_ControlItem::DocContextDefiner
- *  on the stack so internalizing OLE emebddings works right now
- *
- *  Revision 2.1  2000/04/24 17:29:21  lewis
- *  SPR#0743- added new Led_MFC_WordProcessor module - and broke some stuff from Led_MFC out and into it
- *
- *
- *
- *
- *  <========== CODE based on Led_MFC.h - moved some code here ==========>
- *
- */
 
 
 #if     _MSC_VER == 1200
@@ -549,10 +415,4 @@ namespace   Stroika {
 #endif
 
 
-#endif  /*__Led_MFC_WordProcessor_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+#endif  /*_Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_*/

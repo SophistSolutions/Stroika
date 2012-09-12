@@ -1,4 +1,6 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ */
 #ifndef	__ActiveLedItConfig_h__
 #define	__ActiveLedItConfig_h__	1
 

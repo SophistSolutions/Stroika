@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __Led_ATL_h__
-#define __Led_ATL_h__   1
+#ifndef _Stroika_Frameworks_Led_Platform_ATL_h_
+#define _Stroika_Frameworks_Led_Platform_ATL_h_   1
 
 /*
 @MODULE:    Led_ATL
@@ -116,4 +116,4 @@ namespace   Stroika {
 
 
 
-#endif  /*__Led_ATL_h__*/
+#endif  /*_Stroika_Frameworks_Led_Platform_ATL_h_*/

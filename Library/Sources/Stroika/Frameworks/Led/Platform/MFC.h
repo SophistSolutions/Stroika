@@ -1,6 +1,10 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ */
 #ifndef _Stroika_Frameworks_Led_Platform_MFC_h_
 #define _Stroika_Frameworks_Led_Platform_MFC_h_ 1
+
+#include    "../../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    Led_MFC

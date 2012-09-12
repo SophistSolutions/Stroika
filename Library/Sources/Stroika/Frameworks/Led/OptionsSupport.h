@@ -1,10 +1,9 @@
-/* Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ */
 #ifndef _Stroika_Frameworks_Led_OptionsSupport_h_
 #define _Stroika_Frameworks_Led_OptionsSupport_h_  1
 
-/*
- * $Header: /cygdrive/k/CVSRoot/Led/Headers/LedOptionsSupport.h,v 2.7 2004/02/11 01:07:26 lewis Exp $
- */
 
 
 /*
