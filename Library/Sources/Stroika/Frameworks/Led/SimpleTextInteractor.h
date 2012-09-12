@@ -1,0 +1,109 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ */
+#ifndef __SimpleTextInteractor_h__
+#define __SimpleTextInteractor_h__  1
+
+#include    "../../Foundation/StroikaPreComp.h"
+
+
+/*
+@MODULE:    SimpleTextInteractor
+@DESCRIPTION:
+        <p>SimpleTextInteractor.</p>
+ */
+
+
+#include    "SimpleTextImager.h"
+#include    "TextInteractorMixins.h"
+
+
+
+namespace   Stroika {
+    namespace   Frameworks {
+        namespace   Led {
+
+
+#if     __MWERKS__
+            // Shut-off SetDefaultFont() warning instantiating InteractorImagerMixinHelper<>
+#pragma warn_hidevirtual    off
+#endif
+#if     qQuiteAnnoyingDominanceWarnings
+#pragma warning (disable : 4250)
+#endif
+            /*
+            @CLASS:         SimpleTextInteractor
+            @BASES:         InteractorImagerMixinHelper<SimpleTextImager>
+            @DESCRIPTION:
+                    <p>Simple mixin of @'SimpleTextImager' and @'TextInteractor' (using the utility class @'InteractorImagerMixinHelper<IMAGER>').
+                You might use this class as an argument to the mixin template for your class library wrapper class, as in
+                Led_MFC_X&ltSimpleTextInteractor&gt, for MFC.</p>
+            */
+            class   SimpleTextInteractor : public InteractorImagerMixinHelper<SimpleTextImager> {
+            private:
+                typedef InteractorImagerMixinHelper<SimpleTextImager>   inherited;
+
+            protected:
+                SimpleTextInteractor ();
+
+            protected:
+                override    void    TabletChangedMetrics ();
+                override    void    ChangedInterLineSpace (PartitionMarker* pm);
+
+                /*
+                 *  Must combine behaviors of different mixins.
+                 */
+            public:
+                override    void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
+                nonvirtual  void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode);
+                override    void    SetTopRowInWindow (size_t newTopRow);
+                nonvirtual  void    SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode);
+                override    void    SetTopRowInWindow (RowReference row);
+                nonvirtual  void    SetTopRowInWindow (RowReference row, UpdateMode updateMode);
+
+                // Speed tweek - use rowreferences...
+            public:
+                override    void    SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate);
+            };
+#if     qQuiteAnnoyingDominanceWarnings
+#pragma warning (default : 4250)
+#endif
+#if     __MWERKS__
+#pragma warn_hidevirtual    reset
+#endif
+
+
+
+
+
+
+
+
+
+            /*
+             ********************************************************************************
+             ***************************** Implementation Details ***************************
+             ********************************************************************************
+             */
+//  class   SimpleTextInteractor
+            inline  void    SimpleTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, TextInteractor::UpdateMode updateMode)
+            {
+                TextInteractor::SetDefaultFont (defaultFont, updateMode);
+            }
+            inline  void    SimpleTextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode)
+            {
+                TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
+                SetTopRowInWindow (newTopRow);
+            }
+            inline  void    SimpleTextInteractor::SetTopRowInWindow (RowReference row, UpdateMode updateMode)
+            {
+                TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
+                SetTopRowInWindow (row);
+            }
+
+
+        }
+    }
+}
+#endif  /*__SimpleTextInteractor_h__*/
+

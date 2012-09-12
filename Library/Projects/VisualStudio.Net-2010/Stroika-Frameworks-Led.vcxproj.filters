@@ -132,6 +132,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.cpp">
       <Filter>Source\StyledTextIO</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
@@ -260,9 +269,21 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.h">
       <Filter>Source\StyledTextIO</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\Led\README.txt">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r">
       <Filter>Source</Filter>
     </None>
   </ItemGroup>

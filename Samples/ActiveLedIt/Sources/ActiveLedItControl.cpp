@@ -21,7 +21,7 @@
 
 #include	<atlbase.h>
 
-//#include	"LedStdDialogs.h"
+#include	"Stroika/Frameworks/Led/StdDialogs.h"
 #include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"
 #include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 

@@ -66,7 +66,7 @@ void    StyledTextIOReader_STYLText::Read ()
         size_t  oldPos  =   GetSrcStream ().current_offset ();
         GetSrcStream ().seek_to (UINT_MAX);
         size_t  endPos  =   GetSrcStream ().current_offset ();
-        Led_Assert (endPos >= oldPos);
+        Assert (endPos >= oldPos);
         GetSrcStream ().seek_to (oldPos);
         size_t  len =   endPos - oldPos;
         Led_SmallStackBuffer<char>  buf (len);
@@ -84,7 +84,7 @@ void    StyledTextIOReader_STYLText::Read ()
         GetSinkStream ().AppendText (buf, totalRead, NULL);
 #endif
     }
-    Led_Assert (GetSrcStream ().GetAUXResourceHandle ());   // If QuickLookAppearsToBeRightFormat () we shouldn't get here?
+    Assert (GetSrcStream ().GetAUXResourceHandle ());   // If QuickLookAppearsToBeRightFormat () we shouldn't get here?
     if (GetSrcStream ().GetAUXResourceHandle () != NULL) {
         StScrpHandle    stylHandle  =   (StScrpHandle)GetSrcStream ().GetAUXResourceHandle ();
         HLock (Handle (stylHandle));

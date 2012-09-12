@@ -107,7 +107,7 @@ namespace   Stroika {
                         Led_Coordinate  r   =   0;
                         inherited::GetLayoutMargins (row, &l, &r);
                         r = Led_Max (static_cast<Led_Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
-                        Led_Ensure (r > l);
+                        Ensure (r > l);
                         if (lhs != NULL) {
                             *lhs = l;
                         }
@@ -149,7 +149,7 @@ namespace   Stroika {
             template    <typename   WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
             Led_Size    GetTextExtent (Led_Tablet tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap)
             {
-                Led_RequireNotNil (tablet);
+                RequireNotNull (tablet);
                 Led_Size textExtent (0, 0);
                 if (wordWrap) {
                     if (r.right > r.left) {
@@ -180,7 +180,7 @@ namespace   Stroika {
             template    <typename   WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
             void    DrawTextBox (Led_Tablet tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap)
             {
-                Led_RequireNotNil (tablet);
+                RequireNotNull (tablet);
                 if (wordWrap) {
                     TrivialWordWrappedImager<TEXTSTORE, WORDWRAPPEDTEXTIMAGER> imager (tablet, r, text);
                     imager.Draw (r, false);

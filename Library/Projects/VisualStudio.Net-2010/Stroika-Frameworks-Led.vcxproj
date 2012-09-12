@@ -93,10 +93,13 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextEmbeddedObjects.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO.cpp" />
@@ -137,10 +140,13 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextEmbeddedObjects.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO.h" />
@@ -162,6 +168,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\Led\README.txt" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{57B01FEC-9AD1-46A4-B5F1-9E1C531E59D2}</ProjectGuid>

@@ -36,6 +36,7 @@
 
 #include    <Windows.h>
 
+#include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include    "../CodePage.h"
@@ -185,7 +186,8 @@ namespace   Stroika {
                 @BASES:         BASE_INTERACTOR = @'TextInteractor'
                 @DESCRIPTION:   <p>DOCUMENT SOON - BASED ON @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'</p>
                 */
-                template    <typename   BASE_INTERACTOR = TextInteractor>   class   Led_Win32_Helper :
+                template    <typename   BASE_INTERACTOR = TextInteractor>
+                class   Led_Win32_Helper :
                     public virtual BASE_INTERACTOR {
                 public:
                     typedef TextInteractor::UpdateMode  UpdateMode;
@@ -449,7 +451,8 @@ namespace   Stroika {
                             mimic ALL the messages. Some just don't make sense (like GETHANDLE). But for those that do make sense, we
                             do our best.</p>
                 */
-                template    <typename   BASECLASS>  class   Led_Win32_Win32SDKMessageMimicHelper :
+                template    <typename   BASECLASS>
+                class   Led_Win32_Win32SDKMessageMimicHelper :
                     public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
@@ -3148,7 +3151,7 @@ namespace   Stroika {
                 {
                     Led_SDK_String  tmpClassName;
                     if (lpClassName == NULL) {
-                        tmpClassName    =   Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
+                        tmpClassName    =   Characters::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
                         lpClassName = tmpClassName.c_str ();
                         {
                             static  bool    sRegistered =   false;
