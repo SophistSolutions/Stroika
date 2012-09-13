@@ -4937,19 +4937,13 @@ void    WordProcessorTextIOSinkStream::Flush ()
     // Flush the cached hidable text info
     {
         vector<pair<size_t, size_t> >    hidePairs;
-#if     qNoSupportForNewForLoopScopingRules
-        {
-#endif
-            size_t  curInsert   =   whereToInsert;
-            for (DiscontiguousRun<bool>::const_iterator i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
-                if ((*i).fData) {
-                    hidePairs.push_back (pair<size_t, size_t> (curInsert, curInsert + (*i).fElementLength));
-                }
-                curInsert += (*i).fElementLength;
+        size_t  curInsert   =   whereToInsert;
+        for (DiscontiguousRun<bool>::const_iterator i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
+            if ((*i).fData) {
+                hidePairs.push_back (pair<size_t, size_t> (curInsert, curInsert + (*i).fElementLength));
             }
-#if     qNoSupportForNewForLoopScopingRules
+            curInsert += (*i).fElementLength;
         }
-#endif
         for (vector<pair<size_t, size_t> >::reverse_iterator i = hidePairs.rbegin (); i != hidePairs.rend (); ++i) {
             fHidableTextDatabase->MakeRegionHidable ((*i).first, (*i).second);
         }

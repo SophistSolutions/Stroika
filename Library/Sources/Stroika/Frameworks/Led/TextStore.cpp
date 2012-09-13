@@ -670,41 +670,35 @@ searchSMORE:
 
     // See if pattern matches current text
     CopyOut (searchIdx, patternLen, lookingAtData);
-#if     qNoSupportForNewForLoopScopingRules
-    {
-#endif
-        for (size_t i = 0; i < patternLen; i++) {
-            bool    charsEqual  =   (lookingAtData[i] == pattern[i]);
-            if (not matchCase and not charsEqual) {
-                // if we are doing case-IN-sensative compare, and characters not the same, maybe they are
-                // simply of different case?
+    for (size_t i = 0; i < patternLen; i++) {
+        bool    charsEqual  =   (lookingAtData[i] == pattern[i]);
+        if (not matchCase and not charsEqual) {
+            // if we are doing case-IN-sensative compare, and characters not the same, maybe they are
+            // simply of different case?
 #if     qUseWin32CompareStringCallForCaseInsensitiveSearch
 #if     qWideCharacters
 #define X_COMPARESTRING ::CompareStringW
 #else
 #define X_COMPARESTRING ::CompareStringA
 #endif
-                if (X_COMPARESTRING (LOCALE_USER_DEFAULT, NORM_IGNORECASE, &lookingAtData[i], 1, &pattern[i], 1) == CSTR_EQUAL) {
-                    charsEqual = true;
-                }
+            if (X_COMPARESTRING (LOCALE_USER_DEFAULT, NORM_IGNORECASE, &lookingAtData[i], 1, &pattern[i], 1) == CSTR_EQUAL) {
+                charsEqual = true;
+            }
 #undef  X_COMPARESTRING
 #else
-                if (IsASCIIAlpha (lookingAtData[i]) and IsASCIIAlpha (pattern[i]) and
-                        (tolower (lookingAtData[i]) == tolower (pattern[i]))
-                   ) {
-                    charsEqual = true;
-                }
+            if (IsASCIIAlpha (lookingAtData[i]) and IsASCIIAlpha (pattern[i]) and
+                    (tolower (lookingAtData[i]) == tolower (pattern[i]))
+               ) {
+                charsEqual = true;
+            }
 #endif
-            }
-
-            if (not charsEqual) {
-                searchIdx++;
-                goto searchSMORE;
-            }
         }
-#if     qNoSupportForNewForLoopScopingRules
+
+        if (not charsEqual) {
+            searchIdx++;
+            goto searchSMORE;
+        }
     }
-#endif
 
     // I've never really understood what the heck this means. So maybe I got it wrong.
     // But more likely, there is just no consistently applied definition across systems

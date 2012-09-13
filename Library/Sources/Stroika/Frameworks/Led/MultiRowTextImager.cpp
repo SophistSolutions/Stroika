@@ -1061,36 +1061,30 @@ namespace   Stroika {
                     }
                 }
 
-#if     qNoSupportForNewForLoopScopingRules
-                {
-#endif
-                    // If we got here - we ran out of rows before we ran out of height.
-                    // That means we should scroll back a smidge...
-                    for (RowReference curRow = potentialTopRow; ; ) {
-                        if (not GetPreviousRowReference (&curRow)) {
-                            return (curRow);        // if we've gone back as far as we can - were done!
-                            // Even if we didn't use all the height
-                        }
-
-                        PartitionMarker*            curPM   =   curRow.GetPartitionMarker ();
-                        PartitionElementCacheInfo   pmCacheInfo =   GetPartitionElementCacheInfo (curPM);
-                        heightUsed += pmCacheInfo.GetRowHeight (curRow.GetSubRow ());
-                        if (curRow.GetSubRow () == pmCacheInfo.GetLastRow ()) {
-                            heightUsed += pmCacheInfo.GetInterLineSpace ();
-                        }
-                        if (heightUsed > windowHeight) {
-                            // We went back one too far - forward one and return that.
-                            bool    result  =   GetNextRowReference (&curRow);
-                            Assert (result);
-                            return (curRow);
-                        }
-                        else if (heightUsed == windowHeight) {
-                            return (curRow);        // Then we used all the space we could have - and that is a good row!
-                        }
+                // If we got here - we ran out of rows before we ran out of height.
+                // That means we should scroll back a smidge...
+                for (RowReference curRow = potentialTopRow; ; ) {
+                    if (not GetPreviousRowReference (&curRow)) {
+                        return (curRow);        // if we've gone back as far as we can - were done!
+                        // Even if we didn't use all the height
                     }
-#if     qNoSupportForNewForLoopScopingRules
+
+                    PartitionMarker*            curPM   =   curRow.GetPartitionMarker ();
+                    PartitionElementCacheInfo   pmCacheInfo =   GetPartitionElementCacheInfo (curPM);
+                    heightUsed += pmCacheInfo.GetRowHeight (curRow.GetSubRow ());
+                    if (curRow.GetSubRow () == pmCacheInfo.GetLastRow ()) {
+                        heightUsed += pmCacheInfo.GetInterLineSpace ();
+                    }
+                    if (heightUsed > windowHeight) {
+                        // We went back one too far - forward one and return that.
+                        bool    result  =   GetNextRowReference (&curRow);
+                        Assert (result);
+                        return (curRow);
+                    }
+                    else if (heightUsed == windowHeight) {
+                        return (curRow);        // Then we used all the space we could have - and that is a good row!
+                    }
                 }
-#endif
 #if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
 #pragma push
 #pragma warn -8008

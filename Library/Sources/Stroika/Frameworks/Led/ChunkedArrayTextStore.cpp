@@ -563,23 +563,16 @@ RoutineTop:
         // breadth-wise than depth-wise (no recursion/function call) so probably faster to check
         // this way (assuming we get negative answers) even though we visit each node twice (assuming
         // we end up with a yes
-#if     qNoSupportForNewForLoopScopingRules
-        {
-#endif
-            for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
-                ChunkedArrayMarkerHook* misStuff    =   OurStuff (mi);
-                Assert (misStuff->fParent == m);
-                if (not misStuff->fIsHackMarker) {
-                    return false;
-                }
-                mi = misStuff->fNextSubMarker;
+        for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
+            ChunkedArrayMarkerHook* misStuff    =   OurStuff (mi);
+            Assert (misStuff->fParent == m);
+            if (not misStuff->fIsHackMarker) {
+                return false;
             }
-#if     qNoSupportForNewForLoopScopingRules
+            mi = misStuff->fNextSubMarker;
         }
-#endif
 
-        Marker* mi  = OurStuff (m)->fFirstSubMarker;
-        for (; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
+        for (Marker* mi  = OurStuff (m)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
             Assert (OurStuff (mi)->fIsHackMarker);
             // Save args, then push new args
             stack.GrowToSize (stackDepth + 1);
@@ -1297,17 +1290,11 @@ void    ChunkedArrayTextStore::PossiblyAddHackMarkers (Marker* insideMarker)
 void    ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_t markerCount)
 {
 #if     qUseLRUCacheForRecentlyLookedUpMarkers
-#if     qNoSupportForNewForLoopScopingRules
-    {
-#endif
-        // could only do this for affected markers, but we want to avoid redundant clearcache calls - and this is simpler...
-        // Probably no real performance harm...
-        for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
-            GetAMOH (*i)->ClearCache ();
-        }
-#if     qNoSupportForNewForLoopScopingRules
+    // could only do this for affected markers, but we want to avoid redundant clearcache calls - and this is simpler...
+    // Probably no real performance harm...
+    for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
+        GetAMOH (*i)->ClearCache ();
     }
-#endif
 #endif
     Assert (markerCount == 0 or markerArray != NULL);
 
@@ -1326,24 +1313,18 @@ void    ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_
 #endif
     }
 
-#if     qNoSupportForNewForLoopScopingRules
-    {
-#endif
-        for (size_t i = 0; i < markerCount; i++) {
-            Marker* marker  =   markerArray [i];
-            if (marker->fTextStoreHook != NULL) {   // if its NULL - that means its already been destroyed as a
-                // hack marker in a previous lap through the loop
-                Assert (OurStuff (markerArray [i])->fIsHackMarker);
-                RemoveMarker1 (marker);
-                SetMarkerOwner_ (marker, NULL);
-                AssertNotNull (marker->fTextStoreHook);
-                delete ((ChunkedArrayMarkerHook*)marker->fTextStoreHook);
-                marker->fTextStoreHook = NULL;  // set to NULL so if we encounter it again, we won't try to delete it
-            }
+    for (size_t i = 0; i < markerCount; i++) {
+        Marker* marker  =   markerArray [i];
+        if (marker->fTextStoreHook != NULL) {   // if its NULL - that means its already been destroyed as a
+            // hack marker in a previous lap through the loop
+            Assert (OurStuff (markerArray [i])->fIsHackMarker);
+            RemoveMarker1 (marker);
+            SetMarkerOwner_ (marker, NULL);
+            AssertNotNull (marker->fTextStoreHook);
+            delete ((ChunkedArrayMarkerHook*)marker->fTextStoreHook);
+            marker->fTextStoreHook = NULL;  // set to NULL so if we encounter it again, we won't try to delete it
         }
-#if     qNoSupportForNewForLoopScopingRules
     }
-#endif
 }
 
 void    ChunkedArrayTextStore::PreRemoveMarker (Marker* marker)
@@ -1908,23 +1889,16 @@ RoutineTop:
     // breadth-wise than depth-wise (no recursion/function call) so probably faster to check
     // this way (assuming we get negative answers) even though we visit each node twice (assuming
     // we end up with a yes
-#if     qNoSupportForNewForLoopScopingRules
-    {
-#endif
-        for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
-            ChunkedArrayMarkerHook* misStuff    =   OurStuff (mi);
-            Assert (misStuff->fParent == m);
-            if (not misStuff->fIsHackMarker) {
-                return false;
-            }
-            mi = misStuff->fNextSubMarker;
+    for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
+        ChunkedArrayMarkerHook* misStuff    =   OurStuff (mi);
+        Assert (misStuff->fParent == m);
+        if (not misStuff->fIsHackMarker) {
+            return false;
         }
-#if     qNoSupportForNewForLoopScopingRules
+        mi = misStuff->fNextSubMarker;
     }
-#endif
 
-    Marker* mi  = OurStuff (m)->fFirstSubMarker;
-    for (; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
+    for (Marker* mi  = OurStuff (m)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
         Assert (OurStuff (mi)->fIsHackMarker);
         // Save args, then push new args
         stack.GrowToSize (stackDepth + 1);
