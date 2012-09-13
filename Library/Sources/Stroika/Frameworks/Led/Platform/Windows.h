@@ -15,24 +15,6 @@
  */
 
 
-
-
-#if 0
-// EXPLAIN THIS LOGIC A BIT - LGP 991208
-#ifdef _UNICODE
-#ifndef UNICODE
-#define UNICODE         // UNICODE is used by Windows headers
-#endif
-#endif
-
-#ifdef UNICODE
-#ifndef _UNICODE
-#define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
-#endif
-#endif
-#endif
-
-
 #include    <Windows.h>
 
 #include    "../../../Foundation/Characters/Format.h"
@@ -40,6 +22,8 @@
 
 #include    "../CodePage.h"
 #include    "../TextInteractor.h"
+
+
 
 
 
@@ -186,8 +170,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>DOCUMENT SOON - BASED ON @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'</p>
                 */
                 template    <typename   BASE_INTERACTOR = TextInteractor>
-                class   Led_Win32_Helper :
-                    public virtual BASE_INTERACTOR {
+                class   Led_Win32_Helper : public virtual BASE_INTERACTOR {
                 public:
                     typedef TextInteractor::UpdateMode  UpdateMode;
                     typedef MarkerOwner::UpdateInfo     UpdateInfo;

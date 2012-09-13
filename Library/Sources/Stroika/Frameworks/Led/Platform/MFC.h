@@ -238,7 +238,8 @@ namespace   Stroika {
                     generate the code for the message
                     map for this template, unless its already been done so for your particular MFC_BASE_CLASS in Led_MFC.cpp.</p>
                 */
-                template    <typename   MFC_BASE_CLASS = CWnd, typename BASE_INTERACTOR = TextInteractor>   class   Led_MFC_Helper :
+                template    <typename   MFC_BASE_CLASS = CWnd, typename BASE_INTERACTOR = TextInteractor>
+				class   Led_MFC_Helper :
 #if     qMFCRequiresCWndLeftmostBaseClass
                     public MFC_BASE_CLASS, public Led_Win32_Helper<BASE_INTERACTOR>
 #else
@@ -334,7 +335,8 @@ namespace   Stroika {
                     generate the message map code for this template, unless thats already been done for your particular BASECLASS
                     in Led_MFC.cpp.</p>
                 */
-                template    <typename   BASECLASS = Led_MFC_Helper<> >  class   Led_MFC_MimicMFCAPIHelper :
+                template    <typename   BASECLASS = Led_MFC_Helper<> > 
+				class   Led_MFC_MimicMFCAPIHelper :
                     public BASECLASS {
                 protected:
                     Led_MFC_MimicMFCAPIHelper ();
