@@ -17,8 +17,8 @@
 
 
 
+#if 0
 // EXPLAIN THIS LOGIC A BIT - LGP 991208
-
 #ifdef _UNICODE
 #ifndef UNICODE
 #define UNICODE         // UNICODE is used by Windows headers
@@ -30,9 +30,8 @@
 #define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
 #endif
 #endif
+#endif
 
-
-#include    "../../../Foundation/StroikaPreComp.h"
 
 #include    <Windows.h>
 
@@ -290,31 +289,6 @@ namespace   Stroika {
 
                     // Tablet API
                 public:
-#if     qNestedClassesInTemplateClassesDontExpandCompilerBug
-                    class   TemporarilyUseTablet {
-                    public:
-                        enum DoTextMetricsChangedCall { eDoTextMetricsChangedCall, eDontDoTextMetricsChangedCall };
-                        TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall):
-                            fEditor (editor),
-                            fOldTablet (editor.fUpdateTablet),
-                            fDoTextMetricsChangedCall (tmChanged) {
-                            editor.fUpdateTablet = t;
-                            if (tmChanged == eDoTextMetricsChangedCall) {
-                                editor.TabletChangedMetrics ();
-                            }
-                        }
-                        ~TemporarilyUseTablet () {
-                            fEditor.fUpdateTablet = fOldTablet;
-                            if (fDoTextMetricsChangedCall == eDoTextMetricsChangedCall) {
-                                fEditor.TabletChangedMetrics ();
-                            }
-                        }
-                    private:
-                        Led_Win32_Helper<BASE_INTERACTOR>&  fEditor;
-                        Led_Tablet                          fOldTablet;
-                        DoTextMetricsChangedCall            fDoTextMetricsChangedCall;
-                    };
-#else
                     /*
                     @CLASS:         Led_Win32_Helper<BASE_CLASS>::TemporarilyUseTablet
                     @DESCRIPTION:   <p>Utility class to use (with caution), to temporarily for a given tablet to be
@@ -332,7 +306,6 @@ namespace   Stroika {
                         Led_Tablet                          fOldTablet;
                         DoTextMetricsChangedCall            fDoTextMetricsChangedCall;
                     };
-#endif
                 private:
                     friend  class   TemporarilyUseTablet;
                 protected:
