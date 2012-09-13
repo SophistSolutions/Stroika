@@ -751,7 +751,8 @@ namespace   Stroika {
                         <p>To use this class, you must also
                     define DoDeclare_Led_MFC_ExceptionHandlerHelper_MessageMap() to declare the actual message map for the template.</p>
                 */
-                template    <typename   BASECLASS = Led_MFC >   class   Led_MFC_ExceptionHandlerHelper :
+                template    <typename   BASECLASS = Led_MFC >
+				class   Led_MFC_ExceptionHandlerHelper :
                     public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
