@@ -491,21 +491,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-/*
-@CONFIGVAR:     qWorkAroundWin95BrokenUNICODESupport
-@DESCRIPTION:   <p>Win95 doesn't completely support UNICODE. In particular, the clipboard/Drag&Drop stuff
-    does't work with UNICODE. This workaround is on by default, and really only does anything if qWideCharacters
-    is set on (depends on character set you've defined). This is here mostly for documentation of why I'm doing
-    these workarounds (so they can be lifted in the future), and so folks can conidtionally compile them out
-    as Win95 fades into history.</p>
-        <p>This is ON by default (for windows, and if _UNICODE not defined - cuz there is no point - _UNICODE doesn't work on Win95)</p>
- */
-#ifndef qWorkAroundWin95BrokenUNICODESupport
-#define qWorkAroundWin95BrokenUNICODESupport        (qWindows && !defined (_UNICODE))
-#endif
-
-
-
 
 
 

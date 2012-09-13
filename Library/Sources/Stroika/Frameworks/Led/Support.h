@@ -1746,11 +1746,6 @@ namespace   Stroika {
                 if (FormatAvailable (kTEXTClipFormat)) {
                     return true;
                 }
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-                if (FormatAvailable (CF_TEXT)) {
-                    return true;
-                }
-#endif
                 return false;
             }
             inline  Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire ()

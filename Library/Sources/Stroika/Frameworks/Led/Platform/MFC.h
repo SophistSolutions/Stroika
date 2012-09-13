@@ -2075,22 +2075,9 @@ namespace   Stroika {
                     if (doSmartCNP) {
                         size_t          length      =   flavors.GetFlavorSize (kTEXTClipFormat);
                         Led_ClipFormat  textFormat  =   kTEXTClipFormat;
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-                        if (length == 0) {
-                            textFormat = CF_TEXT;
-                            length = flavors.GetFlavorSize (textFormat);
-                        }
-#endif
                         Memory::SmallStackBuffer<Led_tChar> buf (length);   // really could use smaller buffer
                         length = flavors.ReadFlavorData (textFormat, length, buf);
                         if (doSmartCNP) {
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-                            if (textFormat != kTEXTClipFormat) {
-                                // then we must manually convert the clipboard text to UNICODE
-                                string  tmp         =   string ((const char*)(const void*)buf, length);
-                                length  = ::MultiByteToWideChar (CP_ACP, 0, tmp.c_str (), tmp.length (), buf, length) * sizeof (Led_tChar);
-                            }
-#endif
                             size_t  nTChars =   length / sizeof (Led_tChar);
                             if (nTChars > 0) {
                                 nTChars--;  // on windows, the text buffer contains a trailing NUL-byte

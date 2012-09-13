@@ -2863,24 +2863,11 @@ bool    TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
          */
         size_t          length      =   clipData.GetFlavorSize (kTEXTClipFormat);
         Led_ClipFormat  textFormat  =   kTEXTClipFormat;
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-        if (length == 0) {
-            textFormat = CF_TEXT;
-            length = clipData.GetFlavorSize (textFormat);
-        }
-#endif
 
         Memory::SmallStackBuffer<char>  buf (length);   // could use bufsize=(len+1)/sizeof (Led_tChar)
         length = clipData.ReadFlavorData (textFormat, length, buf);
         if (doSmartCNP) {
             Led_tChar*      buffp           = reinterpret_cast<Led_tChar*> (static_cast<char*> (buf));
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-            if (textFormat != kTEXTClipFormat) {
-                // then we must manually convert the clipboard text to UNICODE
-                string  tmp         =   string (static_cast<char*> (buf), length);
-                length  = ::MultiByteToWideChar (CP_ACP, 0, tmp.c_str (), tmp.length (), buffp, length / sizeof (Led_tChar)) * sizeof (Led_tChar);
-            }
-#endif
             size_t  nTChars =   length / sizeof (Led_tChar);
             doSmartCNP = LooksLikeSmartPastableText (buffp, nTChars, scnpInfo);
         }
@@ -2900,12 +2887,6 @@ void    TextInteractor::OnSelectAllCommand ()
 
 bool    TextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const
 {
-    //   Led_ClipFormat  textFormat  =   kTEXTClipFormat;
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-    if (clipFormat == CF_TEXT) {
-        return true;
-    }
-#endif
     return (kTEXTClipFormat == clipFormat or kFILEClipFormat == clipFormat);
 }
 

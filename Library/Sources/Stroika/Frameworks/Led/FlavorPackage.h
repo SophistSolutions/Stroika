@@ -285,11 +285,6 @@ namespace   Stroika {
                 if (GetFlavorAvailable (kTEXTClipFormat)) {
                     return true;
                 }
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-                if (GetFlavorAvailable (CF_TEXT)) {
-                    return true;
-                }
-#endif
                 return false;
             }
 

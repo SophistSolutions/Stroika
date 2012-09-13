@@ -124,12 +124,6 @@ void    FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& 
     length++;               // so AddFlavorData() writes out the NUL-byte
 #endif
     flavorPackage.AddFlavorData (kTEXTClipFormat, length * sizeof (Led_tChar), buf);
-
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-    Memory::SmallStackBuffer<char>  bufwa (length * sizeof (Led_tChar));
-    size_t  nextPackageSize =   ::WideCharToMultiByte (GetACP (), 0, buf, length, bufwa, length * sizeof (Led_tChar), nullptr, nullptr);
-    flavorPackage.AddFlavorData (CF_TEXT, nextPackageSize, bufwa);
-#endif
 }
 
 
@@ -175,12 +169,6 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& 
     if (flavorPackage.GetFlavorAvailable_TEXT ()) {
         size_t          length      =   flavorPackage.GetFlavorSize (kTEXTClipFormat);
         Led_ClipFormat  textFormat  =   kTEXTClipFormat;
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-        if (length == 0) {
-            textFormat = CF_TEXT;
-            length = flavorPackage.GetFlavorSize (textFormat);
-        }
-#endif
         Memory::SmallStackBuffer<char> buf (length * sizeof (Led_tChar));       // data read from flavor package is just an array of bytes (not Led_tChar)
         // but allocate enuf space for converting TO UNICODE - in case of
         // qWorkAroundWin95BrokenUNICODESupport workaround below - we may
@@ -188,13 +176,6 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& 
         length  =   flavorPackage.ReadFlavorData (textFormat, length, buf);
 
         Led_tChar*  buffp           = reinterpret_cast<Led_tChar*> (static_cast<char*> (buf));  // INTERPRET array of bytes as Led_tChars
-#if     qWideCharacters && qWorkAroundWin95BrokenUNICODESupport
-        if (textFormat != kTEXTClipFormat) {
-            // then we must manually convert the clipboard text to UNICODE
-            string  tmp         =   string (static_cast<char*> (buf), length);
-            length  = ::MultiByteToWideChar (CP_ACP, 0, tmp.c_str (), tmp.length (), buffp, length) * sizeof (Led_tChar);
-        }
-#endif
         size_t  nTChars =   length / sizeof (Led_tChar);
 #if     qWindows
         if (nTChars > 0) {
