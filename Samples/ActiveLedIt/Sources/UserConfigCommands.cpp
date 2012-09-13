@@ -7,6 +7,8 @@
 
 #include	<atlbase.h>
 
+#include	"Stroika/Foundation/Characters/Format.h"
+
 #include	"FontMenu.h"
 
 #include	"UserConfigCommands.h"
@@ -1142,7 +1144,7 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
 					}
 					if (modFlag & eVIRTKEY) {
 						if (VK_F1 <= key and key <= VK_F12) {
-							suffix += Led_SDKString2Wide (Format (Led_SDK_TCHAROF ("F%d"), key+1-VK_F1));
+							suffix += Led_SDKString2Wide (Characters::Format (Led_SDK_TCHAROF ("F%d"), key+1-VK_F1));
 						}
 						else if (key == VK_SUBTRACT) {
 							suffix += L"Num-";

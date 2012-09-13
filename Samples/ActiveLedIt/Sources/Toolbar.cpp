@@ -1152,7 +1152,7 @@ void	ActiveLedIt_Toolbar::DoLayout ()
 		UINT	preferredHeight	=	0;
 		Led_ThrowIfErrorHRESULT  (tbi->get_PreferredHeight (&preferredHeight));
 
-		Led_Distance	useHeight	=	min (preferredHeight, itemBoundsCursor.GetHeight ());
+		Led_Distance	useHeight	=	min (Led_Distance (preferredHeight), itemBoundsCursor.GetHeight ());
 		Led_Rect		itemBounds	=	itemBoundsCursor;
 		itemBounds.right = itemBounds.left + preferredWidth;
 		itemBoundsCursor.right = itemBounds.right;
@@ -1665,8 +1665,8 @@ STDMETHODIMP	ActiveLedIt_ToolbarList::SetRectangle (int X, int Y, UINT width, UI
 void	ActiveLedIt_ToolbarList::DoLayout ()
 {
 	Led_Rect	clientBounds	=	Led_Rect (0, 0, 
-												max (static_cast<Led_Coordinate> (fBounds.GetHeight ()) - 2*::GetSystemMetrics (SM_CYEDGE), 0), 
-												max (static_cast<Led_Coordinate> (fBounds.GetWidth ()) - 2*::GetSystemMetrics (SM_CXEDGE), 0)
+												max (static_cast<Led_Coordinate> (fBounds.GetHeight ()) - 2*::GetSystemMetrics (SM_CYEDGE), Led_Coordinate (0)), 
+												max (static_cast<Led_Coordinate> (fBounds.GetWidth ()) - 2*::GetSystemMetrics (SM_CXEDGE), Led_Coordinate (0))
 											);
 	if (m_hWnd != NULL) {		// probbaly not really needed anymore - now that I subtract out the SM_CXYEDGE - but what the heck... Just in case...
 		RECT	cr;

@@ -1233,8 +1233,8 @@ long	ActiveLedItControl::OLE_GetMaxUndoLevel ()
 void	ActiveLedItControl::OLE_SetMaxUndoLevel (long maxUndoLevel)
 {
 	// sanity check arguments
-	maxUndoLevel = max (0, maxUndoLevel);
-	maxUndoLevel = min (maxUndoLevel, 10);
+	maxUndoLevel = max (0L, maxUndoLevel);
+	maxUndoLevel = min (maxUndoLevel, 10L);
 	fCommandHandler.SetMaxUnDoLevels (maxUndoLevel);
 }
 
@@ -2431,7 +2431,7 @@ void	ActiveLedItControl::OLE_SetShowSecondaryHilight (BOOL bNewValue)
 
 BOOL	ActiveLedItControl::OLE_GetShowHidableText () 
 {
-	ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
+	ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
 	AssertNotNull (uhtmo);
 	return !uhtmo->IsHidden ();
 }
@@ -2451,7 +2451,7 @@ void	ActiveLedItControl::OLE_SetShowHidableText (BOOL bNewValue)
 OLE_COLOR	ActiveLedItControl::OLE_GetHidableTextColor () 
 {
 	try {
-		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
+		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
 		AssertNotNull (uhtmo);
 		return uhtmo->GetColor ().GetOSRep ();
 	}
@@ -2463,7 +2463,7 @@ void	ActiveLedItControl::OLE_SetHidableTextColor (OLE_COLOR color)
 {
 	CHECK_DEMO_AND_BEEP_AND_RETURN();
 	try {
-		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
+		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
 		AssertNotNull (uhtmo);
 		uhtmo->SetColor (Led_Color (TranslateColor (color)));
 		fEditor.Refresh ();
@@ -2474,7 +2474,7 @@ void	ActiveLedItControl::OLE_SetHidableTextColor (OLE_COLOR color)
 BOOL	ActiveLedItControl::OLE_GetHidableTextColored () 
 {
 	try {
-		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
+		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
 		AssertNotNull (uhtmo);
 		return uhtmo->GetColored ();
 	}
@@ -2486,7 +2486,7 @@ void	ActiveLedItControl::OLE_SetHidableTextColored (BOOL bNewValue)
 {
 	CHECK_DEMO_AND_BEEP_AND_RETURN();
 	try {
-		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ()));
+		ColoredUniformHidableTextMarkerOwner*	uhtmo	=	dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
 		AssertNotNull (uhtmo);
 		uhtmo->SetColored (bNewValue);
 		fEditor.Refresh ();

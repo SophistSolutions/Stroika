@@ -7,7 +7,7 @@
 
 #include	"Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
 #include	"Stroika/Frameworks/Led/OptionsSupport.h"
-//#include	"LedStdDialogs.h"
+#include	"Stroika/Frameworks/Led/StdDialogs.h"
 
 #include	"DispIDs.h"
 #include	"FontMenu.h"
@@ -548,7 +548,7 @@ LedItViewController::LedItViewController ():
 	fHidableTextDatabase ()
 
 {
-	fHidableTextDatabase = new ColoredUniformHidableTextMarkerOwner (fTextStore);
+	fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new ColoredUniformHidableTextMarkerOwner (fTextStore));
 }
 
 LedItViewController::~LedItViewController ()
