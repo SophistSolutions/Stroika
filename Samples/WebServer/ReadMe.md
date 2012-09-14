@@ -17,12 +17,7 @@ TONS TODO.
 	
 >	Enable TESTING - by creating a TEST in the Tests folder (../), and have that just
 	RUN this demo.
-	>>> THIS - IN TURN - Requries embellishing the STREAMS code to support
-		TIED IN/OUT streams (like iostream)
-		
-		AND - new runsubprocess code that takes input stream (stdin), and 2 output streams
-		(stdout, and stderr) and make it trivial in Stroika to run these subproxceses,
-		and use that in my test.
+	>> Use NEW Execution::SubProcess module (with streams)
 	
 >	That implies Top-level Demos\build.pl script, and call from top level build before
 	tests
