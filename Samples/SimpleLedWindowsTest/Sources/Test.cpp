@@ -8,8 +8,6 @@
 
 #include	"Resource.h"
 
-
-
 #include	"Stroika/Frameworks/Led/Command.h"
 #include	"Stroika/Frameworks/Led/Platform/Windows.h"
 #include	"Stroika/Frameworks/Led/SimpleTextStore.h"

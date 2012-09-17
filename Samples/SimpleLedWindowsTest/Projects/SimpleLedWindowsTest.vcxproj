@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Full UNICODE Debug|Win32">
-      <Configuration>Full UNICODE Debug</Configuration>
+    <ProjectConfiguration Include="Debug-U-32|Win32">
+      <Configuration>Debug-U-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Full UNICODE Release|Win32">
-      <Configuration>Full UNICODE Release</Configuration>
+    <ProjectConfiguration Include="Release-U-32|Win32">
+      <Configuration>Release-U-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -39,12 +39,12 @@
     <SccLocalPath />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
@@ -53,23 +53,27 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">.\LedTestWin32___Win32_Full_UNICODE_Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">.\LedTestWin32___Win32_Full_UNICODE_Release\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">.\LedTestWin32___Win32_Full_UNICODE_Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">.\LedTestWin32___Win32_Full_UNICODE_Debug\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleLedWindowsTest\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleLedWindowsTest\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Test11\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Test11\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Test11\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Test11\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -109,7 +113,7 @@
       <AdditionalIncludeDirectories>.\Headers;.\Sources;..\Led\Headers;..\Led\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>Headers;..\..\..\Library\Sources;;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -144,6 +148,16 @@
       <Culture>0x0409</Culture>
       <AdditionalIncludeDirectories>.\Headers;.\Sources;..\Led\Headers;..\Led\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
