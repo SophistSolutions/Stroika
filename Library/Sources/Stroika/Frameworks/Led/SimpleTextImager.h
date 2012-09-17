@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __SimpleTextImager_h__
-#define __SimpleTextImager_h__  1
+#ifndef _Stroika_Frameworks_Led_SimpleTextImager_h_
+#define _Stroika_Frameworks_Led_SimpleTextImager_h_  1
 
 /*
 @MODULE:    SimpleTextImager
@@ -523,10 +523,4 @@ namespace   Stroika {
     }
 }
 
-#endif  /*__SimpleTextImager_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+#endif  /*_Stroika_Frameworks_Led_SimpleTextImager_h_*/
