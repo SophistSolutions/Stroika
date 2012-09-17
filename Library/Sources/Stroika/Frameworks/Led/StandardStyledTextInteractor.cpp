@@ -47,16 +47,16 @@ using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 #if     qMacOS
-const   Led_ClipFormat  kLedPrivateClipFormat   =   'LedP';
-const   Led_ClipFormat  kRTFClipFormat          =   'RTF ';
-const   Led_ClipFormat  kHTMLClipFormat         =   'HTML';
+const   Led_ClipFormat  Led::kLedPrivateClipFormat   =   'LedP';
+const   Led_ClipFormat  Led::kRTFClipFormat          =   'RTF ';
+const   Led_ClipFormat  Led::kHTMLClipFormat         =   'HTML';
 #elif   qWindows
 const   TCHAR   kLedPrivateClipTypeName[]       =   _T ("Led Rich Text Format");
-const   Led_ClipFormat  kLedPrivateClipFormat   =   ::RegisterClipboardFormat (kLedPrivateClipTypeName);
+const   Led_ClipFormat  Led::kLedPrivateClipFormat   =   ::RegisterClipboardFormat (kLedPrivateClipTypeName);
 const   TCHAR   kRTFClipTypeName[]              =   _T ("Rich Text Format");
-const   Led_ClipFormat  kRTFClipFormat          =   ::RegisterClipboardFormat (kRTFClipTypeName);
+const   Led_ClipFormat  Led::kRTFClipFormat          =   ::RegisterClipboardFormat (kRTFClipTypeName);
 const   TCHAR   kHTMLClipTypeName[]             =   _T ("HTML");                                    /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
-const   Led_ClipFormat  kHTMLClipFormat         =   ::RegisterClipboardFormat (kHTMLClipTypeName);
+const   Led_ClipFormat  Led::kHTMLClipFormat         =   ::RegisterClipboardFormat (kHTMLClipTypeName);
 #elif   qXWindows
 // Toolkit-specific code (e.g. Led_Gtk<>) must reset these to good values. Cannot be constants
 // and cannot be filled in here, cuz we require a DISPLAY object to register the contants on.

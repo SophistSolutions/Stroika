@@ -996,7 +996,7 @@ void    Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameS
 @DESCRIPTION:   <p>Compute the subset of the two @'Led_IncrementalFontSpecification' arguments where both parts
             are valid and identical.</p>
 */
-Led_IncrementalFontSpecification    Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
+Led_IncrementalFontSpecification    Led::Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
 {
     Led_IncrementalFontSpecification    result  =   lhs;
 
@@ -3039,7 +3039,7 @@ void    Led_GDIGlobals::InvalidateGlobals ()
  ************************************ AddRectangleToRegion **********************
  ********************************************************************************
  */
-void    AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn)
+void    Led::AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn)
 {
     RequireNotNull (toRgn);
     *toRgn = *toRgn + Led_Region (addRect);
@@ -3502,7 +3502,7 @@ wstring Led_IME::GetCompositionResultStringW (HWND hWnd)
 
 
 
-Led_Rect    CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
+Led_Rect    Led::CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
 {
     Led_Coordinate  xLeft   =   (centerIn.left + centerIn.right) / 2 - r.GetWidth () / 2;
     Led_Coordinate  yTop    =   (centerIn.top + centerIn.bottom) / 2 - r.GetHeight () / 2;
@@ -3510,7 +3510,7 @@ Led_Rect    CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
 }
 
 #if     qWindows
-void    Led_CenterWindowInParent (HWND w)
+void    Led::Led_CenterWindowInParent (HWND w)
 {
     Assert (::IsWindow (w));
     HWND hWndCenter = ::GetWindow (w, GW_OWNER);

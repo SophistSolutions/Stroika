@@ -2030,7 +2030,7 @@ string  MakeSophistsAppNameVersionURL (const string& relURL, const string& appNa
  ******************************* Led_CasedCharsEqual ****************************
  ********************************************************************************
  */
-bool    Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase)
+bool    Led::Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase)
 {
     if (lhs == rhs) {
         return true;
@@ -2072,12 +2072,18 @@ bool    Led::Led_CasedStringsEqual (const string& lhs, const string& rhs, bool i
 
 
 #if     qLedCheckCompilerFlagsConsistency
-namespace LedCheckCompilerFlags {
-    int LedCheckCompilerFlags_(qDebug)                  =   qDebug;
-    int LedCheckCompilerFlags_(qSingleByteCharacters)   =   qSingleByteCharacters;
-    int LedCheckCompilerFlags_(qMultiByteCharacters)    =   qMultiByteCharacters;
-    int LedCheckCompilerFlags_(qWideCharacters)         =   qWideCharacters;
-    int LedCheckCompilerFlags_(qProvideIMESupport)      =   qProvideIMESupport;
+namespace   Stroika {
+    namespace   Frameworks {
+        namespace   Led {
+            namespace LedCheckCompilerFlags {
+                int LedCheckCompilerFlags_(qDebug)                  =   qDebug;
+                int LedCheckCompilerFlags_(qSingleByteCharacters)   =   qSingleByteCharacters;
+                int LedCheckCompilerFlags_(qMultiByteCharacters)    =   qMultiByteCharacters;
+                int LedCheckCompilerFlags_(qWideCharacters)         =   qWideCharacters;
+                int LedCheckCompilerFlags_(qProvideIMESupport)      =   qProvideIMESupport;
+            }
+        }
+    }
 }
 #endif
 

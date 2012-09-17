@@ -23,9 +23,17 @@ using   namespace   Stroika::Foundation;
 
 
 #if     qLedCheckCompilerFlagsConsistency
-namespace LedCheckCompilerFlags_Led_Win32 {
-    bool    LedCheckCompilerFlags_(qSupportWindowsSDKCallbacks)                                         =   qSupportWindowsSDKCallbacks;
-    bool    LedCheckCompilerFlags_(qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug)   =   qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug;
+namespace   Stroika {
+    namespace   Frameworks {
+        namespace   Led {
+            namespace   Platform {
+                namespace LedCheckCompilerFlags_Led_Win32 {
+                    bool    LedCheckCompilerFlags_(qSupportWindowsSDKCallbacks)                                         =   qSupportWindowsSDKCallbacks;
+                    bool    LedCheckCompilerFlags_(qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug)   =   qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug;
+                }
+            }
+        }
+    }
 }
 #endif
 

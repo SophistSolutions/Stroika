@@ -3279,8 +3279,10 @@ namespace   Stroika {
                         /*
                          *  The only time I know of where this can happen is that these messages can be passed before the WM_CREATE.
                          *  Seeing this assertion isn't necesarily a bug - but its a clue something wrong maybe going on.
+						 *
+						 *	As of 2012-09-16 - I see a few new (sb irrelevant) messages...
                          */
-                        Assert (message == WM_GETMINMAXINFO or message == WM_NCCREATE or message == WM_NCCALCSIZE);
+                        Assert (message == WM_GETMINMAXINFO or message == WM_NCCREATE or message == WM_NCCALCSIZE or message == 0x0093 or message == 0x0094 or message == WM_NCMOUSELEAVE);
                         return ::DefWindowProc (hWnd, message, wParam, lParam);
                     }
 
