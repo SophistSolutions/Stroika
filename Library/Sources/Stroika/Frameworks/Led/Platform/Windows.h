@@ -513,7 +513,8 @@ namespace   Stroika {
                     entries in BASE_WIN32_HELPER to handle the calls. Not a generic message map mechanism - but instead one simple
                     and hardwired for our purposes here.</p>
                 */
-                template    <typename   BASE_WIN32_HELPER = Led_Win32_Helper<> >    class   Led_Win32_SimpleWndProc_Helper :
+                template    <typename   BASE_WIN32_HELPER = Led_Win32_Helper<> >
+                class   Led_Win32_SimpleWndProc_Helper :
                     public BASE_WIN32_HELPER {
                 private:
                     typedef BASE_WIN32_HELPER   inherited;
