@@ -14,12 +14,12 @@
 
 /**
  *  TODO:
- *      @todo	Consider rename this module to 'RunExternalProcess'
- *				The term subprocess COULD mean other things. Its shorter, but that matters little unless you use it alot.
- *				MAYBE "ExternalProcessRunner". Or "SubProcessRunner".
+ *      @todo   Consider rename this module to 'RunExternalProcess'
+ *              The term subprocess COULD mean other things. Its shorter, but that matters little unless you use it alot.
+ *              MAYBE "ExternalProcessRunner". Or "SubProcessRunner".
  *
- *		@todo	Use Streams. STDIN stream, STDOUT stream, STDERR stream. Make sure it handles well without blocking
- *				(tricks I had todo in HF - forcing extra reads so writes woudlnt block).
+ *      @todo   Use Streams. STDIN stream, STDOUT stream, STDERR stream. Make sure it handles well without blocking
+ *              (tricks I had todo in HF - forcing extra reads so writes woudlnt block).
  *
  */
 
