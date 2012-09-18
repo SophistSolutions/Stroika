@@ -11,14 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2010\Stroika-Foundation.vcxproj">
-      <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2010\Stroika-Frameworks-Led.vcxproj">
-      <Project>{57b01fec-9ad1-46a4-b5f1-9e1c531e59d2}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\Sources\AboutBoxImage.bmp" />
     <None Include="..\..\Sources\AboutBoxImage.vsd" />
     <None Include="..\..\Sources\AboutBoxImage.xpm" />
@@ -89,6 +81,14 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Sources\LedIt.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2010\Stroika-Foundation.vcxproj">
+      <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2010\Stroika-Frameworks-Led.vcxproj">
+      <Project>{57b01fec-9ad1-46a4-b5f1-9e1c531e59d2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />

@@ -5,7 +5,7 @@
 #ifndef	__LedItConfig__
 #define	__LedItConfig__	1
 
-
+#include    "Stroika/Foundation/StroikaPreComp.h"
 #include	"Stroika/Frameworks/Led/Config.h"
 
 #if		defined (__cplusplus)
@@ -41,9 +41,8 @@
 
 #if		defined (__cplusplus)
 
-	#if		qLedUsesNamespaces
-	using	namespace	Led;
-	#endif
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Frameworks::Led;
 
 	enum	FileFormat {
 				eTextFormat,

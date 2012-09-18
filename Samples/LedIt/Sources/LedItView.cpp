@@ -2,9 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #if		qMacOS
 	#include	<AERegistry.h>
@@ -311,8 +309,8 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 	public:
 		override	FontNameSpecifier	CmdNumToFontName (CommandNumber cmdNum)
 			{
-				Led_Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
-				Led_Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
+				Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
+				Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
 				#if		qMacOS
 					static	LMenu*			fontMenu	=	LMenuBar::GetCurrentMenuBar()->FetchMenu (cmd_FontMenu);
 					static	vector<short>	sFontIDMapCache;	// OK to keep static cuz never changes during run of app
@@ -504,8 +502,8 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 		#if		qSupportAddNewTableDlg
 		bool	AddNewTableDialog (size_t* nRows, size_t* nCols)
 			{
-				Led_RequireNotNil (nRows);
-				Led_RequireNotNil (nCols);
+				RequireNotNull (nRows);
+				RequireNotNull (nCols);
 				#if		qMacOS
 					Led_StdDialogHelper_AddNewTableDialog	infoDialog;
 				#elif	qWindows
@@ -526,7 +524,7 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 		#if		qSupportEditTablePropertiesDlg
 		override	bool	EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties)
 			{
-				Led_RequireNotNil (tableProperties);
+				RequireNotNull (tableProperties);
 
 				typedef	Led_StdDialogHelper_EditTablePropertiesDialog	DLGTYPE;
 				#if		qMacOS
@@ -659,7 +657,7 @@ void	LedItView::OnInitialUpdate ()
 #if		qWindows
 bool	LedItView::OnUpdateCommand (CommandUpdater* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	if (inherited::OnUpdateCommand (enabler)) {
 		return true;
 	}

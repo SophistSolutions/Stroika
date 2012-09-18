@@ -5,6 +5,8 @@
 #ifndef	__LedItApplication_h__
 #define	__LedItApplication_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<vector>
 #include	<string>
 

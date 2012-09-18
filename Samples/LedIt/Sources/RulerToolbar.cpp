@@ -2,9 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include	<afxwin.h>		//	MFC core and standard components
 #include	<afxpriv.h>		//	For WM_SIZEPARENT
@@ -494,7 +492,7 @@ void	RulerBar::Update(const WordProcessor::IncrementalParagraphInfo& pf)
 	if (pf.GetTabStopList_Valid ()) {
 		TextImager::StandardTabStopList	tabStops	=	pf.GetTabStopList ();
 		Led_Distance	tabSoFar	=	0;
-		Led_Require (tabStops.fTabStops.size () <= MAX_TAB_STOPS);
+		Require (tabStops.fTabStops.size () <= MAX_TAB_STOPS);
 		size_t i = 0;
 		for (; i < tabStops.fTabStops.size (); ++i) {
 			tabSoFar += tabStops.fTabStops[i];
@@ -552,7 +550,7 @@ void	RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
 		// we will get tabs at 1,2,3,4,5
 		if (nPos != m_pTabItems[i].GetHorzPosTwips()) {
 			nPos = m_pTabItems[i].GetHorzPosTwips();
-			Led_Assert (nPos > soFar);
+			Assert (nPos > soFar);
 			//pf.rgxTabs[pf.cTabCount++] = nPos;
 			v.push_back (Led_TWIPS (nPos-soFar));
 			soFar = nPos;

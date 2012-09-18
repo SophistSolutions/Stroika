@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<Controls.h>
 #include	<ControlDefinitions.h>
 #include	<Icons.h>

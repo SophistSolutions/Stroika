@@ -5,7 +5,7 @@
 #ifndef	__LedItControlItem_h__
 #define	__LedItControlItem_h__	1
 
-#include	"Stroika/Frameworks/Led/Platoform/MFC_WordProcessor.h"
+#include	"Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
 
 #include	"LedItConfig.h"
 
@@ -13,7 +13,7 @@
 class	LedItDocument;
 class	LedItView;
 
-class	LedItControlItem : public Led_MFC_ControlItem	{
+class	LedItControlItem : public Platform::Led_MFC_ControlItem	{
 	public:
 		LedItControlItem (COleDocument* pContainer = NULL);
 

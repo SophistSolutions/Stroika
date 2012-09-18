@@ -2,9 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #if		qMacOS
 	#include	<Balloons.h>
@@ -46,7 +44,7 @@
 #include	"Stroika/Frameworks/Led/Config.h"
 #include	"Stroika/Frameworks/Led/StdDialogs.h"
 #if		qWindows
-	#include	"Stroika/Frameworks/Led/Platform/Led_Win32_FileRegistration.h"
+	#include	"Stroika/Frameworks/Led/Platform/Win32_FileRegistration.h"
 #endif
 #include	"Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 

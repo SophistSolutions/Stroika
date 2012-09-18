@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #if		qMacOS
 	#include	<new.h>
 
@@ -127,10 +129,8 @@
 
 
 
-
-#if		qLedUsesNamespaces
-using	namespace	Led;
-#endif
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Frameworks::Led;
 
 
 

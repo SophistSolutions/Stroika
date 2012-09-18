@@ -2,9 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#if		qIncludePrefixFile
-	#include	"stdafx.h"
-#endif
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include	"LedItDocument.h"
 #include	"LedItView.h"
@@ -31,7 +29,7 @@ LedItControlItem::LedItControlItem (COleDocument* pContainer):
 
 SimpleEmbeddedObjectStyleMarker*	LedItControlItem::mkLedItControlItemStyleMarker (const char* embeddingTag, const void* data, size_t len)
 {
-	Led_RequireNotNil (DocContextDefiner::GetDoc ());	// See doc in header for class DocContextDefiner.
+	RequireNotNull (DocContextDefiner::GetDoc ());	// See doc in header for class DocContextDefiner.
 														// must declare one of these on call stack before calling this
 														// method...
 	Led_MFC_ControlItem*	e = new LedItControlItem (DocContextDefiner::GetDoc ());
@@ -42,12 +40,12 @@ SimpleEmbeddedObjectStyleMarker*	LedItControlItem::mkLedItControlItemStyleMarker
 		delete e;
 		throw;
 	}
-	Led_Assert (false); return NULL; //notreached
+	Assert (false); return NULL; //notreached
 }
 
 SimpleEmbeddedObjectStyleMarker*	LedItControlItem::mkLedItControlItemStyleMarker (ReaderFlavorPackage& flavorPackage)
 {
-	Led_RequireNotNil (DocContextDefiner::GetDoc ());	// See doc in header for class DocContextDefiner.
+	RequireNotNull (DocContextDefiner::GetDoc ());	// See doc in header for class DocContextDefiner.
 														// must declare one of these on call stack before calling this
 														// method...
 	Led_MFC_ControlItem*	e = new LedItControlItem (DocContextDefiner::GetDoc ());
@@ -58,7 +56,7 @@ SimpleEmbeddedObjectStyleMarker*	LedItControlItem::mkLedItControlItemStyleMarker
 		delete e;
 		throw;
 	}
-	Led_Assert (false); return NULL; //notreached
+	Assert (false); return NULL; //notreached
 }
 
 BOOL	LedItControlItem::CanActivate ()
@@ -79,17 +77,10 @@ BOOL	LedItControlItem::CanActivate ()
 LedItDocument&	LedItControlItem::GetDocument () const
 {
 	LedItDocument*	result	=	(LedItDocument*)COleClientItem::GetDocument();
-	Led_EnsureNotNil (result);
+	EnsureNotNull (result);
 	ASSERT_VALID(result);
 	ASSERT (result->IsKindOf (RUNTIME_CLASS (LedItDocument)));
 	return *result;
 }
 #endif
 
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
