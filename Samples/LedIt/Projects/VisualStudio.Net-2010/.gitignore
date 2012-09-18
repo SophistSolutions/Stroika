@@ -1,0 +1,4 @@
+*.vcxproj.user
+*.opensdf
+*.sdf
+*.suo
