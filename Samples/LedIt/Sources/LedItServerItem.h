@@ -5,6 +5,7 @@
 #ifndef	__LedItServerItem_h__
 #define	__LedItServerItem_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 class LedItServerItem : public COleServerItem {
 		DECLARE_DYNAMIC(LedItServerItem)

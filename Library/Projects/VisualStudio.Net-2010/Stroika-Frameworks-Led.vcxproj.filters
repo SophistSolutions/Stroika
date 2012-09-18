@@ -144,6 +144,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
@@ -282,6 +285,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,6 +5,8 @@
 #ifndef	__LedItMainFrame_h__
 #define	__LedItMainFrame_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxwin.h>
 #include	<afxext.h>
 

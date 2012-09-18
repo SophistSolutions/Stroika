@@ -5,15 +5,13 @@
 #ifndef	__FormatToolbar_h__
 #define	__FormatToolbar_h__	1
 
-/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
- */
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #if		qWindows
 #include	<afxext.h>
 #endif
 
-#include	"LedGDI.h"
+#include	"Stroika/Frameworks/Led/GDI.h"
 
 #include	"LedItConfig.h"
 

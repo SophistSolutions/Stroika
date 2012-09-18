@@ -5,6 +5,8 @@
 #ifndef	__Options_h__
 #define	__Options_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #if		defined (WIN32)
 	#include	<afxwin.h>
 #endif

@@ -5,6 +5,8 @@
 #ifndef	__LedItView_h__
 #define	__LedItView_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #if		qMacOS
 	#include	"Stroika/Frameworks/Led/Platform/Led_PP_WordProcessor.h"
 #elif	defined (WIN32)

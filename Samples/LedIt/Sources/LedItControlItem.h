@@ -5,6 +5,8 @@
 #ifndef	__LedItControlItem_h__
 #define	__LedItControlItem_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	"Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
 
 #include	"LedItConfig.h"

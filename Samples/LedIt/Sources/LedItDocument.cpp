@@ -34,10 +34,10 @@
 #endif
 
 #include	"Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
-#include	"Stroika/Frameworks/Led/StyledTextIO_LedNative.h"
-#include	"Stroika/Frameworks/Led/StyledTextIO_PlainText.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
+#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"
 #if		qMacOS
-	#include	"Stroika/Frameworks/Led/StyledTextIO_STYLText.h"
+	#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_STYLText.h"
 #endif
 
 #if		qMacOS
@@ -67,7 +67,7 @@ class	LedItDocumentWindow : public LWindow {
 				sWindowList.push_back (this);
 				::AppendMenu (::GetMenuHandle (kWindowsMenuID), "\pREPLACEME");
 				LMenu*	windowMenu	=	LMenuBar::GetCurrentMenuBar()->FetchMenu (kWindowsMenuID);
-				Led_AssertNotNil (windowMenu);
+				AssertNotNil (windowMenu);
 				size_t	nMenuItems	=	::CountMenuItems (windowMenu->GetMacMenuH ());
 				for (size_t i = 1; i <= nMenuItems; i++) {
 					windowMenu->SetCommand (i, i-1+kBaseWindowCmd);	// make first cmd = kBaseWindowCmd
@@ -79,7 +79,7 @@ class	LedItDocumentWindow : public LWindow {
 				LWindow*	w	=	this;
 				sWindowList.erase (std::find (sWindowList.begin (), sWindowList.end (), w));
 				LMenu*	windowMenu	=	LMenuBar::GetCurrentMenuBar()->FetchMenu (kWindowsMenuID);
-				Led_AssertNotNil (windowMenu);
+				AssertNotNil (windowMenu);
 				windowMenu->RemoveItem (1);
 				size_t	nMenuItems	=	::CountMenuItems (windowMenu->GetMacMenuH ());
 				for (size_t i = 1; i <= nMenuItems; i++) {
@@ -124,7 +124,7 @@ inline	FileFormat	MapPutFileTypeListIdxToFormat (size_t typeIndex)
 			case	1:	return (eLedPrivateFormat);
 			case	2:	return (eRTFFormat);
 			case	3:	return (eTextFormat);
-			default:	Led_Assert (false);	return (eTextFormat);
+			default:	Assert (false);	return (eTextFormat);
 		}
 	}
 
@@ -135,7 +135,7 @@ inline	size_t	MapPutFileFormatToTypeListIdx (FileFormat format)
 			case	eLedPrivateFormat:		return (1);
 			case	eRTFFormat:				return (2);
 			case	eTextFormat:			return (3);
-			default:	Led_Assert (false);	return (0);
+			default:	Assert (false);	return (0);
 		}
 	}
 
@@ -438,7 +438,7 @@ ReRead:
 		break;
 
 		default: {
-			Led_Assert (false);	// don't support reading that format (yet?)!
+			Assert (false);	// don't support reading that format (yet?)!
 		}
 		break;
 	}
@@ -485,7 +485,7 @@ void	LedItDocument::Save ()
 		break;
 
 		default: {
-			Led_Assert (false);	// don't support writing that format (yet?)!
+			Assert (false);	// don't support writing that format (yet?)!
 		}
 		break;
 	}
@@ -572,7 +572,7 @@ void	LedItDocument::DoSaveHelper ()
 						vector<StandardStyledTextImager::InfoSummaryRecord>
 													ledStyleRuns	=	fStyleDatabase->GetStyleInfo (0, fTextStore.GetLength ());
 						size_t						nStyleRuns		=	ledStyleRuns.size ();
-						Led_Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short));	// thats why we add sizeof (short)
+						Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short));	// thats why we add sizeof (short)
 						macStyleHandle	=	(StScrpHandle)::Led_DoNewHandle (sizeof (short) + nStyleRuns*sizeof (ScrpSTElement));
 						HLock (Handle (macStyleHandle));
 						(*macStyleHandle)->scrpNStyles = nStyleRuns;
@@ -614,7 +614,7 @@ void	LedItDocument::DoSaveHelper ()
 		break;
 		
 		default: {
-			Led_Assert (false);
+			Assert (false);
 		}
 		break;
 	}
@@ -648,7 +648,7 @@ void	LedItDocument::NameNewDoc ()
 		::NumToString(num, numStr);
 		LString::AppendPStr(name, numStr);
 	}		
-	Led_AssertNotNil (mWindow);
+	AssertNotNull (mWindow);
 	mWindow->SetDescriptor (name);		// Finally, set window title
 }
 
@@ -825,13 +825,13 @@ void	LedItDocument::PurgeUnneededMemory ()
 	fCommandHandler.Commit ();
 
 	// Also, we can punt cached linebreak etc information
-	Led_AssertNotNil (fTextView);
+	AssertNotNull (fTextView);
 	fTextView->PurgeUnneededMemory ();
 }
 
 void	LedItDocument::BuildDocWindow (const FSSpec* inFileSpec)
 {
-	Led_Assert (mWindow == NULL);
+	Assert (mWindow == NULL);
 
 	// GetNewCWindow() seems to crash when we are nearly out of RAM in our local heap (rather
 	// than just returning NULL. So try to avoid that situation.
@@ -1247,7 +1247,7 @@ void	LedItDocument::Serialize (CArchive& ar)
 			break;
 
 			default: {
-				Led_Assert (false);	// don't support writing that format (yet?)!
+				Assert (false);	// don't support writing that format (yet?)!
 			}
 			break;
 		}
@@ -1360,7 +1360,7 @@ ReRead:
 			break;
 
 			default: {
-				Led_Assert (false);	// don't support reading that format (yet?)!
+				Assert (false);	// don't support reading that format (yet?)!
 			}
 			break;
 		}
@@ -1452,7 +1452,7 @@ BOOL	LedItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 void	LedItDocument::OnUpdateFileSave (CCmdUI* pCmdUI)
 {
 	ASSERT_VALID (this);
-	Led_RequireNotNil (pCmdUI);
+	RequireNotNull (pCmdUI);
 	// only enable save command if dirty, or no file name associated with this document
 	pCmdUI->Enable (IsModified () or GetPathName ().GetLength () == 0);
 }
@@ -1460,7 +1460,7 @@ void	LedItDocument::OnUpdateFileSave (CCmdUI* pCmdUI)
 void	LedItDocument::OnFileSaveCopyAs ()
 {
 	ASSERT_VALID (this);
-	Led_Assert (m_bRemember);
+	Assert (m_bRemember);
 	
 	LPSTORAGE	savedStorage	=	m_lpRootStg;
 	m_lpRootStg = NULL;
@@ -1489,29 +1489,29 @@ void	LedItDocument::DeleteContents ()
 
 bool	LedItDocument::DoPromptSaveAsFileName (CString& fileName, FileFormat* fileFormat)
 {
-	Led_RequireNotNil (fileFormat);
+	RequireNotNull (fileFormat);
 	return DoPromptFileName (fileName, AFX_IDS_SAVEFILE, false, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, fileFormat);
 }
 
 bool	LedItDocument::DoPromptSaveCopyAsFileName (CString& fileName, FileFormat* fileFormat)
 {
-	Led_RequireNotNil (fileFormat);
+	RequireNotNull (fileFormat);
 	return DoPromptFileName (fileName, AFX_IDS_SAVEFILECOPY, false, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, fileFormat);
 }
 
 bool	LedItDocument::DoPromptOpenFileName (CString& fileName, FileFormat* fileFormat)
 {
-	Led_RequireNotNil (fileFormat);
+	RequireNotNull (fileFormat);
 	return DoPromptFileName (fileName, AFX_IDS_OPENFILE, true, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, fileFormat);
 }
 
 bool	LedItDocument::DoPromptFileName (CString& fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, FileFormat* fileFormat)
 {
-	Led_RequireNotNil (fileFormat);
+	RequireNotNull (fileFormat);
 	CFileDialog dlgFile (isOpenDialogCall);
 
 	CString title;
-	Led_Verify (title.LoadString (nIDSTitle));
+	Verify (title.LoadString (nIDSTitle));
 
 	dlgFile.m_ofn.Flags |= fileDLogFlags;
 
@@ -1553,7 +1553,7 @@ bool	LedItDocument::DoPromptFileName (CString& fileName, UINT nIDSTitle, bool is
 			case	eLedPrivateFormat:	dlgFile.m_ofn.nFilterIndex = 2; break;
 			case	eRTFFormat:			dlgFile.m_ofn.nFilterIndex = 3; break;
 			case	eTextFormat:		dlgFile.m_ofn.nFilterIndex = 4; break;
-			default:					Led_Assert (false); break;
+			default:					Assert (false); break;
 		}
 	}
 	bool bResult = (dlgFile.DoModal() == IDOK);

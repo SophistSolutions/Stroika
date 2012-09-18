@@ -5,6 +5,8 @@
 #ifndef	__Units_h__
 #define	__Units_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxwin.h>
 
 #include	"Stroika/Frameworks/Led/Support.h"

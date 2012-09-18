@@ -98,6 +98,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.h" />

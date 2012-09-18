@@ -105,7 +105,7 @@ int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
-	Led_AssertNotNil (fFormatBar);
+	AssertNotNull (fFormatBar);
 	if (!fFormatBar->Create (this, WS_CHILD|WS_VISIBLE|CBRS_TOP, ID_VIEW_FORMATBAR)) {
 		TRACE0("Failed to create FormatBar\n");
 		return -1;      // fail to create
@@ -135,7 +135,7 @@ int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 	// TODO: Delete these three lines if you don't want the toolbar to
 	//  be dockable
 	fToolBar.EnableDocking (CBRS_ALIGN_ANY);
-	Led_AssertNotNil (fFormatBar);
+	AssertNotNull (fFormatBar);
 	fFormatBar->EnableDocking (CBRS_ALIGN_TOP|CBRS_ALIGN_BOTTOM);
 	DockControlBar (&fToolBar);
 	DockControlBar (fFormatBar);
@@ -181,7 +181,7 @@ void	LedItMainFrame::OnCharColor ()
 {
 	ColorMenu colorMenu;
 	CRect rc;
-	Led_AssertNotNil (fFormatBar);
+	AssertNotNull (fFormatBar);
 	int index = fFormatBar->CommandToIndex (ID_CHAR_COLOR);
 	fFormatBar->GetItemRect (index, &rc);
 	fFormatBar->ClientToScreen (rc);
@@ -190,7 +190,7 @@ void	LedItMainFrame::OnCharColor ()
 
 	static	bool	IsPopupInOwningMenu (HMENU popup, HMENU potentialOwner)
 	{
-		Led_RequireNotNil (popup);
+		RequireNotNull (popup);
 		if (potentialOwner != NULL) {
 			int nIndexMax = ::GetMenuItemCount (potentialOwner);
 			for (int nIndex = 0; nIndex < nIndexMax; nIndex++) {
@@ -225,8 +225,8 @@ void	LedItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysM
 	CCmdUI	state;
 	state.m_pSubMenu = NULL;
 	state.m_pMenu = pPopupMenu;
-	Led_Assert (state.m_pOther == NULL);
-	Led_Assert (state.m_pParentMenu == NULL);
+	Assert (state.m_pOther == NULL);
+	Assert (state.m_pParentMenu == NULL);
 
 	state.m_nIndexMax = pPopupMenu->GetMenuItemCount ();
 
@@ -245,7 +245,7 @@ void	LedItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysM
 				memset (&mInfo, 0, sizeof (mInfo));
 				mInfo.cbSize = sizeof (mInfo);
 				mInfo.fMask = MIIM_STATE;
-				Led_Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
+				Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
 				if (mInfo.fState & MFS_DISABLED) {
 					pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
 					state.m_nIndexMax--;

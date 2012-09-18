@@ -5,6 +5,8 @@
 #ifndef	__LedItDocument_h__
 #define	__LedItDocument_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #if		qMacOS
 	#include	<LSingleDoc.h>
 #elif	defined (WIN32)

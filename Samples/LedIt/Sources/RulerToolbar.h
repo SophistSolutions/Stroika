@@ -5,6 +5,8 @@
 #ifndef	__RulerToolbar_h__
 #define	__RulerToolbar_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxext.h>
 
 #include	"Stroika/Frameworks/Led/Support.h"

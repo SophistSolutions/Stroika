@@ -5,6 +5,8 @@
 #ifndef	__LedItInPlaceFrame_h__
 #define	__LedItInPlaceFrame_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<afxole.h>
 
 

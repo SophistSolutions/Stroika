@@ -5,6 +5,7 @@
 #ifndef	__FilteredFIlePicker_h__
 #define	__FilteredFIlePicker_h__	1
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include	<Dialogs.h>
 #include	<Navigation.h>
