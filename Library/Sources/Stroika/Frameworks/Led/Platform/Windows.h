@@ -2840,7 +2840,8 @@ namespace   Stroika {
                     Memory::SmallStackBuffer<Led_tChar> buf (len);
 
 #if     qWideCharacters == qSDK_UNICODE
-                    ::_tcscpy (buf, text);
+                    //::_tcscpy (buf, text);
+					::memcpy (buf.begin (), text, (len+1)*sizeof (text[0]));
 #elif   qWideCharacters && !qSDK_UNICODE
                     len =   ::MultiByteToWideChar (CP_ACP, 0, text, len, buf, len); // Assume they want ANSI code page text?
 #elif   !qWideCharacters && qSDK_UNICODE
