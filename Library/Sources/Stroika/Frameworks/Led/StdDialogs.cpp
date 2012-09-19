@@ -51,6 +51,13 @@ namespace {
     }
     bool    ParseStringToINT (const Led_SDK_String& s, int* t)
     {
+#if 1
+		// get rid of this function - COULD do better API - but this is fine for how we currently use it...
+		// -- LGP 2012-09-19
+		RequireNotNull (t);
+		*t = Characters::String2Int (s);
+		return true;
+#else
         int l   =   0;
 #if     qSDK_UNICODE
         if (::swscanf (s.c_str (), L"%d", &l) < 1) {
@@ -68,6 +75,7 @@ namespace {
             *t = Led_TWIPS (l);
             return true;
         }
+#endif
 #endif
     }
     // Later revise these so they take into account UNITS - like CM, or IN, or TWIPS, or pt, etc...
