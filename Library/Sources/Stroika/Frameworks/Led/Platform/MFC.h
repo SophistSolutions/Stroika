@@ -404,8 +404,8 @@ namespace   Stroika {
                         <p>NB: You must declare DoDeclare_Led_MFC_OptionalWin32SDKMessageMimicHelper_MessageMap (BASECLASS) to get the
                     message map for this class generated, unless this has already been done in Led_MFC.cpp (for your particular BASECLASS).</p>
                 */
-                template    <typename   BASECLASS = Led_MFC_Helper<> >  class   Led_MFC_OptionalWin32SDKMessageMimicHelper :
-                    public Led_Win32_Win32SDKMessageMimicHelper <BASECLASS> {
+                template    <typename   BASECLASS = Led_MFC_Helper<> >  
+				class   Led_MFC_OptionalWin32SDKMessageMimicHelper : public Led_Win32_Win32SDKMessageMimicHelper <BASECLASS> {
                 private:
                     typedef Led_Win32_Win32SDKMessageMimicHelper <BASECLASS>    inherited;
 
@@ -2107,8 +2107,8 @@ namespace   Stroika {
                             InternalizeBestFlavor (flavors);
                         }
                         catch (...) {
-#if     _MFC_VER > 0x0710
-                            // Known broken in 0x0421 and 0x0600 anx 0x700 (MSVC.Net), and 0x710 (MSVC.NET 2003)
+#if     _MFC_VER > 0x0A00
+// Known broken in 0x0421 and 0x0600 anx 0x700 (MSVC.Net), and 0x710 (MSVC.NET 2003), and 0x0A00 (MSVC.net 2010)
 #pragma message "See if MFC has fixed this bug yet"
 #endif
                             // Cannot re-throw here, due to MFC bug in COleDropTarget::XDropTarget::Drop (), where
