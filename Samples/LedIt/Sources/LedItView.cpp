@@ -850,7 +850,7 @@ void	LedItView::OnInsertObject ()
 		BreakInGroupedCommands ();
 		UndoableContextHelper	context (*this, Led_SDK_TCHAROF ("Insert OLE Embedding"), false);
 			{
-				AddEmbedding (pItem, GetTextStore (), GetSelectionStart (), GetDocument ().GetStyleDatabase ());
+				AddEmbedding (pItem, GetTextStore (), GetSelectionStart (), GetDocument ().GetStyleDatabase ().get ());
 				SetSelection (GetSelectionStart ()+1, GetSelectionStart () + 1);
 			}
 		context.CommandComplete ();
