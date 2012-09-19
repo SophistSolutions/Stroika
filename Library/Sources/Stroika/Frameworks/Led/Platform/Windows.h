@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef __Led_Win32_h__
-#define __Led_Win32_h__ 1
+#ifndef _Stroika_Frameworks_Led_Platform_Windows_h_
+#define _Stroika_Frameworks_Led_Platform_Windows_h_ 1
 
 #include    "../../../Foundation/StroikaPreComp.h"
 
@@ -3425,10 +3425,4 @@ namespace   Stroika {
 #endif
 
 
-#endif  /*__Led_Win32_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+#endif  /*_Stroika_Frameworks_Led_Platform_Windows_h_*/
