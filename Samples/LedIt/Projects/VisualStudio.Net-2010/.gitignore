@@ -3,3 +3,4 @@
 *.sdf
 *.suo
 LedIt_i.c
+ipch/
