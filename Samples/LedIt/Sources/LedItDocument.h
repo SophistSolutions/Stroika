@@ -124,7 +124,7 @@ class	LedItDocument :
 	protected:
 	public:
 		ChunkedArrayTextStore						fTextStore;
-		RTFInfo										fRTFInfo;
+		StyledTextIO::RTFInfo						fRTFInfo;
 		StandardStyledTextImager::StyleDatabasePtr	fStyleDatabase;
 		WordProcessor::ParagraphDatabasePtr			fParagraphDatabase;
 		WordProcessor::HidableTextDatabasePtr		fHidableTextDatabase;
@@ -154,8 +154,8 @@ class	LedItDocument :
 #endif
 	private:
 	public:
-		FileFormat	fFileFormat;
-		HTMLInfo	fHTMLInfo;
+		FileFormat				fFileFormat;
+		StyledTextIO::HTMLInfo	fHTMLInfo;
 
 #if		qMacOS
 	protected:

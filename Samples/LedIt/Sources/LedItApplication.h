@@ -49,11 +49,11 @@ class	LedItView;
 
 
 #if		qMacOS
-	typedef	Led_PP_TmpCmdUpdater	CMD_ENABLER;
+	typedef	Platform::Led_PP_TmpCmdUpdater	CMD_ENABLER;
 #elif	qWindows
-	typedef	Led_MFC_TmpCmdUpdater	CMD_ENABLER;
+	typedef	Platform::Led_MFC_TmpCmdUpdater	CMD_ENABLER;
 #elif	qXWindows
-	typedef	Led_Gtk_TmpCmdUpdater	CMD_ENABLER;
+	typedef	Platform::Led_Gtk_TmpCmdUpdater	CMD_ENABLER;
 #endif
 
 

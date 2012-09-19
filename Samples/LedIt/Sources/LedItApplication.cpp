@@ -44,7 +44,7 @@
 #include	"Stroika/Frameworks/Led/Config.h"
 #include	"Stroika/Frameworks/Led/StdDialogs.h"
 #if		qWindows
-	#include	"Stroika/Frameworks/Led/Platform/Win32_FileRegistration.h"
+	#include	"Stroika/Frameworks/Led/Platform/Windows_FileRegistration.h"
 #endif
 #include	"Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 
@@ -315,10 +315,10 @@ class	LedItDocManager : public CDocManager {
 inline	const	void*	LoadAppResource (long resID, LPCTSTR resType)
 	{
 		HRSRC	hrsrc	=	::FindResource (::AfxGetResourceHandle (), MAKEINTRESOURCE (resID), resType);
-		Led_AssertNotNil (hrsrc);
+		AssertNotNull (hrsrc);
 		HGLOBAL	hglobal	=	::LoadResource (::AfxGetResourceHandle (), hrsrc);
 		const void*	lockedData	=	::LockResource (hglobal);
-		Led_EnsureNotNil (lockedData);
+		EnsureNotNull (lockedData);
 		return (lockedData);
 	}
 static	BOOL	AFXAPI	SetRegKey (LPCTSTR lpszKey, LPCTSTR lpszValue, LPCTSTR lpszValueName = NULL)
@@ -407,7 +407,7 @@ class	MyAboutBox : public Led_StdDialogHelper_AboutBox {
 					// Place and fill in version information
 					{
 						HWND	w	=	::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_VersionFieldID);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						const	int	kVERWidth	=	230;
 						::MoveWindow (w, kPictWidth/2 - kVERWidth/2, 32, kVERWidth, 16, false);
 						::SetWindowText (w, _T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"));
@@ -416,17 +416,17 @@ class	MyAboutBox : public Led_StdDialogHelper_AboutBox {
 					// Place hidden buttons which map to URLs
 					{
 						HWND	w	=	::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_InfoLedFieldID);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						::MoveWindow (w, 15, 159, 142, 17, false);
 						w	=	::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_LedWebPageFieldID);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						::MoveWindow (w, 227, 159, 179, 17, false);
 					}
 
 					// Place OK button
 					{
 						HWND	w	=	::GetDlgItem (GetHWND (), IDOK);
-						Led_AssertNotNil (w);
+						AssertNotNull (w);
 						RECT	tmp;
 						::GetWindowRect (w, &tmp);
 						::MoveWindow (w, kButHSluff, kPictHeight - AsLedRect (tmp).GetHeight ()-kButVSluff, AsLedRect (tmp).GetWidth (), AsLedRect (tmp).GetHeight (), false);	// width/height we should presevere
@@ -579,7 +579,7 @@ class	LedItFilePickBox : public StdFilePickBox {
 				inherited::OnOK ();
 				// what a long ugly line of code
 				GtkWidget * activeItem = gtk_menu_get_active (GTK_MENU (gtk_option_menu_get_menu (fFileTypeChoice)));
-				Led_AssertNotNil (activeItem);
+				AssertNotNull (activeItem);
 				fFileFormat = (FileFormat) (reinterpret_cast<int> (gtk_object_get_user_data (GTK_OBJECT (activeItem))));
 			}
 	public:
@@ -660,7 +660,7 @@ LedItApplication::LedItApplication ():
 	fDocument (NULL)
 #endif
 {
-	Led_Require (sThe == NULL);
+	Require (sThe == NULL);
 	sThe = this;
 
 	#if		qIncludeBasicSpellcheckEngine && qDebug
@@ -675,7 +675,7 @@ LedItApplication::LedItApplication ():
 			#ifndef	CSIDL_FLAG_CREATE
 			#define CSIDL_FLAG_CREATE               0x8000      // new for Win2K, or this in to force creation of folder
 			#endif
-			Led_Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
+			Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
 			fSpellCheckEngine.SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
 		}
 	#endif
@@ -795,7 +795,7 @@ LedItApplication::LedItApplication ():
 
 LedItApplication::~LedItApplication ()
 {
-	Led_Require (sThe == this);
+	Require (sThe == this);
 	sThe = NULL;
 	#if		qXWindows
 		delete fDocument;
@@ -804,7 +804,7 @@ LedItApplication::~LedItApplication ()
 
 LedItApplication&	LedItApplication::Get ()
 {
-	Led_EnsureNotNil (sThe);
+	EnsureNotNull (sThe);
 	return *sThe;
 }
 
@@ -873,11 +873,11 @@ void	LedItApplication::MakeMenuBar ()
 	// So we can add font menus, and associate command numbers...
 	{
 		MenuRef fontMenuHandle	=	::GetMenuHandle (cmd_FontMenu);
-		Led_AssertNotNil (fontMenuHandle);
+		AssertNotNull (fontMenuHandle);
 		::AppendResMenu (fontMenuHandle, 'FONT');
-		Led_AssertNotNil (LMenuBar::GetCurrentMenuBar());
+		AssertNotNull (LMenuBar::GetCurrentMenuBar());
 		LMenu*	fontMenu	=	LMenuBar::GetCurrentMenuBar()->FetchMenu (cmd_FontMenu);
-		Led_AssertNotNil (fontMenu);
+		AssertNotNull (fontMenu);
 		size_t	nMenuItems	=	::CountMenuItems (fontMenu->GetMacMenuH ());
 		for (size_t i = 1; i <= nMenuItems; i++) {
 			fontMenu->SetCommand (i, i-1+kBaseFontNameCmd);	// make first cmd = kBaseFontNameCmd
@@ -902,7 +902,7 @@ void	LedItApplication::MakeMenuBar ()
 		if (helpMenu == NULL) {
 			// if there is no helpMenu, then add our own...
 			helpMenu = ::NewMenu (kHelpMenuID, "\pHelp");
-			Led_AssertNotNil (helpMenu);
+			AssertNotNull (helpMenu);
 			MenuID	append	=	0;
 			::InsertMenu (helpMenu, append);
 			
@@ -924,7 +924,7 @@ void	LedItApplication::MakeMenuBar ()
 	// For Aqua UI (OSX) - lose the Quit menu item.
 	if (aquaUI) {
 		MenuRef	fileMenu	=	::GetMenuHandle (kFileMenuID);
-		Led_AssertNotNil (fileMenu);
+		AssertNotNull (fileMenu);
 		// Lose the separator AND the Quit menu item.
 		::DeleteMenuItem (fileMenu, ::CountMenuItems (fileMenu));
 		::DeleteMenuItem (fileMenu, ::CountMenuItems (fileMenu));		
@@ -1006,7 +1006,7 @@ Boolean	LedItApplication::ObeyCommand (CommandT	inCommand, void* ioParam)
 		const vector<LWindow*>&	windows		=	LedItDocument::GetDocumentWindows ();
 		if (windowIdx < windows.size ()) {
 			LWindow*	w	=	windows[windowIdx];
-			Led_AssertNotNil (w);
+			AssertNotNull (w);
 			UDesktop::SelectDeskWindow (w);
 		}
 		else {
@@ -1037,7 +1037,7 @@ void	LedItApplication::FindCommandStatus (CommandT inCommand, Boolean& outEnable
 		const vector<LWindow*>&	windows		=	LedItDocument::GetDocumentWindows ();
 		if (windowIdx < windows.size ()) {
 			LWindow*	w	=	windows[windowIdx];
-			Led_AssertNotNil (w);
+			AssertNotNull (w);
 			outEnabled = true;
 			(void)w->GetDescriptor (outName);
 			outMark = UDesktop::WindowIsSelected (w)? checkMark: 0;
@@ -1199,7 +1199,7 @@ void	LedItApplication::OnToggleSmartCutNPasteOptionCommand ()
 
 void	LedItApplication::OnToggleSmartCutNPasteOption_UpdateCommandUI (CMD_ENABLER* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	enabler->SetEnabled (true);
 	enabler->SetChecked (Options ().GetSmartCutAndPaste ());
 }
@@ -1213,7 +1213,7 @@ void	LedItApplication::OnToggleWrapToWindowOptionCommand ()
 
 void	LedItApplication::OnToggleWrapToWindowOption_UpdateCommandUI (CMD_ENABLER* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	enabler->SetEnabled (true);
 	enabler->SetChecked (Options ().GetWrapToWindow ());
 }
@@ -1227,7 +1227,7 @@ void	LedItApplication::OnToggleShowHiddenTextOptionCommand ()
 
 void	LedItApplication::OnToggleShowHiddenTextOption_UpdateCommandUI (CMD_ENABLER* enabler)
 {
-	Led_RequireNotNil (enabler);
+	RequireNotNull (enabler);
 	enabler->SetEnabled (true);
 	enabler->SetChecked (Options ().GetShowHiddenText ());
 }
@@ -1243,9 +1243,9 @@ void	LedItApplication::UpdateViewsForPrefsChange ()
 	TArrayIterator<LDocument*>	iterator (docList);
 	LDocument*	theDoc	=	NULL;
 	while (iterator.Next (theDoc)) {
-		Led_AssertMember (theDoc, LedItDocument);
+		AssertMember (theDoc, LedItDocument);
 		LedItDocument*	d	=	dynamic_cast<LedItDocument*> (theDoc);
-		Led_AssertNotNil (d->GetTextView ());
+		AssertNotNull (d->GetTextView ());
 		d->GetTextView ()->SetSmartCutAndPasteMode (smartCutNPaste);
 		d->GetTextView ()->SetWrapToWindow (wrapToWindow);
 		d->GetTextView ()->SetShowHiddenText (showHiddenText);
@@ -1255,15 +1255,15 @@ void	LedItApplication::UpdateViewsForPrefsChange ()
 	POSITION	tp	=	GetFirstDocTemplatePosition ();
 	while (tp != NULL) {
 		CDocTemplate*		t	=	GetNextDocTemplate (tp);
-		Led_AssertNotNil (t);
+		AssertNotNull (t);
 		POSITION	dp	=	t->GetFirstDocPosition ();
 		while (dp != NULL) {
 			CDocument*		doc	=	t->GetNextDoc (dp);
-			Led_AssertNotNil (doc);
+			AssertNotNull (doc);
 			POSITION	vp	=	doc->GetFirstViewPosition ();
 			while (vp != NULL) {
 				CView*	v	=	doc->GetNextView (vp);
-				Led_AssertNotNil (v);
+				AssertNotNull (v);
 				LedItView*	lv	=	dynamic_cast<LedItView*> (v);
 				if (lv != NULL) {
 					lv->SetSmartCutAndPasteMode (smartCutNPaste);
@@ -1274,7 +1274,7 @@ void	LedItApplication::UpdateViewsForPrefsChange ()
 		}
 	}
 #elif	qXWindows
-	Led_AssertNotNil (fTextEditor);
+	AssertNotNull (fTextEditor);
 	fTextEditor->SetSmartCutAndPasteMode (smartCutNPaste);
 	fTextEditor->SetWrapToWindow (wrapToWindow);
 	fTextEditor->SetShowHiddenText (showHiddenText);
@@ -1414,7 +1414,7 @@ void	LedItApplication::WinHelp (DWORD dwData, UINT nCmd)
 {
 	// get path of executable
 	TCHAR directoryName[_MAX_PATH];
-	Led_Verify (::GetModuleFileName (m_hInstance, directoryName, _MAX_PATH));
+	Verify (::GetModuleFileName (m_hInstance, directoryName, _MAX_PATH));
 
 	{
 		LPTSTR lpszExt = _tcsrchr (directoryName, '\\');
@@ -1458,15 +1458,15 @@ BOOL	LedItApplication::OnIdle (LONG lCount)
 	POSITION	tp	=	GetFirstDocTemplatePosition ();
 	while (tp != NULL) {
 		CDocTemplate*		t	=	GetNextDocTemplate (tp);
-		Led_AssertNotNil (t);
+		AssertNotNull (t);
 		POSITION	dp	=	t->GetFirstDocPosition ();
 		while (dp != NULL) {
 			CDocument*		doc	=	t->GetNextDoc (dp);
-			Led_AssertNotNil (doc);
+			AssertNotNull (doc);
 			POSITION	vp	=	doc->GetFirstViewPosition ();
 			while (vp != NULL) {
 				CView*	v	=	doc->GetNextView (vp);
-				Led_AssertNotNil (v);
+				AssertNotNull (v);
 				LedItView*	lv	=	dynamic_cast<LedItView*> (v);
 				if (lv != NULL) {
 					lv->CallEnterIdleCallback ();
@@ -1500,7 +1500,7 @@ BOOL	LedItApplication::ProcessShellCommand (CCommandLineInfo& rCmdInfo)
 							POSITION	tp	=	GetFirstDocTemplatePosition ();
 							if (tp != NULL) {
 								CDocTemplate*		t	=	GetNextDocTemplate (tp);
-								Led_AssertNotNil (t);
+								AssertNotNull (t);
 								POSITION	dp	=	t->GetFirstDocPosition ();
 								if (dp != NULL) {
 									newDoc =	t->GetNextDoc (dp);
@@ -1609,7 +1609,7 @@ void	LedItApplication::HandleBadAllocException () throw ()
 			TArrayIterator<LDocument*>	iterator (docList);
 			LDocument*	theDoc	=	NULL;
 			while (iterator.Next (theDoc)) {
-				Led_AssertMember (theDoc, LedItDocument);
+				AssertMember (theDoc, LedItDocument);
 				LedItDocument*	d	=	dynamic_cast<LedItDocument*> (theDoc);
 				d->PurgeUnneededMemory ();
 			}
@@ -1761,8 +1761,8 @@ void	LedItApplication::LoadFromFile (const string& fileName, FileFormat fileForm
 		}
 void	LedItApplication::SaveAs (const string& fileName, FileFormat fileFormat)
 {
-	Led_Require (not fileName.empty ());
-	Led_AssertNotNil (fDocument);
+	Require (not fileName.empty ());
+	AssertNotNull (fDocument);
 
 	fDocument->fPathName = fileName;
 	
@@ -1802,13 +1802,13 @@ void	LedItApplication::SaveAs (const string& fileName, FileFormat fileFormat)
 
 void	LedItApplication::Save ()
 {
-	Led_AssertNotNil (fDocument);
+	AssertNotNull (fDocument);
 	fDocument->Save ();
 }
 
 void	LedItApplication::UpdateFrameWindowTitle ()
 {
-	Led_AssertNotNil (fAppWindow);
+	AssertNotNull (fAppWindow);
 	Led_SDK_String	docName	=	Led_SDK_TCHAROF ("untitled");
 	if (fDocument != NULL and not fDocument->fPathName.empty ()) {
 		docName = fDocument->fPathName;
@@ -2091,7 +2091,7 @@ GtkWidget*	LedItApplication::get_main_menu (GtkWidget  *window)
 			{
 				// Mark the newly created item with a CMDNUM so it will work with the CMD_UPDATE code...
 				GtkWidget*	justCreatedItem	=	gtk_item_factory_get_widget (item_factory, entry.path);
-				Led_AssertNotNil (justCreatedItem);
+				AssertNotNull (justCreatedItem);
 				gtk_object_set_user_data (GTK_OBJECT (justCreatedItem), reinterpret_cast<void*> (entry.callback_action));
 			}
 		}
@@ -2110,7 +2110,7 @@ GtkWidget*	LedItApplication::get_main_menu (GtkWidget  *window)
 			}
 
 			GtkWidget*	aMenu	=	gtk_item_factory_get_widget (item_factory, path.c_str ());
-			Led_AssertNotNil (aMenu);
+			AssertNotNull (aMenu);
 			gtk_object_set_user_data (GTK_OBJECT (aMenu), reinterpret_cast<void*> (kMenuItemResources[i].callback_action));
 		}
 	}
@@ -2130,7 +2130,7 @@ const vector<Led_SDK_String>&	LedItApplication::GetUsableFontNames ()
 
 void	LedItApplication::FixupFontMenu (CMenu* fontMenu)
 {
-	Led_AssertMember (fontMenu, CMenu);
+	AssertMember (fontMenu, CMenu);
 	const vector<Led_SDK_String>&	fontNames	=	GetUsableFontNames ();
 
 	// delete all menu items
@@ -2236,7 +2236,7 @@ CDocument*	LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName)
 	inline	Led_SDK_String	GetLongPathName (const Led_SDK_String& pathName)
 		{
 			TCHAR szPath[_MAX_PATH];
-			Led_Require (pathName.length () < _MAX_PATH);
+			Require (pathName.length () < _MAX_PATH);
 			_tcscpy (szPath, pathName.c_str ());
 			WIN32_FIND_DATA fileData;
 			HANDLE hFind = ::FindFirstFile (szPath, &fileData);
@@ -2410,7 +2410,7 @@ void	LedItDocManager::RegisterShellFileType (bool bWin95, CString strPathName, i
 BOOL	LedItDocManager::DoPromptFileName (CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/)
 {
 	// don't call this directly...
-	Led_Assert (false);
+	Assert (false);
 	return false;
 }
 
