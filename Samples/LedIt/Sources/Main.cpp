@@ -13,6 +13,8 @@
 	#include	<stdio.h>
 	#include	<gtk/gtk.h>
 	#include	<gdk/gdkx.h>
+#elif	defined (WIN32)
+	#include	<afxwin.h>
 #endif
 
 #include	"LedItApplication.h"
