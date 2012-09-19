@@ -49,6 +49,10 @@
 
 
 
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Frameworks::Led;
+using	namespace	Stroika::Frameworks::Led::Platform;
+using	namespace	Stroika::Frameworks::Led::StyledTextIO;
 
 
 
@@ -56,11 +60,11 @@
 
 class	My_CMDNUM_MAPPING : public 
 		#if		qWindows
-			MFC_CommandNumberMapping
+			Platform::MFC_CommandNumberMapping
 		#elif	qMacOS
-			PP_CommandNumberMapping
+			Platform::PP_CommandNumberMapping
 		#elif	qXWindows
-			Gtk_CommandNumberMapping
+			Platform::Gtk_CommandNumberMapping
 		#endif
 	{
 	public:
@@ -285,7 +289,7 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 					case	Led_StdDialogHelper_ReplaceDialog::eReplaceAll:				return eReplaceButton_ReplaceAll;
 					case	Led_StdDialogHelper_ReplaceDialog::eReplaceAllInSelection:	return eReplaceButton_ReplaceAllInSelection;
 				}
-				Led_Assert (false); return eReplaceButton_Cancel;
+				Assert (false); return eReplaceButton_Cancel;
 			}
 #endif
 #if		qSupportStdSpellCheckDlg
@@ -733,7 +737,7 @@ void	LedItView::OnContextMenu (CWnd* /*pWnd*/, CPoint pt)
 	CMenu menu;
 	if (menu.LoadMenu (kContextMenu)) {
 		CMenu*	popup = menu.GetSubMenu (0);
-		Led_AssertNotNil (popup);
+		AssertNotNull (popup);
 		LedItApplication::Get ().FixupFontMenu (popup->GetSubMenu (16));
 		popup->TrackPopupMenu (TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, ::AfxGetMainWnd ());
 	}

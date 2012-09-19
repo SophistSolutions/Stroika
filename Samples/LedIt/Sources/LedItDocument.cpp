@@ -55,6 +55,13 @@
 
 
 
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Frameworks::Led;
+using	namespace	Stroika::Frameworks::Led::Platform;
+using	namespace	Stroika::Frameworks::Led::StyledTextIO;
+
+using	Memory::SmallStackBuffer;
+
 
 
 
@@ -272,9 +279,9 @@ LedItDocument::LedItDocument ():
 		::AfxOleLockApp ();
 	#endif
 	fTextStore.AddMarkerOwner (this);
-	fStyleDatabase = new StandardStyledTextImager::StyleDatabaseRep (fTextStore);
-	fParagraphDatabase = new WordProcessor::ParagraphDatabaseRep (fTextStore);
-	fHidableTextDatabase = new UniformHidableTextMarkerOwner (fTextStore);
+	fStyleDatabase = StandardStyledTextImager::StyleDatabasePtr (new StandardStyledTextImager::StyleDatabaseRep (fTextStore));
+	fParagraphDatabase = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
+	fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 }
 
 LedItDocument::~LedItDocument ()
@@ -314,7 +321,7 @@ TextStore*	LedItDocument::PeekAtTextStore () const
 #if		qXWindows
 void	LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
 {
-	Led_Require (not fileName.empty ());
+	Require (not fileName.empty ());
 	fPathName = fileName;
 	fFileFormat = fileFormat;
 
@@ -323,7 +330,7 @@ void	LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
 		g_message ("DOING LedItDocument::LoadFromFile (path= '%s', format=%d)\n", fPathName.c_str (), fileFormat);
 	#endif
 	size_t						fileLen	=	0;
-	Led_SmallStackBuffer<char>	fileData (fileLen);
+	SmallStackBuffer<char>	fileData (fileLen);
 	int	fd	=	::open (fPathName.c_str (), O_RDONLY);
 	if (fd == -1) {
 		Led_ThrowOutOfMemoryException ();	// WRONG EXCEPTION
@@ -454,7 +461,7 @@ void	LedItDocument::Save ()
 {
 	// Now do actual reading stuff..
 	g_message ("DOING Save- '%s'\n", fPathName.c_str ());
-	Led_Require (fFileFormat != eUnknownFormat);	// We must have chosen a file format by now...
+	Require (fFileFormat != eUnknownFormat);	// We must have chosen a file format by now...
 
 	WordProcessor::WordProcessorTextIOSrcStream		source (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
 	StyledTextIOWriterSinkStream_Memory				sink;
@@ -658,7 +665,7 @@ void	LedItDocument::OpenFile (const FSSpec& inFileSpec)
 	// put the contents into the text view, and set the Window
 	// title to the name of the File.
 	try {
-		Led_Require (mFile == NULL);
+		Require (mFile == NULL);
 		mFile = new LFile (inFileSpec);
 
 		FInfo	docFinderInfo;
@@ -1120,9 +1127,9 @@ BOOL	LedItDocument::OnNewDocument ()
 		return FALSE;
 	}
 	fFileFormat = eDefaultFormat;
-	fStyleDatabase = new StandardStyledTextImager::StyleDatabaseRep (fTextStore);
-	fParagraphDatabase = new WordProcessor::ParagraphDatabaseRep (fTextStore);
-	fHidableTextDatabase = new UniformHidableTextMarkerOwner (fTextStore);
+	fStyleDatabase = StandardStyledTextImager::StyleDatabasePtr (new StandardStyledTextImager::StyleDatabaseRep (fTextStore));
+	fParagraphDatabase = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
+	fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 	return TRUE;
 }
 
@@ -1216,7 +1223,7 @@ BOOL	LedItDocument::DoSave (LPCTSTR lpszPathName, BOOL bReplace)
 void	LedItDocument::Serialize (CArchive& ar)
 {
 	if (ar.IsStoring()) {
-		Led_Require (fFileFormat != eUnknownFormat);	// We must have chosen a file format by now...
+		Require (fFileFormat != eUnknownFormat);	// We must have chosen a file format by now...
 
 		WordProcessor::WordProcessorTextIOSrcStream		source (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
 		StyledTextIOWriterSinkStream_Memory				sink;
@@ -1277,7 +1284,7 @@ void	LedItDocument::Serialize (CArchive& ar)
 		CFile*	file	=	ar.GetFile ();
 		ASSERT_VALID (file);
 		DWORD	nLen = static_cast<DWORD> (file->GetLength ());				// maybe should subtract current offset?
-		Led_SmallStackBuffer<char>	buf (nLen);
+		SmallStackBuffer<char>	buf (nLen);
 		if (ar.Read (buf, nLen) != nLen) {
 			AfxThrowArchiveException (CArchiveException::endOfFile);
 		}
@@ -1389,9 +1396,9 @@ BOOL	LedItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 	}
 	
 	fCommandHandler.Commit ();
-	fStyleDatabase = new StandardStyledTextImager::StyleDatabaseRep (fTextStore);
-	fParagraphDatabase = new WordProcessor::ParagraphDatabaseRep (fTextStore);
-	fHidableTextDatabase = new UniformHidableTextMarkerOwner (fTextStore);
+	fStyleDatabase = StandardStyledTextImager::StyleDatabasePtr (new StandardStyledTextImager::StyleDatabaseRep (fTextStore));
+	fParagraphDatabase = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
+	fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 
 	// Slight performance hack - get rid of existing style/etc dbases for the current view
 	{
@@ -1648,8 +1655,8 @@ Led_SDK_String	ExtractFileSuffix (const Led_SDK_String& from)
 
 static	void	AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CString strFilterExt, CString strFilterName)
 {
-	Led_Require (not strFilterExt.IsEmpty ());
-	Led_Require (not strFilterName.IsEmpty ());
+	Require (not strFilterExt.IsEmpty ());
+	Require (not strFilterName.IsEmpty ());
 
 	// add to filter
 	filter += strFilterName;

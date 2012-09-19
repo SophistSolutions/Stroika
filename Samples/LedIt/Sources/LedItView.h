@@ -36,10 +36,10 @@ class	LedItDocument;
 
 #if		qWindows
 	#if		qTypedefConfusedAccessCheckingCompilerBug
-		class	LedItViewAlmostBASE : public Led_MFC_X <WordProcessor> {
+		class	LedItViewAlmostBASE : public Platform::Led_MFC_X <WordProcessor> {
 		};
 	#else
-		typedef	Led_MFC_X <WordProcessor> LedItViewAlmostBASE;
+		typedef	Platform::Led_MFC_X <WordProcessor> LedItViewAlmostBASE;
 	#endif
 #endif
 
@@ -48,20 +48,20 @@ class	LedItDocument;
 #endif
 class	LedItView : 
 #if		qMacOS
-	public WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >
+	public Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >
 #elif	qWindows
-	public WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>
+	public Platform::WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>
 #elif	qXWindows
-	public WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >
+	public Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >
 #endif
 {
 	private:
 		#if		qMacOS
-			typedef	WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >		inherited;
+			typedef	Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >		inherited;
 		#elif	qWindows
-			typedef	WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>				inherited;
+			typedef	Platform::WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>			inherited;
 		#elif	qXWindows
-			typedef	WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >	inherited;
+			typedef	Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >	inherited;
 		#endif
 
 #if		qMacOS

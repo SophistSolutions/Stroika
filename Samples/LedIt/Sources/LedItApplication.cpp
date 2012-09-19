@@ -70,6 +70,13 @@
 
 
 
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Frameworks::Led;
+using	namespace	Stroika::Frameworks::Led::Platform;
+using	namespace	Stroika::Frameworks::Led::StyledTextIO;
+
+
+
 #if		qMacOS
 	static	Handle	sDeepShitCheeseBuf	=	NULL;	// so no mem alerts don't crash...
 
@@ -1320,7 +1327,7 @@ BOOL	LedItApplication::InitInstance ()
 	//LoadStdProfileSettings (5);  // Load standard INI file options (including MRU)
 	LoadStdProfileSettings (9);  // Load standard INI file options (including MRU)
 
-	Led_Assert (m_pDocManager == NULL);
+	Assert (m_pDocManager == NULL);
 	m_pDocManager = new LedItDocManager ();
 
 	AddDocTemplateForString ("LedIt\n\nLedIt\nLed Rich Text Format (*.led)\n.led\nLedIt.Document\nLedIt Document", true);
@@ -1579,7 +1586,7 @@ void	LedItApplication::OnChooseDefaultFontCommand ()
 	(void)::memset (&lf, 0, sizeof (lf));
 	{
 		(void)::_tcscpy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName);
-		Led_Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));	// cuz our cached entry - if valid - always short enuf...
+		Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));	// cuz our cached entry - if valid - always short enuf...
 	}
 	lf.lfWeight = (fsp.GetStyle_Bold ())? FW_BOLD: FW_NORMAL;
 	lf.lfItalic = (fsp.GetStyle_Italic ());
