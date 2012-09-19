@@ -77,7 +77,12 @@
     <ClInclude Include="..\..\Sources\Units.h" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\..\Sources\LedIt.odl" />
+    <Midl Include="..\..\Sources\LedIt.odl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)%(Filename)_h.h</HeaderFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)SimpleLedTest.tlb</TypeLibraryName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)%(Filename)_h.h</HeaderFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)SimpleLedTest.tlb</TypeLibraryName>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Sources\LedIt.rc" />
@@ -118,11 +123,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleLedWindowsTest\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-LedIt\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-LedIt\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleLedWindowsTest\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-LedIt\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-LedIt\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Test11\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Full UNICODE Debug|Win32'">$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Test11\</IntDir>
@@ -161,7 +166,8 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\LedTestWin32___Win32_Full_UNICODE_Release/LedTestWin32.tlb</TypeLibraryName>
+      <TypeLibraryName>$(IntDir)LedIt.tlb</TypeLibraryName>
+      <HeaderFileName>$(IntDir)%(Filename)_h.h</HeaderFileName>
     </Midl>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -197,7 +203,8 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\LedTestWin32___Win32_Full_UNICODE_Debug/LedTestWin32.tlb</TypeLibraryName>
+      <TypeLibraryName>$(IntDir)LedIt.tlb</TypeLibraryName>
+      <HeaderFileName>$(IntDir)%(Filename)_h.h</HeaderFileName>
     </Midl>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
