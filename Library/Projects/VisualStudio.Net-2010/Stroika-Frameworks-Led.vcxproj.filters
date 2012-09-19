@@ -147,6 +147,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
@@ -289,6 +292,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.h">
+      <Filter>Source\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

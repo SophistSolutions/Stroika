@@ -93,6 +93,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.h" />
