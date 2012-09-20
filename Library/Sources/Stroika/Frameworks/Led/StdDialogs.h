@@ -16,6 +16,7 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include	"Config.h"
 
 #if     defined (__cplusplus)
 #include    "Support.h"

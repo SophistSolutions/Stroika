@@ -7,10 +7,11 @@
 #include	<winver.h>
 #include	<afxres.h>
 
-#include	"LedStdDialogs.h"
+#include	"Stroika/Frameworks/Led/StdDialogs.h"
 
 #include	"LedItConfig.h"
 #include	"LedItResources.h"
+
 
 
 
@@ -1285,7 +1286,7 @@ End
 
 
 
-#include	"LedStdDialogs.r"
+#include	"Stroika/Frameworks/Led/StdDialogs.inc.r"
 
 
 
