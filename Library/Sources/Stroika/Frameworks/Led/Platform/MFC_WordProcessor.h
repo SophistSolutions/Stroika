@@ -94,8 +94,8 @@ namespace   Stroika {
                             define DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap() to declare the
                             actual message map for the template.</p>
                 */
-                template    <typename   BASECLASS>  class   WordProcessorCommonCommandHelper_MFC :
-                    public BASECLASS {
+                template    <typename   BASECLASS>
+				class   WordProcessorCommonCommandHelper_MFC : public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
 
@@ -282,11 +282,10 @@ namespace   Stroika {
                  ***************************** Implementation Details ***************************
                  ********************************************************************************
                  */
-
 //  class   WordProcessorCommonCommandHelper_MFC<BASECLASS>
 #define DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap(BASECLASS)\
-    typedef WordProcessorCommonCommandHelper_MFC<BASECLASS> WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef;\
-    BEGIN_MESSAGE_MAP(WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef, WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef::inherited)\
+    typedef BASECLASS WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef;\
+    BEGIN_TEMPLATE_MESSAGE_MAP(WordProcessorCommonCommandHelper_MFC, WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef, WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef)\
         ON_WM_PAINT()\
         LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableIntraCellAll_CmdID)\
         LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableCell_CmdID)\
