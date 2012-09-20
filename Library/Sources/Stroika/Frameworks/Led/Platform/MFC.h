@@ -749,7 +749,8 @@ namespace   Stroika {
                         <p>This class wraps many messages the control is likely to get, and when there is an exception, it calls a virtual
                     exception-handling method (which by default - beeps), and then returns normally.</p>
                         <p>To use this class, you must also
-                    define DoDeclare_Led_MFC_ExceptionHandlerHelper_MessageMap() to declare the actual message map for the template.</p>
+                    define Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION(BASECLASS) or Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2 to
+					define the actual message map for the template.</p>
                 */
                 template    <typename   BASECLASS = Led_MFC >
                 class   Led_MFC_ExceptionHandlerHelper :
@@ -2601,8 +2602,15 @@ namespace   Stroika {
 
 
 //  class   Led_MFC_ExceptionHandlerHelper<BASECLASS>
-#define DoDeclare_Led_MFC_ExceptionHandlerHelper_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_ExceptionHandlerHelper, MFC_BASE_CLASS, MFC_BASE_CLASS)\
+
+
+
+/**
+ * DEFINE PURPOSE... - TWO ARG VARIANT NEEDED FOR WHEN BASECLASS is a TEMPLATE NAME
+ */
+#define Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2(BASECLASS, UNIQUE_TOKEN_IN_CPP_FILE)\
+    typedef BASECLASS UNIQUE_TOKEN_IN_COMPILATION_UNIT;\
+	BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_ExceptionHandlerHelper, UNIQUE_TOKEN_IN_COMPILATION_UNIT, UNIQUE_TOKEN_IN_COMPILATION_UNIT)\
     ON_WM_CHAR  ()\
     ON_MESSAGE          (WM_IME_CHAR,   OnIMEChar)\
     ON_WM_KEYDOWN       ()\
@@ -2611,6 +2619,16 @@ namespace   Stroika {
     ON_WM_LBUTTONUP     ()\
     ON_WM_LBUTTONDBLCLK ()\
     END_MESSAGE_MAP()
+
+
+/**
+ * DEFINE PURPOSE... - 
+ *		@see Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2
+ */
+#define Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION(BASECLASS)\
+	Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2(BASECLASS, Led_MFC_ExceptionHandlerHelper ## BASECLASS);
+
+
                 template    <typename   BASECLASS>
                 /*
                 @METHOD:        Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException

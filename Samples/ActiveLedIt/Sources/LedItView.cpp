@@ -564,8 +564,7 @@ LedItViewController::~LedItViewController ()
  ************************************ LedItView *********************************
  ********************************************************************************
  */
-
-DoDeclare_Led_MFC_ExceptionHandlerHelper_MessageMap(Led_MFC_X<WordProcessor>);
+Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2(Led_MFC_X<WordProcessor>, Led_MFC_X_WordProcessor_XXX_);
 DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap (LedItViewAlmostBASE)
 
 BEGIN_MESSAGE_MAP(LedItView, LedItView::inherited)
