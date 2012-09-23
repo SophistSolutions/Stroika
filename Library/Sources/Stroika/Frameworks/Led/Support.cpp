@@ -1990,10 +1990,10 @@ void    Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...
 
 /*
  ********************************************************************************
- *************************** MakeSophistsAppNameVersionURL **********************
+ ********************** Led::MakeSophistsAppNameVersionURL **********************
  ********************************************************************************
  */
-string  MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs)
+string  Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs)
 {
     Require (relURL.length () > 0 and relURL[0] == '/');
     char    fullVersionBuf[1024];
