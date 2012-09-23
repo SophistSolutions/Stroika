@@ -840,8 +840,8 @@ void        SpellCheckEngine_Basic::EditableDictionary::GetInfoBlocks (const Inf
 {
     RequireNotNull (start);
     RequireNotNull (end);
-    *start = &*fInfoBlocks.begin ();
-    *end = &*fInfoBlocks.end ();
+	*start = Containers::Start (fInfoBlocks);
+	*end = Containers::End (fInfoBlocks);
 }
 
 void    SpellCheckEngine_Basic::EditableDictionary::ReadFromBuffer (const Led_tChar* readOnlyRAMDictStart, const Led_tChar* readOnlyRAMDictEnd)

@@ -986,7 +986,7 @@ void    WordProcessor::HookLosingTextStore_ ()
         Table* const*    tt  =   t;
         GetTextStore ().RemoveAndDeleteMarkers (tt, tables.fResult.size ());
 #else
-        GetTextStore ().RemoveAndDeleteMarkers (&*tables.fResult.begin (), tables.fResult.size ());
+        GetTextStore ().RemoveAndDeleteMarkers (Containers::Start (tables.fResult), tables.fResult.size ());
 #endif
     }
 

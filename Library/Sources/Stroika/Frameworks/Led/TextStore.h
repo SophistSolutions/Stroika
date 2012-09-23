@@ -214,7 +214,7 @@ namespace   Stroika {
                     for (size_t i = 0; i < mc; ++i) {
                         v.push_back (ma[i]);
                     }
-                    RemoveMarkers (&*v.begin (), mc);
+                    RemoveMarkers (Containers::Start (v), mc);
                 }
 
                 template <typename T>
