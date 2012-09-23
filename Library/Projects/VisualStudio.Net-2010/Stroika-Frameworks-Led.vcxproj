@@ -173,6 +173,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\README.txt" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</ExcludedFromBuild>

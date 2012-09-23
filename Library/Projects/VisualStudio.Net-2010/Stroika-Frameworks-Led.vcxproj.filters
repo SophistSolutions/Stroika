@@ -304,5 +304,8 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r">
       <Filter>Source</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl">
+      <Filter>Source\Platform</Filter>
+    </None>
   </ItemGroup>
 </Project>

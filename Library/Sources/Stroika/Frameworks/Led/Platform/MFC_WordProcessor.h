@@ -95,7 +95,7 @@ namespace   Stroika {
                             actual message map for the template.</p>
                 */
                 template    <typename   BASECLASS>
-				class   WordProcessorCommonCommandHelper_MFC : public BASECLASS {
+                class   WordProcessorCommonCommandHelper_MFC : public BASECLASS {
                 private:
                     typedef BASECLASS   inherited;
 
@@ -286,41 +286,41 @@ namespace   Stroika {
 #define DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap(BASECLASS)\
     typedef BASECLASS WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef;\
     BEGIN_TEMPLATE_MESSAGE_MAP(WordProcessorCommonCommandHelper_MFC, WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef, WordProcessorCommonCommandHelper_MFC ## BASECLASS ## _HackTypeDef)\
-        ON_WM_PAINT()\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableIntraCellAll_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableCell_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableRow_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableColumn_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTable_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStylePlain_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleBold_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleItalic_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleUnderline_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleStrikeout_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSubScriptCommand_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSuperScriptCommand_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kChooseFontCommand_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kBaseFontSize_CmdID,                WordProcessor::kLastFontSize_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFontMenuFirst_CmdID,               WordProcessor::kFontMenuLast_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kBaseFontColor_CmdID,               WordProcessor::kLastFontColor_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kHideSelection_CmdID,               WordProcessor::kUnHideSelection_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstJustification_CmdID,          WordProcessor::kLastJustification_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kParagraphSpacingCommand_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kParagraphIndentsCommand_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstListStyle_CmdID,              WordProcessor::kLastListStyle_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kIncreaseIndent_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kDecreaseIndent_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstShowHideGlyph_CmdID,          WordProcessor::kLastShowHideGlyph_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTable_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableRowAbove_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableRowBelow_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableColBefore_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableColAfter_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kRemoveTableRows_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kRemoveTableColumns_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertURL_CmdID)\
-        LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertSymbol_CmdID)\
-        LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstSelectedEmbedding_CmdID,      WordProcessor::kLastSelectedEmbedding_CmdID)\
+    ON_WM_PAINT()\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableIntraCellAll_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableCell_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableRow_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTableColumn_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSelectTable_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStylePlain_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleBold_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleItalic_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleUnderline_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kFontStyleStrikeout_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSubScriptCommand_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kSuperScriptCommand_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kChooseFontCommand_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kBaseFontSize_CmdID,                WordProcessor::kLastFontSize_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFontMenuFirst_CmdID,               WordProcessor::kFontMenuLast_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kBaseFontColor_CmdID,               WordProcessor::kLastFontColor_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kHideSelection_CmdID,               WordProcessor::kUnHideSelection_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstJustification_CmdID,          WordProcessor::kLastJustification_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kParagraphSpacingCommand_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kParagraphIndentsCommand_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstListStyle_CmdID,              WordProcessor::kLastListStyle_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kIncreaseIndent_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kDecreaseIndent_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstShowHideGlyph_CmdID,          WordProcessor::kLastShowHideGlyph_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTable_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableRowAbove_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableRowBelow_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableColBefore_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertTableColAfter_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kRemoveTableRows_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kRemoveTableColumns_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertURL_CmdID)\
+    LED_MFC_HANDLE_COMMAND_M        (WordProcessor::kInsertSymbol_CmdID)\
+    LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstSelectedEmbedding_CmdID,      WordProcessor::kLastSelectedEmbedding_CmdID)\
     END_MESSAGE_MAP()
 
 #if     qSupportLed30CompatAPI
