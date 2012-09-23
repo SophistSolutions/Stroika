@@ -917,8 +917,8 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
                 */
 #define LED_MFC_HANDLE_COMMAND(A)   \
-    ON_COMMAND_RANGE(A,A,OnPerformCommand_MSG)\
-    ON_UPDATE_COMMAND_UI(A,OnUpdateCommand_MSG)
+    ON_COMMAND_RANGE(A,A,&OnPerformCommand_MSG)\
+    ON_UPDATE_COMMAND_UI(A,&OnUpdateCommand_MSG)
 
 
 
@@ -927,8 +927,8 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
                 */
 #define LED_MFC_HANDLE_COMMAND_RANGE(A,B)   \
-    ON_COMMAND_RANGE(A,B,OnPerformCommand_MSG)\
-    ON_UPDATE_COMMAND_UI_RANGE(A,B,OnUpdateCommand_MSG)
+    ON_COMMAND_RANGE(A,B,&OnPerformCommand_MSG)\
+    ON_UPDATE_COMMAND_UI_RANGE(A,B,&OnUpdateCommand_MSG)
 
 
 

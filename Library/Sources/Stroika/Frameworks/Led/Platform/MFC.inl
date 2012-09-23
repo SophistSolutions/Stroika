@@ -398,8 +398,13 @@ namespace   Stroika {
                 {
                     typedef Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR > ThisClass;
                     typedef MFC_BASE_CLASS TheBaseClass;
+
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
+
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-#if 0
                         ON_WM_CREATE()
                         ON_WM_CHAR()
                         ON_WM_TIMER()
@@ -407,6 +412,7 @@ namespace   Stroika {
                         ON_WM_PAINT ()
                         ON_WM_MOUSEMOVE()
                         ON_WM_LBUTTONDOWN()
+
                         ON_WM_SETCURSOR()
                         ON_WM_GETDLGCODE ()
                         ON_WM_LBUTTONUP()
@@ -419,10 +425,10 @@ namespace   Stroika {
                         ON_WM_HSCROLL   ()
                         ON_WM_MOUSEWHEEL()
                         ON_WM_ENABLE    ()
-                        ON_MESSAGE (WM_UNICHAR, OnUniChar)
-                        ON_MESSAGE (WM_IME_CHAR, OnIMEChar)
-                        ON_MESSAGE (WM_IME_COMPOSITION, OnIME_COMPOSITION)
-                        ON_MESSAGE (WM_IME_ENDCOMPOSITION, OnIME_ENDCOMPOSITION)
+                        ON_MESSAGE (WM_UNICHAR, &OnUniChar)
+                        ON_MESSAGE (WM_IME_CHAR, &OnIMEChar)
+                        ON_MESSAGE (WM_IME_COMPOSITION, &OnIME_COMPOSITION)
+                        ON_MESSAGE (WM_IME_ENDCOMPOSITION, &OnIME_ENDCOMPOSITION)
 
                         LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kUndo_CmdID)
                         LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kRedo_CmdID)
@@ -440,10 +446,11 @@ namespace   Stroika {
                         LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kReplace_CmdID)
                         LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kReplaceAgain_CmdID)
                         LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSpellCheck_CmdID)
-#endif
-
                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
                     };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
                     static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
                     return &messageMap;
                 }
