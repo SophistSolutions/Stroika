@@ -1204,11 +1204,18 @@ namespace   Stroika {
                 {
                     typedef Led_MFC_DragAndDropWindow<BASECLASS> ThisClass;
                     typedef BASECLASS TheBaseClass;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
                         ON_WM_CREATE    ()
                         ON_WM_TIMER     ()
                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
                     };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
                     static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
                     return &messageMap;
                 }

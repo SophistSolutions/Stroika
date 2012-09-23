@@ -18,7 +18,7 @@
 	#include	<UAppleEventsMgr.h>
 	#include	<UModalDialogs.h>
 	#include	<LDialogBox.h>
-#elif	defined (WIN32)
+#elif	qPlatform_Windows
 	#include	<afxodlgs.h>       // MFC OLE dialog classes
 #endif
 
@@ -42,9 +42,6 @@
 #if		qSilenceAnnoyingCompilerWarnings && _MSC_VER
 	#pragma	warning (4 : 4800)	//qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #endif
-
-
-
 
 
 
@@ -570,6 +567,10 @@ static	LedIt_DialogSupport	sLedIt_DialogSupport;
 #if		qPlatform_Windows
 IMPLEMENT_DYNCREATE(LedItView,	CView)
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
 BEGIN_MESSAGE_MAP(LedItView, LedItView::inherited)
 	ON_WM_SETFOCUS				()
 	ON_WM_SIZE					()
@@ -581,6 +582,9 @@ BEGIN_MESSAGE_MAP(LedItView, LedItView::inherited)
 	ON_COMMAND					(ID_FILE_PRINT_DIRECT,									&OnFilePrint)
 	ON_NOTIFY					(NM_RETURN,					ID_VIEW_FORMATBAR,			&OnBarReturn)
 	END_MESSAGE_MAP()
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 #endif
 
 LedItView::LedItView (
