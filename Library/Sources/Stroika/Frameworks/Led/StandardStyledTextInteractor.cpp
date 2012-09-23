@@ -28,13 +28,6 @@ using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 
-#if     defined (CRTDBG_MAP_ALLOC_NEW)
-#define new CRTDBG_MAP_ALLOC_NEW
-#endif
-
-
-
-
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (disable : 4786)        //qQuiteAnnoyingDebugSymbolTruncationWarnings

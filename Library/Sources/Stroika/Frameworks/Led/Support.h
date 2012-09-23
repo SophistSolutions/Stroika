@@ -39,11 +39,6 @@
 #include    <DDEML.h>           // really only needed if qUseSpyglassDDESDIToOpenURLs - but that define only set in LedConfig.h
 #include    <tchar.h>
 #include    <oaidl.h>           // for SAFEARRAY
-#if     CRTDBG_MAP_ALLOC
-#include    <stdlib.h>
-#include    <crtdbg.h>
-#define CRTDBG_MAP_ALLOC_NEW    new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
 #elif   qXWindows
 #include    <X11/X.h>
 #include    <X11/Xatom.h>

@@ -18,11 +18,6 @@
 
 
 
-#if     defined (CRTDBG_MAP_ALLOC_NEW)
-#define new CRTDBG_MAP_ALLOC_NEW
-#endif
-
-
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
