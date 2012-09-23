@@ -191,7 +191,7 @@ LedDialogText::LedDialogText ():
 }
 
 
-#if     qWindows && defined (_MFC_VER)
+#if     qPlatform_Windows && defined (_MFC_VER)
 void    LedDialogText::PostNcDestroy ()
 {
     // Don't auto-delete ourselves!
@@ -208,7 +208,7 @@ int     LedDialogText::OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT m
 
 
 
-#if     qWindows && defined (_MFC_VER)
+#if     qPlatform_Windows && defined (_MFC_VER)
 IMPLEMENT_DYNCREATE     (LedDialogText,                     CView)
 BEGIN_MESSAGE_MAP       (LedDialogText,                     LedDialogText::inherited)
     ON_WM_MOUSEACTIVATE     ()

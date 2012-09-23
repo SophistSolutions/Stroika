@@ -722,7 +722,7 @@ bool    WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
 {
     RequireNotNull (color);
 
-#if     qMacOS
+#if     qPlatform_MacOS
     RGBColor    oldColor    =   color->GetOSRep ();
     RGBColor    newColor    =   oldColor;
     Point       where       = { 0, 0};
@@ -730,7 +730,7 @@ bool    WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
         *color = Led_Color (newColor);
         return true;
     }
-#elif   qWindows
+#elif   qPlatform_Windows
     CHOOSECOLOR cc;
     memset (&cc, 0, sizeof(cc));
     cc.lStructSize = sizeof (cc);
@@ -755,7 +755,7 @@ bool    WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
     return false;
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 UINT_PTR CALLBACK   WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (hWnd != nullptr and message == WM_INITDIALOG) {
@@ -769,7 +769,7 @@ bool    WordProcessor::DialogSupport::ChooseFont (Led_IncrementalFontSpecificati
 {
     RequireNotNull (font);
 
-#if     qWindows
+#if     qPlatform_Windows
     // Copy each valid attribute into the LOGFONT to initialize the CFontDialog
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
@@ -1951,12 +1951,12 @@ WordProcessor::CommandNames WordProcessor::MakeDefaultCommandNames ()
     cmdNames.fFontSizeChange_Other_NoArg            =   Led_SDK_TCHAROF ("Other...");
     cmdNames.fFontSizeChange_Other_OneArg           =   Led_SDK_TCHAROF ("Other (%d)...");
     cmdNames.fTablePropertiesCommandName            =   Led_SDK_TCHAROF ("Table Properties...")
-#if     qWindows
+#if     qPlatform_Windows
             Led_SDK_TCHAROF ("\tAlt+Enter")
 #endif
             ;
     cmdNames.fGenericEmbeddingPropertiesCommandName =   Led_SDK_TCHAROF ("Properties")
-#if     qWindows
+#if     qPlatform_Windows
             Led_SDK_TCHAROF ("\tAlt+Enter")
 #endif
             ;
@@ -2152,11 +2152,11 @@ bool    WordProcessor::OnUpdateCommand (CommandUpdater* enabler)
             {   OnUpdateFontStyleItalicCommand (enabler);           return true;        }
         case    kFontStyleUnderline_CmdID:
             {   OnUpdateFontStyleUnderlineCommand (enabler);        return true;        }
-#if     qWindows
+#if     qPlatform_Windows
         case    kFontStyleStrikeout_CmdID:
             {   OnUpdateFontStyleStrikeoutCommand (enabler);        return true;        }
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
         case    kFontStyleOutline_CmdID:
             {   OnUpdateFontStyleOutlineCommand (enabler);          return true;        }
         case    kFontStyleShadow_CmdID:
@@ -2243,11 +2243,11 @@ bool    WordProcessor::OnPerformCommand (CommandNumber commandNumber)
             {   OnFontStyleItalicCommand ();            return true;        }
         case    kFontStyleUnderline_CmdID:
             {   OnFontStyleUnderlineCommand ();         return true;        }
-#if     qWindows
+#if     qPlatform_Windows
         case    kFontStyleStrikeout_CmdID:
             {   OnFontStyleStrikeoutCommand ();         return true;        }
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
         case    kFontStyleOutline_CmdID:
             {   OnFontStyleOutlineCommand ();           return true;        }
         case    kFontStyleShadow_CmdID:
@@ -2503,7 +2503,7 @@ void    WordProcessor::OnFontStyleUnderlineCommand ()
     InteractiveSetFont (applyFontSpec);
 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 void    WordProcessor::OnUpdateFontStyleOutlineCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
@@ -2568,7 +2568,7 @@ void    WordProcessor::OnFontStyleExtendedCommand ()
     InteractiveSetFont (applyFontSpec);
 }
 
-#elif   qWindows
+#elif   qPlatform_Windows
 
 void    WordProcessor::OnUpdateFontStyleStrikeoutCommand (CommandUpdater* enabler)
 {
@@ -2852,7 +2852,7 @@ void    WordProcessor::OnInsertURLCommand ()
 void    WordProcessor::OnUpdateInsertSymbolCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
-#if     qWindows
+#if     qPlatform_Windows
     enabler->SetEnabled (true);
 #else
     Led_Arg_Unused (enabler);
@@ -2862,7 +2862,7 @@ void    WordProcessor::OnUpdateInsertSymbolCommand (CommandUpdater* enabler)
 
 void    WordProcessor::OnInsertSymbolCommand ()
 {
-#if     qWindows
+#if     qPlatform_Windows
     (void)::ShellExecute (nullptr, Led_SDK_TCHAROF ("open"), Led_SDK_TCHAROF ("CHARMAP.EXE"), nullptr, Led_SDK_TCHAROF (""), SW_SHOWNORMAL);
 #else
     Assert (false); //NYI
@@ -3243,7 +3243,7 @@ Led_SDK_String  WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarke
     else if (dynamic_cast<StandardURLStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_URL;
     }
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     else if (dynamic_cast<StandardMacPictureStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_ImageMacPict;
     }
@@ -3294,7 +3294,7 @@ Led_tString WordProcessor::GetListLeader (size_t paragraphMarkerPos) const
 #if     qWideCharacters
         const   Led_tChar   kBulletChar =   0x2022;
 #else
-#if     qMacOS
+#if     qPlatform_MacOS
         const   Led_tChar   kBulletChar =   '¥';
 #else
         const   Led_tChar   kBulletChar =   '·';
@@ -3683,7 +3683,7 @@ void    WordProcessor::DrawSegment (Led_Tablet tablet,
                     Led_Coordinate  hTriangleBase   =   max (arrowBody.right - kArrowHSize, arrowBody.left);
                     Led_Point       topPt           =   Led_Point (max (arrowBody.GetTop () - kArrowVSize / 2, tabRect.top), hTriangleBase);
                     Led_Point       botPt           =   Led_Point (min (arrowBody.GetTop () + kArrowVSize / 2, tabRect.bottom), hTriangleBase);
-#if     qWindows
+#if     qPlatform_Windows
                     Led_Brush               backgroundBrush (arrowColor.GetOSRep ());
                     Led_Win_Obj_Selector    pen (tablet, ::GetStockObject (NULL_PEN));
                     Led_Win_Obj_Selector    brush (tablet, backgroundBrush);
@@ -3692,7 +3692,7 @@ void    WordProcessor::DrawSegment (Led_Tablet tablet,
                     pts[1] = AsPOINT (topPt);
                     pts[2] = AsPOINT (botPt);
                     Verify (::Polygon (*tablet, pts, NEltsOf (pts)));
-#elif   qMacOS
+#elif   qPlatform_MacOS
                     PolyHandle  ph  =   ::OpenPoly ();
                     ::MoveTo (tip.h, tip.v);
                     ::LineTo (topPt.h, topPt.v);
@@ -4068,7 +4068,7 @@ void    WordProcessor::ReplaceMappedDisplayCharacters (const Led_tChar* srcText,
         // Windoze-specific char - whats equiv on Mac?
 #if     qWideCharacters
         const   Led_tChar   kReplacementChar    =   0x00b6;
-#elif   qMacOS
+#elif   qPlatform_MacOS
         const   Led_tChar   kReplacementChar    =   166;
 #else
         const   Led_tChar   kReplacementChar    =   '¶';
@@ -4079,7 +4079,7 @@ void    WordProcessor::ReplaceMappedDisplayCharacters (const Led_tChar* srcText,
         // NOT SURE WHAT CHAR (on any platform) to replace with. Maybe can do best with UNICODE?
 #if     qWideCharacters
         const   Led_tChar   kReplacementChar    =   0x00b7;
-#elif   qMacOS
+#elif   qPlatform_MacOS
         const   Led_tChar   kReplacementChar    =   215;
 #else
         const   Led_tChar   kReplacementChar    =   '·';

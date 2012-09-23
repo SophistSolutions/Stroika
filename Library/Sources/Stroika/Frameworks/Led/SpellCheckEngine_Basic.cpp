@@ -33,7 +33,7 @@ using   IO::FileSystem::FileWriter;
 namespace   {
 
 #if     qIncludeBakedInDictionaries
-#if     qMacOS
+#if     qPlatform_MacOS
     // Short filenames on MacOS
 #include    "Dictionary-Compiled-US-English."
 #else
@@ -882,9 +882,9 @@ vector<Led_tChar>   SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () 
 {
     SmallStackBuffer<Led_tChar> buf (1);
 
-#if     qWindows
+#if     qPlatform_Windows
     const Led_tChar kLineTerm[] =   LED_TCHAR_OF ("\r\n");
-#elif   qMacOS
+#elif   qPlatform_MacOS
     const Led_tChar kLineTerm[] =   LED_TCHAR_OF ("\r");
 #else
     const Led_tChar kLineTerm[] =   LED_TCHAR_OF ("\n");
@@ -1124,7 +1124,7 @@ SpellCheckEngine_Basic_Simple::UDDictionaryName SpellCheckEngine_Basic_Simple::G
 void    SpellCheckEngine_Basic_Simple::SetUserDictionary (const UDDictionaryName& userDictionary)
 {
     fUDName = userDictionary;
-#if     qMacOS
+#if     qPlatform_MacOS
     static  FSSpec  zero;
     memset (&zero, 0, sizeof (zero));
     bool    noUD        =   (::memcmp (&userDictionary, &zero, sizeof (zero)) == 0);
@@ -1147,7 +1147,7 @@ void    SpellCheckEngine_Basic_Simple::ReadFromUD ()
      *  Ignore any errors reading from the UD (at least file-not-found errors).
      */
     try {
-#if     qMacOS
+#if     qPlatform_MacOS
         FileReader  reader (&fUDName);
 #else
         FileReader  reader (fUDName.c_str ());
@@ -1173,7 +1173,7 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
     Led_ThrowIfNull (fUD);
     vector<Led_tChar>   data    =   fUD->SaveToBuffer ();
 
-#if     qMacOS
+#if     qPlatform_MacOS
     FileWriter  writer (&fUDName);
 #else
     FileWriter  writer (fUDName.c_str ());

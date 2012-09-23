@@ -909,7 +909,7 @@ void    StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* t
     }
     if (refName.length () > 0) {
 #if     !qWideCharacter
-#if     qMacOS
+#if     qPlatform_MacOS
         const   CodePage    kInternalCodePageToMapTo    =   kCodePage_MAC;
 #else
         const   CodePage    kInternalCodePageToMapTo    =   kCodePage_ANSI;
@@ -1317,7 +1317,7 @@ void    StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const cha
                 tagValue = tagValue.substr (0, tagValue.find (','));
             }
             fsp.SetFontName (Led_ANSI2SDKString (tagValue));
-#if     qMacOS
+#if     qPlatform_MacOS
             // cuz the mac does so badly on this, and just sets the font to chicago if its unknown, and cuz
             // this looks so bad, try a nicer default font...
             {
@@ -1585,7 +1585,7 @@ void    StyledTextIOReader_HTML::HandleHTMLThingyTag_span (bool start, const cha
 
 void    StyledTextIOReader_HTML::HandleHTMLThingyTag_strike (bool start, const char* text, size_t nBytes)
 {
-#if     qWindows
+#if     qPlatform_Windows
     BasicFontStackOperation (start);
     if (start) {
         Led_FontSpecification   fsp =   fFontStack.back ();
@@ -2276,7 +2276,7 @@ void    StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContex
 #if     !qWideCharacters
                 // The entity refs we write must be in UNICODE. For non UNICODE Led - make the best guess we can (could parameterize this to make
                 // better - but for I18N - really should just use UNICODE).
-#if     qMacOS
+#if     qPlatform_MacOS
                 const   CodePage    kInternalCodePageToMapFrom  =   kCodePage_MAC;
 #else
                 const   CodePage    kInternalCodePageToMapFrom  =   kCodePage_ANSI;
@@ -2517,7 +2517,7 @@ void    StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerCo
     if (newOne.GetStyle_SubOrSuperScript () != Led_FontSpecification::eSuperscript and IsTagOnStack (writerContext, "sup")) {
         WriteCloseTag (writerContext, "sup");
     }
-#if     qWindows
+#if     qPlatform_Windows
     if (not newOne.GetStyle_Strikeout () and IsTagOnStack (writerContext, "strike")) {
         WriteCloseTag (writerContext, "strike");
     }
@@ -2571,7 +2571,7 @@ void    StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerCo
                 }
                 break;
         }
-#if     qWindows
+#if     qPlatform_Windows
         if (newOne.GetStyle_Strikeout () and not IsTagOnStack (writerContext, "strike")) {
             WriteOpenTag (writerContext, "strike");
         }

@@ -105,7 +105,7 @@ namespace   Stroika {
                         virtual size_t  read1 (char* c)         { return read (c, 1); }
 
                     public:
-#if     qMacOS
+#if     qPlatform_MacOS
                         /*
                         @METHOD:        StyledTextIOReader::SrcStream::GetAUXResourceHandle
                         @DESCRIPTION:   <p>MacOS Only. Returns the Mac handle to the resource fork, if any (used to read 'styl' resources).</p>
@@ -143,7 +143,7 @@ namespace   Stroika {
                         virtual     void    seek_to (size_t to) override;
                         virtual     size_t  read (void* buffer, size_t bytes) override;
                         virtual     size_t  read1 (char* c) override;
-#if     qMacOS
+#if     qPlatform_MacOS
                         virtual     Handle  GetAUXResourceHandle () const override;
 #endif
 
@@ -590,7 +590,7 @@ namespace   Stroika {
                 public:
                     StyledTextIOSrcStream_Memory (
                         const void* data, size_t nBytes
-#if     qMacOS
+#if     qPlatform_MacOS
                         , Handle resourceHandle = nullptr
 #endif
                     );
@@ -600,7 +600,7 @@ namespace   Stroika {
                     virtual     void    seek_to (size_t to) override;
                     virtual     size_t  read (void* buffer, size_t bytes) override;
                     virtual     size_t  read1 (char* c) override;
-#if     qMacOS
+#if     qPlatform_MacOS
                     virtual     Handle  GetAUXResourceHandle () const override;
 #endif
 
@@ -609,7 +609,7 @@ namespace   Stroika {
                     const   void*   fDataEnd;
                     size_t          fBytesInBuffer;
                     const   void*   fCurPtr;
-#if     qMacOS
+#if     qPlatform_MacOS
                     Handle          fResourceHandle;
 #endif
                 };
@@ -734,7 +734,7 @@ namespace   Stroika {
                         return 1;
                     }
                 }
-#if     qMacOS
+#if     qPlatform_MacOS
                 inline  Handle  StyledTextIOReader::BufferedIndirectSrcStream::GetAUXResourceHandle () const
                 {
                     return fRealSrcStream.GetAUXResourceHandle ();
@@ -760,7 +760,7 @@ namespace   Stroika {
                     // NB: On the Mac - this FD refers to a mac file access path - not the result of an ::open () call.
                     StyledTextIOSrcStream_FileDescriptor (
                         int fd
-#if     qMacOS
+#if     qPlatform_MacOS
                         , Handle resourceHandle = nullptr
 #endif
                     );
@@ -770,7 +770,7 @@ namespace   Stroika {
                     virtual     size_t  current_offset () const override;
                     virtual     void    seek_to (size_t to) override;
                     virtual     size_t  read (void* buffer, size_t bytes) override;
-#if     qMacOS
+#if     qPlatform_MacOS
                     virtual     Handle  GetAUXResourceHandle () const override;
 #endif
 
@@ -787,7 +787,7 @@ namespace   Stroika {
                     size_t          fInputBufferSize;
                     size_t          fBufferWindowStart;
                     size_t          fBufferWindowEnd;
-#if     qMacOS
+#if     qPlatform_MacOS
                     Handle          fResourceHandle;
 #endif
                 };

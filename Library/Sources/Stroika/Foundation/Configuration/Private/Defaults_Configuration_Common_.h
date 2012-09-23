@@ -143,6 +143,11 @@
 #endif
 
 
+#ifndef qPlatform_MacOS
+#define qPlatform_MacOS      defined (macintosh)
+#endif
+
+
 
 // POSIX support
 #if     !defined (qPlatform_POSIX)
@@ -161,6 +166,12 @@
 #if     qPlatform_Windows && qPlatform_POSIX
 #warning "Shouldn't have both Windows and POSIX platform flags set"
 #endif
+
+#if     qPlatform_Windows && qPlatform_MacOS
+#warning "Shouldn't have both Windows and MacOS platform flags set"
+#endif
+
+
 
 
 #endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_*/

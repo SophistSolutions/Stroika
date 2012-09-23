@@ -8,7 +8,7 @@
 #include    "CodePage.h"
 #include    "Config.h"
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    "TextUtils.h"
 #endif
 
@@ -570,7 +570,7 @@ TextBreaks_Basic_WP::CharacterClasses   TextBreaks_Basic_WP::CharToCharacterClas
             break;
     }
 
-#if     qSingleByteCharacters && qMacOS
+#if     qSingleByteCharacters && qPlatform_MacOS
     const   char    kNonBreakingSpace   =   '\0xCA';    // Inside-Mac : Text (Appendix A-6 thru A-15)
     if (*charToExamine == kNonBreakingSpace) {
         return (eWordClass);
@@ -688,7 +688,7 @@ void    TextBreaks_Basic_TextEditor::RegressionTest ()
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 /*
  ********************************************************************************
  ***************************** TextBreaks_System ********************************

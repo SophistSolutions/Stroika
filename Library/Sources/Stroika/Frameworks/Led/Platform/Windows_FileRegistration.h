@@ -28,7 +28,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
                 class   Win32FileAssociationRegistrationHelper {
                 public:
                     Win32FileAssociationRegistrationHelper (const Led_SDK_String& fileSuffix);
@@ -59,7 +59,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
                 class   Win32UIFileAssociationInfo {
                 public:
                     Win32UIFileAssociationInfo (
@@ -93,7 +93,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
                 class   Win32UIFileAssociationRegistrationHelper {
                 public:
                     Win32UIFileAssociationRegistrationHelper (HINSTANCE hInstance);

@@ -10,13 +10,13 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "Config.h"  // For qWindows etc defines...
+#include    "Config.h"  // For qPlatform_Windows etc defines...
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <AppleEvents.h>     // for URL support
 #include    <Scrap.h>
 #include    <TextUtils.h>
-#elif   qWindows
+#elif   qPlatform_Windows
 #include    <fcntl.h>
 #include    <io.h>
 #elif   qXWindows
@@ -234,9 +234,9 @@ string  Led::Led_tString2ANSIString (const Led_tString& s)
 */
 void    Led::Led_BeepNotify ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     ::SysBeep (1);
-#elif   qWindows
+#elif   qPlatform_Windows
     ::MessageBeep (MB_OK);
 #elif   qXWindows
     if (gBeepNotifyCallBackProc != nullptr) {
@@ -277,9 +277,9 @@ static  double  Led::GetThisMachineCurTime ()
 */
 float   Led::Led_GetTickCount ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     return (float (::TickCount ()) / 60.0f);
-#elif   qWindows
+#elif   qPlatform_Windows
     return (float (::GetTickCount ()) / 1000.0f);
 #elif   qXWindows
     static  float       sLastTickCountReturned;             // hack so we don't time-warp (out of sync between X client and could
@@ -337,9 +337,9 @@ unsigned long   Led::LedTickCount2XTime (float ledTickCount)
 */
 float   Led::Led_GetDoubleClickTime ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     return (float (::GetDblTime ()) / 60.0f);
-#elif   qWindows
+#elif   qPlatform_Windows
     return (float (::GetDoubleClickTime ()) / 1000.0f);
 #elif   qXWindows
     return 0.25f;   // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
@@ -455,7 +455,7 @@ void    Led::Led_Set_BadFormatDataException_Handler (void (*badFormatDataExcepti
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 /*
  ********************************************************************************
  ***************************** Led_ThrowOSErr ***********************************
@@ -569,9 +569,9 @@ size_t  Led::Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_
 {
     Led_tChar*  outPtr  =   outBuf;
     for (size_t i = 1; i <= srcTextBytes; i++) {
-#if     qMacOS
+#if     qPlatform_MacOS
         Led_tChar   c    = (srcText[i - 1] == '\r') ? '\n' : srcText[i - 1];
-#elif   qWindows
+#elif   qPlatform_Windows
         Led_tChar   c    = srcText[i - 1];
         if (c == '\r') {
             // peek at next character - and if we have a CRLF sequence - then advance pointer
@@ -600,9 +600,9 @@ size_t  Led::Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_
     Led_tChar*  outPtr  =   outBuf;
     for (size_t i = 1; i <= srcTextBytes; i++) {
         Assert (outPtr < outBuf + outBufSize);
-#if     qMacOS
+#if     qPlatform_MacOS
         Led_tChar   c    = (srcText[i - 1] == '\n') ? '\r' : srcText[i - 1];
-#elif   qWindows
+#elif   qPlatform_Windows
         Led_tChar   c    = srcText[i - 1];
         if (c == '\n') {
             *outPtr++ = '\r';
@@ -705,12 +705,12 @@ bool    Led::Led_IsValidMultiByteString (const Led_tChar* start, size_t len)
  */
 
 Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType):
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     fOSClipHandle (nullptr),
 #endif
     fLockedData (nullptr)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
 #if     TARGET_CARBON
     ScrapRef            scrap   =   nullptr;
     Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
@@ -738,7 +738,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
     ::HLock (fOSClipHandle);
     fLockedData = *fOSClipHandle;
 #endif
-#elif   qWindows
+#elif   qPlatform_Windows
     // perhaps rewrite to use exceptions, but for now - when no cliptype avail - set flag so GoodClip() method can check -
     // just cuz thats what surounding code seems to expect - LGP 980617
     fOSClipHandle   =   ::GetClipboardData (clipType);
@@ -756,7 +756,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  ********************************************************************************
  **************************** VariantArrayPacker ********************************
@@ -850,7 +850,7 @@ size_t      VariantArrayUnpacker::GetLength () const
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  ********************************************************************************
  **************************** CreateSafeArrayOfBSTR *****************************
@@ -943,10 +943,10 @@ vector<wstring> Led::UnpackVectorOfStringsFromVariantArray (const VARIANT& v)
 #endif
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
 @METHOD:        DumpSupportedInterfaces
-@DESCRIPTION:   <p>@'qWindows' only</p>
+@DESCRIPTION:   <p>@'qPlatform_Windows' only</p>
                 <p>Helpful COM debugging utility which dumps to the debugger window all the interfaces
             supported by a given COM object. The arguments 'objectName' and 'levelPrefix' can be nullptr (optional).
             </p>
@@ -1035,7 +1035,7 @@ void    Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, con
 
 /*
 @METHOD:        DumpObjectsInIterator
-@DESCRIPTION:   <p>@'qWindows' only</p>
+@DESCRIPTION:   <p>@'qPlatform_Windows' only</p>
                 <p>Helpful COM debugging utility which dumps to the debugger window all the subobjects of a given COM object,
             along with the interfaces they supoport (see also @'DumpSupportedInterfaces'). The arguments
             'iteratorName' and 'levelPrefix' can be nullptr (optional).
@@ -1222,9 +1222,9 @@ void    Led_URLManager::Open (const string& url)
     catch (...) {
         Open_SpyglassAppleEvent (url);
     }
-#elif   qMacOS
+#elif   qPlatform_MacOS
     Open_SpyglassAppleEvent (url);
-#elif   qWindows
+#elif   qPlatform_Windows
 #if     qUseActiveXToOpenURLs && qUseSpyglassDDESDIToOpenURLs
     try {
         Open_ActiveX (url);
@@ -1245,7 +1245,7 @@ void    Led_URLManager::Open (const string& url)
 #endif
 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 string  Led_URLManager::FileSpecToURL (const FSSpec& fsp)
 {
     short   len =   0;
@@ -1288,7 +1288,7 @@ string  Led_URLManager::FileSpecToURL (const FSSpec& fsp)
     }
     return rr;
 }
-#elif   qWindows
+#elif   qPlatform_Windows
 string  Led_URLManager::FileSpecToURL (const string& path)
 {
     Assert (false); // nyi (not needed anywhere right now)
@@ -1335,7 +1335,7 @@ void    Led_URLManager::Open_IC (const string& url)
 }
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
 void    Led_URLManager::Open_SpyglassAppleEvent (const string& url)
 {
     const   OSType  AE_spy_receive_suite    =   'WWW!';
@@ -1508,7 +1508,7 @@ void    Led_URLManager::Open_SystemNetscape (const string& url)
 }
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
 pascal  OSErr   Led_URLManager::FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath)
 {
     // Based on code from Apple Macintosh Developer Technical Support
@@ -1587,7 +1587,7 @@ void    Led_URLManager::InitDDEHandler ()
 }
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
 ProcessSerialNumber Led_URLManager::FindBrowser ()
 {
     OSType  sig             =   'MOSS'; // currently we hardwire Netscape - but we could extend this list to include all known browsers...
@@ -2000,9 +2000,9 @@ string  Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& 
     (void)::snprintf (fullVersionBuf, NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
     string  fullURL =   "http://www.sophists.com" + relURL +
                         "?AppName=" + appName +
-#if     qWindows
+#if     qPlatform_Windows
                         string ("&Platform=Windows") +
-#elif   qMacOS
+#elif   qPlatform_MacOS
                         string ("&Platform=MacOS") +
 #elif   qXWindows
                         string ("&Platform=XWindows") +

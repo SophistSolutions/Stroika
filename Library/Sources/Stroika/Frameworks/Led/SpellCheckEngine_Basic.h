@@ -273,7 +273,7 @@ namespace   Stroika {
                 const Dictionary*   fMainDictionary;
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 typedef FSSpec  UDDictionaryName;
 #else
                 typedef Led_SDK_String  UDDictionaryName;

@@ -30,7 +30,7 @@ using	namespace	Stroika::Frameworks::Led;
 
 
 namespace {
-	#if		qWindows
+	#if		qPlatform_Windows
 		class	MyPrefs : public OptionsFileHelper {
 			private:
 				typedef	OptionsFileHelper	inherited;
@@ -51,7 +51,7 @@ namespace {
 typedef	TextInteractor::SearchParameters	SearchParameters;
 
 
-#if		qWindows
+#if		qPlatform_Windows
 	static	const	TCHAR kDockBarStateEntry[]					=	_T ("DockBarState");
 	static	const	TCHAR kSearchParamsMatchString[]			=	_T ("MatchString");
 	static	const	TCHAR kSearchParamsRecentMatchStrings[]		=	_T ("RecentMatchStrings");
@@ -76,11 +76,11 @@ typedef	TextInteractor::SearchParameters	SearchParameters;
 	const	bool	kShowParagraphGlyphsDefault	=	false;
 	const	bool	kShowTabGlyphsDefault		=	false;
 	const	bool	kShowSpaceGlyphsDefault		=	false;
-#if		qWindows
+#if		qPlatform_Windows
 	const	bool	kCheckFileAssocAtStartupDefault	=	true;
 #endif
 
-#if		!qWindows
+#if		!qPlatform_Windows
 	//tmphack - non-persistant implementation - but good enough for users to see more or less what the different options do...
 	//and we can now easily plug in a 'resource manager' implementation of this for the different platforms when time allows
 	static	SearchParameters	sOptVal_SearchParameters;
@@ -113,7 +113,7 @@ Options::~Options ()
 
 SearchParameters	Options::GetSearchParameters () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		SearchParameters	sp;
 		sp.fMatchString = gMyPrefsFile.GetPref (kSearchParamsMatchString, sp.fMatchString);
 		sp.fRecentFindStrings = gMyPrefsFile.GetPref (kSearchParamsRecentMatchStrings, sp.fRecentFindStrings);
@@ -128,7 +128,7 @@ SearchParameters	Options::GetSearchParameters () const
 
 void	Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kSearchParamsMatchString, searchParameters.fMatchString);
 		gMyPrefsFile.StorePref (kSearchParamsRecentMatchStrings, searchParameters.fRecentFindStrings);
 		gMyPrefsFile.StorePref (kSearchParamsWrapSearch, searchParameters.fWrapSearch);
@@ -139,7 +139,7 @@ void	Options::SetSearchParameters (const SearchParameters& searchParameters)
 	#endif
 }
 
-#if		qWindows
+#if		qPlatform_Windows
 const CDockState&	Options::GetDocBarState () const
 {
 	static	CDockState	dockState;	// keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
@@ -175,7 +175,7 @@ void	Options::SetDocBarState (const CDockState& dockState)
 
 bool	Options::GetSmartCutAndPaste () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		return gMyPrefsFile.GetPref (kSmartCutAndPaste, kSmartCutAndPasteDefault);
 	#else
 		return sOptVal_CutAndPaste;
@@ -184,7 +184,7 @@ bool	Options::GetSmartCutAndPaste () const
 
 void	Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kSmartCutAndPaste, smartCutAndPaste);
 	#else
 		sOptVal_CutAndPaste = smartCutAndPaste;
@@ -193,7 +193,7 @@ void	Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 
 bool	Options::GetWrapToWindow () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		return gMyPrefsFile.GetPref (kWrapToWindow, kWrapToWindowDefault);
 	#else
 		return sOptVal_WrapToWindow;
@@ -202,7 +202,7 @@ bool	Options::GetWrapToWindow () const
 
 void	Options::SetWrapToWindow (bool wrapToWindow)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kWrapToWindow, wrapToWindow);
 	#else
 		sOptVal_WrapToWindow = wrapToWindow;
@@ -211,7 +211,7 @@ void	Options::SetWrapToWindow (bool wrapToWindow)
 
 bool	Options::GetShowHiddenText () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		return gMyPrefsFile.GetPref (kShowHiddenText, kShowHiddenTextDefault);
 	#else
 		return sOptVal_ShowHiddenText;
@@ -220,7 +220,7 @@ bool	Options::GetShowHiddenText () const
 
 void	Options::SetShowHiddenText (bool showHiddenText)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kShowHiddenText, showHiddenText);
 	#else
 		sOptVal_ShowHiddenText = showHiddenText;
@@ -229,7 +229,7 @@ void	Options::SetShowHiddenText (bool showHiddenText)
 
 bool	Options::GetShowParagraphGlyphs () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		return gMyPrefsFile.GetPref (kShowParagraphGlyphs, kShowParagraphGlyphsDefault);
 	#else
 		return sOptVal_ShowParagraphGlyphs;
@@ -238,7 +238,7 @@ bool	Options::GetShowParagraphGlyphs () const
 
 void	Options::SetShowParagraphGlyphs (bool showParagraphGlyphs)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kShowParagraphGlyphs, showParagraphGlyphs);
 	#else
 		sOptVal_ShowParagraphGlyphs = showParagraphGlyphs;
@@ -247,7 +247,7 @@ void	Options::SetShowParagraphGlyphs (bool showParagraphGlyphs)
 
 bool	Options::GetShowTabGlyphs () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		return gMyPrefsFile.GetPref (kShowTabGlyphs, kShowTabGlyphsDefault);
 	#else
 		return sOptVal_ShowTabGlyphs;
@@ -256,7 +256,7 @@ bool	Options::GetShowTabGlyphs () const
 
 void	Options::SetShowTabGlyphs (bool showTabGlyphs)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kShowTabGlyphs, showTabGlyphs);
 	#else
 		sOptVal_ShowTabGlyphs = showTabGlyphs;
@@ -265,7 +265,7 @@ void	Options::SetShowTabGlyphs (bool showTabGlyphs)
 
 bool	Options::GetShowSpaceGlyphs () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		return gMyPrefsFile.GetPref (kShowSpaceGlyphs, kShowSpaceGlyphsDefault);
 	#else
 		return sOptVal_ShowSpaceGlyphs;
@@ -274,14 +274,14 @@ bool	Options::GetShowSpaceGlyphs () const
 
 void	Options::SetShowSpaceGlyphs (bool showSpaceGlyphs)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kShowSpaceGlyphs, showSpaceGlyphs);
 	#else
 		sOptVal_ShowSpaceGlyphs = showSpaceGlyphs;
 	#endif
 }
 
-#if		qWindows
+#if		qPlatform_Windows
 bool	Options::GetCheckFileAssocsAtStartup () const
 {
 	return gMyPrefsFile.GetPref (kCheckFileAssocAtStartup, kCheckFileAssocAtStartupDefault);
@@ -295,7 +295,7 @@ void	Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 
 Led_FontSpecification	Options::GetDefaultNewDocFont () const
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		vector<Byte>	bytes;
 		if (gMyPrefsFile.LookupPref (kDefaultNewDocFont, &bytes)) {
 			if (bytes.size () == sizeof (LOGFONT)) {
@@ -311,7 +311,7 @@ Led_FontSpecification	Options::GetDefaultNewDocFont () const
 
 void	Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const Byte*> (&defaultNewDocFont.GetOSRep ()));
 	#else
 		Led_Arg_Unused (defaultNewDocFont);

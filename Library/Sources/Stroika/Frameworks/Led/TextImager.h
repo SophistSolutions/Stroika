@@ -158,7 +158,7 @@ namespace   Stroika {
                 // Query the OS for the default font that should be used for new text windows
             public:
                 static  Led_FontSpecification   GetStaticDefaultFont ();
-#if     qWindows
+#if     qPlatform_Windows
                 static  Led_FontSpecification   GetStaticDefaultFont (BYTE charSet);
 #endif
 
@@ -858,7 +858,7 @@ namespace   Stroika {
             private:
                 mutable Led_FontSpecification   fCachedFontSpec;
                 mutable Led_FontMetrics         fCachedFontInfo;
-#if     qWindows
+#if     qPlatform_Windows
                 mutable Led_FontObject*     fCachedFont;
 #else
                 mutable bool                fCachedFontValid;
@@ -876,7 +876,7 @@ namespace   Stroika {
                 private:
                     const TextImager*   fImager;
 
-#if     qWindows
+#if     qPlatform_Windows
                 private:
                     Led_Tablet  fTablet;
                     HGDIOBJ     fRestoreObject;
@@ -1448,7 +1448,7 @@ namespace   Stroika {
 //  class   TextImager::FontCacheInfoUpdater
             inline  TextImager::FontCacheInfoUpdater::~FontCacheInfoUpdater ()
             {
-#if     qWindows
+#if     qPlatform_Windows
                 if (fRestoreObject != nullptr) {
                     Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
                 }
@@ -1535,9 +1535,9 @@ namespace   Stroika {
             */
             void    TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 // Should probably do something similar?
-#elif   qWindows
+#elif   qPlatform_Windows
                 HFONT   hFont   =   (HFONT)::GetCurrentObject (fTablet->m_hAttribDC, OBJ_FONT);
                 Verify (hFont != nullptr);
                 LOGFONT lf;

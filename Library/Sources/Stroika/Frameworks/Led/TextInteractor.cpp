@@ -539,7 +539,7 @@ TextInteractor::CommandNames    TextInteractor::MakeDefaultCommandNames ()
     cmdNames.fPasteCommandName                  =   Led_SDK_TCHAROF ("Paste");
     cmdNames.fUndoFormatString                  =   Led_SDK_TCHAROF ("Undo %s");
     cmdNames.fRedoFormatString                  =   Led_SDK_TCHAROF ("ReDo %s");
-#if     qWindows
+#if     qPlatform_Windows
     cmdNames.fUndoFormatString              +=  Led_SDK_TCHAROF ("\tCtrl+Z");
     cmdNames.fRedoFormatString              +=  Led_SDK_TCHAROF ("\tCtrl+Y");
 #endif
@@ -2805,7 +2805,7 @@ void    TextInteractor::OnPasteCommand_After ()
  */
 void    TextInteractor::OnPasteCommand_PasteBestFlavor ()
 {
-#if     qWindows && 0
+#if     qPlatform_Windows && 0
     // A little debugging hack for windows - sometimes helpful to turn this on
     // to peek in the debugger at what is on the clipboard - LGP 960430
 
@@ -3120,7 +3120,7 @@ void    TextInteractor::SetCaretShown (bool shown)
     if (GetCaretShown () != shown) {
         fCaretShown = shown;
         InvalidateCaretState ();
-#if     qMacOS
+#if     qPlatform_MacOS
         // On the mac - when it was shown, and now is not - we MAY need to force an update to get it erased - and when not shown- the
         // InvalidateCaretState () method doesn't force an update.
         if (not shown) {
@@ -3351,10 +3351,10 @@ bool    TextInteractor::HandledMByteCharTyping (char theChar)
 }
 #endif
 
-#if     qMacOS || qXWindows
+#if     qPlatform_MacOS || qXWindows
 float       TextInteractor::GetTickCountBetweenBlinks ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     return (::GetCaretTime () / 60.0);
 #elif   qXWindows
     return (0.4f);

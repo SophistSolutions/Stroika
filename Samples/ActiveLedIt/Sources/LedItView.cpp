@@ -246,9 +246,9 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 		override	void	DisplaySpellCheckDialog (SpellCheckDialogCallback& callback)
 			{
 				Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>	delegator (callback);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_SpellCheckDialog	spellCheckDialog (delegator);
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_SpellCheckDialog	spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#elif	qXWindows
 					Led_StdDialogHelper_SpellCheckDialog	spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -270,9 +270,9 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 		override		Led_Distance		PickOtherFontHeight (Led_Distance origHeight)
 			{
 				CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_OtherFontSizeDialog	dlg;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_OtherFontSizeDialog	dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				dlg.InitValues (origHeight);
@@ -288,9 +288,9 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 		override		bool				PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid)
 			{
 				CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_ParagraphSpacingDialog	dlg;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_ParagraphSpacingDialog	dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				dlg.InitValues (*spaceBefore, *spaceBeforeValid, *spaceAfter, *spaceAfterValid, *lineSpacing, *lineSpacingValid);
@@ -319,9 +319,9 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 		override		bool				PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid)
 			{
 				CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_ParagraphIndentsDialog	dlg;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_ParagraphIndentsDialog	dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				dlg.InitValues (*leftMargin, *leftMarginValid, *rightMargin, *rightMarginValid, *firstIndent, *firstIndentValid);
@@ -408,9 +408,9 @@ struct	ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor:
 				RequireNotNull (tableProperties);
 
 				typedef	Led_StdDialogHelper_EditTablePropertiesDialog	DLGTYPE;
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					DLGTYPE	infoDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					DLGTYPE	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);

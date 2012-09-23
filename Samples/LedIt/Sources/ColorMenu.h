@@ -16,7 +16,7 @@
 #include	"LedItConfig.h"
 
 
-#if		qWindows
+#if		qPlatform_Windows
 class	ColorMenu : public CMenu {
 	public:
 		ColorMenu ();

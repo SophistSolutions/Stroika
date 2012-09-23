@@ -283,7 +283,7 @@ Led_FontSpecification   StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentF
         fsp.SetStyle_Underline (true);
     }
     if (fFixedWidthMode > 0) {
-#if     qMacOS
+#if     qPlatform_MacOS
         fsp.SetFontNameSpecifier (kFontIDMonaco);
 #else
         Assert (false);     // just ignore - NYI

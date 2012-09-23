@@ -744,7 +744,7 @@ namespace   Stroika {
                 nonvirtual  void    UpdateIfNoKeysPending ();       // utility
 
 
-#if     qMacOS || qXWindows
+#if     qPlatform_MacOS || qXWindows
             public:
                 static  float       GetTickCountBetweenBlinks ();
 #endif

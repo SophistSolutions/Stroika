@@ -612,7 +612,7 @@ namespace   Stroika {
                     virtual void        ReadPictData (vector<char>* data);
                     virtual void        ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData);
                     virtual Led_DIB*    ConstructDIBFromData (Led_TWIPS_Point shownSize, ImageFormat imageFormat, Led_TWIPS_Point bmSize, size_t nBytes, const void* data);
-#if     qWindows
+#if     qPlatform_Windows
                     virtual Led_DIB*    ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF);
 #endif
 
@@ -638,7 +638,7 @@ namespace   Stroika {
                     RTFInfo*    fRTFInfo;
                     bool        fOwnRTFInfo;
 
-#if     qWindows
+#if     qPlatform_Windows
                 private:
                     unsigned short  fCachedFontSize;                // Keep these as a speedtweek - SetPointSize() expensive on WIN32
                     long            fCachedFontSizeTMHeight;

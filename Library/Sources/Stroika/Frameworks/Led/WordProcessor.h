@@ -19,7 +19,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <ColorPicker.h>
 #endif
 
@@ -353,12 +353,12 @@ namespace   Stroika {
                     kFontStyleBold_CmdID,
                     kFontStyleItalic_CmdID,
                     kFontStyleUnderline_CmdID,
-#if     qMacOS
+#if     qPlatform_MacOS
                     kFontStyleOutline_CmdID,
                     kFontStyleShadow_CmdID,
                     kFontStyleCondensed_CmdID,
                     kFontStyleExtended_CmdID,
-#elif   qWindows
+#elif   qPlatform_Windows
                     kFontStyleStrikeout_CmdID,
 #endif
                     kSubScriptCommand_CmdID,
@@ -462,7 +462,7 @@ namespace   Stroika {
                 virtual void    OnFontStyleItalicCommand ();
                 virtual void    OnUpdateFontStyleUnderlineCommand (CommandUpdater* enabler);
                 virtual void    OnFontStyleUnderlineCommand ();
-#if     qMacOS
+#if     qPlatform_MacOS
                 virtual void    OnUpdateFontStyleOutlineCommand (CommandUpdater* enabler);
                 virtual void    OnFontStyleOutlineCommand ();
                 virtual void    OnUpdateFontStyleShadowCommand (CommandUpdater* enabler);
@@ -471,7 +471,7 @@ namespace   Stroika {
                 virtual void    OnFontStyleCondensedCommand ();
                 virtual void    OnUpdateFontStyleExtendedCommand (CommandUpdater* enabler);
                 virtual void    OnFontStyleExtendedCommand ();
-#elif   qWindows
+#elif   qPlatform_Windows
                 virtual void    OnUpdateFontStyleStrikeoutCommand (CommandUpdater* enabler);
                 virtual void    OnFontStyleStrikeoutCommand ();
 #endif
@@ -2029,7 +2029,7 @@ namespace   Stroika {
                 struct  TableSelectionPropertiesInfo;
                 virtual     bool                EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties);
 
-#if     qWindows
+#if     qPlatform_Windows
             private:
                 static  UINT_PTR CALLBACK   ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 #endif

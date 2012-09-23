@@ -52,7 +52,7 @@ namespace   Stroika {
                         Based on SPR#0864</p>
              */
 #ifndef qUseWin32CompareStringCallForCaseInsensitiveSearch
-#define qUseWin32CompareStringCallForCaseInsensitiveSearch  qWindows
+#define qUseWin32CompareStringCallForCaseInsensitiveSearch  qPlatform_Windows
 #endif
 
 

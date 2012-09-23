@@ -95,9 +95,9 @@ namespace   Stroika {
                         size_t from, size_t to
                                                            );
                 virtual     bool    InternalizeFlavor_FILEData (
-#if     qMacOS
+#if     qPlatform_MacOS
                     const FSSpec* fileName,
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
                     const Led_SDK_Char* fileName,
 #endif
                     Led_ClipFormat* suggestedClipFormat,
@@ -105,9 +105,9 @@ namespace   Stroika {
                     size_t from, size_t to
                 );
                 virtual     void    InternalizeFlavor_FILEGuessFormatsFromName (
-#if     qMacOS
+#if     qPlatform_MacOS
                     const FSSpec* fileName,
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
                     const Led_SDK_Char* fileName,
 #endif
                     Led_ClipFormat* suggestedClipFormat,

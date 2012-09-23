@@ -7,7 +7,7 @@
 #include    <climits>
 #include    <cstdio>        // for a couple sprintf() calls - could pretty easily be avoided
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <Errors.h>
 #include    <Files.h>
 #include    <TextEdit.h>        // for Apple TE scrap format and TEContinuous etc compatability
@@ -43,7 +43,7 @@ using   Memory::SmallStackBuffer;
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 const   Led_PrivateEmbeddingTag kPictTag_V1 =   "Pict";
 #endif
 
@@ -196,12 +196,12 @@ inline  PortableStyleRunData_Version5   mkPortableStyleRunData_Version5 (const S
     data.fStyleSet |= isr.GetStyle_Italic () ? (1 << data.eItalic) : 0;
     data.fStyleSet |= isr.GetStyle_Underline () ? (1 << data.eUnderline) : 0;
     // note these set to zero in memset above so no need to set on other platforms
-#if     qMacOS
+#if     qPlatform_MacOS
     data.fStyleSet |= isr.GetStyle_Outline () ? (1 << data.eOutline) : 0;
     data.fStyleSet |= isr.GetStyle_Shadow () ? (1 << data.eShadow) : 0;
     data.fStyleSet |= isr.GetStyle_Condensed () ? (1 << data.eCondensed) : 0;
     data.fStyleSet |= isr.GetStyle_Extended () ? (1 << data.eExtended) : 0;
-#elif   qWindows
+#elif   qPlatform_Windows
     data.fStyleSet |= isr.GetStyle_Strikeout () ? (1 << data.eStrikeout) : 0;
 #endif
     Led_USHORTToBuf (isr.GetPointSize (), &data.fPointSize);
@@ -216,12 +216,12 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     fsp.SetStyle_Bold (srcData.fStyleSet & (1 << srcData.eBold));
     fsp.SetStyle_Italic (srcData.fStyleSet & (1 << srcData.eItalic));
     fsp.SetStyle_Underline (srcData.fStyleSet & (1 << srcData.eUnderline));
-#if     qMacOS
+#if     qPlatform_MacOS
     fsp.SetStyle_Outline (srcData.fStyleSet & (1 << srcData.eOutline));
     fsp.SetStyle_Shadow (srcData.fStyleSet & (1 << srcData.eShadow));
     fsp.SetStyle_Condensed (srcData.fStyleSet & (1 << srcData.eCondensed));
     fsp.SetStyle_Extended (srcData.fStyleSet & (1 << srcData.eExtended));
-#elif   qWindows
+#elif   qPlatform_Windows
     fsp.SetStyle_Strikeout (srcData.fStyleSet & (1 << srcData.eStrikeout));
 #endif
     short   fontSize    =   Led_BufToUSHORT (&srcData.fPointSize);
@@ -314,12 +314,12 @@ inline  PortableStyleRunData_Version6   mkPortableStyleRunData_Version6 (const S
     data.fStyleSet |= isr.GetStyle_Italic () ? (1 << data.eItalic) : 0;
     data.fStyleSet |= isr.GetStyle_Underline () ? (1 << data.eUnderline) : 0;
     // note these set to zero in memset above so no need to set on other platforms
-#if     qMacOS
+#if     qPlatform_MacOS
     data.fStyleSet |= isr.GetStyle_Outline () ? (1 << data.eOutline) : 0;
     data.fStyleSet |= isr.GetStyle_Shadow () ? (1 << data.eShadow) : 0;
     data.fStyleSet |= isr.GetStyle_Condensed () ? (1 << data.eCondensed) : 0;
     data.fStyleSet |= isr.GetStyle_Extended () ? (1 << data.eExtended) : 0;
-#elif   qWindows
+#elif   qPlatform_Windows
     data.fStyleSet |= isr.GetStyle_Strikeout () ? (1 << data.eStrikeout) : 0;
 #endif
     data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSubscript) ? (1 << data.eSubscript) : 0;
@@ -339,12 +339,12 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     fsp.SetStyle_Bold (srcData.fStyleSet & (1 << srcData.eBold));
     fsp.SetStyle_Italic (srcData.fStyleSet & (1 << srcData.eItalic));
     fsp.SetStyle_Underline (srcData.fStyleSet & (1 << srcData.eUnderline));
-#if     qMacOS
+#if     qPlatform_MacOS
     fsp.SetStyle_Outline (srcData.fStyleSet & (1 << srcData.eOutline));
     fsp.SetStyle_Shadow (srcData.fStyleSet & (1 << srcData.eShadow));
     fsp.SetStyle_Condensed (srcData.fStyleSet & (1 << srcData.eCondensed));
     fsp.SetStyle_Extended (srcData.fStyleSet & (1 << srcData.eExtended));
-#elif   qWindows
+#elif   qPlatform_Windows
     fsp.SetStyle_Strikeout (srcData.fStyleSet & (1 << srcData.eStrikeout));
 #endif
     if (srcData.fStyleSet & (1 << srcData.eSubscript)) {
@@ -766,7 +766,7 @@ void    StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cooki
 
 SimpleEmbeddedObjectStyleMarker*    StyledTextIOReader_LedNativeFileFormat::InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     // backward compat... 960303 LGP 2.0b3
     if (strcmp (tag, kPictTag_V1) == 0) {
         size_t  howManyBytes    =   0;

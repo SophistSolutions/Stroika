@@ -30,7 +30,7 @@ class	Options {
 		nonvirtual	SearchParameters	GetSearchParameters () const;
 		nonvirtual	void				SetSearchParameters (const SearchParameters& searchParameters);
 
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		nonvirtual	const CDockState&	GetDocBarState () const;
 		nonvirtual	void				SetDocBarState (const CDockState& dockState);
@@ -60,7 +60,7 @@ class	Options {
 		nonvirtual	bool	GetShowSpaceGlyphs () const;
 		nonvirtual	void	SetShowSpaceGlyphs (bool showSpaceGlyphs);
 	
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		nonvirtual	bool	GetCheckFileAssocsAtStartup () const;
 		nonvirtual	void	SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);

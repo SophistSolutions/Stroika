@@ -209,13 +209,13 @@ namespace   Stroika {
             public:
                 LedDialogText ();
 
-#if     qWindows && defined (_MFC_VER)
+#if     qPlatform_Windows && defined (_MFC_VER)
             public:
                 override    void    PostNcDestroy ();
                 override    int     OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message);
 #endif
 
-#if     qWindows && defined (_MFC_VER)
+#if     qPlatform_Windows && defined (_MFC_VER)
             protected:
                 DECLARE_MESSAGE_MAP()
                 DECLARE_DYNCREATE(LedDialogText)

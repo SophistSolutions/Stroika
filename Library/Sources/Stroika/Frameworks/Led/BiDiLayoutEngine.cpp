@@ -211,7 +211,7 @@ public:
 
 
 
-#if     qWindows && qWideCharacters && qTryToUseUNISCRIBEForTextRuns
+#if     qPlatform_Windows && qWideCharacters && qTryToUseUNISCRIBEForTextRuns
 namespace {
 
     /*

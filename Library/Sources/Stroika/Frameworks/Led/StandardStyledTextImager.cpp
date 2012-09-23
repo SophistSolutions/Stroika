@@ -201,9 +201,9 @@ Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyle
     // been simpler. But it would have been more costly (performance).
     int countOfValidThings  =
         7 +
-#if     qMacOS
+#if     qPlatform_MacOS
         4
-#elif   qWindows
+#elif   qPlatform_Windows
         1
 #elif   qXWindows
         0       //  X-TMP-HACK-LGP991213    -- Not quite a hack - but revisit when we have REAL X-Font support
@@ -242,7 +242,7 @@ Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyle
                 fontSpec.InvalidateStyle_SubOrSuperScript ();
                 if (--countOfValidThings == 0)  { break; }
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             if (fontSpec.GetStyle_Outline_Valid () and fontSpec.GetStyle_Outline () != isr.GetStyle_Outline ()) {
                 fontSpec.InvalidateStyle_Outline ();
                 if (--countOfValidThings == 0)  { break; }
@@ -259,7 +259,7 @@ Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyle
                 fontSpec.InvalidateStyle_Extended ();
                 if (--countOfValidThings == 0)  { break; }
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             if (fontSpec.GetStyle_Strikeout_Valid () and fontSpec.GetStyle_Strikeout () != isr.GetStyle_Strikeout ()) {
                 fontSpec.InvalidateStyle_Strikeout ();
                 if (--countOfValidThings == 0)  { break; }
@@ -284,7 +284,7 @@ Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyle
     return (fontSpec);
 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 bool    StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle)
 {
     //  Require ((*mode & doColor) == 0);   // NB: we currently don't support   doColor,  doAll , addSize

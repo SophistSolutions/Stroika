@@ -438,7 +438,7 @@ HidableTextMarkerOwner::HidableTextMarker*  HidableTextMarkerOwner::MakeHidableT
         or:
                 Led_IncrementalFontSpecification    fontSpec;
                 fontSpec.SetTextColor (Led_Color::kRed);
-                #if     qWindows
+                #if     qPlatform_Windows
                 fontSpec.SetStyle_Strikeout (true);
                 #endif
                 return new FontSpecHidableTextMarker (fontSpec);

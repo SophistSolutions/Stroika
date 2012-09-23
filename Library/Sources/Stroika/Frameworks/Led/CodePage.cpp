@@ -300,7 +300,7 @@ void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharC
             }
             break;
         default: {
-#if     qWindows
+#if     qPlatform_Windows
                 Win32_CodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
 #else
                 throw CodePageNotSupportedException (fCodePage);
@@ -308,7 +308,7 @@ void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharC
             }
     }
 
-#if     qDebug && qWindows
+#if     qDebug && qPlatform_Windows
     // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
     if (fCodePage == kCodePage_ANSI or
             fCodePage == kCodePage_MAC or
@@ -410,7 +410,7 @@ void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inChar
                         useOutCharCount = 0;
                     }
                 }
-#if     qWindows
+#if     qPlatform_Windows
                 Win32_CodePageConverter (kCodePage_UTF7).MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
 #else
                 throw CodePageNotSupportedException (fCodePage);
@@ -438,7 +438,7 @@ void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inChar
                         useOutCharCount = 0;
                     }
                 }
-#if     qWindows
+#if     qPlatform_Windows
                 UTF8Converter ().MapFromUNICODE (inChars, inCharCnt, useOutChars, &useOutCharCount);
 #else
                 throw CodePageNotSupportedException (fCodePage);
@@ -452,7 +452,7 @@ void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inChar
             }
             break;
         default: {
-#if     qWindows
+#if     qPlatform_Windows
                 Win32_CodePageConverter (fCodePage).MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
 #else
                 throw CodePageNotSupportedException (fCodePage);
@@ -460,7 +460,7 @@ void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inChar
             }
     }
 
-#if     qDebug && qWindows
+#if     qDebug && qPlatform_Windows
     // Assure my baked tables perform the same as the builtin Win32 API
     if (fCodePage == kCodePage_ANSI or fCodePage == kCodePage_MAC or fCodePage == kCodePage_PC or fCodePage == kCodePage_PCA) {
         size_t                      win32TstCharCnt =   *outCharCnt;
@@ -482,7 +482,7 @@ void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inChar
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  ********************************************************************************
  **************************** Win32_CodePageConverter ***************************
@@ -1423,7 +1423,7 @@ void    UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt,
  */
 vector<CodePage>    CodePagesInstalled::sCodePages;
 
-#if     qWindows
+#if     qPlatform_Windows
 BOOL FAR    PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageString)
 {
     sCodePages.push_back (_ttoi (lpCodePageString));
@@ -1434,7 +1434,7 @@ BOOL FAR    PASCAL CodePagesInstalled::EnumCodePagesProc (LPTSTR lpCodePageStrin
 void    CodePagesInstalled::Init ()
 {
     Assert (sCodePages.size () == 0);
-#if     qWindows
+#if     qPlatform_Windows
     ::EnumSystemCodePages (EnumCodePagesProc, CP_INSTALLED);
 #endif
     // Add these 'fake' code pages - which I believe are always available, but never listed by this procedure
@@ -1533,9 +1533,9 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
     if (confidence != nullptr) {
         *confidence = eLow;
     }
-#if     qWindows
+#if     qPlatform_Windows
     return ::GetACP ();
-#elif   qMacOS
+#elif   qPlatform_MacOS
     return kCodePage_MAC;
 #else
     return kCodePage_ANSI;  /// NOT SURE WHATS BEST FOR UNIX???

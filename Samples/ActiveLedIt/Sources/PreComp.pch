@@ -74,8 +74,8 @@
 
 
 
-#define	qMacOS			0
-#define	qWindows		1
+#define	qPlatform_MacOS			0
+#define	qPlatform_Windows		1
 
 
 

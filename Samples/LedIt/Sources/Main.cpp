@@ -4,7 +4,7 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	<new.h>
 
 	#include	<UMemoryMgr.h>			// for InitializeHeap
@@ -26,7 +26,7 @@
 /*
  *	Config/Defines
  */
-#if		qMacOS
+#if		qPlatform_MacOS
 	#if		__profile__
 		#define	qProfile		1
 	#endif
@@ -54,7 +54,7 @@ using	namespace	Stroika::Frameworks::Led::Platform;
 /*
  *	Profiling/Mac memory Management.
  */
-#if		qMacOS
+#if		qPlatform_MacOS
 
 	#if		qProfile && defined (__MWERKS__)
 		#include	"profiler.h"
@@ -159,10 +159,10 @@ static int	MyXErrorHandler (Display* display, XErrorEvent* error)
 
 
 
-#if		qMacOS || qXWindows
+#if		qPlatform_MacOS || qXWindows
 int		main (int argc, char** argv)
 {
-	#if		qMacOS
+	#if		qPlatform_MacOS
 		Led_Arg_Unused (argc);
 		Led_Arg_Unused (argv);
 		#if		qDebug

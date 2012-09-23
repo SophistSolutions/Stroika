@@ -6,7 +6,7 @@
 
 #include	<cctype>
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	<Finder.h>
 
 	#include	<LFile.h>
@@ -36,13 +36,13 @@
 #include	"Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 #include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_STYLText.h"
 #endif
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	"Stroika/Frameworks/Led/FilteredFilePicker.h"
-#elif	qWindows
+#elif	qPlatform_Windows
 	#include	"LedItControlItem.h"
 	#include	"LedItServerItem.h"
 #endif
@@ -65,7 +65,7 @@ using	Memory::SmallStackBuffer;
 
 
 
-#if		qMacOS
+#if		qPlatform_MacOS
 class	LedItDocumentWindow : public LWindow {
 	public:
 		LedItDocumentWindow (ResIDT inWINDid, UInt32 inAttributes, LCommander* inSuper):
@@ -187,7 +187,7 @@ class	Led_BusyCursor {
 
 
 
-#if		qWindows
+#if		qPlatform_Windows
 // special exception handling just for MFC library implementation
 // copied here so I could clone MFC code as needed - not well understood - UGH!!! - LGP 951227
 #ifndef _AFX_OLD_EXCEPTIONS
@@ -213,7 +213,7 @@ static	void	AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CDocTemplate
  ******************************** LedItDocument *********************************
  ********************************************************************************
  */
-#if		qWindows
+#if		qPlatform_Windows
 FileFormat	LedItDocument::sHiddenDocOpenArg	=	eUnknownFormat;	// See LedItDocument::OnOpenDocument ()
 
 IMPLEMENT_DYNCREATE(LedItDocument, COleServerDoc)
@@ -245,10 +245,10 @@ END_INTERFACE_MAP()
 
 #endif
 
-#if		qMacOS
+#if		qPlatform_MacOS
 LedItDocument::LedItDocument (LCommander* inSuper, FileFormat format):
 	LSingleDoc (inSuper),
-#elif	qWindows
+#elif	qPlatform_Windows
 LedItDocument::LedItDocument ():
 	COleServerDoc (),
 #elif	qXWindows
@@ -261,20 +261,20 @@ LedItDocument::LedItDocument ():
 	fParagraphDatabase (),
 	fHidableTextDatabase (),
 	fCommandHandler (kMaxNumUndoLevels),
-#if		qMacOS
+#if		qPlatform_MacOS
 	fFileFormat (format),
-#elif	qWindows || qXWindows
+#elif	qPlatform_Windows || qXWindows
 	fFileFormat (eDefaultFormat),
 #endif
 	fHTMLInfo ()
 #if		qXWindows
 	,fPathName ()
 #endif
-#if		qMacOS
+#if		qPlatform_MacOS
 	,fTextView (NULL)
 #endif
 {
-	#if		qWindows
+	#if		qPlatform_Windows
 		EnableAutomation ();
 		::AfxOleLockApp ();
 	#endif
@@ -286,7 +286,7 @@ LedItDocument::LedItDocument ():
 
 LedItDocument::~LedItDocument ()
 {
-	#if		qMacOS
+	#if		qPlatform_MacOS
 		if (mWindow != NULL) {
 			mWindow->PostAction (NULL);		//	Flush undo buffer
 		}
@@ -296,7 +296,7 @@ LedItDocument::~LedItDocument ()
 											// DTOR is done...
 	#endif
 	fTextStore.RemoveMarkerOwner (this);
-	#if		qWindows
+	#if		qPlatform_Windows
 		::AfxOleUnlockApp ();
 	#endif
 }
@@ -304,10 +304,10 @@ LedItDocument::~LedItDocument ()
 void	LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) throw ()
 {
 	if (updateInfo.fRealContentUpdate) {
-		#if		qMacOS
+		#if		qPlatform_MacOS
 			mIsModified = true;
 			SetUpdateCommandStatus (true);
-		#elif	qWindows
+		#elif	qPlatform_Windows
 			SetModifiedFlag ();
 		#endif
 	}
@@ -514,7 +514,7 @@ void	LedItDocument::Save ()
 }
 #endif
 
-#if		qMacOS
+#if		qPlatform_MacOS
 const vector<LWindow*>&	LedItDocument::GetDocumentWindows ()
 {
 	return LedItDocumentWindow::sWindowList;
@@ -1119,7 +1119,7 @@ void	LedItDocument::OnSaveACopyAsCommand ()
 }
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 BOOL	LedItDocument::OnNewDocument ()
 {
 	fCommandHandler.Commit ();
@@ -1646,7 +1646,7 @@ Led_SDK_String	ExtractFileSuffix (const Led_SDK_String& from)
 
 
 
-#if		qWindows
+#if		qPlatform_Windows
 /*
  ********************************************************************************
  ******************************** AppendFilterSuffix ****************************

@@ -33,14 +33,14 @@ namespace   Stroika {
             */
             class   OptionsFileHelper {
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 OptionsFileHelper (int resFile);
-#elif   qWindows
+#elif   qPlatform_Windows
                 OptionsFileHelper (HKEY hkey);
 #endif
                 virtual ~OptionsFileHelper ();
 
-#if     qWindows
+#if     qPlatform_Windows
             public:
                 static  HKEY    OpenWithCreateAlongPath (HKEY parentKey, const Led_SDK_String& path, REGSAM samDesired = KEY_READ | KEY_WRITE);
 #endif
@@ -88,9 +88,9 @@ namespace   Stroika {
                 nonvirtual  void    StorePref (const Led_SDK_Char* prefName, const vector<wstring>& value);
 
             private:
-#if     qMacOS
+#if     qPlatform_MacOS
                 int     fResFile;
-#elif   qWindows
+#elif   qPlatform_Windows
                 HKEY    fKey;
 #endif
             };

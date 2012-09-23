@@ -3,7 +3,7 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <TextEdit.h>        // for Apple TE scrap format and TEContinuous etc compatability
 #include    <QDOffscreen.h>
 #endif
@@ -53,7 +53,7 @@ static  struct  FooBarBlatzRegistryCleanupHack {
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
 static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle,
                                        Led_Tablet tablet,
                                        Led_Color foreColor, Led_Color backColor,
@@ -69,7 +69,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
                                 const Led_Size& imageSize,
                                 const Led_Size& margin = kDefaultEmbeddingMargin
                                ) throw ();
-#if     qMacOS
+#if     qPlatform_MacOS
 static  PixMap**    MakePixMapFromDIB (const Led_DIB* dib);
 #endif
 
@@ -95,17 +95,17 @@ EmbeddedObjectCreatorRegistry*  EmbeddedObjectCreatorRegistry::sThe =   nullptr;
 
 void    EmbeddedObjectCreatorRegistry::AddStandardTypes ()
 {
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     AddAssoc (StandardMacPictureStyleMarker::kClipFormat, StandardMacPictureStyleMarker::kEmbeddingTag, &StandardMacPictureStyleMarker::mk, &StandardMacPictureStyleMarker::mk);
     AddAssoc (StandardDIBStyleMarker::kClipFormat, StandardDIBStyleMarker::kEmbeddingTag, &StandardDIBStyleMarker::mk, &StandardDIBStyleMarker::mk);
 #endif
 
     AddAssoc (StandardURLStyleMarker::kURLDClipFormat, StandardURLStyleMarker::kEmbeddingTag, &StandardURLStyleMarker::mk, &StandardURLStyleMarker::mk);
-#if     qWindows
+#if     qPlatform_Windows
     AddAssoc (StandardURLStyleMarker::kWin32URLClipFormat, StandardURLStyleMarker::kEmbeddingTag, &StandardURLStyleMarker::mk, &StandardURLStyleMarker::mk);
 #endif
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     AddAssoc (StandardMacPictureWithURLStyleMarker::kClipFormats, StandardMacPictureWithURLStyleMarker::kClipFormatCount, StandardMacPictureWithURLStyleMarker::kEmbeddingTag, &StandardMacPictureWithURLStyleMarker::mk, &StandardMacPictureWithURLStyleMarker::mk);
     AddAssoc (StandardMacPictureWithURLStyleMarker::kOld1EmbeddingTag, &StandardMacPictureWithURLStyleMarker::mk);
     AddAssoc (StandardDIBWithURLStyleMarker::kClipFormats, StandardDIBWithURLStyleMarker::kClipFormatCount, StandardDIBWithURLStyleMarker::kEmbeddingTag, &StandardDIBWithURLStyleMarker::mk, &StandardDIBWithURLStyleMarker::mk);
@@ -265,15 +265,15 @@ SimpleEmbeddedObjectStyleMarker::CommandNames   SimpleEmbeddedObjectStyleMarker:
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
 /*
  ********************************************************************************
  ************************** StandardMacPictureStyleMarker ***********************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 const   Led_ClipFormat      StandardMacPictureStyleMarker::kClipFormat      =   kPICTClipFormat;
-#elif   qWindows
+#elif   qPlatform_Windows
 // Surprising, the QuickTime for windows 2.1 picture viewer doesn't appear to export (on copy) a
 // native format rep of the picture. So I've no guess what the RIGHT arg is to RegisterClipboardFormat.
 // So - this is as good a guess as any. At least then Led can xfer pictures among instances of itself.
@@ -282,24 +282,24 @@ const   Led_ClipFormat      StandardMacPictureStyleMarker::kClipFormat      =   
 #endif
 const   Led_PrivateEmbeddingTag StandardMacPictureStyleMarker::kEmbeddingTag    =   "Pict2";
 
-#if     qWindows
+#if     qPlatform_Windows
 const Led_DIB*  StandardMacPictureStyleMarker::sUnsupportedFormatPict   =   nullptr;
 #endif
 
 StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture* pictData, size_t picSize):
     SimpleEmbeddedObjectStyleMarker (),
     fPictureHandle (nullptr)
-#if     qWindows
+#if     qPlatform_Windows
     , fPictureSize (0)
 #endif
 {
     RequireNotNull (pictData);
-#if     qWindows
+#if     qPlatform_Windows
     RequireNotNull (sUnsupportedFormatPict);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
     fPictureHandle = (PictureHandle)Led_DoNewHandle (picSize);
-#elif   qWindows
+#elif   qPlatform_Windows
     fPictureSize = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Led_ThrowIfNull (fPictureHandle);
@@ -311,7 +311,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
 {
     AssertNotNull (fPictureHandle);
-#if     qMacOS
+#if     qPlatform_MacOS
     ::DisposeHandle (Handle (fPictureHandle));
 #else
     ::GlobalFree (fPictureHandle);
@@ -417,18 +417,18 @@ const char* StandardMacPictureStyleMarker::GetTag () const
  ************************** StandardDIBStyleMarker ******************************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 // I don't know of any standard type for this, so just make one up...
 // LGP 960429
 const   Led_ClipFormat          StandardDIBStyleMarker::kClipFormat     =   'DIB ';
-#elif   qWindows
+#elif   qPlatform_Windows
 const   Led_ClipFormat          StandardDIBStyleMarker::kClipFormat     =   CF_DIB;
 #elif   qXWindows
 const   Led_ClipFormat          StandardDIBStyleMarker::kClipFormat     =   666;        // X-TMP-HACK-LGP991214
 #endif
 const   Led_PrivateEmbeddingTag     StandardDIBStyleMarker::kEmbeddingTag   =   "DIB";
 
-#if     qMacOS
+#if     qPlatform_MacOS
 Led_Picture**   StandardDIBStyleMarker::sUnsupportedFormatPict  =   nullptr;
 #endif
 
@@ -436,7 +436,7 @@ StandardDIBStyleMarker::StandardDIBStyleMarker (const Led_DIB* pictData):
     SimpleEmbeddedObjectStyleMarker (),
     fDIBData (nullptr)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     RequireNotNull (sUnsupportedFormatPict);    // see class declaration for descriptio
 #endif
     RequireNotNull (pictData);
@@ -561,9 +561,9 @@ const char* StandardDIBStyleMarker::GetTag () const
  ****************************** StandardURLStyleMarker **************************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 const   Led_ClipFormat          StandardURLStyleMarker::kURLDClipFormat     =   'URLD';
-#elif   qWindows
+#elif   qPlatform_Windows
 // Netscape USED to have some sort of predefined name like Netscsape Bookmark, or something like that.
 // Apparently not any more. Will have to investigate further to see what todo for Netscape...
 // LGP 960429
@@ -574,9 +574,9 @@ const   Led_ClipFormat          StandardURLStyleMarker::kURLDClipFormat     =   
 #endif
 
 #if     !qURLStyleMarkerNewDisplayMode
-#if     qMacOS
+#if     qPlatform_MacOS
 Led_Picture**                   StandardURLStyleMarker::sURLPict        =   nullptr;
-#elif   qWindows
+#elif   qPlatform_Windows
 const Led_DIB*                  StandardURLStyleMarker::sURLPict        =   nullptr;
 #endif
 
@@ -591,7 +591,7 @@ StandardURLStyleMarker::StandardURLStyleMarker (const Led_URLD& urlData):
     fURLData (urlData)
 {
 #if     !qURLStyleMarkerNewDisplayMode
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     RequireNotNull (sURLPict);  // If this is ever triggered, see class declaration where we delcare this field
 #endif
 #endif
@@ -619,7 +619,7 @@ SimpleEmbeddedObjectStyleMarker*    StandardURLStyleMarker::mk (ReaderFlavorPack
         length = flavorPackage.ReadFlavorData (kURLDClipFormat, length, buf);
         return (mk (kEmbeddingTag, buf, length));
     }
-#if     qWindows
+#if     qPlatform_Windows
     if (flavorPackage.GetFlavorAvailable (kWin32URLClipFormat)) {
         size_t  length      =   flavorPackage.GetFlavorSize (kWin32URLClipFormat);
         Memory::SmallStackBuffer<char> buf (length);
@@ -667,14 +667,14 @@ void    StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, con
     Led_Color   foreColor   =   imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
     Led_Color   backColor   =   imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
 
-#if     qMacOS
+#if     qPlatform_MacOS
     tablet->SetPort ();
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
     GDI_RGBForeColor (foreColor.GetOSRep ());
     GDI_RGBBackColor (backColor.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());
 #endif
@@ -692,10 +692,10 @@ void    StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, con
      *  Draw the marker on the baseline (to from the top of the drawing area).
      *  And be sure to erase everything in the draw rect!
      */
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     AssertNotNull (sURLPict);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
     Rect    rr  =   AsQDRect (innerBoundsRect);
     PenNormal ();
     PenSize (2, 2);
@@ -717,7 +717,7 @@ void    StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, con
     ::TextFont (kFontIDGeneva);
     ::TextSize (9);
     ::DrawText (url, 0, urlStrLen);
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_Pen                 pen (PS_SOLID, 2, RGB (0, 0, 0));
     Led_Win_Obj_Selector    penWrapper (tablet, pen);
     Led_Win_Obj_Selector    brush (tablet, ::GetStockObject (NULL_BRUSH));
@@ -809,13 +809,13 @@ void    StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* ima
     TextInteractor::Tablet_Acquirer tablet_ (imager);
     Led_Tablet                      tablet      =   tablet_;
 
-#if     qMacOS
+#if     qPlatform_MacOS
     tablet->SetPort ();
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_Tablet  dc  =   tablet;
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
     Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) sURLPict);
     // First add in width of picture
     distanceResults[0] = Led_GetMacPictWidth (sURLPict);
@@ -834,7 +834,7 @@ void    StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* ima
 
     distanceResults[0] += Led_Max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
 
-#elif   qWindows
+#elif   qPlatform_Windows
     // First add in width of picture
     distanceResults[0] = Led_GetDIBImageSize (sURLPict).h;
 
@@ -881,10 +881,10 @@ Led_Distance    StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextIm
 #else
     // this '36' is something of a hack. Really we should set the font into a grafport, and measure font metrics etc.
     // but this is good enuf - I believe - LGP 960314
-#if     qMacOS
+#if     qPlatform_MacOS
     Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) sURLPict);
     return Led_Max (Led_GetMacPictHeight (sURLPict), 36) + 2 * kDefaultEmbeddingMargin.v;
-#elif   qWindows
+#elif   qPlatform_Windows
     return Led_Max (Led_GetDIBImageSize (sURLPict).v, 36) + 2 * kDefaultEmbeddingMargin.v;
 #endif
 #endif
@@ -898,7 +898,7 @@ void    StandardURLStyleMarker::Write (SinkStream& sink)
 void    StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
     flavorPackage.AddFlavorData (kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
-#if     qWindows
+#if     qPlatform_Windows
     size_t  len =   fURLData.GetURLLength () + 1;
     Memory::SmallStackBuffer<char>  hackBuf(len);
     memcpy (hackBuf, fURLData.PeekAtURL (), len - 1);
@@ -1003,7 +1003,7 @@ Led_FontSpecification   StandardURLStyleMarker::GetDisplayFont (const RunElement
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
 /*
  ********************************************************************************
  ************************ StandardMacPictureWithURLStyleMarker ******************
@@ -1021,15 +1021,15 @@ const   Led_PrivateEmbeddingTag StandardMacPictureWithURLStyleMarker::kOld1Embed
 StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (const Led_Picture* pictData, size_t picSize, const Led_URLD& urlData):
     SimpleEmbeddedObjectStyleMarker (),
     fPictureHandle (nullptr),
-#if     qWindows
+#if     qPlatform_Windows
     fPictureSize (0),
 #endif
     fURLData (urlData)
 {
     RequireNotNull (pictData);
-#if     qMacOS
+#if     qPlatform_MacOS
     fPictureHandle = (StandardMacPictureStyleMarker::PictureHandle)Led_DoNewHandle (picSize);
-#elif   qWindows
+#elif   qPlatform_Windows
     fPictureSize = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Led_ThrowIfNull (fPictureHandle);
@@ -1043,9 +1043,9 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker ()
 {
     AssertNotNull (fPictureHandle);
-#if     qMacOS
+#if     qPlatform_MacOS
     ::DisposeHandle (Handle (fPictureHandle));
-#elif   qWindows
+#elif   qPlatform_Windows
     ::GlobalFree (fPictureHandle);
 #endif
 }
@@ -1239,7 +1239,7 @@ StandardDIBWithURLStyleMarker::StandardDIBWithURLStyleMarker (const Led_DIB* dib
     fDIBData (nullptr),
     fURLData (urlData)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     RequireNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);    // see class declaration for descriptio
 #endif
     RequireNotNull (dibData);
@@ -1434,9 +1434,9 @@ const char* StandardDIBWithURLStyleMarker::GetTag () const
  ************************* StandardUnknownTypeStyleMarker ***********************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 Led_Picture**                   StandardUnknownTypeStyleMarker::sUnknownPict            =   nullptr;
-#elif   qWindows
+#elif   qPlatform_Windows
 const Led_DIB*                  StandardUnknownTypeStyleMarker::sUnknownPict            =   nullptr;
 #endif
 const   Led_PrivateEmbeddingTag StandardUnknownTypeStyleMarker::kDefaultEmbeddingTag    =   "UnknwnDlf";
@@ -1453,7 +1453,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
     fDisplayDIB ()
 {
     memcpy (fEmbeddingTag, embeddingTag, sizeof (fEmbeddingTag));
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     RequireNotNull (sUnknownPict);  // If this is ever triggered, see class declaration where we delcare this field
 #endif
     fData = new char [nBytes];
@@ -1505,11 +1505,11 @@ Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcDefaultShownSize ()
 
 Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     RequireNotNull (sUnknownPict);
     Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) sUnknownPict);
     Led_Size    pixelSize   =    Led_GetMacPictSize (sUnknownPict);
-#elif   qWindows
+#elif   qPlatform_Windows
     RequireNotNull (sUnknownPict);
     Led_Size    pixelSize   =    Led_GetDIBImageSize (sUnknownPict);
 #elif   qXWindows
@@ -1537,12 +1537,12 @@ void    StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* ima
                        );
         return;
     }
-#if     qMacOS
+#if     qPlatform_MacOS
     MacPictureDrawSegment (sUnknownPict, tablet,
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                            drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize
                           );
-#elif   qWindows
+#elif   qPlatform_Windows
     DIBDrawSegment (sUnknownPict, tablet,
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize
@@ -1649,7 +1649,7 @@ void    Led::AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
 /*
  ********************************************************************************
  ************************** MacPictureDrawSegment *******************************
@@ -1665,9 +1665,9 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
 
     Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle)pictureHandle);
 
-#if     qMacOS
+#if     qPlatform_MacOS
     tablet->SetPort ();
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_Tablet  dc  =   tablet;
 #endif
 
@@ -1682,21 +1682,21 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
     Led_Rect    innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), pictSize);
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
     GDI_RGBForeColor (foreColor.GetOSRep ());
     GDI_RGBBackColor (backColor.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
     // Must erase above the picture, and below it. And
     Rect    rr  =   AsQDRect (innerBoundsRect);
 
     // Now draw the actual picture
     ::DrawPicture (pictureHandle, &rr);
-#elif   qWindows && qUseQuicktimeForWindows
+#elif   qPlatform_Windows && qUseQuicktimeForWindows
     // I tried doing a LoadLibrary/GetProcAddress ("DrawPicture") so that I wouldn't need
     // to link directly against the QT library, and so I wouldn't get errors at start time
     // if the lib wasn't present. But apparantly Apple has done all that for me in the
@@ -1758,9 +1758,9 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
     Led_Arg_Unused (foreColor);
     Led_Arg_Unused (backColor);
 
-#if     qMacOS
+#if     qPlatform_MacOS
     tablet->SetPort ();
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_Tablet  dc  =   tablet;
 #endif
 
@@ -1778,7 +1778,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #if 1
     GDI_RGBForeColor (Led_Color::kBlack.GetOSRep ());
     GDI_RGBBackColor (Led_Color::kWhite.GetOSRep ());
@@ -1786,12 +1786,12 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
     GDI_RGBForeColor (foreColor.GetOSRep ());
     GDI_RGBBackColor (backColor.GetOSRep ());
 #endif
-#elif   qWindows
+#elif   qPlatform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
     // Must erase above the picture, and below it. And
     Rect    rr  =   AsQDRect (innerBoundsRect);
 
@@ -1814,7 +1814,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
         AssertNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);
         ::DrawPicture (StandardDIBStyleMarker::sUnsupportedFormatPict, &rr);
     }
-#elif   qWindows
+#elif   qPlatform_Windows
     //const BITMAPINFOHEADER&   hdr         =   dib->bmiHeader;
     const void* lpBits      =   Led_GetDIBBitsPointer (dib);
     //const char*               lpBits      =   ((const char*)dib) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (dib);
@@ -1822,7 +1822,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
 #endif
 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 static  PixMap**    MakePixMapFromDIB (const Led_DIB* dib)
 {
     RequireNotNull (dib);

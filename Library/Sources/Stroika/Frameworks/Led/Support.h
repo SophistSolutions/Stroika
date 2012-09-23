@@ -30,11 +30,11 @@
 #include    "Config.h"
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <LowMem.h>
 #include    <Scrap.h>
 #include    <Processes.h>       // for URL support
-#elif   qWindows
+#elif   qPlatform_Windows
 #include    <Windows.h>         //
 #include    <DDEML.h>           // really only needed if qUseSpyglassDDESDIToOpenURLs - but that define only set in LedConfig.h
 #include    <tchar.h>
@@ -470,7 +470,7 @@ public:\
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             /*
             @METHOD:        Led_ThrowOSErr
             @DESCRIPTION:   <p>This is called internally by Led (or your code) after MacOS system calls that return an OSErr.</p>
@@ -495,7 +495,7 @@ public:\
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             class   Win32ErrorException {
             public:
                 Win32ErrorException (DWORD error);
@@ -518,14 +518,14 @@ public:\
 #endif
 
 
-#if     qWindows
+#if     qPlatform_Windows
             void    Led_ThrowIfFalseGetLastError (bool test);
             void    Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
 #endif
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             /*
             @METHOD:        Led_ThrowIfErrorHRESULT
             @DESCRIPTION:   <p>If the HRESULT failed, then throw that HRESULT.</p>
@@ -534,7 +534,7 @@ public:\
 #endif
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             void    Led_ThrowIfOSErr (OSErr err);
             void    Led_ThrowIfOSStatus (OSStatus err);
 #endif
@@ -625,7 +625,7 @@ public:\
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
             // fall back on application-heap-zone if no tmp memory
             Handle  Led_DoNewHandle (size_t n);
@@ -635,16 +635,16 @@ public:\
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
             /*
             @CLASS:         Led_StackBasedHandleLocker
             @DESCRIPTION:   <p>A utility class to lock (and on exit from the block unlock) a handle.</p>
             */
             class   Led_StackBasedHandleLocker {
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 typedef Handle  GenericHandle;
-#elif   qWindows
+#elif   qPlatform_Windows
                 typedef HANDLE  GenericHandle;
 #endif
                 Led_StackBasedHandleLocker (GenericHandle h);
@@ -654,9 +654,9 @@ public:\
 
             private:
                 GenericHandle       fHandle;
-#if     qMacOS
+#if     qPlatform_MacOS
                 unsigned char   fOldState;
-#elif   qWindows
+#elif   qPlatform_Windows
                 void*           fPointer;
 #endif
             };
@@ -782,18 +782,18 @@ public:\
              *  surrounding access to this object - as is currently done in Led_MFC.
              *
              */
-#if     qMacOS
+#if     qPlatform_MacOS
             typedef OSType  Led_ClipFormat;
-#elif   qWindows
+#elif   qPlatform_Windows
             typedef UINT    Led_ClipFormat;
 #elif   qXWindows
             typedef long    Led_ClipFormat;
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
             const Led_ClipFormat    kTEXTClipFormat =   'TEXT';
             const Led_ClipFormat    kPICTClipFormat =   'PICT';
             const Led_ClipFormat    kFILEClipFormat =   'hfs ';     //  flavorTypeHFS->from <Drag.h>
-#elif   qWindows
+#elif   qPlatform_Windows
 #if     qWideCharacters
             const Led_ClipFormat    kTEXTClipFormat =   CF_UNICODETEXT;
 #else
@@ -822,9 +822,9 @@ public:\
                 nonvirtual  size_t  GetDataLength () const;
 
             private:
-#if     qMacOS
+#if     qPlatform_MacOS
                 Handle  fOSClipHandle;
-#elif   qWindows
+#elif   qPlatform_Windows
                 HANDLE  fOSClipHandle;
 #endif
                 void*       fLockedData;
@@ -848,7 +848,7 @@ public:\
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             class   VariantArrayPacker {
             public:
                 VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts);
@@ -880,7 +880,7 @@ public:\
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             VARIANT CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar_t* const* strsEnd);
             VARIANT CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v);
             VARIANT CreateSafeArrayOfBSTR (const vector<wstring>& v);
@@ -891,7 +891,7 @@ public:\
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             void    DumpSupportedInterfaces (IUnknown* obj, const char* objectName = nullptr, const char* levelPrefix = nullptr);
             void    DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName = nullptr, const char* levelPrefix = nullptr);
 #endif
@@ -957,9 +957,9 @@ public:\
 
             public:
                 virtual void    Open (const string& url);   // throws on detected errors
-#if     qMacOS
+#if     qPlatform_MacOS
                 virtual string  FileSpecToURL (const FSSpec& fsp);
-#elif   qWindows
+#elif   qPlatform_Windows
                 virtual string  FileSpecToURL (const string& path);
 #endif
 
@@ -967,7 +967,7 @@ public:\
 #if     qUseInternetConfig
                 nonvirtual  void    Open_IC (const string& url);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  void    Open_SpyglassAppleEvent (const string& url);
 #endif
 #if     qUseActiveXToOpenURLs
@@ -981,13 +981,13 @@ public:\
 #endif
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             private:
                 static  pascal  OSErr   FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath);
 #endif
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             public:
                 static  ProcessSerialNumber FindBrowser ();
 #endif
@@ -1104,7 +1104,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
         }
     }
 }
@@ -1244,7 +1244,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qWindows
+#if     qPlatform_Windows
 //  class   Win32ErrorException
             inline  Win32ErrorException::Win32ErrorException (DWORD error):
                 fError (error)
@@ -1267,7 +1267,7 @@ namespace   Stroika {
             }
 #endif
 
-#if     qWindows
+#if     qPlatform_Windows
             /*
             @METHOD:        Led_ThrowIfFalseGetLastError
             @DESCRIPTION:   <p></p>
@@ -1293,7 +1293,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             inline  void    Led_ThrowIfErrorHRESULT (HRESULT hr)
             {
                 if (not SUCCEEDED (hr)) {
@@ -1303,7 +1303,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             /*
             @METHOD:        Led_ThrowIfOSErr
             @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
@@ -1338,9 +1338,9 @@ namespace   Stroika {
 
             inline  unsigned short  Led_ByteSwapFromMac (unsigned short src)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return src;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return ((src & 0xff) << 8) + (src >> 8);
 #endif
             }
@@ -1353,9 +1353,9 @@ namespace   Stroika {
 
             inline  unsigned short  Led_ByteSwapFromWindows (unsigned short src)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return ((src & 0xff) << 8) + (src >> 8);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return src;
 #endif
             }
@@ -1365,9 +1365,9 @@ namespace   Stroika {
             }
             inline  unsigned long   Led_ByteSwapFromWindows (unsigned long src)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (Led_ByteSwapFromWindows ((unsigned short)(src & 0xffff)) << 16) + Led_ByteSwapFromWindows ((unsigned short)(src >> 16));
-#elif   qWindows
+#elif   qPlatform_Windows
                 return src;
 #endif
             }
@@ -1420,7 +1420,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
             // fall back on application-heap-zone if no tmp memory
             inline  Handle  Led_DoNewHandle (size_t n)
@@ -1469,31 +1469,31 @@ namespace   Stroika {
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
             inline  Led_StackBasedHandleLocker::Led_StackBasedHandleLocker (GenericHandle h):
                 fHandle (h)
             {
                 RequireNotNull (h);
-#if     qMacOS
+#if     qPlatform_MacOS
                 fOldState = ::HGetState (h);
                 ::HLock (h);
-#elif   qWindows
+#elif   qPlatform_Windows
                 fPointer = ::GlobalLock (h);
 #endif
             }
             inline  Led_StackBasedHandleLocker::~Led_StackBasedHandleLocker ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::HSetState (fHandle, fOldState);
-#elif   qWindows
+#elif   qPlatform_Windows
                 ::GlobalUnlock (fHandle);
 #endif
             }
             inline  void*   Led_StackBasedHandleLocker::GetPointer () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return *fHandle;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fPointer;
 #endif
             }
@@ -1723,7 +1723,7 @@ namespace   Stroika {
 
             inline  bool    Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
 #if     TARGET_CARBON
                 ScrapRef            scrap   =   nullptr;
                 Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
@@ -1734,7 +1734,7 @@ namespace   Stroika {
                 long    result      =   ::GetScrap (nullptr, clipType, &scrapOffset);
                 return (result > 0);
 #endif
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (::IsClipboardFormatAvailable (clipType));
 #elif   qXWindows
                 // Wild guess - no good answer yet - LGP 2003-05-06
@@ -1751,14 +1751,14 @@ namespace   Stroika {
             inline  Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire ()
             {
                 // For windows me must unlock, but not delete
-#if     qWindows
+#if     qPlatform_Windows
                 if (fLockedData != nullptr) {
                     ::GlobalUnlock (fLockedData);
                 }
 #endif
 
                 // For mac me must delete - could unlock too - but no need
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (fOSClipHandle != nullptr) {
                     ::DisposeHandle (fOSClipHandle);
                 }
@@ -1766,7 +1766,7 @@ namespace   Stroika {
             }
             inline  bool    Led_ClipboardObjectAcquire::GoodClip () const
             {
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 return (fOSClipHandle != nullptr and fLockedData != nullptr);
 #else
                 return false;   // X-TMP-HACK-LGP991213
@@ -1780,9 +1780,9 @@ namespace   Stroika {
             inline  size_t  Led_ClipboardObjectAcquire::GetDataLength () const
             {
                 Assert (GoodClip ());
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (::GetHandleSize (fOSClipHandle));
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (::GlobalSize (fOSClipHandle));
 #endif
             }

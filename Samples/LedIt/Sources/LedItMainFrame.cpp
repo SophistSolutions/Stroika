@@ -11,7 +11,7 @@
 #include	"LedItView.h"
 #include	"Options.h"
 
-#if		qWindows
+#if		qPlatform_Windows
 #include	"LedItApplication.h"
 #endif
 

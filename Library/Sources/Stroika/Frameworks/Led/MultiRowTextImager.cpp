@@ -485,11 +485,11 @@ namespace   Stroika {
                  *  on the way out. That way - the drawsegment code need not worry about restoring
                  *  these things.
                  */
-#if     qMacOS
+#if     qPlatform_MacOS
                 tablet->SetPort ();
                 RGBColor    oldForeColor    =   GDI_GetForeColor ();
                 RGBColor    oldBackColor    =   GDI_GetBackColor ();
-#elif   qWindows
+#elif   qPlatform_Windows
                 Led_Win_Obj_Selector    pen (tablet, ::GetStockObject (NULL_PEN));
                 Led_Win_Obj_Selector    brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
@@ -578,7 +578,7 @@ namespace   Stroika {
                     }
                 }
                 catch (...) {
-#if     qMacOS
+#if     qPlatform_MacOS
                     // Probably this code (and below case as well) is buggy. Setting back color in offscreen port (which is current now).
                     // But the code has been in place for quite some time (dont think broken by my offscreen bitmap move to LedGDI) with no
                     // noticable bugs/problems... Reconsider later...
@@ -589,7 +589,7 @@ namespace   Stroika {
 #endif
                     throw;
                 }
-#if     qMacOS
+#if     qPlatform_MacOS
                 Assert (*tablet == Led_GetCurrentGDIPort ());
                 GDI_RGBForeColor (oldForeColor);
                 GDI_RGBBackColor (oldBackColor);

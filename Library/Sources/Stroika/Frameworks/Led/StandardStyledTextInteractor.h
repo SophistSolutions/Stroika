@@ -361,9 +361,9 @@ namespace   Stroika {
                                                           ) override;
             public:
                 virtual     void    InternalizeFlavor_FILEGuessFormatsFromName (
-#if     qMacOS
+#if     qPlatform_MacOS
                     const FSSpec* fileName,
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
                     const Led_SDK_Char* fileName,
 #endif
                     Led_ClipFormat* suggestedClipFormat,
@@ -376,7 +376,7 @@ namespace   Stroika {
                 ) override;
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 virtual     bool    InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
 #if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
@@ -414,7 +414,7 @@ namespace   Stroika {
 
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  void    ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
 #if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor

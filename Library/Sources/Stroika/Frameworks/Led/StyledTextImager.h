@@ -22,7 +22,7 @@
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 struct  TextStyle;
 struct  ScrpSTElement;
 #endif
@@ -689,9 +689,9 @@ namespace   Stroika {
                                                                               )
             {
                 Led_Color   lightColor  =   Led_Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
-#if     qWindows
+#if     qPlatform_Windows
                 Led_Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
-#elif   qMacOS
+#elif   qPlatform_MacOS
                 Led_Pen pen (patCopy, &Led_Pen::kGrayPattern, lightColor);
 #elif   qXWindows
                 Led_Pen pen;

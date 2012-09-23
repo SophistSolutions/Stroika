@@ -33,7 +33,7 @@
 
 
 // Global command numbers
-	#if		qMacOS
+	#if		qPlatform_MacOS
 		#define	kCmdUndo					cmd_Undo
 		#define	kFontStylePlainCmd			cmd_Plain
 		#define	kFontStyleBoldCmd			cmd_Bold
@@ -44,7 +44,7 @@
 		#define	kFontStyleCondensedCmd		cmd_Condense
 		#define	kFontStyleExtendedCmd		cmd_Extend
 	#endif
-	#if		qWindows
+	#if		qPlatform_Windows
 		#define	kFindCmd					ID_EDIT_FIND
 		#define	kReplaceCmd					ID_EDIT_REPLACE
 		#define	kCmdUndo					ID_EDIT_UNDO
@@ -338,7 +338,7 @@
 	#endif
 
 	// Command Numbers
-	#if		qMacOS
+	#if		qPlatform_MacOS
 		#define	kBaseWindowCmd				20600
 		#define	kLastWindowCmd				20699
 	#elif	qXWindows
@@ -353,7 +353,7 @@
 
 
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#define	kAppleMenuID		128		//	PowerPlant assumes this ID - cannot change - LGP 960614
 	#define	kFileMenuID			2
 	#define	kEditMenuID			3
@@ -421,7 +421,7 @@
 	#define	WIND_TextDoc		200
 	#define	prto_TextDoc		201
 
-#elif	qWindows
+#elif	qPlatform_Windows
 
 	#define IDR_MAINFRAME				128
 	#define kLedItDocumentIconID		129

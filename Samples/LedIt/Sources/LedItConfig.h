@@ -13,7 +13,7 @@
 #endif
 
 
-#if		qMacOS
+#if		qPlatform_MacOS
 #define	kApplicationSignature					'LDAP'
 
 #define kTEXTFileType							'TEXT'

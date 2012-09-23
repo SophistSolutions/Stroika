@@ -105,13 +105,13 @@ namespace   Stroika {
             protected:
                 nonvirtual  Led_IncrementalFontSpecification    GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const;
 
-#if     qMacOS
+#if     qPlatform_MacOS
             public:
                 nonvirtual  bool    DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle);
 #endif
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
                 // macstyle routines to get/set 'styl' resources for range of text...
             public:
                 static      vector<InfoSummaryRecord>   Convert (const ScrpSTElement* teScrapFmt, size_t nElts);

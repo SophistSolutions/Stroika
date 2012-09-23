@@ -268,7 +268,7 @@ Led_IncrementalFontSpecification    FontTable::GetFontSpec (int fontNumber)
     }
     const FontTableEntry&   fte =   *ftep;
     Led_IncrementalFontSpecification    fontSpec;
-#if     qMacOS
+#if     qPlatform_MacOS
     Str255  fontName;
     fontName[0] = fte.fFontName.length ();
     memcpy (&fontName[1], fte.fFontName.c_str (), fontName[0]);
@@ -321,7 +321,7 @@ Led_IncrementalFontSpecification    FontTable::GetFontSpec (int fontNumber)
         }
     }
     fontSpec.SetFontNameSpecifier (fontNum);
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
     fontSpec.SetFontNameSpecifier (fte.fFontName.c_str ());
 #endif
     return fontSpec;
@@ -1379,9 +1379,9 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
 #if     qWideCharacters
     //fMultiByteInputCharBuf (),
 #else
-#if     qMacOS
+#if     qPlatform_MacOS
     fCurrentOutputCharSetEncoding (kCodePage_MAC),
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
     fCurrentOutputCharSetEncoding (kCodePage_ANSI),     // not sure???
 #endif
     fCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding), // note: important these two members DECLARED before this one... else not INITED at this point!
@@ -1606,7 +1606,7 @@ StyledTextIOReader_RTF::StyledTextIOReader_RTF (SrcStream* srcStream, SinkStream
     fDefaultUnsupportedCharacterChar (LED_TCHAR_OF ('?')),
     fRTFInfo (rtfInfo == nullptr ? new RTFInfo () : rtfInfo),
     fOwnRTFInfo (rtfInfo == nullptr)
-#if     qWindows
+#if     qPlatform_Windows
     , fCachedFontSize (0),
     fCachedFontSizeTMHeight (0)
 #endif
@@ -1618,7 +1618,7 @@ StyledTextIOReader_RTF::StyledTextIOReader_RTF (SrcStream* srcStream, SinkStream
      *  Unclear what that default should be???
      */
     fPlainFont.SetPointSize (12);
-#if     qWindows
+#if     qPlatform_Windows
     fCachedFontSize = 12;
     fCachedFontSizeTMHeight = fPlainFont.PeekAtTMHeight ();
 #endif
@@ -3606,7 +3606,7 @@ void    StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
 
 void    StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data)
 {
-#if     qWindows
+#if     qPlatform_Windows
     typedef RTFIO::RTFOLEEmbedding  RTFOLEEmbedding;
     const   Led_ClipFormat                              kOLEEmbedClipFormat     =   (Led_ClipFormat)::RegisterClipboardFormat (_T ("Object Descriptor"));
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types                   =   EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
@@ -3812,7 +3812,7 @@ Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownS
                 return Led_CloneDIB (dib);
             }
             break;
-#if     qWindows
+#if     qPlatform_Windows
         case    eEMF:   {
                 Led_DIB*        result  =   nullptr;
                 HENHMETAFILE    hMF =   ::SetEnhMetaFileBits (nBytes, reinterpret_cast<const unsigned char*> (data));
@@ -3849,12 +3849,12 @@ Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownS
     return nullptr;
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
 @METHOD:        StyledTextIOReader_RTF::ConstructDIBFromEMFHelper
 @DESCRIPTION:   <p>Construct a Led_DIB given HENHMETAFILE, the desired 'shownSize' and 'bmSize' can OVERRIDE the
             size specified in the metafile itself.</p>
-                <p>This routine is only available if @'qWindows'.</p>
+                <p>This routine is only available if @'qPlatform_Windows'.</p>
 */
 Led_DIB*    StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF)
 {
@@ -4009,14 +4009,14 @@ void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, con
                 if (newSize > 128) {
                     newSize = 128;
                 }
-#if     qWindows
+#if     qPlatform_Windows
                 if (newSize == fCachedFontSize) {
                     fontSpec.PokeAtTMHeight (fCachedFontSizeTMHeight);
                     break;
                 }
 #endif
                 fontSpec.SetPointSize (newSize);
-#if     qWindows
+#if     qPlatform_Windows
                 fCachedFontSize = newSize;
                 fCachedFontSizeTMHeight = fontSpec.PeekAtTMHeight ();
 #endif
@@ -4041,7 +4041,7 @@ void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, con
             }
             break;
 
-#if     qMacOS
+#if     qPlatform_MacOS
         case    RTFIO::eControlAtom_outl: {
                 bool    turnStyleOn =   true;   // no arg means ON
                 if (cw.fHasArg) {
@@ -4073,7 +4073,7 @@ void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, con
                 if (cw.fHasArg) {
                     turnStyleOn = cw.fValue;
                 }
-#if     qWindows
+#if     qPlatform_Windows
                 fontSpec.SetStyle_Strikeout (turnStyleOn);
 #endif
             }
@@ -4325,9 +4325,9 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
     StyledTextIOWriter (srcStream, sinkStream),
     fCurrentOutputCharSetEncoding (kCodePage_ANSI),
 #if     !qWideCharacters
-#if     qMacOS
+#if     qPlatform_MacOS
     fCurrentInputCharSetEncoding (kCodePage_MAC),
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
     fCurrentInputCharSetEncoding (kCodePage_ANSI),      // not sure???
 #endif
     fCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding), // note: important these two members DECLARED before this one... else not INITED at this point!
@@ -5304,7 +5304,7 @@ void    StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerCon
             WriteTag ("super");
             break;
     }
-#if     qWindows
+#if     qPlatform_Windows
     if (newOne.GetStyle_Strikeout ()) {
         WriteTag ("strike");
     }
@@ -5331,7 +5331,7 @@ void    StyledTextIOWriter_RTF::AssureColorTableBuilt (WriterContext& writerCont
     }
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 namespace {
     BOOL    FAR PASCAL  Save_Charset_EnumFontFamiliesProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int /*fontType*/, LPVOID pCharset)
     {
@@ -5349,7 +5349,7 @@ void    StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerConte
         // on StyledTextIOWriter_RTF::DTOR
         set<Led_SDK_String> fontNames;
         writerContext.GetSrcStream ().SummarizeFontAndColorTable (&fontNames, nullptr);
-#if     qWindows
+#if     qPlatform_Windows
         Led_WindowDC    screenDC (nullptr);
 #endif
         for (set<Led_SDK_String>::const_iterator i = fontNames.begin (); i != fontNames.end (); i++) {
@@ -5370,14 +5370,14 @@ void    StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerConte
                 //      Very minimal support to get this working as well as it did for Led 3.0. SPR#1577.
                 //      Got basically working enough to fix this bug.
                 //
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (name == Led_SDK_TCHAROF ("New York"))       {   fte.fFamily = FontTableEntry::eSwiss;   }
                 else if (name == Led_SDK_TCHAROF ("Geneva"))    {   fte.fFamily = FontTableEntry::eRoman;   }
                 else if (name == Led_SDK_TCHAROF ("Monaco"))    {   fte.fFamily = FontTableEntry::eModern;  }
                 else if (name == Led_SDK_TCHAROF ("Helvetica")) {   fte.fFamily = FontTableEntry::eSwiss;   }
                 else if (name == Led_SDK_TCHAROF ("Symbol"))    {   fte.fFamily = FontTableEntry::eTech;    }
                 else if (name == Led_SDK_TCHAROF ("Times"))     {   fte.fFamily = FontTableEntry::eRoman;   }
-#elif   qWindows
+#elif   qPlatform_Windows
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
                 (void)::_tcsncpy (lf.lfFaceName, name.c_str (), NEltsOf (lf.lfFaceName) - 1);

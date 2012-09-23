@@ -20,7 +20,7 @@
 
 #include    <memory>
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <Processes.h>       // for URL support
 #endif
 
@@ -221,7 +221,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
             /*
             @CLASS:         StandardMacPictureStyleMarker
             @BASES:         @'SimpleEmbeddedObjectStyleMarker'
@@ -232,9 +232,9 @@ namespace   Stroika {
                 typedef SimpleEmbeddedObjectStyleMarker inherited;
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 typedef Led_Picture**   PictureHandle;
-#elif   qWindows
+#elif   qPlatform_Windows
                 typedef HANDLE          PictureHandle;
 #endif
 
@@ -250,7 +250,7 @@ namespace   Stroika {
                 static  SimpleEmbeddedObjectStyleMarker*    mk (const char* embeddingTag, const void* data, size_t len);
                 static  SimpleEmbeddedObjectStyleMarker*    mk (ReaderFlavorPackage& flavorPackage);
 
-#if     qWindows
+#if     qPlatform_Windows
                 static  const Led_DIB*  sUnsupportedFormatPict; // Must be set externally by user of this class before we ever build one of these
                 // objects, or an assert error.
                 // Reason for this design is we need access to some pict resource, but we don't want
@@ -280,7 +280,7 @@ namespace   Stroika {
 
             private:
                 PictureHandle   fPictureHandle;
-#if     qWindows
+#if     qPlatform_Windows
                 size_t      fPictureSize;
 #endif
             };
@@ -313,7 +313,7 @@ namespace   Stroika {
                 static  SimpleEmbeddedObjectStyleMarker*    mk (ReaderFlavorPackage& flavorPackage);
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 static  Led_Picture**   sUnsupportedFormatPict; // Must be set externally by user of this class before we ever build one of these
                 // objects, or an assert error.
                 // Reason for this design is we need access to some pict resource, but we don't want
@@ -381,7 +381,7 @@ namespace   Stroika {
 
             public:
                 static  const   Led_ClipFormat          kURLDClipFormat;
-#if     qWindows
+#if     qPlatform_Windows
                 static  const   Led_ClipFormat      kWin32URLClipFormat;
 #endif
                 static  const   Led_PrivateEmbeddingTag kEmbeddingTag;
@@ -395,14 +395,14 @@ namespace   Stroika {
 
 #if     !qURLStyleMarkerNewDisplayMode
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 static  Led_Picture**   sURLPict;   // Must be set externally by user of this class before we ever build one of these
                 // objects, or an assert error.
                 // Reason for this design is we need access to some pict resource, but we don't want
                 // Led to depend on any such things (would make build/distr/name conflicts etc
                 // more complex). So in main, if you ever plan to use these, then load resource and assign
                 // to this member.
-#elif   qWindows
+#elif   qPlatform_Windows
                 static  const Led_DIB*  sURLPict;
 #endif
 #endif
@@ -445,7 +445,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
             class   StandardMacPictureWithURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
                 typedef SimpleEmbeddedObjectStyleMarker inherited;
@@ -498,7 +498,7 @@ namespace   Stroika {
 
             private:
                 StandardMacPictureStyleMarker::PictureHandle    fPictureHandle;
-#if     qWindows
+#if     qPlatform_Windows
                 size_t                                      fPictureSize;
 #endif
             };
@@ -581,14 +581,14 @@ namespace   Stroika {
                 ~StandardUnknownTypeStyleMarker ();
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 static  Led_Picture**   sUnknownPict;   // Must be set externally by user of this class before we ever build one of these
                 // objects, or an assert error.
                 // Reason for this design is we need access to some pict resource, but we don't want
                 // Led to depend on any such things (would make build/distr/name conflicts etc
                 // more complex). So in main, if you ever plan to use these, then load resource and assign
                 // to this member.
-#elif   qWindows
+#elif   qPlatform_Windows
                 static  const Led_DIB*  sUnknownPict;
 #endif
 
@@ -763,7 +763,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
 // class StandardMacPictureStyleMarker
             inline  StandardMacPictureStyleMarker::PictureHandle    StandardMacPictureStyleMarker::GetPictureHandle () const
             {
@@ -772,9 +772,9 @@ namespace   Stroika {
             }
             inline  size_t  StandardMacPictureStyleMarker::GetPictureByteSize () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return ::GetHandleSize (Handle (fPictureHandle));
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fPictureSize;    // cannot use ::GlobalSize () since that sometimes returns result larger than
                 // actual picture size (rounds up)
 #endif
@@ -792,7 +792,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
 // class StandardMacPictureWithURLStyleMarker
             inline  StandardMacPictureStyleMarker::PictureHandle    StandardMacPictureWithURLStyleMarker::GetPictureHandle () const
             {
@@ -801,9 +801,9 @@ namespace   Stroika {
             }
             inline  size_t  StandardMacPictureWithURLStyleMarker::GetPictureByteSize () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return ::GetHandleSize (Handle (fPictureHandle));
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fPictureSize;    // cannot use ::GlobalSize () since that sometimes returns result larger than
                 // actual picture size (rounds up)
 #endif

@@ -27,12 +27,12 @@ using   namespace   Stroika::Frameworks::Led;
 @DESCRIPTION:   CTOR on Mac takes open resource file handle as argument, and on Windows - takes open HKEY registry
     handle. On both cases - this class takes over ownership - and closes the handle upon descruction.
 */
-#if     qMacOS
+#if     qPlatform_MacOS
 OptionsFileHelper::OptionsFileHelper (int resFile):
     fResFile (resFile)
 {
 }
-#elif   qWindows
+#elif   qPlatform_Windows
 OptionsFileHelper::OptionsFileHelper (HKEY hkey):
     fKey (hkey)
 {
@@ -41,14 +41,14 @@ OptionsFileHelper::OptionsFileHelper (HKEY hkey):
 
 OptionsFileHelper::~OptionsFileHelper ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     ::RegCloseKey (fKey);
 #endif
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
 @METHOD:        OptionsFileHelper::OpenWithCreateAlongPath
 @DESCRIPTION:   <p>Walk the given path (in segments) - and make sure each exists, and create each segment if it doesn't
@@ -91,9 +91,9 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, string* val
 {
     RequireNotNull (prefName);
     RequireNotNull (value);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     string  strValue;
     DWORD   dwType;
     DWORD   dwCount = 0;
@@ -121,9 +121,9 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, wstring* va
 {
     RequireNotNull (prefName);
     RequireNotNull (value);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     wstring strValue;
     DWORD   dwType;
     DWORD   dwCount = 0;
@@ -171,9 +171,9 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, int* value)
 {
     RequireNotNull (prefName);
     RequireNotNull (value);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     DWORD   dwValue;
     DWORD   dwType;
     DWORD   dwCount = sizeof (DWORD);
@@ -192,9 +192,9 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<Byte
 {
     RequireNotNull (prefName);
     RequireNotNull (value);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     DWORD   dwType  =   0;
     DWORD   dwCount =   0;
     LONG    lResult =   ::RegQueryValueEx (fKey, prefName, nullptr, &dwType, nullptr, &dwCount);
@@ -237,9 +237,9 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<wstr
 void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string& value)
 {
     RequireNotNull (prefName);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     (void)::RegSetValueExA (fKey, Led_SDKString2ANSI (prefName).c_str (), 0, REG_SZ, (LPBYTE)value.c_str (), (value.length () + 1)*sizeof(TCHAR));
 #endif
 }
@@ -247,9 +247,9 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string
 void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const wstring& value)
 {
     RequireNotNull (prefName);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     if (::RegSetValueExW (fKey, Led_SDKString2Wide (prefName).c_str (), 0, REG_SZ, reinterpret_cast<const Byte*> (value.c_str ()), (value.length () + 1)*sizeof(wchar_t)) != ERROR_SUCCESS) {
         // failure to write a UNICODE string could be because the OS doesn't support it - so try writing it as ANSI
         string  tmp =   Wide2ACPString (value);
@@ -267,9 +267,9 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, bool value)
 void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, int value)
 {
     RequireNotNull (prefName);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     DWORD   dwValue =   value;
     (void)::RegSetValueEx (fKey, prefName, 0, REG_DWORD, (LPBYTE)&dwValue, sizeof (dwValue));
 #endif
@@ -279,9 +279,9 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nByte
 {
     RequireNotNull (prefName);
     RequireNotNull (data);
-#if     qMacOS
+#if     qPlatform_MacOS
     Assert (false); // NYI
-#elif   qWindows
+#elif   qPlatform_Windows
     (void)::RegSetValueEx (fKey, prefName, 0, REG_BINARY, (LPBYTE)data, nBytes);
 #endif
 }

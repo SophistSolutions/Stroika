@@ -25,7 +25,7 @@ namespace   Stroika {
             namespace   StyledTextIO {
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
                 /*
                 @CLASS:         StyledTextIOReader_STYLText
                 @BASES:         @'StyledTextIOReader'

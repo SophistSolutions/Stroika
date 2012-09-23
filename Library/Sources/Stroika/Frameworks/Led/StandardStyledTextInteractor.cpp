@@ -46,11 +46,11 @@ using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 const   Led_ClipFormat  Led::kLedPrivateClipFormat   =   'LedP';
 const   Led_ClipFormat  Led::kRTFClipFormat          =   'RTF ';
 const   Led_ClipFormat  Led::kHTMLClipFormat         =   'HTML';
-#elif   qWindows
+#elif   qPlatform_Windows
 const   TCHAR   kLedPrivateClipTypeName[]       =   _T ("Led Rich Text Format");
 const   Led_ClipFormat  Led::kLedPrivateClipFormat   =   ::RegisterClipboardFormat (kLedPrivateClipTypeName);
 const   TCHAR   kRTFClipTypeName[]              =   _T ("Rich Text Format");
@@ -893,9 +893,9 @@ StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextSt
 }
 
 void    StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
-#if     qMacOS
+#if     qPlatform_MacOS
     const FSSpec* fileName,
-#elif   qWindows || qXWindows
+#elif   qPlatform_Windows || qXWindows
     const Led_SDK_Char* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat,
@@ -904,10 +904,10 @@ void    StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsF
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
-#if     qMacOS
+#if     qPlatform_MacOS
     // Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
     // called from elsewhere...
-#elif   qWindows
+#elif   qPlatform_Windows
     if (suggestedClipFormat != nullptr and * suggestedClipFormat == kBadClipFormat) {
         TCHAR   drive[_MAX_DRIVE];
         TCHAR   dir[_MAX_DIR];
@@ -991,7 +991,7 @@ bool    StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavor
         return true;
     }
 #endif
-#if     qWindows
+#if     qPlatform_Windows
     // A bit of a hack. MSIE 3.0 generates both FILE and DIB objects on the clip
     // for when we drag out pictures. This allows us to grab the dibs in that case.
     // I just hope it doesn't cause too much trouble for other cases. For Led 2.2, we
@@ -1008,7 +1008,7 @@ bool    StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavor
     else if (InternalizeFlavor_OtherRegisteredEmbedding (flavorPackage, from, to)) {
         return true;
     }
-#if     qMacOS
+#if     qPlatform_MacOS
     else if (InternalizeFlavor_STYLAndTEXT (flavorPackage, from, to)) {
         return true;
     }
@@ -1019,7 +1019,7 @@ bool    StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavor
     return false;
 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     size_t  pasteStart  =   from;
@@ -1240,7 +1240,7 @@ void    StyledTextFlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPac
 
     ExternalizeFlavor_TEXT (flavorPackage, start, end);
 
-#if     qMacOS
+#if     qPlatform_MacOS
     ExternalizeFlavor_STYL (flavorPackage, start, end);
 #endif
 }
@@ -1250,7 +1250,7 @@ void    StyledTextFlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavor
     ExternalizeFlavor_RTF (flavorPackage, from, to);
 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
 void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     Require (from <= to);

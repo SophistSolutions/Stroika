@@ -25,7 +25,7 @@ using   Memory::SmallStackBuffer;
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 
 inline  void    ThrowIfRegError (LONG e)
 {

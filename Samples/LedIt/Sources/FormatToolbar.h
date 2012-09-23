@@ -7,7 +7,7 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		qWindows
+#if		qPlatform_Windows
 #include	<afxext.h>
 #endif
 
@@ -17,7 +17,7 @@
 
 
 
-#if		qWindows
+#if		qPlatform_Windows
 // abstract callback API
 class	FormatToolbarOwner {
 	public:

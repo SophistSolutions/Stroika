@@ -30,14 +30,14 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 // Often included by <Windows.h> automaticly, but sometimes people define NOIME or VC_EXTRALEAN, and then we
 // must include this manaully.
 #include <windows.h>
 #include <imm.h>
 #endif
 
-#if     qWindows
+#if     qPlatform_Windows
 // RTL Imaging flags
 #define qUseUniscribeToImage                qUniscribeAvailableWithSDK && qWideCharacters
 #define qUseFakeTTGetWPlacementToImage      1
@@ -71,7 +71,7 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  *  Used to use CreateCompatibleBitmap, but as of SPR#1271 try using a DIBSection (of a compatile depth) instead).
  *  This has no noticable effect on normal drawing, but greatly speeds HilightRectangle () code for some computers.
@@ -88,7 +88,7 @@ static  const wchar_t   kHiInArabic[]   =   L"\xfe7d\xfe8d\xfe91\xfea3\xfead\xfe
 #endif
 
 
-#if     qWindows
+#if     qPlatform_Windows
 inline  bool operator== (PALETTEENTRY lhs, COLORREF rhs)
 {
     return RGB (lhs.peRed, lhs.peGreen, lhs.peBlue) == rhs;
@@ -108,7 +108,7 @@ inline  bool operator== (PALETTEENTRY lhs, COLORREF rhs)
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 #ifdef  _UNICODE
 const   bool    kRunning32BitGDI    =   true;                                   //  UNICODE only supported on 32GDI (NT or Win2k or Later)
 #else
@@ -134,7 +134,7 @@ const   bool    kRunningWin95GDI    =   not kRunning32BitGDI and _IsWin95Helper_
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 inline  QDErr   SafeNewGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect,
                                CTabHandle cTable, GDHandle aGDevice, GWorldFlags flags
                               )
@@ -171,7 +171,7 @@ inline  GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDep
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 #if     qWideCharacters && (qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBugs)
 inline  bool    CodePageBetterOffUsingWideCharVersion (UINT codePage)
 {
@@ -314,7 +314,7 @@ inline  void    Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar*
 
 
 
-#if     qWindows && qWideCharacters && qUseUniscribeToImage
+#if     qPlatform_Windows && qWideCharacters && qUseUniscribeToImage
 
 const   size_t  kMaxUNISCRIBECharacters =   30000;
 
@@ -505,7 +505,7 @@ namespace   {
 }
 
 
-#if     qWindows
+#if     qPlatform_Windows
 namespace {
 
     inline  RGBQUAD mkRGBQuad (COLORREF c)
@@ -731,7 +731,7 @@ namespace {
 
 
 
-#if     qWindows && qWideCharacters && qUseFakeTTGetWPlacementToImage
+#if     qPlatform_Windows && qWideCharacters && qUseFakeTTGetWPlacementToImage
 static  bool    Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* srcText, size_t len, wchar_t* glyphImagesOut);
 #endif
 
@@ -741,7 +741,7 @@ static  bool    Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  ********************************************************************************
  ************************************ Led_Bitmap ********************************
@@ -860,7 +860,7 @@ const   Led_Color   Led_Color::kAqua        =   Led_Color::kCyan;       // same 
  ************************************** Led_Pen *********************************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 const   Pattern Led_Pen::kWhitePattern          = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 const   Pattern Led_Pen::kLightGrayPattern      = { 0x88, 0x22, 0x88, 0x22, 0x88, 0x22, 0x88, 0x22, };
 const   Pattern Led_Pen::kGrayPattern           = { 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, };
@@ -939,7 +939,7 @@ void    Led_FontSpecification::SetFromOSRep (const string& osRep)
 */
 void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     Str255  pFontName;
     pFontName[0] = fontName.length ();
     memcpy (&pFontName[1], fontName.c_str (), pFontName[0]);
@@ -948,7 +948,7 @@ void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
     // Alas, the Mac font Manager returns ZERO as the font number if it really
     // has no idea about the font. This is NOT what we want. But unsure what we can do better at this point!
     fFontSpecifier = fontNum;
-#elif   qWindows
+#elif   qPlatform_Windows
     const   size_t  kBufLen =   sizeof (fFontInfo.lfFaceName) / sizeof (fFontInfo.lfFaceName[0]);
     (void)_tcsncpy (fFontInfo.lfFaceName, fontName.c_str (), kBufLen);
     fFontInfo.lfFaceName[kBufLen - 1] = '\0';
@@ -958,7 +958,7 @@ void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
 #endif
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
 {
     (void)::_tcsncpy (fName, from, LF_FACESIZE);
@@ -968,9 +968,9 @@ Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char*
 
 void    Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     fFontSpecifier = fontNameSpecifier;
-#elif   qWindows
+#elif   qPlatform_Windows
     const   size_t  kBufLen =   sizeof (fFontInfo.lfFaceName) / sizeof (fFontInfo.lfFaceName[0]);
     (void)::_tcsncpy (fFontInfo.lfFaceName, fontNameSpecifier.fName, kBufLen);
     fFontInfo.lfFaceName[kBufLen - 1] = '\0';
@@ -1038,7 +1038,7 @@ Led_IncrementalFontSpecification    Led::Intersection (const Led_IncrementalFont
             result.InvalidateStyle_SubOrSuperScript ();
         }
     }
-#if     qMacOS
+#if     qPlatform_MacOS
     {
         if (not lhs.GetStyle_Outline_Valid () or not rhs.GetStyle_Outline_Valid () or
                 lhs.GetStyle_Outline () != rhs.GetStyle_Outline ()
@@ -1067,7 +1067,7 @@ Led_IncrementalFontSpecification    Led::Intersection (const Led_IncrementalFont
             result.InvalidateStyle_Extended ();
         }
     }
-#elif   qWindows
+#elif   qPlatform_Windows
     {
         if (not lhs.GetStyle_Strikeout_Valid () or not rhs.GetStyle_Strikeout_Valid () or
                 lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()
@@ -1117,7 +1117,7 @@ Led_IncrementalFontSpecification    Led::Intersection (const Led_IncrementalFont
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  ********************************************************************************
  *************************** Led_Tablet_::RecolorHelper *************************
@@ -1384,13 +1384,13 @@ void    Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (c
  *********************************** Led_Tablet_ ********************************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 Led_Tablet_::Led_Tablet_ (GrafPtr gp):
     fGrafPort (gp)
 {
     RequireNotNull (gp);
 }
-#elif   qWindows
+#elif   qPlatform_Windows
 Led_Tablet_::Led_Tablet_ (HDC hdc, Led_Tablet_::OwnDCControl ownsDC):
     m_hDC (hdc),
     fRecolorHelper (nullptr),
@@ -1442,7 +1442,7 @@ Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable):
 
 Led_Tablet_::~Led_Tablet_ ()
 {
-#if     qWindows
+#if     qPlatform_Windows
     delete fRecolorHelper;
     if (m_hDC != nullptr and fOwnsDC == eOwnsDC) {
         ::DeleteDC (Detach ());
@@ -1502,7 +1502,7 @@ Led_TWIPS_Rect  Led_Tablet_::CvtToTWIPS (Led_Rect from) const
 */
 void    Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Coordinate scrollVBy)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     Rect            qdMoveRect  =   AsQDRect (windowRect);
     RgnHandle       updateRgn   =   ::NewRgn ();
     Led_ThrowIfNull (updateRgn);
@@ -1514,7 +1514,7 @@ void    Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led
     ::InvalRgn (updateRgn);
 #endif
     ::DisposeRgn (updateRgn);
-#elif   qWindows
+#elif   qPlatform_Windows
     RECT    gdiMoveRect =   AsRECT (windowRect);
     // NB: I used to use ScrollDC (Led 2.1 and earlier). But that code appeared to sometimes leave
     // little bits of crufy around. I never understood why. But I assume it was a windows bug.
@@ -1594,13 +1594,13 @@ void    Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led
 */
 void    Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     Led_MacPortAndClipRegionEtcSaver    saver;      // unclear if this is useful/needed?
     SetPort ();
     PenMode (srcCopy);  // ???
     GDI_RGBForeColor (c.GetOSRep ());
     ::FrameRgn (r.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_Brush   brush   =   Led_Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
@@ -1644,13 +1644,13 @@ void    Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 {
     RequireNotNull (text);
     RequireNotNull (charLocations);
-#if     qMacOS
+#if     qPlatform_MacOS
     SetPort ();
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
     const   Led_Distance    kMaxTextWidthResult =   0x7fff;
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_Distance    kMaxTextWidthResult =   kRunning32BitGDI ? 0x7fffffff : 0x7fff;
     if (IsPrinting ()) {
         // See SPR#0435
@@ -1706,14 +1706,14 @@ void    Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
         }
 #endif
 
-#if     qMacOS
+#if     qPlatform_MacOS
         Memory::SmallStackBuffer<short> shortOffsets (charsThisTime + 1);
         Assert (Led_GetCurrentGDIPort () == *this);
         ::MeasureText (charsThisTime, &text[i], shortOffsets);
         for (size_t j = 0; j < charsThisTime; j++) {
             charLocations[i + j] = shortOffsets[j + 1] + runningCharCount;  // Silly Apple defines shortOffsets[0] always to be zero!
         }
-#elif   qWindows
+#elif   qPlatform_Windows
         SIZE    size;
         Assert (sizeof (int) == sizeof (Led_Distance));
 #if     qUseUniscribeToImage && qWideCharacters
@@ -1796,7 +1796,7 @@ Succeeded:
     }
 
 // LGP-991220 - This is generating asserts elsewhere - and seems like such a hack. Not sure why needed. Try getting rid of and see what happens?
-#if     qWindows && 0
+#if     qPlatform_Windows && 0
     // This gross hack is cuz we do a GetTextExtent() at the end of the
     // DrawText for PC, to see how much we drew. This is the only hack
     // I could think of to assure we get consistent results (which is very important).
@@ -1848,7 +1848,7 @@ void    Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetric
 #if     !qWideCharacters
     Led_Arg_Unused (direction);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
     SetPort ();
 #endif
 
@@ -1871,7 +1871,7 @@ void    Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetric
         }
 
         // Actually image the characters
-#if     qMacOS
+#if     qPlatform_MacOS
         Assert (Led_GetCurrentGDIPort () == *this);
         Led_Point   cursor  =   Led_Point (outputAt.v + precomputedFontMetrics.GetAscent (), outputAt.h - hScrollOffset);   // ascent - goto baseline...
         ::MoveTo (cursor.h + widthSoFar, cursor.v);
@@ -1885,7 +1885,7 @@ void    Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetric
 #else
         widthSoFar = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
 #endif
-#elif   qWindows
+#elif   qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
 
 #if     qUseUniscribeToImage && qWideCharacters
@@ -2072,10 +2072,10 @@ Succeeded:
 
 void    Led_Tablet_::SetBackColor (const Led_Color& backColor)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     SetPort ();
     GDI_RGBBackColor (backColor.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
     SetBkColor (backColor.GetOSRep ());
 #elif   qXWindows
     if (backColor == Led_Color::kWhite) {
@@ -2104,10 +2104,10 @@ void    Led_Tablet_::SetBackColor (const Led_Color& backColor)
 
 void    Led_Tablet_::SetForeColor (const Led_Color& foreColor)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     SetPort ();
     GDI_RGBForeColor (foreColor.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
     SetTextColor (foreColor.GetOSRep ());
 #elif   qXWindows
     if (foreColor == Led_Color::kWhite) {
@@ -2142,12 +2142,12 @@ void    Led_Tablet_::SetForeColor (const Led_Color& foreColor)
 void    Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Led_Color& eraseColor)
 {
     if (not eraseRect.IsEmpty ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
         SetPort ();
         Rect    qdEraser = AsQDRect (eraseRect);
         GDI_RGBForeColor (eraseColor.GetOSRep ());
         ::FillRect (&qdEraser, &Led_Pen::kBlackPattern);
-#elif   qWindows
+#elif   qPlatform_Windows
         Led_Rect                eraser  =   eraseRect;
         Led_Brush               backgroundBrush (eraseColor.GetOSRep ());
         Led_Win_Obj_Selector    pen (this, ::GetStockObject (NULL_PEN));
@@ -2189,7 +2189,7 @@ void    Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, con
 void    Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
         Led_Arg_Unused (hilightBackColor);
         Led_Arg_Unused (hilightForeColor);
         Led_Arg_Unused (oldForeColor);
@@ -2199,7 +2199,7 @@ void    Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_C
         //  GDI_RGBForeColor (foreColor.GetOSRep ());       // See IM V-61- docs on "The Hilite Mode".
         Rect    qdHiliteRect = AsQDRect (hilightArea);
         ::InvertRect (&qdHiliteRect);
-#elif   qWindows
+#elif   qPlatform_Windows
         /*
          *  SPR#1271 - major reworking using DIB sections etc, to get much better display of hilighted text.
          */
@@ -2263,7 +2263,7 @@ void    Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_C
 void    Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
         Led_Arg_Unused (hilightBackColor);
         Led_Arg_Unused (hilightForeColor);
         Led_Arg_Unused (oldForeColor);
@@ -2272,7 +2272,7 @@ void    Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led
         GDI_RGBBackColor (oldBackColor.GetOSRep ());    // Mac HilightMode code already knows the hilightBackColor - and exchanges it with the given backColor
         //  GDI_RGBForeColor (foreColor.GetOSRep ());       // See IM V-61- docs on "The Hilite Mode".
         ::InvertRgn (hilightArea.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
         Assert (false); // probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
 #elif   qXWindows
         Assert (false);  // I have no XWin region implementation yet... LGP 2002-12-03
@@ -2287,11 +2287,11 @@ void    Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led
 */
 Led_FontMetrics Led_Tablet_::GetFontMetrics () const
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     FontInfo    fontInfo;
     ::GetFontInfo (&fontInfo);
     return (fontInfo);
-#elif   qWindows
+#elif   qPlatform_Windows
     RequireNotNull (m_hAttribDC);
     TEXTMETRIC  tms;
     Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
@@ -2554,12 +2554,12 @@ void    Led_Tablet_::ParseFontName (const Led_SDK_String& fontName, Led_SDK_Stri
  ***************************** OffscreenTablet::OT ******************************
  ********************************************************************************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 OffscreenTablet::OT::OT (GrafPtr gp):
     inherited (gp)
 {
 }
-#elif   qWindows
+#elif   qPlatform_Windows
 OffscreenTablet::OT::OT (HDC hdc, Led_Tablet_::OwnDCControl ownsDC):
     inherited (hdc, ownsDC)
 {
@@ -2585,11 +2585,11 @@ OffscreenTablet::OffscreenTablet ():
     fOrigTablet (nullptr),
     fOffscreenRect (Led_Rect (0, 0, 0, 0)),
     fOffscreenTablet (nullptr)
-#if     qMacOS
+#if     qPlatform_MacOS
     , fOrigDevice (nullptr),
     fOrigPort (nullptr),
     fOffscreenGWorld (nullptr)
-#elif   qWindows
+#elif   qPlatform_Windows
     , fMemDC (),
     fMemoryBitmap (),
     fOldBitmapInDC (nullptr)
@@ -2601,7 +2601,7 @@ OffscreenTablet::OffscreenTablet ():
 
 OffscreenTablet::~OffscreenTablet ()
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     if (fOrigPort != nullptr) {
         ::SetGWorld (fOrigPort, fOrigDevice);   // restore gworld
     }
@@ -2609,7 +2609,7 @@ OffscreenTablet::~OffscreenTablet ()
         ::DisposeGWorld (fOffscreenGWorld);
     }
     delete fOffscreenTablet;
-#elif   qWindows
+#elif   qPlatform_Windows
     if (fOldBitmapInDC != nullptr) {
         (void)fMemDC.SelectObject (fOldBitmapInDC);
     }
@@ -2632,7 +2632,7 @@ void    OffscreenTablet::Setup (Led_Tablet origTablet)
     RequireNotNull (origTablet);
 
     fOrigTablet = origTablet;
-#if     qMacOS
+#if     qPlatform_MacOS
     // Save the old gworld info
     Assert (fOrigPort == nullptr);
     Assert (fOrigDevice == nullptr);
@@ -2650,7 +2650,7 @@ void    OffscreenTablet::Setup (Led_Tablet origTablet)
     if (fOffscreenGWorld != nullptr) {
         fOffscreenTablet = new OT (reinterpret_cast<GrafPtr> (fOffscreenGWorld));
     }
-#elif   qWindows
+#elif   qPlatform_Windows
     if (fMemDC.CreateCompatibleDC (fOrigTablet)) {
         fOffscreenTablet = &fMemDC;
     }
@@ -2669,7 +2669,7 @@ void    OffscreenTablet::Setup (Led_Tablet origTablet)
 Led_Tablet  OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect)
 {
     Led_Tablet  result  =   fOrigTablet;
-#if     qMacOS
+#if     qPlatform_MacOS
     if (fOffscreenTablet != nullptr) {
         fOffscreenRect  =   currentRowRect;
         fOffscreenRect.bottom += extraToAddToBottomOfRect;
@@ -2709,7 +2709,7 @@ bad:
 good:
         ;
     }
-#elif   qWindows
+#elif   qPlatform_Windows
     if (fOffscreenTablet != nullptr) {
         fOffscreenRect  =   currentRowRect;
         fOffscreenRect.bottom += extraToAddToBottomOfRect;
@@ -2809,7 +2809,7 @@ good:
 void    OffscreenTablet::BlastBitmapToOrigTablet ()
 {
     if (fOffscreenTablet != nullptr) {
-#if     qMacOS
+#if     qPlatform_MacOS
         Rect    bounds  =   AsQDRect (fOffscreenRect);
         ::SetGWorld (fOrigPort, fOrigDevice);   // restore gworld
         GDI_RGBForeColor (Led_Color::kBlack.GetOSRep ());
@@ -2824,7 +2824,7 @@ void    OffscreenTablet::BlastBitmapToOrigTablet ()
         ::CopyBits (&tabletGrafPort->portBits, &((GrafPtr)fOrigPort)->portBits, &tabletGrafPort->portRect, &bounds, srcCopy, nullptr);
 #endif
         ::UnlockPixels (::GetGWorldPixMap (fOffscreenGWorld));
-#elif   qWindows
+#elif   qPlatform_Windows
         Led_Tablet  screenDC    =   fOrigTablet;
         screenDC->BitBlt (fOffscreenRect.left, fOffscreenRect.top, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY
@@ -2864,7 +2864,7 @@ Led_InstalledFonts::Led_InstalledFonts (
     fFilterOptions (filterOptions),
     fFontNames ()
 {
-#if     qWindows
+#if     qPlatform_Windows
     LOGFONT lf;
     memset(&lf, 0, sizeof(LOGFONT));
     lf.lfCharSet = DEFAULT_CHARSET;
@@ -2900,7 +2900,7 @@ Led_InstalledFonts::Led_InstalledFonts (
 #endif
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 BOOL    FAR PASCAL  Led_InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis)
 {
     Led_InstalledFonts* thisP   =   reinterpret_cast<Led_InstalledFonts*> (pThis);
@@ -2955,10 +2955,10 @@ void    Led_GDIGlobals::InvalidateGlobals ()
 {
     // From the name, it would appear we invalidated, and re-validate later. But I think this implematnion is a bit
     // simpler, and should perform fine given its expected usage.
-#if     qMacOS
+#if     qPlatform_MacOS
     fLogPixelsH = 72;
     fLogPixelsV = 72;
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_WindowDC    screenDC (nullptr);
     fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
     fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
@@ -3052,7 +3052,7 @@ size_t      Led::Led_GetDIBPalletByteCount (const Led_DIB* dib)
         const BITMAPINFOHEADER& hdr         =   dib->bmiHeader;
         unsigned short          bitCount    =   Led_ByteSwapFromWindows (hdr.biBitCount);
         if (Led_ByteSwapFromWindows (hdr.biCompression) == BI_BITFIELDS) {
-#if     qWindows
+#if     qPlatform_Windows
             Assert (sizeof (DWORD) == sizeof (unsigned int));
 #endif
             Assert (4 == sizeof (unsigned int));
@@ -3170,7 +3170,7 @@ const void*     Led::Led_GetDIBBitsPointer (const Led_DIB* dib)
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 /*
  ********************************************************************************
  ****************************** Led_DIBFromHBITMAP ******************************
@@ -3458,7 +3458,7 @@ Led_Rect    Led::CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
     return Led_Rect (yTop, xLeft, r.GetHeight (), r.GetWidth ());
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 void    Led::Led_CenterWindowInParent (HWND w)
 {
     Assert (::IsWindow (w));
@@ -3496,7 +3496,7 @@ void    Led::Led_CenterWindowInParent (HWND w)
 
 ////////////////////////////// PRIVATE UTILITIES
 
-#if     qWindows && qWideCharacters && qUseFakeTTGetWPlacementToImage
+#if     qPlatform_Windows && qWideCharacters && qUseFakeTTGetWPlacementToImage
 
 ///////////////////////////////////////////////////////////////////////////////////
 ////////////// CODE FROM Microsoft Knowledge Base Article - 241020  ///////////////

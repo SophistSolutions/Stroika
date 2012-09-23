@@ -7,7 +7,7 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	<LSingleDoc.h>
 #elif	defined (WIN32)
 	#include	<afxwin.h>
@@ -29,22 +29,22 @@
 
 class	LedItView;
 
-#if		qWindows
+#if		qPlatform_Windows
 class	LedItServerItem;
 #endif
 
 class	LedItDocument :
-	#if		qMacOS
+	#if		qPlatform_MacOS
 		public LSingleDoc,
-	#elif	qWindows
+	#elif	qPlatform_Windows
 		public COleServerDoc,
 	#endif
 		public MarkerOwner
 {
-#if		qMacOS
+#if		qPlatform_MacOS
 	public:
 		LedItDocument (LCommander *inSuper, FileFormat format);
-#elif	qWindows
+#elif	qPlatform_Windows
 	protected: // create from serialization only
 		LedItDocument ();
 		DECLARE_DYNCREATE(LedItDocument)
@@ -60,7 +60,7 @@ class	LedItDocument :
 		override	void		DidUpdateText (const UpdateInfo& /*updateInfo*/) throw ();
 		override	TextStore*	PeekAtTextStore () const;
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	// Call exactly once (inFileSpec==NULL for new window)
 	public:
 		nonvirtual	void	BuildDocWindow (const FSSpec* inFileSpec);
@@ -91,7 +91,7 @@ class	LedItDocument :
 
 	private:
 		nonvirtual	void	DoReadCode ();
-#elif	qWindows
+#elif	qPlatform_Windows
 	public:
 		nonvirtual	LedItServerItem* GetEmbeddedItem ();
 
@@ -137,7 +137,7 @@ class	LedItDocument :
 #endif
 
 
-#if		qWindows
+#if		qPlatform_Windows
 	// utilities to pick save/open file names
 	public:
 		static	bool	DoPromptSaveAsFileName (CString& fileName, FileFormat* fileFormat);
@@ -157,7 +157,7 @@ class	LedItDocument :
 		FileFormat				fFileFormat;
 		StyledTextIO::HTMLInfo	fHTMLInfo;
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	protected:
 		nonvirtual	void	DoSaveHelper ();
 
@@ -170,7 +170,7 @@ class	LedItDocument :
 		nonvirtual	void		NameNewDoc ();
 		nonvirtual	void		OpenFile (const FSSpec &inFileSpec);
 #endif
-#if		qWindows
+#if		qPlatform_Windows
 	#if		qDebug
 	public:
 		override	void	AssertValid () const;
@@ -194,7 +194,7 @@ Led_SDK_String	ExtractFileSuffix (const Led_SDK_String& from);
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if		qWindows
+#if		qPlatform_Windows
 	inline	LedItServerItem* LedItDocument::GetEmbeddedItem ()
 		{
 			return (LedItServerItem*)COleServerDoc::GetEmbeddedItem();

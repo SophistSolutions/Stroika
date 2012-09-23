@@ -15,7 +15,7 @@
  */
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #if     defined (__cplusplus) && !defined (__SOMIDL__)
 #include    <ConditionalMacros.h>
 #endif
@@ -81,22 +81,16 @@
  * OS Defines.
  *
  *      Be sure OS defines are defined to ZERO if not defined. This is so we can write code
- *  like if (qMacOS) as well as code like #if qMacOS
+ *  like if (qPlatform_MacOS) as well as code like #if qPlatform_MacOS
  */
-#ifndef qMacOS
-#define qMacOS      defined (macintosh)
-#endif
-#ifndef qWindows
-#define qWindows    (defined (_WIN32) || defined (WIN32))
-#endif
 #ifndef qXWindows
-#define qXWindows   defined (__GNUC__) && !qMacOS
+#define qXWindows   defined (__GNUC__) && !qPlatform_MacOS
 #endif
 
-#if     qMacOS + qWindows + qXWindows > 1
+#if     qPlatform_MacOS + qPlatform_Windows + qXWindows > 1
 #error  "Only one of these should be defined"
 #endif
-#if     !qMacOS && !qWindows && !qXWindows
+#if     !qPlatform_MacOS && !qPlatform_Windows && !qXWindows
 #error  "One of these should be defined - right now thats all we support"
 #endif
 
@@ -260,7 +254,10 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-#if     qWindows
+// DONT THINK NEEDED ANYMORE - OR IF IT IS - DO IN FOUNDATIONCONFIG
+//		-- LGP 2012-09-23
+#if 0
+#if     qPlatform_Windows
 /*
  *  Some of Microsoft's headers use _UNICODE and some use UNICODE. If users set one or the other, treat that as having
  *  set both.
@@ -274,6 +271,7 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 #ifdef UNICODE
 #ifndef _UNICODE
 #define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
+#endif
 #endif
 #endif
 #endif
@@ -380,7 +378,7 @@ when debugging is ON, then you may want to turn this flag ON.</p>
         <p>This is ON by default (for windows). It degrades gracefully if no IME found.</p>
  */
 #ifndef qProvideIMESupport
-#if     qWindows
+#if     qPlatform_Windows
 #define qProvideIMESupport                      1
 #else
 #define qProvideIMESupport                      0
@@ -439,7 +437,7 @@ when debugging is ON, then you may want to turn this flag ON.</p>
     Someday soon I'll implement better smart-cut/paste like Style(on Mac) does.</p>
  */
 #ifndef qDoubleClickSelectsSpaceAfterWord
-#if     qWindows
+#if     qPlatform_Windows
 #define qDoubleClickSelectsSpaceAfterWord       0
 #else
 #define qDoubleClickSelectsSpaceAfterWord       0
@@ -517,7 +515,7 @@ namespace   Stroika {
  **************** MacOS Specific configuration variables ***************
  **************** MacOS Specific configuration variables ***************
  */
-#if     qMacOS
+#if     qPlatform_MacOS
 
 #ifndef TARGET_CARBON
 #define TARGET_CARBON   0
@@ -583,7 +581,7 @@ namespace   Stroika {
 #endif
 #endif
 
-#endif  /*qMacOS*/
+#endif  /*qPlatform_MacOS*/
 
 
 
@@ -602,7 +600,7 @@ namespace   Stroika {
  **************** Windows Specific configuration variables **************
  **************** Windows Specific configuration variables **************
  */
-#if     qWindows
+#if     qPlatform_Windows
 
 
 /*
@@ -645,7 +643,7 @@ namespace   Stroika {
 #define qUseActiveXToOpenURLs           1
 #endif
 
-#endif  /*qWindows*/
+#endif  /*qPlatform_Windows*/
 
 
 
@@ -672,7 +670,7 @@ namespace   Stroika {
 #define qUseSystemNetscapeOpenURLs          1
 #endif
 
-#endif  /*qWindows*/
+#endif  /*qXWindows*/
 
 
 

@@ -4,7 +4,7 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	<AERegistry.h>
 	#include	<ColorPicker.h>
 	#include	<Dialogs.h>
@@ -25,7 +25,7 @@
 #include	"Stroika/Frameworks/Led/StdDialogs.h"
 
 #include	"ColorMenu.h"
-#if		qWindows
+#if		qPlatform_Windows
 	#include	"LedItControlItem.h"
 #endif
 #include	"LedItDocument.h"
@@ -59,9 +59,9 @@ using	namespace	Stroika::Frameworks::Led::StyledTextIO;
 
 
 class	My_CMDNUM_MAPPING : public 
-		#if		qWindows
+		#if		qPlatform_Windows
 			Platform::MFC_CommandNumberMapping
-		#elif	qMacOS
+		#elif	qPlatform_MacOS
 			Platform::PP_CommandNumberMapping
 		#elif	qXWindows
 			Platform::Gtk_CommandNumberMapping
@@ -155,18 +155,18 @@ class	My_CMDNUM_MAPPING : public
 				AddAssociation (kFontStyleBoldCmd,				LedItView::kFontStyleBold_CmdID);
 				AddAssociation (kFontStyleItalicCmd,			LedItView::kFontStyleItalic_CmdID);
 				AddAssociation (kFontStyleUnderlineCmd,			LedItView::kFontStyleUnderline_CmdID);
-			#if		qMacOS
+			#if		qPlatform_MacOS
 				AddAssociation (kFontStyleOutlineCmd,			LedItView::kFontStyleOutline_CmdID);
 				AddAssociation (kFontStyleShadowCmd,			LedItView::kFontStyleShadow_CmdID);
 				AddAssociation (kFontStyleCondensedCmd,			LedItView::kFontStyleCondensed_CmdID);
 				AddAssociation (kFontStyleExtendedCmd,			LedItView::kFontStyleExtended_CmdID);
 			#endif
-			#if		qWindows
+			#if		qPlatform_Windows
 				AddAssociation (kFontStyleStrikeoutCmd,			LedItView::kFontStyleStrikeout_CmdID);
 			#endif
 				AddAssociation (kSubScriptCmd,					LedItView::kSubScriptCommand_CmdID);
 				AddAssociation (kSuperScriptCmd,				LedItView::kSuperScriptCommand_CmdID);
-			#if		qWindows || qXWindows
+			#if		qPlatform_Windows || qXWindows
 				AddAssociation (kChooseFontDialogCmd,			LedItView::kChooseFontCommand_CmdID);
 			#endif
 
@@ -176,7 +176,7 @@ class	My_CMDNUM_MAPPING : public
 				AddAssociation (kInsertTableColBeforeCmd,		LedItView::kInsertTableColBefore_CmdID);
 				AddAssociation (kInsertTableColAfterCmd,		LedItView::kInsertTableColAfter_CmdID);
 				AddAssociation (kInsertURLCmd,					LedItView::kInsertURL_CmdID);
-			#if		qWindows
+			#if		qPlatform_Windows
 				AddAssociation (kInsertSymbolCmd,				LedItView::kInsertSymbol_CmdID);
 			#endif
 
@@ -195,7 +195,7 @@ class	My_CMDNUM_MAPPING : public
 				AddAssociation (kShowHideTabGlyphsCmd,			LedItView::kShowHideTabGlyphs_CmdID);
 				AddAssociation (kShowHideSpaceGlyphsCmd,		LedItView::kShowHideSpaceGlyphs_CmdID);
 
-#if		qWindows
+#if		qPlatform_Windows
 				AddAssociation (IDC_FONTSIZE,	IDC_FONTSIZE);
 				AddAssociation (IDC_FONTNAME,	IDC_FONTNAME);
 #endif
@@ -232,9 +232,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 	public:
 		override	void	DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_FindDialog	findDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_FindDialog	findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#elif	qXWindows
 					Led_StdDialogHelper_FindDialog	findDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -259,9 +259,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 	public:
 		override	ReplaceButtonPressed	DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_ReplaceDialog	replaceDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_ReplaceDialog	replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#elif	qXWindows
 					Led_StdDialogHelper_ReplaceDialog	replaceDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -297,9 +297,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 		override	void	DisplaySpellCheckDialog (SpellCheckDialogCallback& callback)
 			{
 				Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>	delegator (callback);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_SpellCheckDialog	spellCheckDialog (delegator);
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_SpellCheckDialog	spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#elif	qXWindows
 					Led_StdDialogHelper_SpellCheckDialog	spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -315,7 +315,7 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 			{
 				Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
 				Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					static	LMenu*			fontMenu	=	LMenuBar::GetCurrentMenuBar()->FetchMenu (cmd_FontMenu);
 					static	vector<short>	sFontIDMapCache;	// OK to keep static cuz never changes during run of app
 
@@ -331,7 +331,7 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 						sFontIDMapCache.push_back (familyID);
 					}
 					return sFontIDMapCache[idx];
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					return LedItApplication::Get ().CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
 				#elif	qXWindows
 					const vector<Led_SDK_String>&	fontNames	=	LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
@@ -342,9 +342,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 		#if		qSupportOtherFontSizeDlg
 		override		Led_Distance		PickOtherFontHeight (Led_Distance origHeight)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_OtherFontSizeDialog	dlg;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_OtherFontSizeDialog	dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				dlg.InitValues (origHeight);
@@ -359,9 +359,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 		#if		qSupportParagraphSpacingDlg
 		override		bool				PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_ParagraphSpacingDialog	dlg;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_ParagraphSpacingDialog	dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				dlg.InitValues (*spaceBefore, *spaceBeforeValid, *spaceAfter, *spaceAfterValid, *lineSpacing, *lineSpacingValid);
@@ -389,9 +389,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 		#if		qSupportParagraphIndentsDlg
 		override		bool				PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_ParagraphIndentsDialog	dlg;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_ParagraphIndentsDialog	dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				dlg.InitValues (*leftMargin, *leftMarginValid, *rightMargin, *rightMarginValid, *firstIndent, *firstIndentValid);
@@ -439,30 +439,30 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 				return false;
 			}
 		#endif
-		#if		qMacOS || qWindows
+		#if		qPlatform_MacOS || qPlatform_Windows
 		override	void				ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName)
 			{
 				// unknown embedding...
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_UnknownEmbeddingInfoDialog	infoDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_UnknownEmbeddingInfoDialog	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
-				#if		qMacOS || qWindows
+				#if		qPlatform_MacOS || qPlatform_Windows
 					infoDialog.fEmbeddingTypeName = embeddingTypeName;
 					(void)infoDialog.DoModal ();
 				#endif
 			}
 		#endif
-		#if		qMacOS || qWindows
+		#if		qPlatform_MacOS || qPlatform_Windows
 		override		bool	ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_URLXEmbeddingInfoDialog	infoDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_URLXEmbeddingInfoDialog	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
-				#if		qMacOS || qWindows
+				#if		qPlatform_MacOS || qPlatform_Windows
 					infoDialog.fEmbeddingTypeName = embeddingTypeName;
 					infoDialog.fTitleText = *urlTitle;
 					infoDialog.fURLText = *urlValue;
@@ -479,15 +479,15 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 				#endif
 			}
 		#endif
-		#if		qMacOS || qWindows
+		#if		qPlatform_MacOS || qPlatform_Windows
 		override		bool	ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue)
 			{
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_AddURLXEmbeddingInfoDialog	infoDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_AddURLXEmbeddingInfoDialog	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
-				#if		qMacOS || qWindows
+				#if		qPlatform_MacOS || qPlatform_Windows
 					infoDialog.fTitleText = *urlTitle;
 					infoDialog.fURLText = *urlValue;
 					if (infoDialog.DoModal ()) {
@@ -508,9 +508,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 			{
 				RequireNotNull (nRows);
 				RequireNotNull (nCols);
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					Led_StdDialogHelper_AddNewTableDialog	infoDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					Led_StdDialogHelper_AddNewTableDialog	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				infoDialog.fRows = *nRows;
@@ -531,9 +531,9 @@ struct	LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::Dialo
 				RequireNotNull (tableProperties);
 
 				typedef	Led_StdDialogHelper_EditTablePropertiesDialog	DLGTYPE;
-				#if		qMacOS
+				#if		qPlatform_MacOS
 					DLGTYPE	infoDialog;
-				#elif	qWindows
+				#elif	qPlatform_Windows
 					DLGTYPE	infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 				#endif
 				#if		qTemplatedMemberFunctionsFailBug
@@ -567,7 +567,7 @@ static	LedIt_DialogSupport	sLedIt_DialogSupport;
  ************************************ LedItView *********************************
  ********************************************************************************
  */
-#if		qWindows
+#if		qPlatform_Windows
 DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap (LedItViewAlmostBASE)
 
 IMPLEMENT_DYNCREATE(LedItView,	CView)
@@ -598,10 +598,10 @@ LedItView::LedItView (
 	SetShowParagraphGlyphs (Options ().GetShowParagraphGlyphs ());
 	SetShowTabGlyphs (Options ().GetShowTabGlyphs ());
 	SetShowSpaceGlyphs (Options ().GetShowSpaceGlyphs ());
-#if		qMacOS
+#if		qPlatform_MacOS
 	SetScrollBarType (h, fWrapToWindow? eScrollBarNever: eScrollBarAsNeeded);
 	SetScrollBarType (v, eScrollBarAlways);
-#elif	qWindows
+#elif	qPlatform_Windows
 	SetScrollBarType (h, fWrapToWindow? eScrollBarNever: eScrollBarAsNeeded);
 	SetScrollBarType (v, eScrollBarAlways);
 #elif	qXWindows
@@ -613,10 +613,10 @@ LedItView::LedItView (
 	SetCommandHandler (&owningDoc->GetCommandHandler ());
 	SetSpellCheckEngine (&LedItApplication::Get ().fSpellCheckEngine);
 #endif
-#if		qMacOS || qWindows
+#if		qPlatform_MacOS || qPlatform_Windows
 	SetUseSecondaryHilight (true);
 #endif
-#if		qWindows
+#if		qPlatform_Windows
 	// SHOULD be supported on other platforms, but only Win32 for now...
 	SetDefaultWindowMargins (Led_TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin-kLedItViewTopMargin, kLedItViewRHSMargin-kLedItViewLHSMargin));
 #endif
@@ -629,7 +629,7 @@ LedItView::~LedItView()
 	SetSpellCheckEngine (NULL);
 }
 
-#if		qWindows
+#if		qPlatform_Windows
 void	LedItView::OnInitialUpdate ()
 {
 	inherited::OnInitialUpdate ();
@@ -658,7 +658,7 @@ void	LedItView::OnInitialUpdate ()
 }
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 bool	LedItView::OnUpdateCommand (CommandUpdater* enabler)
 {
 	RequireNotNull (enabler);
@@ -711,7 +711,7 @@ void	LedItView::SetWindowRect (const Led_Rect& windowRect)
 	}
 }
 
-#if		qMacOS
+#if		qPlatform_MacOS
 void	LedItView::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName)
 {
 	outUsesMark = false;
@@ -731,7 +731,7 @@ void	LedItView::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Bool
 }
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 void	LedItView::OnContextMenu (CWnd* /*pWnd*/, CPoint pt) 
 {
 	CMenu menu;
@@ -821,7 +821,7 @@ void	LedItView::SetShowHiddenText (bool showHiddenText)
 	}
 }
 
-#if		qWindows
+#if		qPlatform_Windows
 void	LedItView::OnInsertObject ()
 {
 	// Invoke the standard Insert Object dialog box to obtain information
@@ -922,7 +922,7 @@ void	LedItView::OnCancelEditSrvr ()
 }
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 LedItControlItem*	LedItView::GetSoleSelectedOLEEmbedding () const
 {
 	return dynamic_cast<LedItControlItem*> (GetSoleSelectedEmbedding ());

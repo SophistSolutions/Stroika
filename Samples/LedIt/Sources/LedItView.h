@@ -7,7 +7,7 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	"Stroika/Frameworks/Led/Platform/Led_PP_WordProcessor.h"
 #elif	defined (WIN32)
 	#include	"Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
@@ -24,7 +24,7 @@
 
 
 
-#if		qWindows
+#if		qPlatform_Windows
 class	LedItControlItem;
 class	LedItDocument;
 #endif
@@ -34,7 +34,7 @@ class	LedItDocument;
 
 
 
-#if		qWindows
+#if		qPlatform_Windows
 	#if		qTypedefConfusedAccessCheckingCompilerBug
 		class	LedItViewAlmostBASE : public Platform::Led_MFC_X <WordProcessor> {
 		};
@@ -47,27 +47,27 @@ class	LedItDocument;
 	#pragma warning (disable : 4250)
 #endif
 class	LedItView : 
-#if		qMacOS
+#if		qPlatform_MacOS
 	public Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >
-#elif	qWindows
+#elif	qPlatform_Windows
 	public Platform::WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>
 #elif	qXWindows
 	public Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >
 #endif
 {
 	private:
-		#if		qMacOS
+		#if		qPlatform_MacOS
 			typedef	Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >		inherited;
-		#elif	qWindows
+		#elif	qPlatform_Windows
 			typedef	Platform::WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>			inherited;
 		#elif	qXWindows
 			typedef	Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >	inherited;
 		#endif
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	public:
 	 	LedItView ();
-#elif	qWindows
+#elif	qPlatform_Windows
 	protected: // create from serialization only
 		LedItView ();
 		DECLARE_DYNCREATE (LedItView)
@@ -79,12 +79,12 @@ class	LedItView :
 	public:
 		virtual ~LedItView ();
 
-#if		qWindows
+#if		qPlatform_Windows
 	protected:
 		override	void	OnInitialUpdate ();
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		override	bool	OnUpdateCommand (CommandUpdater* enabler);
 #endif
@@ -98,21 +98,21 @@ class	LedItView :
 		override	void	GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const;
 		override	void	SetWindowRect (const Led_Rect& windowRect);
 
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		nonvirtual	LedItDocument&		GetDocument () const;
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 		nonvirtual	LedItControlItem*					GetSoleSelectedOLEEmbedding () const;
 #endif
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	public:
 		override	void	FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName);
 #endif
 
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		afx_msg		void	OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
 
@@ -134,7 +134,7 @@ class	LedItView :
 	public:
 		nonvirtual	void	SetShowHiddenText (bool showHiddenText);
 
-#if		qWindows
+#if		qPlatform_Windows
 	protected:
 		afx_msg void	OnSetFocus (CWnd* pOldWnd);
 		afx_msg void	OnSize (UINT nType, int cx, int cy);
@@ -167,7 +167,7 @@ class	LedItView :
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-	#if		!qDebug && qWindows
+	#if		!qDebug && qPlatform_Windows
 		inline	LedItDocument&	LedItView::GetDocument () const
 	   		{
 	   			return *(LedItDocument*)m_pDocument;

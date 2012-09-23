@@ -3,7 +3,7 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
-#if     qMacOS
+#if     qPlatform_MacOS
 #include    <Script.h>
 #endif
 
@@ -42,7 +42,7 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 inline  void    GDI_TextFont (short font)
 {
 #if     TARGET_CARBON
@@ -103,7 +103,7 @@ inline  void    GDI_TextSize (short size)
  *********************** TextImager::FontCacheInfoUpdater ***********************
  ********************************************************************************
  */
-#if     qWindows
+#if     qPlatform_Windows
 inline  bool    LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
 {
     size_t  bytesToCompare  =   offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Led_SDK_Char);
@@ -126,13 +126,13 @@ inline  bool    LogFontsEqual (const Led_FontSpecification& lhs, const Led_FontS
 #endif
 TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const Led_FontSpecification& fontSpec):
     fImager (imager)
-#if     qWindows
+#if     qPlatform_Windows
     , fTablet (tablet),
     fRestoreObject (nullptr),
     fRestoreAttribObject (nullptr)
 #endif
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     /*
      *  For MAC:
      *
@@ -159,7 +159,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
         imager->fCachedFontSpec = fontSpec;
         imager->fCachedFontValid = true;
     }
-#elif   qWindows
+#elif   qPlatform_Windows
     /*
      *  For Windows:
      *
@@ -253,7 +253,7 @@ TextImager::TextImager ():
     //  fDefaultColorIndex (),
     fCachedFontSpec (),
     fCachedFontInfo (),
-#if     qWindows
+#if     qPlatform_Windows
     fCachedFont (nullptr)
 #else
     fCachedFontValid (false)
@@ -272,7 +272,7 @@ TextImager::~TextImager ()
         delete *i;
         *i = nullptr;
     }
-#if     qWindows
+#if     qPlatform_Windows
     delete fCachedFont;
 #endif
 }
@@ -356,7 +356,7 @@ void    TextImager::PurgeUnneededMemory ()
 void    TextImager::InvalidateAllCaches ()
 {
     // Classes which cache font-based information must OVERRIDE and invalidate it...
-#if     qWindows
+#if     qPlatform_Windows
     delete fCachedFont;
     fCachedFont = nullptr;
 #else
@@ -397,7 +397,7 @@ void    TextImager::SetDefaultFont_ (const Led_IncrementalFontSpecification& def
     }
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 struct  FontSelectionInfo {
     FontSelectionInfo (BYTE desiredCharset):
         fDesiredCharset (desiredCharset),
@@ -510,11 +510,11 @@ Led_FontSpecification   TextImager::GetStaticDefaultFont ()
     static  bool                    sDefaultFontValid   =   false;
     static  Led_FontSpecification   sDefaultFont;
     if (not sDefaultFontValid) {
-#if     qMacOS
+#if     qPlatform_MacOS
         sDefaultFont.SetFontNameSpecifier (::GetScriptVariable (smCurrentScript, smScriptAppFond));
         sDefaultFont.SetPointSize (::GetScriptVariable (smCurrentScript, smScriptAppFondSize));
         sDefaultFont.SetStyle_Plain ();
-#elif   qWindows
+#elif   qPlatform_Windows
         sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
 #elif   qXWindows
         {
@@ -528,7 +528,7 @@ Led_FontSpecification   TextImager::GetStaticDefaultFont ()
     return (sDefaultFont);
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 Led_FontSpecification   TextImager::GetStaticDefaultFont (BYTE charSet)
 {
     Led_FontSpecification   defaultFont;

@@ -29,7 +29,7 @@ using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 /*
  ********************************************************************************
  ************************** StyledTextIOReader_STYLText *************************

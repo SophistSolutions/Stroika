@@ -27,7 +27,7 @@
 
 
 	
-#if		qWindows
+#if		qPlatform_Windows
 
 typedef	FormatToolbar::LocalComboBox	LocalComboBox;
 

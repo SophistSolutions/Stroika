@@ -205,7 +205,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             /*
             @CLASS:         TextBreaks_System
             @BASES:         @'TextBreaks'

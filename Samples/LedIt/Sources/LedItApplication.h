@@ -11,11 +11,11 @@
 #include	<string>
 
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	<Dialogs.h>
 
 	#include	<LDocApplication.h>
-#elif	qWindows
+#elif	qPlatform_Windows
 	#include	<afxole.h>
 #elif	qXWindows
 	#include	<gtk/gtk.h>
@@ -31,16 +31,16 @@
 	#include	"Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #endif
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	#include	"Stroika/Frameworks/Led/Platform/Led_PP.h"
-#elif	qWindows
+#elif	qPlatform_Windows
 	#include	"Stroika/Frameworks/Led/Platform/MFC.h"
 #elif	qXWindows
 	#include	"Stroika/Frameworks/Led/Platform/Gtk.h"
 #endif
 
 
-#if		qWindows
+#if		qPlatform_Windows
 class	CMenu;
 #endif
 
@@ -48,9 +48,9 @@ class	LedItDocument;
 class	LedItView;
 
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	typedef	Platform::Led_PP_TmpCmdUpdater	CMD_ENABLER;
-#elif	qWindows
+#elif	qPlatform_Windows
 	typedef	Platform::Led_MFC_TmpCmdUpdater	CMD_ENABLER;
 #elif	qXWindows
 	typedef	Platform::Led_Gtk_TmpCmdUpdater	CMD_ENABLER;
@@ -60,16 +60,16 @@ class	LedItView;
 
 
 class	LedItApplication
-#if		qMacOS
+#if		qPlatform_MacOS
 	: public LDocApplication
-#elif	qWindows
+#elif	qPlatform_Windows
 	: public CWinApp
 #endif
 {
 	private:
-		#if		qMacOS
+		#if		qPlatform_MacOS
 			typedef	LDocApplication	inherited;
-		#elif	qWindows
+		#elif	qPlatform_Windows
 			typedef	CWinApp			inherited;
 		#endif
 
@@ -88,7 +88,7 @@ class	LedItApplication
 		SpellCheckEngine_Basic_Simple	fSpellCheckEngine;
 	#endif
 
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		nonvirtual	void							FixupFontMenu (CMenu* fontMenu);
 		nonvirtual	Led_SDK_String					CmdNumToFontName (UINT cmdNum);
@@ -106,7 +106,7 @@ class	LedItApplication
 	private:
 		nonvirtual	void	UpdateViewsForPrefsChange ();
 
-#if		qWindows
+#if		qPlatform_Windows
 	public:
 		override	BOOL	InitInstance ();
 
@@ -162,7 +162,7 @@ class	LedItApplication
 		nonvirtual	void	OnGotoSophistsWebPageCommand ();
 		nonvirtual	void	OnCheckForUpdatesWebPageCommand ();
 
-#if		qMacOS
+#if		qPlatform_MacOS
 	public:
 		override	void	MakeMenuBar ();
 		override	void	StartUp ();
@@ -257,7 +257,7 @@ class	LedItApplication
 	private:
 		static GtkItemFactoryEntry kMenuItemResources[];
 #endif
-#if		qWindows || qXWindows
+#if		qPlatform_Windows || qXWindows
 	public:
 		Led_InstalledFonts	fInstalledFonts;	// Keep a static copy for speed, and so font#s are static throughout the life of the applet
 #endif

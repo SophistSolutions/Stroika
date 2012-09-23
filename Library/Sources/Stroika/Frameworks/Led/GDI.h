@@ -208,7 +208,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
 
             inline  GrafPtr Led_GetCurrentGDIPort ()
             {
@@ -223,7 +223,7 @@ namespace   Stroika {
                 return t;
             }
 
-#elif   qWindows
+#elif   qPlatform_Windows
 
 
 
@@ -473,7 +473,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             /*
             @CLASS:         auto_gdi_ptr
             @DESCRIPTION:       <p>Like auto_ptr<> - except to just assure a Win32 GDI object is deleted. NB: We cannot
@@ -510,7 +510,7 @@ namespace   Stroika {
                 nonvirtual  Led_Rect    GetBoundingRect () const;
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 Led_Region (RgnHandle rgn):
                     fRgn (rgn),
                     fOwned (false) {
@@ -524,7 +524,7 @@ namespace   Stroika {
 
             private:
                 bool    fOwned;
-#elif   qWindows
+#elif   qPlatform_Windows
                 operator HRGN() const {
                     return fRgn;
                 }
@@ -552,9 +552,9 @@ namespace   Stroika {
                 }
 #endif
             private:
-#if     qMacOS
+#if     qPlatform_MacOS
                 RgnHandle   fRgn;
-#elif   qWindows
+#elif   qPlatform_Windows
                 HRGN    fRgn;
 #endif
             };
@@ -581,9 +581,9 @@ namespace   Stroika {
                 enum { kColorValueMin = 0, kColorValueMax = USHRT_MAX };
             public:
                 explicit    Led_Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue);
-#if     qMacOS
+#if     qPlatform_MacOS
                 explicit    Led_Color (const RGBColor& rgbColor);
-#elif   qWindows
+#elif   qPlatform_Windows
                 explicit    Led_Color (COLORREF colorRef);
 #endif
 
@@ -618,9 +618,9 @@ namespace   Stroika {
                 static  const   Led_Color   kAqua;
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  RGBColor    GetOSRep () const;
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  COLORREF    GetOSRep () const;
 #endif
             private:
@@ -640,7 +640,7 @@ namespace   Stroika {
 
             unsigned int    Distance (Led_Color lhs, Led_Color rhs);
             unsigned int    Distance_Squared (Led_Color lhs, Led_Color rhs);
-#if     qWindows
+#if     qPlatform_Windows
             unsigned int    Distance_Squared (COLORREF lhs, COLORREF rhs);
 #endif
 
@@ -655,7 +655,7 @@ namespace   Stroika {
                             <p>Note - this class is used in conjunction with @'Led_GDI_Obj_Selector'.</p>
             */
             class   Led_Pen {
-#if     qWindows
+#if     qPlatform_Windows
             public:
                 Led_Pen (int nPenStyle, int nWidth, COLORREF crColor):
                     m_hObject (nullptr) {
@@ -685,7 +685,7 @@ namespace   Stroika {
             private:
                 HPEN    m_hObject;
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
             public:
                 static  const   Pattern kWhitePattern;
                 static  const   Pattern kLightGrayPattern;
@@ -865,7 +865,7 @@ namespace   Stroika {
             class   Led_FontSpecification {
             public:
                 Led_FontSpecification ();
-#if     qWindows
+#if     qPlatform_Windows
                 explicit Led_FontSpecification (const LOGFONT& logFont);
 #endif
 
@@ -875,9 +875,9 @@ namespace   Stroika {
                 explicit    Led_FontSpecification (const Led_IncrementalFontSpecification& from);
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 typedef short   FontNameSpecifier;
-#elif   qWindows
+#elif   qPlatform_Windows
                 struct  FontNameSpecifier {     // So struct copies etc will work and so we can define op==
                     FontNameSpecifier ();
                     FontNameSpecifier (const Led_SDK_Char* from);
@@ -913,7 +913,7 @@ namespace   Stroika {
                 nonvirtual  SubOrSuperScript    GetStyle_SubOrSuperScript () const;
                 nonvirtual  void                SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  bool    GetStyle_Outline () const;
                 nonvirtual  void    SetStyle_Outline (bool isOutline);
 
@@ -925,14 +925,14 @@ namespace   Stroika {
 
                 nonvirtual  bool    GetStyle_Extended () const;
                 nonvirtual  void    SetStyle_Extended (bool isExtended);
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  bool    GetStyle_Strikeout () const;
                 nonvirtual  void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
                 nonvirtual  unsigned short  GetPointSize () const;
                 nonvirtual  void            SetPointSize (unsigned short pointSize);
-#if     qWindows
+#if     qPlatform_Windows
                 nonvirtual   long           PeekAtTMHeight () const;        // Speed tweek
                 nonvirtual   void           PokeAtTMHeight (long tmHeight); // ditto
 #endif
@@ -941,10 +941,10 @@ namespace   Stroika {
                 nonvirtual  void        SetTextColor (const Led_Color& textColor);
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  void    GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const;
                 nonvirtual  void    SetOSRep (short fontID, short fontSize, Style fontStyle);
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  LOGFONT GetOSRep () const;
                 nonvirtual  void    GetOSRep (LOGFONT* logFont) const;
                 nonvirtual  void    SetOSRep (LOGFONT logFont);
@@ -960,11 +960,11 @@ namespace   Stroika {
 
                 // OSRep.
             private:
-#if     qMacOS
+#if     qPlatform_MacOS
                 short               fFontSpecifier;
                 short               fFontSize;
                 Style               fFontStyle;
-#elif   qWindows
+#elif   qPlatform_Windows
                 LOGFONT             fFontInfo;          // Could make this MUCH smaller on windows - do for future release!
 #elif   qXWindows
                 FontNameSpecifier   fFontFamily;
@@ -976,7 +976,7 @@ namespace   Stroika {
                 SubOrSuperScript    fSubOrSuperScript;
                 Led_Color           fTextColor;
             };
-#if     qWindows
+#if     qPlatform_Windows
             bool    operator== (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs);
             bool    operator!= (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs);
 #endif
@@ -1057,7 +1057,7 @@ namespace   Stroika {
                 nonvirtual  void                InvalidateStyle_SubOrSuperScript ();
                 nonvirtual  void                SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  bool    GetStyle_Outline () const;
                 nonvirtual  bool    GetStyle_Outline_Valid () const;
                 nonvirtual  void    InvalidateStyle_Outline ();
@@ -1077,7 +1077,7 @@ namespace   Stroika {
                 nonvirtual  bool    GetStyle_Extended_Valid () const;
                 nonvirtual  void    InvalidateStyle_Extended ();
                 nonvirtual  void    SetStyle_Extended (bool isExtended);
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  bool    GetStyle_Strikeout () const;
                 nonvirtual  bool    GetStyle_Strikeout_Valid () const;
                 nonvirtual  void    InvalidateStyle_Strikeout ();
@@ -1094,7 +1094,7 @@ namespace   Stroika {
                 nonvirtual  bool            GetPointSize_Valid () const;
                 nonvirtual  void            InvalidatePointSize ();
                 nonvirtual  void            SetPointSize (unsigned short pointSize);
-#if     qWindows
+#if     qPlatform_Windows
                 nonvirtual   void           PokeAtTMHeight (long tmHeight); // ditto
 #endif
 
@@ -1109,10 +1109,10 @@ namespace   Stroika {
                 nonvirtual  void        SetTextColor (const Led_Color& textColor);
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  void    GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const;
                 nonvirtual  void    SetOSRep (short fontID, short fontSize, Style fontStyle);   // marks all attribs as valid
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  LOGFONT GetOSRep () const;
                 nonvirtual  void    GetOSRep (LOGFONT* logFont) const;
                 nonvirtual  void    SetOSRep (LOGFONT logFont);                                 // marks all attribs as valid
@@ -1132,12 +1132,12 @@ namespace   Stroika {
                 bool    fStyleValid_Italic: 1;
                 bool    fStyleValid_Underline: 1;
                 bool    fStyleValid_SubOrSuperScript: 1;
-#if     qMacOS
+#if     qPlatform_MacOS
                 bool    fStyleValid_Outline: 1;
                 bool    fStyleValid_Shadow: 1;
                 bool    fStyleValid_Condensed: 1;
                 bool    fStyleValid_Extended: 1;
-#elif   qWindows
+#elif   qPlatform_Windows
                 bool    fStyleValid_Strikeout: 1;
                 bool    fDidSetOSRepCallFlag: 1;
 #endif
@@ -1157,13 +1157,13 @@ namespace   Stroika {
             class   Led_InstalledFonts {
             public:
                 enum    FilterOptions {
-#if     qWindows
+#if     qPlatform_Windows
                     eSkipAtSignFonts    =   0x1,
                     eSkipRasterFonts    =   0x2,
 #endif
 
 
-#if     qWindows
+#if     qPlatform_Windows
                     eDefaultFilterOptions   =   eSkipAtSignFonts | eSkipRasterFonts
 #else
                     eDefaultFilterOptions   =   0
@@ -1183,7 +1183,7 @@ namespace   Stroika {
                 FilterOptions           fFilterOptions;
                 vector<Led_SDK_String>  fFontNames;
 
-#if     qWindows
+#if     qPlatform_Windows
             private:
                 static  BOOL    FAR PASCAL  FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis);
 #endif
@@ -1249,7 +1249,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             Led_Point   AsLedPoint (Point p);
             Point       AsQDPoint (Led_Point p);
             Led_Rect    AsLedRect (Rect r);
@@ -1259,7 +1259,7 @@ namespace   Stroika {
             Point       GetRectSize (const Rect& r);
             short       GetRectHeight (const Rect& r);
             short       GetRectWidth (const Rect& r);
-#elif   qWindows
+#elif   qPlatform_Windows
             Led_Point   AsLedPoint (POINT p);
             POINT       AsPOINT (Led_Point p);
             Led_Rect    AsLedRect (RECT r);
@@ -1302,9 +1302,9 @@ namespace   Stroika {
 #endif
             public:
                 Led_FontMetrics ();
-#if     qMacOS
+#if     qPlatform_MacOS
                 Led_FontMetrics (const FontInfo& from);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Led_FontMetrics (const TEXTMETRIC& from);
 #elif   qXWindows
                 Led_FontMetrics (const PlatformSpecific& from);
@@ -1322,25 +1322,25 @@ namespace   Stroika {
 
             public:
                 nonvirtual  Led_Distance    GetMaxCharacterWidth () const;
-#if     qWindows
+#if     qPlatform_Windows
                 nonvirtual  Led_Distance    GetAveCharacterWidth () const;
 #endif
 
                 // Convertion operator to make it easier to make GDI calls with one of our guys on a
                 // with something expected a system specific one - like to fill in its value!
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 operator const FontInfo* () const;
                 operator FontInfo* ();
-#elif   qWindows
+#elif   qPlatform_Windows
                 operator const TEXTMETRIC* () const;
                 operator TEXTMETRIC* ();
 #endif
 
             private:
-#if     qMacOS
+#if     qPlatform_MacOS
                 FontInfo    fPlatformSpecific;
-#elif   qWindows
+#elif   qPlatform_Windows
                 TEXTMETRIC  fPlatformSpecific;
 #elif   qXWindows
                 PlatformSpecific    fPlatformSpecific;
@@ -1373,9 +1373,9 @@ namespace   Stroika {
             */
             class   Led_Tablet_  {
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 Led_Tablet_ (GrafPtr gp);
-#elif   qWindows
+#elif   qPlatform_Windows
                 enum    OwnDCControl    { eOwnsDC, eDoesntOwnDC };
 
                 Led_Tablet_ (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
@@ -1388,9 +1388,9 @@ namespace   Stroika {
 
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  operator GrafPtr () const;
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  operator HDC () const;
 #endif
 
@@ -1416,9 +1416,9 @@ namespace   Stroika {
                 nonvirtual  void    FrameRectangle (const Led_Rect& r, Led_Color c, Led_Distance borderWidth);
 
             public:
-#if     qMacOS
+#if     qPlatform_MacOS
                 nonvirtual  void    SetPort ();
-#elif   qWindows
+#elif   qPlatform_Windows
                 nonvirtual  BOOL BitBlt(int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
                 nonvirtual  BOOL CreateCompatibleDC (Led_Tablet_* pDC);
                 nonvirtual  COLORREF SetTextColor (COLORREF crColor);
@@ -1455,7 +1455,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qWindows
+#if     qPlatform_Windows
             private:
                 nonvirtual  HWND GetWindow() const;
                 nonvirtual  unsigned int SetTextAlign (unsigned int nTextAlign);
@@ -1502,7 +1502,7 @@ namespace   Stroika {
                 nonvirtual  void    HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
                 nonvirtual  void    HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
 
-#if     qWindows
+#if     qPlatform_Windows
             private:
                 class   RecolorHelper;
             private:
@@ -1523,10 +1523,10 @@ namespace   Stroika {
                 nonvirtual  Led_FontMetrics GetFontMetrics () const;
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             private:
                 GrafPtr fGrafPort;
-#elif   qWindows
+#elif   qPlatform_Windows
             public:
                 HDC m_hDC;          // The output DC (must be first data member)
                 HDC m_hAttribDC;    // The Attribute DC
@@ -1590,7 +1590,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             class   Led_WindowDC : public Led_Tablet_ {
             public:
                 Led_WindowDC (HWND hWnd):
@@ -1614,7 +1614,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             class   Led_MacPortAndClipRegionEtcSaver {
             public:
                 Led_MacPortAndClipRegionEtcSaver ();
@@ -1634,7 +1634,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             class   Led_Bitmap {
             public:
                 Led_Bitmap ();
@@ -1683,9 +1683,9 @@ namespace   Stroika {
                 private:
                     typedef Led_Tablet_ inherited;
                 public:
-#if     qMacOS
+#if     qPlatform_MacOS
                     OT (GrafPtr gp);
-#elif   qWindows
+#elif   qPlatform_Windows
                     OT (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
 #elif   qXWindows
                     OT (Display* display, Drawable drawable);
@@ -1696,11 +1696,11 @@ namespace   Stroika {
                 Led_Tablet  fOrigTablet;
                 Led_Rect    fOffscreenRect;
                 Led_Tablet  fOffscreenTablet;
-#if     qMacOS
+#if     qPlatform_MacOS
                 GDHandle    fOrigDevice;
                 CGrafPtr    fOrigPort;
                 GWorldPtr   fOffscreenGWorld;
-#elif   qWindows
+#elif   qPlatform_Windows
                 OT          fMemDC;
                 Led_Bitmap  fMemoryBitmap;      // only can create / select inside loop cuz there is where we know the size.
                 // but decare outside, so stays around for successive rows which are the same size.
@@ -1727,26 +1727,26 @@ namespace   Stroika {
             */
             class   Led_GDI_Obj_Selector {
             public:
-#if     qWindows
+#if     qPlatform_Windows
                 Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect);
-#elif   qMacOS || qXWindows
+#elif   qPlatform_MacOS || qXWindows
                 Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen);
 #endif
             public:
                 ~Led_GDI_Obj_Selector ();
             private:
                 Led_Tablet  fTablet;
-#if     qWindows
+#if     qPlatform_Windows
                 HGDIOBJ     fRestoreObject;
                 HGDIOBJ     fRestoreAttribObject;
-#elif   qMacOS
+#elif   qPlatform_MacOS
                 Led_Pen fRestorePen;
 #endif
             };
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
             /*
             @CLASS:         Led_Win_Obj_Selector
             @DESCRIPTION:   <p>Alias for newer @'Led_GDI_Obj_Selector'.</p>
@@ -1764,7 +1764,7 @@ namespace   Stroika {
              *  the Mac (at least 68K - I've never tried on PowerPC). For now
              *  (and perhaps always) we only support this for the 68K code.
              */
-#if     qMacOS
+#if     qPlatform_MacOS
             void        GDI_RGBForeColor (const RGBColor& color);
             void        GDI_RGBBackColor (const RGBColor& color);
             RGBColor    GDI_GetForeColor ();
@@ -1784,7 +1784,7 @@ namespace   Stroika {
 
 // Even for windows we have have this defined if we build including QuickTime support!
 #ifndef qHaveMacPictureDefined
-#define qHaveMacPictureDefined  qMacOS
+#define qHaveMacPictureDefined  qPlatform_MacOS
 #endif
 
             /*
@@ -1816,7 +1816,7 @@ namespace   Stroika {
             short       Led_GetMacPictWidth (const Led_Picture* picture);
             short       Led_GetMacPictHeight (const Led_Picture* picture);
             Led_Size    Led_GetMacPictSize (const Led_Picture* picture);
-#if     qMacOS
+#if     qPlatform_MacOS
             short       Led_GetMacPictTop (const Led_Picture* const* picture);
             short       Led_GetMacPictLeft (const Led_Picture* const* picture);
             short       Led_GetMacPictBottom (const Led_Picture* const* picture);
@@ -1831,7 +1831,7 @@ namespace   Stroika {
 
 // Windows DIB support
 #ifndef qHaveWindowsDIBDefined
-#define qHaveWindowsDIBDefined  qWindows
+#define qHaveWindowsDIBDefined  qPlatform_Windows
 #endif
 
 #if     !qHaveWindowsDIBDefined
@@ -1891,7 +1891,7 @@ namespace   Stroika {
             const void* Led_GetDIBBitsPointer (const Led_DIB* dib);
 
 
-#if     qWindows
+#if     qPlatform_Windows
             Led_DIB*    Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm);
 #endif
 
@@ -1958,7 +1958,7 @@ namespace   Stroika {
 
 
             Led_Rect    CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn);
-#if     qWindows
+#if     qPlatform_Windows
             void    Led_CenterWindowInParent (HWND w);
 #endif
 
@@ -2278,7 +2278,7 @@ namespace   Stroika {
             }
 
 
-#if     qWindows
+#if     qPlatform_Windows
             //class auto_gdi_ptr
             inline auto_gdi_ptr::auto_gdi_ptr (HGDIOBJ gdiObj):
                 fGDIObj (gdiObj)
@@ -2294,76 +2294,76 @@ namespace   Stroika {
 
             //class Led_Region
             inline  Led_Region::Led_Region ()
-#if     qMacOS
+#if     qPlatform_MacOS
                 : fRgn (::NewRgn ()),
                   fOwned (true)
-#elif   qWindows
+#elif   qPlatform_Windows
                 : fRgn (::CreateRectRgn (0, 0, 0, 0))
 #endif
             {
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 Led_ThrowIfNull (fRgn);
 #endif
             }
             inline  Led_Region::Led_Region (const Led_Rect& r)
-#if     qMacOS
+#if     qPlatform_MacOS
                 : fRgn (::NewRgn ()),
                   fOwned (true)
-#elif   qWindows
+#elif   qPlatform_Windows
                 : fRgn (::CreateRectRgn (r.GetLeft (), r.GetTop (), r.GetRight (), r.GetBottom ()))
 #endif
             {
                 Require (r.GetHeight () >= 0);
                 Require (r.GetWidth () >= 0);
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 Led_ThrowIfNull (fRgn);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::SetRectRgn (fRgn, (short)r.left, (short)r.top, (short)r.right, (short)r.bottom);
 #endif
                 Assert (GetBoundingRect () == r or (GetBoundingRect ().IsEmpty () and r.IsEmpty ()));
             }
             inline  Led_Region::Led_Region (const Led_Region& from)
-#if     qMacOS
+#if     qPlatform_MacOS
                 : fRgn (::NewRgn ()),
                   fOwned (true)
-#elif   qWindows
+#elif   qPlatform_Windows
                 : fRgn (::CreateRectRgn (0, 0, 0, 0))
 #endif
             {
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 Led_ThrowIfNull (fRgn);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::CopyRgn (from.GetOSRep (), fRgn);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::CombineRgn (fRgn, from, from, RGN_COPY) != ERROR);
 #endif
             }
             inline  const Led_Region& Led_Region::operator= (const Led_Region& rhs)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (fOwned and fRgn != nullptr) {
                     ::DisposeRgn (fRgn);
                 }
                 fOwned = true;
                 fRgn = ::NewRgn ();
                 ::CopyRgn (rhs.GetOSRep (), fRgn);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::CombineRgn (fRgn, rhs, rhs, RGN_COPY) != ERROR);
 #endif
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 Led_ThrowIfNull (fRgn);
 #endif
                 return *this;
             }
             inline  Led_Region::~Led_Region ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (fOwned and fRgn != nullptr) {
                     ::DisposeRgn (fRgn);
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 if (fRgn != nullptr) {
                     ::DeleteObject (fRgn);
                 }
@@ -2371,7 +2371,7 @@ namespace   Stroika {
             }
             inline  bool    Led_Region::IsEmpty () const
             {
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 AssertNotNull (fRgn);
 #endif
                 Assert (false); //NYI - not used yet - so don't worry about this right now... LGP 2002-12-03
@@ -2379,17 +2379,17 @@ namespace   Stroika {
             }
             inline  Led_Rect    Led_Region::GetBoundingRect () const
             {
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
                 AssertNotNull (fRgn);
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
 #if     TARGET_CARBON
                 Rect    bnds;
                 return AsLedRect (*::GetRegionBounds (fRgn, &bnds));
 #else
                 return AsLedRect ((**fRgn).rgnBBox);
 #endif
-#elif   qWindows
+#elif   qPlatform_Windows
                 RECT    r;
                 int     tmp =   ::GetRgnBox (fRgn, &r);
                 Verify (tmp != 0);
@@ -2409,9 +2409,9 @@ namespace   Stroika {
             inline  Led_Region  operator* (const Led_Region& lhs, const Led_Region& rhs)
             {
                 Led_Region  result;
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::SectRgn (lhs.GetOSRep (), rhs.GetOSRep (), result.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::CombineRgn (result, lhs, rhs, RGN_AND) != ERROR);
 #endif
                 return result;
@@ -2419,9 +2419,9 @@ namespace   Stroika {
             inline  Led_Region  operator+ (const Led_Region& lhs, const Led_Region& rhs)
             {
                 Led_Region  result;
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::UnionRgn (lhs.GetOSRep (), rhs.GetOSRep (), result.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::CombineRgn (result, lhs, rhs, RGN_OR) != ERROR);
 #endif
                 return result;
@@ -2446,7 +2446,7 @@ namespace   Stroika {
 
 
 
-#if     qWindows
+#if     qPlatform_Windows
 // class Led_Bitmap
             inline  Led_Bitmap::Led_Bitmap ():
                 m_hObject (nullptr),
@@ -2481,12 +2481,12 @@ namespace   Stroika {
 
 
             //class Led_Tablet_
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  Led_Tablet_::operator GrafPtr () const
             {
                 return fGrafPort;
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  Led_Tablet_::operator HDC() const
             {
                 return m_hDC;
@@ -2499,7 +2499,7 @@ namespace   Stroika {
             */
             inline  Led_Coordinate  Led_Tablet_::CvtFromTWIPSV (Led_TWIPS from) const
             {
-#if     qWindows
+#if     qPlatform_Windows
                 if (fLogPixelsV == 0) {
                     fLogPixelsV = GetDeviceCaps (LOGPIXELSY);
                 }
@@ -2526,7 +2526,7 @@ namespace   Stroika {
             */
             inline  Led_Coordinate  Led_Tablet_::CvtFromTWIPSH (Led_TWIPS from) const
             {
-#if     qWindows
+#if     qPlatform_Windows
                 if (fLogPixelsH == 0) {
                     fLogPixelsH = GetDeviceCaps (LOGPIXELSX);
                 }
@@ -2553,7 +2553,7 @@ namespace   Stroika {
             */
             inline  Led_TWIPS   Led_Tablet_::CvtToTWIPSV (Led_Coordinate from) const
             {
-#if     qWindows
+#if     qPlatform_Windows
                 if (fLogPixelsV == 0) {
                     fLogPixelsV = GetDeviceCaps (LOGPIXELSY);
                 }
@@ -2579,7 +2579,7 @@ namespace   Stroika {
             */
             inline  Led_TWIPS   Led_Tablet_::CvtToTWIPSH (Led_Coordinate from) const
             {
-#if     qWindows
+#if     qPlatform_Windows
                 if (fLogPixelsH == 0) {
                     fLogPixelsH = GetDeviceCaps (LOGPIXELSX);
                 }
@@ -2598,12 +2598,12 @@ namespace   Stroika {
 //              return Led_TWIPS (from * 20);   // assume 72dpi on mac
 #endif
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  void    Led_Tablet_::SetPort ()
             {
                 ::SetPort (fGrafPort);
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  BOOL Led_Tablet_::BitBlt(int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop)
             {
                 AssertNotNull (m_hDC);
@@ -2780,9 +2780,9 @@ namespace   Stroika {
 #endif
             inline  void    Led_Tablet_::MoveTo (const Led_Point& to)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::MoveTo (to.h, to.v);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Assert(m_hDC != nullptr);
                 Verify (::MoveToEx (m_hDC, to.h, to.v, nullptr));
 #elif   qXWindows
@@ -2791,9 +2791,9 @@ namespace   Stroika {
             }
             inline  void    Led_Tablet_::LineTo (const Led_Point& to)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 ::LineTo (to.h, to.v);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Assert(m_hDC != nullptr);
                 Verify (::LineTo (m_hDC, to.h, to.v));
 #elif   qXWindows
@@ -2804,10 +2804,10 @@ namespace   Stroika {
             inline  Led_Region  Led_Tablet_::GetClip () const
             {
                 Led_Region  result;
-#if     qMacOS
+#if     qPlatform_MacOS
                 const_cast<Led_Tablet_*> (this)->SetPort ();
                 ::GetClip (result.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
                 int r =  ::GetClipRgn (*this, result);
                 Assert (r == 0 or r == 1 or r == -1);
                 if (r == 0) {
@@ -2825,11 +2825,11 @@ namespace   Stroika {
             inline  bool    Led_Tablet_::GetClip (Led_Region* r) const
             {
                 RequireNotNull (r);
-#if     qMacOS
+#if     qPlatform_MacOS
                 const_cast<Led_Tablet_*> (this)->SetPort ();
                 ::GetClip (r->GetOSRep ());
                 return true;
-#elif   qWindows
+#elif   qPlatform_Windows
                 int res =  ::GetClipRgn (*this, *r);
                 Assert (res == 0 or res == 1 or res == -1);
                 if (res == 0) {
@@ -2843,11 +2843,11 @@ namespace   Stroika {
             }
             inline  void    Led_Tablet_::SetClip ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 SetPort ();
                 static  Led_Region  kWideOpened =   Led_Region (Led_Rect (-10000, -10000, 20000, 20000));
                 ::SetClip (kWideOpened.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::SelectClipRgn (*this, nullptr) != ERROR);
 #elif   qXWindows
                 static  Led_Rect    kWideOpened =   Led_Rect (-10000, -10000, 20000, 20000);
@@ -2859,10 +2859,10 @@ namespace   Stroika {
             }
             inline  void    Led_Tablet_::SetClip (const Led_Rect& clipTo)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 SetPort ();
                 ::SetClip (Led_Region (clipTo).GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::SelectClipRgn (*this, Led_Region (clipTo)) != ERROR);
                 Ensure (GetClip ().GetBoundingRect () == clipTo);
 #elif   qXWindows
@@ -2874,10 +2874,10 @@ namespace   Stroika {
             }
             inline  void    Led_Tablet_::SetClip (const Led_Region& clipTo)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 SetPort ();
                 ::SetClip (clipTo.GetOSRep ());
-#elif   qWindows
+#elif   qPlatform_Windows
                 Verify (::SelectClipRgn (*this, clipTo) != ERROR);
 #else
                 Assert (false);     // NYI
@@ -2932,7 +2932,7 @@ namespace   Stroika {
 
             inline  bool    Intersect (const Led_Rect& lhs, const Led_Rect& rhs)
             {
-#if     qMacOS && qDebug
+#if     qPlatform_MacOS && qDebug
                 bool    gdiResult;
                 {
                     Rect    mLHS;
@@ -2950,51 +2950,51 @@ namespace   Stroika {
                 }
 #endif
                 if (rhs.GetTop () >= lhs.GetBottom ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
                     Assert (not gdiResult);
 #endif
                     return (false);
                 }
                 else if (rhs.GetBottom () <= lhs.GetTop ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
                     Assert (not gdiResult);
 #endif
                     return (false);
                 }
                 else if (rhs.GetLeft () >= lhs.GetRight ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
                     Assert (not gdiResult);
 #endif
                     return (false);
                 }
                 else if (rhs.GetRight () <= lhs.GetLeft ()) {
-#if     qMacOS
+#if     qPlatform_MacOS
                     Assert (not gdiResult);
 #endif
                     return (false);
                 }
 
                 if (rhs.GetHeight () == 0 or rhs.GetWidth () == 0 or lhs.GetHeight () == 0 or lhs.GetWidth () == 0) {
-#if     qMacOS
+#if     qPlatform_MacOS
                     Assert (not gdiResult);
 #endif
                     return false;
                 }
 
-#if     qMacOS
+#if     qPlatform_MacOS
                 Assert (gdiResult);
 #endif
                 return (true);
             }
             inline  bool    Intersect (const Led_Rect& lhs, const Led_Region& rhs)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 static  RgnHandle   result  =   ::NewRgn ();
                 static  RgnHandle   lhsRgn  =   ::NewRgn ();
                 ::SetRectRgn (lhsRgn, (short)lhs.left, (short)lhs.top, (short)lhs.right, (short)lhs.bottom);
                 ::SectRgn (lhsRgn, rhs.GetOSRep (), result);
                 return not ::EmptyRgn (result);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Led_Region  lhsRgn =    lhs;
                 Led_Region  result;
                 return result.CombineRgn (&lhsRgn, const_cast<Led_Region*> (&rhs), RGN_AND) != NULLREGION;
@@ -3002,13 +3002,13 @@ namespace   Stroika {
             }
             inline  bool    Intersect (const Led_Region& lhs, const Led_Rect& rhs)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 static  RgnHandle   result  =   ::NewRgn ();
                 static  RgnHandle   rhsRgn  =   ::NewRgn ();
                 ::SetRectRgn (rhsRgn, (short)rhs.left, (short)rhs.top, (short)rhs.right, (short)rhs.bottom);
                 ::SectRgn (lhs.GetOSRep (), rhsRgn, result);
                 return not ::EmptyRgn (result);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Led_Region  rhsRgn  =   rhs;
                 Led_Region  result;
                 return result.CombineRgn (const_cast<Led_Region*> (&lhs), &rhsRgn, RGN_AND) != NULLREGION;
@@ -3016,11 +3016,11 @@ namespace   Stroika {
             }
             inline  bool    Intersect (const Led_Region& lhs, const Led_Region& rhs)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 static  RgnHandle   result  =   ::NewRgn ();
                 ::SectRgn (lhs.GetOSRep (), rhs.GetOSRep (), result);
                 return not ::EmptyRgn (result);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Led_Region  result;
                 return result.CombineRgn (const_cast<Led_Region*> (&lhs), const_cast<Led_Region*> (&rhs), RGN_AND) != NULLREGION;
 #endif
@@ -3089,7 +3089,7 @@ namespace   Stroika {
             */
             inline  Led_Rect    EnsureRectOnScreen (Led_Rect& r)
             {
-#if     qWindows
+#if     qPlatform_Windows
                 // Get the limits of the 'workarea'
                 RECT rWorkArea;
                 BOOL  bResult = SystemParametersInfo (SPI_GETWORKAREA, sizeof(RECT), &rWorkArea,  0);
@@ -3109,7 +3109,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  Led_Point   AsLedPoint (Point p)
             {
                 return Led_Point (p.v, p.h);
@@ -3165,7 +3165,7 @@ namespace   Stroika {
             {
                 return (r.bottom - r.top);
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  Led_Point   AsLedPoint (POINT p)
             {
                 return Led_Point (p.y, p.x);
@@ -3232,7 +3232,7 @@ namespace   Stroika {
             */
             inline  Led_TWIPS   Led_CvtScreenPixelsToTWIPSV (Led_Coordinate from)
             {
-#if     qWindows
+#if     qPlatform_Windows
                 return Led_TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
 #else
                 return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
@@ -3245,7 +3245,7 @@ namespace   Stroika {
             */
             inline  Led_TWIPS   Led_CvtScreenPixelsToTWIPSH (Led_Coordinate from)
             {
-#if     qWindows
+#if     qPlatform_Windows
                 return Led_TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ()));
 #else
                 return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
@@ -3258,7 +3258,7 @@ namespace   Stroika {
             */
             inline  Led_Coordinate  Led_CvtScreenPixelsFromTWIPSV (Led_TWIPS from)
             {
-#if     qWindows
+#if     qPlatform_Windows
                 return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 1440);
 #else
                 return Led_TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsV () / 1440);
@@ -3271,7 +3271,7 @@ namespace   Stroika {
             */
             inline  Led_Coordinate  Led_CvtScreenPixelsFromTWIPSH (Led_TWIPS from)
             {
-#if     qWindows
+#if     qPlatform_Windows
                 return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH (), 1440);
 #else
                 return Led_TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsH () / 1440);
@@ -3288,12 +3288,12 @@ namespace   Stroika {
             {
                 (void)::memset (&fPlatformSpecific, 0, sizeof (fPlatformSpecific));
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  Led_FontMetrics::Led_FontMetrics (const FontInfo& from):
                 fPlatformSpecific (from)
             {
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  Led_FontMetrics::Led_FontMetrics (const TEXTMETRIC& from):
                 fPlatformSpecific (from)
             {
@@ -3315,9 +3315,9 @@ namespace   Stroika {
             }
             inline  Led_Distance    Led_FontMetrics::GetAscent () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fPlatformSpecific.ascent);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (fPlatformSpecific.tmAscent);
 #elif   qXWindows
                 return fPlatformSpecific.fAscent;
@@ -3325,9 +3325,9 @@ namespace   Stroika {
             }
             inline  Led_Distance    Led_FontMetrics::GetDescent () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fPlatformSpecific.descent);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (fPlatformSpecific.tmDescent);
 #elif   qXWindows
                 return fPlatformSpecific.fDescent;
@@ -3335,9 +3335,9 @@ namespace   Stroika {
             }
             inline  Led_Distance    Led_FontMetrics::GetLeading () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fPlatformSpecific.leading);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (fPlatformSpecific.tmExternalLeading);
 #elif   qXWindows
                 return (fPlatformSpecific.fLeading);
@@ -3345,7 +3345,7 @@ namespace   Stroika {
             }
             inline  Led_Distance    Led_FontMetrics::GetHeight () const
             {
-#if     qWindows
+#if     qPlatform_Windows
                 Assert (fPlatformSpecific.tmHeight >= 0);
                 Assert (GetAscent () + GetDescent () == Led_Distance (fPlatformSpecific.tmHeight));
 #endif
@@ -3357,21 +3357,21 @@ namespace   Stroika {
             }
             inline  nonvirtual  Led_Distance    Led_FontMetrics::GetMaxCharacterWidth () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fPlatformSpecific.widMax);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (fPlatformSpecific.tmMaxCharWidth);
 #elif   qXWindows
                 return (fPlatformSpecific.fMaxCharWidth);
 #endif
             }
-#if     qWindows
+#if     qPlatform_Windows
             inline  nonvirtual  Led_Distance    Led_FontMetrics::GetAveCharacterWidth () const
             {
                 return (fPlatformSpecific.tmAveCharWidth);
             }
 #endif
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  Led_FontMetrics::operator const FontInfo* () const
             {
                 return (&fPlatformSpecific);
@@ -3380,7 +3380,7 @@ namespace   Stroika {
             {
                 return (&fPlatformSpecific);
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  Led_FontMetrics::operator const TEXTMETRIC* () const
             {
                 return (&fPlatformSpecific);
@@ -3400,14 +3400,14 @@ namespace   Stroika {
                 fBlue (blueValue)
             {
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  Led_Color::Led_Color (const RGBColor& rgbColor):
                 fRed (rgbColor.red),
                 fGreen (rgbColor.green),
                 fBlue (rgbColor.blue)
             {
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  Led_Color::Led_Color (COLORREF colorRef):
                 fRed (static_cast<ColorValue> (GetRValue (colorRef)) << 8),
                 fGreen (static_cast<ColorValue> (GetGValue (colorRef)) << 8),
@@ -3427,7 +3427,7 @@ namespace   Stroika {
             {
                 return fBlue;
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  RGBColor    Led_Color::GetOSRep () const
             {
                 RGBColor    r;
@@ -3436,7 +3436,7 @@ namespace   Stroika {
                 r.blue = fBlue;
                 return r;
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  COLORREF    Led_Color::GetOSRep () const
             {
                 return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8);
@@ -3483,7 +3483,7 @@ namespace   Stroika {
             {
                 return static_cast<unsigned int> (::sqrt (static_cast<float> (Distance_Squared (lhs, rhs))));
             }
-#if     qWindows
+#if     qPlatform_Windows
             inline  unsigned int    Distance_Squared (COLORREF lhs, COLORREF rhs)
             {
                 int rDiff   =   static_cast<int> (GetRValue (lhs)) - static_cast<int> (GetRValue (rhs));
@@ -3528,7 +3528,7 @@ namespace   Stroika {
 
 
 //  class   Led_FontSpecification
-#if     qWindows
+#if     qPlatform_Windows
             inline  Led_FontSpecification::FontNameSpecifier::FontNameSpecifier ()
             {
                 fName[0] = '\0';
@@ -3543,11 +3543,11 @@ namespace   Stroika {
             }
 #endif
             inline  Led_FontSpecification::Led_FontSpecification ():
-#if     qMacOS
+#if     qPlatform_MacOS
                 fFontSpecifier (0),
                 fFontSize (0),
                 fFontStyle (0),
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo (),
 #elif   qXWindows
                 fFontFamily (),
@@ -3559,16 +3559,16 @@ namespace   Stroika {
                 fSubOrSuperScript (eNoSubOrSuperscript),
                 fTextColor (Led_Color::kBlack)
             {
-#if     qWindows
+#if     qPlatform_Windows
                 (void)::memset (&fFontInfo, 0, sizeof (fFontInfo));
 #endif
             }
             inline  Led_FontSpecification::Led_FontSpecification (const Led_IncrementalFontSpecification& from):
-#if     qMacOS
+#if     qPlatform_MacOS
                 fFontSpecifier (((const Led_FontSpecification&)from).fFontSpecifier),
                 fFontSize (((const Led_FontSpecification&)from).fFontSize),
                 fFontStyle (((const Led_FontSpecification&)from).fFontStyle),
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo (((const Led_FontSpecification&)from).fFontInfo),
 #elif   qXWindows
                 fFontFamily (from.fFontFamily),
@@ -3588,12 +3588,12 @@ namespace   Stroika {
             */
             inline  Led_SDK_String  Led_FontSpecification::GetFontName () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 Str255  fontName;
                 ::GetFontName (fFontSpecifier, fontName);
                 size_t  len =   fontName[0];
                 return string ((const char*)&fontName[1], len);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fFontInfo.lfFaceName;
 #elif   qXWindows
                 return fFontFamily;
@@ -3602,9 +3602,9 @@ namespace   Stroika {
             // FontName info
             inline  Led_FontSpecification::FontNameSpecifier    Led_FontSpecification::GetFontNameSpecifier () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return fFontSpecifier;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fFontInfo.lfFaceName;
 #elif   qXWindows
                 return fFontFamily;
@@ -3622,9 +3622,9 @@ namespace   Stroika {
                 if (fSubOrSuperScript != eNoSubOrSuperscript) {
                     return false;
                 }
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fFontStyle == 0);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (
                            fFontInfo.lfItalic == false and
                            fFontInfo.lfWeight <= FW_NORMAL and
@@ -3643,9 +3643,9 @@ namespace   Stroika {
             inline  void    Led_FontSpecification::SetStyle_Plain ()
             {
                 fSubOrSuperScript = eNoSubOrSuperscript;
-#if     qMacOS
+#if     qPlatform_MacOS
                 fFontStyle = 0;
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo.lfItalic = false;
                 fFontInfo.lfWeight = FW_NORMAL;
                 fFontInfo.lfUnderline = false;
@@ -3658,9 +3658,9 @@ namespace   Stroika {
             }
             inline  bool    Led_FontSpecification::GetStyle_Bold () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fFontStyle & bold);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return (fFontInfo.lfWeight > FW_NORMAL);
 #elif   qXWindows
                 return fBold;
@@ -3668,14 +3668,14 @@ namespace   Stroika {
             }
             inline  void    Led_FontSpecification::SetStyle_Bold (bool isBold)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (isBold) {
                     fFontStyle |= bold;
                 }
                 else {
                     fFontStyle &= ~bold;
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
 #elif   qXWindows
                 fBold = isBold;
@@ -3683,9 +3683,9 @@ namespace   Stroika {
             }
             inline  bool    Led_FontSpecification::GetStyle_Italic () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fFontStyle & italic);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fFontInfo.lfItalic;
 #elif   qXWindows
                 return fItalics;
@@ -3693,14 +3693,14 @@ namespace   Stroika {
             }
             inline  void    Led_FontSpecification::SetStyle_Italic (bool isItalic)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (isItalic) {
                     fFontStyle |= italic;
                 }
                 else {
                     fFontStyle &= ~italic;
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo.lfItalic = isItalic;
 #elif   qXWindows
                 fItalics = isItalic;
@@ -3708,9 +3708,9 @@ namespace   Stroika {
             }
             inline  bool    Led_FontSpecification::GetStyle_Underline () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (fFontStyle & underline);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return fFontInfo.lfUnderline;
 #elif   qXWindows
                 return fUnderline;
@@ -3718,14 +3718,14 @@ namespace   Stroika {
             }
             inline  void    Led_FontSpecification::SetStyle_Underline (bool isUnderline)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (isUnderline) {
                     fFontStyle |= underline;
                 }
                 else {
                     fFontStyle &= ~underline;
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo.lfUnderline = isUnderline;
 #elif   qXWindows
                 fUnderline = isUnderline;
@@ -3739,7 +3739,7 @@ namespace   Stroika {
             {
                 fSubOrSuperScript = subOrSuperScript;
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  bool    Led_FontSpecification::GetStyle_Outline () const
             {
                 return (fFontStyle & outline);
@@ -3792,7 +3792,7 @@ namespace   Stroika {
                     fFontStyle &= ~extend;
                 }
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  bool    Led_FontSpecification::GetStyle_Strikeout () const
             {
                 return fFontInfo.lfStrikeOut;
@@ -3805,9 +3805,9 @@ namespace   Stroika {
             // FontSize info
             inline  unsigned short  Led_FontSpecification::GetPointSize () const
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return fFontSize;
-#elif   qWindows
+#elif   qPlatform_Windows
                 if (fFontInfo.lfHeight >= 0) {
                     // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
                     // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
@@ -3830,15 +3830,15 @@ namespace   Stroika {
             }
             inline  void    Led_FontSpecification::SetPointSize (unsigned short pointSize)
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 fFontSize = pointSize;
-#elif   qWindows
+#elif   qPlatform_Windows
                 fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
 #elif   qXWindows
                 fFontSize = pointSize;
 #endif
             }
-#if     qWindows
+#if     qPlatform_Windows
             inline       long   Led_FontSpecification::PeekAtTMHeight () const
             {
                 return fFontInfo.lfHeight;
@@ -3856,7 +3856,7 @@ namespace   Stroika {
             {
                 fTextColor = textColor;
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  void    Led_FontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
             {
                 if (fontID != nullptr) {
@@ -3875,7 +3875,7 @@ namespace   Stroika {
                 fFontSize = fontSize;
                 fFontStyle = fontStyle;
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  LOGFONT Led_FontSpecification::GetOSRep () const
             {
                 return fFontInfo;
@@ -3902,7 +3902,7 @@ namespace   Stroika {
                 fFontInfo.lfPitchAndFamily = 0;
             }
 #endif
-#if     qWindows
+#if     qPlatform_Windows
             inline  Led_FontSpecification::Led_FontSpecification (const LOGFONT& logFont):
                 fFontInfo (),
                 fSubOrSuperScript (eNoSubOrSuperscript),
@@ -3919,7 +3919,7 @@ namespace   Stroika {
                 }
 
                 // Style Info
-#if     qMacOS
+#if     qPlatform_MacOS
                 Style   lhsStyle;
                 Style   rhsStyle;
                 lhs.GetOSRep (nullptr, nullptr, &lhsStyle);
@@ -3927,7 +3927,7 @@ namespace   Stroika {
                 if (lhsStyle != rhsStyle) {
                     return false;
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
                     return false;
                 }
@@ -3961,7 +3961,7 @@ namespace   Stroika {
                 }
 
                 // Size Info
-#if     qWindows
+#if     qPlatform_Windows
                 // Speed tweek to avoid divide and getdevicecaps crap...
                 if (lhs.PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
                     return true;
@@ -3999,12 +3999,12 @@ namespace   Stroika {
                 fStyleValid_Italic (false),
                 fStyleValid_Underline (false),
                 fStyleValid_SubOrSuperScript (false),
-#if     qMacOS
+#if     qPlatform_MacOS
                 fStyleValid_Outline (false),
                 fStyleValid_Shadow (false),
                 fStyleValid_Condensed (false),
                 fStyleValid_Extended (false),
-#elif   qWindows
+#elif   qPlatform_Windows
                 fStyleValid_Strikeout (false),
                 fDidSetOSRepCallFlag (false),
 #endif
@@ -4020,12 +4020,12 @@ namespace   Stroika {
                 fStyleValid_Italic (true),
                 fStyleValid_Underline (true),
                 fStyleValid_SubOrSuperScript (true),
-#if     qMacOS
+#if     qPlatform_MacOS
                 fStyleValid_Outline (true),
                 fStyleValid_Shadow (true),
                 fStyleValid_Condensed (true),
                 fStyleValid_Extended (true),
-#elif   qWindows
+#elif   qPlatform_Windows
                 fStyleValid_Strikeout (true),
                 fDidSetOSRepCallFlag (true),
 #endif
@@ -4047,14 +4047,14 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::InvalidateFontNameSpecifier ()
             {
                 fFontSpecifierValid = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
             {
                 fFontSpecifierValid = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetFontNameSpecifier (fontNameSpecifier);
@@ -4062,7 +4062,7 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::SetFontName (const Led_SDK_String& fontName)
             {
                 fFontSpecifierValid = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetFontName (fontName);
@@ -4074,12 +4074,12 @@ namespace   Stroika {
                 Require (fStyleValid_Italic);
                 Require (fStyleValid_Underline);
                 Require (fStyleValid_SubOrSuperScript);
-#if     qMacOS
+#if     qPlatform_MacOS
                 Require (fStyleValid_Outline);
                 Require (fStyleValid_Shadow);
                 Require (fStyleValid_Condensed);
                 Require (fStyleValid_Extended);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Require (fStyleValid_Strikeout);
 #endif
                 return inherited::GetStyle_Plain ();
@@ -4087,9 +4087,9 @@ namespace   Stroika {
             inline  bool    Led_IncrementalFontSpecification::GetStyle_Plain_Valid () const
             {
                 bool    isValid =   fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fStyleValid_SubOrSuperScript;
-#if     qMacOS
+#if     qPlatform_MacOS
                 isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
-#elif   qWindows
+#elif   qPlatform_Windows
                 isValid = isValid and fStyleValid_Strikeout;
 #endif
                 return isValid;
@@ -4100,12 +4100,12 @@ namespace   Stroika {
                 fStyleValid_Italic = false;
                 fStyleValid_Underline = false;
                 fStyleValid_SubOrSuperScript = false;
-#if     qMacOS
+#if     qPlatform_MacOS
                 fStyleValid_Outline = false;
                 fStyleValid_Shadow = false;
                 fStyleValid_Condensed = false;
                 fStyleValid_Extended = false;
-#elif   qWindows
+#elif   qPlatform_Windows
                 fStyleValid_Strikeout = false;
                 fDidSetOSRepCallFlag = false;
 #endif
@@ -4116,12 +4116,12 @@ namespace   Stroika {
                 fStyleValid_Italic = true;
                 fStyleValid_Underline = true;
                 fStyleValid_SubOrSuperScript = true;
-#if     qMacOS
+#if     qPlatform_MacOS
                 fStyleValid_Outline = true;
                 fStyleValid_Shadow = true;
                 fStyleValid_Condensed = true;
                 fStyleValid_Extended = true;
-#elif   qWindows
+#elif   qPlatform_Windows
                 fStyleValid_Strikeout = true;
                 fDidSetOSRepCallFlag = false;
 #endif
@@ -4139,14 +4139,14 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::InvalidateStyle_Bold ()
             {
                 fStyleValid_Bold = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetStyle_Bold (bool isBold)
             {
                 fStyleValid_Bold = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetStyle_Bold (isBold);
@@ -4163,14 +4163,14 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::InvalidateStyle_Italic ()
             {
                 fStyleValid_Italic = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetStyle_Italic (bool isItalic)
             {
                 fStyleValid_Italic = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetStyle_Italic (isItalic);
@@ -4187,14 +4187,14 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::InvalidateStyle_Underline ()
             {
                 fStyleValid_Underline = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetStyle_Underline (bool isUnderline)
             {
                 fStyleValid_Underline = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetStyle_Underline (isUnderline);
@@ -4211,19 +4211,19 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::InvalidateStyle_SubOrSuperScript ()
             {
                 fStyleValid_SubOrSuperScript = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
             {
                 fStyleValid_SubOrSuperScript = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetStyle_SubOrSuperScript (subOrSuperScript);
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  bool    Led_IncrementalFontSpecification::GetStyle_Outline () const
             {
                 Require (fStyleValid_Outline);
@@ -4296,7 +4296,7 @@ namespace   Stroika {
                 fStyleValid_Extended = true;
                 inherited::SetStyle_Extended (isExtended);
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  bool    Led_IncrementalFontSpecification::GetStyle_Strikeout () const
             {
                 Require (fStyleValid_Strikeout);
@@ -4309,14 +4309,14 @@ namespace   Stroika {
             inline  void    Led_IncrementalFontSpecification::InvalidateStyle_Strikeout ()
             {
                 fStyleValid_Strikeout = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
             {
                 fStyleValid_Strikeout = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetStyle_Strikeout (isStrikeout);
@@ -4337,20 +4337,20 @@ namespace   Stroika {
             {
                 fFontSizeValid = false;
                 fFontSizeIncrementValid = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetPointSize (unsigned short pointSize)
             {
                 fFontSizeValid = true;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetPointSize (pointSize);
                 fFontSizeIncrementValid = false;
             }
-#if     qWindows
+#if     qPlatform_Windows
             inline  void    Led_IncrementalFontSpecification::PokeAtTMHeight (long tmHeight)
             {
                 fFontSizeValid = true;
@@ -4373,14 +4373,14 @@ namespace   Stroika {
             {
                 fFontSizeValid = false;
                 fFontSizeIncrementValid = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
             }
             inline  void    Led_IncrementalFontSpecification::SetPointSizeIncrement (short pointSizeIncrement)
             {
                 fFontSizeValid = false;
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = false;
 #endif
                 inherited::SetPointSize ((unsigned short)pointSizeIncrement);
@@ -4405,7 +4405,7 @@ namespace   Stroika {
                 fTextColorValid = true;
                 inherited::SetTextColor (textColor);
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  void    Led_IncrementalFontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
             {
                 Require (fFontSpecifierValid and
@@ -4435,7 +4435,7 @@ namespace   Stroika {
                 fFontSizeIncrementValid = false;
                 inherited::SetOSRep (fontID, fontSize, fontStyle);
             }
-#elif   qWindows
+#elif   qPlatform_Windows
             inline  LOGFONT Led_IncrementalFontSpecification::GetOSRep () const
             {
                 Require (fFontSpecifierValid and
@@ -4511,7 +4511,7 @@ namespace   Stroika {
                 if (addInTheseAttributes.GetStyle_SubOrSuperScript_Valid ()) {
                     SetStyle_SubOrSuperScript (addInTheseAttributes.GetStyle_SubOrSuperScript ());
                 }
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (addInTheseAttributes.GetStyle_Outline_Valid ()) {
                     SetStyle_Outline (addInTheseAttributes.GetStyle_Outline ());
                 }
@@ -4524,7 +4524,7 @@ namespace   Stroika {
                 if (addInTheseAttributes.GetStyle_Extended_Valid ()) {
                     SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
                     SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
                 }
@@ -4532,7 +4532,7 @@ namespace   Stroika {
 
                 // Font Size
                 if (addInTheseAttributes.GetPointSize_Valid ()) {
-#if     qWindows
+#if     qPlatform_Windows
                     // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
                     PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
@@ -4553,7 +4553,7 @@ namespace   Stroika {
                     SetTextColor (addInTheseAttributes.GetTextColor ());
                 }
 
-#if     qWindows
+#if     qPlatform_Windows
                 // could have done somewhat earlier, but if so, must be more careful about what else gets changed... (like textcolor not part of this guy)
                 if (addInTheseAttributes.GetDidSetOSRepCallFlag ()) {
                     LOGFONT lf;
@@ -4582,7 +4582,7 @@ namespace   Stroika {
                 if (addInTheseAttributes.GetStyle_Underline_Valid ()) {
                     SetStyle_Underline (addInTheseAttributes.GetStyle_Underline ());
                 }
-#if     qMacOS
+#if     qPlatform_MacOS
                 if (addInTheseAttributes.GetStyle_Outline_Valid ()) {
                     SetStyle_Outline (addInTheseAttributes.GetStyle_Outline ());
                 }
@@ -4595,7 +4595,7 @@ namespace   Stroika {
                 if (addInTheseAttributes.GetStyle_Extended_Valid ()) {
                     SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
                     SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
                 }
@@ -4603,7 +4603,7 @@ namespace   Stroika {
 
                 // Font Size
                 if (addInTheseAttributes.GetPointSize_Valid ()) {
-#if     qWindows
+#if     qPlatform_Windows
                     // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
                     PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
@@ -4624,7 +4624,7 @@ namespace   Stroika {
                     SetTextColor (addInTheseAttributes.GetTextColor ());
                 }
 
-#if     qWindows
+#if     qPlatform_Windows
                 fDidSetOSRepCallFlag = addInTheseAttributes.GetDidSetOSRepCallFlag ();
 #endif
             }
@@ -4677,7 +4677,7 @@ namespace   Stroika {
                         return false;
                     }
                 }
-#if     qMacOS
+#if     qPlatform_MacOS
                 {
                     if (lhs.GetStyle_Outline_Valid () != rhs.GetStyle_Outline_Valid ()) {
                         return false;
@@ -4710,7 +4710,7 @@ namespace   Stroika {
                         return false;
                     }
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 {
                     if (lhs.GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
                         return false;
@@ -4748,7 +4748,7 @@ namespace   Stroika {
                         return false;
                     }
                     if (lhs.GetPointSize_Valid ()) {
-#if     qWindows
+#if     qPlatform_Windows
                         // Speed tweek to avoid divide and getdevicecaps crap...
                         if (lhs.PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
                             return true;
@@ -4788,9 +4788,9 @@ namespace   Stroika {
 
             inline  Led_Color   Led_GetTextColor ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (Led_Color::kBlack);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return Led_Color (::GetSysColor (COLOR_WINDOWTEXT));
 #elif   qXWindows
                 return (Led_Color::kBlack);
@@ -4798,9 +4798,9 @@ namespace   Stroika {
             }
             inline  Led_Color   Led_GetTextBackgroundColor ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 return (Led_Color::kWhite);
-#elif   qWindows
+#elif   qPlatform_Windows
                 return Led_Color (::GetSysColor (COLOR_WINDOW));
 #elif   qXWindows
                 return (Led_Color::kWhite);
@@ -4808,7 +4808,7 @@ namespace   Stroika {
             }
             inline  Led_Color   Led_GetSelectedTextColor ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 RGBColor    hiliteRGBValue;
                 LMGetHiliteRGB (&hiliteRGBValue);
                 /*
@@ -4822,7 +4822,7 @@ namespace   Stroika {
                 else {
                     return (Led_Color::kBlack);
                 }
-#elif   qWindows
+#elif   qPlatform_Windows
                 //          return Led_Color (::GetSysColor (COLOR_CAPTIONTEXT));
                 return Led_Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
 #elif   qXWindows
@@ -4831,11 +4831,11 @@ namespace   Stroika {
             }
             inline  Led_Color   Led_GetSelectedTextBackgroundColor ()
             {
-#if     qMacOS
+#if     qPlatform_MacOS
                 RGBColor    hiliteRGBValue;
                 LMGetHiliteRGB (&hiliteRGBValue);
                 return Led_Color (hiliteRGBValue);
-#elif   qWindows
+#elif   qPlatform_Windows
                 //return Led_Color (::GetSysColor (COLOR_ACTIVECAPTION));
                 return Led_Color (::GetSysColor (COLOR_HIGHLIGHT));
 #elif   qXWindows
@@ -4858,7 +4858,7 @@ namespace   Stroika {
                 fOldClip ()
             {
                 RequireNotNull (tablet);
-#if     qWindows
+#if     qPlatform_Windows
                 if (::GetDeviceCaps (fTablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
                     return;
                 }
@@ -4872,10 +4872,10 @@ namespace   Stroika {
             {
                 RequireNotNull (tablet);
                 fHasOldClip = tablet->GetClip (&fOldClip);
-#if     qMacOS
+#if     qPlatform_MacOS
                 Assert (fHasOldClip);
                 tablet->SetClip (fOldClip * clipFurtherTo);
-#elif   qWindows
+#elif   qPlatform_Windows
                 /*
                  *  NB: We must use IntersectClipRect instead of the above SetClip () call because the CLIP on Win32 is in
                  *  device rather than logical coordinates.
@@ -4893,10 +4893,10 @@ namespace   Stroika {
             {
                 RequireNotNull (tablet);
                 fHasOldClip = tablet->GetClip (&fOldClip);
-#if     qMacOS
+#if     qPlatform_MacOS
                 Assert (fHasOldClip);
                 tablet->SetClip (fOldClip * clipFurtherTo);
-#elif   qWindows
+#elif   qPlatform_Windows
                 Assert (false); // NYI - see SPR#????
 #else
                 Assert (false); // NYI
@@ -4905,7 +4905,7 @@ namespace   Stroika {
             inline  Led_Tablet_::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
             {
                 AssertNotNull (fTablet);
-#if     qWindows
+#if     qPlatform_Windows
                 if (::GetDeviceCaps (fTablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
                     return;
                 }
@@ -4920,7 +4920,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  Led_MacPortAndClipRegionEtcSaver::Led_MacPortAndClipRegionEtcSaver ():
                 fSavedPort (Led_GetCurrentGDIPort ()),
 #if     !TARGET_CARBON
@@ -4961,7 +4961,7 @@ namespace   Stroika {
 
 
 //  class   Led_GDI_Obj_Selector
-#if     qWindows
+#if     qPlatform_Windows
             inline  Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect):
                 fTablet (tablet),
                 fRestoreObject (nullptr),
@@ -4978,7 +4978,7 @@ namespace   Stroika {
                     fRestoreAttribObject = ::SelectObject (tablet->m_hAttribDC, objToSelect);
                 }
             }
-#elif   qMacOS
+#elif   qPlatform_MacOS
             inline  Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen):
                 fTablet (tablet),
 #if     TARGET_CARBON
@@ -5001,7 +5001,7 @@ namespace   Stroika {
 #endif
             inline  Led_GDI_Obj_Selector::~Led_GDI_Obj_Selector ()
             {
-#if     qWindows
+#if     qPlatform_Windows
                 //NB: These restore objects CAN be nullptr, if no font (or whatever) selected into DC before we do... (aside from error cases)
                 if (fRestoreObject != nullptr) {
                     Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
@@ -5009,7 +5009,7 @@ namespace   Stroika {
                 if (fRestoreAttribObject != nullptr) {
                     Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
                 }
-#elif   qMacOS
+#elif   qPlatform_MacOS
                 GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
                 ::PenMode (fRestorePen.fPenStyle);
                 ::PenPat (&fRestorePen.fPenPat);
@@ -5022,7 +5022,7 @@ namespace   Stroika {
 
 
 
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  void    GDI_RGBForeColor (const RGBColor& color)
             {
                 ::RGBForeColor (&color);
@@ -5051,36 +5051,36 @@ namespace   Stroika {
             inline  short   Led_GetMacPictTop (const Led_Picture* picture)
             {
                 RequireNotNull (picture);
-#if     qMacOS
+#if     qPlatform_MacOS
                 return picture->picFrame.top;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return Led_ByteSwapFromMac (picture->picFrameTop);
 #endif
             }
             inline  short   Led_GetMacPictLeft (const Led_Picture* picture)
             {
                 RequireNotNull (picture);
-#if     qMacOS
+#if     qPlatform_MacOS
                 return picture->picFrame.left;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return Led_ByteSwapFromMac (picture->picFrameLeft);
 #endif
             }
             inline  short   Led_GetMacPictBottom (const Led_Picture* picture)
             {
                 RequireNotNull (picture);
-#if     qMacOS
+#if     qPlatform_MacOS
                 return picture->picFrame.bottom;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return Led_ByteSwapFromMac (picture->picFrameBottom);
 #endif
             }
             inline  short   Led_GetMacPictRight (const Led_Picture* picture)
             {
                 RequireNotNull (picture);
-#if     qMacOS
+#if     qPlatform_MacOS
                 return picture->picFrame.right;
-#elif   qWindows
+#elif   qPlatform_Windows
                 return Led_ByteSwapFromMac (picture->picFrameRight);
 #endif
             }
@@ -5096,7 +5096,7 @@ namespace   Stroika {
             {
                 return Led_Size (Led_GetMacPictHeight (picture), Led_GetMacPictWidth (picture));
             }
-#if     qMacOS
+#if     qPlatform_MacOS
             inline  short   Led_GetMacPictTop (const Led_Picture* const* picture)
             {
                 RequireNotNull (picture);
