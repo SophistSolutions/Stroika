@@ -16,12 +16,6 @@
     <Filter Include="CabFile">
       <UniqueIdentifier>{6fc575df-6168-4e1e-864b-e8bcc129d62a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\Samples\HTML-VBScript">
-      <UniqueIdentifier>{95324960-ef80-42f6-b2aa-4e0368b860ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="..\Samples\HTML-JavaScript">
-      <UniqueIdentifier>{be0f7d85-c39a-4d1a-91a1-79fca3ae9a9c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Sources\ActiveLedIt.def">
