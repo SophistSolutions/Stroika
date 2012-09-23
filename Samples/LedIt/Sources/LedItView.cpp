@@ -568,20 +568,18 @@ static	LedIt_DialogSupport	sLedIt_DialogSupport;
  ********************************************************************************
  */
 #if		qPlatform_Windows
-DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap (LedItViewAlmostBASE)
-
 IMPLEMENT_DYNCREATE(LedItView,	CView)
 
 BEGIN_MESSAGE_MAP(LedItView, LedItView::inherited)
 	ON_WM_SETFOCUS				()
 	ON_WM_SIZE					()
 	ON_WM_CONTEXTMENU			()
-	ON_COMMAND					(ID_OLE_INSERT_NEW,										OnInsertObject)
-	ON_COMMAND					(ID_CANCEL_EDIT_CNTR,									OnCancelEditCntr)
-	ON_COMMAND					(ID_CANCEL_EDIT_SRVR,									OnCancelEditSrvr)
-	ON_COMMAND					(ID_FILE_PRINT,											OnFilePrint)
-	ON_COMMAND					(ID_FILE_PRINT_DIRECT,									OnFilePrint)
-	ON_NOTIFY					(NM_RETURN,					ID_VIEW_FORMATBAR,			OnBarReturn)
+	ON_COMMAND					(ID_OLE_INSERT_NEW,										&OnInsertObject)
+	ON_COMMAND					(ID_CANCEL_EDIT_CNTR,									&OnCancelEditCntr)
+	ON_COMMAND					(ID_CANCEL_EDIT_SRVR,									&OnCancelEditSrvr)
+	ON_COMMAND					(ID_FILE_PRINT,											&OnFilePrint)
+	ON_COMMAND					(ID_FILE_PRINT_DIRECT,									&OnFilePrint)
+	ON_NOTIFY					(NM_RETURN,					ID_VIEW_FORMATBAR,			&OnBarReturn)
 	END_MESSAGE_MAP()
 #endif
 
