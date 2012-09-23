@@ -122,70 +122,10 @@ namespace   Stroika {
 
 
 
-#define BEGIN_TEMPLATE_2_MESSAGE_MAP(theClass, type_name1, type_name2, baseClass)           \
-    PTM_WARNING_DISABLE                                                     \
-    template < typename type_name1, typename type_name2 >                                           \
-    const AFX_MSGMAP* theClass< type_name1, type_name2 >::GetMessageMap() const         \
-    { return GetThisMessageMap(); }                                     \
-    template < typename type_name1, typename type_name2 >                                           \
-    const AFX_MSGMAP* PASCAL theClass< type_name1, type_name2 >::GetThisMessageMap()        \
-    {                                                                       \
-        typedef theClass< type_name1, type_name2 > ThisClass;                           \
-        typedef baseClass TheBaseClass;                                     \
-        static const AFX_MSGMAP_ENTRY _messageEntries[] =                   \
-                {
 
 
 
-//  class   Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>
-#define DoDeclare_Led_MFC_Helper_MessageMap(MFC_BASE_CLASS,BASE_INTERACTOR)\
-    BEGIN_TEMPLATE_2_MESSAGE_MAP(Led_MFC_Helper, MFC_BASE_CLASS, BASE_INTERACTOR, MFC_BASE_CLASS)\
-    ON_WM_CREATE()\
-    ON_WM_CHAR()\
-    ON_WM_TIMER()\
-    ON_WM_KEYDOWN()\
-    ON_WM_PAINT ()\
-    ON_WM_MOUSEMOVE()\
-    ON_WM_LBUTTONDOWN()\
-    ON_WM_SETCURSOR()\
-    ON_WM_GETDLGCODE ()\
-    ON_WM_LBUTTONUP()\
-    ON_WM_LBUTTONDBLCLK()\
-    ON_WM_SETFOCUS()\
-    ON_WM_KILLFOCUS()\
-    ON_WM_SIZE      ()\
-    ON_WM_ERASEBKGND()\
-    ON_WM_VSCROLL   ()\
-    ON_WM_HSCROLL   ()\
-    ON_WM_MOUSEWHEEL()\
-    ON_WM_ENABLE    ()\
-    ON_MESSAGE (WM_UNICHAR, OnUniChar)\
-    ON_MESSAGE (WM_IME_CHAR, OnIMEChar)\
-    ON_MESSAGE (WM_IME_COMPOSITION, OnIME_COMPOSITION)\
-    ON_MESSAGE (WM_IME_ENDCOMPOSITION, OnIME_ENDCOMPOSITION)\
-    \
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kUndo_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kRedo_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectAll_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectWord_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectTextRow_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectParagraph_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kCut_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kCopy_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kPaste_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kClear_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kFind_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kFindAgain_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kEnterFindString_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kReplace_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kReplaceAgain_CmdID)\
-    LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSpellCheck_CmdID)\
-    END_MESSAGE_MAP()
 
-
-#if     qSupportLed30CompatAPI
-#define DoDeclare_TextInteractorCommonCommandHelper_MFC_MessageMap(BASECLASS,CMD_INFO,CMD_ENABLER)
-#endif
 
 
                 template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
@@ -448,6 +388,65 @@ namespace   Stroika {
                     IdleManager::NonIdleContext nonIdleContext;
                     (void)OnPerformCommand (MFC_CommandNumberMapping::Get ().Lookup (commandNumber));
                 }
+                template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
+                const AFX_MSGMAP* Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR >::GetMessageMap() const
+                {
+                    return GetThisMessageMap();
+                }
+                template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
+                const AFX_MSGMAP* PASCAL Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR >::GetThisMessageMap()
+                {
+                    typedef Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR > ThisClass;
+                    typedef MFC_BASE_CLASS TheBaseClass;
+                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
+#if 0
+                        ON_WM_CREATE()
+                        ON_WM_CHAR()
+                        ON_WM_TIMER()
+                        ON_WM_KEYDOWN()
+                        ON_WM_PAINT ()
+                        ON_WM_MOUSEMOVE()
+                        ON_WM_LBUTTONDOWN()
+                        ON_WM_SETCURSOR()
+                        ON_WM_GETDLGCODE ()
+                        ON_WM_LBUTTONUP()
+                        ON_WM_LBUTTONDBLCLK()
+                        ON_WM_SETFOCUS()
+                        ON_WM_KILLFOCUS()
+                        ON_WM_SIZE      ()
+                        ON_WM_ERASEBKGND()
+                        ON_WM_VSCROLL   ()
+                        ON_WM_HSCROLL   ()
+                        ON_WM_MOUSEWHEEL()
+                        ON_WM_ENABLE    ()
+                        ON_MESSAGE (WM_UNICHAR, OnUniChar)
+                        ON_MESSAGE (WM_IME_CHAR, OnIMEChar)
+                        ON_MESSAGE (WM_IME_COMPOSITION, OnIME_COMPOSITION)
+                        ON_MESSAGE (WM_IME_ENDCOMPOSITION, OnIME_ENDCOMPOSITION)
+
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kUndo_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kRedo_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectAll_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectWord_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectTextRow_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSelectParagraph_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kCut_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kCopy_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kPaste_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kClear_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kFind_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kFindAgain_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kEnterFindString_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kReplace_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kReplaceAgain_CmdID)
+                        LED_MFC_HANDLE_COMMAND_M    (BASE_INTERACTOR::kSpellCheck_CmdID)
+#endif
+
+                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
+                    };
+                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
+                    return &messageMap;
+                }
 
 
 
@@ -455,9 +454,6 @@ namespace   Stroika {
 
 
 //  class   Led_MFC_MimicMFCAPIHelper<BASECLASS>
-#define DoDeclare_Led_MFC_MimicMFCAPIHelper_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_MimicMFCAPIHelper, MFC_BASE_CLASS, MFC_BASE_CLASS)\
-    END_MESSAGE_MAP()
                 template    <typename   BASECLASS>
                 inline  Led_MFC_MimicMFCAPIHelper<BASECLASS>::Led_MFC_MimicMFCAPIHelper ()
                 {
@@ -701,76 +697,108 @@ namespace   Stroika {
                     Assert (::IsWindow (m_hWnd));
                     return (TCHAR)::SendMessage (m_hWnd, EM_GETPASSWORDCHAR, 0, 0L);
                 }
-
-
-
-
-
+#if 0
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetMessageMap() const
+                {
+                    return GetThisMessageMap();
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* PASCAL Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetThisMessageMap()
+                {
+                    typedef Led_MFC_MimicMFCAPIHelper<BASECLASS> ThisClass;
+                    typedef BASECLASS TheBaseClass;
+                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
+                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
+                    };
+                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
+                    return &messageMap;
+                }
+#endif
 
 
 
 
 
 //  class   Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>
-#if     qTemplatedMemberFunctionsFailWithMFCMessageMaps
-#define DoDeclare_Led_MFC_OptionalWin32SDKMessageMimicHelper_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_MESSAGE_MAP(Led_MFC_OptionalWin32SDKMessageMimicHelper, MFC_BASE_CLASS, Led_MFC_OptionalWin32SDKMessageMimicHelper<MFC_BASE_CLASS >::inherited)\
-        ON_MESSAGE      (WM_SETTEXT,                    OnMFCSDKMessageDispatcher_##WM_SETTEXT)\
-        ON_MESSAGE      (WM_GETTEXT,                    OnMFCSDKMessageDispatcher_##WM_GETTEXT)\
-        ON_MESSAGE      (WM_GETTEXTLENGTH,              OnMFCSDKMessageDispatcher_##WM_GETTEXTLENGTH)\
-        ON_MESSAGE      (EM_GETSEL,                     OnMFCSDKMessageDispatcher_##EM_GETSEL)\
-        ON_MESSAGE      (EM_SETREADONLY,                OnMFCSDKMessageDispatcher_##EM_SETREADONLY)\
-        ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        OnMFCSDKMessageDispatcher_##EM_GETFIRSTVISIBLELINE)\
-        ON_MESSAGE      (EM_LINEINDEX,                  OnMFCSDKMessageDispatcher_##EM_LINEINDEX)\
-        ON_MESSAGE      (EM_GETLINECOUNT,               OnMFCSDKMessageDispatcher_##EM_GETLINECOUNT)\
-        ON_MESSAGE      (EM_CANUNDO,                    OnMFCSDKMessageDispatcher_##EM_CANUNDO)\
-        ON_MESSAGE      (EM_UNDO,                       OnMFCSDKMessageDispatcher_##EM_UNDO)\
-        ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            OnMFCSDKMessageDispatcher_##EM_EMPTYUNDOBUFFER)\
-        ON_MESSAGE      (WM_CLEAR,                      OnMFCSDKMessageDispatcher_##WM_CLEAR)\
-        ON_MESSAGE      (WM_CUT,                        OnMFCSDKMessageDispatcher_##WM_CUT)\
-        ON_MESSAGE      (WM_COPY,                       OnMFCSDKMessageDispatcher_##WM_COPY)\
-        ON_MESSAGE      (WM_PASTE,                      OnMFCSDKMessageDispatcher_##WM_PASTE)\
-        ON_MESSAGE      (EM_LINEFROMCHAR,               OnMFCSDKMessageDispatcher_##EM_LINEFROMCHAR)\
-        ON_MESSAGE      (EM_LINELENGTH,                 OnMFCSDKMessageDispatcher_##EM_LINELENGTH)\
-        ON_MESSAGE      (EM_LINESCROLL,                 OnMFCSDKMessageDispatcher_##EM_LINESCROLL)\
-        ON_MESSAGE      (EM_REPLACESEL,                 OnMFCSDKMessageDispatcher_##EM_REPLACESEL)\
-        ON_MESSAGE      (EM_SETSEL,                     OnMFCSDKMessageDispatcher_##EM_SETSEL)\
-        ON_MESSAGE      (EM_SCROLLCARET,                OnMFCSDKMessageDispatcher_##EM_SCROLLCARET)\
-        ON_MESSAGE      (WM_GETFONT,                    OnMFCSDKMessageDispatcher_##WM_GETFONT)\
-        ON_MESSAGE      (WM_SETFONT,                    OnMFCSDKMessageDispatcher_##WM_SETFONT)\
-    END_MESSAGE_MAP()
-#else
-#define DoDeclare_Led_MFC_OptionalWin32SDKMessageMimicHelper_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_OptionalWin32SDKMessageMimicHelper, MFC_BASE_CLASS, Led_MFC_OptionalWin32SDKMessageMimicHelper<MFC_BASE_CLASS >::inherited)\
-    ON_MESSAGE      (WM_SETTEXT,                    OnMFCSDKMessageDispatcher<WM_SETTEXT>)\
-    ON_MESSAGE      (WM_GETTEXT,                    OnMFCSDKMessageDispatcher<WM_GETTEXT>)\
-    ON_MESSAGE      (WM_GETTEXTLENGTH,              OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>)\
-    ON_MESSAGE      (EM_GETSEL,                     OnMFCSDKMessageDispatcher<EM_GETSEL>)\
-    ON_MESSAGE      (EM_SETREADONLY,                OnMFCSDKMessageDispatcher<EM_SETREADONLY>)\
-    ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        OnMFCSDKMessageDispatcher<EM_GETFIRSTVISIBLELINE>)\
-    ON_MESSAGE      (EM_LINEINDEX,                  OnMFCSDKMessageDispatcher<EM_LINEINDEX>)\
-    ON_MESSAGE      (EM_GETLINECOUNT,               OnMFCSDKMessageDispatcher<EM_GETLINECOUNT>)\
-    ON_MESSAGE      (EM_CANUNDO,                    OnMFCSDKMessageDispatcher<EM_CANUNDO>)\
-    ON_MESSAGE      (EM_UNDO,                       OnMFCSDKMessageDispatcher<EM_UNDO>)\
-    ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            OnMFCSDKMessageDispatcher<EM_EMPTYUNDOBUFFER>)\
-    ON_MESSAGE      (WM_CLEAR,                      OnMFCSDKMessageDispatcher<WM_CLEAR>)\
-    ON_MESSAGE      (WM_CUT,                        OnMFCSDKMessageDispatcher<WM_CUT>)\
-    ON_MESSAGE      (WM_COPY,                       OnMFCSDKMessageDispatcher<WM_COPY>)\
-    ON_MESSAGE      (WM_PASTE,                      OnMFCSDKMessageDispatcher<WM_PASTE>)\
-    ON_MESSAGE      (EM_LINEFROMCHAR,               OnMFCSDKMessageDispatcher<EM_LINEFROMCHAR>)\
-    ON_MESSAGE      (EM_LINELENGTH,                 OnMFCSDKMessageDispatcher<EM_LINELENGTH>)\
-    ON_MESSAGE      (EM_LINESCROLL,                 OnMFCSDKMessageDispatcher<EM_LINESCROLL>)\
-    ON_MESSAGE      (EM_REPLACESEL,                 OnMFCSDKMessageDispatcher<EM_REPLACESEL>)\
-    ON_MESSAGE      (EM_SETSEL,                     OnMFCSDKMessageDispatcher<EM_SETSEL>)\
-    ON_MESSAGE      (EM_SCROLLCARET,                OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)\
-    ON_MESSAGE      (WM_GETFONT,                    OnMFCSDKMessageDispatcher<WM_GETFONT>)\
-    ON_MESSAGE      (WM_SETFONT,                    OnMFCSDKMessageDispatcher<WM_SETFONT>)\
-    END_MESSAGE_MAP()
-#endif
                 template    <typename   BASECLASS>
                 Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>::Led_MFC_OptionalWin32SDKMessageMimicHelper ():
                     inherited ()
                 {
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS>::GetMessageMap() const
+                {
+                    return GetThisMessageMap();
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* PASCAL Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS >::GetThisMessageMap()
+                {
+                    typedef Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS > ThisClass;
+                    typedef BASECLASS TheBaseClass;
+                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
+#if 0
+
+#if     qTemplatedMemberFunctionsFailWithMFCMessageMaps
+                        ON_MESSAGE      (WM_SETTEXT,                    OnMFCSDKMessageDispatcher_##WM_SETTEXT)\
+                        ON_MESSAGE      (WM_GETTEXT,                    OnMFCSDKMessageDispatcher_##WM_GETTEXT)\
+                        ON_MESSAGE      (WM_GETTEXTLENGTH,              OnMFCSDKMessageDispatcher_##WM_GETTEXTLENGTH)\
+                        ON_MESSAGE      (EM_GETSEL,                     OnMFCSDKMessageDispatcher_##EM_GETSEL)\
+                        ON_MESSAGE      (EM_SETREADONLY,                OnMFCSDKMessageDispatcher_##EM_SETREADONLY)\
+                        ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        OnMFCSDKMessageDispatcher_##EM_GETFIRSTVISIBLELINE)\
+                        ON_MESSAGE      (EM_LINEINDEX,                  OnMFCSDKMessageDispatcher_##EM_LINEINDEX)\
+                        ON_MESSAGE      (EM_GETLINECOUNT,               OnMFCSDKMessageDispatcher_##EM_GETLINECOUNT)\
+                        ON_MESSAGE      (EM_CANUNDO,                    OnMFCSDKMessageDispatcher_##EM_CANUNDO)\
+                        ON_MESSAGE      (EM_UNDO,                       OnMFCSDKMessageDispatcher_##EM_UNDO)\
+                        ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            OnMFCSDKMessageDispatcher_##EM_EMPTYUNDOBUFFER)\
+                        ON_MESSAGE      (WM_CLEAR,                      OnMFCSDKMessageDispatcher_##WM_CLEAR)\
+                        ON_MESSAGE      (WM_CUT,                        OnMFCSDKMessageDispatcher_##WM_CUT)\
+                        ON_MESSAGE      (WM_COPY,                       OnMFCSDKMessageDispatcher_##WM_COPY)\
+                        ON_MESSAGE      (WM_PASTE,                      OnMFCSDKMessageDispatcher_##WM_PASTE)\
+                        ON_MESSAGE      (EM_LINEFROMCHAR,               OnMFCSDKMessageDispatcher_##EM_LINEFROMCHAR)\
+                        ON_MESSAGE      (EM_LINELENGTH,                 OnMFCSDKMessageDispatcher_##EM_LINELENGTH)\
+                        ON_MESSAGE      (EM_LINESCROLL,                 OnMFCSDKMessageDispatcher_##EM_LINESCROLL)\
+                        ON_MESSAGE      (EM_REPLACESEL,                 OnMFCSDKMessageDispatcher_##EM_REPLACESEL)\
+                        ON_MESSAGE      (EM_SETSEL,                     OnMFCSDKMessageDispatcher_##EM_SETSEL)\
+                        ON_MESSAGE      (EM_SCROLLCARET,                OnMFCSDKMessageDispatcher_##EM_SCROLLCARET)\
+                        ON_MESSAGE      (WM_GETFONT,                    OnMFCSDKMessageDispatcher_##WM_GETFONT)\
+                        ON_MESSAGE      (WM_SETFONT,                    OnMFCSDKMessageDispatcher_##WM_SETFONT)\
+
+#else
+
+                        ON_MESSAGE      (WM_SETTEXT,                    OnMFCSDKMessageDispatcher<WM_SETTEXT>)\
+                        ON_MESSAGE      (WM_GETTEXT,                    OnMFCSDKMessageDispatcher<WM_GETTEXT>)\
+                        ON_MESSAGE      (WM_GETTEXTLENGTH,              OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>)\
+                        ON_MESSAGE      (EM_GETSEL,                     OnMFCSDKMessageDispatcher<EM_GETSEL>)\
+                        ON_MESSAGE      (EM_SETREADONLY,                OnMFCSDKMessageDispatcher<EM_SETREADONLY>)\
+                        ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        OnMFCSDKMessageDispatcher<EM_GETFIRSTVISIBLELINE>)\
+                        ON_MESSAGE      (EM_LINEINDEX,                  OnMFCSDKMessageDispatcher<EM_LINEINDEX>)\
+                        ON_MESSAGE      (EM_GETLINECOUNT,               OnMFCSDKMessageDispatcher<EM_GETLINECOUNT>)\
+                        ON_MESSAGE      (EM_CANUNDO,                    OnMFCSDKMessageDispatcher<EM_CANUNDO>)\
+                        ON_MESSAGE      (EM_UNDO,                       OnMFCSDKMessageDispatcher<EM_UNDO>)\
+                        ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            OnMFCSDKMessageDispatcher<EM_EMPTYUNDOBUFFER>)\
+                        ON_MESSAGE      (WM_CLEAR,                      OnMFCSDKMessageDispatcher<WM_CLEAR>)\
+                        ON_MESSAGE      (WM_CUT,                        OnMFCSDKMessageDispatcher<WM_CUT>)\
+                        ON_MESSAGE      (WM_COPY,                       OnMFCSDKMessageDispatcher<WM_COPY>)\
+                        ON_MESSAGE      (WM_PASTE,                      OnMFCSDKMessageDispatcher<WM_PASTE>)\
+                        ON_MESSAGE      (EM_LINEFROMCHAR,               OnMFCSDKMessageDispatcher<EM_LINEFROMCHAR>)\
+                        ON_MESSAGE      (EM_LINELENGTH,                 OnMFCSDKMessageDispatcher<EM_LINELENGTH>)\
+                        ON_MESSAGE      (EM_LINESCROLL,                 OnMFCSDKMessageDispatcher<EM_LINESCROLL>)\
+                        ON_MESSAGE      (EM_REPLACESEL,                 OnMFCSDKMessageDispatcher<EM_REPLACESEL>)\
+                        ON_MESSAGE      (EM_SETSEL,                     OnMFCSDKMessageDispatcher<EM_SETSEL>)\
+                        ON_MESSAGE      (EM_SCROLLCARET,                OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)\
+                        ON_MESSAGE      (WM_GETFONT,                    OnMFCSDKMessageDispatcher<WM_GETFONT>)\
+                        ON_MESSAGE      (WM_SETFONT,                    OnMFCSDKMessageDispatcher<WM_SETFONT>)\
+
+#endif
+
+
+#endif
+
+                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
+                    };
+                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
+                    return &messageMap;
                 }
 
 
@@ -781,12 +809,6 @@ namespace   Stroika {
 
 
 //  class   Led_MFC_DragAndDropWindow<BASECLASS>
-#define DoDeclare_Led_MFC_DragAndDropWindow_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_DragAndDropWindow, MFC_BASE_CLASS, Led_MFC_DragAndDropWindow<MFC_BASE_CLASS >::inherited)\
-    ON_WM_CREATE    ()\
-    ON_WM_TIMER     ()\
-    END_MESSAGE_MAP()
-
                 template    <typename   BASECLASS>
                 typename    Led_MFC_DragAndDropWindow<BASECLASS>::LedStartDragAndDropContext*   Led_MFC_DragAndDropWindow<BASECLASS>::sCurrentDragInfo  =   NULL;
                 template    <typename   BASECLASS>
@@ -1226,19 +1248,31 @@ namespace   Stroika {
                 }
 
 
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* Led_MFC_DragAndDropWindow<BASECLASS>::GetMessageMap() const
+                {
+                    return GetThisMessageMap();
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* PASCAL Led_MFC_DragAndDropWindow<BASECLASS>::GetThisMessageMap()
+                {
+                    typedef Led_MFC_DragAndDropWindow<BASECLASS> ThisClass;
+                    typedef BASECLASS TheBaseClass;
+                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
+#if 0
+                        ON_WM_CREATE    ()
+                        ON_WM_TIMER     ()
+#endif
+                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
+                    };
+                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
+                    return &messageMap;
+                }
 
 
 
 
 //  class   Led_MFC_CViewHelper<BASECLASS>
-#define DoDeclare_Led_MFC_CViewHelper_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_CViewHelper, MFC_BASE_CLASS, Led_MFC_CViewHelper<MFC_BASE_CLASS >::inherited)\
-    ON_WM_PAINT()\
-    ON_WM_LBUTTONDOWN()\
-    ON_WM_CREATE    ()\
-    ON_WM_VSCROLL   ()\
-    ON_WM_HSCROLL   ()\
-    END_MESSAGE_MAP()
                 template    <typename   BASECLASS>
                 Led_MFC_CViewHelper<BASECLASS>::Led_MFC_CViewHelper ():
                     inherited (),
@@ -1619,6 +1653,30 @@ namespace   Stroika {
                         }
                     }
                     inherited::OnHScroll (nSBCode, nPos, pScrollBar);
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* Led_MFC_CViewHelper< BASECLASS>::GetMessageMap() const
+                {
+                    return GetThisMessageMap();
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* PASCAL Led_MFC_CViewHelper< BASECLASS >::GetThisMessageMap()
+                {
+                    typedef Led_MFC_CViewHelper< BASECLASS > ThisClass;
+                    typedef BASECLASS TheBaseClass;
+                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
+#if 0
+                        ON_WM_PAINT()
+                        ON_WM_LBUTTONDOWN()
+                        ON_WM_CREATE    ()
+                        ON_WM_VSCROLL   ()
+                        ON_WM_HSCROLL   ()
+#endif
+
+                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
+                    };
+                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
+                    return &messageMap;
                 }
 
 

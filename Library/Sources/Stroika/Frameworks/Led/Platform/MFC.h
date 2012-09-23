@@ -234,9 +234,6 @@ namespace   Stroika {
                     with a document, you want to subclass from CView. For a little control (as in a dialog), you want to subclass from CWnd.</p>
                         <p>This template makes it easier (soon easy, but for now, just easier) to subclass from either one. The default one, and
                     the one Led mainly uses is CView. But soon I'll support (better) subclassing from CWnd.</p>
-                        <p>NB: You must invoke the macro DoDeclare_Led_MFC_Helper_MessageMap(MFC_BASE_CLASS, BASE_INTERACTOR) to
-                    generate the code for the message
-                    map for this template, unless its already been done so for your particular MFC_BASE_CLASS in Led_MFC.cpp.</p>
                 */
                 template    <typename   MFC_BASE_CLASS = CWnd, typename BASE_INTERACTOR = TextInteractor>
                 class   Led_MFC_Helper :
@@ -331,9 +328,6 @@ namespace   Stroika {
                         <p>NB: Use of this class almost ALWAYS requires also mixing in the template
                     @'Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>'. since that is what (by default) implements
                     the OnMsgXXX helpers.</p>
-                        <p>NB: You must invoke the macro DoDeclare_Led_MFC_MimicMFCAPIHelper_MessageMap(BASECLASS) somewhere to
-                    generate the message map code for this template, unless thats already been done for your particular BASECLASS
-                    in Led_MFC.cpp.</p>
                 */
                 template    <typename   BASECLASS = Led_MFC_Helper<> >
                 class   Led_MFC_MimicMFCAPIHelper :
@@ -376,8 +370,10 @@ namespace   Stroika {
                     nonvirtual  BOOL    SetReadOnly (BOOL bReadOnly = TRUE);
                     nonvirtual  int     GetFirstVisibleLine () const;
                     nonvirtual  TCHAR   GetPasswordChar () const;
+#if 0
                 protected:
                     DECLARE_MESSAGE_MAP ()
+#endif
                 };
 
 
@@ -401,8 +397,6 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Mimicry of the starndard Win32 messages sent to an edit control. We cannot
                     mimic ALL the messages. Some just don't make sense (like GETHANDLE). But for those that do, we
                     do our best.</p>
-                        <p>NB: You must declare DoDeclare_Led_MFC_OptionalWin32SDKMessageMimicHelper_MessageMap (BASECLASS) to get the
-                    message map for this class generated, unless this has already been done in Led_MFC.cpp (for your particular BASECLASS).</p>
                 */
                 template    <typename   BASECLASS = Led_MFC_Helper<> >
                 class   Led_MFC_OptionalWin32SDKMessageMimicHelper : public Led_Win32_Win32SDKMessageMimicHelper <BASECLASS> {
@@ -460,9 +454,6 @@ namespace   Stroika {
                 @CLASS:         Led_MFC_DragAndDropWindow<BASECLASS>
                 @BASES:         BASECLASS
                 @DESCRIPTION:   <p>NB: BASECLASS <em>must</em> derive (possibly indirectly) from CWnd.</p>
-                        <p>To use this class, you must also
-                    define DoDeclare_Led_MFC_DragAndDropWindow_MessageMap() to declare the actual message map for the template (unless its already done for yours
-                    in Led_MFC.cpp).</p>
                         <p>Probably eventually migrate more stuff from @'Led_MFC_CViewHelper<BASECLASS>' here to this class. But for now,
                     I'm risk averse. I don't want to break the class library. And this is all that is needed to move out to meet the immediate
                     complaints.</p>
@@ -585,9 +576,6 @@ namespace   Stroika {
                 @CLASS:         Led_MFC_CViewHelper<BASECLASS>
                 @BASES:         BASECLASS
                 @DESCRIPTION:   <p>NB: BASECLASS <em>must</em> derive (possibly indirectly) from CView.</p>
-                        <p>To use this class, you must also
-                    define DoDeclare_Led_MFC_CViewHelper_MessageMap() to declare the actual message map for the template (unless its already done for yours
-                    in Led_MFC.cpp).</p>
                 */
                 template    <typename   BASECLASS = Led_MFC_DragAndDropWindow<> >
                 class   Led_MFC_CViewHelper :
@@ -674,6 +662,8 @@ namespace   Stroika {
 
 
 
+
+
                 /*
                 @CLASS:         Led_MFC
                 @BASES:         @'Led_MFC_CViewHelper<BASECLASS>', where BASECLASS=@'Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>, where BASECLASS=@'Led_MFC_MimicMFCAPIHelper<BASECLASS>', where BASECLASS == @'Led_MFC_Helper<BASECLASS>', where BASECLASS=CView
@@ -681,7 +671,7 @@ namespace   Stroika {
                     for Led 2.2. In Led 2.2, Led_MFC was the SOLE class provided to integrated Led with MFC. Now there is a whole suite of
                     individually selectable templates to provide that interfacing.</p>
                 */
-                typedef Led_MFC_CViewHelper<Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper <Led_MFC_MimicMFCAPIHelper <Led_MFC_Helper<CView, TextInteractor> > > > >   Led_MFC;
+                typedef Led_MFC_CViewHelper<Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView, TextInteractor>>>>>   Led_MFC;
 
 
 
@@ -692,9 +682,6 @@ namespace   Stroika {
                 @CLASS:         Led_MFC_COleControlHelper<BASECLASS>
                 @BASES:         BASECLASS
                 @DESCRIPTION:   <p>NB: BASECLASS <em>must</em> derive (possibly indirectly) from CView.</p>
-                        <p>To use this class, you must also
-                    define DoDeclare_Led_MFC_COleControlHelper_MessageMap() to declare the actual message map for the template (unless its already done for yours
-                    in Led_MFC.cpp).</p>
                 */
                 template    <typename   BASECLASS = Led_MFC_DragAndDropWindow<> >
                 class   Led_MFC_COleControlHelper :
@@ -727,16 +714,9 @@ namespace   Stroika {
                         const TextInteractor*   ti  =   this;
                         ti->Refresh (range, updateMode);
                     }
-
-                protected:
-                    DECLARE_MESSAGE_MAP ()
                 };
 
 
-//  class   Led_MFC_COleControlHelper<BASECLASS>
-#define DoDeclare_Led_MFC_COleControlHelper_MessageMap(MFC_BASE_CLASS)\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_COleControlHelper, MFC_BASE_CLASS, MFC_BASE_CLASS)\
-    END_MESSAGE_MAP()
 
 
 

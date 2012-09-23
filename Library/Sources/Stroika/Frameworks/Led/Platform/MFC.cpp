@@ -158,26 +158,6 @@ extern "C"  STDAPI_(LRESULT)    LresultFromObject (REFIID riid, WPARAM wParam, L
 
 
 
-/*
- ********************************************************************************
- *********************************** Led_MFC ************************************
- ********************************************************************************
- */
-#if 0
-//tmphack disable til I fix macro mapping stuff
-DoDeclare_Led_MFC_Helper_MessageMap(CView, TextInteractor)
-DoDeclare_Led_MFC_MimicMFCAPIHelper_MessageMap(Led_MFC_Helper<CView>)
-DoDeclare_Led_MFC_OptionalWin32SDKMessageMimicHelper_MessageMap(Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView> >)
-DoDeclare_Led_MFC_DragAndDropWindow_MessageMap(Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView> > >)
-DoDeclare_Led_MFC_CViewHelper_MessageMap(Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView> > > >)
-
-
-DoDeclare_Led_MFC_Helper_MessageMap(CWnd, TextInteractor);
-DoDeclare_Led_MFC_MimicMFCAPIHelper_MessageMap(Led_MFC_Helper<CWnd>)
-DoDeclare_Led_MFC_OptionalWin32SDKMessageMimicHelper_MessageMap(Led_MFC_MimicMFCAPIHelper <Led_MFC_Helper<CWnd> >)
-
-#endif
-
 
 
 
