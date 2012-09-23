@@ -426,10 +426,6 @@ namespace   Stroika {
 
                 // Helper functions, mainly for subclasses, but imagers may use too
             public:
-#if     qSupportLed30CompatAPI
-                nonvirtual  void    DoAboutToUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers);
-                nonvirtual  void    DoDidUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers) throw ();
-#endif
                 nonvirtual  void    DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd);
                 nonvirtual  void    DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd) throw ();
 
@@ -509,16 +505,6 @@ namespace   Stroika {
 
 
 // Helpers for MarkerSink classes
-
-
-#if     qSupportLed30CompatAPI
-            /*
-            @CLASS:         MarkersOfATypeMarkerSink<T>
-            @BASES:         @'TextStore::MarkerSink'
-            @DESCRIPTION:   <p>OBSOLETE - use @'MarkersOfATypeMarkerSink2Vector<T>'</p>
-            */
-#define MarkersOfATypeMarkerSink    MarkersOfATypeMarkerSink2Vector
-#endif
 
 
 

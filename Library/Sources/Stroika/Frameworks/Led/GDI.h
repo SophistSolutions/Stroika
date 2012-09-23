@@ -1228,22 +1228,6 @@ namespace   Stroika {
 
 
 
-
-
-
-
-#if     qSupportLed30CompatAPI
-            Led_Point       GetRectOrigin (const Led_Rect& r);
-            Led_Size        GetRectSize (const Led_Rect& r);
-            Led_Distance    GetRectWidth (const Led_Rect& r);
-            Led_Distance    GetRectHeight (const Led_Rect& r);
-            Led_Point       GetRectTopLeft (const Led_Rect& r);
-            Led_Point       GetRectTopRight (const Led_Rect& r);
-            Led_Point       GetRectBottomRight (const Led_Rect& r);
-            Led_Point       GetRectBottomLeft (const Led_Rect& r);
-#endif
-
-
             Led_Rect    operator- (const Led_Rect& lhs, const Led_Point& rhs);
             Led_Rect    operator+ (Led_Point p, Led_Rect r);
             Led_Rect    operator+ (Led_Rect r, Led_Point p);
@@ -1515,9 +1499,6 @@ namespace   Stroika {
 
             public:
                 nonvirtual  void    EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Led_Color& eraseColor);
-#if     qSupportLed30CompatAPI
-                nonvirtual  void    HilightARectangle_SolidHelper (const Led_Rect& hilightRect, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
-#endif
                 nonvirtual  void    HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
                 nonvirtual  void    HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
 
@@ -2930,43 +2911,6 @@ namespace   Stroika {
 
 
 
-
-
-
-#if     qSupportLed30CompatAPI
-            inline  Led_Point   GetRectOrigin (const Led_Rect& r)
-            {
-                return r.GetOrigin ();
-            }
-            inline  Led_Size    GetRectSize (const Led_Rect& r)
-            {
-                return r.GetSize ();
-            }
-            inline  Led_Distance    GetRectWidth (const Led_Rect& r)
-            {
-                return r.GetWidth ();
-            }
-            inline  Led_Distance    GetRectHeight (const Led_Rect& r)
-            {
-                return r.GetHeight ();
-            }
-            inline  Led_Point       GetRectTopLeft (const Led_Rect& r)
-            {
-                return r.GetTopLeft ();
-            }
-            inline  Led_Point       GetRectTopRight (const Led_Rect& r)
-            {
-                return r.GetTopRight ();
-            }
-            inline  Led_Point       GetRectBottomRight (const Led_Rect& r)
-            {
-                return r.GetBotRight ();
-            }
-            inline  Led_Point       GetRectBottomLeft (const Led_Rect& r)
-            {
-                return (Led_Point (r.GetBottom (), r.GetLeft ()));
-            }
-#endif
 
 
 

@@ -267,12 +267,6 @@ namespace   Stroika {
                 nonvirtual  void    InvalidateTotalRowsInWindow ();
                 virtual     size_t  ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const;
 
-#if     qSupportLed30CompatAPI
-            protected:
-                typedef LineBasedPartition  MultiRowPartition;
-            public:
-                typedef Partition::PartitionMarker  MultiRowPartitionMarker;
-#endif
             private:
                 friend  class   PMInfoCacheMgr;
             };

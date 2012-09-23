@@ -197,19 +197,6 @@ namespace   Stroika {
                 {
                     OnMouseMove_Msg (nFlags, oPoint.x, oPoint.y);
                 }
-#if     qSupportLed30CompatAPI
-                template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
-                BOOL    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::SubclassWindow (HWND hWnd)
-                {
-                    /*
-                     *  We've never bothered really supporting the SubclassWindow mechanism since it
-                     *  didn't seem to work very well. In Led 3.0 and earlier, we REALLY just did
-                     *  a REPLACE. Now just cleanup our nomenclature, but keep this routine name
-                     *  around for backward compatability.
-                     */
-                    return ReplaceWindow (hWnd);
-                }
-#endif
                 template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
                 /*
                 @METHOD:        Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>::ReplaceWindow

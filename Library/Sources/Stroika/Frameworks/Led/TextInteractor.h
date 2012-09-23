@@ -397,16 +397,6 @@ namespace   Stroika {
                 virtual     void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const                            =   0;
 
 
-#if     qSupportLed30CompatAPI
-            public:
-                nonvirtual  void    Refresh (const Led_Rect& area, UpdateMode updateMode = eDefaultUpdate) const {
-                    RefreshWindowRect (GetWindowRect (), updateMode);
-                }
-                nonvirtual  void    Update (const Led_Rect& area) const {
-                    UpdateWindowRect (GetWindowRect ());
-                }
-#endif
-
             public:
                 nonvirtual  bool    GetUseSecondaryHilight () const;
                 nonvirtual  void    SetUseSecondaryHilight (bool useSecondaryHilight);
@@ -970,12 +960,6 @@ namespace   Stroika {
                 nonvirtual  void    SetSimplePlainTextInsertOptimization (bool simplePlainTextInsertOptimizationFlag);
             private:
                 bool    fSimplePlainTextInsertOptimization;
-
-#if     qSupportLed30CompatAPI
-            public:
-                nonvirtual  size_t  GetSelStart () const;
-                nonvirtual  size_t  GetSelEnd () const;
-#endif
 
             private:
                 TextInteractor& fTextInteractor;
@@ -1923,16 +1907,6 @@ namespace   Stroika {
             {
                 fSimplePlainTextInsertOptimization = simplePlainTextInsertOptimizationFlag;
             }
-#if     qSupportLed30CompatAPI
-            inline  size_t  TextInteractor::UndoableContextHelper::GetSelStart () const
-            {
-                return fSelStart;
-            }
-            inline  size_t  TextInteractor::UndoableContextHelper::GetSelEnd () const
-            {
-                return fSelEnd;
-            }
-#endif
 
 
 

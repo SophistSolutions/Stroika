@@ -766,9 +766,6 @@ void    TextImager::SetSelection (size_t start, size_t end)
 
     if (start != GetSelectionStart () or end != GetSelectionEnd ()) {
         SetSelection_ (start, end);
-#if     qSupportLed30CompatAPI
-        NotificationOf_SelectionChanged ();
-#endif
     }
 }
 
@@ -829,12 +826,6 @@ void    TextImager::SetHilightMarker (HilightMarker* newHilightMarker)
     AssertNotNull (fHiliteMarker);
     GetTextStore ().AddMarker (fHiliteMarker, start, end - start, this);
 }
-
-#if     qSupportLed30CompatAPI
-void    TextImager::NotificationOf_SelectionChanged ()
-{
-}
-#endif
 
 /*
 @METHOD:        TextImager::RecomputeSelectionGoalColumn
@@ -1083,35 +1074,6 @@ size_t  TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirec
     Assert (false);     // not reached...
     return (fromPos);
 }
-
-#if     qSupportLed30CompatAPI
-/*
-@METHOD:        TextImager::GetTextBoundingRect
-@DESCRIPTION:   <p><b>OBSOLETE</b></p>
-                <p>Most likely you want to use @'TextImager::GetTextWindowBoundingRect'. This routine isn't
-            BIDI friendly.</p>
-*/
-Led_Rect    TextImager::GetTextBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const
-{
-    Led_Rect    caretStart  =   GetCharLocation (fromMarkerPos);
-    Led_Rect    caretEnd    =   (fromMarkerPos == toMarkerPos) ? caretStart : GetCharLocation (toMarkerPos);
-
-    Led_Rect    boundingRect;
-
-    boundingRect.top = caretStart.top;
-    boundingRect.bottom = caretEnd.bottom;
-    if (caretStart.top == caretEnd.top) {
-        boundingRect.left = caretStart.left;
-        // We only go up to the start of the caretEnd - cuz we produce bounding rect BETWEEN markerPoses - not characters!
-        boundingRect.right = caretEnd.left;
-    }
-    else {
-        boundingRect.left = 0;
-        boundingRect.right = GetWindowRect ().GetWidth ();
-    }
-    return (boundingRect);
-}
-#endif
 
 /*
 @METHOD:        TextImager::GetTextWindowBoundingRect
@@ -1541,22 +1503,6 @@ void    TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetTo
         tablet->EraseBackground_SolidHelper (subsetToDraw, GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor));
     }
 }
-
-#if     qSupportLed30CompatAPI
-/*
-@METHOD:        TextImager::HilightARectangle
-@DESCRIPTION:   <p>Hilight the given rectangle of the screen, after its been drawn. This is typically done via
-    some sort of pixel or color invesion. The default implemtation uses @'Led_Tablet_::HilightARectangle_SolidHelper'.</p>
-        <p>Override this mostly if you want different hilighting behavior, or if you want your hilighting behavior
-    to remain in sync with other changes to the EraseBackground behavior.</p>
-        <p>OBSOLETE - use @'TextImager::HilightArea' instead.</p>
-*/
-void    TextImager::HilightARectangle (Led_Tablet tablet, Led_Rect hiliteRect)
-{
-    RequireNotNull (tablet);
-    HilightArea (tablet, hiliteRect);
-}
-#endif
 
 /*
 @METHOD:        TextImager::HilightArea

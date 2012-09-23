@@ -2175,57 +2175,6 @@ void    Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, con
     }
 }
 
-#if     qSupportLed30CompatAPI
-/*
-@METHOD:        Led_Tablet_::HilightARectangle__SolidHelper
-@DESCRIPTION:   <p>HilightARectangle__SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE
-            @'TextImager::HilightARectangle'.</p>
-                <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
-            platform UI conventionally calls for) inverting the text via a simple XOR.</p>
-                <p>OBSOLETE - Use @'Led_Tablet_::HilightArea__SolidHelper' instead.</p>
-*/
-void    Led_Tablet_::HilightARectangle_SolidHelper (const Led_Rect& hilightRect, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
-{
-    if (not hilightRect.IsEmpty ()) {
-#if     qMacOS
-        Led_Arg_Unused (hilightBackColor);
-        Led_Arg_Unused (hilightForeColor);
-        Led_Arg_Unused (oldForeColor);
-        SetPort ();
-        LMSetHiliteMode (LMGetHiliteMode () & 0x7F);
-        GDI_RGBBackColor (oldBackColor.GetOSRep ());    // Mac HilightMode code already knows the hilightBackColor - and exchanges it with the given backColor
-        //  GDI_RGBForeColor (foreColor.GetOSRep ());       // See IM V-61- docs on "The Hilite Mode".
-        Rect    qdHiliteRect = AsQDRect (hilightRect);
-        ::InvertRect (&qdHiliteRect);
-#elif   qWindows
-        // Does proper inverse video, but seems to ignore the TextColor/BkColor/Pen/Brush colors.
-        // Really should fix this to behave like Mac - replacing the background color with the text hilight color.
-        // See SPR#???
-        BitBlt (hilightRect.left, hilightRect.top, hilightRect.GetWidth (), hilightRect.GetHeight (),
-                this, hilightRect.left, hilightRect.top, DSTINVERT
-               );
-#elif   qXWindows
-        /*
-         *  Quick and dirty primitive version. Should probably take into account backColor/foreColor args.
-         *          --  LGP 2001-04-30
-         */
-        XGCValues   prevValues;
-        const unsigned long kSavedAttrs =   GCFunction | GCForeground | GCBackground;
-        (void)::memset (&prevValues, 0, sizeof (prevValues));
-        ::XGetGCValues (fDisplay, fGC, kSavedAttrs, &prevValues);
-        ::XSetFunction (fDisplay, fGC, GXxor);
-        long    whiteP  =   WhitePixel (fDisplay, DefaultScreen (fDisplay));
-        long    blackP  =   BlackPixel (fDisplay, DefaultScreen (fDisplay)) ^ whiteP;
-        ::XSetBackground (fDisplay, fGC, whiteP);
-        ::XSetForeground (fDisplay, fGC, blackP);
-        Led_Rect    adjustedRect    =   hilightRect - fDrawableOrigin;
-        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedRect.GetLeft (), adjustedRect.GetTop (), adjustedRect.GetWidth (), adjustedRect.GetHeight ());
-        ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
-#endif
-    }
-}
-#endif
-
 /*
 @METHOD:        Led_Tablet_::HilightArea_SolidHelper
 @DESCRIPTION:   <p>HilightArea_SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE

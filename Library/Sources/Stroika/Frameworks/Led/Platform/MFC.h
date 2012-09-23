@@ -256,10 +256,6 @@ namespace   Stroika {
                 public:
                     virtual ~Led_MFC_Helper ();
 
-#if     qSupportLed30CompatAPI
-                public:
-                    nonvirtual  BOOL    SubclassWindow (HWND hWnd);
-#endif
                 public:
                     nonvirtual  BOOL    ReplaceWindow (HWND hWnd);
 

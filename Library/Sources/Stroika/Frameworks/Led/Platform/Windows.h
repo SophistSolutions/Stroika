@@ -225,12 +225,6 @@ namespace   Stroika {
                 protected:
                     short   fAccumulatedWheelDelta;
 
-#if     qSupportLed30CompatAPI
-                public:
-                    nonvirtual  void    GetDefaultWindowMargins (Led_Coordinate* top, Led_Coordinate* left, Led_Coordinate* bottom, Led_Coordinate* right);
-                    nonvirtual  void    SetDefaultWindowMargins (Led_Coordinate top, Led_Coordinate left, Led_Coordinate bottom, Led_Coordinate right);
-#endif
-
                 public:
                     nonvirtual  Led_TWIPS_Rect  GetDefaultWindowMargins () const;
                     nonvirtual  void            SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins);
@@ -1618,50 +1612,6 @@ namespace   Stroika {
 #endif
                     return true;
                 }
-#if     qSupportLed30CompatAPI
-                template    <typename   BASE_INTERACTOR>
-                /*
-                @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins
-                @DESCRIPTION:   <p>30 Backward compatability. Use the other overloaded version</p>
-                */
-                void    Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins (Led_Coordinate* top, Led_Coordinate* left, Led_Coordinate* bottom, Led_Coordinate* right)
-                {
-                    try {
-                        Tablet_Aquirer  tablet (this);
-                        Led_TWIPS_Rect  tr  =   GetDefaultWindowMargins ();
-                        Led_Rect        r   =   tablet->CvtFromTWIPS (tr);
-                        if (top != NULL) {
-                            *top = r.GetTop ();
-                        }
-                        if (left != NULL) {
-                            *left = r.GetLeft ();
-                        }
-                        if (bottom != NULL) {
-                            *bottom = r.GetBottom ();
-                        }
-                        if (right != NULL) {
-                            *right = r.GetRight ();
-                        }
-                    }
-                    catch (...) {
-                        Assert (false);     // COULD implement using Led_CvtScreenPixelsToTWIPSH () but not worth it for backcompat routine...
-                    }
-                }
-                template    <typename   BASE_INTERACTOR>
-                /*
-                @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins
-                @DESCRIPTION:   <p>30 Backward compatability. Use the other overloaded version</p>
-                */
-                void    Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins (Led_Coordinate top, Led_Coordinate left, Led_Coordinate bottom, Led_Coordinate right)
-                {
-                    SetDefaultWindowMargins (Led_TWIPS_Rect (Led_CvtScreenPixelsToTWIPSV (top),
-                                             Led_CvtScreenPixelsToTWIPSH (left),
-                                             Led_CvtScreenPixelsToTWIPSV (bottom - top),
-                                             Led_CvtScreenPixelsToTWIPSH (right - left)
-                                                            )
-                                            );
-                }
-#endif
                 template    <typename   BASE_INTERACTOR>
                 /*
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins

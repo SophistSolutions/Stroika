@@ -426,15 +426,6 @@ namespace   Stroika {
             public:
                 virtual Led_Distance    CalculateLongestRowInWindowPixelWidth () const;
 
-#if     qSupportLed30CompatAPI
-                /*
-                 *  Always/only called at times when it is safe to call other editor API methods.
-                 *  It is expected these will be PRIMARY hooks for subclassers (simple users).
-                 */
-            protected:
-                virtual     void        NotificationOf_SelectionChanged ();
-#endif
-
             public:
                 enum    CursorMovementDirection { eCursorBack, eCursorForward, eCursorToStart, eCursorToEnd };
                 enum    CursorMovementUnit      { eCursorByChar, eCursorByWord, eCursorByRow, eCursorByLine, eCursorByWindow, eCursorByBuffer };
@@ -471,9 +462,6 @@ namespace   Stroika {
 
 
             public:
-#if     qSupportLed30CompatAPI
-                nonvirtual  Led_Rect    GetTextBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const;
-#endif
                 nonvirtual  Led_Rect    GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const;
 
             public:
@@ -741,9 +729,6 @@ namespace   Stroika {
                 virtual     void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
 
             public:
-#if     qSupportLed30CompatAPI
-                virtual     void    HilightARectangle (Led_Tablet tablet, Led_Rect hiliteRect);
-#endif
                 virtual     void    HilightArea (Led_Tablet tablet, Led_Rect hiliteArea);
                 virtual     void    HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea);
 

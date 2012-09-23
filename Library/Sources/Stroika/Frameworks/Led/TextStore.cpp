@@ -775,13 +775,6 @@ notFoundByBuffersEnd:
     return kBadIndex;
 }
 
-#if     qSupportLed30CompatAPI
-void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers)
-{
-    Assert (false);
-    DoAboutToUpdateCalls (updateInfo, &*markers.begin (), &*markers.end ());
-}
-#endif
 
 /*
 @METHOD:        TextStore::DoAboutToUpdateCalls
@@ -813,13 +806,6 @@ void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* c
         }
     }
 }
-
-#if     qSupportLed30CompatAPI
-void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, const vector<Marker*>& markers)  throw ()
-{
-    DoDidUpdateCalls (updateInfo, &*markers.begin (), &*markers.end ());
-}
-#endif
 
 /*
 @METHOD:        TextStore::DoDidUpdateCalls

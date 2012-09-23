@@ -2082,16 +2082,6 @@ namespace   Stroika {
 
 
 
-#if     qSupportLed30CompatAPI
-            /*
-            @CLASS:         WordProcessorHScrollbarHelper<BASECLASS>
-            @BASES:         BASECLASS
-            @DESCRIPTION:   <p>Deprecated. Only available if @'qSupportLed30CompatAPI' defined.</p>
-            */
-            template    <typename   BASECLASS>  class   WordProcessorHScrollbarHelper :
-                public BASECLASS {
-            };
-#endif
 
 
 

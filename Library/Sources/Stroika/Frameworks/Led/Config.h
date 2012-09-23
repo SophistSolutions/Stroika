@@ -248,22 +248,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-/*
-@CONFIGVAR:     qSupportLed30CompatAPI
-@DESCRIPTION:   <p>A way to incrementally, semi-backward-compatably implement API changes. Also, this
-    serves as documentation.</p>
-        <p>Any methods etc marked with @'qSupportLed30CompatAPI' will be supported (assuming this flag
-    is set true) for Led 3.1, but probably NOT thereafter. You can get your programs compiling
-    with this set true. But you should try getting stuff compiling with this
-    set OFF soon thereafter. Using the NEW apis will (hopefully make your code clearer), but at
-    any rate, make it more easy to migrate to the NEXT Led release.</p>
-        <p>Default is OFF</p>
- */
-#ifndef qSupportLed30CompatAPI
-// ship with off, but test with it both ways!!!
-//#define   qSupportLed30CompatAPI              1
-#define qSupportLed30CompatAPI                      0
-#endif
 
 
 
@@ -292,90 +276,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 #define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
 #endif
 #endif
-#endif
-
-
-
-
-#if     qSupportLed30CompatAPI
-/*
-@CONFIGVAR:     qLed_CharacterSet
-@DESCRIPTION:   <p>OBSOLETE</p>
-                <p>As of Led 3.1a4 - you must directly define @'qSingleByteCharacters' or
-            @'qMultiByteCharacters' or @'qWideCharacters'.
-                </P>
-        <p>It was a difficult choice deciding how to deal with character set issues.
-    There are four major character sets I was immediately concerned with supporting,
-    and, of course, hundreds more that I'd like to be able to support in the future.
-    And then there is the question of supporting different character sets at the same
-    time.</p>
-        <p>Since my immediate contractual obligations only require support for SJIS, and
-    possibly ASCII, and or Extended ASCII, and not in any mixed form, I've allowed myself
-    the luxury of not worrying beyond that for now. Also - I've taken the approach of
-    building the choice of character set in at the compilation level. This is a
-    simplification since it allows me to make type choices (as WinNT does for UNICODE)
-    depending on character set choices. The difference probably doesn't matter for
-    different single byte character sets.</p>
-        <p>Anyhow - for the time being, the character set defined at compile time is
-    given by qLed_CharacterSet.</p>
-        <p><code>qLed_CharacterSet</code> can be any one of the following:
-        <ul><code>
-            <li>qASCII_CharacterSet</li><br>
-            <li>qExtendedASCII_CharacterSet</li><br>
-            <li>qSJIS_CharacterSet</li><br>
-            <li>qUNICODE_CharacterSet</li><br>
-        </ul></code>
-        </p>
-        <p>Depending on which value is specified, Led will automatically define one of:
-        <ul><code>
-            <li>qSingleByteCharacters</li><br>
-            <li>qMultiByteCharacters</li><br>
-            <li>qWideCharacters</li><br>
-        </ul></code>
-        and will use that value internally.
-        </p>
-        <p><b>WARNING</b>All this character set support is subject to change, and is being re-thought for future
-    Led releases. I probably will go in the direction of just supporting ASCII, or UNICODE. And not all the various
-    MBYTE character sets (mainly cuz then no good way to mix charactersets within a document). -- LGP 970722</p>
- */
-#define qASCII_CharacterSet         1
-#define qExtendedASCII_CharacterSet 2
-#define qUNICODE_CharacterSet       3
-#define qSJIS_CharacterSet          4
-
-#ifndef qLed_CharacterSet
-#ifdef  _UNICODE
-#define qLed_CharacterSet       qUNICODE_CharacterSet
-#else
-#define qLed_CharacterSet       qExtendedASCII_CharacterSet
-#endif
-#endif
-
-
-// DON'T Edit THESE directly - change the characterset, and allow
-// these to be derivitive...
-#if     qLed_CharacterSet == qASCII_CharacterSet
-#define qSingleByteCharacters   1
-#define qMultiByteCharacters    0
-#define qWideCharacters         0
-#elif   qLed_CharacterSet == qExtendedASCII_CharacterSet
-#define qSingleByteCharacters   1
-#define qMultiByteCharacters    0
-#define qWideCharacters         0
-#elif   qLed_CharacterSet == qUNICODE_CharacterSet
-#define qSingleByteCharacters   0
-#define qMultiByteCharacters    0
-#define qWideCharacters         1
-#else
-#error  "Unknown character set"
-#endif
-
-#else
-
-#if     defined (qLed_CharacterSet)
-#error  "This is OBSOLETE - use qSingleByteCharacters/qMultiByteCharacters/qWideCharacters"
-#endif
-
 #endif
 
 

@@ -323,12 +323,6 @@ namespace   Stroika {
     LED_MFC_HANDLE_COMMAND_RANGE_M  (WordProcessor::kFirstSelectedEmbedding_CmdID,      WordProcessor::kLastSelectedEmbedding_CmdID)\
     END_MESSAGE_MAP()
 
-#if     qSupportLed30CompatAPI
-                // Obsolete because of SPR#1407 - just call DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap
-                // directly...
-#define DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMapX(BASECLASS,CMD_INFO)\
-    DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap (BASECLASS)
-#endif
 
                 template    <typename   BASECLASS>
                 inline  WordProcessorCommonCommandHelper_MFC<BASECLASS>::WordProcessorCommonCommandHelper_MFC ():
