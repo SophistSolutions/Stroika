@@ -98,6 +98,8 @@ namespace   Stroika {
 
 
 
+
+
 //  class   Led_MFC_TabletFromCDC
                 inline  Led_MFC_TabletFromCDC::Led_MFC_TabletFromCDC (CDC* pDC):
                     fTablet ()
@@ -385,12 +387,10 @@ namespace   Stroika {
                 {
                     typedef Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR > ThisClass;
                     typedef MFC_BASE_CLASS TheBaseClass;
-
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 #endif
-
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
                         ON_WM_CREATE()
                         ON_WM_CHAR()
@@ -691,24 +691,6 @@ namespace   Stroika {
                     Assert (::IsWindow (m_hWnd));
                     return (TCHAR)::SendMessage (m_hWnd, EM_GETPASSWORDCHAR, 0, 0L);
                 }
-#if 0
-                template    <typename   BASECLASS>
-                const AFX_MSGMAP* Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetMessageMap() const
-                {
-                    return GetThisMessageMap();
-                }
-                template    <typename   BASECLASS>
-                const AFX_MSGMAP* PASCAL Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetThisMessageMap()
-                {
-                    typedef Led_MFC_MimicMFCAPIHelper<BASECLASS> ThisClass;
-                    typedef BASECLASS TheBaseClass;
-                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
-                    };
-                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
-                    return &messageMap;
-                }
-#endif
 
 
 
@@ -730,67 +712,39 @@ namespace   Stroika {
                 {
                     typedef Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS > ThisClass;
                     typedef BASECLASS TheBaseClass;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-#if 0
-
-#if     qTemplatedMemberFunctionsFailWithMFCMessageMaps
-                        ON_MESSAGE      (WM_SETTEXT,                    OnMFCSDKMessageDispatcher_##WM_SETTEXT)\
-                        ON_MESSAGE      (WM_GETTEXT,                    OnMFCSDKMessageDispatcher_##WM_GETTEXT)\
-                        ON_MESSAGE      (WM_GETTEXTLENGTH,              OnMFCSDKMessageDispatcher_##WM_GETTEXTLENGTH)\
-                        ON_MESSAGE      (EM_GETSEL,                     OnMFCSDKMessageDispatcher_##EM_GETSEL)\
-                        ON_MESSAGE      (EM_SETREADONLY,                OnMFCSDKMessageDispatcher_##EM_SETREADONLY)\
-                        ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        OnMFCSDKMessageDispatcher_##EM_GETFIRSTVISIBLELINE)\
-                        ON_MESSAGE      (EM_LINEINDEX,                  OnMFCSDKMessageDispatcher_##EM_LINEINDEX)\
-                        ON_MESSAGE      (EM_GETLINECOUNT,               OnMFCSDKMessageDispatcher_##EM_GETLINECOUNT)\
-                        ON_MESSAGE      (EM_CANUNDO,                    OnMFCSDKMessageDispatcher_##EM_CANUNDO)\
-                        ON_MESSAGE      (EM_UNDO,                       OnMFCSDKMessageDispatcher_##EM_UNDO)\
-                        ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            OnMFCSDKMessageDispatcher_##EM_EMPTYUNDOBUFFER)\
-                        ON_MESSAGE      (WM_CLEAR,                      OnMFCSDKMessageDispatcher_##WM_CLEAR)\
-                        ON_MESSAGE      (WM_CUT,                        OnMFCSDKMessageDispatcher_##WM_CUT)\
-                        ON_MESSAGE      (WM_COPY,                       OnMFCSDKMessageDispatcher_##WM_COPY)\
-                        ON_MESSAGE      (WM_PASTE,                      OnMFCSDKMessageDispatcher_##WM_PASTE)\
-                        ON_MESSAGE      (EM_LINEFROMCHAR,               OnMFCSDKMessageDispatcher_##EM_LINEFROMCHAR)\
-                        ON_MESSAGE      (EM_LINELENGTH,                 OnMFCSDKMessageDispatcher_##EM_LINELENGTH)\
-                        ON_MESSAGE      (EM_LINESCROLL,                 OnMFCSDKMessageDispatcher_##EM_LINESCROLL)\
-                        ON_MESSAGE      (EM_REPLACESEL,                 OnMFCSDKMessageDispatcher_##EM_REPLACESEL)\
-                        ON_MESSAGE      (EM_SETSEL,                     OnMFCSDKMessageDispatcher_##EM_SETSEL)\
-                        ON_MESSAGE      (EM_SCROLLCARET,                OnMFCSDKMessageDispatcher_##EM_SCROLLCARET)\
-                        ON_MESSAGE      (WM_GETFONT,                    OnMFCSDKMessageDispatcher_##WM_GETFONT)\
-                        ON_MESSAGE      (WM_SETFONT,                    OnMFCSDKMessageDispatcher_##WM_SETFONT)\
-
-#else
-
-                        ON_MESSAGE      (WM_SETTEXT,                    OnMFCSDKMessageDispatcher<WM_SETTEXT>)\
-                        ON_MESSAGE      (WM_GETTEXT,                    OnMFCSDKMessageDispatcher<WM_GETTEXT>)\
-                        ON_MESSAGE      (WM_GETTEXTLENGTH,              OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>)\
-                        ON_MESSAGE      (EM_GETSEL,                     OnMFCSDKMessageDispatcher<EM_GETSEL>)\
-                        ON_MESSAGE      (EM_SETREADONLY,                OnMFCSDKMessageDispatcher<EM_SETREADONLY>)\
-                        ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        OnMFCSDKMessageDispatcher<EM_GETFIRSTVISIBLELINE>)\
-                        ON_MESSAGE      (EM_LINEINDEX,                  OnMFCSDKMessageDispatcher<EM_LINEINDEX>)\
-                        ON_MESSAGE      (EM_GETLINECOUNT,               OnMFCSDKMessageDispatcher<EM_GETLINECOUNT>)\
-                        ON_MESSAGE      (EM_CANUNDO,                    OnMFCSDKMessageDispatcher<EM_CANUNDO>)\
-                        ON_MESSAGE      (EM_UNDO,                       OnMFCSDKMessageDispatcher<EM_UNDO>)\
-                        ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            OnMFCSDKMessageDispatcher<EM_EMPTYUNDOBUFFER>)\
-                        ON_MESSAGE      (WM_CLEAR,                      OnMFCSDKMessageDispatcher<WM_CLEAR>)\
-                        ON_MESSAGE      (WM_CUT,                        OnMFCSDKMessageDispatcher<WM_CUT>)\
-                        ON_MESSAGE      (WM_COPY,                       OnMFCSDKMessageDispatcher<WM_COPY>)\
-                        ON_MESSAGE      (WM_PASTE,                      OnMFCSDKMessageDispatcher<WM_PASTE>)\
-                        ON_MESSAGE      (EM_LINEFROMCHAR,               OnMFCSDKMessageDispatcher<EM_LINEFROMCHAR>)\
-                        ON_MESSAGE      (EM_LINELENGTH,                 OnMFCSDKMessageDispatcher<EM_LINELENGTH>)\
-                        ON_MESSAGE      (EM_LINESCROLL,                 OnMFCSDKMessageDispatcher<EM_LINESCROLL>)\
-                        ON_MESSAGE      (EM_REPLACESEL,                 OnMFCSDKMessageDispatcher<EM_REPLACESEL>)\
-                        ON_MESSAGE      (EM_SETSEL,                     OnMFCSDKMessageDispatcher<EM_SETSEL>)\
-                        ON_MESSAGE      (EM_SCROLLCARET,                OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)\
-                        ON_MESSAGE      (WM_GETFONT,                    OnMFCSDKMessageDispatcher<WM_GETFONT>)\
-                        ON_MESSAGE      (WM_SETFONT,                    OnMFCSDKMessageDispatcher<WM_SETFONT>)\
-
-#endif
-
-
-#endif
-
+                        ON_MESSAGE      (WM_SETTEXT,                    &OnMFCSDKMessageDispatcher<WM_SETTEXT>)
+                        ON_MESSAGE      (WM_GETTEXT,                    &OnMFCSDKMessageDispatcher<WM_GETTEXT>)
+                        ON_MESSAGE      (WM_GETTEXTLENGTH,              &OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>)
+                        ON_MESSAGE      (EM_GETSEL,                     &OnMFCSDKMessageDispatcher<EM_GETSEL>)
+                        ON_MESSAGE      (EM_SETREADONLY,                &OnMFCSDKMessageDispatcher<EM_SETREADONLY>)
+                        ON_MESSAGE      (EM_GETFIRSTVISIBLELINE,        &OnMFCSDKMessageDispatcher<EM_GETFIRSTVISIBLELINE>)
+                        ON_MESSAGE      (EM_LINEINDEX,                  &OnMFCSDKMessageDispatcher<EM_LINEINDEX>)
+                        ON_MESSAGE      (EM_GETLINECOUNT,               &OnMFCSDKMessageDispatcher<EM_GETLINECOUNT>)
+                        ON_MESSAGE      (EM_CANUNDO,                    &OnMFCSDKMessageDispatcher<EM_CANUNDO>)
+                        ON_MESSAGE      (EM_UNDO,                       &OnMFCSDKMessageDispatcher<EM_UNDO>)
+                        ON_MESSAGE      (EM_EMPTYUNDOBUFFER,            &OnMFCSDKMessageDispatcher<EM_EMPTYUNDOBUFFER>)
+                        ON_MESSAGE      (WM_CLEAR,                      &OnMFCSDKMessageDispatcher<WM_CLEAR>)
+                        ON_MESSAGE      (WM_CUT,                        &OnMFCSDKMessageDispatcher<WM_CUT>)
+                        ON_MESSAGE      (WM_COPY,                       &OnMFCSDKMessageDispatcher<WM_COPY>)
+                        ON_MESSAGE      (WM_PASTE,                      &OnMFCSDKMessageDispatcher<WM_PASTE>)
+                        ON_MESSAGE      (EM_LINEFROMCHAR,               &OnMFCSDKMessageDispatcher<EM_LINEFROMCHAR>)
+                        ON_MESSAGE      (EM_LINELENGTH,                 &OnMFCSDKMessageDispatcher<EM_LINELENGTH>)
+                        ON_MESSAGE      (EM_LINESCROLL,                 &OnMFCSDKMessageDispatcher<EM_LINESCROLL>)
+                        ON_MESSAGE      (EM_REPLACESEL,                 &OnMFCSDKMessageDispatcher<EM_REPLACESEL>)
+                        ON_MESSAGE      (EM_SETSEL,                     &OnMFCSDKMessageDispatcher<EM_SETSEL>)
+                        ON_MESSAGE      (EM_SCROLLCARET,                &OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)
+                        ON_MESSAGE      (WM_GETFONT,                    &OnMFCSDKMessageDispatcher<WM_GETFONT>)
+                        ON_MESSAGE      (WM_SETFONT,                    &OnMFCSDKMessageDispatcher<WM_SETFONT>)
                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
                     };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
                     static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
                     return &messageMap;
                 }
@@ -1240,8 +1194,6 @@ namespace   Stroika {
                         inherited::OnTimer (nEventID);
                     }
                 }
-
-
                 template    <typename   BASECLASS>
                 const AFX_MSGMAP* Led_MFC_DragAndDropWindow<BASECLASS>::GetMessageMap() const
                 {
@@ -1253,10 +1205,8 @@ namespace   Stroika {
                     typedef Led_MFC_DragAndDropWindow<BASECLASS> ThisClass;
                     typedef BASECLASS TheBaseClass;
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-#if 0
                         ON_WM_CREATE    ()
                         ON_WM_TIMER     ()
-#endif
                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
                     };
                     static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
@@ -1658,17 +1608,21 @@ namespace   Stroika {
                 {
                     typedef Led_MFC_CViewHelper< BASECLASS > ThisClass;
                     typedef BASECLASS TheBaseClass;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-#if 0
                         ON_WM_PAINT()
                         ON_WM_LBUTTONDOWN()
                         ON_WM_CREATE    ()
                         ON_WM_VSCROLL   ()
                         ON_WM_HSCROLL   ()
-#endif
-
                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
                     };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
                     static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
                     return &messageMap;
                 }
@@ -1679,34 +1633,7 @@ namespace   Stroika {
 
 
 
-//  class   Led_MFC_ExceptionHandlerHelper<BASECLASS>
-
-
-
-                /**
-                 * DEFINE PURPOSE... - TWO ARG VARIANT NEEDED FOR WHEN BASECLASS is a TEMPLATE NAME
-                 */
-#define Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2(BASECLASS, UNIQUE_TOKEN_IN_CPP_FILE)\
-    typedef BASECLASS UNIQUE_TOKEN_IN_COMPILATION_UNIT;\
-    BEGIN_TEMPLATE_MESSAGE_MAP(Led_MFC_ExceptionHandlerHelper, UNIQUE_TOKEN_IN_COMPILATION_UNIT, UNIQUE_TOKEN_IN_COMPILATION_UNIT)\
-    ON_WM_CHAR  ()\
-    ON_MESSAGE          (WM_IME_CHAR,   OnIMEChar)\
-    ON_WM_KEYDOWN       ()\
-    ON_MESSAGE          (WM_PASTE,      OnMsgPaste)\
-    ON_WM_LBUTTONDOWN   ()\
-    ON_WM_LBUTTONUP     ()\
-    ON_WM_LBUTTONDBLCLK ()\
-    END_MESSAGE_MAP()
-
-
-                /**
-                 * DEFINE PURPOSE... -
-                 *      @see Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2
-                 */
-#define Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION(BASECLASS)\
-    Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2(BASECLASS, Led_MFC_ExceptionHandlerHelper ## BASECLASS);
-
-
+			//  class   Led_MFC_ExceptionHandlerHelper<BASECLASS>
                 template    <typename   BASECLASS>
                 /*
                 @METHOD:        Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException
@@ -1798,6 +1725,36 @@ namespace   Stroika {
                         HandleException ();
                         return 1;
                     }
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* Led_MFC_ExceptionHandlerHelper< BASECLASS>::GetMessageMap() const
+                {
+                    return GetThisMessageMap();
+                }
+                template    <typename   BASECLASS>
+                const AFX_MSGMAP* PASCAL Led_MFC_ExceptionHandlerHelper< BASECLASS >::GetThisMessageMap()
+                {
+                    typedef Led_MFC_ExceptionHandlerHelper< BASECLASS > ThisClass;
+                    typedef BASECLASS TheBaseClass;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
+                    static const AFX_MSGMAP_ENTRY _messageEntries[] = {
+						ON_WM_CHAR  ()
+						ON_MESSAGE          (WM_IME_CHAR,   &OnIMEChar)
+						ON_WM_KEYDOWN       ()
+						ON_MESSAGE          (WM_PASTE,      &OnMsgPaste)
+						ON_WM_LBUTTONDOWN   ()
+						ON_WM_LBUTTONUP     ()
+						ON_WM_LBUTTONDBLCLK ()
+                        {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
+                    };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
+                    static const AFX_MSGMAP messageMap =    { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
+                    return &messageMap;
                 }
 
 

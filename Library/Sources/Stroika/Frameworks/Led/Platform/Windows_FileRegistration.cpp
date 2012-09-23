@@ -344,18 +344,3 @@ void    Win32UIFileAssociationRegistrationHelper::ExpandVariables (Led_SDK_Strin
 #endif
 
 
-
-
-
-#if     qLedUsesNamespaces
-}
-#endif
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-
-

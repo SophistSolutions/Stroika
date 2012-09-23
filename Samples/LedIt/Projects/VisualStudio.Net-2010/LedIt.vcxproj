@@ -193,7 +193,7 @@
       </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386   /verbose:lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

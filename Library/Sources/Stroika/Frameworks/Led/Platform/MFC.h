@@ -366,24 +366,11 @@ namespace   Stroika {
                     nonvirtual  BOOL    SetReadOnly (BOOL bReadOnly = TRUE);
                     nonvirtual  int     GetFirstVisibleLine () const;
                     nonvirtual  TCHAR   GetPasswordChar () const;
-#if 0
-                protected:
-                    DECLARE_MESSAGE_MAP ()
-#endif
                 };
 
 
 
 
-#if     qTemplatedMemberFunctionsFailWithMFCMessageMaps
-#define OnMFCSDKMessageDispatcherBWA_DECLARE(MESSAGE_NUMBER)\
-    afx_msg LRESULT OnMFCSDKMessageDispatcher_##MESSAGE_NUMBER (WPARAM wParam, LPARAM lParam)\
-    {\
-        LRESULT result  =   0;\
-        Verify (HandleMessage (MESSAGE_NUMBER, wParam, lParam, &result));\
-        return result;\
-    }
-#endif
 
 
 
@@ -409,33 +396,6 @@ namespace   Stroika {
                         Verify (HandleMessage (MESSAGE_NUMBER, wParam, lParam, &result));
                         return result;
                     }
-
-#if     qTemplatedMemberFunctionsFailWithMFCMessageMaps
-                public:
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_SETTEXT)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_GETTEXT)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_GETTEXTLENGTH)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_GETSEL)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_SETREADONLY)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_GETFIRSTVISIBLELINE)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_LINEINDEX)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_GETLINECOUNT)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_CANUNDO)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_UNDO)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_EMPTYUNDOBUFFER)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_CLEAR)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_CUT)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_COPY)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_PASTE)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_LINEFROMCHAR)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_LINELENGTH)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_LINESCROLL)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_REPLACESEL)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_SETSEL)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(EM_SCROLLCARET)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_GETFONT)
-                    OnMFCSDKMessageDispatcherBWA_DECLARE(WM_SETFONT)
-#endif
 
                 protected:
                     DECLARE_MESSAGE_MAP ()
@@ -724,9 +684,6 @@ namespace   Stroika {
                     where it cannot throw exceptions in error situations.</p>
                         <p>This class wraps many messages the control is likely to get, and when there is an exception, it calls a virtual
                     exception-handling method (which by default - beeps), and then returns normally.</p>
-                        <p>To use this class, you must also
-                    define Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION(BASECLASS) or Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2 to
-                    define the actual message map for the template.</p>
                 */
                 template    <typename   BASECLASS = Led_MFC >
                 class   Led_MFC_ExceptionHandlerHelper :

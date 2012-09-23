@@ -56,6 +56,9 @@ inline  SIZE    DPtoHIMETRIC (SIZE s)
 }
 
 
+
+
+
 /*
  ********************************************************************************
  ***************************** Led_MFC_ControlItem ******************************
@@ -594,15 +597,3 @@ Led_MFC&    Led_MFC_ControlItem::GetActiveView () const
 set<HWND>   Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed;
 
 #endif
-
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-
-
