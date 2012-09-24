@@ -311,20 +311,6 @@ namespace   Stroika {
                 return LTrim (RTrim (text));
             }
 
-
-
-            template    <>
-            inline  size_t  Length (const char* p)
-            {
-                RequireNotNull (p);
-                return ::strlen (p);
-            }
-            template    <>
-            inline  size_t  Length (const wchar_t* p)
-            {
-                RequireNotNull (p);
-                return ::wcslen (p);
-            }
         }
     }
 }

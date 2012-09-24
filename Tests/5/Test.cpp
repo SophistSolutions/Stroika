@@ -740,7 +740,37 @@ namespace	{
 }
 
 
+namespace	{
+	void	Test20_CStringHelpers_ ()
+	{
+		VerifyTestResult (C_String::Length ("hi") == 2);
+		VerifyTestResult (C_String::Length (L"hi") == 2);
 
+		{
+			char	buf[3] = {'1', '1', '1' };
+			C_String::Copy (buf, "3", NEltsOf (buf));
+			VerifyTestResult (::strcmp (buf, "3") == 0);
+		}
+		{
+			wchar_t	buf[3] = {'1', '1', '1' };
+			C_String::Copy (buf, L"3", NEltsOf (buf));
+			VerifyTestResult (::wcscmp (buf, L"3") == 0);
+		}
+
+
+		{
+			char	buf[3] = {'1', '1', '1' };
+			C_String::Copy (buf, "12345", NEltsOf (buf));
+			VerifyTestResult (::strcmp (buf, "12") == 0);
+		}
+		{
+			wchar_t	buf[3] = {'1', '1', '1' };
+			C_String::Copy (buf, L"12345", NEltsOf (buf));
+			VerifyTestResult (::wcscmp (buf, L"12") == 0);
+		}
+
+	}
+}
 
 
 namespace	{
@@ -768,6 +798,7 @@ namespace	{
 			Test17_RegExp_ ();
 			Test18_Compare_ ();
 			Test19_ConstCharStar_ ();
+			Test20_CStringHelpers_ ();
 		}
 }
 

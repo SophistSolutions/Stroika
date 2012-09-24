@@ -125,10 +125,11 @@ namespace   Stroika {
                 bool operator()(const wstring& _Left, const wstring& _Right) const;
             };
 
-
+#if 0
             // Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
             template    <typename T>
             size_t  Length (const T* p);
+#endif
 
 
             string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
