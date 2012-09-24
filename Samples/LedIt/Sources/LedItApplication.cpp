@@ -41,6 +41,8 @@
 	#include	<gtk/gtkoptionmenu.h>
 #endif
 
+#include	"Stroika/Foundation/Characters/String.h"
+
 #include	"Stroika/Frameworks/Led/Config.h"
 #include	"Stroika/Frameworks/Led/StdDialogs.h"
 #if		qPlatform_Windows
@@ -1585,7 +1587,7 @@ void	LedItApplication::OnChooseDefaultFontCommand ()
 	LOGFONT	lf;
 	(void)::memset (&lf, 0, sizeof (lf));
 	{
-		(void)::_tcscpy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName);
+		Characters::C_String::Copy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
 		Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));	// cuz our cached entry - if valid - always short enuf...
 	}
 	lf.lfWeight = (fsp.GetStyle_Bold ())? FW_BOLD: FW_NORMAL;
@@ -2244,7 +2246,7 @@ CDocument*	LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName)
 		{
 			TCHAR szPath[_MAX_PATH];
 			Require (pathName.length () < _MAX_PATH);
-			_tcscpy (szPath, pathName.c_str ());
+			Characters::C_String::Copy (szPath, pathName.c_str (), NEltsOf (szPath));
 			WIN32_FIND_DATA fileData;
 			HANDLE hFind = ::FindFirstFile (szPath, &fileData);
 			if (hFind != INVALID_HANDLE_VALUE) {
@@ -2276,18 +2278,18 @@ CDocument*	LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName, FileFormat f
 	TCHAR szTemp[_MAX_PATH];
 	if (lpszFileName[0] == '\"')
 		++lpszFileName;
-	_tcsncpy(szTemp, lpszFileName, _MAX_PATH);
+	Characters::C_String::Copy (szTemp, lpszFileName, NEltsOf (szTemp));
 	LPTSTR lpszLast = _tcsrchr(szTemp, '\"');
 	if (lpszLast != NULL)
 		*lpszLast = 0;
 	AfxFullPath(szPath, szTemp);
 	TCHAR szLinkName[_MAX_PATH];
 	if (AfxResolveShortcut(AfxGetMainWnd(), szPath, szLinkName, _MAX_PATH))
-		_tcscpy (szPath, szLinkName);
+		Characters::C_String::Copy (szPath, szLinkName, NEltsOf (szPath));
 
 	// Also, to fix SPR#0345, we must use this (or SHGetFileInfo) hack
 	// to get the long-file-name version of the file name.
-	(void)::_tcscpy (szPath, GetLongPathName (szPath).c_str ());
+	Characters::C_String::Copy (szPath, GetLongPathName (szPath).c_str (), NEltsOf (szPath));
 
 	LedItDocument::sHiddenDocOpenArg = format;
 	return (pTemplate->OpenDocumentFile (szPath));

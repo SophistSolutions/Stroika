@@ -7,6 +7,7 @@
 #include    <cstdio>
 #include    <set>
 
+#include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -945,9 +946,7 @@ void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
     // has no idea about the font. This is NOT what we want. But unsure what we can do better at this point!
     fFontSpecifier = fontNum;
 #elif   qPlatform_Windows
-    const   size_t  kBufLen =   sizeof (fFontInfo.lfFaceName) / sizeof (fFontInfo.lfFaceName[0]);
-    (void)_tcsncpy (fFontInfo.lfFaceName, fontName.c_str (), kBufLen);
-    fFontInfo.lfFaceName[kBufLen - 1] = '\0';
+    Characters::C_String::Copy (fFontInfo.lfFaceName, fontName.c_str (), NEltsOf (fFontInfo.lfFaceName));
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif   qXWindows
     fFontFamily = fontName;
@@ -957,8 +956,7 @@ void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
 #if     qPlatform_Windows
 Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
 {
-    (void)::_tcsncpy (fName, from, LF_FACESIZE);
-    fName[LF_FACESIZE - 1] = '\0';
+    Characters::C_String::Copy (fName, from, NEltsOf (fName));
 }
 #endif
 
@@ -967,9 +965,7 @@ void    Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameS
 #if     qPlatform_MacOS
     fFontSpecifier = fontNameSpecifier;
 #elif   qPlatform_Windows
-    const   size_t  kBufLen =   sizeof (fFontInfo.lfFaceName) / sizeof (fFontInfo.lfFaceName[0]);
-    (void)::_tcsncpy (fFontInfo.lfFaceName, fontNameSpecifier.fName, kBufLen);
-    fFontInfo.lfFaceName[kBufLen - 1] = '\0';
+    Characters::C_String::Copy (fFontInfo.lfFaceName, fontNameSpecifier.fName, NEltsOf (fFontInfo.lfFaceName));
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif   qXWindows
     fFontFamily = fontNameSpecifier;

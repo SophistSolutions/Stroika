@@ -13,6 +13,8 @@
 	#include	<atlconv.h>
 #endif
 
+#include    "Stroika/Foundation/Characters/String.h"
+
 
 //#include	"FontMenu.h"
 #include	"LedItApplication.h"
@@ -22,6 +24,7 @@
 
 
 
+using	namespace	Stroika::Foundation;
 
 	
 #if		qPlatform_Windows
@@ -365,7 +368,7 @@ void	FontComboBox::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 	{
 		LOGFONT lf;
 		memset(&lf, 0, sizeof(LOGFONT));
-		(void)::_tcsncpy (lf.lfFaceName, strText, LF_FACESIZE);
+		Characters::C_String::Copy (lf.lfFaceName, static_cast<const TCHAR*> (strText), NEltsOf (lf.lfFaceName));
 		CWindowDC screenDC (NULL);
 		HDC hDC = screenDC.m_hDC;
 		ASSERT(hDC != NULL);

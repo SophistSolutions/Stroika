@@ -7,6 +7,7 @@
 #include    <climits>
 #include    <cstdio>        // for a couple sprintf() calls - could pretty easily be avoided
 
+#include    "../../../Foundation/Characters/String.h"
 #include    "../../../Foundation/Characters/StringUtils.h"
 
 #include    "../Config.h"
@@ -1570,7 +1571,7 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::~GroupContext ()
 RTFIO::ControlWordAtomName::ControlWordAtomName (const char* c)
 //:fName ()
 {
-    ::strncpy (fName, c, eMaxControlAtomNameLen);
+    Characters::C_String::Copy (fName, c, eMaxControlAtomNameLen);
     fName[eMaxControlAtomNameLen] = '\0';
 }
 
@@ -5375,8 +5376,7 @@ void    StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerConte
 #elif   qPlatform_Windows
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
-                (void)::_tcsncpy (lf.lfFaceName, name.c_str (), NEltsOf (lf.lfFaceName) - 1);
-                lf.lfFaceName[NEltsOf (lf.lfFaceName) - 1] = '\0';
+                Characters::C_String::Copy (lf.lfFaceName, name.c_str (), NEltsOf (lf.lfFaceName));
                 lf.lfCharSet = DEFAULT_CHARSET;
                 BYTE    useCharset  =   DEFAULT_CHARSET;
                 ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, (long)&useCharset, 0);

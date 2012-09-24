@@ -5,6 +5,7 @@
 
 #include    <cctype>
 
+#include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/Format.h"
 
 #include    "Config.h"
@@ -768,7 +769,7 @@ bool    WordProcessor::DialogSupport::ChooseFont (Led_IncrementalFontSpecificati
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     if (font->GetFontNameSpecifier_Valid ()) {
-        (void)::_tcscpy (lf.lfFaceName, font->GetFontNameSpecifier ().fName);
+		Characters::C_String::Copy (lf.lfFaceName, font->GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
         Assert (::_tcslen (lf.lfFaceName) < NEltsOf (lf.lfFaceName));   // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight = (font->GetStyle_Bold_Valid () and font->GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;

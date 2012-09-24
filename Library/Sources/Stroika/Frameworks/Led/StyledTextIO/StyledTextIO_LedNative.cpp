@@ -13,6 +13,8 @@
 #include    <TextEdit.h>        // for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
+#include    "../../../Foundation/Characters/String.h"
+
 #include    "../CodePage.h"
 #include    "../StyledTextEmbeddedObjects.h"
 
@@ -182,7 +184,7 @@ inline  PortableStyleRunData_Version5   mkPortableStyleRunData_Version5 (const S
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
     string  fontName    =   Led_SDKString2ANSI (isr.GetFontName ());
-    (void)::strncpy (data.fFontName, fontName.c_str (), sizeof (data.fFontName));
+    Characters::C_String::Copy (data.fFontName, fontName.c_str (), NEltsOf (data.fFontName));
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
     data.fStyleSet |= isr.GetStyle_Bold () ? (1 << data.eBold) : 0;
@@ -300,7 +302,7 @@ inline  PortableStyleRunData_Version6   mkPortableStyleRunData_Version6 (const S
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
     string  fontName    =   Led_SDKString2ANSI (isr.GetFontName ());
-    (void)::strncpy (data.fFontName, fontName.c_str (), sizeof (data.fFontName));
+    Characters::C_String::Copy (data.fFontName, fontName.c_str (), NEltsOf (data.fFontName));
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
     data.fStyleSet |= isr.GetStyle_Bold () ? (1 << data.eBold) : 0;

@@ -6,6 +6,7 @@
 #include    <cctype>
 #include    <cstdarg>
 
+#include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/StringUtils.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
@@ -1065,7 +1066,7 @@ void    Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName
         (void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", i);
         char    levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2);  // assert MUCH less
-        strcpy (levelPrefixBuf, levelPrefix);
+        Characters::C_String::Copy (levelPrefixBuf, levelPrefix, NEltsOf (levelPrefixBuf));
         strcat (levelPrefixBuf, "\t");
         DumpSupportedInterfaces (nextObj, nameBuf, levelPrefixBuf);
         AssertNotNull (nextObj);
@@ -1097,7 +1098,7 @@ Led_URLD::Led_URLD (const char* url, const char* title):
     fData.resize (resultURLDLen, '\0');
 
     char*   data    =   &fData.front ();
-    strcpy (data, url);
+	Characters::C_String::Copy (data, url, resultURLDLen);
     strcat (data, "\r");
     strcat (data, title);
 }
