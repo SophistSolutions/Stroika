@@ -97,6 +97,7 @@ if (lc ($BLD_TRG) eq "rebuild") {
 if ($isBuildingMode) {
 	system ("cd Library; perl buildall.pl $useBld");
 	system ("cd Tools; perl buildall.pl $useBld");
+	system ("cd Samples; perl buildall.pl $useBld");
 	system ("cd Tests; perl buildall.pl $useBld");
 }
 
