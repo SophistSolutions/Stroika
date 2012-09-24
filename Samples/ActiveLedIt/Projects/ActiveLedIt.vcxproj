@@ -46,6 +46,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples\ActiveLedIt\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples\ActiveLedIt\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">.ocx</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">.ocx</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <CustomBuildStep>
@@ -87,9 +89,9 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName).ocx</OutputFile>
+      <OutputFile>$(OutDir)$(ProjectName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>.\Sources\ActiveLedIt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>$(ProjectDir)\..\Sources\ActiveLedIt.def</ModuleDefinitionFile>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,9 +141,9 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName).ocx</OutputFile>
+      <OutputFile>$(OutDir)$(ProjectName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>.\Sources\ActiveLedIt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>$(ProjectDir)\..\Sources\ActiveLedIt.def</ModuleDefinitionFile>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -211,6 +213,14 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\Sources\ActiveLedIt.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2010\Stroika-Foundation.vcxproj">
+      <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2010\Stroika-Frameworks-Led.vcxproj">
+      <Project>{57b01fec-9ad1-46a4-b5f1-9e1c531e59d2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
