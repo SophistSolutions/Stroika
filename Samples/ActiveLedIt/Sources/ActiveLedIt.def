@@ -1,6 +1,6 @@
 ; ActiveLedIt.def : Declares the module parameters.
 
-LIBRARY      "ACTIVELEDIT.OCX"
+LIBRARY      "ActiveLedIt.ocx"
 
 EXPORTS
 	DllCanUnloadNow     PRIVATE
