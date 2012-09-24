@@ -7,6 +7,8 @@
 #include	<comcat.h>
 #include	<objsafe.h>
 
+#include	"Stroika/Foundation/Characters/String.h"
+
 #include	"Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 
 #include	"ActiveLedItControl.h"
@@ -57,7 +59,7 @@ static	HRESULT CreateComponentCategory(CATID catid, WCHAR* catDescription)
 		int len = wcslen(catDescription);
 		if (len>127)
 			len = 127;
-		wcsncpy(catinfo.szDescription, catDescription, len);
+		Characters::C_String::Copy (catinfo.szDescription, catDescription, len);
 		// Make sure the description is null terminated.
 		catinfo.szDescription[len] = '\0';
 

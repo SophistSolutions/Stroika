@@ -2,10 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
+#include    "Stroika/Foundation/StroikaPreComp.h"
+
 #include	<winver.h>
 #include	<afxres.h>
 
-#include	"LedStdDialogs.h"
+#include	"Stroika/Frameworks/Led/StdDialogs.h"
 
 #include	"Resource.h"
 
@@ -161,7 +163,7 @@ End
 1 TYPELIB "ActiveLedIt.tlb"
 
 
-#include	"LedStdDialogs.r"
+#include	"Stroika/Frameworks/Led/StdDialogs.inc.r"
 
 
 #include "afxprint.rc"  // printing/print preview resources (REALLY WE USE MUCH LESS THAN ALL OF THIS - COULD ELIM SOME... to save size?

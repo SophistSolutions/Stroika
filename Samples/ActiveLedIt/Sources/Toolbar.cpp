@@ -88,12 +88,13 @@ namespace	{
 namespace {
 	// Used as an implemenation detail for CComEnumOnSTL<> invocation
 	struct STL_ATL_COPY_VARIANT_IDISPATCH	{
-		static HRESULT copy (VARIANT* p1, IDispatch** p2)
+		static HRESULT copy (VARIANT* p1, const ATL::CComPtr<IDispatch> * p2)
 			{
 				if (p2 != NULL and *p2 != NULL) {
 					p1->vt = VT_DISPATCH;
 					p1->pdispVal = *p2;
-					(*p2)->AddRef ();
+					IDispatch*	pp2	=	*p2;
+					pp2->AddRef ();
 					return S_OK;
 				}
 				else {

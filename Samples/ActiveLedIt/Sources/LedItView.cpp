@@ -564,9 +564,10 @@ LedItViewController::~LedItViewController ()
  ************************************ LedItView *********************************
  ********************************************************************************
  */
-Led_MFC_ExceptionHandlerHelper_MESSAGE_MAP_DEFINITION2(Led_MFC_X<WordProcessor>, Led_MFC_X_WordProcessor_XXX_);
-DoDeclare_WordProcessorCommonCommandHelper_MFC_MessageMap (LedItViewAlmostBASE)
-
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
 BEGIN_MESSAGE_MAP(LedItView, LedItView::inherited)
 	ON_WM_MOUSEACTIVATE ()
 	ON_WM_INITMENUPOPUP			()
@@ -593,6 +594,9 @@ BEGIN_MESSAGE_MAP(LedItView, LedItView::inherited)
 	ON_COMMAND_RANGE			(kFirstOLEUserCmdCmdID, kLastOLEUserCmdCmdID,			OnOLEUserCommand)
 	ON_UPDATE_COMMAND_UI_RANGE	(kFirstOLEUserCmdCmdID, kLastOLEUserCmdCmdID,			OnUpdateOLEUserCommand)
 END_MESSAGE_MAP()
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 
 

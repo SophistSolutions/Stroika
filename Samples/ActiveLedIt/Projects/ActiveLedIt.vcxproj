@@ -81,7 +81,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;qWindows=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>Headers;Sources;..\Led\Headers;..\Led\Sources;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\..\Sources;..\..\..\Library\Sources;$(INTDIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
@@ -133,7 +133,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;qWindows=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>Headers;Sources;..\Led\Headers;..\Led\Sources;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\..\Sources;..\..\..\Library\Sources;$(INTDIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
