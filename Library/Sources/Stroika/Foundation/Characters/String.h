@@ -951,19 +951,19 @@ namespace   Stroika {
                 size_t  Length (const wchar_t* p);
 
 
-				/*
-				 * Copy the C-string pointed to by 'src' to the location pointed to by 'dest'. This function will always
-				 * nul-terminate, and it is illegal to call it with a value of zero for nEltsInDest.
-				 *
-				 * This is basically like strcpy/strncpy, except with better logic for nul-termination.
-				 */
+                /*
+                 * Copy the C-string pointed to by 'src' to the location pointed to by 'dest'. This function will always
+                 * nul-terminate, and it is illegal to call it with a value of zero for nEltsInDest.
+                 *
+                 * This is basically like strcpy/strncpy, except with better logic for nul-termination.
+                 */
                 template    <typename T>
-				void	Copy (T* dest, const T* src, size_t nEltsInDest);
+                void    Copy (T* dest, const T* src, size_t nEltsInDest);
                 template    <>
-				void	Copy (char* dest, const char* src, size_t nEltsInDest);
+                void    Copy (char* dest, const char* src, size_t nEltsInDest);
                 template    <>
-				void	Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest);
-			}
+                void    Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest);
+            }
 
         }
     }

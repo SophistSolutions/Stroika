@@ -1098,7 +1098,7 @@ Led_URLD::Led_URLD (const char* url, const char* title):
     fData.resize (resultURLDLen, '\0');
 
     char*   data    =   &fData.front ();
-	Characters::C_String::Copy (data, url, resultURLDLen);
+    Characters::C_String::Copy (data, url, resultURLDLen);
     strcat (data, "\r");
     strcat (data, title);
 }

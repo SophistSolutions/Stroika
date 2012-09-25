@@ -84,9 +84,9 @@ namespace   Stroika {
 
                 private:
                     enum    { eTimerEventID     =   34252 };    // Magic#
-                    HWND		fIdleWnd;
-                    float		fSuggestedFrequency;
-                    UINT_PTR	fTimerID;
+                    HWND        fIdleWnd;
+                    float       fSuggestedFrequency;
+                    UINT_PTR    fTimerID;
                 };
 
 

@@ -2911,11 +2911,11 @@ namespace   Stroika {
                 inline  void    SimpleWin32WndProcHelper::SetHWND (HWND hWnd)
                 {
                     if (fHWnd != NULL) {
-						::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0);	// reset back to original value
+                        ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0);   // reset back to original value
                     }
                     fHWnd = hWnd;
                     if (fHWnd != NULL) {
-						::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
+                        ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
                     }
                 }
                 inline  HWND    SimpleWin32WndProcHelper::GetValidatedHWND ()   const

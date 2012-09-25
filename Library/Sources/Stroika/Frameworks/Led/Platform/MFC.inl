@@ -1640,7 +1640,7 @@ namespace   Stroika {
 
 
 
-			//  class   Led_MFC_ExceptionHandlerHelper<BASECLASS>
+                //  class   Led_MFC_ExceptionHandlerHelper<BASECLASS>
                 template    <typename   BASECLASS>
                 /*
                 @METHOD:        Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException
@@ -1748,13 +1748,13 @@ namespace   Stroika {
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 #endif
                     static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-						ON_WM_CHAR  ()
-						ON_MESSAGE          (WM_IME_CHAR,   &OnIMEChar)
-						ON_WM_KEYDOWN       ()
-						ON_MESSAGE          (WM_PASTE,      &OnMsgPaste)
-						ON_WM_LBUTTONDOWN   ()
-						ON_WM_LBUTTONUP     ()
-						ON_WM_LBUTTONDBLCLK ()
+                        ON_WM_CHAR  ()
+                        ON_MESSAGE          (WM_IME_CHAR,   &OnIMEChar)
+                        ON_WM_KEYDOWN       ()
+                        ON_MESSAGE          (WM_PASTE,      &OnMsgPaste)
+                        ON_WM_LBUTTONDOWN   ()
+                        ON_WM_LBUTTONUP     ()
+                        ON_WM_LBUTTONDBLCLK ()
                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
                     };
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER

@@ -30,39 +30,39 @@ namespace   Stroika {
                 return ::wcslen (p);
             }
             template    <>
-			inline	void	C_String::Copy (char* dest, const char* src, size_t nEltsInDest)
-			{
-				RequireNotNull (dest);
-				RequireNotNull (src);
-				Require (nEltsInDest >= 1);
-				char*		destEnd	=	dest + nEltsInDest;
-				char*		destI	=	dest;
-				const char*	srcI	=	src;
-				while ((*dest++ = *srcI++) != '\0') {
-					Assert (dest <= destEnd);
-					if (dest == destEnd) {
-						*(dest-1) = '\0';
-						return;
-					}
-				}
-			}
+            inline  void    C_String::Copy (char* dest, const char* src, size_t nEltsInDest)
+            {
+                RequireNotNull (dest);
+                RequireNotNull (src);
+                Require (nEltsInDest >= 1);
+                char*       destEnd =   dest + nEltsInDest;
+                char*       destI   =   dest;
+                const char* srcI    =   src;
+                while ((*dest++ = *srcI++) != '\0') {
+                    Assert (dest <= destEnd);
+                    if (dest == destEnd) {
+                        *(dest - 1) = '\0';
+                        return;
+                    }
+                }
+            }
             template    <>
-			inline	void	C_String::Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest)
-			{
-				RequireNotNull (dest);
-				RequireNotNull (src);
-				Require (nEltsInDest >= 1);
-				wchar_t*		destEnd	=	dest + nEltsInDest;
-				wchar_t*		destI	=	dest;
-				const wchar_t*	srcI	=	src;
-				while ((*dest++ = *srcI++) != '\0') {
-					Assert (dest <= destEnd);
-					if (dest == destEnd) {
-						*(dest-1) = '\0';
-						return;
-					}
-				}
-			}
+            inline  void    C_String::Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest)
+            {
+                RequireNotNull (dest);
+                RequireNotNull (src);
+                Require (nEltsInDest >= 1);
+                wchar_t*        destEnd =   dest + nEltsInDest;
+                wchar_t*        destI   =   dest;
+                const wchar_t*  srcI    =   src;
+                while ((*dest++ = *srcI++) != '\0') {
+                    Assert (dest <= destEnd);
+                    if (dest == destEnd) {
+                        *(dest - 1) = '\0';
+                        return;
+                    }
+                }
+            }
 
 
             //  class   String::_Rep

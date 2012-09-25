@@ -769,7 +769,7 @@ bool    WordProcessor::DialogSupport::ChooseFont (Led_IncrementalFontSpecificati
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     if (font->GetFontNameSpecifier_Valid ()) {
-		Characters::C_String::Copy (lf.lfFaceName, font->GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
+        Characters::C_String::Copy (lf.lfFaceName, font->GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
         Assert (::_tcslen (lf.lfFaceName) < NEltsOf (lf.lfFaceName));   // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight = (font->GetStyle_Bold_Valid () and font->GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;

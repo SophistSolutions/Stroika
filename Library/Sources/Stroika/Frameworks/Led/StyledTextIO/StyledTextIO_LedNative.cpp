@@ -90,9 +90,9 @@ struct  PortableStyleRunData_Version4 {
     unsigned char   fBoldWeight;    // use Windows definition here/4...
     enum { eBoldnessNormal = 400 / 4, eBoldnessBold = 700 / 4 };
     uint8_t         fUnderline;
-    uint8_t			fUnused1_;      // so we get good cross-platform / cross-compiler alignment
-    uint16_t		fFontSize;      // note this size is a POINT-SIZE (not the tmHeight)
-    uint16_t		fUnused2_;
+    uint8_t         fUnused1_;      // so we get good cross-platform / cross-compiler alignment
+    uint16_t        fFontSize;      // note this size is a POINT-SIZE (not the tmHeight)
+    uint16_t        fUnused2_;
     uint32_t        fLength;
 };
 inline  void    _DO_ALIGN_ASSERTS_Version4_ ()
@@ -268,9 +268,9 @@ struct  PortableStyleRunData_Version6 {
         eSubscript,
         eSuperscript
     };
-    uint16_t		fStyleSet;          // or in BitFlagStyles
-    uint16_t		fPointSize;         // note this size is a POINT-SIZE (not the tmHeight)
-    uint16_t		fColor[3];
+    uint16_t        fStyleSet;          // or in BitFlagStyles
+    uint16_t        fPointSize;         // note this size is a POINT-SIZE (not the tmHeight)
+    uint16_t        fColor[3];
     uint32_t        fLength;
     char            fFontName[256];     // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 

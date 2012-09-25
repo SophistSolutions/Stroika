@@ -255,7 +255,7 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 // DONT THINK NEEDED ANYMORE - OR IF IT IS - DO IN FOUNDATIONCONFIG
-//		-- LGP 2012-09-23
+//      -- LGP 2012-09-23
 #if 0
 #if     qPlatform_Windows
 /*
