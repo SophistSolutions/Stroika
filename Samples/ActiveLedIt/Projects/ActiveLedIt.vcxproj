@@ -51,11 +51,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <CustomBuildStep>
-      <Message>Registering ActiveX Control...</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"
+      <Message>(DISABLED) Registering ActiveX Control... (old outputs were $(OutDir)regsvr32.trg;%(Outputs))</Message>
+      <Command>REM regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
-      <Outputs>$(OutDir)regsvr32.trg;%(Outputs)</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -100,11 +101,12 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <CustomBuildStep>
-      <Message>Registering ActiveX Control...</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"
+      <Message>(DISABLED) Registering ActiveX Control... (old outputs were $(OutDir)regsvr32.trg;%(Outputs))</Message>
+      <Command>REM regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
-      <Outputs>$(OutDir)regsvr32.trg;%(Outputs)</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
