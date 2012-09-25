@@ -819,7 +819,7 @@ namespace   Stroika {
 
 #if     qPlatform_Windows
             private:
-                static  UINT CALLBACK   ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+                static  UINT_PTR CALLBACK   ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
             public:

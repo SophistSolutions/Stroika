@@ -211,7 +211,7 @@ namespace   Stroika {
                     virtual     void    OnSetFocus_Msg (HWND oldWnd);
                     virtual     void    OnKillFocus_Msg (HWND newWnd);
                     virtual     bool    OnEraseBkgnd_Msg (HDC hDC);
-                    virtual     void    OnTimer_Msg (UINT nEventID, TIMERPROC* proc);
+                    virtual     void    OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
                     virtual     void    OnLButtonDown_Msg (UINT nFlags, int x, int y);
                     virtual     void    OnLButtonUp_Msg (UINT nFlags, int x, int y);
                     virtual     void    OnLButtonDblClk_Msg (UINT nFlags, int x, int y);
@@ -1266,7 +1266,7 @@ namespace   Stroika {
                     return true;
                 }
                 template    <typename   BASE_INTERACTOR>
-                void    Led_Win32_Helper<BASE_INTERACTOR>::OnTimer_Msg (UINT nEventID, TIMERPROC* proc)
+                void    Led_Win32_Helper<BASE_INTERACTOR>::OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc)
                 {
                     HWND    hWnd    =   GetValidatedHWND ();
                     if (nEventID == eAutoscrollingTimerEventID) {
@@ -2911,11 +2911,11 @@ namespace   Stroika {
                 inline  void    SimpleWin32WndProcHelper::SetHWND (HWND hWnd)
                 {
                     if (fHWnd != NULL) {
-                        ::SetWindowLong (fHWnd, GWL_USERDATA, 0);   // reset back to original value
+						::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0);	// reset back to original value
                     }
                     fHWnd = hWnd;
                     if (fHWnd != NULL) {
-                        ::SetWindowLong (fHWnd, GWL_USERDATA, LONG (this));
+						::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
                     }
                 }
                 inline  HWND    SimpleWin32WndProcHelper::GetValidatedHWND ()   const
@@ -2975,7 +2975,7 @@ namespace   Stroika {
                     Require (fHWnd == NULL);                // don't call after already created! - use this instead of SetHWnd ()!!!
                     RequireNotNull (hWnd);
                     Require (::IsWindow (hWnd));
-                    fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLong (hWnd, GWL_WNDPROC, reinterpret_cast<LONG> (StaticWndProc)));
+                    fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLongPtr (hWnd, GWLP_WNDPROC, reinterpret_cast<DWORD_PTR> (StaticWndProc)));
                     if (fSuperWindowProc == NULL) {
                         return false;
                     }
@@ -2992,7 +2992,7 @@ namespace   Stroika {
                     Require (fHWnd == NULL);                // don't call after already created! - use this instead of SetHWnd ()!!!
                     RequireNotNull (hWnd);
                     Require (::IsWindow (hWnd));
-                    fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLongW (hWnd, GWL_WNDPROC, reinterpret_cast<LONG> (StaticWndProc)));
+                    fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLongPtr (hWnd, GWLP_WNDPROC, reinterpret_cast<DWORD_PTR> (StaticWndProc)));
                     if (fSuperWindowProc == NULL) {
                         return false;
                     }
@@ -3090,11 +3090,11 @@ namespace   Stroika {
                 void    Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::SetHWND (HWND hWnd)
                 {
                     if (fHWnd != NULL) {
-                        ::SetWindowLong (fHWnd, GWL_USERDATA, 0);   // reset back to original value
+                        ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0);   // reset back to original value
                     }
                     fHWnd = hWnd;
                     if (fHWnd != NULL) {
-                        ::SetWindowLong (fHWnd, GWL_USERDATA, LONG (this));
+                        ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
                     }
                 }
                 template    <typename   BASE_WIN32_HELPER>
@@ -3224,7 +3224,7 @@ namespace   Stroika {
                         pThis->SetHWND (hWnd);
                     }
 
-                    Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>*  pThis   =   reinterpret_cast<Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>*> (::GetWindowLong (hWnd, GWL_USERDATA));
+                    Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>*  pThis   =   reinterpret_cast<Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
                     if (pThis == NULL) {
                         /*

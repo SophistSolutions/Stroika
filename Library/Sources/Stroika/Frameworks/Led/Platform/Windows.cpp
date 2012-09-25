@@ -74,7 +74,7 @@ namespace   Stroika {
                     override    void    SetSuggestedFrequency (float suggestedFrequency);
 
                 protected:
-                    nonvirtual  void    OnTimer_Msg (UINT nEventID, TIMERPROC* proc);
+                    nonvirtual  void    OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
 
                 protected:
                     nonvirtual  void    CheckAndCreateIdleWnd ();
@@ -84,9 +84,9 @@ namespace   Stroika {
 
                 private:
                     enum    { eTimerEventID     =   34252 };    // Magic#
-                    HWND    fIdleWnd;
-                    float   fSuggestedFrequency;
-                    UINT    fTimerID;
+                    HWND		fIdleWnd;
+                    float		fSuggestedFrequency;
+                    UINT_PTR	fTimerID;
                 };
 
 
@@ -227,7 +227,7 @@ namespace   Stroika {
                         pThis->SetHWND (hWnd);
                     }
 
-                    SimpleWin32WndProcHelper*   pThis   =   reinterpret_cast<SimpleWin32WndProcHelper*> (::GetWindowLong (hWnd, GWL_USERDATA));
+                    SimpleWin32WndProcHelper*   pThis   =   reinterpret_cast<SimpleWin32WndProcHelper*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
                     if (pThis == NULL) {
                         /*
@@ -310,10 +310,10 @@ namespace   Stroika {
                         LPCREATESTRUCT  lpcs    =   reinterpret_cast<LPCREATESTRUCT> (lParam);
                         AssertNotNull (lpcs);
                         IdleManagerOSImpl_Win32*    pThis   =   reinterpret_cast<IdleManagerOSImpl_Win32*> (lpcs->lpCreateParams);
-                        ::SetWindowLong (hWnd, GWL_USERDATA, reinterpret_cast<LONG> (pThis));
+                        ::SetWindowLongPtr (hWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (pThis));
                     }
 
-                    IdleManagerOSImpl_Win32*    pThis   =   reinterpret_cast<IdleManagerOSImpl_Win32*> (::GetWindowLong (hWnd, GWL_USERDATA));
+                    IdleManagerOSImpl_Win32*    pThis   =   reinterpret_cast<IdleManagerOSImpl_Win32*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
                     if (pThis == NULL) {
                         return ::DefWindowProc (hWnd, message, wParam, lParam);
@@ -328,7 +328,7 @@ namespace   Stroika {
                     return ::DefWindowProc (hWnd, message, wParam, lParam);
                 }
 
-                void    IdleManagerOSImpl_Win32::OnTimer_Msg (UINT /*nEventID*/, TIMERPROC* /*proc*/)
+                void    IdleManagerOSImpl_Win32::OnTimer_Msg (UINT_PTR /*nEventID*/, TIMERPROC* /*proc*/)
                 {
                     /*
                      *  Check if any input or paint messages pending, and if so - ignore the timer message as

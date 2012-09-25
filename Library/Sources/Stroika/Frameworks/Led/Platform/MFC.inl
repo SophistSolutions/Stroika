@@ -323,7 +323,7 @@ namespace   Stroika {
                     OnEnable_Msg (bEnable);
                 }
                 template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
-                void    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnTimer (UINT nEventID)
+                void    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnTimer (UINT_PTR nEventID)
                 {
                     OnTimer_Msg (nEventID, NULL);
                 }
@@ -1185,7 +1185,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename   BASECLASS>
-                void    Led_MFC_DragAndDropWindow<BASECLASS>::OnTimer (UINT nEventID)
+                void    Led_MFC_DragAndDropWindow<BASECLASS>::OnTimer (UINT_PTR nEventID)
                 {
                     if (nEventID == eAutoscrolling4DragTimerEventID) {
                         HandleSharedDragOverUpdateSelCode ();

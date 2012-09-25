@@ -1182,7 +1182,7 @@ BOOL    CALLBACK    Led_StdDialogHelper::StaticDialogProc (HWND hWnd, UINT messa
         return pThis->OnInitDialog ();
     }
 
-    Led_StdDialogHelper*    pThis   =   reinterpret_cast<Led_StdDialogHelper*> (::GetWindowLong (hWnd, GWL_USERDATA));
+    Led_StdDialogHelper*    pThis   =   reinterpret_cast<Led_StdDialogHelper*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
     if (pThis == NULL) {
         return false;
@@ -1384,11 +1384,11 @@ void    Led_StdDialogHelper::SetDialogPtr (DialogPtr d)
 void    Led_StdDialogHelper::SetHWND (HWND hWnd)
 {
     if (fHWnd != NULL) {
-        ::SetWindowLong (fHWnd, GWL_USERDATA, 0);   // reset back to original value
+        ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0);   // reset back to original value
     }
     fHWnd = hWnd;
     if (fHWnd != NULL) {
-        ::SetWindowLong (fHWnd, GWL_USERDATA, LONG (this));
+        ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
     }
 }
 
@@ -2300,7 +2300,7 @@ bool    StdColorPickBox::DoModal ()
 #endif
 
 #if     qPlatform_Windows
-UINT CALLBACK   StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+UINT_PTR CALLBACK   StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (hWnd != NULL and message == WM_INITDIALOG) {
         Led_CenterWindowInParent (hWnd);

@@ -290,7 +290,7 @@ namespace   Stroika {
                     afx_msg void    OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
                     afx_msg BOOL    OnMouseWheel (UINT fFlags, short zDelta, CPoint point);
                     afx_msg void    OnEnable (BOOL bEnable);
-                    afx_msg void    OnTimer (UINT nEventID);
+                    afx_msg void    OnTimer (UINT_PTR nEventID);
 
 
                     // Disambigouate mixins
@@ -488,7 +488,7 @@ namespace   Stroika {
                     nonvirtual  bool    GetObjectInfo (COleDataObject* pDataObject, CSize* pSize, CSize* pOffset);
 
                 protected:
-                    afx_msg     void    OnTimer (UINT nEventID);
+                    afx_msg     void    OnTimer (UINT_PTR nEventID);
                 private:
                     nonvirtual  void    StartDragAutoscrollTimer ();
                     nonvirtual  void    StopDragAutoscrollTimer ();
