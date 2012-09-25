@@ -11,7 +11,7 @@ my @kConfigurations = (
 
 
 print("Building Samples/ActiveLedIt...\n");
-if ("^0" == "cygwin") {
+if ("^0" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();

@@ -5,7 +5,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-if ("^0" == "cygwin") {
+if ("^0" eq "cygwin") {
 	require "../../Library/Projects/VisualStudio.Net-2010/SetupBuildCommonVars.pl";
 }
 else {
