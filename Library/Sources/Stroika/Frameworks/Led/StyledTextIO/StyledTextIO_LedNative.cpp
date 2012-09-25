@@ -89,11 +89,11 @@ struct  PortableStyleRunData_Version4 {
     unsigned char   fItalic;
     unsigned char   fBoldWeight;    // use Windows definition here/4...
     enum { eBoldnessNormal = 400 / 4, eBoldnessBold = 700 / 4 };
-    unsigned char   fUnderline;
-    unsigned char   fUnused1_;      // so we get good cross-platform / cross-compiler alignment
-    unsigned short  fFontSize;      // note this size is a POINT-SIZE (not the tmHeight)
-    unsigned short  fUnused2_;
-    size_t          fLength;
+    uint8_t         fUnderline;
+    uint8_t			fUnused1_;      // so we get good cross-platform / cross-compiler alignment
+    uint16_t		fFontSize;      // note this size is a POINT-SIZE (not the tmHeight)
+    uint16_t		fUnused2_;
+    uint32_t        fLength;
 };
 inline  void    _DO_ALIGN_ASSERTS_Version4_ ()
 {
@@ -152,7 +152,7 @@ struct  PortableStyleRunData_Version5 {
     };
     unsigned char   fStyleSet;  // or in BitFlagStyles
     unsigned short  fPointSize;         // note this size is a POINT-SIZE (not the tmHeight)
-    size_t          fLength;
+    uint32_t        fLength;
     char            fFontName[256];     // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
     static  unsigned char   NameLenFromRecordLen (unsigned char len) {
@@ -268,10 +268,10 @@ struct  PortableStyleRunData_Version6 {
         eSubscript,
         eSuperscript
     };
-    unsigned short  fStyleSet;          // or in BitFlagStyles
-    unsigned short  fPointSize;         // note this size is a POINT-SIZE (not the tmHeight)
-    unsigned short  fColor[3];
-    size_t          fLength;
+    uint16_t		fStyleSet;          // or in BitFlagStyles
+    uint16_t		fPointSize;         // note this size is a POINT-SIZE (not the tmHeight)
+    uint16_t		fColor[3];
+    uint32_t        fLength;
     char            fFontName[256];     // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
     static  unsigned char   NameLenFromRecordLen (unsigned char len) {
@@ -430,7 +430,7 @@ void    StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cooki
     // so we don't need large contiguos buffer. This is OK though ...
     size_t  totalTextLength =   0;
     {
-        size_t  lenAsBuf;
+        uint32_t  lenAsBuf;
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
             Led_ThrowBadFormatDataException ();
         }
@@ -534,7 +534,7 @@ void    StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cooki
     // so we don't need large contiguos buffer. This is OK though ...
     size_t  totalTextLength =   0;
     {
-        size_t  lenAsBuf;
+        uint32_t  lenAsBuf;
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
             Led_ThrowBadFormatDataException ();
         }
@@ -650,7 +650,7 @@ void    StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cooki
     // so we don't need large contiguos buffer. This is OK though ...
     size_t  totalTextLength =   0;
     {
-        size_t  lenAsBuf;
+        uint32_t  lenAsBuf;
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
             Led_ThrowBadFormatDataException ();
         }
@@ -923,7 +923,7 @@ void    StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         nChars = WideCharToMultiByte (CP_ACP, 0, buf, totalTextLength, result, nChars, NULL, NULL);
 #endif
         {
-            size_t  encodedTL   =   0;
+            uint32_t  encodedTL   =   0;
             Led_ULONGToBuf (nChars, &encodedTL);
             write (&encodedTL, sizeof (encodedTL));
         }
