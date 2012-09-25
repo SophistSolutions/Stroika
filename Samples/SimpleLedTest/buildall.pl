@@ -10,9 +10,11 @@ my @kConfigurations = (
 					);
 
 
-print("Building Samples/ActiveLedIt...\n");
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	my $extraArgs = GetMSBuildArgs();
-	RunAndPrint ("cd Projects; msbuild.exe $extraArgs SimpleLedTest.sln /p:$curConfig /target:$useBld");
+print("Building Samples/SimpleLedTest...\n");
+if ("^0" == "cygwin") {
+	foreach (@kConfigurations) {
+		my $curConfig	=	$_;
+		my $extraArgs = GetMSBuildArgs();
+		RunAndPrint ("cd Projects; msbuild.exe $extraArgs SimpleLedTest.sln /p:$curConfig /target:$useBld");
+	}
 }
