@@ -12,6 +12,7 @@
 
 #include	<set>
 #include	<afxctl.h>
+#include	<objsafe.h>		// for IObjectSafety; in ActiveX SDK
 
 #include	"Stroika/Frameworks/Led/SpellCheckEngine.h"
 #include	"Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_HTML.h"
@@ -139,6 +140,24 @@ class	ActiveLedItControl : public COleControl, public MarkerOwner, public LedItV
 
 	private:
 		nonvirtual	void	ExchangeTextAsRTFBlob (CPropExchange* pPX);
+
+
+public:
+DECLARE_INTERFACE_MAP()
+
+	BEGIN_INTERFACE_PART(ObjSafe, IObjectSafety)
+		STDMETHOD_(HRESULT, GetInterfaceSafetyOptions) ( 
+            /* [in] */ REFIID riid,
+            /* [out] */ DWORD __RPC_FAR *pdwSupportedOptions,
+            /* [out] */ DWORD __RPC_FAR *pdwEnabledOptions
+		);
+        
+        STDMETHOD_(HRESULT, SetInterfaceSafetyOptions) ( 
+            /* [in] */ REFIID riid,
+            /* [in] */ DWORD dwOptionSetMask,
+            /* [in] */ DWORD dwEnabledOptions
+		);
+	END_INTERFACE_PART(ObjSafe);
 
 	protected:
 		DECLARE_OLECREATE_EX(ActiveLedItControl)    // Class factory and guid
@@ -422,7 +441,6 @@ class	ActiveLedItControl : public COleControl, public MarkerOwner, public LedItV
 	public:
 		LedItView				fEditor;
 		StyledTextIO::HTMLInfo	fHTMLInfo;
-
 };
 
 

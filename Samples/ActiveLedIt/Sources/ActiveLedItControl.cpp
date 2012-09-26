@@ -973,6 +973,112 @@ void	ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
 	}
 }
 
+
+const DWORD dwSupportedBits = 
+		INTERFACESAFE_FOR_UNTRUSTED_CALLER |
+		INTERFACESAFE_FOR_UNTRUSTED_DATA;
+const DWORD dwNotSupportedBits = ~ dwSupportedBits;
+		
+
+BEGIN_INTERFACE_MAP( ActiveLedItControl, COleControl )
+	INTERFACE_PART(ActiveLedItControl, IID_IObjectSafety, ObjSafe)
+END_INTERFACE_MAP()
+
+
+ULONG FAR EXPORT ActiveLedItControl::XObjSafe::AddRef()
+{
+    METHOD_PROLOGUE(ActiveLedItControl, ObjSafe)
+    return pThis->ExternalAddRef();
+}
+
+ULONG FAR EXPORT ActiveLedItControl::XObjSafe::Release()
+{
+    METHOD_PROLOGUE(ActiveLedItControl, ObjSafe)
+    return pThis->ExternalRelease();
+}
+
+HRESULT FAR EXPORT ActiveLedItControl::XObjSafe::QueryInterface(
+    REFIID iid, void FAR* FAR* ppvObj)
+{
+    METHOD_PROLOGUE(ActiveLedItControl, ObjSafe)
+    return (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CStopLiteCtrl::XObjSafe::GetInterfaceSafetyOptions
+// Allows container to query what interfaces are safe for what. We're
+// optimizing significantly by ignoring which interface the caller is
+// asking for.
+HRESULT STDMETHODCALLTYPE 
+	ActiveLedItControl::XObjSafe::GetInterfaceSafetyOptions( 
+		/* [in] */ REFIID riid,
+        /* [out] */ DWORD __RPC_FAR *pdwSupportedOptions,
+        /* [out] */ DWORD __RPC_FAR *pdwEnabledOptions)
+{
+	METHOD_PROLOGUE(ActiveLedItControl, ObjSafe)
+
+	HRESULT retval = ResultFromScode(S_OK);
+
+	// does interface exist?
+	IUnknown FAR* punkInterface;
+	retval = pThis->ExternalQueryInterface(&riid, 
+					(void * *)&punkInterface);
+	if (retval != E_NOINTERFACE) {	// interface exists
+		punkInterface->Release(); // release it--just checking!
+	}
+	
+	// we support both kinds of safety and have always both set,
+	// regardless of interface
+	*pdwSupportedOptions = *pdwEnabledOptions = dwSupportedBits;
+
+	return retval; // E_NOINTERFACE if QI failed
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// CStopLiteCtrl::XObjSafe::SetInterfaceSafetyOptions
+// Since we're always safe, this is a no-brainer--but we do check to make
+// sure the interface requested exists and that the options we're asked to
+// set exist and are set on (we don't support unsafe mode).
+HRESULT STDMETHODCALLTYPE 
+	ActiveLedItControl::XObjSafe::SetInterfaceSafetyOptions( 
+        /* [in] */ REFIID riid,
+        /* [in] */ DWORD dwOptionSetMask,
+        /* [in] */ DWORD dwEnabledOptions)
+{
+    METHOD_PROLOGUE(ActiveLedItControl, ObjSafe)
+	
+	// does interface exist?
+	IUnknown FAR* punkInterface;
+	pThis->ExternalQueryInterface(&riid, (void * *)&punkInterface);
+	if (punkInterface) {	// interface exists
+		punkInterface->Release(); // release it--just checking!
+	}
+	else { // interface doesn't exist
+		return ResultFromScode(E_NOINTERFACE);
+	}
+
+	// can't set bits we don't support
+	if (dwOptionSetMask & dwNotSupportedBits) { 
+		return ResultFromScode(E_FAIL);
+	}
+	
+	// can't set bits we do support to zero
+	dwEnabledOptions &= dwSupportedBits;
+	// (we already know there are no extra bits in mask )
+	if ((dwOptionSetMask & dwEnabledOptions) !=
+		 dwOptionSetMask) {
+		return ResultFromScode(E_FAIL);
+	}								
+	
+	// don't need to change anything since we're always safe
+	return ResultFromScode(S_OK);
+}
+
+
+
+
 void	ActiveLedItControl::AboutBox ()
 {
 	OnAboutBoxCommand ();
