@@ -33,8 +33,27 @@ foreach $i (@ARGV) {
 	$runFile = $i;
 }
 
+
+my $aStyleFileTargets = "";
+$aStyleFileTargets .= "Library/*.cpp ";
+$aStyleFileTargets .= "Library/*.h ";
+$aStyleFileTargets .= "Library/*.inl ";
+
+$aStyleFileTargets .= "Samples/*.cpp ";
+$aStyleFileTargets .= "Samples/*.h ";
+$aStyleFileTargets .= "Samples/*.inl ";
+
+$aStyleFileTargets .= "Tests/*.cpp ";
+$aStyleFileTargets .= "Tests/*.h ";
+$aStyleFileTargets .= "Tests/*.inl ";
+
+$aStyleFileTargets .= "Tools/*.cpp ";
+$aStyleFileTargets .= "Tools/*.h ";
+$aStyleFileTargets .= "Tools/*.inl ";
+
+
 if ($runFile == "") {
-	system ("astyle $aStyleArgs --recursive Library/*.cpp Library/*.h Library/*.inl Tools/*.cpp Tools/*.h Tools/*.inl Tests/*.cpp Tests/*.h Tests/*.inl");
+	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
 }
 else {
 	system ("astyle $aStyleArgs < $runFile > $runFile.XXX");

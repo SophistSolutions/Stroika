@@ -2,73 +2,73 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
 
-#ifndef	__Options_h__
-#define	__Options_h__	1
+#ifndef __Options_h__
+#define __Options_h__   1
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		defined (WIN32)
-	#include	<afxwin.h>
+#if     defined (WIN32)
+#include    <afxwin.h>
 #endif
 
-#include	"Stroika/Frameworks/Led/GDI.h"
-#include	"Stroika/Frameworks/Led/Support.h"
-#include	"Stroika/Frameworks/Led/TextInteractor.h"
+#include    "Stroika/Frameworks/Led/GDI.h"
+#include    "Stroika/Frameworks/Led/Support.h"
+#include    "Stroika/Frameworks/Led/TextInteractor.h"
 
-#include	"LedItConfig.h"
+#include    "LedItConfig.h"
 
 
 
-class	Options {
-	public:
-		Options ();
-		~Options ();
+class   Options {
+public:
+    Options ();
+    ~Options ();
 
-	public:
-		typedef	TextInteractor::SearchParameters	SearchParameters;
-	public:
-		nonvirtual	SearchParameters	GetSearchParameters () const;
-		nonvirtual	void				SetSearchParameters (const SearchParameters& searchParameters);
+public:
+    typedef TextInteractor::SearchParameters    SearchParameters;
+public:
+    nonvirtual  SearchParameters    GetSearchParameters () const;
+    nonvirtual  void                SetSearchParameters (const SearchParameters& searchParameters);
 
-#if		qPlatform_Windows
-	public:
-		nonvirtual	const CDockState&	GetDocBarState () const;
-		nonvirtual	void				SetDocBarState (const CDockState& dockState);
+#if     qPlatform_Windows
+public:
+    nonvirtual  const CDockState&   GetDocBarState () const;
+    nonvirtual  void                SetDocBarState (const CDockState& dockState);
 #endif
 
-	public:
-		nonvirtual	bool	GetSmartCutAndPaste () const;
-		nonvirtual	void	SetSmartCutAndPaste (bool smartCutAndPaste);
+public:
+    nonvirtual  bool    GetSmartCutAndPaste () const;
+    nonvirtual  void    SetSmartCutAndPaste (bool smartCutAndPaste);
 
-	public:
-		nonvirtual	bool	GetWrapToWindow () const;
-		nonvirtual	void	SetWrapToWindow (bool wrapToWindow);
+public:
+    nonvirtual  bool    GetWrapToWindow () const;
+    nonvirtual  void    SetWrapToWindow (bool wrapToWindow);
 
-	public:
-		nonvirtual	bool	GetShowHiddenText () const;
-		nonvirtual	void	SetShowHiddenText (bool showHiddenText);
+public:
+    nonvirtual  bool    GetShowHiddenText () const;
+    nonvirtual  void    SetShowHiddenText (bool showHiddenText);
 
-	public:
-		nonvirtual	bool	GetShowParagraphGlyphs () const;
-		nonvirtual	void	SetShowParagraphGlyphs (bool showParagraphGlyphs);
+public:
+    nonvirtual  bool    GetShowParagraphGlyphs () const;
+    nonvirtual  void    SetShowParagraphGlyphs (bool showParagraphGlyphs);
 
-	public:
-		nonvirtual	bool	GetShowTabGlyphs () const;
-		nonvirtual	void	SetShowTabGlyphs (bool showTabGlyphs);
+public:
+    nonvirtual  bool    GetShowTabGlyphs () const;
+    nonvirtual  void    SetShowTabGlyphs (bool showTabGlyphs);
 
-	public:
-		nonvirtual	bool	GetShowSpaceGlyphs () const;
-		nonvirtual	void	SetShowSpaceGlyphs (bool showSpaceGlyphs);
-	
-#if		qPlatform_Windows
-	public:
-		nonvirtual	bool	GetCheckFileAssocsAtStartup () const;
-		nonvirtual	void	SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);
+public:
+    nonvirtual  bool    GetShowSpaceGlyphs () const;
+    nonvirtual  void    SetShowSpaceGlyphs (bool showSpaceGlyphs);
+
+#if     qPlatform_Windows
+public:
+    nonvirtual  bool    GetCheckFileAssocsAtStartup () const;
+    nonvirtual  void    SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);
 #endif
 
-	public:
-		nonvirtual	Led_FontSpecification	GetDefaultNewDocFont () const;
-		nonvirtual	void					SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
+public:
+    nonvirtual  Led_FontSpecification   GetDefaultNewDocFont () const;
+    nonvirtual  void                    SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
 };
 
 
@@ -80,7 +80,7 @@ class	Options {
  */
 
 
-#endif	/*__Options_h__*/
+#endif  /*__Options_h__*/
 
 // For gnuemacs:
 // Local Variables: ***

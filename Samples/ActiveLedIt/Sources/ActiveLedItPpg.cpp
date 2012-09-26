@@ -3,11 +3,11 @@
  */
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include	<afxctl.h>
+#include    <afxctl.h>
 
-#include	"ActiveLedIt.h"
+#include    "ActiveLedIt.h"
 
-#include	"ActiveLedItPpg.h"
+#include    "ActiveLedItPpg.h"
 
 
 
@@ -22,12 +22,12 @@
  */
 // ActiveLedItPropPage::ActiveLedItPropPageFactory::UpdateRegistry -
 // Adds or removes system registry entries for ActiveLedItPropPage
-BOOL	ActiveLedItPropPage::ActiveLedItPropPageFactory::UpdateRegistry(BOOL bRegister)
+BOOL    ActiveLedItPropPage::ActiveLedItPropPageFactory::UpdateRegistry(BOOL bRegister)
 {
-	if (bRegister)
-		return AfxOleRegisterPropertyPageClass(AfxGetInstanceHandle(), m_clsid, IDS_ACTIVELEDIT_PPG);
-	else
-		return AfxOleUnregisterClass(m_clsid, NULL);
+    if (bRegister)
+        return AfxOleRegisterPropertyPageClass(AfxGetInstanceHandle(), m_clsid, IDS_ACTIVELEDIT_PPG);
+    else
+        return AfxOleUnregisterClass(m_clsid, NULL);
 }
 
 
@@ -48,16 +48,16 @@ BEGIN_MESSAGE_MAP(ActiveLedItPropPage, COlePropertyPage)
 END_MESSAGE_MAP()
 
 IMPLEMENT_OLECREATE_EX(ActiveLedItPropPage, "ACTIVELEDIT.ActiveLedItPropPage.1",
-	0x9a013a77, 0xad34, 0x11d0, 0x8d, 0x9b, 0, 0xa0, 0xc9, 0x8, 0xc, 0x73)
+                       0x9a013a77, 0xad34, 0x11d0, 0x8d, 0x9b, 0, 0xa0, 0xc9, 0x8, 0xc, 0x73)
 
 ActiveLedItPropPage::ActiveLedItPropPage() :
-	COlePropertyPage(IDD, IDS_ACTIVELEDIT_PPG_CAPTION)
+    COlePropertyPage(IDD, IDS_ACTIVELEDIT_PPG_CAPTION)
 {
 }
 
-void	ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX)
+void    ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX)
 {
-	DDP_PostProcessing(pDX);
+    DDP_PostProcessing(pDX);
 }
 
 
