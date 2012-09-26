@@ -11,8 +11,13 @@ if ("$^O" eq "linux") {
 #	$latexMake = "make";
 }
 if ("$^O" eq "cygwin") {
-	$doxygen = "\'c:/Program Files/doxygen/bin/doxygen.exe\'";
-#	$latexMake = "make.bat";
+	my $doxygenFile = "c:/Program Files/doxygen/bin/doxygen.exe";
+	$doxygen = "\'$doxygenFile\'";
+	unless (-e $doxygenFile) {
+		print "Error: $doxygen Doesn't Exist! - Run Installer (from ThirdPartyProducts)\r\n";
+		exit(1);
+	}
+ #	$latexMake = "make.bat";
 }
 
 my $doxyArgs = "Stroika-Library.cfg";
