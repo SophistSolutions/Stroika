@@ -2,6 +2,8 @@
 
 #print ("OS: $^O\n");
 
+my $Path2StroikaRoot = "../../";
+
 my $doxygen = "";
 
 #my $latexMake = "";
@@ -11,12 +13,12 @@ if ("$^O" eq "linux") {
 #	$latexMake = "make";
 }
 if ("$^O" eq "cygwin") {
-	my $doxygenFile = "c:/Program Files/doxygen/bin/doxygen.exe";
-	$doxygen = "\'$doxygenFile\'";
+	my $doxygenFile = "$Path2StroikaRoot/ThirdPartyLibs/doxygen/CURRENT/bin/doxygen.exe";
 	unless (-e $doxygenFile) {
-		print "Error: $doxygen Doesn't Exist! - Run Installer (from ThirdPartyProducts)\r\n";
+		print "Error: $doxygenFile Doesn't Exist!\r\n";
 		exit(1);
 	}
+	$doxygen =$doxygenFile;
  #	$latexMake = "make.bat";
 }
 

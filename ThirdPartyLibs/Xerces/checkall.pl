@@ -37,4 +37,4 @@ if (! (-e "$DBG64_LIB")) {
 	print ("Echo [FAILED] - $DBG64_LIB is missing\n");
 	exit (1);
 }
-print ("[SUCCEEDED]\n");
+print ("ThirdPartyLibs/Xerces -  [SUCCEEDED]\n");

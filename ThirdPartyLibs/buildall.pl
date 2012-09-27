@@ -6,3 +6,4 @@ if ($BLD_TRG eq '') {
 }
 
 system ("cd Xerces; perl buildall.pl $BLD_TRG");
+system ("cd doxygen; perl buildall.pl $BLD_TRG");
