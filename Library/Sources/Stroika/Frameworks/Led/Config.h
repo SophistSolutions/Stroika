@@ -41,6 +41,8 @@
  *      #endif
  */
 
+///REDO ALL THIS BASED ON STROIKA VERIONS - BUT TO BE CONSISTNET WITH EARLIER VERSIONING, INCRMENMET BASE VERSION
+
 // Support declarations for version#
 #define qLed_Version_Stage_Dev              0x1
 #define qLed_Version_Stage_Alpha            0x2
@@ -62,15 +64,15 @@
 
 
 // This part is where we actually update the version#
-#define qLed_Version_Major                  3
-#define qLed_Version_Minor                  1
-#define qLed_Version_MajorMinor             0x31
-#define qLed_Version_Stage                  qLed_Version_Stage_Beta
-#define qLed_Version_SubStage               2
+#define qLed_Version_Major                  4
+#define qLed_Version_Minor                  0
+#define qLed_Version_MajorMinor             0x40
+#define qLed_Version_Stage                  qLed_Version_Stage_Dev
+#define qLed_Version_SubStage               1
 #define qLed_Version_FinalBuild             0
 
-#define qLed_MajorMinorVersionString        "3.1"
-#define qLed_ShortVersionString             "3.1b2x"
+#define qLed_MajorMinorVersionString        "4.0"
+#define qLed_ShortVersionString             "4.0d1x"
 
 
 
