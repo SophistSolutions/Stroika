@@ -100,7 +100,6 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
-      <UpdateFileHashes>true</UpdateFileHashes>
       <UpdateFileHashesSearchPath>$(OutDir)</UpdateFileHashesSearchPath>
     </Manifest>
   </ItemDefinitionGroup>
@@ -157,7 +156,6 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
-      <UpdateFileHashes>true</UpdateFileHashes>
       <UpdateFileHashesSearchPath>$(OutDir)</UpdateFileHashesSearchPath>
     </Manifest>
   </ItemDefinitionGroup>
