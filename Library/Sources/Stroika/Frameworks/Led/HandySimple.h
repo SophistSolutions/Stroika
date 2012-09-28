@@ -95,12 +95,12 @@ namespace   Stroika {
                          */
                         SetImageUsingOffscreenBitmaps (false);
                     }
-                    override    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) {
+                    virtual    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override {
                         // Do no erasing - just draw the text...
                         // Note - its CRITICAL that we shutoff offscreen bitmaps for this imager so that we don't get garbage bits
                         // from that offscreen bitmap being copied back to the original tablet.
                     }
-                    override    void    GetLayoutMargins (typename WORDPROCESSOR::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const {
+                    virtual    void    GetLayoutMargins (typename WORDPROCESSOR::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override {
                         // Make the layout right margin of each line (paragraph) equal to the windowrect. Ie, wrap to the
                         // edge of the window.
                         Led_Coordinate  l   =   0;

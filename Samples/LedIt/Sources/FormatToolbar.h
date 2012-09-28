@@ -65,9 +65,9 @@ public:
 
         static  BOOL    CALLBACK    AFX_EXPORT  CheckIsTrueTypeEnumFamCallback (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int FontType, LPVOID pThis);
 
-        override    void    DrawItem (LPDRAWITEMSTRUCT lpDIS);
-        override    void    MeasureItem (LPMEASUREITEMSTRUCT lpMIS);
-        override    int     CompareItem (LPCOMPAREITEMSTRUCT lpCIS);
+        virtual    void    DrawItem (LPDRAWITEMSTRUCT lpDIS) override;
+        virtual    void    MeasureItem (LPMEASUREITEMSTRUCT lpMIS) override;
+        virtual    int     CompareItem (LPCOMPAREITEMSTRUCT lpCIS) override;
         DECLARE_MESSAGE_MAP()
     };
 
@@ -94,7 +94,7 @@ public:
     void NotifyOwner (UINT nCode);
 
 protected:
-    override    void    OnUpdateCmdUI (CFrameWnd* pTarget, BOOL bDisableIfNoHndler);
+    virtual    void    OnUpdateCmdUI (CFrameWnd* pTarget, BOOL bDisableIfNoHndler) override;
 
     afx_msg int     OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void    OnFontNameKillFocus();

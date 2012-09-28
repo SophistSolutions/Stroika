@@ -81,12 +81,12 @@ public:
 
 #if     qPlatform_Windows
 protected:
-    override    void    OnInitialUpdate ();
+    virtual    void    OnInitialUpdate () override;
 #endif
 
 #if     qPlatform_Windows
 public:
-    override    bool    OnUpdateCommand (CommandUpdater* enabler);
+    virtual    bool    OnUpdateCommand (CommandUpdater* enabler) override;
 #endif
 
 public:
@@ -95,8 +95,8 @@ private:
     bool    fWrapToWindow;
 
 public:
-    override    void    GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const;
-    override    void    SetWindowRect (const Led_Rect& windowRect);
+    virtual    void    GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
+    virtual    void    SetWindowRect (const Led_Rect& windowRect) override;
 
 #if     qPlatform_Windows
 public:
@@ -109,7 +109,7 @@ public:
 
 #if     qPlatform_MacOS
 public:
-    override    void    FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName);
+    virtual    void    FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
 #endif
 
 #if     qPlatform_Windows
@@ -117,7 +117,7 @@ public:
     afx_msg     void    OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
 
 protected:
-    override    BOOL    IsSelected (const CObject* pDocItem) const; // support for CView/OLE
+    virtual    BOOL    IsSelected (const CObject* pDocItem) const override; // support for CView/OLE
 #endif
 
 public:
@@ -125,11 +125,11 @@ public:
     nonvirtual      void                        SetParaFormatSelection (const IncrementalParagraphInfo& pf);
 
 public:
-    override    void    OnShowHideGlyphCommand (CommandNumber cmdNum);
+    virtual    void    OnShowHideGlyphCommand (CommandNumber cmdNum) override;
 
 protected:
-    override    SearchParameters    GetSearchParameters () const;
-    override    void                SetSearchParameters (const SearchParameters& sp);
+    virtual    SearchParameters    GetSearchParameters () const override;
+    virtual    void                SetSearchParameters (const SearchParameters& sp) override;
 
 public:
     nonvirtual  void    SetShowHiddenText (bool showHiddenText);
@@ -147,8 +147,8 @@ protected:
 
 #ifdef _DEBUG
 public:
-    override    void    AssertValid () const;
-    override    void    Dump (CDumpContext& dc) const;
+    virtual    void    AssertValid () const override;
+    virtual    void    Dump (CDumpContext& dc) const override;
 #endif
 #endif
 };

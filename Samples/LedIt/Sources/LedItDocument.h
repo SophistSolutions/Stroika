@@ -56,8 +56,8 @@ public:
     virtual ~LedItDocument();
 
 public:
-    override    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) throw ();
-    override    TextStore*  PeekAtTextStore () const;
+    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) override throw ();
+    virtual    TextStore*  PeekAtTextStore () const override;
 
 #if     qPlatform_MacOS
     // Call exactly once (inFileSpec==NULL for new window)
@@ -68,22 +68,22 @@ public:
     static  const vector<LWindow*>& GetDocumentWindows ();
 
 public:
-    override    Boolean ObeyCommand (CommandT   inCommand, void* ioParam);
-    override    void    FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
-                                           UInt16& outMark, Str255 outName
-                                          );
+    virtual    Boolean ObeyCommand (CommandT   inCommand, void* ioParam) override;
+    virtual    void    FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
+                                          UInt16& outMark, Str255 outName
+                                         ) override;
 
     nonvirtual  void    OnSaveACopyAsCommand ();
 
 public:
-    override    Boolean     IsModified ();
+    virtual    Boolean     IsModified () override;
 
-    override    Boolean AskSaveAs (FSSpec& outFSSpec, Boolean inRecordIt);
+    virtual    Boolean AskSaveAs (FSSpec& outFSSpec, Boolean inRecordIt) override;
 
-    override    void        DoAESave (FSSpec& inFileSpec, OSType inFileType);
-    override    void        DoSave ();
-    override    void        DoRevert ();
-    override    void        DoPrint ();
+    virtual    void        DoAESave (FSSpec& inFileSpec, OSType inFileType) override;
+    virtual    void        DoSave () override;
+    virtual    void        DoRevert () override;
+    virtual    void        DoPrint () override;
 
 public:
     nonvirtual  void    PurgeUnneededMemory ();
@@ -95,23 +95,23 @@ public:
     nonvirtual  LedItServerItem* GetEmbeddedItem ();
 
 public:
-    override    BOOL    OnNewDocument ();
-    override    void    Serialize (CArchive& ar);
+    virtual    BOOL    OnNewDocument () override;
+    virtual    void    Serialize (CArchive& ar) override;
 
 public:
     static  FileFormat  sHiddenDocOpenArg;
-    override    BOOL    OnOpenDocument (LPCTSTR lpszPathName);
+    virtual    BOOL    OnOpenDocument (LPCTSTR lpszPathName) override;
 
 protected:
-    override    COleServerItem* OnGetEmbeddedItem ();
+    virtual    COleServerItem* OnGetEmbeddedItem () override;
 
 public:
-    override    BOOL DoSave (LPCTSTR lpszPathName, BOOL bReplace);
+    virtual    BOOL DoSave (LPCTSTR lpszPathName, BOOL bReplace) override;
 
 public:
     afx_msg     void    OnUpdateFileSave (CCmdUI* pCmdUI);
     afx_msg     void    OnFileSaveCopyAs ();
-    override    void    DeleteContents ();
+    virtual    void    DeleteContents () override;
 #endif
 
 public:
@@ -172,7 +172,7 @@ private:
 #if     qPlatform_Windows
 #if     qDebug
 public:
-    override    void    AssertValid () const;
+    virtual    void    AssertValid () const override;
 #endif
 
     // Generated message map functions

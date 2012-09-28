@@ -68,10 +68,10 @@ namespace   Stroika {
                     ~IdleManagerOSImpl_Win32 ();
 
                 public:
-                    override    void    StartSpendTimeCalls ();
-                    override    void    TerminateSpendTimeCalls ();
-                    override    float   GetSuggestedFrequency () const;
-                    override    void    SetSuggestedFrequency (float suggestedFrequency);
+                    virtual    void    StartSpendTimeCalls () override;
+                    virtual    void    TerminateSpendTimeCalls () override;
+                    virtual    float   GetSuggestedFrequency () const override;
+                    virtual    void    SetSuggestedFrequency (float suggestedFrequency) override;
 
                 protected:
                     nonvirtual  void    OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);

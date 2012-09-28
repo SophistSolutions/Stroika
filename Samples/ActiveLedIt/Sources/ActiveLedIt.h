@@ -15,8 +15,8 @@ class   ActiveLedItApp : public COleControlModule {
 private:
     typedef COleControlModule   inherited;
 public:
-    override    BOOL    InitInstance ();
-    override    int     ExitInstance ();
+    virtual    BOOL    InitInstance () override;
+    virtual    int     ExitInstance () override;
 };
 
 extern const GUID CDECL _tlid;

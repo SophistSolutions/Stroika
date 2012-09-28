@@ -93,7 +93,7 @@ public:
     }
 
     // make zoom produce a roughly page-size window
-    override    void    CalcStandardBoundsForScreen (const Rect& inScreenBounds, Rect& outStdBounds) const {
+    virtual    void    CalcStandardBoundsForScreen (const Rect& inScreenBounds, Rect& outStdBounds) const override {
         LWindow::CalcStandardBoundsForScreen (inScreenBounds, outStdBounds);
         short   winWidth        =   ::GetRectWidth (outStdBounds);
         short   desiredWidth    =   8.5 * 72; // 8.5 inches by 72dpi

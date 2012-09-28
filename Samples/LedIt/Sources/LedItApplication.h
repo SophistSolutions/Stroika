@@ -108,24 +108,24 @@ private:
 
 #if     qPlatform_Windows
 public:
-    override    BOOL    InitInstance ();
+    virtual    BOOL    InitInstance () override;
 
 public:
 #if     _MFC_VER >= 0x0700
-    override    void    WinHelpInternal (DWORD_PTR dwData, UINT nCmd = HELP_CONTEXT);
+    virtual    void    WinHelpInternal (DWORD_PTR dwData, UINT nCmd = HELP_CONTEXT) override;
 #else
-    override    void    WinHelp (DWORD dwData, UINT nCmd = HELP_CONTEXT);
+    vitual    void    WinHelp (DWORD dwData, UINT nCmd = HELP_CONTEXT) override;
 #endif
 
     // handle exceptions....
 public:
-    override    BOOL    PumpMessage ();
+    virtual    BOOL    PumpMessage () override;
 
     nonvirtual  void    HandleMFCException (CException* e) throw ();
     nonvirtual  void    HandleHRESULTException (HRESULT hr) throw ();
 #if 0
 public:
-    override    BOOL    OnIdle (LONG lCount);
+    virtual    BOOL    OnIdle (LONG lCount) override;
 #endif
 
 private:
@@ -134,7 +134,7 @@ private:
     COleTemplateServer fOleTemplateServer;
 
 public:
-    override    BOOL ProcessShellCommand (CCommandLineInfo& rCmdInfo);
+    virtual    BOOL ProcessShellCommand (CCommandLineInfo& rCmdInfo) override;
 
 protected:
     afx_msg void    OnAppAbout ();
@@ -164,23 +164,23 @@ public:
 
 #if     qPlatform_MacOS
 public:
-    override    void    MakeMenuBar ();
-    override    void    StartUp ();
-    override    void    ProcessNextEvent ();
-    override    void    HandleAppleEvent (const AppleEvent& inAppleEvent, AppleEvent& outAEReply, AEDesc& outResult, long inAENumber);
+    virtual    void    MakeMenuBar () override;
+    virtual    void    StartUp () override;
+    virtual    void    ProcessNextEvent () override;
+    virtual    void    HandleAppleEvent (const AppleEvent& inAppleEvent, AppleEvent& outAEReply, AEDesc& outResult, long inAENumber) override;
 
 protected:
     nonvirtual  void    HandleMacOSException (OSErr err);
     nonvirtual  void    HandlePowerPlantException (ExceptionCode err);
 
 public:
-    override    void    ShowAboutBox ();
+    virtual    void    ShowAboutBox () override;
 
-    override    Boolean ObeyCommand (CommandT inCommand, void* ioParam = nil);
-    override    void    FindCommandStatus (CommandT inCommand,
-                                           Boolean& outEnabled, Boolean& outUsesMark,
-                                           UInt16& outMark, Str255 outName
-                                          );
+    virtual    Boolean ObeyCommand (CommandT inCommand, void* ioParam = nil) override;
+    virtual    void    FindCommandStatus (CommandT inCommand,
+                                          Boolean& outEnabled, Boolean& outUsesMark,
+                                          UInt16& outMark, Str255 outName
+                                         ) override;
 
 public:
     nonvirtual  void    OnHelpMenuCommand ();
@@ -197,17 +197,17 @@ private:
     short   fCheckForUpdatesWebPageMenuItem;
 
 public:
-    override    void    UseIdleTime (const EventRecord& inMacEvent);
+    virtual    void    UseIdleTime (const EventRecord& inMacEvent) override;
 private:
     float   fLastLowMemWarnAt;
 
 public:
-    override void           OpenDocument (FSSpec* inMacFSSpec);
-    override void           OpenDocument (FSSpec* inMacFSSpec, FileFormat format);
-    override LModelObject*  MakeNewDocument();
+    virtual void           OpenDocument (FSSpec* inMacFSSpec) override;
+    virtual void           OpenDocument (FSSpec* inMacFSSpec, FileFormat format) override;
+    virtual LModelObject*  MakeNewDocument() override;
 
 public:
-    override void   ChooseDocument ();
+    virtual void   ChooseDocument () override;
 private:
     static  pascal  Boolean SFGetDlgModalFilter (DialogPtr dialog, EventRecord* theEvent, short* itemHit, void* myData);
     static  pascal  short   SFGetDlgHook (short item, DialogPtr dialog, void* myData);

@@ -62,9 +62,9 @@ namespace   Stroika {
                 nonvirtual  void    operator= (const SimpleTextImager&);    // don't call. not implemented
 
             protected:
-                override    void    HookLosingTextStore ();
+                virtual    void    HookLosingTextStore () override;
                 nonvirtual  void    HookLosingTextStore_ ();
-                override    void    HookGainedNewTextStore ();
+                virtual    void    HookGainedNewTextStore () override;
                 nonvirtual  void    HookGainedNewTextStore_ ();
 
             public:
@@ -73,7 +73,7 @@ namespace   Stroika {
                 bool    fICreatedPartition;
 
             public:
-                override    PartitionPtr    MakeDefaultPartition () const;
+                virtual    PartitionPtr    MakeDefaultPartition () const override;
 
             private:
                 class   MyPartitionWatcher : public Partition::PartitionWatcher {
@@ -81,10 +81,10 @@ namespace   Stroika {
                     nonvirtual  void    Init (PartitionPtr partition, SimpleTextImager* imager);
                     nonvirtual  void    UnInit (PartitionPtr partition);
                 public:
-                    override    void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const throw ();
-                    override    void    DidSplit (void* infoRecord) const throw ();
-                    override    void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ();
-                    override    void    DidCoalece (void* infoRecord) const throw ();
+                    virtual    void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const override throw ();
+                    virtual    void    DidSplit (void* infoRecord) const override throw ();
+                    virtual    void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const override throw ();
+                    virtual    void    DidCoalece (void* infoRecord) const override throw ();
                 private:
                     SimpleTextImager*   fImager;
                 };
@@ -101,8 +101,8 @@ namespace   Stroika {
                 Led_Distance    fRowHeight;
 
             protected:
-                override    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const;
-                override    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const;
+                virtual    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override;
+                virtual    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override;
 
             protected:
                 typedef Partition::PartitionMarker  PartitionMarker;
@@ -153,22 +153,22 @@ namespace   Stroika {
                  *  Window/Scrolling support.
                  */
             public:
-                override    size_t      GetTopRowInWindow () const;
-                override    size_t      GetTotalRowsInWindow () const;
-                override    size_t      GetLastRowInWindow () const;
-                override    void        SetTopRowInWindow (size_t newTopRow);
-                override    size_t      GetMarkerPositionOfStartOfWindow () const;
-                override    size_t      GetMarkerPositionOfEndOfWindow () const;
-                override    size_t      GetMarkerPositionOfStartOfLastRowOfWindow () const;
-                override    long        CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const;
-                override    long        CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const;
-                override    void        ScrollByIfRoom (long downByRows);       // if downBy negative then up
+                virtual    size_t      GetTopRowInWindow () const override;
+                virtual    size_t      GetTotalRowsInWindow () const override;
+                virtual    size_t      GetLastRowInWindow () const override;
+                virtual    void        SetTopRowInWindow (size_t newTopRow) override;
+                virtual    size_t      GetMarkerPositionOfStartOfWindow () const override;
+                virtual    size_t      GetMarkerPositionOfEndOfWindow () const override;
+                virtual    size_t      GetMarkerPositionOfStartOfLastRowOfWindow () const override;
+                virtual    long        CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const override;
+                virtual    long        CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const override;
+                virtual    void        ScrollByIfRoom (long downByRows);       // if downBy negative then up
                 // OK to ask to scroll further
                 // than allowed - return true
                 // if any scrolling (not necesarily
                 // same amont requested) done
             public:
-                override    void        ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0);
+                virtual    void        ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0) override;
 
             protected:
                 nonvirtual  RowReference    GetTopRowReferenceInWindow () const;
@@ -183,27 +183,27 @@ namespace   Stroika {
                 // not completely up-to-date.
 
             protected:
-                override    void        AssureWholeWindowUsedIfNeeded ();
+                virtual   void        AssureWholeWindowUsedIfNeeded () override;
 
             public:
-                override    Led_Distance    ComputeMaxHScrollPos () const;
+                virtual    Led_Distance    ComputeMaxHScrollPos () const override;
 
             public:
-                override    Led_Rect    GetCharLocation (size_t afterPosition)  const;
-                override    size_t      GetCharAtLocation (const Led_Point& where) const;
-                override    Led_Rect    GetCharWindowLocation (size_t afterPosition)    const;
-                override    size_t      GetCharAtWindowLocation (const Led_Point& where) const;
+                virtual    Led_Rect    GetCharLocation (size_t afterPosition)  const override;
+                virtual    size_t      GetCharAtLocation (const Led_Point& where) const override;
+                virtual    Led_Rect    GetCharWindowLocation (size_t afterPosition)    const override;
+                virtual    size_t      GetCharAtWindowLocation (const Led_Point& where) const override;
 
             public:
-                override    size_t          GetStartOfRow (size_t rowNumber) const;
-                override    size_t          GetStartOfRowContainingPosition (size_t charPosition) const;
-                override    size_t          GetEndOfRow (size_t rowNumber) const;
-                override    size_t          GetEndOfRowContainingPosition (size_t charPosition) const;
-                override    size_t          GetRealEndOfRow (size_t rowNumber) const;
-                override    size_t          GetRealEndOfRowContainingPosition (size_t charPosition) const;
-                override    size_t          GetRowContainingPosition (size_t charPosition) const;
-                override    size_t          GetRowCount () const;
-                override    Led_Rect        GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const;
+                virtual    size_t          GetStartOfRow (size_t rowNumber) const override;
+                virtual    size_t          GetStartOfRowContainingPosition (size_t charPosition) const override;
+                virtual    size_t          GetEndOfRow (size_t rowNumber) const override;
+                virtual    size_t          GetEndOfRowContainingPosition (size_t charPosition) const override;
+                virtual    size_t          GetRealEndOfRow (size_t rowNumber) const override;
+                virtual    size_t          GetRealEndOfRowContainingPosition (size_t charPosition) const override;
+                virtual    size_t          GetRowContainingPosition (size_t charPosition) const override;
+                virtual    size_t          GetRowCount () const override;
+                virtual    Led_Rect        GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
 
             public:
                 nonvirtual  size_t          GetStartOfRow (RowReference row) const;
@@ -213,21 +213,21 @@ namespace   Stroika {
                 nonvirtual  size_t          GetRowLength (RowReference row) const;
 
             public:
-                override    Led_Distance    GetRowHeight (size_t rowNumber) const;
+                virtual   Led_Distance    GetRowHeight (size_t rowNumber) const override;
 
             public:
-                override    Led_Distance    GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const;
+                virtual    Led_Distance    GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
 
             public:
                 nonvirtual  Led_Distance    GetHeightOfRows (size_t startingRow, size_t rowCount)   const;
                 nonvirtual  Led_Distance    GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
 
             public:
-                override    void    GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                        size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const;
+                virtual    void    GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
+                        size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const override;
 
             public:
-                override    void    Draw (const Led_Rect& subsetToDraw, bool printing);
+                virtual    void    Draw (const Led_Rect& subsetToDraw, bool printing) override;
 
             public:
                 virtual     void    DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
@@ -248,19 +248,19 @@ namespace   Stroika {
 
                 // Hook to invalidate cached info based on fontmetrics
             public:
-                override    void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
+                virtual    void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
 
                 // To assure our top-line scroll info not left corrupt...
             protected:
-                override    void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) override throw ();
 
 
                 // override to invalidate caches.
             public:
-                override    void        SetWindowRect (const Led_Rect& windowRect);
+                virtual    void        SetWindowRect (const Led_Rect& windowRect) override;
 
             protected:
-                override    void        InvalidateAllCaches ();
+                virtual    void        InvalidateAllCaches () override;
 
             private:
                 nonvirtual  RowReference    AdjustPotentialTopRowReferenceSoWholeWindowUsed (const RowReference& potentialTopRow);
@@ -282,8 +282,8 @@ namespace   Stroika {
                 virtual     size_t  ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const;
 
             protected:
-                override    bool    ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
-                override    size_t  RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const;
+                virtual    bool    ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
+                virtual    size_t  RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
 
             private:
                 friend  class   RowReference;

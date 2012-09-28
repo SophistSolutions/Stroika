@@ -28,11 +28,11 @@ public:
     ~LedItMainFrame ();
 
 public:
-    override    BOOL    PreCreateWindow (CREATESTRUCT& cs);
+    virtual    BOOL    PreCreateWindow (CREATESTRUCT& cs) override;
 
 public:
-    override    Led_IncrementalFontSpecification    GetCurFont () const;
-    override    void                                SetCurFont (const Led_IncrementalFontSpecification& fsp);
+    virtual    Led_IncrementalFontSpecification    GetCurFont () const override;
+    virtual    void                                SetCurFont (const Led_IncrementalFontSpecification& fsp) override;
 
 protected:
     afx_msg void    OnCharColor ();

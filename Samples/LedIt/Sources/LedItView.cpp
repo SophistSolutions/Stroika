@@ -224,7 +224,7 @@ public:
     //  TextInteractor::DialogSupport
 #if     qSupportStdFindDlg
 public:
-    override    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) {
+    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_FindDialog  findDialog;
 #elif   qPlatform_Windows
@@ -250,7 +250,7 @@ public:
 #endif
 #if     qSupportStdReplaceDlg
 public:
-    override    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) {
+    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ReplaceDialog   replaceDialog;
 #elif   qPlatform_Windows
@@ -292,7 +292,7 @@ public:
 #endif
 #if     qSupportStdSpellCheckDlg
 public:
-    override    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) {
+    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>   delegator (callback);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator);
@@ -308,7 +308,7 @@ public:
 
     //  WordProcessor::DialogSupport
 public:
-    override    FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum) {
+    virtual    FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum) override {
         Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
         Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
 #if     qPlatform_MacOS
@@ -336,7 +336,7 @@ public:
 #endif
     }
 #if     qSupportOtherFontSizeDlg
-    override        Led_Distance        PickOtherFontHeight (Led_Distance origHeight) {
+    virtual        Led_Distance        PickOtherFontHeight (Led_Distance origHeight) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif   qPlatform_Windows
@@ -352,7 +352,7 @@ public:
     }
 #endif
 #if     qSupportParagraphSpacingDlg
-    override        bool                PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) {
+    virtual        bool                PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog  dlg;
 #elif   qPlatform_Windows
@@ -381,7 +381,7 @@ public:
     }
 #endif
 #if     qSupportParagraphIndentsDlg
-    override        bool                PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) {
+    virtual        bool                PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog  dlg;
 #elif   qPlatform_Windows
@@ -409,7 +409,7 @@ public:
     }
 #endif
 #if     qXWindows
-    override        bool                PickOtherFontColor (Led_Color* color) {
+    virtual        bool                PickOtherFontColor (Led_Color* color) override {
         StdColorPickBox dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *color);
         dlg.DoModal ();
         if (dlg.GetWasOK ()) {
@@ -420,7 +420,7 @@ public:
     }
 #endif
 #if     qXWindows
-    override        bool                ChooseFont (Led_IncrementalFontSpecification* font) {
+    virtual        bool                ChooseFont (Led_IncrementalFontSpecification* font) override {
         StdFontPickBox  dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *font);
         dlg.DoModal ();
         if (dlg.GetWasOK ()) {
@@ -431,7 +431,7 @@ public:
     }
 #endif
 #if     qPlatform_MacOS || qPlatform_Windows
-    override    void                ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) {
+    virtual    void                ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override {
         // unknown embedding...
 #if     qPlatform_MacOS
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog  infoDialog;
@@ -445,7 +445,7 @@ public:
     }
 #endif
 #if     qPlatform_MacOS || qPlatform_Windows
-    override        bool    ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) {
+    virtual        bool    ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog;
 #elif   qPlatform_Windows
@@ -469,7 +469,7 @@ public:
     }
 #endif
 #if     qPlatform_MacOS || qPlatform_Windows
-    override        bool    ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) {
+    virtual        bool    ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog  infoDialog;
 #elif   qPlatform_Windows
@@ -513,7 +513,7 @@ public:
     }
 #endif
 #if     qSupportEditTablePropertiesDlg
-    override    bool    EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) {
+    virtual    bool    EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override {
         RequireNotNull (tableProperties);
 
         typedef Led_StdDialogHelper_EditTablePropertiesDialog   DLGTYPE;

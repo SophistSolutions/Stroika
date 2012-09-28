@@ -1024,7 +1024,7 @@ ActiveLedItControl::XObjSafe::GetInterfaceSafetyOptions(
     // does interface exist?
     IUnknown FAR* punkInterface;
     retval = pThis->ExternalQueryInterface(&riid,
-                                           (void **)&punkInterface);
+                                           (void**)&punkInterface);
     if (retval != E_NOINTERFACE) {  // interface exists
         punkInterface->Release(); // release it--just checking!
     }
@@ -1051,7 +1051,7 @@ ActiveLedItControl::XObjSafe::SetInterfaceSafetyOptions(
 
     // does interface exist?
     IUnknown FAR* punkInterface;
-    pThis->ExternalQueryInterface(&riid, (void **)&punkInterface);
+    pThis->ExternalQueryInterface(&riid, (void**)&punkInterface);
     if (punkInterface) {    // interface exists
         punkInterface->Release(); // release it--just checking!
     }
@@ -1536,7 +1536,7 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
             inherited (hInstance, parentWnd) {
         }
     public:
-        override    BOOL    OnInitDialog () {
+        virtual    BOOL    OnInitDialog () override {
             BOOL    result  =   inherited::OnInitDialog ();
 
             // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
@@ -1620,7 +1620,7 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
             return (result);
         }
     public:
-        override    void    OnClickInInfoField () {
+        virtual    void    OnClickInInfoField () override {
             try {
                 Led_URLManager::Get ().Open ("mailto:info-led@sophists.com");
             }
@@ -1630,7 +1630,7 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
             inherited::OnClickInInfoField ();
         }
 
-        override    void    OnClickInLedWebPageField () {
+        virtual    void    OnClickInLedWebPageField () override {
             try {
                 Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/Default.asp", kAppName, kURLDemoFlag));
             }
@@ -3308,13 +3308,13 @@ BOOL    ActiveLedItControl::OLE_CommandEnabled (const VARIANT& command)
                 CCmdUI (),
                 fEnabled (false) {
             }
-            override    void    Enable (BOOL bOn) {
+            virtual    void    Enable (BOOL bOn) override {
                 fEnabled = bOn;
                 m_bEnableChanged = TRUE;
             }
-            override    void    SetCheck (int /*nCheck*/) {
+            virtual    void    SetCheck (int /*nCheck*/) override {
             }
-            override    void    SetText (LPCTSTR /*lpszText*/) {
+            virtual    void    SetText (LPCTSTR /*lpszText*/) override {
             }
 
             bool    fEnabled;
@@ -3337,13 +3337,13 @@ BOOL    ActiveLedItControl::OLE_CommandChecked (const VARIANT& command)
                 CCmdUI (),
                 fChecked (false) {
             }
-            override    void    Enable (BOOL bOn) {
+            virtual    void    Enable (BOOL bOn) override {
                 m_bEnableChanged = TRUE;
             }
-            override    void    SetCheck (int nCheck) {
+            virtual    void    SetCheck (int nCheck) override {
                 fChecked = nCheck != 0;
             }
-            override    void    SetText (LPCTSTR /*lpszText*/) {
+            virtual    void    SetText (LPCTSTR /*lpszText*/) override {
             }
 
             bool    fChecked;

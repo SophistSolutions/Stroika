@@ -116,23 +116,23 @@ namespace   Stroika {
                 virtual ~ChunkedArrayTextStore ();
 
             public:
-                override    TextStore*  ConstructNewTextStore () const;
+                virtual    TextStore*  ConstructNewTextStore () const override;
 
             public:
-                override    void    AddMarkerOwner (MarkerOwner* owner);
-                override    void    RemoveMarkerOwner (MarkerOwner* owner);
+                virtual    void    AddMarkerOwner (MarkerOwner* owner) override;
+                virtual    void    RemoveMarkerOwner (MarkerOwner* owner) override;
 
             public:
-                override    size_t  GetLength () const throw ();
-                override    void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ();
-                override    void    ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount);
+                virtual    size_t  GetLength () const override throw  ();
+                virtual    void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const override throw ();
+                virtual    void    ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) override;
 
             public:
-                override    void    AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner);
-                override    void    RemoveMarkers (Marker* const markerArray[], size_t markerCount);
-                override    void    PreRemoveMarker (Marker* marker);
-                override    void    SetMarkerRange (Marker* m, size_t start, size_t end) throw ();
-                override    void    CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const;
+                virtual    void    AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner) override;
+                virtual    void    RemoveMarkers (Marker* const markerArray[], size_t markerCount) override;
+                virtual    void    PreRemoveMarker (Marker* marker) override;
+                virtual    void    SetMarkerRange (Marker* m, size_t start, size_t end) override throw ();
+                virtual    void    CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const override;
 
 #if     qUseLRUCacheForRecentlyLookedUpMarkers
             public:
@@ -210,7 +210,7 @@ namespace   Stroika {
 
 #if     qDebug
             protected:
-                override    void    Invariant_ () const;
+                virtual    void    Invariant_ () const override;
                 nonvirtual  void    WalkSubTreeAndCheckInvariants (const Marker* m) const;
 #endif
             };

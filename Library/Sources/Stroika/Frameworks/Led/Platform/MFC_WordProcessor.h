@@ -127,7 +127,7 @@ namespace   Stroika {
                             fDocument (doc) {
                         }
                     public:
-                        override    bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) {
+                        virtual    bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override {
                             Led_MFC_ControlItem::DocContextDefiner tmp (fDocument);
                             return inherited::InternalizeBestFlavor (flavorPackage, from, to);
                         }
@@ -135,10 +135,10 @@ namespace   Stroika {
                         COleDocument*   fDocument;
                     };
                 protected:
-                    override    shared_ptr<FlavorPackageInternalizer>   MakeDefaultInternalizer ();
+                    virtual    shared_ptr<FlavorPackageInternalizer>   MakeDefaultInternalizer () override;
 #endif
                 public:
-                    override        Led_SDK_String      GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m);
+                    virtual        Led_SDK_String      GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m) override;
 
                 protected:
                     DECLARE_MESSAGE_MAP ()
@@ -189,48 +189,48 @@ namespace   Stroika {
                     nonvirtual  Led_MFC&        GetActiveView () const;
 
                 public:
-                    override    void    OnChange (OLE_NOTIFICATION wNotification, DWORD dwParam);
-                    override    void    OnActivate ();
-                    override    BOOL    DoVerb (LONG nVerb, CView* pView, LPMSG lpMsg = NULL);
+                    virtual    void    OnChange (OLE_NOTIFICATION wNotification, DWORD dwParam) override;
+                    virtual    void    OnActivate () override;
+                    virtual    BOOL    DoVerb (LONG nVerb, CView* pView, LPMSG lpMsg = NULL) override;
 
                 protected:
-                    override    void    OnGetItemPosition (CRect& rPosition);
-                    override    void    OnDeactivateUI (BOOL bUndoable);
-                    override    BOOL    OnChangeItemPosition (const CRect& rectPos);
+                    virtual    void    OnGetItemPosition (CRect& rPosition) override;
+                    virtual    void    OnDeactivateUI (BOOL bUndoable) override;
+                    virtual    BOOL    OnChangeItemPosition (const CRect& rectPos) override;
 
                 public:
-                    override    void            DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                            size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                            Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                            );
-                    override    void            MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                    virtual    void            DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                            size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                            Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
+                                                           ) override;
+                    virtual    void            MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                             const Led_tChar* text,
                             Led_Distance* distanceResults
-                                                                    ) const;
-                    override    Led_Distance    MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const;
-                    override    void            DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo);
-                    override    bool            HandleOpen ();
+                                                                   ) const override;
+                    virtual    Led_Distance    MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+                    virtual    void            DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
+                    virtual    bool            HandleOpen () override;
 
                 public:
-                    override    vector<PrivateCmdNumber>    GetCmdNumbers () const;
-                    override    bool                        IsCmdEnabled (PrivateCmdNumber cmd) const;
+                    virtual    vector<PrivateCmdNumber>    GetCmdNumbers () const override;
+                    virtual    bool                        IsCmdEnabled (PrivateCmdNumber cmd) const override;
 
                 private:
                     Led_Size    fSize;
 
                     // Support RTFIO::RTFOLEEmbedding API
                 public:
-                    override    void            PostCreateSpecifyExtraInfo (Led_TWIPS_Point size);
-                    override    Led_SDK_String  GetObjClassName ()  const;
-                    override    void            DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData);
-                    override    Led_Size        GetSize ();
+                    virtual    void            PostCreateSpecifyExtraInfo (Led_TWIPS_Point size) override;
+                    virtual    Led_SDK_String  GetObjClassName ()  const override;
+                    virtual    void            DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) override;
+                    virtual    Led_Size        GetSize () override;
 
                 public:
-                    override    const char*     GetTag () const;
-                    override    void            Write (SinkStream& sink);
-                    override    void            ExternalizeFlavors (WriterFlavorPackage& flavorPackage);
+                    virtual    const char*     GetTag () const override;
+                    virtual    void            Write (SinkStream& sink) override;
+                    virtual    void            ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
-                    override    void    Serialize (CArchive& ar);
+                    virtual    void    Serialize (CArchive& ar) override;
 
                 private:
                     DECLARE_SERIAL(Led_MFC_ControlItem)

@@ -265,7 +265,7 @@ public:
     DECLARE_PROTECT_FINAL_CONSTRUCT()
 
 protected:
-    override    void    OnEnterIdle ();
+    virtual    void    OnEnterIdle () override;
 
 public:
     STDMETHOD(get__NewEnum)(IUnknown** ppUnk);

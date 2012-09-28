@@ -138,7 +138,7 @@ const   unsigned    int kMaxNumUndoLevels   =   512;
 
 #if     qActiveLedIt_MajorVersion==3 && qActiveLedIt_MinorVersion==1
 #define qActiveLedIt_MajorDotMinorVersion   3.1
-#elif	(qActiveLedIt_MajorVersion==4) && (qActiveLedIt_MinorVersion==0)
+#elif   (qActiveLedIt_MajorVersion==4) && (qActiveLedIt_MinorVersion==0)
 #define qActiveLedIt_MajorDotMinorVersion   4.0
 #else
 //tmphack - LGP 2012-09-04 - cuz we've let yet to fix version# stuff

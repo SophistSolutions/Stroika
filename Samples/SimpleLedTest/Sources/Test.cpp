@@ -38,7 +38,7 @@ class   MyLedWindow : public _BASE_ {
 private:
     typedef _BASE_  inherited;
 public:
-    override    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
+    virtual    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 
 public:
     MyLedWindow ():
@@ -46,7 +46,7 @@ public:
         SetScrollBarType (h, eScrollBarAsNeeded);
         SetScrollBarType (v, eScrollBarAlways);
     }
-    override    void    OnNCDestroy_Msg ();
+    virtual    void    OnNCDestroy_Msg () override;
 };
 
 

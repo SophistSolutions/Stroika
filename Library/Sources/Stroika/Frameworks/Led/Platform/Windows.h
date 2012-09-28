@@ -259,9 +259,9 @@ namespace   Stroika {
                      * Overrides of the Led (TextInteractor) code that must thunk down to Win32 SDK calls
                      */
                 protected:
-                    override    void    RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const;
-                    override    void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const;
-                    override    bool    QueryInputKeyStrokesPending () const;
+                    virtual    void    RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const override;
+                    virtual    void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const override;
+                    virtual    bool    QueryInputKeyStrokesPending () const override;
 
 
                     // Tablet API
@@ -286,8 +286,8 @@ namespace   Stroika {
                 private:
                     friend  class   TemporarilyUseTablet;
                 protected:
-                    override    Led_Tablet  AcquireTablet () const;
-                    override    void        ReleaseTablet (Led_Tablet tablet) const;
+                    virtual    Led_Tablet  AcquireTablet () const override;
+                    virtual    void        ReleaseTablet (Led_Tablet tablet) const override;
                 private:
                     Led_Tablet          fUpdateTablet;      // assigned in stack-based fasion during update/draw calls.
                     mutable Led_Tablet_ fAllocatedTablet;   // if we needed to allocate a tablet, store it here, and on the
@@ -298,7 +298,7 @@ namespace   Stroika {
                     virtual     void    WindowDrawHelper (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
 
                 protected:
-                    override    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
+                    virtual    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override;
 
 
 
@@ -310,8 +310,8 @@ namespace   Stroika {
                     virtual     void    HandleTabCharacterTyped ();
 
                 public:
-                    override    void    AboutToUpdateText (const UpdateInfo& updateInfo);
-                    override    void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                    virtual    void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
+                    virtual    void    DidUpdateText (const UpdateInfo& updateInfo) override throw ();
                 protected:
                     nonvirtual  void    DidUpdateText_ (const UpdateInfo& updateInfo) throw ();
 
@@ -346,7 +346,7 @@ namespace   Stroika {
                     typedef TextInteractor::VHSelect        VHSelect;       // redundant typedef to keep compiler happy...LGP 2000-10-05-MSVC60
 
                 public:
-                    override    void            SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType);
+                    virtual    void            SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType) override;
 
                 protected:
                     virtual bool        ShouldUpdateHScrollBar () const;
@@ -360,23 +360,23 @@ namespace   Stroika {
                     nonvirtual  void    SetVScrollInfo (const SCROLLINFO& scrollInfo, bool redraw = true);
 
                 public:
-                    override    void    InvalidateScrollBarParameters ();
+                    virtual    void    InvalidateScrollBarParameters () override;
                 protected:
                     nonvirtual  void    InvalidateScrollBarParameters_ ();
 
                 protected:
-                    override    void    InvalidateCaretState ();
+                    virtual    void    InvalidateCaretState () override;
                     nonvirtual  void    UpdateCaretState_ ();
 
                 protected:
-                    override    void    UpdateScrollBars ();
+                    virtual    void    UpdateScrollBars () override;
 
                     // Clipboard Support
                 protected:
-                    override    bool    OnCopyCommand_Before ();
-                    override    void    OnCopyCommand_After ();
-                    override    bool    OnPasteCommand_Before ();
-                    override    void    OnPasteCommand_After ();
+                    virtual    bool    OnCopyCommand_Before () override;
+                    virtual    void    OnCopyCommand_After () override;
+                    virtual    bool    OnPasteCommand_Before () override;
+                    virtual    void    OnPasteCommand_After () override;
 
 
                 public:
@@ -493,7 +493,7 @@ namespace   Stroika {
                 protected:
                     virtual     LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
                 protected:
-                    override    LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam);
+                    virtual    LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam) override;
                 };
 
 
@@ -530,7 +530,7 @@ namespace   Stroika {
 
                     // Led_Win32_Helper overrides.
                 public:
-                    override    HWND    GetHWND () const;
+                    virtual    HWND    GetHWND () const override;
 
                 public:
                     virtual void    OnNCDestroy_Msg ();
@@ -550,7 +550,7 @@ namespace   Stroika {
                 protected:
                     virtual     LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
                 protected:
-                    override    LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam);
+                    virtual    LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam) override;
                 };
 
 
@@ -576,7 +576,7 @@ namespace   Stroika {
                     Led_Win32_SimpleWndProc_HelperWithSDKMessages ();
 
                 protected:
-                    override        LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
+                    virtual        LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
                 };
 
 

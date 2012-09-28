@@ -47,23 +47,23 @@ namespace   Stroika {
                 SimpleTextInteractor ();
 
             protected:
-                override    void    TabletChangedMetrics ();
-                override    void    ChangedInterLineSpace (PartitionMarker* pm);
+                virtual    void    TabletChangedMetrics () override;
+                virtual    void    ChangedInterLineSpace (PartitionMarker* pm) override;
 
                 /*
                  *  Must combine behaviors of different mixins.
                  */
             public:
-                override    void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
+                virtual    void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
                 nonvirtual  void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode);
-                override    void    SetTopRowInWindow (size_t newTopRow);
+                virtual    void    SetTopRowInWindow (size_t newTopRow) override;
                 nonvirtual  void    SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode);
-                override    void    SetTopRowInWindow (RowReference row);
+                virtual    void    SetTopRowInWindow (RowReference row) override;
                 nonvirtual  void    SetTopRowInWindow (RowReference row, UpdateMode updateMode);
 
                 // Speed tweek - use rowreferences...
             public:
-                override    void    SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate);
+                virtual    void    SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate) override;
             };
 #if     qQuiteAnnoyingDominanceWarnings
 #pragma warning (default : 4250)

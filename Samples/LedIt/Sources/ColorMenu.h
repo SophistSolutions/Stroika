@@ -28,8 +28,8 @@ public:
     static  UINT        FontColorToCmd (Led_Color color);
 
 public:
-    override    void    DrawItem (LPDRAWITEMSTRUCT lpDIS);
-    override    void    MeasureItem (LPMEASUREITEMSTRUCT lpMIS);
+    virtual    void    DrawItem (LPDRAWITEMSTRUCT lpDIS) override;
+    virtual    void    MeasureItem (LPMEASUREITEMSTRUCT lpMIS) override;
 
 };
 #endif

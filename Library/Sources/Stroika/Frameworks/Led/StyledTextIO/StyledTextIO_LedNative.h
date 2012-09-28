@@ -58,8 +58,8 @@ namespace   Stroika {
                     StyledTextIOReader_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    override    void    Read ();
-                    override    bool    QuickLookAppearsToBeRightFormat ();
+                    virtual    void    Read () override;
+                    virtual    bool    QuickLookAppearsToBeRightFormat () override;
 
                 protected:
                     nonvirtual  void    Read_Version4 (const char* cookie);
@@ -81,7 +81,7 @@ namespace   Stroika {
                     StyledTextIOWriter_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    override    void    Write ();
+                    virtual    void    Write () override;
 
                 protected:
 #if     !qWideCharacters

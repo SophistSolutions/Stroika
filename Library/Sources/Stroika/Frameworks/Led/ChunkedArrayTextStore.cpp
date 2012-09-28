@@ -166,11 +166,11 @@ public:
     DECLARE_USE_BLOCK_ALLOCATION (ChunkedArrayMarkerHook);
 
 public:
-    override    MarkerOwner*    GetOwner () const;
-    override    size_t          GetStart () const;
-    override    size_t          GetEnd () const;
-    override    size_t          GetLength () const;
-    override    void            GetStartEnd (size_t* start, size_t* end)  const;
+    virtual    MarkerOwner*    GetOwner () const override;
+    virtual    size_t          GetStart () const override;
+    virtual    size_t          GetEnd () const override;
+    virtual    size_t          GetLength () const override;
+    virtual    void            GetStartEnd (size_t* start, size_t* end)  const override;
 
 
     nonvirtual  void    AddToChildList (Marker* marker);

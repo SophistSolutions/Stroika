@@ -121,15 +121,15 @@ private:
     long    fMaxLength;
 
 public:
-    override    void    GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const;
-    override    void    SetWindowRect (const Led_Rect& windowRect);
+    virtual    void    GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
+    virtual    void    SetWindowRect (const Led_Rect& windowRect) override;
 public:
-    override    Led_Distance    CalculateFarthestRightMarginInWindow () const;
+    virtual    Led_Distance    CalculateFarthestRightMarginInWindow () const override;
 
 protected:
     afx_msg int OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message);
 public:
-    override    void    PostNcDestroy ();
+    virtual    void    PostNcDestroy () override;
     afx_msg     void    OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
     afx_msg     void    OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
 
@@ -140,7 +140,7 @@ public:
     afx_msg     void    OnSysKeyUp (UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg     void    OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg     void    OnKeyUp (UINT nChar, UINT nRepCnt, UINT nFlags);
-    override    void    OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed);
+    virtual    void    OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
     afx_msg     void    OnLButtonDown (UINT nFlags, CPoint oPoint);
     afx_msg     void    OnLButtonUp (UINT nFlags, CPoint oPoint);
     afx_msg     void    OnLButtonDblClk (UINT nFlags, CPoint oPoint);
@@ -156,18 +156,18 @@ public:
     afx_msg     void    OnUpdateOLEUserCommand (CCmdUI* pCmdUI);
 
 protected:
-    override    SearchParameters    GetSearchParameters () const;
-    override    void                SetSearchParameters (const SearchParameters& sp);
+    virtual    SearchParameters    GetSearchParameters () const override;
+    virtual    void                SetSearchParameters (const SearchParameters& sp) override;
 
 public:
-    override    void    SetSelection (size_t start, size_t end);
+    virtual    void    SetSelection (size_t start, size_t end) override;
     using   TextInteractor::SetSelection;
 
 protected:
-    override    void    AboutToUpdateText (const UpdateInfo& updateInfo);
+    virtual    void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
 
 public:
-    override    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
+    virtual    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override;
 
 public:
     bool    fEnableAutoChangesBackgroundColor;
@@ -196,8 +196,8 @@ private:
 
 #ifdef  _DEBUG
 public:
-    override    void    AssertValid () const;
-    override    void    Dump (CDumpContext& dc) const;
+    virtual    void    AssertValid () const override;
+    virtual    void    Dump (CDumpContext& dc) const override;
 #endif
 };
 #if     qQuiteAnnoyingDominanceWarnings

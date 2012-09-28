@@ -28,7 +28,7 @@ protected:
     typedef Led_MFC_ControlItem inherited;
 
 public:
-    override    BOOL    CanActivate ();
+    virtual    BOOL    CanActivate () override;
 
 public:
     nonvirtual  LedItDocument&  GetDocument () const;

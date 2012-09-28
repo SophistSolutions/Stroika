@@ -36,8 +36,8 @@ namespace   Stroika {
                     StyledTextIOReader_STYLText (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    override    void    Read ();
-                    override    bool    QuickLookAppearsToBeRightFormat ();
+                    virtual    void    Read () override;
+                    virtual    bool    QuickLookAppearsToBeRightFormat () override;
                 };
 #endif
 

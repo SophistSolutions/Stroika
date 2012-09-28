@@ -177,9 +177,9 @@ class   SimpleLedTemplate : public CSingleDocTemplate {
 public:
     SimpleLedTemplate (const char* daStr);
 public:
-    override    void    LoadTemplate ();
+    virtual    void    LoadTemplate () override;
 public:
-    override    CDocument* OpenDocumentFile (LPCTSTR lpszPathName, BOOL bMakeVisible) {
+    virtual    CDocument* OpenDocumentFile (LPCTSTR lpszPathName, BOOL bMakeVisible) override {
         // Based on MFC CSingleDocTemplate::OpenDocumentFile () from MSVC.Net 2k3 (2003-11-29)
         // But changed to cope with exceptions being thrown during OpenDoc (SPR#1572)
         CDocument* pDocument = NULL;
@@ -304,20 +304,20 @@ public:
 class   LedItDocManager : public CDocManager {
 public:
     LedItDocManager ();
-    override    void        OnFileNew ();
-    override    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName);
+    virtual    void        OnFileNew () override;
+    virtual    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName) override;
     nonvirtual  CDocument*  OpenDocumentFile (LPCTSTR lpszFileName, FileFormat format);
 
 public:
-    override    void    RegisterShellFileTypes (BOOL bWin95);
+    virtual    void    RegisterShellFileTypes (BOOL bWin95) override;
 private:
     nonvirtual  void    RegisterShellFileType (bool bWin95, CString strPathName, int iconIndexInFile, CString strFilterExt, CString strFileTypeId, CString strFileTypeName);
 
 public:
-    override    BOOL    DoPromptFileName (CString& fileName, UINT nIDSTitle, DWORD lFlags, BOOL bOpenFileDialog, CDocTemplate* pTemplate);
+    virtual    BOOL    DoPromptFileName (CString& fileName, UINT nIDSTitle, DWORD lFlags, BOOL bOpenFileDialog, CDocTemplate* pTemplate) override;
 
 
-    override    void    OnFileOpen ();
+    virtual    void    OnFileOpen () override;
 };
 
 inline  const   void*   LoadAppResource (long resID, LPCTSTR resType)
@@ -371,7 +371,7 @@ public:
 #endif
 
 public:
-    override    void    PreDoModalHook () {
+    virtual    void    PreDoModalHook () override {
         inherited::PreDoModalHook ();
 #if     _UNICODE
 #define kUNICODE_NAME_ADORNER   L" [UNICODE]"
@@ -473,7 +473,7 @@ public:
 
 #endif
     }
-    override    void    OnClickInInfoField () {
+    virtual    void    OnClickInInfoField () override {
         try {
             Led_URLManager::Get ().Open ("mailto:info-led@sophists.com");
         }
@@ -483,7 +483,7 @@ public:
         inherited::OnClickInInfoField ();
     }
 
-    override    void    OnClickInLedWebPageField () {
+    virtual    void    OnClickInLedWebPageField () override {
         try {
             Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/LedIt/", kAppName));
         }
@@ -508,7 +508,7 @@ public:
         fFileTypeChoice (NULL) {
     }
 protected:
-    override    void    PreDoModalHook () {
+    virtual    void    PreDoModalHook () override {
         inherited::PreDoModalHook ();
 
         {
@@ -575,7 +575,7 @@ protected:
             }
         }
     }
-    override    void    OnOK () {
+    virtual    void    OnOK () override {
         inherited::OnOK ();
         // what a long ugly line of code
         GtkWidget* activeItem = gtk_menu_get_active (GTK_MENU (gtk_option_menu_get_menu (fFileTypeChoice)));
@@ -1375,7 +1375,7 @@ BOOL    LedItApplication::InitInstance ()
             }
 
         public:
-            override    bool    CheckUserSaysOKToUpdate () const {
+            virtual    bool    CheckUserSaysOKToUpdate () const override {
                 Options o;
                 if (o.GetCheckFileAssocsAtStartup ()) {
                     Led_StdDialogHelper_UpdateWin32FileAssocsDialog     dlg(::AfxGetResourceHandle (), ::GetActiveWindow ());

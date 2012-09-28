@@ -262,7 +262,7 @@ namespace   Stroika {
 
                     // Led_Win32_Helper Hooks
                 public:
-                    override    HWND    GetHWND () const;
+                    virtual    HWND    GetHWND () const override;
 
 
 
@@ -295,7 +295,7 @@ namespace   Stroika {
 
                     // Disambigouate mixins
                 public:
-                    override    Led_Rect    GetWindowRect () const;
+                    virtual    Led_Rect    GetWindowRect () const override;
                     nonvirtual  void        GetWindowRect (LPRECT lpRect) const;
                 public:
                     nonvirtual  DWORD   GetStyle () const;
@@ -556,7 +556,7 @@ namespace   Stroika {
 
                 protected:
                     afx_msg     void    OnPaint ();
-                    override    void    OnDraw (CDC* pDC);
+                    virtual    void    OnDraw (CDC* pDC) override;
                     afx_msg     void    OnLButtonDown (UINT nFlags, CPoint oPoint);
                     afx_msg     int     OnCreate (LPCREATESTRUCT lpCreateStruct);
                     afx_msg     void    OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -569,12 +569,12 @@ namespace   Stroika {
                     Led_TWIPS_Rect  fPrintMargins;
 
                 protected:
-                    override    BOOL    OnPreparePrinting (CPrintInfo* pInfo);
-                    override    void    OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo);
-                    override    void    OnPrint (CDC* pDC, CPrintInfo* pInfo);
-                    override    void    OnEndPrinting (CDC* pDC, CPrintInfo* pInfo);
+                    virtual    BOOL    OnPreparePrinting (CPrintInfo* pInfo) override;
+                    virtual    void    OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo) override;
+                    virtual    void    OnPrint (CDC* pDC, CPrintInfo* pInfo) override;
+                    virtual    void    OnEndPrinting (CDC* pDC, CPrintInfo* pInfo) override;
                 public:
-                    override    void    OnPrepareDC (CDC* pDC, CPrintInfo* pInfo);
+                    virtual    void    OnPrepareDC (CDC* pDC, CPrintInfo* pInfo) override;
                 protected:
                     virtual     Led_Rect    CalculatePrintingRect (CDC* pDC) const;
                 protected:
@@ -599,16 +599,16 @@ namespace   Stroika {
 
                     // mouse down tracking... and drag and drop...
                 protected:
-                    override    DROPEFFECT  OnDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
-                    override    DROPEFFECT  OnDragOver (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
-                    override    BOOL        OnDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point);
-                    override    void        OnDragLeave ();
+                    virtual    DROPEFFECT  OnDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point) override;
+                    virtual    DROPEFFECT  OnDragOver (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point) override;
+                    virtual    BOOL        OnDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point) override;
+                    virtual    void        OnDragLeave () override;
 
                 public:
-                    override    void    InvalidateScrollBarParameters ();
+                    virtual    void    InvalidateScrollBarParameters () override;
 
                 protected:
-                    override    void    UpdateScrollBars ();
+                    virtual    void    UpdateScrollBars () override;
 
                 protected:
                     DECLARE_MESSAGE_MAP ()
@@ -734,8 +734,8 @@ namespace   Stroika {
                     Led_MFC_X ();
 
                 public:
-                    override    void    AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo);
-                    override    void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw ();
+                    virtual    void    AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
+                    virtual    void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override throw ();
                 };
 
 
@@ -760,9 +760,9 @@ namespace   Stroika {
                 public:
                     Led_MFCReaderDAndDFlavorPackage (COleDataObject* dataObject);
 
-                    override    bool    GetFlavorAvailable (Led_ClipFormat clipFormat) const;
-                    override    size_t  GetFlavorSize (Led_ClipFormat clipFormat) const;
-                    override    size_t  ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const;
+                    virtual    bool    GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
+                    virtual    size_t  GetFlavorSize (Led_ClipFormat clipFormat) const override;
+                    virtual    size_t  ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const override;
 
                     nonvirtual  COleDataObject* GetOleDataObject () const;
 
@@ -785,7 +785,7 @@ namespace   Stroika {
                 public:
                     Led_MFCWriterDAndDFlavorPackage (COleDataSource* dataObject);
 
-                    override    void    AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf);
+                    virtual    void    AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf) override;
 
                     nonvirtual  COleDataSource* GetOleDataSource () const;
 
@@ -844,11 +844,11 @@ namespace   Stroika {
                     explicit Led_MFC_TmpCmdUpdater (CCmdUI* pCmdUI);
 
                 public:
-                    override    CommandNumber   GetCmdID () const;
-                    override    bool            GetEnabled () const;
-                    override    void            SetEnabled (bool enabled);
-                    override    void            SetChecked (bool checked);
-                    override    void            SetText (const Led_SDK_Char* text);
+                    virtual    CommandNumber   GetCmdID () const override;
+                    virtual    bool            GetEnabled () const override;
+                    virtual    void            SetEnabled (bool enabled) override;
+                    virtual    void            SetChecked (bool checked) override;
+                    virtual    void            SetText (const Led_SDK_Char* text) override;
 
                 public:
                     operator CCmdUI* ();

@@ -183,10 +183,10 @@ namespace   Stroika {
                 virtual ~LedDialogWidget ();
 
             public:
-                override    void    OnBadUserInput ();
+                virtual    void    OnBadUserInput () override;
 
             public:
-                override    void    OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/, bool controlPressed, bool /*altKeyPressed*/);
+                virtual    void    OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/, bool controlPressed, bool /*altKeyPressed*/) override;
 
             protected:
                 virtual CommandNumber   CharToCommand (Led_tChar theChar) const;
@@ -243,7 +243,7 @@ namespace   Stroika {
 
 #if     qPlatform_Windows
             public:
-                override    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
+                virtual    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
             protected:
                 virtual     LRESULT OnCreate_Msg (WPARAM wParam, LPARAM lParam);
                 virtual     LRESULT OnSize_Msg (WPARAM wParam, LPARAM lParam);
@@ -255,7 +255,7 @@ namespace   Stroika {
                     typedef SimpleWin32WndProcHelper    inherited;
 
                     MyButton ();
-                    override    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
+                    virtual    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 
                     LedComboBoxWidget*  fComboBox;
                     Led_Bitmap          fDropDownArrow;
@@ -269,7 +269,7 @@ namespace   Stroika {
                     typedef SimpleWin32WndProcHelper    inherited;
 
                     MyComboListBoxPopup ();
-                    override    LRESULT     WndProc (UINT message, WPARAM wParam, LPARAM lParam);
+                    virtual    LRESULT     WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
                     nonvirtual  void        UpdatePopupItems ();
                     nonvirtual  void        MadeSelection ();
                     nonvirtual  void        ComputePreferedHeight (Led_Distance* prefHeight, size_t* nEltsShown) const;
@@ -286,7 +286,7 @@ namespace   Stroika {
 
                     MyTextWidget ();
                     ~MyTextWidget ();
-                    override    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
+                    virtual    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 
                     LedComboBoxWidget*  fComboBox;
                 };
@@ -441,7 +441,7 @@ namespace   Stroika {
 
 #if     qPlatform_Windows
             protected:
-                override    BOOL    OnInitDialog ();
+                virtual    BOOL    OnInitDialog ();
 #endif
 
 #if     qPlatform_Windows
@@ -481,7 +481,7 @@ namespace   Stroika {
                 Led_StdAlertHelper (int resID);
 
             public:
-                override    bool    DoModal ();
+                virtual    bool    DoModal () override;
             };
 #endif
 
@@ -541,25 +541,25 @@ namespace   Stroika {
 
 #if     qPlatform_MacOS
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
                 nonvirtual  void    SimpleLayoutHelper (short pictHeight, short pictWidth, Led_Rect infoField, Led_Rect webPageField, const Led_SDK_String versionStr);
 #endif
 
 #if     qXWindows
-                override    GtkWidget*  MakeWindow ();
+                virtual    GtkWidget*  MakeWindow () override;
 #endif
 
 #if     qPlatform_MacOS
             protected:
-                override    bool    EventFilter (DialogPtr dialog, EventRecord* eventRecord, short* itemHit);
+                virtual    bool    EventFilter (DialogPtr dialog, EventRecord* eventRecord, short* itemHit) override;
 #endif
 
             protected:
 #if     qPlatform_MacOS
-                override    bool    HandleCommandClick (int itemNum);
+                virtual    bool    HandleCommandClick (int itemNum) override;
 #elif   qPlatform_Windows
-                override    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam);
+                virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
             public:
@@ -607,9 +607,9 @@ namespace   Stroika {
 
             protected:
 #if     qPlatform_MacOS
-                override    bool    HandleCommandClick (int itemNum);
+                virtual    bool    HandleCommandClick (int itemNum) override;
 #elif   qPlatform_Windows
-                override    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam);
+                virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
             public:
@@ -626,7 +626,7 @@ namespace   Stroika {
 #endif
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             public:
                 virtual void    OnFindButton ();
@@ -684,9 +684,9 @@ namespace   Stroika {
 
             protected:
 #if     qPlatform_MacOS
-                override    bool    HandleCommandClick (int itemNum);
+                virtual    bool    HandleCommandClick (int itemNum) override;
 #elif   qPlatform_Windows
-                override    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam);
+                virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
             public:
@@ -707,7 +707,7 @@ namespace   Stroika {
 #endif
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             public:
                 virtual void    OnFindButton ();
@@ -751,10 +751,10 @@ namespace   Stroika {
                 StdFontPickBox (GtkWindow* modalParentWindow, const Led_FontSpecification& initialFont);
 
             public:
-                override    GtkWidget*  MakeWindow ();
-                override    void    PreDoModalHook ();
+                virtual    GtkWidget*  MakeWindow () override;
+                virtual    void    PreDoModalHook () override;
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
             public:
                 Led_FontSpecification   fFont;
@@ -810,11 +810,11 @@ namespace   Stroika {
 
 #if     qUseGTKForLedStandardDialogs && qXWindows
             public:
-                override    GtkWidget*  MakeWindow ();
-                override    void    PreDoModalHook ();
+                virtual    GtkWidget*  MakeWindow () override;
+                virtual    void    PreDoModalHook () override;
 
             public:
-                override    void    OnOK ();
+                virtual  void    OnOK () override;
 #endif
 
 #if     qPlatform_Windows
@@ -849,10 +849,10 @@ namespace   Stroika {
                 StdFilePickBox (GtkWindow* modalParentWindow, const Led_SDK_String& title, bool saveDialog, const Led_SDK_String& fileName);
 
             public:
-                override    GtkWidget*  MakeWindow ();
-                override    void    PreDoModalHook ();
+                virtual    GtkWidget*  MakeWindow () override;
+                virtual    void    PreDoModalHook () override;
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
             public:
                 nonvirtual  Led_SDK_String  GetFileName () const;
@@ -893,10 +893,10 @@ namespace   Stroika {
                 bool            fKeepChecking;
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
             public:
-                override    void    OnOK ();
-                override    void    OnCancel ();
+                virtual    void    OnOK () override;
+                virtual    void    OnCancel () override;
             };
 #endif
 #endif
@@ -937,9 +937,9 @@ namespace   Stroika {
                 virtual void    InitValues (Led_TWIPS leftMargin, bool leftMarginValid, Led_TWIPS rightMargin, bool rightMarginValid, Led_TWIPS firstIndent, bool firstIndentValid);
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
             public:
                 bool            fLeftMargin_Valid;
@@ -996,9 +996,9 @@ namespace   Stroika {
                 virtual void    InitValues (Led_TWIPS spaceBefore, bool spaceBeforeValid, Led_TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid);
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
             public:
                 bool            fSpaceBefore_Valid;
@@ -1046,9 +1046,9 @@ namespace   Stroika {
                 virtual void    InitValues (Led_Distance origFontSize);
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
             public:
                 Led_Distance    fFontSize_Orig;
@@ -1093,7 +1093,7 @@ namespace   Stroika {
                 Led_SDK_String  fEmbeddingTypeName;
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
             };
 #endif
 #endif
@@ -1140,10 +1140,10 @@ namespace   Stroika {
                 Led_SDK_String  fURLText;
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
 #if     qXWindows && qUseGTKForLedStandardDialogs
             private:
@@ -1182,10 +1182,10 @@ namespace   Stroika {
                 Led_SDK_String  fURLText;
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
 #if     qXWindows && qUseGTKForLedStandardDialogs
             private:
@@ -1234,10 +1234,10 @@ namespace   Stroika {
                 size_t  fColumns;
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
             };
 #endif
 #endif
@@ -1314,17 +1314,17 @@ namespace   Stroika {
                 Info    fInfo;
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             protected:
 #if     qPlatform_MacOS
-                override    bool    HandleCommandClick (int itemNum);
+                virtual    bool    HandleCommandClick (int itemNum) override;
 #elif   qPlatform_Windows
-                override    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam);
+                virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
             public:
-                override    void    OnOK ();
+                virtual    void    OnOK () override;
 
             protected:
                 StdColorPopupHelper fBorderColorPopup;
@@ -1436,9 +1436,9 @@ namespace   Stroika {
 
             protected:
 #if     qPlatform_MacOS
-                override    bool    HandleCommandClick (int itemNum);
+                virtual    bool    HandleCommandClick (int itemNum) override;
 #elif   qPlatform_Windows
-                override    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam);
+                virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
             protected:
@@ -1448,7 +1448,7 @@ namespace   Stroika {
 #endif
 
             protected:
-                override    void    PreDoModalHook ();
+                virtual    void    PreDoModalHook () override;
 
             public:
                 virtual void    OnIgnoreButton ();
@@ -1526,7 +1526,7 @@ namespace   Stroika {
                 }
 
             public:
-                override    MisspellingInfo*    GetNextMisspelling () {
+                virtual    MisspellingInfo*    GetNextMisspelling () override {
                     // This is the line that confuses MSVC60 - qTemplatesWithMixOfNestedClassesWithCommonNamesGetsConfusedBug
                     typename DEL::MisspellingInfo*  delResult   =   fDelegate.GetNextMisspelling ();
                     if (delResult != NULL) {
@@ -1540,15 +1540,15 @@ namespace   Stroika {
                 }
 
             public:
-                override    void    DoIgnore ()                                         {   fDelegate.DoIgnore ();  }
-                override    void    DoIgnoreAll ()                                      {   fDelegate.DoIgnoreAll ();   }
-                override    void    DoChange (const Led_tString& changeTo)              {   fDelegate.DoChange (changeTo);  }
-                override    void    DoChangeAll (const Led_tString& changeTo)           {   fDelegate.DoChangeAll (changeTo);   }
-                override    bool    AddToDictionaryEnabled () const                     {   return fDelegate.AddToDictionaryEnabled (); }
-                override    void    AddToDictionary (const Led_tString& newWord)        {   fDelegate.AddToDictionary (newWord);    }
-                override    void    LookupOnWeb (const Led_tString& word)               {   fDelegate.LookupOnWeb (word);   }
-                override    bool    OptionsDialogEnabled () const                       {   return fDelegate.OptionsDialogEnabled (); }
-                override    void    OptionsDialog ()                                    {   fDelegate.OptionsDialog (); }
+                virtual    void    DoIgnore () override                                        {   fDelegate.DoIgnore ();  }
+                virtual    void    DoIgnoreAll () override                                     {   fDelegate.DoIgnoreAll ();   }
+                virtual    void    DoChange (const Led_tString& changeTo)  override            {   fDelegate.DoChange (changeTo);  }
+                virtual    void    DoChangeAll (const Led_tString& changeTo) override          {   fDelegate.DoChangeAll (changeTo);   }
+                virtual    bool    AddToDictionaryEnabled () const override                     {   return fDelegate.AddToDictionaryEnabled (); }
+                virtual    void    AddToDictionary (const Led_tString& newWord) override       {   fDelegate.AddToDictionary (newWord);    }
+                virtual    void    LookupOnWeb (const Led_tString& word) override              {   fDelegate.LookupOnWeb (word);   }
+                virtual    bool    OptionsDialogEnabled () const override                       {   return fDelegate.OptionsDialogEnabled (); }
+                virtual    void    OptionsDialog () override                                   {   fDelegate.OptionsDialog (); }
 
             private:
                 DEL&    fDelegate;

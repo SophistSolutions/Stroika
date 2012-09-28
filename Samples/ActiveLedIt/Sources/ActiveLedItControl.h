@@ -48,38 +48,38 @@ private:
     CComPtr<IDispatch>  fEngine;
 
 public:
-    override    bool    ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
+    virtual    bool    ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
             const Led_tChar** wordStartResult, const Led_tChar** wordEndResult
-                                             );
+                                            ) override;
 
 protected:
-    override        bool    LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult);
+    virtual        bool    LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult) override;
 
 public:
-    override    vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord);
+    virtual    vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord) override;
 
 public:
-    override    TextBreaks*     PeekAtTextBreaksUsed ();
+    virtual    TextBreaks*     PeekAtTextBreaksUsed () override;
 
     // From TextBreaks
 public:
-    override    void    FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
-                                       ) const;
-    override    void    FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordEndResult, bool* wordReal
-                                       ) const;
+    virtual    void    FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                       size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
+                                      ) const override;
+    virtual    void    FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                       size_t* wordEndResult, bool* wordReal
+                                      ) const override;
 
 public:
 #if     qMixinDisambiguatingNameInBothBug
     typedef inherited::UDInterface  UDInterface;
 #endif
-    override    UDInterface*    GetUDInterface ();
+    virtual    UDInterface*    GetUDInterface () override;
 
     // From SpellCheckEngine::UDInterface
 public:
-    override    bool    AddWordToUserDictionarySupported () const;
-    override    void    AddWordToUserDictionary (const Led_tString& word);
+    virtual    bool    AddWordToUserDictionarySupported () const override;
+    virtual    void    AddWordToUserDictionary (const Led_tString& word) override;
 };
 
 
@@ -108,25 +108,25 @@ private:
 #endif
 
 protected:
-    override    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) throw ();
-    override    TextStore*  PeekAtTextStore () const;
+    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) override throw ();
+    virtual    TextStore*  PeekAtTextStore () const override;
 
 public:
-    override    void    OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
-    override    void    OnDrawMetafile (CDC* pDC, const CRect& rcBounds);
+    virtual    void    OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid) override;
+    virtual    void    OnDrawMetafile (CDC* pDC, const CRect& rcBounds) override;
     afx_msg     BOOL    OnEraseBkgnd (CDC* pDC);
-    override    void    DoPropExchange (CPropExchange* pPX);
-    override    void    OnResetState ();
-    override    DWORD   GetControlFlags ();
-    override    void    OnGetControlInfo (LPCONTROLINFO pControlInfo);
-    override    BOOL    PreTranslateMessage (MSG* pMsg);
-    override    void    AddFrameLevelUI ();
-    override    void    RemoveFrameLevelUI ();
-    override    BOOL    OnSetObjectRects(LPCRECT lprcPosRect, LPCRECT lprcClipRect);
-    override    BOOL    OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */,
-                                            DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
-                                            DVEXTENTINFO* /* pExtentInfo */, LPSIZEL /* psizel */
-                                           );
+    virtual    void    DoPropExchange (CPropExchange* pPX) override;
+    virtual    void    OnResetState () override;
+    virtual    DWORD   GetControlFlags () override;
+    virtual    void    OnGetControlInfo (LPCONTROLINFO pControlInfo) override;
+    virtual    BOOL    PreTranslateMessage (MSG* pMsg) override;
+    virtual    void    AddFrameLevelUI () override;
+    virtual    void    RemoveFrameLevelUI () override;
+    virtual    BOOL    OnSetObjectRects(LPCRECT lprcPosRect, LPCRECT lprcClipRect) override;
+    virtual    BOOL    OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */,
+                                           DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
+                                           DVEXTENTINFO* /* pExtentInfo */, LPSIZEL /* psizel */
+                                          ) override;
 
 
 private:
@@ -178,13 +178,13 @@ protected:
 
 #if     qDontUIActivateOnOpen
 protected:
-    override    HRESULT OnOpen (BOOL bTryInPlace, LPMSG pMsg);
+    virtual    HRESULT OnOpen (BOOL bTryInPlace, LPMSG pMsg) override;
 #endif
 
 protected:
-    override    void    OnBackColorChanged ();
+    virtual    void    OnBackColorChanged () override;
 #if     qFunnyDisplayInDesignMode
-    override    void    OnAmbientPropertyChange (DISPID dispid);
+    virtual    void    OnAmbientPropertyChange (DISPID dispid) override;
 #endif
 
 protected:
@@ -412,18 +412,18 @@ private:
 
     //LedItViewController callbacks
 public:
-    override    void    OnBrowseHelpCommand ();
-    override    void    OnAboutBoxCommand ();
-    override    void    ForceUIActive ();
-    override    void    FireOLEEvent (DISPID eventID);
-    override    void    FireOLEEvent (DISPID dispid, BYTE* pbParams, ...);
-    override    void    FireUpdateUserCommand (const wstring& internalCmdName, VARIANT_BOOL* enabled, VARIANT_BOOL* checked, wstring* name);
-    override    void    FireUserCommand (const wstring& internalCmdName);
+    virtual    void    OnBrowseHelpCommand () override;
+    virtual    void    OnAboutBoxCommand () override;
+    virtual    void    ForceUIActive () override;
+    virtual    void    FireOLEEvent (DISPID eventID) override;
+    virtual    void    FireOLEEvent (DISPID dispid, BYTE* pbParams, ...) override;
+    virtual    void    FireUpdateUserCommand (const wstring& internalCmdName, VARIANT_BOOL* enabled, VARIANT_BOOL* checked, wstring* name) override;
+    virtual    void    FireUserCommand (const wstring& internalCmdName) override;
 #if     qFunnyDisplayInDesignMode
-    override    bool    IsInDesignMode () const;
-    override    bool    DrawExtraDesignModeBorder () const;
+    virtual    bool    IsInDesignMode () const override;
+    virtual    bool    DrawExtraDesignModeBorder () const override;
 #endif
-    override    HMENU   GenerateContextMenu ();
+    virtual    HMENU   GenerateContextMenu () override;
 
 
 protected:

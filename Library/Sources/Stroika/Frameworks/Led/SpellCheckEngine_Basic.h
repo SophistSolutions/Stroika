@@ -65,12 +65,12 @@ namespace   Stroika {
                 ~SpellCheckEngine_Basic ();
 
             public:
-                override    bool    ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
+                virtual    bool    ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
                         const Led_tChar** wordStartResult, const Led_tChar** wordEndResult
-                                                         );
+                                                        ) override;
 
             protected:
-                override    bool    LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult);
+                virtual    bool    LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult) override;
 
             private:
                 nonvirtual  bool    LookupWordHelper_ (const Led_tString& checkWord, Led_tString* matchedWordResult) const;
@@ -82,13 +82,13 @@ namespace   Stroika {
                 nonvirtual  bool    OtherStringToIgnore_Number (const Led_tString& checkWord);
 
             public:
-                override    vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord);
+                virtual    vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord) override;
 
             public:
-                override    UDInterface*    GetUDInterface ();
+                virtual    UDInterface*    GetUDInterface () override;
 
             public:
-                override    TextBreaks*     PeekAtTextBreaksUsed ();
+                virtual    TextBreaks*     PeekAtTextBreaksUsed () override;
 
 
             private:
@@ -127,7 +127,7 @@ namespace   Stroika {
 
 #if     qDebug
             protected:
-                override    void    Invariant_ () const;
+                virtual    void    Invariant_ () const override;
 #endif
 
 #if     qDebug
@@ -171,9 +171,9 @@ namespace   Stroika {
                 nonvirtual  void    AddWordToUserDictionary (const Led_tString& word);
 
             public:
-                override    const Led_tChar*    GetTextBase () const;
-                override    const Led_tChar*    GetTextEnd () const;
-                override    void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const;
+                virtual    const Led_tChar*    GetTextBase () const override;
+                virtual    const Led_tChar*    GetTextEnd () const override;
+                virtual    void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
 
             public:
                 nonvirtual  void                ReadFromBuffer (const Led_tChar* readOnlyRAMDictStart, const Led_tChar* readOnlyRAMDictEnd);
@@ -205,9 +205,9 @@ namespace   Stroika {
                 CompiledDictionary (const CompiledDictionaryData& data);
 
             public:
-                override    const Led_tChar*    GetTextBase () const;
-                override    const Led_tChar*    GetTextEnd () const;
-                override    void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const;
+                virtual    const Led_tChar*    GetTextBase () const override;
+                virtual    const Led_tChar*    GetTextEnd () const override;
+                virtual    void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
 
             private:
                 CompiledDictionaryData  fData;
@@ -229,7 +229,7 @@ namespace   Stroika {
                 TextBreaks_SpellChecker ();
 
             protected:
-                override    CharacterClasses    CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const;
+                virtual    CharacterClasses    CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
 #if     qDebug
             private:
@@ -259,12 +259,12 @@ namespace   Stroika {
 #if     qMixinDisambiguatingNameInBothBug
                 typedef inherited::UDInterface  UDInterface;
 #endif
-                override    UDInterface*    GetUDInterface ();
+                virtual    UDInterface*    GetUDInterface () override;
 
                 // From SpellCheckEngine::UDInterface
             public:
-                override    bool    AddWordToUserDictionarySupported () const;
-                override    void    AddWordToUserDictionary (const Led_tString& word);
+                virtual    bool    AddWordToUserDictionarySupported () const override;
+                virtual    void    AddWordToUserDictionary (const Led_tString& word) override;
 
             public:
                 nonvirtual  const Dictionary*   GetMainDictionary () const;

@@ -32,8 +32,8 @@ namespace   Stroika {
                     StyledTextIOReader_MIMETextEnriched (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    override    void    Read ();
-                    override    bool    QuickLookAppearsToBeRightFormat ();
+                    virtual    void    Read () override;
+                    virtual    bool    QuickLookAppearsToBeRightFormat () override;
 
                 private:
                     nonvirtual  void    SkipWhitespace ();
