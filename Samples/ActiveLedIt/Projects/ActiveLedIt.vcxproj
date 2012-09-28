@@ -98,6 +98,9 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <CustomBuildStep>
@@ -150,6 +153,11 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       </DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
+      <UpdateFileHashes>true</UpdateFileHashes>
+      <UpdateFileHashesSearchPath>$(OutDir)</UpdateFileHashesSearchPath>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\Sources\AboutBoxImage.bmp" />
@@ -158,6 +166,9 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <None Include="..\Sources\AboutBoxImage_Demo.vsd" />
     <None Include="..\Sources\ActiveLedIt.def" />
     <None Include="..\Sources\ActiveLedIt.ico" />
+    <None Include="..\Sources\ActiveLedIt.manifest.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\Sources\ActiveLedItControl.bmp" />
     <None Include="..\Sources\PreComp.pch" />
     <None Include="..\Sources\ToolbarButton_ActiveLedIt.ico" />
