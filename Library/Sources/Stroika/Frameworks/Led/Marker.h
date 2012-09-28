@@ -130,8 +130,8 @@ namespace   Stroika {
 
             public:
                 virtual void    AboutToUpdateText (const UpdateInfo& updateInfo);
-                virtual void    EarlyDidUpdateText (const UpdateInfo& updateInfo) throw ();
-                virtual void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                virtual void    EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept;
+                virtual void    DidUpdateText (const UpdateInfo& updateInfo) noexcept;
 
             public:
                 /*
@@ -267,7 +267,7 @@ namespace   Stroika {
             public:
                 typedef MarkerOwner::UpdateInfo UpdateInfo;
                 virtual void    AboutToUpdateText (const UpdateInfo& updateInfo);   // throw to avoid actual update
-                virtual void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                virtual void    DidUpdateText (const UpdateInfo& updateInfo) noexcept;
 
 
                 // this field is managed by the TextStore subclass which
@@ -321,8 +321,8 @@ namespace   Stroika {
             public:
                 nonvirtual  void    AccumulateMarkerForDeletion (MARKER* m);
                 nonvirtual  void    SafeAccumulateMarkerForDeletion (MARKER* m);
-                nonvirtual  void    FinalizeMarkerDeletions () throw ();
-                nonvirtual  bool    IsEmpty () const throw ();
+                nonvirtual  void    FinalizeMarkerDeletions () noexcept;
+                nonvirtual  bool    IsEmpty () const noexcept;
             private:
                 vector<MARKER*> fMarkersToBeDeleted;
             };
@@ -472,7 +472,7 @@ namespace   Stroika {
                 in some rare cases - you can tell if your getting a callback between your AboutToUpdate() call and your DidUpdateText () call - so you can
                 tell if the text is truely updated yet.</p>
             */
-            inline  void    MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) throw ()
+            inline  void    MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
             {
             }
             /*
@@ -481,7 +481,7 @@ namespace   Stroika {
                 some appropriate data structures based on the change. NB: an exception <em>cannot</em> be raised by this method, or
                 any overrides of it.</p>
             */
-            inline  void    MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) throw ()
+            inline  void    MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
             {
             }
 
@@ -513,7 +513,7 @@ namespace   Stroika {
                 from this routine. Use @'Marker::AboutToUpdateText' to preflight, and assure any DidUpdateText method calls will
                 work without a hitch.</p>
             */
-            inline  void    Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/)    throw ()
+            inline  void    Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/)    noexcept
             {
             }
             /*
@@ -685,7 +685,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Call anytime, but preferably after we've finished doing a bunch of marker deletions.
                 See @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' for more information.</p>
             */
-            void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () throw ()
+            void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept
             {
                 if (fMarkersToBeDeleted.size () != 0) {
                     MarkerOwner*    owner       =   static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
@@ -708,7 +708,7 @@ namespace   Stroika {
             @METHOD:        MarkerMortuary<MARKER>::IsEmpty
             @DESCRIPTION:   <p>Mostly used for assertions. Checks all accumulated markers have been finalized.</p>
             */
-            inline  bool    MarkerMortuary<MARKER>::IsEmpty () const throw ()
+            inline  bool    MarkerMortuary<MARKER>::IsEmpty () const noexcept
             {
                 return fMarkersToBeDeleted.size () == 0;
             }

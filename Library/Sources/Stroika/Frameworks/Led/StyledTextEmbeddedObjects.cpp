@@ -53,7 +53,7 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
                                        const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                        const Led_Size& imageSize,
                                        const Led_Size& margin = kDefaultEmbeddingMargin
-                                      ) throw ();
+                                      ) noexcept;
 #endif
 static  void    DIBDrawSegment (const Led_DIB* dib,
                                 Led_Tablet tablet,
@@ -61,7 +61,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
                                 const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                 const Led_Size& imageSize,
                                 const Led_Size& margin = kDefaultEmbeddingMargin
-                               ) throw ();
+                               ) noexcept;
 #if     qPlatform_MacOS
 static  PixMap**    MakePixMapFromDIB (const Led_DIB* dib);
 #endif
@@ -152,7 +152,7 @@ Led_Distance    SimpleEmbeddedObjectStyleMarker::MeasureSegmentBaseLine (const S
     return (MeasureSegmentHeight (imager, runElement, from, to) - 1 * kDefaultEmbeddingMargin.v);
 }
 
-void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw ()
+void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
 {
     RequireNotNull (GetOwner ());
     RequireNotNull (GetOwner ()->PeekAtTextStore ());
@@ -1652,7 +1652,7 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
                                        Led_Tablet tablet, Led_Color foreColor, Led_Color backColor, const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                        const Led_Size& imageSize,
                                        const Led_Size& margin
-                                      ) throw ()
+                                      ) noexcept
 {
     RequireNotNull (pictureHandle);
 
@@ -1744,7 +1744,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
                                 const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                 const Led_Size& imageSize,
                                 const Led_Size& margin
-                               ) throw ()
+                               ) noexcept
 {
     RequireNotNull (dib);
     RequireNotNull (tablet);

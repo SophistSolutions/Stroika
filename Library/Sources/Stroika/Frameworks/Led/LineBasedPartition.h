@@ -40,11 +40,11 @@ namespace   Stroika {
                 virtual     void    FinalConstruct () override;
 
             public:
-                virtual     void    UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) throw () override;
+                virtual     void    UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept override;
 
             protected:
-                virtual void    CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) throw () override;
-                virtual bool    NeedToCoalesce (PartitionMarker* pm) throw () override;
+                virtual void    CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept override;
+                virtual bool    NeedToCoalesce (PartitionMarker* pm) noexcept override;
 
 #if     qDebug
             protected:

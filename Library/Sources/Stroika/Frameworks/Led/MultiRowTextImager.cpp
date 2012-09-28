@@ -959,7 +959,7 @@ namespace   Stroika {
                 return (height);
             }
 
-            void    MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            void    MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) noexcept
             {
 //maynot need this addtion either - since done in PMInfoCache guy...
 #if 1
@@ -1490,12 +1490,12 @@ namespace   Stroika {
                 fPMCache.clear ();
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const throw ()
+            void    MultiRowTextImager::PMInfoCacheMgr::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
             {
                 *infoRecord = pm;
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::DidSplit (void* infoRecord) const throw ()
+            void    MultiRowTextImager::PMInfoCacheMgr::DidSplit (void* infoRecord) const noexcept
             {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
                 typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
@@ -1512,7 +1512,7 @@ namespace   Stroika {
 #endif
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()
+            void    MultiRowTextImager::PMInfoCacheMgr::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept
             {
                 *infoRecord = pm;
 
@@ -1569,7 +1569,7 @@ namespace   Stroika {
 #endif
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::DidCoalece (void* infoRecord) const throw ()
+            void    MultiRowTextImager::PMInfoCacheMgr::DidCoalece (void* infoRecord) const noexcept
             {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
                 typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
@@ -1614,7 +1614,7 @@ namespace   Stroika {
             {
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            void    MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept
             {
                 inherited::DidUpdateText (updateInfo);
                 fPMInfoCacheMgr.MyMarkerDidUpdateCallback ();

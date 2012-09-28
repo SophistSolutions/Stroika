@@ -567,7 +567,7 @@ namespace   Stroika {
 
             public:
                 virtual     void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
             private:
                 PreReplaceInfo  fTmpPreReplaceInfo;
                 TextInteractor* fDoingUpdateModeReplaceOn;

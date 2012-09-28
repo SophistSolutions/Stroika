@@ -49,12 +49,12 @@ public:
      *  insert past end of buffer - or to delete too many characters.
      */
 public:
-    nonvirtual  size_t              GetLength () const throw ();
-    nonvirtual  size_t              GetBytesCanAccommodate () const throw ();
-    nonvirtual  void                CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ();
-    nonvirtual  const Led_tChar*    PeekAfter (size_t charPos) const throw ();
-    nonvirtual  void                InsertAfter (const Led_tChar* what, size_t howMany, size_t after) throw ();
-    nonvirtual  void                DeleteAfter (size_t howMany, size_t after) throw ();
+    nonvirtual  size_t              GetLength () const noexcept;
+    nonvirtual  size_t              GetBytesCanAccommodate () const noexcept;
+    nonvirtual  void                CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept;
+    nonvirtual  const Led_tChar*    PeekAfter (size_t charPos) const noexcept;
+    nonvirtual  void                InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept;
+    nonvirtual  void                DeleteAfter (size_t howMany, size_t after) noexcept;
 
 private:
     size_t      fTotalTcharsUsed;
@@ -73,27 +73,27 @@ inline  ChunkedArrayTextStore::TextChunk::TextChunk (const Led_tChar* copyFrom, 
     AssertNotNull (copyFrom);
     (void)::memcpy (fData, copyFrom, bytesToCopy * sizeof (Led_tChar));
 }
-inline  size_t  ChunkedArrayTextStore::TextChunk::GetLength () const throw ()
+inline  size_t  ChunkedArrayTextStore::TextChunk::GetLength () const noexcept
 {
     return (fTotalTcharsUsed);
 }
-inline  size_t  ChunkedArrayTextStore::TextChunk::GetBytesCanAccommodate () const throw ()
+inline  size_t  ChunkedArrayTextStore::TextChunk::GetBytesCanAccommodate () const noexcept
 {
     return (kTextChunkSize - fTotalTcharsUsed);
 }
-inline  void    ChunkedArrayTextStore::TextChunk::CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ()
+inline  void    ChunkedArrayTextStore::TextChunk::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {
     AssertNotNull (buffer);
     Assert (from + count <= fTotalTcharsUsed);
     (void)::memcpy (buffer, &fData[from], count * sizeof (Led_tChar));
 }
-inline  const Led_tChar*    ChunkedArrayTextStore::TextChunk::PeekAfter (size_t charPos) const throw ()
+inline  const Led_tChar*    ChunkedArrayTextStore::TextChunk::PeekAfter (size_t charPos) const noexcept
 {
     Assert (charPos >= 0);
     Assert (charPos < fTotalTcharsUsed);
     return (&fData[charPos]);
 }
-inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* what, size_t howMany, size_t after) throw ()
+inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept
 {
     Assert (what != 0 or howMany == 0);
     Assert (after >= 0);
@@ -111,7 +111,7 @@ inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* 
     (void)::memcpy (&fData[after], what, howMany * sizeof (Led_tChar));
     fTotalTcharsUsed += howMany;
 }
-inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) throw ()
+inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept
 {
     Require (after + howMany <= fTotalTcharsUsed);
     size_t  bytesToMove =   fTotalTcharsUsed - ( after + howMany );
@@ -789,7 +789,7 @@ void    ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
     inherited::RemoveMarkerOwner (owner);
 }
 
-void    ChunkedArrayTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ()
+void    ChunkedArrayTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {
     // Note that it IS NOT an error to call CopyOut for multibyte characters and split them. This is one of the few
     // API routines where that is so...
@@ -1491,7 +1491,7 @@ void    ChunkedArrayTextStore::LoseIfUselessHackMarker (Marker* potentiallyUsele
     }
 }
 
-void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) throw ()
+void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
 {
     RequireNotNull (marker);
 #if     qUseLRUCacheForRecentlyLookedUpMarkers

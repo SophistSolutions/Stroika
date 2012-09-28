@@ -207,7 +207,7 @@ Led_IncrementalFontSpecification    StandardStyledTextInteractor::GetContinuousS
     }
 }
 
-void    StandardStyledTextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    StandardStyledTextInteractor::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     TextInteractor::DidUpdateText (updateInfo);
     StandardStyledTextImager::DidUpdateText (updateInfo);

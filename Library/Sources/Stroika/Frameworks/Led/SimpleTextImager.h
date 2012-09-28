@@ -81,10 +81,10 @@ namespace   Stroika {
                     nonvirtual  void    Init (PartitionPtr partition, SimpleTextImager* imager);
                     nonvirtual  void    UnInit (PartitionPtr partition);
                 public:
-                    virtual    void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const override throw ();
-                    virtual    void    DidSplit (void* infoRecord) const override throw ();
-                    virtual    void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const override throw ();
-                    virtual    void    DidCoalece (void* infoRecord) const override throw ();
+                    virtual    void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const override noexcept;
+                    virtual    void    DidSplit (void* infoRecord) const override noexcept;
+                    virtual    void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const override noexcept;
+                    virtual    void    DidCoalece (void* infoRecord) const override noexcept;
                 private:
                     SimpleTextImager*   fImager;
                 };
@@ -252,7 +252,7 @@ namespace   Stroika {
 
                 // To assure our top-line scroll info not left corrupt...
             protected:
-                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) override throw ();
+                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) override noexcept;
 
 
                 // override to invalidate caches.

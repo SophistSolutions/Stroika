@@ -103,21 +103,21 @@ namespace   Stroika {
 
             public:
                 virtual     void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual     void    EarlyDidUpdateText (const UpdateInfo& updateInfo) throw () override;
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             protected:
-                nonvirtual  void    CullZerod (size_t around) throw ();
-                nonvirtual  void    CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) throw ();
-                nonvirtual  void    CheckForMerges (size_t around) throw ();
-                nonvirtual  void    CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) throw ();
+                nonvirtual  void    CullZerod (size_t around) noexcept;
+                nonvirtual  void    CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) noexcept;
+                nonvirtual  void    CheckForMerges (size_t around) noexcept;
+                nonvirtual  void    CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) noexcept;
 
             protected:
                 mutable MarkerMortuary<MARKER>  fMarkersToBeDeleted;
 
             private:
-                nonvirtual  void    HandleCallBeforeDidUpdateComplete () const throw ();
-                virtual     void    HandleCallBeforeDidUpdateComplete_ () const throw ();
+                nonvirtual  void    HandleCallBeforeDidUpdateComplete () const noexcept;
+                virtual     void    HandleCallBeforeDidUpdateComplete_ () const noexcept;
 
             private:
                 mutable bool    fNeedExtraUpdateCheck;                  // flag so we can tell if someone queries our state after an 'AboutToUpdateText' but BEFORE we've gotten our 'DidUpdateText'
@@ -666,7 +666,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
             {
                 // See docs on @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete' for an
                 // explanation of this code.
@@ -680,7 +680,7 @@ namespace   Stroika {
                 Calls @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied'. Also checks the Invariant ()
                 after its called (invariant could fail before DidUpdate() call).</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
             {
                 fNeedExtraUpdateCheck = false;
                 if (updateInfo.fTextModified) {
@@ -697,12 +697,12 @@ namespace   Stroika {
             @DESCRIPTION:
                     <p>Internal utility routine, used to check for (and safely delete) zero-width cover elements.</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (size_t around) throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (size_t around) noexcept
             {
                 CullZerod (CollectAllInRange_OrSurroundings (around, around));
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
             {
                 // all effected text is diff if we did a replace or not - if no, then from-to,
                 // else from to from+textInserted (cuz from-to deleted)
@@ -714,7 +714,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (size_t around) throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (size_t around) noexcept
             {
                 // Gather all style markers and sumarize them for the region which overlaps my change
                 MarkerVector        markers =   CollectAllNonEmptyInRange_OrSurroundings (around, around);
@@ -738,7 +738,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
             {
                 /*
                  *  Argument markers must be pre-sorted.
@@ -805,14 +805,14 @@ namespace   Stroika {
                 the NoteCoverRangeDirtied (). But we cannot BLINDLY do this. We need to know if the actual text modification has taken place (so we know
                 which buffer offsets to use). It is for this reason that we have the 'fEarlyDidUpdateCalled' variable.</p>
             */
-            inline  void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete () const throw ()
+            inline  void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete () const noexcept
             {
                 if (fNeedExtraUpdateCheck) {
                     HandleCallBeforeDidUpdateComplete_ ();
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete_ () const throw ()
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete_ () const noexcept
             {
                 /*
                  *  If some 'GetInfo' routine is called - AFTER our AboutToUpdate () call but before our EarlyDidUpdate call, then

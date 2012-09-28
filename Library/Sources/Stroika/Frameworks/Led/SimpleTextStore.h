@@ -44,8 +44,8 @@ namespace   Stroika {
                 virtual     TextStore*  ConstructNewTextStore () const override;
 
             public:
-                virtual     size_t  GetLength () const throw () override;
-                virtual     void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw () override;
+                virtual     size_t  GetLength () const noexcept override;
+                virtual     void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept override;
                 virtual     void    ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) override;
 
             protected:
@@ -56,7 +56,7 @@ namespace   Stroika {
                 virtual     void    AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner) override;
                 virtual     void    RemoveMarkers (Marker* const markerArray[], size_t markerCount) override;
                 virtual     void    PreRemoveMarker (Marker* marker) override;
-                virtual     void    SetMarkerRange (Marker* m, size_t start, size_t end) throw () override;
+                virtual     void    SetMarkerRange (Marker* m, size_t start, size_t end) noexcept override;
                 virtual     void    CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const override;
 
             private:
@@ -81,7 +81,7 @@ namespace   Stroika {
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-            inline  size_t  SimpleTextStore::GetLength () const throw ()
+            inline  size_t  SimpleTextStore::GetLength () const noexcept
             {
                 return (fLength);
             }

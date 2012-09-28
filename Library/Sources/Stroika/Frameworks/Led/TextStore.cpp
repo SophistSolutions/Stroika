@@ -810,7 +810,7 @@ void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* c
             in the <em>reverse</em> order in which the @'MarkerOwner::AboutToUpdateText' calls were made.</p>
             <p>Note also that this API changed arguments in Led 3.1a4</p>
 */
-void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)  throw ()
+void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)  noexcept
 {
     vector<MarkerOwner*>    markerOwners    =   GetMarkerOwners ();
     /*

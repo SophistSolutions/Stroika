@@ -161,7 +161,7 @@ namespace   Stroika {
                 virtual     Led_Distance    MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
-                virtual     void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
 
 
                 // Native clip format writing support

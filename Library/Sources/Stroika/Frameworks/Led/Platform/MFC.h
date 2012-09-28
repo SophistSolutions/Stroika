@@ -735,7 +735,7 @@ namespace   Stroika {
 
                 public:
                     virtual    void    AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
-                    virtual    void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override throw ();
+                    virtual    void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override noexcept;
                 };
 
 

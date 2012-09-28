@@ -131,7 +131,7 @@ namespace   Stroika {
                 virtual     Led_IncrementalFontSpecification    GetContinuousStyleInfo (size_t from, size_t nTChars) const override;
 
             public:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             public:
                 virtual     bool    ShouldEnablePasteCommand () const override;

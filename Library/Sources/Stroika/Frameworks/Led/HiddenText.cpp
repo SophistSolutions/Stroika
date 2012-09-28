@@ -455,7 +455,7 @@ void    HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
     inherited::AboutToUpdateText (updateInfo);
 }
 
-void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     if (updateInfo.fTextModified) {

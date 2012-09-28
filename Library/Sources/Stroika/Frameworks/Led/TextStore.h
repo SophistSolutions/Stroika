@@ -114,7 +114,7 @@ namespace   Stroika {
             public:
                 virtual     void    AddMarkerOwner (MarkerOwner* owner);
                 virtual     void    RemoveMarkerOwner (MarkerOwner* owner);
-                nonvirtual  const vector<MarkerOwner*>& GetMarkerOwners () const throw ();
+                nonvirtual  const vector<MarkerOwner*>& GetMarkerOwners () const noexcept;
             private:
                 vector<MarkerOwner*>    fMarkerOwners;
 
@@ -125,7 +125,7 @@ namespace   Stroika {
                 @METHOD:        TextStore::GetLength
                 @DESCRIPTION:   <p>Returns the number of @'Led_tChar's in this @'TextStore'.</p>
                 */
-                virtual size_t  GetLength () const throw ()                                                             =   0;
+                virtual size_t  GetLength () const noexcept                                                             =   0;
                 /*
                 @METHOD:        TextStore::CopyOut
                 @DESCRIPTION:   <p>CopyOut does NOT null terminate. It is an error to call with 'count' causing
@@ -133,7 +133,7 @@ namespace   Stroika {
                                 <p>Note that it IS NOT an error to call CopyOut for multibyte characters and split them.
                             This is one of the few API routines where that is so.</p>
                 */
-                virtual void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ()                   =   0;
+                virtual void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept                   =   0;
 
                 // utilities to simplify refering to beginning/end of buffer.
             public:
@@ -247,10 +247,10 @@ namespace   Stroika {
                             And it is required that the start/end values be within the valid marker
                             range for this buffer.</p>
                 */
-                virtual     void    SetMarkerRange (Marker* marker, size_t start, size_t end) throw ()                          =   0;
-                nonvirtual  void    SetMarkerStart (Marker* marker, size_t start) throw ();
-                nonvirtual  void    SetMarkerEnd (Marker* marker, size_t end) throw ();
-                nonvirtual  void    SetMarkerLength (Marker* marker, size_t length) throw ();
+                virtual     void    SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept                          =   0;
+                nonvirtual  void    SetMarkerStart (Marker* marker, size_t start) noexcept;
+                nonvirtual  void    SetMarkerEnd (Marker* marker, size_t end) noexcept;
+                nonvirtual  void    SetMarkerLength (Marker* marker, size_t length) noexcept;
 
 
                 /*
@@ -427,7 +427,7 @@ namespace   Stroika {
                 // Helper functions, mainly for subclasses, but imagers may use too
             public:
                 nonvirtual  void    DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd);
-                nonvirtual  void    DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd) throw ();
+                nonvirtual  void    DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd) noexcept;
 
             public:
                 class   SimpleUpdater;
@@ -691,7 +691,7 @@ namespace   Stroika {
             @DESCRIPTION:
                         <p>Returns the list of all MarkerOwners registered for notification of changes to the text.</p>
             */
-            inline  const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const throw ()
+            inline  const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const noexcept
             {
                 return fMarkerOwners;
             }
@@ -785,7 +785,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the end-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerEnd'.</p>
             */
-            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) throw ()
+            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept
             {
                 SetMarkerRange (marker, start, marker->GetEnd ());
             }
@@ -794,7 +794,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the start-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) throw ()
+            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept
             {
                 SetMarkerRange (marker, marker->GetStart (), end);
             }
@@ -804,7 +804,7 @@ namespace   Stroika {
                         Similar to @'TextStore::SetMarkerEnd' except that it takes a length, not an end-point.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) throw ()
+            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) noexcept
             {
                 size_t  start   =   marker->GetStart ();
                 SetMarkerRange (marker, start, start + length);

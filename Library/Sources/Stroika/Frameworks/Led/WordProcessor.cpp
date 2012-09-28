@@ -347,7 +347,7 @@ void    ParagraphDatabaseRep::ConstrainSetInfoArgs (size_t* charAfterPos, size_t
 @DESCRIPTION:   <p>Called internally to check that all the paragraph info records in the MarkerCover
             respect the contraint that they start and end on paragraph boundaries.</p>
 */
-void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) throw ()
+void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept
 {
     if (fPartition.get () != nullptr) {
         MarkerVector    markers =   CollectAllInRange_OrSurroundings (from, to);
@@ -356,7 +356,7 @@ void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t
     }
 }
 
-void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) throw ()
+void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
 {
     /*
      *  For each paragraph style run, check if its edges fall on paragraph (as specified by the partition) boundaries.
@@ -2083,7 +2083,7 @@ void    WordProcessor::TabletChangedMetrics ()
     }
 }
 
-void    WordProcessor::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    WordProcessor::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     fCachedCurSelFontSpecValid = false;
@@ -5385,7 +5385,7 @@ void    WordProcessor::WPPartition::FinalConstruct ()
     DoHandleUpdateForTableRangeCheck (0, GetTextStore ().GetLength ());
 }
 
-void    WordProcessor::WPPartition::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    WordProcessor::WPPartition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
 // cuz random ordering of whether table DidUpdateText() gets called first or PartitionElt::DidUpdateText () - so we msut
 // do our checks HERE - to make sure size of table has been adjusted.
@@ -5396,7 +5396,7 @@ void    WordProcessor::WPPartition::DidUpdateText (const UpdateInfo& updateInfo)
     inherited::DidUpdateText (updateInfo);
 }
 
-void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t from, size_t to) throw ()
+void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t from, size_t to) noexcept
 {
     TextStore&  ts  =   GetTextStore ();
 
@@ -5466,7 +5466,7 @@ void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t fro
     }
 }
 
-bool    WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) throw ()
+bool    WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
 {
     RequireNotNull (pm);
 
@@ -7723,7 +7723,7 @@ void    WordProcessor::Table::CellRep::AboutToUpdateText (const UpdateInfo& upda
     }
 }
 
-void    WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) throw ()
+void    WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
 

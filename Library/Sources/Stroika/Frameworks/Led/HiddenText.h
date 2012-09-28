@@ -113,7 +113,7 @@ namespace   Stroika {
                 virtual     TextStore*  PeekAtTextStore () const override;
             public:
                 virtual     void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             private:
                 TextStore&                                  fTextStore;

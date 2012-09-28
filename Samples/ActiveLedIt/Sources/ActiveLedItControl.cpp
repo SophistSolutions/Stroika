@@ -562,7 +562,7 @@ ActiveLedItControl::~ActiveLedItControl ()
     }
 }
 
-void    ActiveLedItControl::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    ActiveLedItControl::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     if (updateInfo.fRealContentUpdate) {
         SetModifiedFlag ();

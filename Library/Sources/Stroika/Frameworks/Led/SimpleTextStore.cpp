@@ -135,7 +135,7 @@ TextStore*  SimpleTextStore::ConstructNewTextStore () const
     return new SimpleTextStore ();
 }
 
-void    SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const throw ()
+void    SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {
     // Note that it IS NOT an error to call CopyOut for multibyte characters and split them. This is one of the few
     // API routines where that is so...
@@ -327,7 +327,7 @@ void    SimpleTextStore::PreRemoveMarker (Marker* marker)
     OurStuff (marker)->fIsPreRemoved = true;
 }
 
-void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) throw ()
+void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
 {
     Assert (start >= 0);
     Assert (end >= 0);

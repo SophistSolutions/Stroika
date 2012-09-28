@@ -49,12 +49,12 @@ namespace   Stroika {
 
                 public:
                     CComObjectWithARGS (const CTOR_ARGS& args);
-                    virtual ~CComObjectWithARGS() throw ();
+                    virtual ~CComObjectWithARGS() noexcept;
 
                 public:
                     STDMETHOD_(ULONG, AddRef)();
                     STDMETHOD_(ULONG, Release)();
-                    STDMETHOD(QueryInterface)(REFIID iid, void** ppvObject) throw();
+                    STDMETHOD(QueryInterface)(REFIID iid, void** ppvObject) noexcept;
                 };
 
 
@@ -75,7 +75,7 @@ namespace   Stroika {
                     _pAtlModule->Lock();
                 }
                 template    <typename BASE, typename CTOR_ARGS>
-                CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS() throw ()
+                CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS() noexcept
                 {
                     m_dwRef = -(LONG_MAX / 2);
                     FinalRelease();
@@ -99,7 +99,7 @@ namespace   Stroika {
                     return l;
                 }
                 template    <typename BASE, typename CTOR_ARGS>
-                HRESULT STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::QueryInterface (REFIID iid, void** ppvObject) throw()
+                HRESULT STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::QueryInterface (REFIID iid, void** ppvObject) noexcept
                 {
                     //if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
                     return _InternalQueryInterface(iid, ppvObject);

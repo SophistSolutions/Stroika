@@ -84,7 +84,7 @@ namespace   Stroika {
                 TextStore&  fTextStore;
 
             protected:
-                virtual void    UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) throw ()   =   0;
+                virtual void    UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept   =   0;
 
             public:
                 virtual PartitionMarker*    GetPartitionMarkerContainingPosition (size_t charPosition) const;
@@ -107,10 +107,10 @@ namespace   Stroika {
                 virtual     void    Split (PartitionMarker* pm, size_t at);
                 virtual     void    Coalece (PartitionMarker* pm);  // call when pm loses its trialing NL (may do nothing)
             private:
-                nonvirtual      void    DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const throw ();
-                nonvirtual      void    DoDidSplitCalls (const vector<void*>& infos) const throw ();
-                nonvirtual      void    DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const throw ();
-                nonvirtual      void    DoDidCoaleceCalls (const vector<void*>& infos) const throw ();
+                nonvirtual      void    DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const noexcept;
+                nonvirtual      void    DoDidSplitCalls (const vector<void*>& infos) const noexcept;
+                nonvirtual      void    DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const noexcept;
+                nonvirtual      void    DoDidCoaleceCalls (const vector<void*>& infos) const noexcept;
 
             protected:
                 nonvirtual  void    AccumulateMarkerForDeletion (PartitionMarker* m);
@@ -118,7 +118,7 @@ namespace   Stroika {
 
             protected:
                 virtual     void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
 
                 // Trivial TextStore wrappers...
@@ -171,7 +171,7 @@ namespace   Stroika {
 
                 // Calls Partition::UpdatePartitions ()
             public:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
                 // These markers are all kept in a doubly-linked list, headed by "GetOwner ()"
             public:
@@ -207,10 +207,10 @@ namespace   Stroika {
             */
             class   Partition::PartitionWatcher {
             public:
-                virtual     void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const throw () =   0;
-                virtual     void    DidSplit (void* infoRecord) const throw ()                                      =   0;
-                virtual     void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()          =   0;
-                virtual     void    DidCoalece (void* infoRecord) const throw ()                                    =   0;
+                virtual     void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const noexcept =   0;
+                virtual     void    DidSplit (void* infoRecord) const noexcept                                      =   0;
+                virtual     void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept          =   0;
+                virtual     void    DidCoalece (void* infoRecord) const noexcept                                    =   0;
             };
 
 
@@ -318,16 +318,16 @@ namespace   Stroika {
                 ~MeasureTextCache ();
 
             public:
-                virtual     void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const throw () override;
-                virtual     void    DidSplit (void* infoRecord) const throw () override;
-                virtual     void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw () override;
-                virtual     void    DidCoalece (void* infoRecord) const throw () override;
+                virtual     void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const noexcept override;
+                virtual     void    DidSplit (void* infoRecord) const noexcept override;
+                virtual     void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept override;
+                virtual     void    DidCoalece (void* infoRecord) const noexcept override;
 
             public:
                 virtual     TextStore*  PeekAtTextStore () const override;
 
             protected:
-                virtual     void    EarlyDidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             public:
                 struct  CacheEltLRUCacheTraits;
@@ -497,7 +497,7 @@ namespace   Stroika {
                     fPartitionWatchers.erase (it);
                 }
             }
-            inline  void    Partition::DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const throw ()
+            inline  void    Partition::DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const noexcept
             {
                 for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     void*   info;
@@ -505,7 +505,7 @@ namespace   Stroika {
                     infos->push_back (info);
                 }
             }
-            inline  void    Partition::DoDidSplitCalls (const vector<void*>& infos) const throw ()
+            inline  void    Partition::DoDidSplitCalls (const vector<void*>& infos) const noexcept
             {
                 Assert (infos.size () == fPartitionWatchers.size ());
                 vector<void*>::const_iterator infoIt = infos.begin ();
@@ -514,7 +514,7 @@ namespace   Stroika {
                     ++infoIt;
                 }
             }
-            inline  void    Partition::DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const throw ()
+            inline  void    Partition::DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const noexcept
             {
                 for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     void*   info;
@@ -522,7 +522,7 @@ namespace   Stroika {
                     infos->push_back (info);
                 }
             }
-            inline  void    Partition::DoDidCoaleceCalls (const vector<void*>& infos) const throw ()
+            inline  void    Partition::DoDidCoaleceCalls (const vector<void*>& infos) const noexcept
             {
                 Assert (infos.size () == fPartitionWatchers.size ());
                 vector<void*>::const_iterator infoIt = infos.begin ();

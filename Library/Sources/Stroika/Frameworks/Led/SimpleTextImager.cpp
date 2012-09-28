@@ -52,18 +52,18 @@ void    SimpleTextImager::MyPartitionWatcher::UnInit (PartitionPtr partition)
     }
 }
 
-void    SimpleTextImager::MyPartitionWatcher::AboutToSplit (PartitionMarker* /*pm*/, size_t /*at*/, void** /*infoRecord*/) const throw ()
+void    SimpleTextImager::MyPartitionWatcher::AboutToSplit (PartitionMarker* /*pm*/, size_t /*at*/, void** /*infoRecord*/) const noexcept
 {
     AssertNotNull (fImager);
 }
 
-void    SimpleTextImager::MyPartitionWatcher::DidSplit (void* /*infoRecord*/) const throw ()
+void    SimpleTextImager::MyPartitionWatcher::DidSplit (void* /*infoRecord*/) const noexcept
 {
     AssertNotNull (fImager);
     fImager->InvalidateTotalRowsInWindow ();
 }
 
-void    SimpleTextImager::MyPartitionWatcher::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()
+void    SimpleTextImager::MyPartitionWatcher::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept
 {
     AssertNotNull (fImager);
 
@@ -85,7 +85,7 @@ void    SimpleTextImager::MyPartitionWatcher::AboutToCoalece (PartitionMarker* p
     *infoRecord = newTopLine;
 }
 
-void    SimpleTextImager::MyPartitionWatcher::DidCoalece (void* infoRecord) const throw ()
+void    SimpleTextImager::MyPartitionWatcher::DidCoalece (void* infoRecord) const noexcept
 {
     AssertNotNull (fImager);
 
@@ -1037,7 +1037,7 @@ void    SimpleTextImager::SetDefaultFont (const Led_IncrementalFontSpecification
     }
 }
 
-void    SimpleTextImager::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    SimpleTextImager::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     InvalidateTotalRowsInWindow ();
     inherited::DidUpdateText (updateInfo);

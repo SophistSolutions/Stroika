@@ -332,7 +332,7 @@ void    Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
     inherited::AboutToUpdateText (updateInfo);
 }
 
-void    Partition::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     Require (fFinalConstructCalled);
     fMarkersToBeDeleted.FinalizeMarkerDeletions ();
@@ -851,12 +851,12 @@ const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImag
     return cacheElt;
 }
 
-void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const throw ()
+void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
 {
     *infoRecord = pm;
 }
 
-void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const throw ()
+void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const noexcept
 {
     PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
     for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
@@ -866,14 +866,14 @@ void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) co
     }
 }
 
-void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw ()
+void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept
 {
     RequireNotNull (infoRecord);
     RequireNotNull (pm);
     *infoRecord = pm;
 }
 
-void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const throw ()
+void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const noexcept
 {
     PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
     for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
@@ -888,7 +888,7 @@ TextStore*  PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
     return fPartition->PeekAtTextStore ();
 }
 
-void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     {
         size_t  cacheSize   =   1;
@@ -938,7 +938,7 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
  ********************************** PartitionMarker *****************************
  ********************************************************************************
  */
-void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     GetOwner ().UpdatePartitions (this, updateInfo);

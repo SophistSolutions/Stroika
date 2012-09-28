@@ -103,7 +103,7 @@ namespace   Stroika {
                     nonvirtual  void    Add (const Win32UIFileAssociationInfo& infoRec);
 
                 public:
-                    nonvirtual  void    DoIt () throw ();
+                    nonvirtual  void    DoIt () noexcept;
 
                 public:
                     nonvirtual  bool    RegisteredToSomeoneElse () const;

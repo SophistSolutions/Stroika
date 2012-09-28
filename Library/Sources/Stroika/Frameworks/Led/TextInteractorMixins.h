@@ -53,7 +53,7 @@ namespace   Stroika {
             public:
                 virtual     void    Draw (const Led_Rect& subsetToDraw, bool printing) override;
                 virtual     void    AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
             protected:
                 virtual     void    HookLosingTextStore () override;
                 virtual     void    HookGainedNewTextStore () override;
@@ -118,7 +118,7 @@ namespace   Stroika {
                 }
 
             public:
-                virtual     void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
 
             };
 
@@ -156,7 +156,7 @@ namespace   Stroika {
                 TextInteractor::AboutToUpdateText (updateInfo);
             }
             template    <typename   IMAGER>
-            void    InteractorImagerMixinHelper<IMAGER>::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+            void    InteractorImagerMixinHelper<IMAGER>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
             {
                 IMAGER::DidUpdateText (updateInfo);
                 TextInteractor::DidUpdateText (updateInfo);
@@ -202,7 +202,7 @@ namespace   Stroika {
                 INTERACTOR2::HookGainedNewTextStore ();
             }
             template    <typename   INTERACTOR1, typename INTERACTOR2>
-            void    InteractorInteractorMixinHelper<INTERACTOR1, INTERACTOR2>::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) throw ()
+            void    InteractorInteractorMixinHelper<INTERACTOR1, INTERACTOR2>::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
             {
                 INTERACTOR1::DidUpdateText (updateInfo);
                 INTERACTOR2::DidUpdateText (updateInfo);

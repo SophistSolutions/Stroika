@@ -234,7 +234,7 @@ namespace   Stroika {
 
                 // To assure our top-line scroll info not left corrupt...
             protected:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept;
 
 
                 // override to invalidate caches.
@@ -385,10 +385,10 @@ namespace   Stroika {
                 nonvirtual  void    ClearCache ();
 
             public:
-                virtual     void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const throw () override;
-                virtual     void    DidSplit (void* infoRecord) const throw () override;
-                virtual     void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const throw () override;
-                virtual     void    DidCoalece (void* infoRecord) const throw () override;
+                virtual     void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const noexcept override;
+                virtual     void    DidSplit (void* infoRecord) const noexcept override;
+                virtual     void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept override;
+                virtual     void    DidCoalece (void* infoRecord) const noexcept override;
 
 
             private:
@@ -426,7 +426,7 @@ namespace   Stroika {
                 MyMarker (PMInfoCacheMgr& pmInfoCacheMgr);
 
             protected:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             private:
                 PMInfoCacheMgr&     fPMInfoCacheMgr;

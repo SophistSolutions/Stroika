@@ -421,7 +421,7 @@ namespace   Stroika {
                 virtual     void    TabletChangedMetrics () override;
 
             public:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
 
             public:
@@ -893,8 +893,8 @@ namespace   Stroika {
                 virtual     void    ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing) override;
 
             private:
-                nonvirtual  void    CheckMarkerBounaryConstraints (size_t from, size_t to) throw ();
-                nonvirtual  void    CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) throw ();
+                nonvirtual  void    CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept;
+                nonvirtual  void    CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept;
 
 #if     qDebug
             protected:
@@ -1173,13 +1173,13 @@ namespace   Stroika {
                 virtual     void    FinalConstruct () override;
 
             public:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             protected:
-                nonvirtual  void    DoHandleUpdateForTableRangeCheck (size_t from, size_t to) throw ();
+                nonvirtual  void    DoHandleUpdateForTableRangeCheck (size_t from, size_t to) noexcept;
 
             protected:
-                virtual     bool    NeedToCoalesce (PartitionMarker* pm) throw () override;
+                virtual     bool    NeedToCoalesce (PartitionMarker* pm) noexcept override;
 
 #if     qDebug
             protected:
@@ -1635,7 +1635,7 @@ namespace   Stroika {
             public:
                 virtual     TextStore*  PeekAtTextStore () const override;
                 virtual     void        AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual     void        DidUpdateText (const UpdateInfo& updateInfo) throw () override;
+                virtual     void        DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             public:
                 Table&                                      fForTable;

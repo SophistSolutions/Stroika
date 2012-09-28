@@ -1950,7 +1950,7 @@ void    TextInteractor::AboutToUpdateText (const MarkerOwner::UpdateInfo& update
     }
 }
 
-void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     TextImager::DidUpdateText (updateInfo);
     if (fDoingUpdateModeReplaceOn != this) {
