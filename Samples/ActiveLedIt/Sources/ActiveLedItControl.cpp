@@ -1632,7 +1632,7 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
 
         virtual    void    OnClickInLedWebPageField () override {
             try {
-                Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/Default.asp", kAppName, kURLDemoFlag));
+                Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/", kAppName, kURLDemoFlag));
             }
             catch (...) {
                 // ignore for now - since errors here prent dialog from dismissing (on MacOSX)
