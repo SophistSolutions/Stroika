@@ -496,12 +496,14 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
+#if     defined (__cplusplus)
 namespace   Stroika {
     namespace   Frameworks {
         namespace   Led {
         }
     }
 }
+#endif
 // Be sure namespace is defined for later use.
 
 

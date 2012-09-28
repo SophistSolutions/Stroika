@@ -102,7 +102,11 @@
 
 #if     defined (__cplusplus)
 #include    "Stroika/Foundation/StroikaPreComp.h"
+#endif
+
 #include    "Stroika/Frameworks/Led/Config.h"
+
+#if     defined (__cplusplus)
 #include    "Stroika/Frameworks/Led/Support.h"
 #endif
 
@@ -131,11 +135,14 @@ const   unsigned    int kMaxNumUndoLevels   =   512;
 #define qActiveLedIt_MajorVersion   qLed_Version_Major
 #define qActiveLedIt_MinorVersion   qLed_Version_Minor
 
+
 #if     qActiveLedIt_MajorVersion==3 && qActiveLedIt_MinorVersion==1
 #define qActiveLedIt_MajorDotMinorVersion   3.1
+#elif	(qActiveLedIt_MajorVersion==4) && (qActiveLedIt_MinorVersion==0)
+#define qActiveLedIt_MajorDotMinorVersion   4.0
 #else
 //tmphack - LGP 2012-09-04 - cuz we've let yet to fix version# stuff
-#define qActiveLedIt_MajorDotMinorVersion   3.1
+#error "OOOPS"
 #endif
 
 #if     qDemoMode
