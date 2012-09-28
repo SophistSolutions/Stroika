@@ -250,8 +250,7 @@ void    Win32UIFileAssociationRegistrationHelper::Add (const Win32UIFileAssociat
     fInfoRecs.push_back (infoRec);
 }
 
-void    Win32UIFileAssociationRegistrationHelper::DoIt () noexcept
-{
+void    Win32UIFileAssociationRegistrationHelper::DoIt () noexcept {
     /*
      *  By default - if this fails - just ignore the failure.
      */

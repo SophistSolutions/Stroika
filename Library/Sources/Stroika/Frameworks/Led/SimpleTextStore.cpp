@@ -327,8 +327,7 @@ void    SimpleTextStore::PreRemoveMarker (Marker* marker)
     OurStuff (marker)->fIsPreRemoved = true;
 }
 
-void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
-{
+void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept {
     Assert (start >= 0);
     Assert (end >= 0);
     Assert (start <= end);

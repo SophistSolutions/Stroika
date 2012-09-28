@@ -959,8 +959,7 @@ namespace   Stroika {
                 return (height);
             }
 
-            void    MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-            {
+            void    MultiRowTextImager::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
 //maynot need this addtion either - since done in PMInfoCache guy...
 #if 1
                 /*
@@ -1614,8 +1613,7 @@ namespace   Stroika {
             {
             }
 
-            void    MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-            {
+            void    MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
                 inherited::DidUpdateText (updateInfo);
                 fPMInfoCacheMgr.MyMarkerDidUpdateCallback ();
             }

@@ -93,8 +93,7 @@ inline  const Led_tChar*    ChunkedArrayTextStore::TextChunk::PeekAfter (size_t 
     Assert (charPos < fTotalTcharsUsed);
     return (&fData[charPos]);
 }
-inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept
-{
+inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept {
     Assert (what != 0 or howMany == 0);
     Assert (after >= 0);
     Assert (after <= fTotalTcharsUsed); // cannot insert past end (other than appending)
@@ -111,8 +110,7 @@ inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* 
     (void)::memcpy (&fData[after], what, howMany * sizeof (Led_tChar));
     fTotalTcharsUsed += howMany;
 }
-inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept
-{
+inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept {
     Require (after + howMany <= fTotalTcharsUsed);
     size_t  bytesToMove =   fTotalTcharsUsed - ( after + howMany );
     if (bytesToMove != 0) {
@@ -1491,8 +1489,7 @@ void    ChunkedArrayTextStore::LoseIfUselessHackMarker (Marker* potentiallyUsele
     }
 }
 
-void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
-{
+void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept {
     RequireNotNull (marker);
 #if     qUseLRUCacheForRecentlyLookedUpMarkers
     GetAMOH (marker)->ClearCache ();

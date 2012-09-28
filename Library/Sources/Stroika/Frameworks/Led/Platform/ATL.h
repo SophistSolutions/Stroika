@@ -75,8 +75,7 @@ namespace   Stroika {
                     _pAtlModule->Lock();
                 }
                 template    <typename BASE, typename CTOR_ARGS>
-                CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS() noexcept
-                {
+                CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS() noexcept {
                     m_dwRef = -(LONG_MAX / 2);
                     FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
@@ -99,8 +98,7 @@ namespace   Stroika {
                     return l;
                 }
                 template    <typename BASE, typename CTOR_ARGS>
-                HRESULT STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::QueryInterface (REFIID iid, void** ppvObject) noexcept
-                {
+                HRESULT STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::QueryInterface (REFIID iid, void** ppvObject) noexcept {
                     //if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
                     return _InternalQueryInterface(iid, ppvObject);
                 }

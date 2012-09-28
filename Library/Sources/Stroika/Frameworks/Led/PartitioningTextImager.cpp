@@ -332,8 +332,7 @@ void    Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
     inherited::AboutToUpdateText (updateInfo);
 }
 
-void    Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-{
+void    Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
     Require (fFinalConstructCalled);
     fMarkersToBeDeleted.FinalizeMarkerDeletions ();
     inherited::DidUpdateText (updateInfo);
@@ -888,8 +887,7 @@ TextStore*  PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
     return fPartition->PeekAtTextStore ();
 }
 
-void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
-{
+void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept {
     {
         size_t  cacheSize   =   1;
         size_t  bufLen      =   GetTextStore ().GetLength ();
@@ -938,8 +936,7 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
  ********************************** PartitionMarker *****************************
  ********************************************************************************
  */
-void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-{
+void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
     inherited::DidUpdateText (updateInfo);
     GetOwner ().UpdatePartitions (this, updateInfo);
 }

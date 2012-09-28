@@ -1965,8 +1965,7 @@ namespace   Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText
                 @DESCRIPTION:   <p>Override to hook @'MarkerOwner::DidUpdateText' and call @'Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_'.</p>
                 */
-                void    Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-                {
+                void    Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
                     inherited::DidUpdateText (updateInfo);
                     DidUpdateText_ (updateInfo);
                 }
@@ -1976,8 +1975,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>When the text is modified between clicks, that should reset any click count. Besides the logic of this,
                     its actually IMPORTANT todo in case the change in text invalidates the fDragAnchor.</p>
                 */
-                inline  void    Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept
-                {
+                inline  void    Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept {
                     if (updateInfo.fTextModified) {
                         SetCurClickCount (0, Led_GetTickCount ());
                     }

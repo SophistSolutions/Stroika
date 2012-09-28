@@ -666,8 +666,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
-            {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept {
                 // See docs on @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete' for an
                 // explanation of this code.
                 fEarlyDidUpdateCalled = true;
@@ -680,8 +679,7 @@ namespace   Stroika {
                 Calls @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied'. Also checks the Invariant ()
                 after its called (invariant could fail before DidUpdate() call).</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-            {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
                 fNeedExtraUpdateCheck = false;
                 if (updateInfo.fTextModified) {
                     NoteCoverRangeDirtied (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
@@ -697,13 +695,11 @@ namespace   Stroika {
             @DESCRIPTION:
                     <p>Internal utility routine, used to check for (and safely delete) zero-width cover elements.</p>
             */
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (size_t around) noexcept
-            {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (size_t around) noexcept {
                 CullZerod (CollectAllInRange_OrSurroundings (around, around));
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
-            {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) noexcept {
                 // all effected text is diff if we did a replace or not - if no, then from-to,
                 // else from to from+textInserted (cuz from-to deleted)
                 for (typename MarkerVector::const_iterator i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
@@ -714,8 +710,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (size_t around) noexcept
-            {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (size_t around) noexcept {
                 // Gather all style markers and sumarize them for the region which overlaps my change
                 MarkerVector        markers =   CollectAllNonEmptyInRange_OrSurroundings (around, around);
                 Assert (markers.size () != 0);
@@ -738,8 +733,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
-            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
-            {
+            void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) noexcept {
                 /*
                  *  Argument markers must be pre-sorted.
                  *
