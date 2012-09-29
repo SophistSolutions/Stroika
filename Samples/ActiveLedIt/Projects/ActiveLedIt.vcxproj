@@ -46,8 +46,10 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Samples-ActiveLedIt\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-ActiveLedIt\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">.ocx</TargetExt>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">.ocx</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">.dll</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">.dll</TargetExt>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">SophistSolutions.ActiveLedIt</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">SophistSolutions.ActiveLedIt</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <CustomBuildStep>
@@ -90,7 +92,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>$(ProjectDir)\..\Sources\ActiveLedIt.def</ModuleDefinitionFile>
       <DelayLoadDLLs>
@@ -101,6 +103,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
       <UpdateFileHashesSearchPath>$(OutDir)</UpdateFileHashesSearchPath>
+      <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
@@ -147,16 +150,18 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>$(ProjectDir)\..\Sources\ActiveLedIt.def</ModuleDefinitionFile>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
       <UpdateFileHashesSearchPath>$(OutDir)</UpdateFileHashesSearchPath>
+      <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>

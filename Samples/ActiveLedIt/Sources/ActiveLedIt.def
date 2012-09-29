@@ -1,6 +1,6 @@
 ; ActiveLedIt.def : Declares the module parameters.
 
-LIBRARY      "ActiveLedIt.ocx"
+LIBRARY      "SophistSolutions.ActiveLedIt.dll"
 
 EXPORTS
 	DllCanUnloadNow     PRIVATE

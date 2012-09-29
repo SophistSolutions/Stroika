@@ -6,8 +6,8 @@
      version="64.1.1.1"
      processorArchitecture="x86"
   />
-	<file name="ActiveLedIt.ocx">
-		<typelib tlbid="{9A013A72-AD34-11D0-8D9B-00A0C9080C73}" version="4.0" helpdir="ActiveLedIt"/>
+	<file name="SophistSolutions.ActiveLedIt.dll">
+		<typelib tlbid="{9A013A72-AD34-11D0-8D9B-00A0C9080C73}" version="4.0" helpdir=""/>
 		<comClass description="ActiveLedIt! Control" clsid="{9A013A76-AD34-11D0-8D9B-00A0C9080C73}" threadingModel="Apartment" progid="ActiveLedIt.ActiveLedItCtrl.1"/>
 		<comInterfaceProxyStub iid="{0C9C2C7F-BA8A-4654-9357-4DC09A9B6A32}" name="IALCurrentEventArguments"/>
 		<comInterfaceProxyStub iid="{3DAD6846-D90F-4C80-9042-CD832E9D8F80}" name="IALIconButtonToolbarElement"/>
