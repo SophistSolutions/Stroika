@@ -34,6 +34,9 @@
  *      @todo   Consider adding smarter implementation with keys - some btree indexing impl - to make stuff that
  *              looks up by value quicker.
  *
+ *		@todo	Add Shake() method, which MAY randomize the ordering of items. Note - since ordering is not
+ *				defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
+ *
  */
 
 #include    "../StroikaPreComp.h"
