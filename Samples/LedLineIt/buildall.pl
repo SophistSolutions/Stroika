@@ -10,7 +10,7 @@ my @kConfigurations = (
 					);
 
 
-print("Building Samples/LedIt...\n");
+print("Building Samples/LedLineIt...\n");
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
