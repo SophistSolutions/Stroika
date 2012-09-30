@@ -748,6 +748,7 @@ void    ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
             PX_String (pPX, _T("Text"), aProp, _T(""));
             if ((fTextStore.GetLength () == 0) and (not aProp.IsEmpty ())) {
                 SetBufferTextCRLF (aProp);
+				fDataDirty = false;
             }
         }
         catch (...) {
@@ -759,6 +760,7 @@ void    ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
             PX_String (pPX, _T("TextRTF"), aProp, _T(""));
             if ((fTextStore.GetLength () == 0) and (not aProp.IsEmpty ())) {
                 SetBufferTextAsRTF (aProp);
+				fDataDirty = false;
             }
         }
         catch (...) {
@@ -770,6 +772,7 @@ void    ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
             PX_String (pPX, _T("TextHTML"), aProp, _T(""));
             if ((fTextStore.GetLength () == 0) and (not aProp.IsEmpty ())) {
                 SetBufferTextAsHTML (aProp);
+				fDataDirty = false;
             }
         }
         catch (...) {
