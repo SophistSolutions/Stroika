@@ -7,7 +7,7 @@ LedIt - a word processor application. It was originally working on Windows,
 
 LedLineIt - a text editor application. This version only works on Windows, but it
         was ported from code (Led 3.1x) that also had implementations for MacOS, and
-        Linux, and so could be ported/targetted for those OSes without too much difficult.
+        Linux, and so could be ported/targetted for those OSes without too much difficulty.
 
 SimpleLedTest - Test the simple-to-use Led library wrapper code. This can easily
 		be adapted to work for MacOS (Carbon SDK) and Linux / X-Windows, but
