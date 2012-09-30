@@ -15,6 +15,11 @@
 
 
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
+
+
+
 
 inline  LedLineItView*  GetActiveLedItView ()
 {
@@ -93,7 +98,7 @@ void    StatusBar::TrackInGotoLineField ()
     // make sure plenty wide..
     r.right = max (r.right, r.left + 50);
     if (fGotoEdit.m_hWnd == 0) {
-        Led_Verify (fGotoEdit.Create (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT, r, this, kMagicGotoWidgetID));
+        Verify (fGotoEdit.Create (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT, r, this, kMagicGotoWidgetID));
     }
     fGotoEdit.SetFont (GetFont ());
     fGotoEdit.SetWindowText (GetPaneText (1));
@@ -119,7 +124,7 @@ void    StatusBar::OnMagicEdited ()
 
 void    StatusBar::OnMagicLoseFocus ()
 {
-    Led_Verify (fGotoEdit.DestroyWindow ());
+    Verify (fGotoEdit.DestroyWindow ());
 }
 
 
@@ -310,7 +315,7 @@ void    LedLineItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOO
                 memset (&mInfo, 0, sizeof (mInfo));
                 mInfo.cbSize = sizeof (mInfo);
                 mInfo.fMask = MIIM_STATE;
-                Led_Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
+                Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
                 if (mInfo.fState & MFS_DISABLED) {
                     pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
                     state.m_nIndexMax--;

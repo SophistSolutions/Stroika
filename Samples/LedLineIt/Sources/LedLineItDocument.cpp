@@ -6,6 +6,7 @@
 
 #include    <afxwin.h>
 
+#include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Frameworks/Led/FlavorPackage.h"
 
 #include    "LedLineItServerItem.h"
@@ -14,8 +15,12 @@
 #include    "LedLineItDocument.h"
 
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
 
 
+
+using	Stroika::Foundation::Memory::SmallStackBuffer;
 
 
 
@@ -197,7 +202,7 @@ LedLineItDocument::LedLineItDocument ():
     EnableAutomation ();
     AfxOleLockApp ();
 
-    fTextStore.SetTextBreaker (Led_RefCntPtr<TextBreaks> (new TextBreaks_Basic_TextEditor ()));
+    fTextStore.SetTextBreaker (shared_ptr<TextBreaks> (new TextBreaks_Basic_TextEditor ()));
     fTextStore.AddMarkerOwner (this);
 }
 
@@ -368,7 +373,7 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             }
 
             if (maxLineSize > kMaxLineSize) {
-                LineTooLongOnReadDialog dlg (Format (Led_SDK_TCHAROF ("This file contains at least one very long line (approximately %d characters). This may reduce editor performance, and make viewing the file awkward. Long lines can optionally be automatically broken up if they exceed the 'Break at characer count' value below."), maxLineSize / 100 * 100), kMaxLineSize);
+                LineTooLongOnReadDialog dlg (Characters::Format (Led_SDK_TCHAROF ("This file contains at least one very long line (approximately %d characters). This may reduce editor performance, and make viewing the file awkward. Long lines can optionally be automatically broken up if they exceed the 'Break at characer count' value below."), maxLineSize / 100 * 100), kMaxLineSize);
                 fBreakLongLines = (dlg.DoModal () == IDOK);
                 fBreakWidths = dlg.fBreakCount;
             }
@@ -383,7 +388,7 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             Led_ClipFormat  cf  =   (suggestedClipFormat == NULL or * suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
             Require (cf == kTEXTClipFormat);
 
-            fBreakWidths = max (fBreakWidths, 1);   // assure a decent value given...
+            fBreakWidths = max (fBreakWidths, 1U);   // assure a decent value given...
 
             if (fBreakLongLines) {
 #if     qWideCharacters
@@ -485,9 +490,9 @@ void    LedLineItDocument::Serialize (CArchive& ar)
             size_t  charsToWrite    =   Led_Min (kBufSize, eob - offset);
             fTextStore.CopyOut (offset, charsToWrite, buf);
             offset += charsToWrite;
-#if     qMacOS
+#if     qPlatform_MacOS
             Led_tChar   buf2[sizeof (buf)];
-#elif   qWindows
+#elif   qPlatform_Windows
             Led_tChar   buf2[2 * sizeof (buf)];
 #endif
             charsToWrite = Led_NLToNative (buf, charsToWrite, buf2, sizeof (buf2));
@@ -634,7 +639,7 @@ bool    LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, 
     FileDialogWithCodePage dlgFile (isOpenDialogCall, codePages, isOpenDialogCall ? kAutomaticallyGuessCodePage : *codePage);
 
     CString title;
-    Led_Verify (title.LoadString(nIDSTitle));
+    Verify (title.LoadString(nIDSTitle));
 
     dlgFile.m_ofn.Flags |= fileDLogFlags;
 

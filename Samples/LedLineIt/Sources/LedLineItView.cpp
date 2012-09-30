@@ -20,6 +20,15 @@
 
 
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
+
+
+using	Memory::SmallStackBuffer;
+
+
+
+
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (disable : 4800)
 #endif
@@ -118,9 +127,9 @@ public:
 public:
     override    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>   delegator (callback);
-#if     qMacOS
+#if     qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator);
-#elif   qWindows
+#elif   qPlatform_Windows
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif   qXWindows
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -276,6 +285,10 @@ namespace {
  */
 IMPLEMENT_DYNCREATE(LedLineItView, CView)
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+#endif
 BEGIN_MESSAGE_MAP(LedLineItView, LedLineItView::inherited)
 
     ON_WM_SETFOCUS              ()
@@ -301,6 +314,9 @@ BEGIN_MESSAGE_MAP(LedLineItView, LedLineItView::inherited)
     ON_UPDATE_COMMAND_UI_RANGE  (kBaseFontSizeCmdID,    kLastFontSizeCmdID, OnUpdateFontSizeChangeCommand)
     ON_COMMAND_RANGE            (kBaseFontSizeCmdID,    kLastFontSizeCmdID, OnFontSizeChangeCommand)
 END_MESSAGE_MAP()
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 
 LedLineItView::LedLineItView ():
@@ -326,12 +342,12 @@ LedLineItView::LedLineItView ():
     const   Led_TWIPS   kLedItViewBottomMargin  =   Led_TWIPS (0);
     const   Led_TWIPS   kLedItViewLHSMargin     =   Led_TWIPS (60);
     const   Led_TWIPS   kLedItViewRHSMargin     =   Led_TWIPS (60);
-#if     qWindows
+#if     qPlatform_Windows
     // This SHOULD be available on other platforms, but only now done for WIN32
     SetDefaultWindowMargins (Led_TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 
-#if     qMacOS || qWindows
+#if     qPlatform_MacOS || qPlatform_Windows
     SetUseSecondaryHilight (true);
 #endif
 }
@@ -690,9 +706,9 @@ void    LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
 
 Led_Distance    LedLineItView::PickOtherFontHeight (Led_Distance origHeight)
 {
-#if     qMacOS
+#if     qPlatform_MacOS
     Led_StdDialogHelper_OtherFontSizeDialog dlg;
-#elif   qWindows
+#elif   qPlatform_Windows
     Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
     dlg.InitValues (origHeight);

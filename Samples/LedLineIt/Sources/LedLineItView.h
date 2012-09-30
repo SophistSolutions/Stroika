@@ -18,6 +18,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks::Led;
+using   namespace   Stroika::Frameworks::Led::Platform;
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)

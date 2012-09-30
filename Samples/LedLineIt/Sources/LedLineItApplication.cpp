@@ -23,6 +23,9 @@
 
 
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
+
 
 
 
@@ -315,12 +318,12 @@ LedLineItApplication::LedLineItApplication ():
     SpellCheckEngine_Basic::RegressionTest ();
 #endif
 
-#if     qIncludeBasicSpellcheckEngine && qWindows
+#if     qIncludeBasicSpellcheckEngine && qPlatform_Windows
     {
         // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
         // and other spellchecking options (see SPR#1591)
         TCHAR   defaultPath[MAX_PATH + 1];
-        Led_Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
+        Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
         fSpellCheckEngine.SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
     }
 #endif
@@ -334,7 +337,7 @@ LedLineItApplication::~LedLineItApplication ()
 
 LedLineItApplication&   LedLineItApplication::Get ()
 {
-    EnsureNotNil (sThe);
+    EnsureNotNull (sThe);
     return *sThe;
 }
 
@@ -393,7 +396,7 @@ BOOL LedLineItApplication::InitInstance ()
     fOleTemplateServer.UpdateRegistry (OAT_INPLACE_SERVER);
     COleObjectFactory::UpdateRegistryAll ();
 
-#if     qWindows
+#if     qPlatform_Windows
     {
         class   MyRegistrationHelper : public Win32UIFileAssociationRegistrationHelper {
         private:
@@ -473,7 +476,7 @@ void    LedLineItApplication::WinHelp (DWORD dwData, UINT nCmd)
 {
     // get path of executable
     TCHAR directoryName[_MAX_PATH];
-    Led_Verify (::GetModuleFileName (m_hInstance, directoryName, _MAX_PATH));
+    Verify (::GetModuleFileName (m_hInstance, directoryName, _MAX_PATH));
 
     {
         LPTSTR lpszExt = _tcsrchr (directoryName, '\\');
@@ -519,7 +522,7 @@ void    LedLineItApplication::HandleBadAllocException () throw ()
 void    LedLineItApplication::HandleBadUserInputException () throw ()
 {
     try {
-#if     qWindows
+#if     qPlatform_Windows
         CDialog errorDialog (kBadUserInputExceptionOnCmdDialogID);
         errorDialog.DoModal ();
 #else

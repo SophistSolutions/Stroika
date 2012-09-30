@@ -16,6 +16,10 @@
 
 
 
+
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
+
 class   Options {
 public:
     Options ();
@@ -48,7 +52,7 @@ public:
     nonvirtual  void                    SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);
 #endif
 
-#if     qWindows
+#if     qPlatform_Windows
 public:
     nonvirtual  bool    GetCheckFileAssocsAtStartup () const;
     nonvirtual  void    SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);

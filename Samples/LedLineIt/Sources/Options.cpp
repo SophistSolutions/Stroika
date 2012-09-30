@@ -15,11 +15,15 @@
 #pragma warning (4 : 4800)      //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #endif
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
+
+
 
 
 
 namespace {
-#if     qWindows
+#if     qPlatform_Windows
     class   MyPrefs : public OptionsFileHelper {
     private:
         typedef OptionsFileHelper   inherited;
@@ -88,7 +92,7 @@ void    Options::SetSearchParameters (const SearchParameters& searchParameters)
     gMyPrefsFile.StorePref (kSearchParamsCaseSensativeSearch, searchParameters.fCaseSensativeSearch);
 }
 
-#if     qWindows
+#if     qPlatform_Windows
 const CDockState&   Options::GetDocBarState () const
 {
     static  CDockState  dockState;  // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
@@ -171,7 +175,7 @@ void    Options::SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOpt
 }
 #endif
 
-#if     qWindows
+#if     qPlatform_Windows
 bool    Options::GetCheckFileAssocsAtStartup () const
 {
     return gMyPrefsFile.GetPref (kCheckFileAssocAtStartup, true);

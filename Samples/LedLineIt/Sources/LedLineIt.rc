@@ -862,7 +862,7 @@ End
 
 
 
-#include	"LedStdDialogs.r"
+#include	"Stroika/Frameworks/Led/StdDialogs.inc.r"
 
 
 

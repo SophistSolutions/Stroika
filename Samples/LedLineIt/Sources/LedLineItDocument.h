@@ -17,6 +17,11 @@
 
 
 
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Frameworks::Led;
+
+
+
 const   CodePage    kDefaultNewDocCodePage  =   CodePagesInstalled::IsCodePageAvailable (kCodePage_UTF8) ? kCodePage_UTF8 : CodePagesInstalled::GetDefaultCodePage ();
 
 
