@@ -20,7 +20,7 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-using	Stroika::Foundation::Memory::SmallStackBuffer;
+using   Stroika::Foundation::Memory::SmallStackBuffer;
 
 
 

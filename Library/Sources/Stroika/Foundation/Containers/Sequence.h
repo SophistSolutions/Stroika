@@ -15,9 +15,9 @@
  *
  *      (o)         Should inherit from Iterable<T>
  *
- *		@todo		Must support SequenceIterator - and that SequenceIterator must work with qsort().
- *					In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL 
- *					random-access iterators.
+ *      @todo       Must support SequenceIterator - and that SequenceIterator must work with qsort().
+ *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
+ *                  random-access iterators.
  *
  *
  */

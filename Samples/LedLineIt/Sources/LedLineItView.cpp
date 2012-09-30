@@ -24,7 +24,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks::Led;
 
 
-using	Memory::SmallStackBuffer;
+using   Memory::SmallStackBuffer;
 
 
 
