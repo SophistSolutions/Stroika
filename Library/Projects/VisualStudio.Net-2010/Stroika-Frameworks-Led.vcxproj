@@ -113,6 +113,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Support.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Support.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.h" />

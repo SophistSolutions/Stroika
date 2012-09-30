@@ -41,9 +41,9 @@ void    StyledTextIOReader_STYLText::Read ()
     {
 #if 1
         // Read into a contiguous block of memory since it makes the dealing with CRLF
-        // strattling a buffer-bounary problem go away. Note that the Led_SmallStackBuffer<>::GrowToSize()
+        // strattling a buffer-bounary problem go away. Note that the SmallStackBuffer<>::GrowToSize()
         // code grows exponentially so that we minimize buffer copies on grows...
-        Led_SmallStackBuffer<char>  buf (totalRead);
+        SmallStackBuffer<char>  buf (totalRead);
         while (true) {
             size_t  kTryToReadThisTime  =   16 * 1024;
             buf.GrowToSize (totalRead + kTryToReadThisTime);
@@ -64,13 +64,13 @@ void    StyledTextIOReader_STYLText::Read ()
         Assert (endPos >= oldPos);
         GetSrcStream ().seek_to (oldPos);
         size_t  len =   endPos - oldPos;
-        Led_SmallStackBuffer<char>  buf (len);
+        SmallStackBuffer<char>  buf (len);
         if ( (totalRead = GetSrcStream ().read (buf, len)) != len ) {
             Led_ThrowBadFormatDataException ();
         }
 #endif
 #if     qWideCharacters
-        Led_SmallStackBuffer<Led_tChar> tCharBuf (totalRead);
+        SmallStackBuffer<Led_tChar> tCharBuf (totalRead);
         CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf, totalRead, tCharBuf, &totalRead);
         totalRead = Led_NormalizeTextToNL (tCharBuf, totalRead, tCharBuf, totalRead);
         GetSinkStream ().AppendText (tCharBuf, totalRead, NULL);

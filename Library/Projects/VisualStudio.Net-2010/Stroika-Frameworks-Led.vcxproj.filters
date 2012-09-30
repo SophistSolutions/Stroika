@@ -150,6 +150,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
@@ -295,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.h">
       <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
