@@ -24,3 +24,13 @@ TONS TODO.
 	
 >	Try to get webserver working on BOTH windows / unix (and tested from each)
 
+>	Embellish sevice framework so can have abstract service base, and then
+	have one IMPL for native UNIX (done), one for native WinService, and one for
+	unix-style appraoch but on windows service (exe running but not using service interace)
+	
+>	Do simple WS admin section - so we have webservices controlling
+
+>	If no web page root - have DEFAULT baked in webpage root (trivial - points to admin page).
+
+>	Do basic Admin webpage - which does jquery, and ajax, to WS front end.
+
