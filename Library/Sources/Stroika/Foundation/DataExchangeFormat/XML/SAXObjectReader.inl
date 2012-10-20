@@ -147,17 +147,17 @@ namespace   Stroika {
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
                 {
                     actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text) override
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text)
                 {
                     actualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (SAXObjectReader& r) override
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (SAXObjectReader& r)
                 {
                     shared_ptr<ObjectBase>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
@@ -179,14 +179,14 @@ namespace   Stroika {
                     RequireNotNull (vp);
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleTextInside (SAXObjectReader& r, const String& text) override
+                void    ComplexObjectReader<T>::HandleTextInside (SAXObjectReader& r, const String& text)
                 {
                     // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
                     // assure input is valid
                     Assert (text.IsWhitespace ());
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleEndTag (SAXObjectReader& r) override
+                void    ComplexObjectReader<T>::HandleEndTag (SAXObjectReader& r)
                 {
                     r.Pop ();
                 }
@@ -208,7 +208,7 @@ namespace   Stroika {
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
                 {
                     if (localName == TRAITS::ElementName) {
                         if (readingAT_) {
@@ -225,7 +225,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader& r) override
+                void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader& r)
                 {
                     if (readingAT_) {
                         Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);

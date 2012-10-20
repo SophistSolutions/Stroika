@@ -38,10 +38,11 @@
 #elif     defined (_MSC_VER)
 
 #define _MS_VS_2k10_VER_    1600
+#define _MS_VS_2k12_VER_    1700
 #if      _MSC_VER < _MS_VS_2k10_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2010")
 #endif
-#if      _MSC_VER > _MS_VS_2k10_VER_
+#if      _MSC_VER > _MS_VS_2k12_VER_
 #pragma message ("Info: Stroika untested with this version of Microsoft Visual Studio.net")
 #endif
 
@@ -107,7 +108,7 @@
 */
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    1
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    0
@@ -131,7 +132,7 @@
 #if     defined (__GNUC__)
 // not sure what version will/does support this
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   0
-#elif   defined (_MSC_VER) && _MSC_VER <= 1600
+#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   0
 #else
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   1
@@ -152,7 +153,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 #define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  0
 #else
 #define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
@@ -163,6 +164,11 @@
 
 
 
+// MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
+// easy enough to disable ;-)
+#if     defined (_MSC_VER) && _MSC_VER == _MS_VS_2k12_VER_
+#define	_ALLOW_KEYWORD_MACROS
+#endif
 
 
 
@@ -173,7 +179,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 #define qCompilerAndStdLib_Supports_constexpr   0
 #else
 #define qCompilerAndStdLib_Supports_constexpr   1
@@ -236,7 +242,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_noexcept
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 #define qCompilerAndStdLib_Supports_noexcept    0
 #else
 #define qCompilerAndStdLib_Supports_noexcept    1
@@ -268,7 +274,7 @@
 //
 #ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 0
 #else
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
@@ -334,7 +340,9 @@
 */
 #ifndef qCompilerAndStdLib_Supports_threads
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+
+// MAYBE OK FOR 2k12, but requires a little work so disable for now--LGP 2012-10-19
 #define qCompilerAndStdLib_Supports_threads 0
 #else
 #define qCompilerAndStdLib_Supports_threads 1
@@ -414,7 +422,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdchrono)
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_Supports_stdchrono       0
 #else
 #define qCompilerAndStdLib_Supports_stdchrono       1
@@ -432,7 +440,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdthreads)
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_Supports_stdthreads  0
 #else
 #define qCompilerAndStdLib_Supports_stdthreads  1
@@ -453,7 +461,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_varadic_templates)
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 #define qCompilerAndStdLib_Supports_varadic_templates  0
 #else
 #define qCompilerAndStdLib_Supports_varadic_templates  1
@@ -477,7 +485,10 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdatomic)
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
+#define qCompilerAndStdLib_Supports_stdatomic   0
+#elif     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+// really is supported, but fake off for now til we fix it --LGP 2012-10-20
 #define qCompilerAndStdLib_Supports_stdatomic   0
 #else
 #define qCompilerAndStdLib_Supports_stdatomic   1
@@ -500,7 +511,7 @@
 
 #if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
 #define qCompilerAndStdLib_Supports_override    0
-#elif   defined (_MSC_VER) && _MSC_VER <= 1600
+#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_Supports_override    0
 #else
 #define qCompilerAndStdLib_Supports_override    1
@@ -553,7 +564,9 @@
 */
 #ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
 
-#if     defined (_MSC_VER) && _MSC_VER <= 1600
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+
+//RETEST THIS WITH 2k12 -- LGP 2012-10-19
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   0
 #else
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
@@ -640,7 +653,7 @@
 
 // SHOULD GO ELSEWHERE -- LGP 2011-10-27
 #if     !qCompilerAndStdLib_Supports_noexcept
-#define noexcept    throw  ()
+#define noexcept    throw ()
 #endif
 
 

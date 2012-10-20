@@ -47,7 +47,7 @@ namespace   Stroika {
                 return shared_ptr<IRunnable> (DEBUG_NEW SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
             }
             template    <typename   OBJ>
-            void    SimpleObjRunnable<OBJ>::Run () override
+            void    SimpleObjRunnable<OBJ>::Run ()
             {
                 ((*fObjPtr_).*(fPtrToMemberFunction_)) ();
             }

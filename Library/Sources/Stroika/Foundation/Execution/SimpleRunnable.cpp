@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::Execution;
  *************************** Execution::SimpleRunnable **************************
  ********************************************************************************
  */
-void    SimpleRunnable::Run () override
+void    SimpleRunnable::Run ()
 {
     (fFun2CallOnce) (fArg);
 }

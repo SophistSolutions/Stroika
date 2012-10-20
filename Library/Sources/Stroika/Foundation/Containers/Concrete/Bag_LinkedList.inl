@@ -107,12 +107,12 @@ namespace   Stroika {
                     return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
-                void      Bag_LinkedList<T>::Rep_::Apply (void (*doToElement) (const T& item)) const override
+                void      Bag_LinkedList<T>::Rep_::Apply (void (*doToElement) (const T& item)) const
                 {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (bool (*doToElement) (const T& item)) const override
+                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (bool (*doToElement) (const T& item)) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }
@@ -176,7 +176,7 @@ namespace   Stroika {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (typename Iterator<T>::IRep*  rhs) override
+                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (typename Iterator<T>::IRep*  rhs)
                 {
                     AssertNotImplemented ();
                     return false;

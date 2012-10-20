@@ -28,7 +28,7 @@ TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (BinaryInputStream sr
 {
 }
 
-size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* intoEnd) override
+size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* intoEnd)
 {
     Memory::SmallStackBuffer<Byte>  buf (intoEnd - intoStart);
     size_t  n   =   fSource_.Read (buf.begin (), buf.end ());
@@ -41,13 +41,13 @@ size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* in
     return outN;
 }
 
-Streams::SeekOffsetType TextInputStreamBinaryAdapter::_GetOffset () const override
+Streams::SeekOffsetType TextInputStreamBinaryAdapter::_GetOffset () const
 {
     AssertNotImplemented ();
     return 0;
 }
 
-void    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset) override
+void    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset)
 {
     AssertNotImplemented ();
 }

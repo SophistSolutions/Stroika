@@ -154,7 +154,7 @@ namespace   {
             virtual void    SetLength (size_t newLength) override {
                 Execution::DoThrow (UnsupportedFeatureException_ ());
             }
-            virtual const wchar_t*  c_str_peek () const  override noexcept {
+            virtual const wchar_t*  c_str_peek () const  noexcept override {
                 return nullptr;
             }
             virtual const wchar_t*      c_str_change () override {
@@ -278,7 +278,7 @@ namespace   {
                 _fEnd = _fStart + newLength;    // we don't bother doing anything to added/removed characters
                 Ensure (GetLength () == newLength);
             }
-            virtual     const wchar_t*  c_str_peek () const override noexcept {
+            virtual     const wchar_t*  c_str_peek () const noexcept override {
                 size_t  len =   GetLength ();
                 if (len < fCapacity_) {
                     const_cast<wchar_t*> (_fStart)[len] = '\0';     // Cheaper to always set than to check, and maybe set
@@ -409,7 +409,7 @@ public:
          */
         return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
-    virtual const wchar_t*  c_str_peek () const  override noexcept {
+    virtual const wchar_t*  c_str_peek () const  noexcept override {
         // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
         Assert (_fStart + ::wcslen (_fStart) == _fEnd);
         return _fStart;

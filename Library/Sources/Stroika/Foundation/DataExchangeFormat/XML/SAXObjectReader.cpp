@@ -175,17 +175,17 @@ BuiltinReader<String>::BuiltinReader (String* intoVal, const map<String, Memory:
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<String>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<String>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     (*value_) += text;
 }
 
-void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -209,18 +209,18 @@ BuiltinReader<int>::BuiltinReader (int* intoVal, const map<String, Memory::Varia
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<int>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<int>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -242,18 +242,18 @@ BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal, const map<Str
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<unsigned int>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<unsigned int>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -277,19 +277,19 @@ BuiltinReader<bool>::BuiltinReader (bool* intoVal, const map<String, Memory::Var
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<bool>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<bool>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     String  tmp =   tmpVal_.Trim ().ToLowerCase ();
     (*value_) = (tmp == L"true");
 }
 
-void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -315,18 +315,18 @@ BuiltinReader<float>::BuiltinReader (float* intoVal, const map<String, Memory::V
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<float>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<float>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = static_cast<float> (Characters::String2Float (tmpVal_.As<wstring> ()));
 }
 
-void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -347,18 +347,18 @@ BuiltinReader<double>::BuiltinReader (double* intoVal, const map<String, Memory:
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<double>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<double>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Float (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -381,19 +381,19 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const map
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
 
-void    BuiltinReader<Time::DateTime>::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    BuiltinReader<Time::DateTime>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::eXML_PF));
 }
 
-void    BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader& r) override
+void    BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader& r)
 {
     r.Pop ();
 }
@@ -413,18 +413,18 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override
+void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
 {
     Require (fDepth_ >= 0);
     fDepth_++;
 }
 
-void    IgnoreNodeReader::HandleTextInside (SAXObjectReader& r, const String& text) override
+void    IgnoreNodeReader::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     // Ignore text
 }
 
-void    IgnoreNodeReader::HandleEndTag (SAXObjectReader& r) override
+void    IgnoreNodeReader::HandleEndTag (SAXObjectReader& r)
 {
     Require (fDepth_ >= 0);
     --fDepth_;

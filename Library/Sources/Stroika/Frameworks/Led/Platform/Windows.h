@@ -311,7 +311,7 @@ namespace   Stroika {
 
                 public:
                     virtual    void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                    virtual    void    DidUpdateText (const UpdateInfo& updateInfo) override noexcept;
+                    virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
                 protected:
                     nonvirtual  void    DidUpdateText_ (const UpdateInfo& updateInfo) noexcept;
 
@@ -493,7 +493,7 @@ namespace   Stroika {
                 protected:
                     virtual     LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam);
                 protected:
-                    virtual    LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam) override;
+                    virtual    LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam);
                 };
 
 

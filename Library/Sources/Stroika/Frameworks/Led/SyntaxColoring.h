@@ -63,8 +63,8 @@ namespace   Stroika {
             */
             class   TrivialRGBSyntaxAnalyzer : public SyntaxAnalyzer {
             public:
-                override    void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const;
-                override    void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const;
+                virtual    void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
+                virtual    void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
             };
 
 
@@ -104,8 +104,8 @@ namespace   Stroika {
                 TableDrivenKeywordSyntaxAnalyzer (const KeywordTable& keyTable);
 
             public:
-                override    void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const;
-                override    void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const;
+                virtual    void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
+                virtual    void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
 
             private:
                 KeywordTable    fKeywordTable;
@@ -151,7 +151,7 @@ namespace   Stroika {
                 typedef TrivialFontSpecStyleMarker  FontChangeStyleMarker;
 
             public:
-                override    TextStore*  PeekAtTextStore () const;
+                virtual    TextStore*  PeekAtTextStore () const override;
             protected:
                 TextInteractor&         fInteractor;
                 TextStore&              fTextStore;
@@ -179,10 +179,10 @@ namespace   Stroika {
                 virtual ~SimpleSyntaxColoringMarkerOwner ();
 
             protected:
-                override    void    RecheckRange (size_t updateFrom, size_t updateTo);
+                virtual    void    RecheckRange (size_t updateFrom, size_t updateTo) override;
 
             public:
-                override    void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             private:
                 vector<Marker*> fMarkers;
@@ -216,11 +216,11 @@ namespace   Stroika {
                 nonvirtual  void    RecheckScrolling ();
 
             protected:
-                override    void    RecheckRange (size_t updateFrom, size_t updateTo);
+                virtual    void    RecheckRange (size_t updateFrom, size_t updateTo) override;
 
             public:
-                override    void    AboutToUpdateText (const UpdateInfo& updateInfo);
-                override    void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+                virtual    void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
+                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             private:
                 vector<Marker*> fMarkers;
@@ -264,7 +264,7 @@ namespace   Stroika {
                 DECLARE_USE_BLOCK_ALLOCATION (ColoredStyleMarker);
 
             protected:
-                override    Led_FontSpecification       MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
+                virtual    Led_FontSpecification       MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
             public:
                 Led_Color               fColor;

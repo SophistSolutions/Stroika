@@ -176,22 +176,22 @@ Connection_WinHTTP::Rep_::~Rep_ ()
     fSessionHandle_.reset ();
 }
 
-DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const override
+DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const
 {
     return fTimeout_;
 }
 
-void    Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout) override
+void    Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
 {
     fTimeout_ = timeout;    // affects subsequent calls to send...
 }
 
-URL     Connection_WinHTTP::Rep_::GetURL () const override
+URL     Connection_WinHTTP::Rep_::GetURL () const
 {
     return fURL_;
 }
 
-void    Connection_WinHTTP::Rep_::SetURL (const URL& url) override
+void    Connection_WinHTTP::Rep_::SetURL (const URL& url)
 {
     if (fURL_ != url) {
         fConnectionHandle_.reset ();
@@ -199,13 +199,13 @@ void    Connection_WinHTTP::Rep_::SetURL (const URL& url) override
     }
 }
 
-void    Connection_WinHTTP::Rep_::Close ()  override
+void    Connection_WinHTTP::Rep_::Close ()
 {
     fConnectionHandle_.reset ();
     fSessionHandle_.reset ();
 }
 
-Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)   override
+Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
 {
     Response    response;
 

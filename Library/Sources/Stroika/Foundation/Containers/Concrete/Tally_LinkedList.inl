@@ -122,7 +122,7 @@ namespace   Stroika {
                     return (fIterator.More (current, advance));
                 }
                 template    <typename T>
-                bool    Tally_LinkedListMutatorRep<T>::StrongEquals (typename Iterator<TallyEntry<T> >::IRep* rhs) override
+                bool    Tally_LinkedListMutatorRep<T>::StrongEquals (typename Iterator<TallyEntry<T> >::IRep* rhs)
                 {
                     AssertNotImplemented ();
                     return false;

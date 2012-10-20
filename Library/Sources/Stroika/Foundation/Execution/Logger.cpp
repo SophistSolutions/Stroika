@@ -96,7 +96,7 @@ Logger::FileAppender::FileAppender (const String& fileName)
 {
     AssertNotImplemented ();
 }
-void    Logger::FileAppender::Log (Priority logLevel, const String& message) override
+void    Logger::FileAppender::Log (Priority logLevel, const String& message)
 {
     AssertNotImplemented ();
 }

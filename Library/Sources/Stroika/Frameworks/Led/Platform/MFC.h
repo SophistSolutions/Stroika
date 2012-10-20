@@ -293,9 +293,9 @@ namespace   Stroika {
                     afx_msg void    OnTimer (UINT_PTR nEventID);
 
 
-                    // Disambigouate mixins
+                    // Disambiguate mixins
                 public:
-                    virtual    Led_Rect    GetWindowRect () const override;
+                    virtual    Led_Rect    GetWindowRect () const;
                     nonvirtual  void        GetWindowRect (LPRECT lpRect) const;
                 public:
                     nonvirtual  DWORD   GetStyle () const;
@@ -735,7 +735,7 @@ namespace   Stroika {
 
                 public:
                     virtual    void    AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
-                    virtual    void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override noexcept;
+                    virtual    void    DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
                 };
 
 

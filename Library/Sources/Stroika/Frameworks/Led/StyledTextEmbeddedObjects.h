@@ -431,8 +431,8 @@ namespace   Stroika {
                 virtual     bool                        IsCmdEnabled (PrivateCmdNumber cmd) const override;
 
             public:
-                nonvirtual  const Led_URLD& GetURLData () const override;
-                nonvirtual  void            SetURLData (const Led_URLD& urlData) override;
+                nonvirtual  const Led_URLD& GetURLData () const;
+                nonvirtual  void            SetURLData (const Led_URLD& urlData);
             private:
                 Led_URLD    fURLData;
 

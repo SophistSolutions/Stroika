@@ -59,7 +59,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
-                atomic<uint32_t*> ((uint32_t*)p)++;
+                return * (atomic<uint32_t*> ((uint32_t*)p) += 1);
 #elif   qPlatform_Windows
                 return static_cast<uint32_t> (::InterlockedIncrement (reinterpret_cast<volatile LONG*> (p)));
 #else
@@ -152,7 +152,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
-                atomic<uint32_t*> ((uint32_t*)p)++;
+                return *(atomic<uint32_t*> ((uint32_t*)p)--);
 #elif   qPlatform_Windows
                 return ::InterlockedDecrement (reinterpret_cast<volatile LONG*> (p));
 #else
@@ -201,7 +201,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
-                atomic<uint32_t*> ((uint32_t*)p) += arg;
+                return *(atomic<uint32_t*> ((uint32_t*)p) += arg);
 #elif   qPlatform_Windows
                 return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), arg);
 #else
@@ -266,7 +266,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_stdatomic
 // A BIT of a WAG about how to use stdc++ atomics... -- LGP 2011-09-02
 //Pretty sure wrong but not sure what right way is...
-                atomic<uint32_t*> ((uint32_t*)p) += arg;
+                return * (atomic<uint32_t*> ((uint32_t*)p) += arg);
 #elif   qPlatform_Windows
                 return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), -static_cast<int32_t> (arg));
 #else

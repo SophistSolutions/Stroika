@@ -211,7 +211,7 @@ Thread::Rep_::~Rep_ ()
 #endif
 }
 
-void    Thread::Rep_::Run () override
+void    Thread::Rep_::Run ()
 {
     fRunnable->Run ();
 }
