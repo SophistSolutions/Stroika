@@ -34,6 +34,6 @@ $ENV{'VisualStudioVersion'}='11.0';
 ### SEE http://bugzilla/show_bug.cgi?id=736
 
 
-print ("AFTER SETTING PATH ENV=$ENV{'PATH'}\n");
+#print ("AFTER SETTING PATH ENV=$ENV{'PATH'}\n");
 
 1
