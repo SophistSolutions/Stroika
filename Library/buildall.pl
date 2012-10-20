@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+require "../ScriptsLib/ConfigurationReader.pl";
+
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
@@ -21,5 +23,6 @@ if ("$^O" eq "linux") {
     system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make $useBld");
 }
 else {
-    system ("cd Projects/VisualStudio.Net-2010; perl buildall.pl $useBld");
+    my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
+    system ("cd $useProjectDir; perl buildall.pl $useBld");
 }

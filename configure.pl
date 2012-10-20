@@ -523,6 +523,9 @@ if ("$^O" eq "linux") {
     MakeUnixDirs ();
 }
 
+unless (-e $intermediateFiles) {
+    mkdir ($intermediateFiles);
+}
 
 unless (-e $masterXMLConfigFile) {
 	print("Writing \"$masterXMLConfigFile\"...\n");

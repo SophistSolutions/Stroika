@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+require "../../ScriptsLib/ConfigurationReader.pl";
+
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
@@ -50,7 +52,7 @@ if ($DoCreateSymLink) {
 
 print ("Patching Xerces...\n");
 system ("patch -t CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
-system ("cd CURRENT; tar xvf ../Patches/VC11Projects.tar.gz");
+system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
 
 sub RunAndPrint
 {
@@ -100,8 +102,16 @@ if ("$^O" eq "linux") {
 	system ("cd CURRENT ; make -s all");
 }
 else {
-	BuildVCDotNet ('VisualStudio.Net-2010', 'VC10');
-	BuildVCDotNet ('VisualStudio.Net-2012', 'VC11');
+	my $myPlatformSubDir =	GetProjectPlatformSubdir ();
+	print ("Target Platform subdir: $myPlatformSubDir\n");
+	my $myBinOutDir = '';
+	if ($myPlatformSubDir eq 'VisualStudio.Net-2010') {
+		$myBinOutDir = 'VC10';
+	}
+	if ($myPlatformSubDir eq 'VisualStudio.Net-2012') {
+		$myBinOutDir = 'VC11';
+	}
+	BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
 }
 
 system ("perl checkall.pl");
