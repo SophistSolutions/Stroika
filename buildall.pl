@@ -73,8 +73,6 @@ if ((lc ($BLD_TRG) eq 'all') or (lc ($BLD_TRG) eq 'all+') or
 print ("**************************** STARTING Stroika ****************************\n");
 system ("sh -c 'date'");
 
-system ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
-
 if ((lc ($BLD_TRG) eq "clobber") || (lc ($BLD_TRG) eq "rebuild")) {
 	system ("rm -rf Builds");
 	system ("rm -f Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h");
@@ -86,6 +84,10 @@ if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean") or (lc ($BLD_TRG)
 if ($isBuildingMode) {
 	system ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
 }
+
+
+system ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
+
 
 my $useBld	=	$BLD_TRG;
 if (lc ($BLD_TRG) eq "rebuild") {
