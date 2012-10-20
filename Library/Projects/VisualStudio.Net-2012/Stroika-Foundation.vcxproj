@@ -959,7 +959,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
@@ -981,7 +981,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
@@ -1003,7 +1003,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
@@ -1025,7 +1025,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
@@ -1047,7 +1047,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
@@ -1069,7 +1069,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
@@ -1099,7 +1099,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
@@ -1129,7 +1129,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
@@ -1159,7 +1159,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
@@ -1189,7 +1189,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
@@ -1219,7 +1219,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
@@ -1249,7 +1249,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
@@ -1279,7 +1279,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
@@ -1309,7 +1309,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
@@ -1339,7 +1339,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
@@ -1369,7 +1369,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
@@ -1399,7 +1399,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
@@ -1429,7 +1429,7 @@
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC10\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC11\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
