@@ -5,7 +5,7 @@
 ### GIVE UP ON PERL - CANNOT EASILY INSTALL XML READER - SO JUST USE 
 ### tesxt reading..
 
-my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles/";
+my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
 my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
 
 
