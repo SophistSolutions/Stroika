@@ -175,6 +175,8 @@ if ($forceRecreate) {
 my $configFileCName		=	"Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
 my $configFileMakeName	=	"$intermediateFiles$platform/$target/Library/Configuration.mk";
 
+my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
+
 
 
 
@@ -397,6 +399,48 @@ sub WriteStroikaConfigCHeader
 
 
 
+# Eventually  -make this more central - put all configs here, and then
+# build C++/dirs etc from this!
+sub	WriteConfigFile_
+{
+	my $PROJECTPLATFORMSUBDIR='';
+	if ("$^O" eq "linux") {
+		$PROJECTPLATFORMSUBDIR = 'Linux';
+	}
+	if ("$^O" eq "cygwin") {
+		# first try vs 2k12
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			local $PROGRAMFILESDIR= `cygpath \"$ENV{'PROGRAMFILES'}\"`;
+			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 11.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2012';
+			}
+			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 11.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2012';
+			}
+		}
+
+		# first try vs 2k10
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			local $PROGRAMFILESDIR= `cygpath \"$ENV{'PROGRAMFILES'}\"`;
+			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 10.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
+			}
+			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 10.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
+			}
+		}
+	}
+
+	open(OUT,">$masterXMLConfigFile");
+	print (OUT "<Configuration>\n");
+	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
+	print (OUT "</Configuration>\n");
+	close(OUT);
+}
+
+
 
 
 sub WriteStroikaConfigMakeHeader
@@ -479,6 +523,11 @@ if ("$^O" eq "linux") {
     MakeUnixDirs ();
 }
 
+
+unless (-e $masterXMLConfigFile) {
+	print("Writing \"$masterXMLConfigFile\"...\n");
+	WriteConfigFile_ ();
+}
 
 unless (-e $configFileCName) {
 	print("Writing \"$configFileCName\"...\n");
