@@ -50,7 +50,7 @@ if ($DoCreateSymLink) {
 
 print ("Patching Xerces...\n");
 system ("patch -t CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
-
+system ("cd CURRENT; tar xvf ../Patches/VC11Projects.tar.gz");
 
 sub RunAndPrint
 {
@@ -61,6 +61,31 @@ sub RunAndPrint
 		print "Run result = $result\r\n";
 	}
 }
+
+
+
+sub BuildVCDotNet
+{
+	my $PROJVVCVERSUBDIR = $_[0];
+	my $SHORTVCVERDIR = $_[1];
+
+	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+	require "../../Library/Projects/$PROJVVCVERSUBDIR/SetupBuildCommonVars.pl";
+	
+	chdir ("CURRENT/Projects/Win32/$SHORTVCVERDIR/xerces-all/XercesLib");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:$BLD_TRG");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:$BLD_TRG");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:$BLD_TRG");
+		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:$BLD_TRG");
+	chdir ("../../../../../../");
+
+	# cleaning needless objs (leave libs)
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Debug/obj/'");
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Release/obj/'");
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Debug/obj/'");
+	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Release/obj/'");
+}
+
 
 
 if ("$^O" eq "linux") {
@@ -75,22 +100,9 @@ if ("$^O" eq "linux") {
 	system ("cd CURRENT ; make -s all");
 }
 else {
-	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
-	require "../../Library/Projects/VisualStudio.Net-2010/SetupBuildCommonVars.pl";
-	
-	chdir ("CURRENT/Projects/Win32/VC10/xerces-all/XercesLib");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:$BLD_TRG");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:$BLD_TRG");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:$BLD_TRG");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:$BLD_TRG");
-	chdir ("../../../../../../");
-
-	# cleaning needless objs (leave libs)
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/VC10/Static Debug/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/VC10/Static Release/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/VC10/Static Debug/obj/'");
-}	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/VC10/Static Release/obj/'");
-
+	BuildVCDotNet ('VisualStudio.Net-2010', 'VC10');
+	BuildVCDotNet ('VisualStudio.Net-2012', 'VC11');
+}
 
 system ("perl checkall.pl");
 
