@@ -75,84 +75,68 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Stroika-Frameworks-Led.vcxproj">
-      <Project>{57b01fec-9ad1-46a4-b5f1-9e1c531e59d2}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="Stroika-Frameworks-Service.vcxproj">
-      <Project>{76c03e61-1308-4973-abda-2e83210a5b52}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="Stroika-Frameworks-WebServer.vcxproj">
-      <Project>{bb1903e4-c75b-430b-9e6f-8caea64bf194}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\HTMLViewCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
+    <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2012\Stroika-Foundation.vcxproj">
+      <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{91C825D0-2702-4800-98DD-B83727D51F5E}</ProjectGuid>
+    <ProjectGuid>{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StroikaFoundation</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
@@ -160,7 +144,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
@@ -168,7 +152,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -176,7 +160,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -184,7 +168,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -192,7 +176,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -200,7 +184,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -208,7 +192,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -216,7 +200,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -224,7 +208,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -232,7 +216,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -240,7 +224,7 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -307,93 +291,111 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
+    <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <ClCompile>
@@ -406,18 +408,19 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
@@ -431,18 +434,19 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
@@ -456,18 +460,19 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
@@ -481,18 +486,19 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
@@ -506,18 +512,19 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
@@ -531,18 +538,19 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
@@ -561,20 +569,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
@@ -593,20 +603,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
@@ -625,20 +637,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
@@ -657,20 +671,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
@@ -689,20 +705,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
@@ -721,20 +739,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
@@ -753,20 +773,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
@@ -785,20 +807,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
@@ -817,20 +841,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
@@ -849,20 +875,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
@@ -881,20 +909,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
@@ -913,20 +943,22 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalOptions>Stroika-Framework-Led.lib Stroika-Framework-Service.lib  Stroika-Framework-WebServer.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <Verbose>true</Verbose>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
