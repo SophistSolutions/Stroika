@@ -42,14 +42,14 @@ namespace   Stroika {
                 std::recursive_mutex    fMutex_;
 #elif   qUseThreads_WindowsNative
             private:
-                CRITICAL_SECTION fCritSec;
+                CRITICAL_SECTION fCritSec_;
 #endif
             };
 #if     qUseThreads_WindowsNative
             template    <>
             inline  CRITICAL_SECTION&   CriticalSection::As ()
             {
-                return fCritSec;
+                return fCritSec_;
             }
 #endif
 
@@ -65,7 +65,7 @@ namespace   Stroika {
                 ~AutoCriticalSectionT ();
 
             private:
-                LOCKTYPE&   fCritSec;
+                LOCKTYPE&   fCritSec_;
             };
             typedef AutoCriticalSectionT<CriticalSection>   AutoCriticalSection;
 

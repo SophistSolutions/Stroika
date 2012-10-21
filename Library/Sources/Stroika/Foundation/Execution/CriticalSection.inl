@@ -21,20 +21,20 @@ namespace   Stroika {
             inline  CriticalSection::CriticalSection ()
             {
 #if qUseThreads_WindowsNative
-                memset (&fCritSec, 0, sizeof(fCritSec));
-                ::InitializeCriticalSection (&fCritSec);
+                memset (&fCritSec_, 0, sizeof(fCritSec_));
+                ::InitializeCriticalSection (&fCritSec_);
 #endif
             }
             inline  CriticalSection::~CriticalSection()
             {
 #if qUseThreads_WindowsNative
-                IgnoreExceptionsForCall (::DeleteCriticalSection (&fCritSec));
+                IgnoreExceptionsForCall (::DeleteCriticalSection (&fCritSec_));
 #endif
             }
             inline  void    CriticalSection::Lock ()
             {
 #if     qUseThreads_WindowsNative
-                ::EnterCriticalSection (&fCritSec);
+                ::EnterCriticalSection (&fCritSec_);
 #elif       qUseThreads_StdCPlusPlus
                 fMutex_.lock ();
 #endif
@@ -42,7 +42,7 @@ namespace   Stroika {
             inline  void CriticalSection::Unlock()
             {
 #if     qUseThreads_WindowsNative
-                ::LeaveCriticalSection (&fCritSec);
+                ::LeaveCriticalSection (&fCritSec_);
 #elif       qUseThreads_StdCPlusPlus
                 fMutex_.unlock ();
 #endif
@@ -52,14 +52,14 @@ namespace   Stroika {
             //  class   AutoCriticalSection
             template    <typename LOCKTYPE>
             inline  AutoCriticalSectionT<LOCKTYPE>::AutoCriticalSectionT (LOCKTYPE& critSec)
-                : fCritSec (critSec)
+                : fCritSec_ (critSec)
             {
-                fCritSec.Lock ();
+                fCritSec_.Lock ();
             }
             template    <typename LOCKTYPE>
             inline  AutoCriticalSectionT<LOCKTYPE>::~AutoCriticalSectionT ()
             {
-                fCritSec.Unlock ();
+                fCritSec_.Unlock ();
             }
 
         }
