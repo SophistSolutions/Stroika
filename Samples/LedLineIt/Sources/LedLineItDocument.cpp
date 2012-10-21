@@ -77,7 +77,7 @@ public:
         m_ofn.lpTemplateName = m_lpszTemplateName = MAKEINTRESOURCE (kFileDialogAddOnID);
     }
 
-    override    BOOL OnInitDialog () {
+    virtual    BOOL OnInitDialog () override {
         inherited::OnInitDialog ();
         fCodePageComboBox.SubclassWindow (::GetDlgItem (GetSafeHwnd (), kFileDialog_EncodingComboBox));
         for (vector<CodePage>::const_iterator i = fCodePages.begin (); i != fCodePages.end (); ++i) {
@@ -122,14 +122,14 @@ namespace   {
             fMessage (message),
             fBreakCount (breakCount) {
         }
-        override    BOOL OnInitDialog () {
+        virtual    BOOL OnInitDialog () override {
             BOOL    result  =   CDialog::OnInitDialog();
             Led_CenterWindowInParent (m_hWnd);
             SetDlgItemText (kLineTooLongOnRead_Dialog_MessageFieldID, fMessage.c_str ());
             SetDlgItemInt (kLineTooLongOnRead_Dialog_BreakNumFieldID, fBreakCount);
             return (result);
         }
-        override    void    OnOK () {
+        virtual    void    OnOK () override {
             size_t  origBreakCount  =   fBreakCount;
             BOOL    trans   =   false;
             fBreakCount = GetDlgItemInt (kLineTooLongOnRead_Dialog_BreakNumFieldID, &trans);
@@ -212,7 +212,7 @@ LedLineItDocument::~LedLineItDocument ()
     AfxOleUnlockApp ();
 }
 
-void    LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     if (updateInfo.fRealContentUpdate) {
         SetModifiedFlag ();
@@ -349,11 +349,11 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             fBreakWidths (kMaxLineSize) {
         }
     public:
-        override    void    InternalizeFlavor_FILEGuessFormatsFromStartOfData (
+        virtual    void    InternalizeFlavor_FILEGuessFormatsFromStartOfData (
             Led_ClipFormat* suggestedClipFormat,
             CodePage* suggestedCodePage,
             const Byte* fileStart, const Byte* fileEnd
-        ) {
+        ) override {
             size_t  curLineSize =   0;
             size_t  maxLineSize =   0;
             for (const Byte* p = fileStart; p != fileEnd; ++p) {
@@ -379,12 +379,12 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             }
         }
 
-        override    bool    InternalizeFlavor_FILEDataRawBytes (
+        virtual    bool    InternalizeFlavor_FILEDataRawBytes (
             Led_ClipFormat* suggestedClipFormat,
             CodePage* suggestedCodePage,
             size_t from, size_t to,
             const void* rawBytes, size_t nRawBytes
-        ) {
+        ) override {
             Led_ClipFormat  cf  =   (suggestedClipFormat == NULL or * suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
             Require (cf == kTEXTClipFormat);
 

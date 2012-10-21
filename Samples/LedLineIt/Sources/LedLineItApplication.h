@@ -35,7 +35,7 @@ private:
     static  LedLineItApplication*   sThe;
 
 public:
-    override    BOOL    InitInstance ();
+    virtual    BOOL    InitInstance () override;
 
 #if     qIncludeBasicSpellcheckEngine
 public:
@@ -43,20 +43,16 @@ public:
 #endif
 
 public:
-#if     _MFC_VER >= 0x0700
-    override    void    WinHelpInternal (DWORD_PTR dwData, UINT nCmd = HELP_CONTEXT);
-#else
-    override    void    WinHelp (DWORD dwData, UINT nCmd = HELP_CONTEXT);
-#endif
+    virtual    void    WinHelpInternal (DWORD_PTR dwData, UINT nCmd = HELP_CONTEXT) override;
 
     // handle exceptions....
 public:
-    override    BOOL    PumpMessage ();
+    virtual    BOOL    PumpMessage () override;
 
-    nonvirtual  void    HandleMFCException (CException* e) throw ();
-    nonvirtual  void    HandleBadAllocException () throw ();
-    nonvirtual  void    HandleBadUserInputException () throw ();
-    nonvirtual  void    HandleUnknownException () throw ();
+    nonvirtual  void    HandleMFCException (CException* e) noexcept;
+    nonvirtual  void    HandleBadAllocException () noexcept;
+    nonvirtual  void    HandleBadUserInputException () noexcept;
+    nonvirtual  void    HandleUnknownException () noexcept;
 
 
 private:
@@ -102,10 +98,3 @@ private:
 
 
 #endif  /*__LedLineItApplication_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

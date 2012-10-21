@@ -31,10 +31,10 @@ using   namespace   Stroika::Frameworks::Led::Platform;
 #if     qSupportSyntaxColoring
 struct  LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
 protected:
-    override    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const {
+    virtual    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override{
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentHeight (from, to);
     }
-    override    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const {
+    virtual    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override {
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentBaseLine (from, to);
     }
 };
@@ -65,21 +65,21 @@ public:
     virtual ~LedLineItView ();
 
 protected:
-    override    void    OnInitialUpdate ();
+    virtual    void    OnInitialUpdate () override;
 
 #if     qSupportSyntaxColoring
 public:
     nonvirtual  void    ResetSyntaxColoringTable ();
 protected:
-    override    void    HookLosingTextStore ();
-    override    void    HookGainedNewTextStore ();
+    virtual    void    HookLosingTextStore () override;
+    virtual    void    HookGainedNewTextStore () override;
 #endif
 
 
 #if     qSupportSyntaxColoring
 protected:
-    override    vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to) const;
-    override    vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const;
+    virtual    vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to) const override;
+    virtual    vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const override;
 #endif
 
 public:
@@ -87,25 +87,25 @@ public:
     nonvirtual  void    SetCurUserLine (size_t newCurLine); // OK if bad line given
 
 public:
-    override    void    UpdateScrollBars ();
+    virtual    void    UpdateScrollBars () override;
 
 public:
-    override    Led_Distance    ComputeMaxHScrollPos () const;
+    virtual    Led_Distance    ComputeMaxHScrollPos () const override;
 private:
     mutable Led_Distance    fCachedLayoutWidth;
 
 public:
-    override    void    OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed);
+    virtual    void    OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
 
 protected:
-    override    const TabStopList&  GetTabStopList (size_t /*containingPos*/) const;
+    virtual    const TabStopList&  GetTabStopList (size_t /*containingPos*/) const override;
 protected:
-    override    void    TabletChangedMetrics ();
+    virtual    void    TabletChangedMetrics () override;
 private:
     SimpleTabStopList   fTabStopList;
 
 public:
-    override    void    DidUpdateText (const UpdateInfo& updateInfo) throw ();
+    virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
 public:
     nonvirtual  LedLineItDocument&      GetDocument () const;
@@ -114,7 +114,7 @@ public:
     afx_msg     void    OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
 
 protected:
-    override    BOOL    IsSelected (const CObject* pDocItem) const; // support for CView/OLE
+    virtual    BOOL    IsSelected (const CObject* pDocItem) const override; // support for CView/OLE
 
 public:
     afx_msg void    OnUpdateFontNameChangeCommand (CCmdUI* pCmdUI);
@@ -138,8 +138,8 @@ public:
 #endif
 
 protected:
-    override    SearchParameters    GetSearchParameters () const;
-    override    void                SetSearchParameters (const SearchParameters& sp);
+    virtual    SearchParameters    GetSearchParameters () const override;
+    virtual    void                SetSearchParameters (const SearchParameters& sp) override;
 
 protected:
     afx_msg void    OnSetFocus (CWnd* pOldWnd);
@@ -160,8 +160,8 @@ private:
 
 #ifdef _DEBUG
 public:
-    override    void    AssertValid () const;
-    override    void    Dump (CDumpContext& dc) const;
+    virtual    void    AssertValid () const override;
+    virtual    void    Dump (CDumpContext& dc) const override;
 #endif
 };
 
@@ -173,7 +173,7 @@ public:
 class   FontDlgWithNoColorNoStyles : public CFontDialog {
 public:
     FontDlgWithNoColorNoStyles (LOGFONT* lf);
-    override    BOOL    OnInitDialog ();
+    virtual    BOOL    OnInitDialog () override;
 };
 
 
@@ -200,10 +200,3 @@ inline  LedLineItDocument&  LedLineItView::GetDocument () const
 #endif
 
 #endif  /*__LedLineItView_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

@@ -68,7 +68,7 @@ public:
     }
 #if     qSupportStdFindDlg
 public:
-    override    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) {
+    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override {
         Led_StdDialogHelper_FindDialog  findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
         findDialog.fFindText = *findText;
@@ -88,7 +88,7 @@ public:
 #endif
 #if     qSupportStdReplaceDlg
 public:
-    override    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) {
+    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override {
         Led_StdDialogHelper_ReplaceDialog   replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
         replaceDialog.fFindText = *findText;
@@ -125,7 +125,7 @@ public:
 #endif
 #if     qSupportStdSpellCheckDlg
 public:
-    override    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) {
+    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>   delegator (callback);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator);
@@ -240,12 +240,12 @@ public:
         fOrigLine (origLine),
         fResultLine (0) {
     }
-    override    BOOL OnInitDialog () {
+    virtual    BOOL OnInitDialog () override {
         BOOL    result  =   CDialog::OnInitDialog();
         SetDlgItemInt (kGotoLine_Dialog_LineNumberEditFieldID, fOrigLine);
         return (result);
     }
-    override    void    OnOK () {
+    virtual    void    OnOK () override {
         BOOL    trans   =   false;
         fResultLine = GetDlgItemInt (kGotoLine_Dialog_LineNumberEditFieldID, &trans);
         if (not trans) {
@@ -484,7 +484,7 @@ void    LedLineItView::TabletChangedMetrics ()
 #endif
 }
 
-void    LedLineItView::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    LedLineItView::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     fCachedLayoutWidth = kBadDistance;

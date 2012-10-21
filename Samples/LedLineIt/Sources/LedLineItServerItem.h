@@ -24,8 +24,8 @@ public:
     nonvirtual  LedLineItDocument*  GetDocument () const;
 
 public:
-    override    BOOL OnDraw (CDC* pDC, CSize& rSize);
-    override    BOOL OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize);
+    virtual    BOOL OnDraw (CDC* pDC, CSize& rSize) override;
+    virtual    BOOL OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize) override;
 
 protected:
     virtual void Serialize (CArchive& ar);   // overridden for document i/o

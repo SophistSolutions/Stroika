@@ -70,7 +70,7 @@ public:
         m_strDocStrings = daStr;
     }
 
-    override    void    LoadTemplate () {
+    virtual    void    LoadTemplate () override {
         CMultiDocTemplate::LoadTemplate ();
 
         // Now go and fixup the font menu...
@@ -191,7 +191,7 @@ public:
     }
 
 public:
-    override    void    OnFileOpen () {
+    virtual    void    OnFileOpen () override {
         CString fileName;
         int codePage    =   0;
         if (LedLineItDocument::DoPromptOpenFileName (&fileName, &codePage)) {
@@ -200,7 +200,7 @@ public:
     }
 
 public:
-    override    BOOL DoPromptFileName(CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/) {
+    virtual    BOOL DoPromptFileName(CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/) override {
         Assert (false); // shouldn't be called - cuz we now override OnFileOpen () to avoid it...
         return false;
     }
@@ -249,7 +249,7 @@ public:
             throw;
         }
     }
-    override    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName) {
+    virtual    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName) override {
         return OpenDocumentFile (lpszFileName, kAutomaticallyGuessCodePage);
     }
 
@@ -407,7 +407,7 @@ BOOL LedLineItApplication::InitInstance ()
             }
 
         public:
-            override    bool    CheckUserSaysOKToUpdate () const {
+            virtual    bool    CheckUserSaysOKToUpdate () const override{
                 Options o;
                 if (o.GetCheckFileAssocsAtStartup ()) {
                     Led_StdDialogHelper_UpdateWin32FileAssocsDialog     dlg(::AfxGetResourceHandle (), ::GetActiveWindow ());
@@ -468,11 +468,7 @@ BOOL LedLineItApplication::InitInstance ()
     return true;
 }
 
-#if     _MFC_VER >= 0x0700
 void    LedLineItApplication::WinHelpInternal (DWORD_PTR dwData, UINT nCmd)
-#else
-void    LedLineItApplication::WinHelp (DWORD dwData, UINT nCmd)
-#endif
 {
     // get path of executable
     TCHAR directoryName[_MAX_PATH];
@@ -502,13 +498,13 @@ BOOL    LedLineItApplication::PumpMessage ()
     return true;
 }
 
-void    LedLineItApplication::HandleMFCException (CException* /*e*/) throw ()
+void    LedLineItApplication::HandleMFCException (CException* /*e*/) noexcept
 {
     // tmp hack for now...
     HandleUnknownException ();
 }
 
-void    LedLineItApplication::HandleBadAllocException () throw ()
+void    LedLineItApplication::HandleBadAllocException () noexcept
 {
     try {
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
@@ -519,7 +515,7 @@ void    LedLineItApplication::HandleBadAllocException () throw ()
     }
 }
 
-void    LedLineItApplication::HandleBadUserInputException () throw ()
+void    LedLineItApplication::HandleBadUserInputException () noexcept
 {
     try {
 #if     qPlatform_Windows
@@ -534,7 +530,7 @@ void    LedLineItApplication::HandleBadUserInputException () throw ()
     }
 }
 
-void    LedLineItApplication::HandleUnknownException () throw ()
+void    LedLineItApplication::HandleUnknownException () noexcept
 {
     try {
         CDialog errorDialog (kUnknownExceptionOnCmdDialogID);
@@ -572,7 +568,7 @@ void    LedLineItApplication::OnAppAbout ()
             inherited (hInstance, parentWnd) {
         }
     public:
-        override    BOOL    OnInitDialog () {
+        virtual    BOOL    OnInitDialog () override {
             BOOL    result  =   inherited::OnInitDialog ();
 
             // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
@@ -636,7 +632,7 @@ void    LedLineItApplication::OnAppAbout ()
             return (result);
         }
     public:
-        override    void    OnClickInInfoField () {
+        virtual    void    OnClickInInfoField () override {
             try {
                 Led_URLManager::Get ().Open ("mailto:info-led@sophists.com");
             }
@@ -646,7 +642,7 @@ void    LedLineItApplication::OnAppAbout ()
             inherited::OnClickInInfoField ();
         }
 
-        override    void    OnClickInLedWebPageField () {
+        virtual    void    OnClickInLedWebPageField () override {
             try {
                 Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/LedLineIt/", kAppName));
             }

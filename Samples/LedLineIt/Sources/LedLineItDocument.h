@@ -40,22 +40,22 @@ public:
     virtual ~LedLineItDocument();
 
 public:
-    override    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) throw ();
-    override    TextStore*  PeekAtTextStore () const;
+    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept override;
+    virtual    TextStore*  PeekAtTextStore () const override;
 
 public:
     nonvirtual  LedLineItServerItem* GetEmbeddedItem ();
 
 public:
-    override    BOOL    OnNewDocument ();
-    override    BOOL    OnOpenDocument (LPCTSTR lpszPathName);
-    override    void    Serialize (CArchive& ar);
+    virtual    BOOL    OnNewDocument () override;
+    virtual    BOOL    OnOpenDocument (LPCTSTR lpszPathName) override;
+    virtual    void    Serialize (CArchive& ar) override;
 
 protected:
-    override    COleServerItem* OnGetEmbeddedItem ();
+    virtual    COleServerItem* OnGetEmbeddedItem () override;
 
 public:
-    override    BOOL DoSave (LPCTSTR lpszPathName, BOOL bReplace);
+    virtual    BOOL DoSave (LPCTSTR lpszPathName, BOOL bReplace) override;
 
 
 public:
@@ -64,7 +64,7 @@ public:
 public:
     afx_msg     void    OnUpdateFileSave (CCmdUI* pCmdUI);
     afx_msg     void    OnFileSaveCopyAs ();
-    override    void    DeleteContents ();
+    virtual     void    DeleteContents () override;
 
 public:
     nonvirtual  TextStore&          GetTextStore ();
@@ -87,7 +87,7 @@ private:
 
 #if     qDebug
 public:
-    override    void    AssertValid () const;
+    virtual    void    AssertValid () const override;
 #endif
 
     // Generated message map functions
