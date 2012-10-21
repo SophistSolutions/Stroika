@@ -1476,7 +1476,7 @@ namespace   Stroika {
                 {
                     ASSERT_VALID (this);
 
-                    UINT nLen = GetLength();
+                    size_t nLen = GetLength();
                     Memory::SmallStackBuffer<Led_tChar> buf (nLen);
                     CopyOut (0, nLen, buf);
                     Memory::SmallStackBuffer<Led_tChar> buf2 (2 * nLen);
