@@ -461,7 +461,7 @@ namespace   Stroika {
             void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t> >& infoForMarkers)
             {
                 vector<pair<INCREMENTALMARKERINFO, size_t> > tmp;
-				tmp.reserve (infoForMarkers.size ());
+                tmp.reserve (infoForMarkers.size ());
                 for (typename vector<pair<MARKERINFO, size_t> >::const_iterator i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
                     tmp.push_back (pair<INCREMENTALMARKERINFO, size_t> (INCREMENTALMARKERINFO ((*i).first), (*i).second));
                 }

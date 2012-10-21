@@ -25,7 +25,7 @@
 // TODO:
 // @todo
 /// THIS MEANS ALMOST CERTAINLY MY BUG _ SO UNDERSTAND AND FIX...
-///		-- LGP 2012-10-20
+///     -- LGP 2012-10-20
 #if      _MSC_VER == _MS_VS_2k12_VER_
 #define qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug        1
 #else

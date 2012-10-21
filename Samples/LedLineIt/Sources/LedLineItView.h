@@ -31,7 +31,7 @@ using   namespace   Stroika::Frameworks::Led::Platform;
 #if     qSupportSyntaxColoring
 struct  LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
 protected:
-    virtual    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override{
+    virtual    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override {
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentHeight (from, to);
     }
     virtual    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override {

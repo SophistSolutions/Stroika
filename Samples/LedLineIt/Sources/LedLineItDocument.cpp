@@ -212,8 +212,7 @@ LedLineItDocument::~LedLineItDocument ()
     AfxOleUnlockApp ();
 }
 
-void    LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
-{
+void    LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
     if (updateInfo.fRealContentUpdate) {
         SetModifiedFlag ();
     }

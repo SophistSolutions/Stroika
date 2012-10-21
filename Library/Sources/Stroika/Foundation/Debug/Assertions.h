@@ -128,7 +128,7 @@ namespace   Stroika {
 
 
             namespace   Private {
-                void    _NoReturn_	Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);   // don't call directly - implementation detail...
+                void    _NoReturn_  Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);   // don't call directly - implementation detail...
             }
 
 #if     !defined (__Doxygen__)

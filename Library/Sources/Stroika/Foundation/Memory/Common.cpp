@@ -79,7 +79,7 @@ using   Debug::TraceContextBumper;
 //#define   qOverrideOpNew_EXTRA_LEAK_DETECTION 1
 #if     qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug && !defined (qOverrideOpNew_EXTRA_LEAK_DETECTION)
 #define qOverrideOpNew_EXTRA_LEAK_DETECTION 0
-#endif 
+#endif
 #ifndef qOverrideOpNew_EXTRA_LEAK_DETECTION
 #define qOverrideOpNew_EXTRA_LEAK_DETECTION 1
 #endif

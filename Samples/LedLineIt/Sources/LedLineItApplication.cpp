@@ -407,7 +407,7 @@ BOOL LedLineItApplication::InitInstance ()
             }
 
         public:
-            virtual    bool    CheckUserSaysOKToUpdate () const override{
+            virtual    bool    CheckUserSaysOKToUpdate () const override {
                 Options o;
                 if (o.GetCheckFileAssocsAtStartup ()) {
                     Led_StdDialogHelper_UpdateWin32FileAssocsDialog     dlg(::AfxGetResourceHandle (), ::GetActiveWindow ());
@@ -498,14 +498,12 @@ BOOL    LedLineItApplication::PumpMessage ()
     return true;
 }
 
-void    LedLineItApplication::HandleMFCException (CException* /*e*/) noexcept
-{
+void    LedLineItApplication::HandleMFCException (CException* /*e*/) noexcept {
     // tmp hack for now...
     HandleUnknownException ();
 }
 
-void    LedLineItApplication::HandleBadAllocException () noexcept
-{
+void    LedLineItApplication::HandleBadAllocException () noexcept {
     try {
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
         errorDialog.DoModal ();
@@ -515,8 +513,7 @@ void    LedLineItApplication::HandleBadAllocException () noexcept
     }
 }
 
-void    LedLineItApplication::HandleBadUserInputException () noexcept
-{
+void    LedLineItApplication::HandleBadUserInputException () noexcept {
     try {
 #if     qPlatform_Windows
         CDialog errorDialog (kBadUserInputExceptionOnCmdDialogID);
@@ -530,8 +527,7 @@ void    LedLineItApplication::HandleBadUserInputException () noexcept
     }
 }
 
-void    LedLineItApplication::HandleUnknownException () noexcept
-{
+void    LedLineItApplication::HandleUnknownException () noexcept {
     try {
         CDialog errorDialog (kUnknownExceptionOnCmdDialogID);
         errorDialog.DoModal ();
