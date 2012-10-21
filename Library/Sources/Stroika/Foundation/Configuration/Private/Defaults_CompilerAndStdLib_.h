@@ -130,12 +130,17 @@
 #ifndef qCompilerAndStdLib_Supports_ConstructorDelegation
 
 #if     defined (__GNUC__)
-// not sure what version will/does support this
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   0
-#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   0
+
+#define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
+
+#elif   defined (_MSC_VER)
+
+#define qCompilerAndStdLib_Supports_ConstructorDelegation   (_MSC_VER > _MS_VS_2k12_VER_)
+
 #else
+
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   1
+
 #endif
 
 #endif
@@ -688,6 +693,15 @@
 /*
  *   Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
  *   This can allow the compiler to occasionally better optimize, but mostly avoid spurrious warnings.
+ *
+ *	From http://msdn.microsoft.com/en-us/library/k6ktzx3s(v=vs.80).aspx
+ *		This __declspec attribute tells the compiler that a function does not return. As a consequence,
+ *		the compiler knows that the code following a call to a __declspec(noreturn) function is unreachable.
+ *		
+ *		If the compiler finds a function with a control path that does not return a value, 
+ *		it generates a warning (C4715) or error message (C2202). If the control path cannot
+ *		be reached due to a function that never returns, you can use __declspec(noreturn) to prevent
+ *		this warning or error.
  */
 #if     !defined (_NoReturn_)
 
