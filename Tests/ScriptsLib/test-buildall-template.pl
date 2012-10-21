@@ -3,7 +3,8 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-require "../../../../Library/Projects/VisualStudio.Net-2010/SetupBuildCommonVars.pl";
+require "../../../../ScriptsLib/ConfigurationReader.pl";
+require "../../../../Library/Projects/" . GetProjectPlatformSubdir () . "/SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 
@@ -17,6 +18,7 @@ use IPC::Open3;
 use Symbol qw(gensym);
 use IO::File;
 local *CATCHERR = IO::File->new_tmpfile;
+
 
 sub RunAndPrint
 {

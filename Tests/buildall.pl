@@ -1,12 +1,14 @@
 #!/usr/bin/perl 
 
+require "../ScriptsLib/ConfigurationReader.pl";
+require ("ScriptsLib/TestsList.pl");
+
 
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-require ("ScriptsLib/TestsList.pl");
 
 print ("Building Tests...\n");
 
@@ -45,7 +47,8 @@ else {
 	use Cwd;
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
-	chdir ("Projects/VisualStudio.Net-2010");
+    	my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
+	chdir ($useProjectDir);
 		system ("perl BuildProjectsFiles.pl");
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
