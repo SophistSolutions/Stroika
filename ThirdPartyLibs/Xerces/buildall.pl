@@ -1,6 +1,5 @@
 #!/usr/bin/perl 
 
-require "../../ScriptsLib/ConfigurationReader.pl";
 
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
@@ -39,6 +38,7 @@ if (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp") {
 	exit (0);
 }
 
+require "../../ScriptsLib/ConfigurationReader.pl";
 print ("Extracting Xerces...\n");
 
 system ("rm -rf $trgDirName CURRENT");
