@@ -1458,13 +1458,13 @@ BOOL    LedItApplication::PumpMessage ()
     return true;
 }
 
-void    LedItApplication::HandleMFCException (CException* /*e*/) throw ()
+void    LedItApplication::HandleMFCException (CException* /*e*/) noexcept
 {
     // tmp hack for now...
     HandleUnknownException ();
 }
 
-void    LedItApplication::HandleHRESULTException (HRESULT hr) throw ()
+void    LedItApplication::HandleHRESULTException (HRESULT hr) noexcept
 {
     // tmp hack for now...
     HandleUnknownException ();
@@ -1615,7 +1615,7 @@ void    LedItApplication::OnChooseDefaultFontCommand ()
 #endif
 }
 
-void    LedItApplication::HandleBadAllocException () throw ()
+void    LedItApplication::HandleBadAllocException () noexcept
 {
     try {
 #if     qPlatform_Windows
@@ -1642,7 +1642,7 @@ void    LedItApplication::HandleBadAllocException () throw ()
     }
 }
 
-void    LedItApplication::HandleBadUserInputException () throw ()
+void    LedItApplication::HandleBadUserInputException () noexcept
 {
     try {
 #if     qPlatform_MacOS
@@ -1659,7 +1659,7 @@ void    LedItApplication::HandleBadUserInputException () throw ()
     }
 }
 
-void    LedItApplication::HandleUnknownException () throw ()
+void    LedItApplication::HandleUnknownException () noexcept
 {
     try {
 #if     qPlatform_MacOS

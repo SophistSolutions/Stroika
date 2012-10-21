@@ -121,8 +121,8 @@ public:
 public:
     virtual    BOOL    PumpMessage () override;
 
-    nonvirtual  void    HandleMFCException (CException* e) throw ();
-    nonvirtual  void    HandleHRESULTException (HRESULT hr) throw ();
+    nonvirtual  void    HandleMFCException (CException* e) noexcept;
+    nonvirtual  void    HandleHRESULTException (HRESULT hr) noexcept;
 #if 0
 public:
     virtual    BOOL    OnIdle (LONG lCount) override;
@@ -134,7 +134,7 @@ private:
     COleTemplateServer fOleTemplateServer;
 
 public:
-    virtual    BOOL ProcessShellCommand (CCommandLineInfo& rCmdInfo) override;
+    virtual    BOOL ProcessShellCommand (CCommandLineInfo& rCmdInfo);
 
 protected:
     afx_msg void    OnAppAbout ();
@@ -152,9 +152,9 @@ protected:
 
     // handle exceptions....
 public:
-    nonvirtual  void    HandleBadAllocException () throw ();
-    nonvirtual  void    HandleBadUserInputException () throw ();
-    nonvirtual  void    HandleUnknownException () throw ();
+    nonvirtual  void    HandleBadAllocException () noexcept;
+    nonvirtual  void    HandleBadUserInputException () noexcept;
+    nonvirtual  void    HandleUnknownException () noexcept;
 
 public:
     nonvirtual  void    DoAboutBox ();

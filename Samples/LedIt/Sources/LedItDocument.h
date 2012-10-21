@@ -56,7 +56,7 @@ public:
     virtual ~LedItDocument();
 
 public:
-    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) override throw ();
+    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept override;
     virtual    TextStore*  PeekAtTextStore () const override;
 
 #if     qPlatform_MacOS

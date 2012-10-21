@@ -1,6 +1,7 @@
 #!/usr/bin/perl 
 
-require "../Scripts/buildallHelpers.pl";
+require "../../ScriptsLib/ConfigurationReader.pl";
+require "../../ScriptsLib/BuildUtils.pl";
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
@@ -10,11 +11,13 @@ my @kConfigurations = (
 					);
 
 
+my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
+
 print("Building Samples/LedIt...\n");
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd Projects/VisualStudio.Net-2010; msbuild.exe $extraArgs LedIt.sln /p:$curConfig /target:$useBld");
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs LedIt.sln /p:$curConfig /target:$useBld");
 	}
 }

@@ -315,7 +315,7 @@ LedItDocument::~LedItDocument ()
 #endif
 }
 
-void    LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) throw ()
+void    LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     if (updateInfo.fRealContentUpdate) {
 #if     qPlatform_MacOS
