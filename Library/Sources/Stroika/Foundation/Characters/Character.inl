@@ -90,6 +90,10 @@ namespace   Stroika {
             {
                 return !!iswpunct (fCharacterCode_);
             }
+			inline  bool    Character::IsControl () const
+            {
+                return !!iswcntrl (fCharacterCode_);
+            }
             inline  Character   Character::ToLowerCase () const
             {
                 // Cannot find good spec on towlower/towupper, so not sure this cehck is necessary

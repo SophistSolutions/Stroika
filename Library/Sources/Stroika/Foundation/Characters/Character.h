@@ -87,6 +87,7 @@ namespace   Stroika {
                 nonvirtual  bool    IsLowerCase () const;
                 nonvirtual  bool    IsAlphaNumeric () const;
                 nonvirtual  bool    IsPunctuation () const;
+                nonvirtual  bool    IsControl () const;
 
             public:
                 /*
