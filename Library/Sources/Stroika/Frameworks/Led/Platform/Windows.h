@@ -726,7 +726,7 @@ namespace   Stroika {
                 {
 #if     qWideCharacters && !qSDK_UNICODE
                     {
-                        CodePage    useCodePage =   Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (NULL)));
+						CodePage    useCodePage =   Characters::Platform::Windows::Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (NULL)));
                         char        ccc =   nChar;
                         wchar_t     outC    =   0;
                         int xx  =   ::MultiByteToWideChar (useCodePage, 0, &ccc, 1, &outC, 1);
