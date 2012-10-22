@@ -9,7 +9,8 @@
 #include    <afxwin.h>
 #include    <afxole.h>
 
-#include    "Stroika/Frameworks/Led/CodePage.h"
+#include    "Stroika/Foundation/Characters/CodePage.h"
+
 #include    "Stroika/Frameworks/Led/Command.h"
 #include    "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
 
@@ -18,11 +19,13 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks::Led;
 
 
 
-const   CodePage    kDefaultNewDocCodePage  =   CodePagesInstalled::IsCodePageAvailable (kCodePage_UTF8) ? kCodePage_UTF8 : CodePagesInstalled::GetDefaultCodePage ();
+const   CodePage    kDefaultNewDocCodePage  =   CodePagesInstalled ().IsCodePageAvailable (kCodePage_UTF8) ? kCodePage_UTF8 : GetDefaultSDKCodePage ();
 
 
 const   CodePage    kAutomaticallyGuessCodePage =   -2; // I HOPE this # doesn't conflict with any legit ones!!!

@@ -6,6 +6,7 @@
 #include    <cctype>
 #include    <cstdarg>
 
+#include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/StringUtils.h"
 #include    "../../Foundation/Execution/Exceptions.h"
@@ -30,8 +31,6 @@
 #include    <fcntl.h>
 #endif
 
-#include    "CodePage.h"
-
 #include    "Support.h"
 
 #if     qUseInternetConfig
@@ -50,6 +49,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 

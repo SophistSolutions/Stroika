@@ -3,7 +3,7 @@
  */
 #include    "../../../Foundation/StroikaPreComp.h"
 
-#include    "../CodePage.h"
+#include    "../../../Foundation/Characters/CodePage.h"
 
 #include    "StyledTextIO_STYLText.h"
 

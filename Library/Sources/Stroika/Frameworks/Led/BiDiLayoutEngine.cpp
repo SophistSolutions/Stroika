@@ -5,7 +5,7 @@
 
 #include    <algorithm>
 
-#include    "CodePage.h"
+#include    "../../Foundation/Characters/CodePage.h"
 
 #include    "BiDiLayoutEngine.h"
 

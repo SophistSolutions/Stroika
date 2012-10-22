@@ -15,9 +15,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -156,9 +153,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Config.h">

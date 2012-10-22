@@ -9,6 +9,7 @@
 #include    "../Characters/Format.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Common.h"
+#include	"../Execution/CriticalSection.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Memory/SmallStackBuffer.h"
 
@@ -1625,52 +1626,38 @@ void    UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt
  ********************************************************************************
  */
 namespace   {
-    set<CodePage>   sCodePages_;
-}
-
 #if     qPlatform_Windows
-namespace   {
+	shared_ptr<set<CodePage>>	s_EnumCodePagesProc_Accumulator_;
     BOOL FAR    PASCAL EnumCodePagesProc_ (LPTSTR lpCodePageString)
-    {
-        sCodePages_.insert (_ttoi (lpCodePageString));
-        return (1);
-    }
-}
+		{
+			s_EnumCodePagesProc_Accumulator_->insert (_ttoi (lpCodePageString));
+			return (1);
+		}
 #endif
-
-vector<CodePage>    CodePagesInstalled::GetAll ()
-{
-    if (sCodePages_.empty ()) {
-        Init_ ();
-    }
-    return vector<CodePage> (sCodePages_.begin (), sCodePages_.end ());
 }
 
-void    CodePagesInstalled::Init_ ()
+CodePagesInstalled::CodePagesInstalled ()
+	: fCodePages_ ()
 {
-    Assert (sCodePages_.size () == 0);
+    Assert (fCodePages_.size () == 0);
+
+	shared_ptr<set<CodePage>>	accum (new set<CodePage> ());
 #if     qPlatform_Windows
-    ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);
+	static	Execution::CriticalSection	sCritSec_;
+	{
+		Execution::AutoCriticalSection enterCritSection (sCritSec_);
+		Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
+		s_EnumCodePagesProc_Accumulator_ = accum;
+		::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);
+		s_EnumCodePagesProc_Accumulator_.reset ();
+	}
 #endif
-    // Add these 'fake' code pages - which I believe are always available, but never listed by this procedure
-    AddIfNotPresent_ (kCodePage_UNICODE_WIDE);
-    AddIfNotPresent_ (kCodePage_UNICODE_WIDE_BIGENDIAN);
-    AddIfNotPresent_ (kCodePage_UTF8);          // cuz even if OS (e.g. Win98) doesn't support, we have our own baked in code
+    // Add these 'fake' code pages - which I believe are always available, but never listed by EnumSystemCodePages()
+    accum->insert (kCodePage_UNICODE_WIDE);
+    accum->insert (kCodePage_UNICODE_WIDE_BIGENDIAN);
+    accum->insert (kCodePage_UTF8);
+    fCodePages_ = vector<CodePage> (accum->begin (), accum->end ());
 }
-
-void    CodePagesInstalled::AddIfNotPresent_ (CodePage cp)
-{
-    sCodePages_.insert (cp);
-}
-
-bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp)
-{
-    if (sCodePages_.empty ()) {
-        Init_ ();
-    }
-    return sCodePages_.find (cp) != sCodePages_.end ();
-}
-
 
 
 
@@ -1751,6 +1738,90 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
 }
 
 
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** CodePagePrettyNameMapper ************************
+ ********************************************************************************
+ */
+CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::sCodePageNames_    =   CodePagePrettyNameMapper::MakeDefaultCodePageNames ();
+
+CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::MakeDefaultCodePageNames ()
+{
+    CodePageNames   codePageNames;
+    codePageNames.fUNICODE_WIDE             =   L"UNICODE {wide characters}";
+    codePageNames.fUNICODE_WIDE_BIGENDIAN   =   L"UNICODE {wide characters - big endian}";
+    codePageNames.fANSI                     =   L"ANSI (1252)";
+    codePageNames.fMAC                      =   L"MAC (2)";
+    codePageNames.fPC                       =   L"IBM PC United States code page (437)";
+    codePageNames.fSJIS                     =   L"Japanese SJIS {932}";
+    codePageNames.fUTF7                     =   L"UNICODE {UTF-7}";
+    codePageNames.fUTF8                     =   L"UNICODE {UTF-8}";
+    codePageNames.f850                      =   L"Latin I - MS-DOS Multilingual (850)";
+    codePageNames.f851                      =   L"Latin II - MS-DOS Slavic (850)";
+    codePageNames.f866                      =   L"Russian - MS-DOS (866)";
+    codePageNames.f936                      =   L"Chinese {Simplfied} (936)";
+    codePageNames.f949                      =   L"Korean (949)";
+    codePageNames.f950                      =   L"Chinese {Traditional} (950)";
+    codePageNames.f1250                     =   L"Eastern European Windows (1250)";
+    codePageNames.f1251                     =   L"Cyrilic (1251)";
+    codePageNames.f10000                    =   L"Roman {Macintosh} (10000)";
+    codePageNames.f10001                    =   L"Japanese {Macintosh} (10001)";
+    codePageNames.f50220                    =   L"Japanese JIS (50220)";
+    return codePageNames;
+}
+
+wstring  CodePagePrettyNameMapper::GetName (CodePage cp)
+{
+    switch (cp) {
+        case    kCodePage_UNICODE_WIDE:
+            return sCodePageNames_.fUNICODE_WIDE;
+        case    kCodePage_UNICODE_WIDE_BIGENDIAN:
+            return sCodePageNames_.fUNICODE_WIDE_BIGENDIAN;
+        case    kCodePage_ANSI:
+            return sCodePageNames_.fANSI;
+        case    kCodePage_MAC:
+            return sCodePageNames_.fMAC;
+        case    kCodePage_PC:
+            return sCodePageNames_.fPC;
+        case    kCodePage_SJIS:
+            return sCodePageNames_.fSJIS;
+        case    kCodePage_UTF7:
+            return sCodePageNames_.fUTF7;
+        case    kCodePage_UTF8:
+            return sCodePageNames_.fUTF8;
+        case    850:
+            return sCodePageNames_.f850;
+        case    851:
+            return sCodePageNames_.f851;
+        case    866:
+            return sCodePageNames_.f866;
+        case    936:
+            return sCodePageNames_.f936;
+        case    949:
+            return sCodePageNames_.f949;
+        case    950:
+            return sCodePageNames_.f950;
+        case    1250:
+            return sCodePageNames_.f1250;
+        case    1251:
+            return sCodePageNames_.f1251;
+        case    10000:
+            return sCodePageNames_.f10000;
+        case    10001:
+            return sCodePageNames_.f10001;
+        case    50220:
+            return sCodePageNames_.f50220;
+        default: {
+                return Characters::Format (L"%d", cp);
+            }
+    }
+}
 
 
 

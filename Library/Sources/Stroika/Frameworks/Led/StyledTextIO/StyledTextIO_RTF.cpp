@@ -7,6 +7,11 @@
 #include    <climits>
 #include    <cstdio>        // for a couple sprintf() calls - could pretty easily be avoided
 
+#include    "../../../Foundation/Characters/CodePage.h"
+#if     qPlatform_Windows
+#include    "../../../Foundation/Characters/Platform/Windows/CodePage.h"
+#endif
+
 #include    "../../../Foundation/Characters/String.h"
 #include    "../../../Foundation/Characters/StringUtils.h"
 
@@ -17,7 +22,6 @@
 #pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #endif
 
-#include    "../CodePage.h"
 #include    "../Support.h"
 
 #include    "StyledTextIO_RTF.h"
@@ -50,6 +54,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 using   namespace   Stroika::Frameworks::Led::StyledTextIO;
@@ -1370,8 +1376,8 @@ SinkStreamDestination::RowInfo::RowInfo ():
  */
 StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& reader):
     fReader (reader),
-    fDocumentCharacterSet (kCodePage_ANSI),                 // ANSI default, according to RTF spec
-    fCurrentInputCharSetEncoding (kCodePage_ANSI),
+    fDocumentCharacterSet (Characters::kCodePage_ANSI),                 // ANSI default, according to RTF spec
+    fCurrentInputCharSetEncoding (Characters::kCodePage_ANSI),
 #if     qWideCharacters
     //fMultiByteInputCharBuf (),
 #else
@@ -3985,7 +3991,7 @@ void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, con
                 }
                 if (fte->fCharSet != -1) {
                     // Not sure what I should do if Win32CharSetToCodePage returns zero? -- LGP 2002-12-08
-                    CodePage    cp  =   Win32CharSetToCodePage (fte->fCharSet);
+					CodePage    cp  =   Platform::Windows::Win32CharSetToCodePage (fte->fCharSet);
                     if (cp != 0) {
                         readerContext.GetCurrentGroupContext ()->fCurrentCodePage = cp;
                     }

@@ -17,10 +17,10 @@
 
 #include    <Windows.h>
 
+#include    "../../../Foundation/Characters/CodePage.h"
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "../CodePage.h"
 #include    "../TextInteractor.h"
 
 

@@ -13,9 +13,9 @@
 #include    <TextEdit.h>        // for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
+#include    "../../../Foundation/Characters/CodePage.h"
 #include    "../../../Foundation/Characters/String.h"
 
-#include    "../CodePage.h"
 #include    "../StyledTextEmbeddedObjects.h"
 
 #include    "StyledTextIO_LedNative.h"
@@ -23,6 +23,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 using   namespace   Stroika::Frameworks::Led::StyledTextIO;

@@ -5,7 +5,9 @@
 
 #include    <cctype>
 
-#include    "CodePage.h"
+#include    "../../Foundation/Characters/Character.h"
+#include    "../../Foundation/Characters/CodePage.h"
+
 #include    "Config.h"
 
 #if     qPlatform_MacOS
@@ -20,6 +22,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 
@@ -169,7 +172,7 @@ inline  bool    IsJapaneseBOLChar (wchar_t c)
 {
     char    mbyteChars[2];
     size_t  nBytesInThisChar    =   2;
-    CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    CodePageConverter (Characters::kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0;   // if No SJIS code page, not much we can do!
@@ -180,7 +183,7 @@ inline  bool    IsJapaneseEOLChar (wchar_t c)
 {
     char    mbyteChars[2];
     size_t  nBytesInThisChar    =   2;
-    CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    CodePageConverter (Characters::kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0;   // if No SJIS code page, not much we can do!
@@ -191,7 +194,7 @@ inline  unsigned    GetJapaneseKutenRow (wchar_t c)
 {
     char    mbyteChars[2];
     size_t  nBytesInThisChar    =   2;
-    CodePageConverter (kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    CodePageConverter (Characters::kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0;   // if No SJIS code page, not much we can do!
@@ -475,7 +478,7 @@ TextBreaks_Basic::CharacterClasses  TextBreaks_Basic::CharToCharacterClass (cons
             break;
     }
 
-    if (not CharacterProperties::IsPunct (c)) {
+    if (not Character (c).IsPunctuation ()) {
         return eWordClass;
     }
 

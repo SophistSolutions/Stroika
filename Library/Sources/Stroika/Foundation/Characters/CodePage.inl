@@ -137,6 +137,16 @@ namespace   Stroika {
 
 
 
+			//	class   CodePagesInstalled
+			inline	vector<CodePage>    CodePagesInstalled::GetAll ()
+			{
+				return fCodePages_;
+			}
+			inline	bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+			{
+				return (std::find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
+			}
+
 
 
 

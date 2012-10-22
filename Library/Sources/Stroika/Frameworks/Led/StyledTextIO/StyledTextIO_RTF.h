@@ -17,7 +17,8 @@
 #include    <memory>
 #include    <vector>
 
-#include    "../CodePage.h"
+#include    "../../../Foundation/Characters/CodePage.h"
+
 #include    "../Support.h"
 
 #include    "StyledTextIO.h"

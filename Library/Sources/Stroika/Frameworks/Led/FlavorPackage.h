@@ -17,7 +17,8 @@
 #include    <map>
 #include    <vector>
 
-#include    "CodePage.h"
+#include    "../../Foundation/Characters/CodePage.h"
+
 #include    "Command.h"
 #include    "TextImager.h"
 
@@ -27,7 +28,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Led {
 
-
+			using	Foundation::Characters::CodePage;
 
             class   ReaderFlavorPackage;
             class   WriterFlavorPackage;

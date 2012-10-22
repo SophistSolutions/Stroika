@@ -5,6 +5,8 @@
 
 #include    <cctype>
 
+#include    "../../Foundation/Characters/Character.h"
+#include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/Format.h"
 
@@ -14,7 +16,6 @@
 #pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #endif
 
-#include    "CodePage.h"
 #include    "SimpleTextStore.h"
 #include    "StyledTextEmbeddedObjects.h"
 
@@ -22,9 +23,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 
-
-using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 using   namespace   Stroika::Frameworks::Led::StyledTextIO;
@@ -4281,7 +4281,7 @@ Led_Distance    WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) cons
         // Throw away trailing space characters
         while (rowStart < rowEnd) {
             size_t  i   =   rowEnd - rowStart - 1;
-            if (CharacterProperties::IsSpace (buf[i])) {
+            if (Character (buf[i]).IsWhitespace ()) {
                 rowEnd--;
             }
             else {

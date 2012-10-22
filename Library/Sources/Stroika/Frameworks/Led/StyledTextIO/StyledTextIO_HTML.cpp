@@ -6,6 +6,7 @@
 #include    <cctype>
 #include    <cstdio>    // for sprintf()
 
+#include    "../../../Foundation/Characters/CodePage.h"
 #include    "../../../Foundation/Characters/StringUtils.h"
 
 #include    "../Config.h"
@@ -14,18 +15,17 @@
 #pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #endif
 
-#include    "../CodePage.h"
 #include    "../StyledTextEmbeddedObjects.h"
 
 #include    "StyledTextIO_HTML.h"
 
 
-using   namespace   Stroika::Foundation;
-
 
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 using   namespace   Stroika::Frameworks::Led::StyledTextIO;

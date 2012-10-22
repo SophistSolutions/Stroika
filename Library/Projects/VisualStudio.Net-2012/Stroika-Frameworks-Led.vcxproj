@@ -79,7 +79,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\GDI.cpp" />
@@ -126,7 +125,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Command.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Config.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.h" />

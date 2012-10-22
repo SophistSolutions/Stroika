@@ -7,19 +7,19 @@
 #include    <cstdio>
 #include    <set>
 
+#include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
-#include    "CodePage.h"
 #include    "GDI.h"
 
 
 
-using   namespace   Stroika::Foundation;
-
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 
@@ -173,10 +173,10 @@ inline  GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDep
 inline  bool    CodePageBetterOffUsingWideCharVersion (UINT codePage)
 {
     switch (codePage) {
-        case    kCodePage_SJIS:
-        case    kCodePage_Korean:
-        case    kCodePage_GB2312:
-        case    kCodePage_BIG5:
+		case    Characters::kCodePage_SJIS:
+        case    Characters::kCodePage_Korean:
+        case    Characters::kCodePage_GB2312:
+        case    Characters::kCodePage_BIG5:
             return true;
         default:
             return false;
@@ -218,7 +218,7 @@ inline  void    Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Le
         }
         return;
     }
-    UINT    codePage    =   Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
+    UINT    codePage    =   Platform::Windows::Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
     int nChars2 =   ::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars * 2, nullptr, nullptr);
     Assert (lpnFit == nullptr); // cuz we don't support handling/mapping this # back not needed right now - LGP 980422
     Memory::SmallStackBuffer<int>   tmpAlpDxArray (nChars2);
@@ -241,7 +241,7 @@ inline  void    Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Le
 #if     qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
 inline  void    Win32_GetTextExtentPoint_Win95WorkAround (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
 {
-    UINT    codePage    =   Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
+    UINT    codePage    =   Platform::Windows::Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
     if (CodePageBetterOffUsingWideCharVersion (codePage)) {
         Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
         return;
@@ -254,7 +254,7 @@ inline  void    Win32_GetTextExtentPoint_Win95WorkAround (HDC hdc, const Led_tCh
 #if     qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
 inline  void    Win32_TextOut_Win95WorkAround (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
 {
-    UINT    codePage    =   Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
+    UINT    codePage    =   Platform::Windows::Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
     if (CodePageBetterOffUsingWideCharVersion (codePage)) {
         Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
         return;

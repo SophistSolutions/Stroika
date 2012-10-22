@@ -6,10 +6,10 @@
 #include    <cmath>
 #include    <cctype>
 
+#include    "../../Foundation/Characters/Character.h"
+#include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 #include    "../../Foundation/IO/FileSystem/FileUtils.h"
-
-#include    "CodePage.h"
 
 #include    "SpellCheckEngine_Basic.h"
 
@@ -18,6 +18,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 
@@ -354,7 +356,7 @@ bool    SpellCheckEngine_Basic::OtherStringToIgnore_AllPunctuation (const Led_tS
 {
     for (size_t i = 0; i < checkWord.length (); ++i) {
         Led_tChar   c   =   checkWord[i];
-        if (not CharacterProperties::IsPunct (c)) {
+        if (not Character (c).IsPunctuation ()) {
             return false;
         }
     }
@@ -368,7 +370,7 @@ bool    SpellCheckEngine_Basic::OtherStringToIgnore_Number (const Led_tString& c
         // at least for English - we could tighten up the IsPunct call to just c==',' or c=='.' Not sure enough about
         // other languages, so don't bother about this. Anyhow - stuff that is all punctuation and/or digits
         // should probably be ignored anyhow... LGP 2003-06-25
-        if (not (CharacterProperties::IsPunct (c) or CharacterProperties::IsDigit (c))) {
+        if (not (Character (c).IsPunctuation () or Character (c).IsDigit ())) {
             return false;
         }
     }
@@ -441,13 +443,13 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
             bool    capitalize  =   false;
             bool    allCaps     =   false;
             {
-                if (CharacterProperties::IsAlpha (misspelledWord[0]) and CharacterProperties::IsAlpha (topSug[0])) {
+                if (Character (misspelledWord[0]).IsAlphabetic () and Character (topSug[0]).IsAlphabetic ()) {
                     if (isupper (misspelledWord[0]) and not isupper (topSug[0])) {
                         capitalize = true;
                     }
                 }
                 for (size_t i = 0; i < misspelledWord.length (); ++i) {
-                    if (CharacterProperties::IsAlpha (misspelledWord[i])) {
+                    if (Character (misspelledWord[i]).IsAlphabetic ()) {
                         if (isupper (misspelledWord[i])) {
                             allCaps = true;
                         }
@@ -463,7 +465,7 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
                 Led_tString newWord     =   topSug;
                 {
                     for (size_t i = 0; i < newWord.length (); ++i) {
-                        if (CharacterProperties::IsAlpha (newWord[i])) {
+                        if (Character (newWord[i]).IsAlphabetic ()) {
                             newWord[i] = toupper (newWord[i]);
                         }
                     }
@@ -475,7 +477,7 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
             else if (capitalize) {
                 Led_tString newWord     =   topSug;
                 {
-                    if (CharacterProperties::IsAlpha (newWord[0])) {
+                    if (Character (newWord[0]).IsAlphabetic ()) {
                         newWord[0] = toupper (newWord[0]);
                     }
                 }

@@ -601,7 +601,7 @@ bool    LedLineItDocument::DoPromptOpenFileName (CString* fileName, CodePage* co
 
 bool    LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage)
 {
-    vector<CodePage>    codePages   =   CodePagesInstalled::GetAll ();
+    vector<CodePage>    codePages   =   CodePagesInstalled ().GetAll ();
 #if     qDebug
     {
         // We use these magic numbers internally here - just assure they don't conflict...

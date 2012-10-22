@@ -3,6 +3,7 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/IO/FileSystem/FileUtils.h"
 
 #include    "Config.h"
@@ -21,8 +22,6 @@
 #include    <unistd.h>
 #endif
 
-
-#include    "CodePage.h"
 #include    "Marker.h"
 #include    "TextStore.h"
 
@@ -31,11 +30,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 
-
-
-
-using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 

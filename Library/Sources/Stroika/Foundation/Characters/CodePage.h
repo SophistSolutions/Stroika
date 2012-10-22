@@ -21,6 +21,7 @@
 
 
 
+
 /*
  *  TODO:
  *
@@ -246,23 +247,24 @@ namespace   Stroika {
                         <p>Helper class to check what code pages are installed on a given machine.</p>
             */
             class   CodePagesInstalled {
+			public:
+				CodePagesInstalled ();
             public:
                 /*
                 @METHOD:        CodePagesInstalled::GetAll
                 @DESCRIPTION:   <p>Returns a list of all code pages installed on the system.
                             This list is returned in sorted order.</p>
                 */
-                static  vector<CodePage>    GetAll ();
+                vector<CodePage>    GetAll ();
 
                 /*
                 @METHOD:        CodePagesInstalled::IsCodePageAvailable
                 @DESCRIPTION:   <p>Checks if the given code page is installed.</p>
                 */
-                static  bool                IsCodePageAvailable (CodePage cp);
-
-            private:
-                static  void    Init_ ();
-                static  void    AddIfNotPresent_ (CodePage cp);
+                bool                IsCodePageAvailable (CodePage cp);
+			
+			private:
+				vector<CodePage>	fCodePages_;
             };
 
 
@@ -290,6 +292,53 @@ namespace   Stroika {
                             </p>
                 */
                 nonvirtual  CodePage    Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
+            };
+
+
+
+
+            /*
+            @CLASS:         CodePagePrettyNameMapper
+            @DESCRIPTION:   <p>Code to map numeric code pages to symbolic user-interface appropriate names.</p>
+            */
+            class   CodePagePrettyNameMapper {
+            public:
+                static  wstring  GetName (CodePage cp);
+
+            public:
+                struct  CodePageNames;
+
+                // This class builds commands with command names. The UI may wish to change these
+                // names (eg. to customize for particular languages, etc)
+                // Just patch these strings here, and commands will be created with these names.
+                // (These names appear in text of undo menu item)
+            public:
+                static  CodePageNames		GetCodePageNames ();
+                static  void                SetCodePageNames (const CodePageNames& cmdNames);
+                static  CodePageNames       MakeDefaultCodePageNames ();
+            private:
+                static  CodePageNames   sCodePageNames_;
+            };
+            struct  CodePagePrettyNameMapper::CodePageNames {
+                wstring  fUNICODE_WIDE;
+                wstring  fUNICODE_WIDE_BIGENDIAN;
+                wstring  fANSI;
+                wstring  fMAC;
+                wstring  fPC;
+                wstring  fSJIS;
+                wstring  fUTF7;
+                wstring  fUTF8;
+                wstring  f850;
+                wstring  f851;
+                wstring  f866;
+                wstring  f936;
+                wstring  f949;
+                wstring  f950;
+                wstring  f1250;
+                wstring  f1251;
+                wstring  f10000;
+                wstring  f10001;
+                wstring  f50220;
             };
 
 

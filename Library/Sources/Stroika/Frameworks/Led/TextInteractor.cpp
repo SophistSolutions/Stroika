@@ -6,12 +6,12 @@
 #include    <cctype>
 #include    <set>
 
+#include    "../../Foundation/Characters/Character.h"
+#include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/Format.h"
 
 #include    "Config.h"
 
-
-#include    "CodePage.h"
 #include    "Command.h"
 #include    "IdleManager.h"
 #include    "Marker.h"
@@ -19,12 +19,10 @@
 #include    "TextInteractor.h"
 
 
-using   namespace   Stroika::Foundation;
-
-
-
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 
@@ -98,7 +96,7 @@ namespace {
         // like that (will have to read up on UNICODE more, and/or experiemnet). Anyhow - none of that will happen
         // for this release, and this should be good enuf to prevent smart-copy-paste from happing with
         // idiogram characters
-        return CharacterProperties::IsAlnum (c) and c < 127;
+        return Character (c).IsAlphaNumeric () and c < 127;
     }
 }
 
@@ -1125,7 +1123,7 @@ void    TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes 
             if (realStart < GetEnd ()) {
                 Led_tChar   c;
                 CopyOut (realStart, 1, &c);
-                if (CharacterProperties::IsSpace (c)) {
+                if (Character (c).IsWhitespace ()) {
                     return;
                 }
                 if (realStart > 0) {
@@ -1139,7 +1137,7 @@ void    TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes 
             if (realStart < realEnd and realEnd < GetEnd ()) {
                 Led_tChar   c;
                 CopyOut (FindPreviousCharacter (realEnd), 1, &c);
-                if (CharacterProperties::IsSpace (c)) {
+                if (Character (c).IsWhitespace ()) {
                     return;
                 }
                 if (realEnd < GetEnd ()) {
@@ -3265,7 +3263,7 @@ void    TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*option
     Assert (GetSelectionEnd () <= GetLength () + 1);
 
     if (GetSupressTypedControlCharacters ()) {
-        bool    controlChar =   CharacterProperties::IsCntrl (theChar);
+        bool    controlChar =   Character (theChar).IsControl ();
         if (controlChar &&
                 (theChar == '\r' || theChar == '\n' || theChar == ' ' || theChar == '\t' || theChar == '\b')
            ) {
