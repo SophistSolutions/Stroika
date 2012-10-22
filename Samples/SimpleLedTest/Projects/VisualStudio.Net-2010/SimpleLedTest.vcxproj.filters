@@ -14,34 +14,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Sources\UnknownEmbeddingIcon.bmp">
+    <None Include="..\..\Sources\UnknownEmbeddingIcon.bmp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Sources\Test.ico">
+    <None Include="..\..\Sources\Test.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Sources\small.ico">
+    <None Include="..\..\Sources\small.ico">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Sources\Resource.h">
+    <ClInclude Include="..\..\Sources\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\StdAfx.h">
+    <ClInclude Include="..\..\Sources\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Test.h">
+    <ClInclude Include="..\..\Sources\Test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Test.cpp">
+    <ClCompile Include="..\..\Sources\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\Sources\Test.rc">
+    <ResourceCompile Include="..\..\Sources\Test.rc">
       <Filter>Source Files</Filter>
     </ResourceCompile>
   </ItemGroup>
