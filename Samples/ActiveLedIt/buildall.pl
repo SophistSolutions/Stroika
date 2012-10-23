@@ -1,6 +1,7 @@
 #!/usr/bin/perl 
 
-require "../Scripts/buildallHelpers.pl";
+require "../../ScriptsLib/ConfigurationReader.pl";
+require "../../ScriptsLib/BuildUtils.pl";
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
@@ -9,12 +10,13 @@ my @kConfigurations = (
 					"Configuration=Release-U-32,Platform=Win32",
 					);
 
+my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
 print("Building Samples/ActiveLedIt...\n");
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd Projects; msbuild.exe $extraArgs ActiveLedIt.sln /p:$curConfig /target:$useBld");
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs ActiveLedIt.sln /p:$curConfig /target:$useBld");
 	}
 }

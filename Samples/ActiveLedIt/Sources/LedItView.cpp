@@ -693,7 +693,7 @@ Led_Distance    LedItView::CalculateFarthestRightMarginInWindow () const
         return GetWindowRect ().GetWidth ();
     }
     else {
-        return inherited::CalculateFarthestRightMarginInWindow ();
+        return inherited::CalculateFarthestRightMarginInWindow () / 20;
     }
 }
 

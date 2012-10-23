@@ -108,13 +108,13 @@ private:
 #endif
 
 protected:
-    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) override throw ();
+    virtual    void        DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept override;
     virtual    TextStore*  PeekAtTextStore () const override;
 
 public:
     virtual    void    OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid) override;
     virtual    void    OnDrawMetafile (CDC* pDC, const CRect& rcBounds) override;
-    afx_msg     BOOL    OnEraseBkgnd (CDC* pDC);
+    afx_msg    BOOL    OnEraseBkgnd (CDC* pDC);
     virtual    void    DoPropExchange (CPropExchange* pPX) override;
     virtual    void    OnResetState () override;
     virtual    DWORD   GetControlFlags () override;
