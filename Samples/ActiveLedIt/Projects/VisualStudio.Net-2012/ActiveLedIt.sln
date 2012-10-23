@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActiveLedIt", "ActiveLedIt.vcxproj", "{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
