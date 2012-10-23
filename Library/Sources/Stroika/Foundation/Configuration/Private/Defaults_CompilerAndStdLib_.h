@@ -108,7 +108,7 @@
 */
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    1
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    0
