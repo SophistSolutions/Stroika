@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    <cstring>
+#include    <algorithm>
 #include    "../Debug/Assertions.h"
 
 #if     qPlatform_Windows
@@ -144,6 +145,9 @@ namespace   Stroika {
 			}
 			inline	bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp)
 			{
+				#if		qCompilerAndStdLib_StdFindOverloadBug
+					using	std::find;
+				#endif
 				return (std::find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
 			}
 

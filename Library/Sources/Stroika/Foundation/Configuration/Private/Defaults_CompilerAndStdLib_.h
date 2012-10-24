@@ -120,6 +120,22 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_StdFindOverloadBug
+@DESCRIPTION:   <p>Strange overloading bug - for reasons that elude me - gcc 4.6.3 doesnt find an obvious std::find() use, but if I say find() it works fine???</p>
+*/
+#if     !defined (qCompilerAndStdLib_StdFindOverloadBug)
+
+#if     defined (__GNUC__)
+#define	qCompilerAndStdLib_StdFindOverloadBug		( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#else
+#define	qCompilerAndStdLib_StdFindOverloadBug		0
+#endif
+
+#endif
+
+
+
 
 
 
