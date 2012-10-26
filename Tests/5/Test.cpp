@@ -5,6 +5,7 @@
 
 #include	<iostream>
 
+#include	"Stroika/Foundation/Characters/CString/Utilities.h"
 #include	"Stroika/Foundation/Characters/Format.h"
 #include	"Stroika/Foundation/Characters/RegularExpression.h"
 #include	"Stroika/Foundation/Characters/String.h"
@@ -743,29 +744,29 @@ namespace	{
 namespace	{
 	void	Test20_CStringHelpers_ ()
 	{
-		VerifyTestResult (C_String::Length ("hi") == 2);
-		VerifyTestResult (C_String::Length (L"hi") == 2);
+		VerifyTestResult (CString::Length ("hi") == 2);
+		VerifyTestResult (CString::Length (L"hi") == 2);
 
 		{
 			char	buf[3] = {'1', '1', '1' };
-			C_String::Copy (buf, "3", NEltsOf (buf));
+			CString::Copy (buf, "3", NEltsOf (buf));
 			VerifyTestResult (::strcmp (buf, "3") == 0);
 		}
 		{
 			wchar_t	buf[3] = {'1', '1', '1' };
-			C_String::Copy (buf, L"3", NEltsOf (buf));
+			CString::Copy (buf, L"3", NEltsOf (buf));
 			VerifyTestResult (::wcscmp (buf, L"3") == 0);
 		}
 
 
 		{
 			char	buf[3] = {'1', '1', '1' };
-			C_String::Copy (buf, "12345", NEltsOf (buf));
+			CString::Copy (buf, "12345", NEltsOf (buf));
 			VerifyTestResult (::strcmp (buf, "12") == 0);
 		}
 		{
 			wchar_t	buf[3] = {'1', '1', '1' };
-			C_String::Copy (buf, L"12345", NEltsOf (buf));
+			CString::Copy (buf, L"12345", NEltsOf (buf));
 			VerifyTestResult (::wcscmp (buf, L"12") == 0);
 		}
 

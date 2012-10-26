@@ -7,6 +7,7 @@
 #include    <cstdarg>
 
 #include    "../../Foundation/Characters/CodePage.h"
+#include    "../../Foundation/Characters/CString/Utilities.h"
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/StringUtils.h"
 #include    "../../Foundation/Execution/Exceptions.h"
@@ -1066,7 +1067,7 @@ void    Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName
         (void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", i);
         char    levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2);  // assert MUCH less
-        Characters::C_String::Copy (levelPrefixBuf, levelPrefix, NEltsOf (levelPrefixBuf));
+        Characters::CString::Copy (levelPrefixBuf, levelPrefix, NEltsOf (levelPrefixBuf));
         strcat (levelPrefixBuf, "\t");
         DumpSupportedInterfaces (nextObj, nameBuf, levelPrefixBuf);
         AssertNotNull (nextObj);
@@ -1098,7 +1099,7 @@ Led_URLD::Led_URLD (const char* url, const char* title):
     fData.resize (resultURLDLen, '\0');
 
     char*   data    =   &fData.front ();
-    Characters::C_String::Copy (data, url, resultURLDLen);
+    Characters::CString::Copy (data, url, resultURLDLen);
     strcat (data, "\r");
     strcat (data, title);
 }
@@ -1321,7 +1322,7 @@ void    Led_URLManager::Open_IC (const string& url)
         // Unclear if/why url would be modified, but since they declare it as non-cost
         // better be sure...LGP 961028
         char    urlBuf[1024];
-		C_String::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
+		CString::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
         err = ::ICLaunchURL (icInstance, hint, urlBuf, ::strlen (urlBuf), &urlStart, &urlEnd);
     }
     ::ICStop (icInstance);
@@ -1828,7 +1829,7 @@ char*   Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
     if(*pTraverse == '\"')  {
         pTraverse++;
     }
-    C_String::Copy(pRetVal, pTraverse, iLength);
+    CString::Copy(pRetVal, pTraverse, iLength);
 
     delete(pRemove);
     return(pRetVal);

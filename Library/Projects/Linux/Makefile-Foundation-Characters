@@ -15,5 +15,18 @@ Objs	=	\
 	$(ObjDir)RegularExpression.o\
 	$(ObjDir)Tokenize.o\
 
-all:	$(Objs)
+SubDirs	=	\
+	CString \
 
+all:	$(Objs) $(SubDirs)
+
+
+CSTRING_OBJS := $(addprefix "./CString/", $(shell cd CString; make -s list-objs))
+
+
+list-objs::
+	@echo $(CSTRING_OBJS)
+
+
+CString:
+	(cd CString; make -s)

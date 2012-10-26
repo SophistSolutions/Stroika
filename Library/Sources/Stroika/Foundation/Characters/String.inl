@@ -17,55 +17,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
-            template    <>
-            inline  size_t  C_String::Length (const char* p)
-            {
-                RequireNotNull (p);
-                return ::strlen (p);
-            }
-            template    <>
-            inline  size_t  C_String::Length (const wchar_t* p)
-            {
-                RequireNotNull (p);
-                return ::wcslen (p);
-            }
-            template    <>
-            inline  void    C_String::Copy (char* dest, const char* src, size_t nEltsInDest)
-            {
-                RequireNotNull (dest);
-                RequireNotNull (src);
-                Require (nEltsInDest >= 1);
-                char*       destEnd =   dest + nEltsInDest;
-                char*       di		=   dest;
-                const char* si		=   src;
-                while ((*di++ = *si++) != '\0') {
-                    Assert (di <= destEnd);
-                    if (di == destEnd) {
-                        *(di - 1) = '\0';
-                        break;
-                    }
-                }
-				Ensure (Length (dest) < nEltsInDest);
-            }
-            template    <>
-            inline  void    C_String::Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest)
-            {
-                RequireNotNull (dest);
-                RequireNotNull (src);
-                Require (nEltsInDest >= 1);
-                wchar_t*        destEnd =   dest + nEltsInDest;
-                wchar_t*        di		=   dest;
-                const wchar_t*  si		=   src;
-                while ((*di++ = *si++) != '\0') {
-                    Assert (di <= destEnd);
-                    if (di == destEnd) {
-                        *(di - 1) = '\0';
-                        break;
-                    }
-                }
-				Ensure (Length (dest) < nEltsInDest);
-            }
-
 
             //  class   String::_Rep
             inline  String::_Rep::_Rep ()

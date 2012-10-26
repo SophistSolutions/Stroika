@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Characters/String.h"
+#include    "../Characters/CString/Utilities.h"
 #include    "../Containers/Common.h"
 #include    "../Memory/SmallStackBuffer.h"
 
@@ -75,7 +76,7 @@ namespace   Stroika {
             {
                 RequireNotNull (text);
                 const   CHAR*   eol =   GetEOL<CHAR> ();
-                size_t          eolLen  =   C_String::Length (eol);
+                size_t          eolLen  =   CString::Length (eol);
                 size_t          len =   text->length ();
                 bool            already =   false;
                 if (eolLen < len) {

@@ -1,0 +1,14 @@
+include ../../../Configuration.mk
+include	../../../SharedBuildRules.mk
+include	../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot	=	../../../../../../../
+SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Characters/CString
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Utilities.o\
+
+all:	$(Objs)
+

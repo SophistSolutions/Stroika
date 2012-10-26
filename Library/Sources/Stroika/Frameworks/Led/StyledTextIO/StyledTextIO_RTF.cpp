@@ -11,7 +11,7 @@
 #if     qPlatform_Windows
 #include    "../../../Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
-
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/String.h"
 #include    "../../../Foundation/Characters/StringUtils.h"
 
@@ -1577,7 +1577,7 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::~GroupContext ()
 RTFIO::ControlWordAtomName::ControlWordAtomName (const char* c)
 //:fName ()
 {
-    Characters::C_String::Copy (fName, c, eMaxControlAtomNameLen);
+    Characters::CString::Copy (fName, c, eMaxControlAtomNameLen);
     fName[eMaxControlAtomNameLen] = '\0';
 }
 
@@ -5382,7 +5382,7 @@ void    StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerConte
 #elif   qPlatform_Windows
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
-                Characters::C_String::Copy (lf.lfFaceName, name.c_str (), NEltsOf (lf.lfFaceName));
+                Characters::CString::Copy (lf.lfFaceName, name.c_str (), NEltsOf (lf.lfFaceName));
                 lf.lfCharSet = DEFAULT_CHARSET;
                 BYTE    useCharset  =   DEFAULT_CHARSET;
                 ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, (long)&useCharset, 0);
