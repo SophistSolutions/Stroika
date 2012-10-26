@@ -13,6 +13,7 @@
 #include    <atlconv.h>
 #endif
 
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Foundation/Characters/String.h"
 
 
@@ -364,7 +365,7 @@ void    FontComboBox::DrawItem (LPDRAWITEMSTRUCT lpDIS)
     {
         LOGFONT lf;
         memset(&lf, 0, sizeof(LOGFONT));
-        Characters::C_String::Copy (lf.lfFaceName, static_cast<const TCHAR*> (strText), NEltsOf (lf.lfFaceName));
+        Characters::CString::Copy (lf.lfFaceName, static_cast<const TCHAR*> (strText), NEltsOf (lf.lfFaceName));
         CWindowDC screenDC (NULL);
         HDC hDC = screenDC.m_hDC;
         ASSERT(hDC != NULL);

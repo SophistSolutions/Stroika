@@ -41,6 +41,7 @@
 #include    <gtk/gtkoptionmenu.h>
 #endif
 
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Foundation/Characters/String.h"
 
 #include    "Stroika/Frameworks/Led/Config.h"
@@ -1594,7 +1595,7 @@ void    LedItApplication::OnChooseDefaultFontCommand ()
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     {
-        Characters::C_String::Copy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
+        Characters::CString::Copy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
         Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));    // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight = (fsp.GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;
@@ -2298,7 +2299,7 @@ inline  Led_SDK_String  GetLongPathName (const Led_SDK_String& pathName)
 {
     TCHAR szPath[_MAX_PATH];
     Require (pathName.length () < _MAX_PATH);
-    Characters::C_String::Copy (szPath, pathName.c_str (), NEltsOf (szPath));
+    Characters::CString::Copy (szPath, pathName.c_str (), NEltsOf (szPath));
     WIN32_FIND_DATA fileData;
     HANDLE hFind = ::FindFirstFile (szPath, &fileData);
     if (hFind != INVALID_HANDLE_VALUE) {
@@ -2330,18 +2331,18 @@ CDocument*  LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName, FileFormat 
     TCHAR szTemp[_MAX_PATH];
     if (lpszFileName[0] == '\"')
         ++lpszFileName;
-    Characters::C_String::Copy (szTemp, lpszFileName, NEltsOf (szTemp));
+    Characters::CString::Copy (szTemp, lpszFileName, NEltsOf (szTemp));
     LPTSTR lpszLast = _tcsrchr(szTemp, '\"');
     if (lpszLast != NULL)
         *lpszLast = 0;
     AfxFullPath(szPath, szTemp);
     TCHAR szLinkName[_MAX_PATH];
     if (AfxResolveShortcut(AfxGetMainWnd(), szPath, szLinkName, _MAX_PATH))
-        Characters::C_String::Copy (szPath, szLinkName, NEltsOf (szPath));
+        Characters::CString::Copy (szPath, szLinkName, NEltsOf (szPath));
 
     // Also, to fix SPR#0345, we must use this (or SHGetFileInfo) hack
     // to get the long-file-name version of the file name.
-    Characters::C_String::Copy (szPath, GetLongPathName (szPath).c_str (), NEltsOf (szPath));
+    Characters::CString::Copy (szPath, GetLongPathName (szPath).c_str (), NEltsOf (szPath));
 
     LedItDocument::sHiddenDocOpenArg = format;
     return (pTemplate->OpenDocumentFile (szPath));
