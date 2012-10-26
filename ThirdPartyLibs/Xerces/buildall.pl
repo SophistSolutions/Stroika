@@ -54,6 +54,7 @@ print ("Patching Xerces...\n");
 system ("patch -t CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
 system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
 
+
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
