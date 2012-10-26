@@ -1321,8 +1321,7 @@ void    Led_URLManager::Open_IC (const string& url)
         // Unclear if/why url would be modified, but since they declare it as non-cost
         // better be sure...LGP 961028
         char    urlBuf[1024];
-        strncpy (urlBuf, url.c_str (), sizeof (urlBuf));
-        urlBuf[sizeof(urlBuf) - 1] = '\0';
+		C_String::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
         err = ::ICLaunchURL (icInstance, hint, urlBuf, ::strlen (urlBuf), &urlStart, &urlEnd);
     }
     ::ICStop (icInstance);
@@ -1829,8 +1828,7 @@ char*   Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
     if(*pTraverse == '\"')  {
         pTraverse++;
     }
-    strncpy(pRetVal, pTraverse, iLength - 1);
-    pRetVal[iLength - 1] = '\0';
+    C_String::Copy(pRetVal, pTraverse, iLength);
 
     delete(pRemove);
     return(pRetVal);

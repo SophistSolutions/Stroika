@@ -36,15 +36,16 @@ namespace   Stroika {
                 RequireNotNull (src);
                 Require (nEltsInDest >= 1);
                 char*       destEnd =   dest + nEltsInDest;
-                char*       destI   =   dest;
-                const char* srcI    =   src;
-                while ((*dest++ = *srcI++) != '\0') {
-                    Assert (dest <= destEnd);
-                    if (dest == destEnd) {
-                        *(dest - 1) = '\0';
-                        return;
+                char*       di		=   dest;
+                const char* si		=   src;
+                while ((*di++ = *si++) != '\0') {
+                    Assert (di <= destEnd);
+                    if (di == destEnd) {
+                        *(di - 1) = '\0';
+                        break;
                     }
                 }
+				Ensure (Length (dest) < nEltsInDest);
             }
             template    <>
             inline  void    C_String::Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest)
@@ -53,15 +54,16 @@ namespace   Stroika {
                 RequireNotNull (src);
                 Require (nEltsInDest >= 1);
                 wchar_t*        destEnd =   dest + nEltsInDest;
-                wchar_t*        destI   =   dest;
-                const wchar_t*  srcI    =   src;
-                while ((*dest++ = *srcI++) != '\0') {
-                    Assert (dest <= destEnd);
-                    if (dest == destEnd) {
-                        *(dest - 1) = '\0';
-                        return;
+                wchar_t*        di		=   dest;
+                const wchar_t*  si		=   src;
+                while ((*di++ = *si++) != '\0') {
+                    Assert (di <= destEnd);
+                    if (di == destEnd) {
+                        *(di - 1) = '\0';
+                        break;
                     }
                 }
+				Ensure (Length (dest) < nEltsInDest);
             }
 
 

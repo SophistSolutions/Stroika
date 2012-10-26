@@ -942,7 +942,13 @@ namespace   Stroika {
              */
             namespace   C_String    {
 
-                // Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
+                /**
+                 *  \brief  Measure the length of the argument c-string (NUL-terminated string).
+                 *
+                 * Measure the length of the argument c-string (NUL-terminated string). Overloaded version of strlen/wcslen.
+				 *
+				 * Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
+                 */
                 template    <typename T>
                 size_t  Length (const T* p);
                 template    <>
@@ -951,7 +957,9 @@ namespace   Stroika {
                 size_t  Length (const wchar_t* p);
 
 
-                /*
+                /**
+                 *  \brief  Safe variant of strncpy() - which always NUL-terminates the string
+                 *
                  * Copy the C-string pointed to by 'src' to the location pointed to by 'dest'. This function will always
                  * nul-terminate, and it is illegal to call it with a value of zero for nEltsInDest.
                  *
