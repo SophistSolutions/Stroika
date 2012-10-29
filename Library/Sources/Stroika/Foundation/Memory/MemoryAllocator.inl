@@ -55,6 +55,11 @@ namespace   Stroika {
                 return (*this);
             }
             template <typename T, typename BASE_ALLOCATOR>
+            inline  STLAllocator<T, BASE_ALLOCATOR> STLAllocator<T, BASE_ALLOCATOR>::select_on_container_copy_construction() const
+            {
+                return (*this);
+            }
+            template <typename T, typename BASE_ALLOCATOR>
             inline  typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::allocate (size_type nElements)
             {
                 // allocate storage for _Count elements of type T
@@ -73,15 +78,29 @@ namespace   Stroika {
                 }
             }
             template <typename T, typename BASE_ALLOCATOR>
+            inline  void    STLAllocator<T, BASE_ALLOCATOR>::construct (pointer ptr)
+            {
+                new (ptr) T ();
+            }
+            template <typename T, typename BASE_ALLOCATOR>
             inline  void    STLAllocator<T, BASE_ALLOCATOR>::construct (pointer ptr, const T& v)
             {
                 new (ptr) T (v);
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline  void    STLAllocator<T, BASE_ALLOCATOR>::destroy (pointer p)
+            template<class OTHERT>
+            inline	void STLAllocator<T, BASE_ALLOCATOR>::destroy (OTHERT* p)
             {
-                p->~T ();
+                p->~OTHERT();
             }
+#if  qCompilerAndStdLib_Supports_varadic_templates
+            template <typename T, typename BASE_ALLOCATOR>
+            template    <typename... ARGS>
+            inline	void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS && ... args)
+            {
+                ::new ((void*)p) T (std::forward<ARGS> (args)...);
+            }
+#endif
             template <typename T, typename BASE_ALLOCATOR>
             inline  size_t  STLAllocator<T, BASE_ALLOCATOR>::max_size () const noexcept
             {
@@ -91,11 +110,6 @@ namespace   Stroika {
             inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
             {
                 return true;
-            }
-            template <typename T, typename BASE_ALLOCATOR>
-            inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
-            {
-                return !operator== (rhs);
             }
         }
     }
