@@ -1322,7 +1322,7 @@ void    Led_URLManager::Open_IC (const string& url)
         // Unclear if/why url would be modified, but since they declare it as non-cost
         // better be sure...LGP 961028
         char    urlBuf[1024];
-		CString::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
+        CString::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
         err = ::ICLaunchURL (icInstance, hint, urlBuf, ::strlen (urlBuf), &urlStart, &urlEnd);
     }
     ::ICStop (icInstance);

@@ -127,9 +127,9 @@
 #if     !defined (qCompilerAndStdLib_StdFindOverloadBug)
 
 #if     defined (__GNUC__)
-#define	qCompilerAndStdLib_StdFindOverloadBug		( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#define qCompilerAndStdLib_StdFindOverloadBug       ( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #else
-#define	qCompilerAndStdLib_StdFindOverloadBug		0
+#define qCompilerAndStdLib_StdFindOverloadBug       0
 #endif
 
 #endif

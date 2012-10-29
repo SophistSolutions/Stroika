@@ -174,7 +174,7 @@ inline  GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDep
 inline  bool    CodePageBetterOffUsingWideCharVersion (UINT codePage)
 {
     switch (codePage) {
-		case    Characters::kCodePage_SJIS:
+        case    Characters::kCodePage_SJIS:
         case    Characters::kCodePage_Korean:
         case    Characters::kCodePage_GB2312:
         case    Characters::kCodePage_BIG5:

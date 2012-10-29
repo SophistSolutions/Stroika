@@ -1919,7 +1919,7 @@ void    TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification
          *  Fill in the useVirtualText buffer with the text to draw.
          */
         Memory::SmallStackBuffer<Led_tChar> useVirtualText (runLength);
-		(void)::memcpy (static_cast<Led_tChar*> (useVirtualText), &fullVirtualText[se.fVirtualStart], runLength * sizeof (Led_tChar));
+        (void)::memcpy (static_cast<Led_tChar*> (useVirtualText), &fullVirtualText[se.fVirtualStart], runLength * sizeof (Led_tChar));
 
         /*
          *  Process 'mapped display characters'

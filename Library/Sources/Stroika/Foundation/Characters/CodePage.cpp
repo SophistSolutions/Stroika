@@ -9,7 +9,7 @@
 #include    "../Characters/Format.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Common.h"
-#include	"../Execution/CriticalSection.h"
+#include    "../Execution/CriticalSection.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Memory/SmallStackBuffer.h"
 
@@ -1627,30 +1627,30 @@ void    UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt
  */
 namespace   {
 #if     qPlatform_Windows
-	shared_ptr<set<CodePage>>	s_EnumCodePagesProc_Accumulator_;
+    shared_ptr<set<CodePage>>   s_EnumCodePagesProc_Accumulator_;
     BOOL FAR    PASCAL EnumCodePagesProc_ (LPTSTR lpCodePageString)
-		{
-			s_EnumCodePagesProc_Accumulator_->insert (_ttoi (lpCodePageString));
-			return (1);
-		}
+    {
+        s_EnumCodePagesProc_Accumulator_->insert (_ttoi (lpCodePageString));
+        return (1);
+    }
 #endif
 }
 
 CodePagesInstalled::CodePagesInstalled ()
-	: fCodePages_ ()
+    : fCodePages_ ()
 {
     Assert (fCodePages_.size () == 0);
 
-	shared_ptr<set<CodePage>>	accum (new set<CodePage> ());
+    shared_ptr<set<CodePage>>   accum (new set<CodePage> ());
 #if     qPlatform_Windows
-	static	Execution::CriticalSection	sCritSec_;
-	{
-		Execution::AutoCriticalSection enterCritSection (sCritSec_);
-		Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
-		s_EnumCodePagesProc_Accumulator_ = accum;
-		::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);
-		s_EnumCodePagesProc_Accumulator_.reset ();
-	}
+    static  Execution::CriticalSection  sCritSec_;
+    {
+        Execution::AutoCriticalSection enterCritSection (sCritSec_);
+        Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
+        s_EnumCodePagesProc_Accumulator_ = accum;
+        ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);
+        s_EnumCodePagesProc_Accumulator_.reset ();
+    }
 #endif
     // Add these 'fake' code pages - which I believe are always available, but never listed by EnumSystemCodePages()
     accum->insert (kCodePage_UNICODE_WIDE);

@@ -138,18 +138,18 @@ namespace   Stroika {
 
 
 
-			//	class   CodePagesInstalled
-			inline	vector<CodePage>    CodePagesInstalled::GetAll ()
-			{
-				return fCodePages_;
-			}
-			inline	bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp)
-			{
-				#if		qCompilerAndStdLib_StdFindOverloadBug
-					using	std::find;
-				#endif
-				return (std::find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
-			}
+            //  class   CodePagesInstalled
+            inline  vector<CodePage>    CodePagesInstalled::GetAll ()
+            {
+                return fCodePages_;
+            }
+            inline  bool    CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+            {
+#if     qCompilerAndStdLib_StdFindOverloadBug
+                using   std::find;
+#endif
+                return (std::find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
+            }
 
 
 

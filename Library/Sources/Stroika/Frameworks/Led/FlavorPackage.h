@@ -28,7 +28,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Led {
 
-			using	Foundation::Characters::CodePage;
+            using   Foundation::Characters::CodePage;
 
             class   ReaderFlavorPackage;
             class   WriterFlavorPackage;

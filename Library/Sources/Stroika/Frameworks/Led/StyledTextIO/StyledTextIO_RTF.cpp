@@ -3991,7 +3991,7 @@ void    StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, con
                 }
                 if (fte->fCharSet != -1) {
                     // Not sure what I should do if Win32CharSetToCodePage returns zero? -- LGP 2002-12-08
-					CodePage    cp  =   Platform::Windows::Win32CharSetToCodePage (fte->fCharSet);
+                    CodePage    cp  =   Platform::Windows::Win32CharSetToCodePage (fte->fCharSet);
                     if (cp != 0) {
                         readerContext.GetCurrentGroupContext ()->fCurrentCodePage = cp;
                     }

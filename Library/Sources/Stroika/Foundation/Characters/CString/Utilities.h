@@ -31,19 +31,19 @@ namespace   Stroika {
             /*
              * Legacy "C_String" string utilities.
              */
-	        namespace   CString {
+            namespace   CString {
 
-				using   std::string;
-				using   std::wstring;
-				using   std::basic_string;
+                using   std::string;
+                using   std::wstring;
+                using   std::basic_string;
 
 
                 /**
                  *  \brief  Measure the length of the argument c-string (NUL-terminated string).
                  *
                  * Measure the length of the argument c-string (NUL-terminated string). Overloaded version of strlen/wcslen.
-				 *
-				 * Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
+                 *
+                 * Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
                  */
                 template    <typename T>
                 size_t  Length (const T* p);
@@ -68,7 +68,7 @@ namespace   Stroika {
                 template    <>
                 void    Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest);
 
-	        }
+            }
         }
     }
 }

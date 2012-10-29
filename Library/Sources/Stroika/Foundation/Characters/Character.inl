@@ -90,7 +90,7 @@ namespace   Stroika {
             {
                 return !!iswpunct (fCharacterCode_);
             }
-			inline  bool    Character::IsControl () const
+            inline  bool    Character::IsControl () const
             {
                 return !!iswcntrl (fCharacterCode_);
             }

@@ -247,8 +247,8 @@ namespace   Stroika {
                         <p>Helper class to check what code pages are installed on a given machine.</p>
             */
             class   CodePagesInstalled {
-			public:
-				CodePagesInstalled ();
+            public:
+                CodePagesInstalled ();
             public:
                 /*
                 @METHOD:        CodePagesInstalled::GetAll
@@ -262,9 +262,9 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Checks if the given code page is installed.</p>
                 */
                 bool                IsCodePageAvailable (CodePage cp);
-			
-			private:
-				vector<CodePage>	fCodePages_;
+
+            private:
+                vector<CodePage>    fCodePages_;
             };
 
 
@@ -313,7 +313,7 @@ namespace   Stroika {
                 // Just patch these strings here, and commands will be created with these names.
                 // (These names appear in text of undo menu item)
             public:
-                static  CodePageNames		GetCodePageNames ();
+                static  CodePageNames       GetCodePageNames ();
                 static  void                SetCodePageNames (const CodePageNames& cmdNames);
                 static  CodePageNames       MakeDefaultCodePageNames ();
             private:
