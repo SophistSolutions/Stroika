@@ -72,8 +72,8 @@ namespace   Stroika {
              * for usage as an STL-style allocator.
              *
              *  @todo   unsure about how to handle propagate_on_container_copy_assignment, etc. For all my current allocators, this
-             *          is fine (false), but if they had data, obviously it would be differnt. Perhaps that choice should be
-             *          parametized (as it is with normal C++ allocactors). Or maybe leave subclassing this STLAllocator<> as a way
+             *          is fine (false), but if they had data, obviously it would be different. Perhaps that choice should be
+             *          parametized (as it is with normal C++ allocators). Or maybe leave subclassing this STLAllocator<> as a way
              *          todo that? Thats probably good enuf...
              */
             template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
