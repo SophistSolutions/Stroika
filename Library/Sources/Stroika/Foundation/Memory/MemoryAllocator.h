@@ -153,6 +153,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  bool    operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
+                nonvirtual  bool    operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
             };
 
 

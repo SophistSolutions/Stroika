@@ -111,6 +111,11 @@ namespace   Stroika {
             {
                 return true;
             }
+            template <typename T, typename BASE_ALLOCATOR>
+            inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
+            {
+				return not (*this == rhs);
+            }
         }
     }
 }
