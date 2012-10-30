@@ -14,7 +14,10 @@
 #include    "Common.h"
 
 
-
+/**
+ *  \file
+ *
+ */
 
 
 namespace   Stroika {
@@ -22,7 +25,7 @@ namespace   Stroika {
         namespace   Memory {
 
 
-            /*
+            /**
              * This defines a generic abstract 'Allocator' API - for allocating (and freeing) memory.
              * This is far simpler than than the STL/stdC++ allocator policy (for example, not templated, and uses C model
              * of memory - just a byte pointer and amount).
@@ -42,7 +45,7 @@ namespace   Stroika {
             };
 
 
-            /*
+            /**
              * SimpleAllocator_CallLIBCMallocFree implements the AbstractGeneralPurposeAllocator just using malloc and free.
              */
             class   SimpleAllocator_CallLIBCMallocFree : public AbstractGeneralPurposeAllocator {
@@ -53,7 +56,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              * SimpleAllocator_CallLIBCNewDelete implements the AbstractGeneralPurposeAllocator just using stdC++ new/delete.
              */
             class   SimpleAllocator_CallLIBCNewDelete : public AbstractGeneralPurposeAllocator {
@@ -64,7 +67,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              * The STLAllocator takes a Stroika Allocator class (as template argument) and maps it
              * for usage as an STL-style allocator.
              *
@@ -105,7 +108,7 @@ namespace   Stroika {
                 template    <typename OTHER>
                 STLAllocator(const STLAllocator<OTHER, BASE_ALLOCATOR>& from);
                 template    <typename OTHER>
-                STLAllocator<T, BASE_ALLOCATOR>& operator= (const STLAllocator<OTHER, BASE_ALLOCATOR>& rhs);
+                nonvirtual  STLAllocator<T, BASE_ALLOCATOR>& operator= (const STLAllocator<OTHER, BASE_ALLOCATOR>& rhs);
 
             public:
                 nonvirtual  STLAllocator<T, BASE_ALLOCATOR>  select_on_container_copy_construction() const;
@@ -144,7 +147,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              * The SimpleSizeCountingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps statistics, and delegates to
              * some real allocator (constructor argument).
              */
@@ -162,16 +165,17 @@ namespace   Stroika {
                 nonvirtual  size_t  GetNetAllocatedByteCount () const;
 
             private:
-                AbstractGeneralPurposeAllocator&    fBaseAllocator;
-                uint32_t                            fNetAllocationCount;
-                size_t                              fNetAllocatedByteCount;
+                AbstractGeneralPurposeAllocator&    fBaseAllocator_;
+                uint32_t                            fNetAllocationCount_;
+                size_t                              fNetAllocatedByteCount_;
             };
 
 
 
-            /*
-             * The LeakTrackingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps LOTS of statistics - it tracks all allocations,
-             * and delegates to some real allocator (constructor argument).
+            /**
+             * The LeakTrackingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which
+             * keeps LOTS of statistics - it tracks all allocations, and delegates to some real allocator
+             * (constructor argument).
              */
             class   LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
             public:
@@ -181,6 +185,7 @@ namespace   Stroika {
                 LeakTrackingGeneralPurposeAllocator ();
                 LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator);
                 ~LeakTrackingGeneralPurposeAllocator ();
+
             public:
                 virtual     void*   Allocate (size_t size) override;
                 virtual     void    Deallocate (void* p) override;
@@ -203,9 +208,9 @@ namespace   Stroika {
                 nonvirtual  void        DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
 
             private:
-                mutable Execution::CriticalSection  fCritSection;
-                AbstractGeneralPurposeAllocator&    fBaseAllocator;
-                PTRMAP                              fAllocations;
+                mutable Execution::CriticalSection  fCritSection_;
+                AbstractGeneralPurposeAllocator&    fBaseAllocator_;
+                PTRMAP                              fAllocations_;
             };
 
         }
