@@ -14,22 +14,6 @@
 #include    "Common.h"
 
 
-/*
- * So far - quite ill-understood very complicated template bug. Only really comes up with _GLIBCXX_DEBUG
- * assertions code - so just disable our leaktracker in that case.
- *      -- LGP 2012-05-28
- */
-#ifndef qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug
-
-// TODO:
-// @todo
-/// THIS MEANS ALMOST CERTAINLY MY BUG _ SO UNDERSTAND AND FIX...
-///     -- LGP 2012-10-20
-#define qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug        defined(_GLIBCXX_DEBUG)
-
-#endif
-
-
 
 
 

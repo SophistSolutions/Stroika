@@ -89,14 +89,14 @@ namespace   Stroika {
             }
             template <typename T, typename BASE_ALLOCATOR>
             template<class OTHERT>
-            inline	void STLAllocator<T, BASE_ALLOCATOR>::destroy (OTHERT* p)
+            inline  void STLAllocator<T, BASE_ALLOCATOR>::destroy (OTHERT* p)
             {
                 p->~OTHERT();
             }
 #if  qCompilerAndStdLib_Supports_varadic_templates
             template <typename T, typename BASE_ALLOCATOR>
             template    <typename... ARGS>
-            inline	void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS && ... args)
+            inline  void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS && ... args)
             {
                 ::new ((void*)p) T (std::forward<ARGS> (args)...);
             }
@@ -114,7 +114,7 @@ namespace   Stroika {
             template <typename T, typename BASE_ALLOCATOR>
             inline  bool    STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
             {
-				return not (*this == rhs);
+                return not (*this == rhs);
             }
         }
     }

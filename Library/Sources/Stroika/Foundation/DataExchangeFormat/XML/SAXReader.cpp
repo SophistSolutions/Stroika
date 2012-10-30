@@ -26,8 +26,7 @@
 //#define   qXMLDBTrackAllocs   0
 //#define   qXMLDBTrackAllocs   1
 #ifndef qXMLDBTrackAllocs
-//#define qXMLDBTrackAllocs       qDebug
-#define qXMLDBTrackAllocs       qDebug && !qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug
+#define qXMLDBTrackAllocs       qDebug
 #endif
 #endif
 
