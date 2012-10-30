@@ -1,5 +1,5 @@
 [1]	Foundation::Memory
-[2]	Foundation::Execution::Threads
+[2]	Foundation::Execution::Threads		[Note - includes atomics]
 [3]	Foundation::Execution::Exceptions
 [4]	Foundation::Streams
 [5]	Foundation::Characters::Strings

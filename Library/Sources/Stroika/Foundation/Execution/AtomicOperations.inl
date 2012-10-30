@@ -171,7 +171,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 atomic<int32_t*> ((int32_t*)p) += arg;
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), arg);
+                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), arg) + arg;
 #else
                 AssertNotImplemented ();
 #endif
@@ -188,7 +188,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 atomic<int64_t*> ((int64_t*)p) += arg;
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd64 (p, arg);
+                return ::InterlockedExchangeAdd64 (p, arg) + arg;
 #endif
             }
 #endif
@@ -203,7 +203,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 return *(atomic<uint32_t*> ((uint32_t*)p) += arg);
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), arg);
+                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), arg) + arg;
 #else
                 AssertNotImplemented ();
 #endif
@@ -220,7 +220,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 atomic<uint64_t*> ((uint64_t*)p) += arg;
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd64 (reinterpret_cast<volatile int64_t*> (p), arg);
+                return ::InterlockedExchangeAdd64 (reinterpret_cast<volatile int64_t*> (p), arg) + arg;
 #endif
             }
 #endif
@@ -236,7 +236,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 atomic<int32_t*> ((int32_t*)p) += arg;
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), -arg);
+                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), -arg) - arg;
 #else
                 AssertNotImplemented ();
 #endif
@@ -253,7 +253,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 atomic<int64_t*> ((int64_t*)p) += arg;
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd64 (p, -arg);
+                return ::InterlockedExchangeAdd64 (p, -arg) - arg;
 #endif
             }
 #endif
@@ -268,7 +268,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 return * (atomic<uint32_t*> ((uint32_t*)p) += arg);
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), -static_cast<int32_t> (arg));
+                return ::InterlockedExchangeAdd (reinterpret_cast<volatile LONG*> (p), -static_cast<int32_t> (arg)) - arg;
 #else
                 AssertNotImplemented ();
 #endif
@@ -285,7 +285,7 @@ namespace   Stroika {
 //Pretty sure wrong but not sure what right way is...
                 atomic<uint64_t*> ((uint64_t*)p) += arg;
 #elif   qPlatform_Windows
-                return ::InterlockedExchangeAdd64 (reinterpret_cast<volatile int64_t*> (p), -static_cast<int64_t> (arg));
+                return ::InterlockedExchangeAdd64 (reinterpret_cast<volatile int64_t*> (p), -static_cast<int64_t> (arg)) - arg;
 #endif
             }
 #endif

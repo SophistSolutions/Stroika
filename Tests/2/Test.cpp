@@ -6,6 +6,7 @@
 #include	<iostream>
 #include	<sstream>
 
+#include	"Stroika/Foundation/Execution/AtomicOperations.h"
 #include	"Stroika/Foundation/Execution/CriticalSection.h"
 #include	"Stroika/Foundation/Execution/Event.h"
 #include	"Stroika/Foundation/Execution/Lockable.h"
@@ -494,6 +495,70 @@ namespace	{
 
 
 
+
+namespace	{
+	template	<typename T>
+		void	Test_SimpleAtomic_Increment_ (T n)
+		{
+			using	namespace   Execution;
+			T	origValue	=	n;
+			T	v			=	origValue;
+			VerifyTestResult (AtomicIncrement (&v) == origValue + 1);
+			VerifyTestResult (v == origValue + 1);
+		}
+	template	<typename T>
+		void	Test_SimpleAtomic_Decrement_ (T n)
+		{
+			using	namespace   Execution;
+			T	origValue	=	n;
+			T	v			=	origValue;
+			VerifyTestResult (AtomicDecrement (&v) == origValue - 1);
+			VerifyTestResult (v == origValue - 1);
+		}
+	template	<typename T>
+		void	Test_SimpleAtomic_Add_ (T n, T by)
+		{
+			using	namespace   Execution;
+			T	origValue	=	n;
+			T	v			=	origValue;
+			VerifyTestResult (AtomicAdd (&v, by) == origValue + by);
+			VerifyTestResult (v == origValue + by);
+		}
+	template	<typename T>
+		void	Test_SimpleAtomic_Subtract_ (T n, T by)
+		{
+			using	namespace   Execution;
+			T	origValue	=	n;
+			T	v			=	origValue;
+			VerifyTestResult (AtomicSubtract (&v, by) == origValue - by);
+			VerifyTestResult (v == origValue - by);
+		}
+	void	RegressionTest9_SimpleAtomics_ ()
+	{
+		Test_SimpleAtomic_Increment_<int32_t> (5);
+		Test_SimpleAtomic_Increment_<int64_t> (5);
+		Test_SimpleAtomic_Increment_<uint32_t> (5);
+		Test_SimpleAtomic_Increment_<uint64_t> (5);
+
+		Test_SimpleAtomic_Decrement_<int32_t> (5);
+		Test_SimpleAtomic_Decrement_<int64_t> (5);
+		Test_SimpleAtomic_Decrement_<uint32_t> (5);
+		Test_SimpleAtomic_Decrement_<uint64_t> (5);
+
+		Test_SimpleAtomic_Add_<int32_t> (5, 34);
+		Test_SimpleAtomic_Add_<int64_t> (5, -19);
+		Test_SimpleAtomic_Add_<uint32_t> (5, 44);
+		Test_SimpleAtomic_Add_<uint64_t> (5, 9473388573);
+
+		Test_SimpleAtomic_Subtract_<int32_t> (5, 34);
+		Test_SimpleAtomic_Subtract_<int64_t> (5, -19);
+		Test_SimpleAtomic_Subtract_<uint32_t> (5, 44);
+		Test_SimpleAtomic_Subtract_<uint64_t> (5, 9473388573);
+	}
+}
+
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -507,6 +572,7 @@ namespace	{
 			RegressionTest7_SimpleThreadPool_ ();
 			RegressionTest8_ThreadPool_ ();
 			RegressionTest9_ThreadsAbortingEarly_ ();
+			RegressionTest9_SimpleAtomics_ ();
 		}
 }
 

@@ -76,7 +76,7 @@ int64_t Execution::AtomicSubtract (volatile int64_t* p, int64_t arg)
 {
     RequireNotNull (p);
     AutoCriticalSection critSec (sCritSec_);
-    (*p) += arg;
+    (*p) -= arg;
     return *p;
 }
 
