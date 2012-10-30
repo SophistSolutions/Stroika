@@ -76,7 +76,7 @@ namespace   Stroika {
             template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
             class   STLAllocator  {
             public:
-                typedef STLAllocator<T, BASE_ALLOCATOR>  other;
+                typedef STLAllocator<T, BASE_ALLOCATOR> other;
                 typedef T                               value_type;
                 typedef value_type*                     pointer;
                 typedef const value_type*               const_pointer;
@@ -122,6 +122,7 @@ namespace   Stroika {
             public:
                 nonvirtual  void    construct (pointer p);
                 nonvirtual  void    construct (pointer p, const T& v);
+
             public:
                 template<class OTHERT>
                 nonvirtual  void    destroy (OTHERT* p);
@@ -133,7 +134,7 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  size_t  max_size() const noexcept;
+                nonvirtual  size_t  max_size () const noexcept;
 
             public:
                 nonvirtual  bool    operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
@@ -168,7 +169,6 @@ namespace   Stroika {
 
 
 
-#if     !qMemoryAllocator_GNUCCLib_MemoryAllocator_CompileBug
             /*
              * The LeakTrackingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps LOTS of statistics - it tracks all allocations,
              * and delegates to some real allocator (constructor argument).
@@ -204,10 +204,9 @@ namespace   Stroika {
 
             private:
                 mutable Execution::CriticalSection  fCritSection;
-                AbstractGeneralPurposeAllocator&        fBaseAllocator;
-                PTRMAP                                  fAllocations;
+                AbstractGeneralPurposeAllocator&    fBaseAllocator;
+                PTRMAP                              fAllocations;
             };
-#endif
 
         }
     }
