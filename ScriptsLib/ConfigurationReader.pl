@@ -8,17 +8,9 @@
 my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
 my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
 
-
+require (GetThisScriptDir () + "StringUtils.pl");
 
 # Declare the subroutines
-sub trim($)
-{
-	my $string = shift;
-	$string =~ s/^\s+//;
-	$string =~ s/\s+$//;
-	return $string;
-}
-
 sub	GetThisScriptDir {
 	use File::Basename;
 	use Cwd 'abs_path';
@@ -63,6 +55,9 @@ sub	ReadConfigFile_ {
 
 ### PUBLIC APIS
 sub	GetProjectPlatformSubdir {
+	if ($configuration{'ProjectPlatformSubdir'} eq "") {
+		die ("GetProjectPlatformSubdir () EMPTY\n");
+	}
 	return $configuration{'ProjectPlatformSubdir'};
 }
 

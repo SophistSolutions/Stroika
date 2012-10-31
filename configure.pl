@@ -7,6 +7,7 @@
 #use warnings;
 
 require ("Tests/ScriptsLib/TestsList.pl");
+require ("ScriptsLib/StringUtils.pl");
 
 
 use constant false => 0;
@@ -411,7 +412,7 @@ sub	WriteConfigFile_
 	if ("$^O" eq "cygwin") {
 		# first try vs 2k12
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			local $PROGRAMFILESDIR= `cygpath \"$ENV{'PROGRAMFILES'}\"`;
+			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
 			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 11.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2012';
@@ -423,7 +424,7 @@ sub	WriteConfigFile_
 
 		# first try vs 2k10
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			local $PROGRAMFILESDIR= `cygpath \"$ENV{'PROGRAMFILES'}\"`;
+			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
 			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 10.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
@@ -432,6 +433,10 @@ sub	WriteConfigFile_
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
 			}
 		}
+	}
+
+	if ($PROJECTPLATFORMSUBDIR eq "") {
+		die ("Cannot identify ProjectPlatformSubdir");
 	}
 
 	open(OUT,">$masterXMLConfigFile");
