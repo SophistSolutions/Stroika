@@ -199,10 +199,3 @@ const   char    kDemoExpiredExtraArgs[] =   "&DemoExpired=true";
 
 
 #endif  /*__ActiveLedItConfig_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

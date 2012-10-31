@@ -464,10 +464,3 @@ inline  ActiveLedItControl::OnCreateExtras::OnCreateExtras ():
 
 
 #endif  /*__ActiveLedItControl_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

@@ -4162,13 +4162,3 @@ void    ActiveLedItControl::OLE_SetSelHidable (UINT hidable)
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
 }
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

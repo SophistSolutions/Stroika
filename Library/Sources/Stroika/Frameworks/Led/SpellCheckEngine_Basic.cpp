@@ -1187,17 +1187,3 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
     writer.Append (reinterpret_cast<const Byte*> (&*data.begin ()), data.size ());
 #endif
 }
-
-
-
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-
-

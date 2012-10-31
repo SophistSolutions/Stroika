@@ -1684,11 +1684,3 @@ void    ActiveLedIt_ToolbarList::DoLayout ()
         }
     }
 }
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

@@ -269,10 +269,3 @@ STDAPI  DllUnregisterServer ()
 
     return NOERROR;
 }
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

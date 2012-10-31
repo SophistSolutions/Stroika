@@ -1706,16 +1706,3 @@ InitialUNISCRIBEDir myGetInitialUNISCRIBEDir (wchar_t c)
     }
     return eNeutralChar;
 }
-
-
-
-
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

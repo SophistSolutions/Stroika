@@ -59,12 +59,3 @@ void    ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX)
 {
     DDP_PostProcessing(pDX);
 }
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

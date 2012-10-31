@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef ____Led_StdDialogs__h__
-#define ____Led_StdDialogs__h__ 1
+#ifndef __Led_StdDialogs__h__
+#define __Led_StdDialogs__h__ 1
 
 /*
 @MODULE:    LedStdDialogs
@@ -1589,10 +1589,4 @@ namespace   Stroika {
 #endif
 
 
-#endif  /*____Led_StdDialogs__h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
+#endif  /*__Led_StdDialogs__h__*/

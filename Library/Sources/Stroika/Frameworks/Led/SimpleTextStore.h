@@ -94,10 +94,3 @@ namespace   Stroika {
 
 
 #endif  /*_Stroika_Frameworks_Led_SimpleTextStore_h_*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

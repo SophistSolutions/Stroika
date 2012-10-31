@@ -1413,13 +1413,3 @@ wstring CmdNum2Name (WORD cmdNum)
 
     return wstring ();      // no such CMD found...
 }
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

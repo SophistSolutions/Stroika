@@ -209,13 +209,3 @@ BEGIN_MESSAGE_MAP       (LedDialogText,                     LedDialogText::inher
     ON_WM_MOUSEACTIVATE     ()
 END_MESSAGE_MAP()
 #endif
-
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

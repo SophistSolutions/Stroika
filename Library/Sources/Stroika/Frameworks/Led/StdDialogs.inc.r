@@ -1208,11 +1208,3 @@
 
 
 #endif	/*__Led_Std_Dialogs_r__*/
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
-

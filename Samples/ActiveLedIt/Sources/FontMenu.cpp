@@ -54,11 +54,3 @@ Led_SDK_String  CmdNumToFontName (UINT cmdNum)
     const vector<Led_SDK_String>&   fontNames   =   GetUsableFontNames ();
     return (fontNames[cmdNum - kBaseFontNameCmd]);
 }
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
