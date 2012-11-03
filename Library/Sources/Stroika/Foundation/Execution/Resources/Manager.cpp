@@ -8,5 +8,25 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
+using   namespace   Stroika::Foundation::Execution::Resources;
 
+
+
+
+
+/*
+ ********************************************************************************
+ ********************* Execution::Resources::Manager ****************************
+ ********************************************************************************
+ */
+Accessor    Manager::CheckedReadResource (const Name& name) const
+{
+    try {
+        return fRep_->ReadResource (name);
+    }
+    catch (...) {
+        AssertNotReached();
+        return Accessor (nullptr, nullptr);
+    }
+}
 

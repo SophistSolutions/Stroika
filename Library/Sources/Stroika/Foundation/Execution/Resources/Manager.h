@@ -44,6 +44,9 @@ namespace   Stroika {
                 public:
                     // throws if not found
                     nonvirtual  Accessor    ReadResource (const Name& name) const;
+                public:
+                    // Like ReadResource () - but asserts instead  of throwing if resource not found
+                    nonvirtual  Accessor    CheckedReadResource (const Name& name) const noexcept;
                 };
 
             }
