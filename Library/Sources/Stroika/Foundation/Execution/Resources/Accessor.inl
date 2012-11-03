@@ -16,6 +16,11 @@ namespace   Stroika {
             namespace   Resources {
 
                 //  class   Accessor
+                inline   Accessor::Accessor (const Byte* start, const Byte* end)
+                    : fDataStart_ (start)
+                    , fDataEnd_ (end)
+                {
+                }
                 inline  const Byte* Accessor::GetDataStart () const
                 {
                     return fDataStart_;
