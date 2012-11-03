@@ -11,6 +11,22 @@
 #include    "Socket.h"
 
 
+
+
+
+/**
+ *  \file
+ *
+ *		TODO:
+ *
+ *			@todo	Major problem! SocketStream REALLY should be modeled as TWO Binary streams - NOT using
+ *					BinaryInputOutputStream. They are two RELATED streams - but do not share a common
+ *					seek position. They share a common FILE DESCRIPTOR - but they are untied streams.
+ *					<<MAYBE thats a concept that should go into the stream code???
+ *					<<< Whatever we do - see comments in header of BinaryInputOutputStream - and
+ *					fix code there and use fix here>>>
+ */
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {

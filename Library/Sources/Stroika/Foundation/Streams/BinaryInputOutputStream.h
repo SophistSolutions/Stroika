@@ -19,6 +19,15 @@
 /**
  *  \file
  *
+ *	TODO:
+ *			@todo	Consdier adding something LIKE BinaryIntputOutputStream which two RELATED streams
+ *					but that dont share a common offset, and where writing on side has nothing
+ *					todo with what yhou would read.
+ *
+ *					This kind of stream is whats used for TCP communications or PIPES. Maybe call it
+ *					a BiStream??? Not sure? Bad name, but??? Whatever we do here - fixup SocketStream
+ *					to correspond!!!
+ *
  */
 
 
@@ -38,6 +47,9 @@ namespace   Stroika {
              *  If the BinaryInputOutputStream is seekable, then the same seek offset applies to BOTH the input and
              *  output sides. If you wish to have separate seek offsets, maintain two separate input and output stream
              *  objects.
+			 *
+			 *	Note that this concept applies to a file, but NOT to a socket (tcp) stream. A TCP/stream
+			 *	really consists of two related (paired) streams going in opposite directions.
              */
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:
