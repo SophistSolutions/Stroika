@@ -14,6 +14,9 @@ using   namespace   Stroika::Foundation::Execution::Resources;
 
 
 
+
+
+
 /*
  ********************************************************************************
  ********************* Execution::Resources::Manager ****************************

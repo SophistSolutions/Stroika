@@ -15,8 +15,7 @@ namespace   Stroika {
         namespace   Execution {
             namespace   Resources {
 
-
-                class Manager;
+                class   Manager;
 
                 /**
                  * This object provides access to the application-lifetime data/pointers associated with a resource
@@ -27,8 +26,16 @@ namespace   Stroika {
                     Accessor (const Byte* start, const Byte* end);
 
                 public:
-                    nonvirtual  const Byte*     GetDataStart () const;
-                    nonvirtual  const Byte*     GetDataEnd () const;
+                    nonvirtual  const Byte*     begin () const;
+                    nonvirtual  const Byte*     end () const;
+                
+				public:
+                    nonvirtual  size_t    size () const;
+
+				public:
+					/*
+					 * @todo	Consider different return value - streams? - or some new BLOB type.
+					 */
                     nonvirtual  vector<Byte>    GetData () const;
 
                 private:

@@ -20,14 +20,21 @@ namespace   Stroika {
                     : fDataStart_ (start)
                     , fDataEnd_ (end)
                 {
+					Require (start != nullptr or (start == end));
+					Require (end != nullptr or (start == end));
+					Require (start <= end);
                 }
-                inline  const Byte* Accessor::GetDataStart () const
+                inline  const Byte* Accessor::begin () const
                 {
                     return fDataStart_;
                 }
-                inline  const Byte* Accessor::GetDataEnd () const
+                inline  const Byte* Accessor::end () const
                 {
                     return fDataEnd_;
+                }
+                inline  size_t	Accessor::size () const
+                {
+                    return fDataEnd_ - fDataStart_;
                 }
                 inline  vector<Byte>    Accessor::GetData () const
                 {
