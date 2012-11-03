@@ -12,7 +12,7 @@
  *  \file
  *
  * TODO:
- *		@todo	Support for POD-types is incomplete, and requires lots of typing. It would be nice to find a better way.
+ *      @todo   Support for POD-types is incomplete, and requires lots of typing. It would be nice to find a better way.
  *              Baring that, implement the remaining cases...
  */
 
@@ -28,8 +28,8 @@ namespace   Stroika {
              * piece of data it locks (making it easier and more practical to have a single critical section for each peice of data)
              *
              * You can use Lockable<T> in most places like a "T" - but with the added ability to use it with AutoCriticalSection.
-			 *
-			 * @note this works with POD-types like bool etc, only through explicit template specialization.
+             *
+             * @note this works with POD-types like bool etc, only through explicit template specialization.
              */
             template    <typename BASE, typename LOCKTYPE = CriticalSection>
             class   Lockable : public BASE, public LOCKTYPE {
