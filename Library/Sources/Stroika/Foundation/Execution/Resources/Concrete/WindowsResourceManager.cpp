@@ -15,6 +15,7 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Execution::Resources;
+using   namespace   Stroika::Foundation::Execution::Resources::Concrete;
 
 
 
@@ -24,7 +25,7 @@ class    WindowsResourceManager::IRep_ : public Manager::_IRep {
 private:
     HMODULE fModule_;
 public:
-	IRep_ (HMODULE hModule)
+    IRep_ (HMODULE hModule)
         : fModule_ (hModule) {
     }
     virtual Accessor    ReadResource (const Name& name) const override {

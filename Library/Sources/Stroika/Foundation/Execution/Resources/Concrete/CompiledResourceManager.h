@@ -39,17 +39,19 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
+                namespace   Concrete {
 
-                /**
-                 * NYI, but this class will be paired with a compiler which takes an arbitrary file and converts it to
-                 * an initialized c array, to be bound by the linker. The trikiest - TBD part of this - is figuring out
-                 * how to compile a directory, and integrate the various resources into a single mapped manaager.
-                 */
-                class   CompiledResourceManager : public Manager {
-                public:
-                    CompiledResourceManager ();
-                };
+                    /**
+                     * NYI, but this class will be paired with a compiler which takes an arbitrary file and converts it to
+                     * an initialized c array, to be bound by the linker. The trikiest - TBD part of this - is figuring out
+                     * how to compile a directory, and integrate the various resources into a single mapped manaager.
+                     */
+                    class   CompiledResourceManager : public Manager {
+                    public:
+                        CompiledResourceManager ();
+                    };
 
+                }
             }
         }
     }

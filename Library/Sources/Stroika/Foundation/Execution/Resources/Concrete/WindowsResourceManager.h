@@ -21,17 +21,19 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
+                namespace   Concrete {
 
-                /**
-                 * Provide ResourceManager access to a Windows resource section of a Windows executable.
-                 */
-                class   WindowsResourceManager : public Manager {
-                public:
-                    WindowsResourceManager (HMODULE hModule);
-                private:
-                    class   IRep_;
-                };
+                    /**
+                     * Provide ResourceManager access to a Windows resource section of a Windows executable.
+                     */
+                    class   WindowsResourceManager : public Manager {
+                    public:
+                        WindowsResourceManager (HMODULE hModule);
+                    private:
+                        class   IRep_;
+                    };
 
+                }
             }
         }
     }

@@ -27,15 +27,17 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
+                namespace   Concrete {
 
-                /**
-                 * NYI, but this will use the ELF gcc ld feature of letting you bind arbitrary files into an executable...
-                 */
-                class   ElfResourceManager : public Manager {
-                public:
-                    ElfResourceManager ();
-                };
+                    /**
+                     * NYI, but this will use the ELF gcc ld feature of letting you bind arbitrary files into an executable...
+                     */
+                    class   ElfResourceManager : public Manager {
+                    public:
+                        ElfResourceManager ();
+                    };
 
+                }
             }
         }
     }
