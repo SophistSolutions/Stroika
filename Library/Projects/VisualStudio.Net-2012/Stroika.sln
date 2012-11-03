@@ -62,6 +62,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-
 		..\Linux\SharedMakeVariables-Default.mk = ..\Linux\SharedMakeVariables-Default.mk
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebService", "Stroika-Frameworks-WebService.vcxproj", "{9454F6D7-68B9-4C91-92D1-99958EC9EA42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -255,6 +257,42 @@ Global
 		{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}.Release-U-64|Win32.Build.0 = Release-U-64|Win32
 		{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
 		{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}.Release-U-64|x64.Build.0 = Release-U-64|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-A-32|Win32.ActiveCfg = Debug-A-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-A-32|Win32.Build.0 = Debug-A-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-A-32|x64.ActiveCfg = Debug-A-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-A-32|x64.Build.0 = Debug-A-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-32|Win32.ActiveCfg = Debug-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-32|Win32.Build.0 = Debug-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-32|x64.ActiveCfg = Debug-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-32|x64.Build.0 = Debug-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-64|Win32.ActiveCfg = Debug-U-64|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-64|Win32.Build.0 = Debug-U-64|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-64|x64.ActiveCfg = Debug-U-64|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Debug-U-64|x64.Build.0 = Debug-U-64|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-A-32|Win32.ActiveCfg = Release-A-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-A-32|x64.Build.0 = Release-A-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-DbgMemLeaks-U-32|Win32.Build.0 = Release-DbgMemLeaks-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-DbgMemLeaks-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-DbgMemLeaks-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-32|Win32.ActiveCfg = Release-Logging-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-32|Win32.Build.0 = Release-Logging-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-32|x64.ActiveCfg = Release-Logging-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-32|x64.Build.0 = Release-Logging-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-64|Win32.ActiveCfg = Release-Logging-U-64|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-64|Win32.Build.0 = Release-Logging-U-64|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-64|x64.ActiveCfg = Release-Logging-U-64|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-Logging-U-64|x64.Build.0 = Release-Logging-U-64|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-32|x64.ActiveCfg = Release-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-32|x64.Build.0 = Release-U-32|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-64|Win32.ActiveCfg = Release-U-64|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-64|Win32.Build.0 = Release-U-64|Win32
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
+		{9454F6D7-68B9-4C91-92D1-99958EC9EA42}.Release-U-64|x64.Build.0 = Release-U-64|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

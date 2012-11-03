@@ -55,5 +55,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl">
       <Filter>Sources</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
   </ItemGroup>
 </Project>

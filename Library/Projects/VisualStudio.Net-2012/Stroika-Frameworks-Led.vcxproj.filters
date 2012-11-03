@@ -298,14 +298,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\Led\README.txt">
-      <Filter>Source</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r">
       <Filter>Source</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl">
       <Filter>Source\Platform</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\ReadMe.md" />
   </ItemGroup>
 </Project>

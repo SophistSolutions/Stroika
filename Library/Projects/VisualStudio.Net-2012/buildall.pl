@@ -71,5 +71,9 @@ foreach (@kConfigurations) {
 }
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebService.vcxproj /p:$curConfig /target:$useBld");
+}
+foreach (@kConfigurations) {
+	my $curConfig	=	$_;
 	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$useBld");
 }

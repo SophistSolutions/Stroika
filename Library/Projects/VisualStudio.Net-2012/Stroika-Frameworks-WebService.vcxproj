@@ -75,36 +75,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Service\Main.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Service\Main.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Framework-Service-Main.obj</ObjectFileName>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\Service\Main.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Service\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ReadMe.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{76C03E61-1308-4973-ABDA-2E83210A5B52}</ProjectGuid>
+    <ProjectGuid>{9454F6D7-68B9-4C91-92D1-99958EC9EA42}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StroikaFoundation</RootNamespace>
   </PropertyGroup>
