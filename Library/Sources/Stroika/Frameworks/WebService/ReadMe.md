@@ -20,11 +20,18 @@ TODO/DESIGN NOTES:
 			Memory::Variant	Call (String methodName, Memory::Variant args);
 	};
 
+
+	// Need CFX-style interceptors mechanism... maybe not for v1.0?
 	class	SOAPStub {
 		public:
-			SOAPProxy (WSDL, OPTIONAL URL);
-			SOAPProxy (URL);
+			class MethodCallHandler {
+			public:
+			virtual Memory::Variant	Call (String methodName, Memory::Variant args) = 0;
+			};
+			typedef	shared_ptr<MethodCallHandler> MethodCallHandlerPtr;
+			SOAPStub (WSDL, SocketStream, MethodCallHandlerPtr);
+			SOAPProxy (SocketStream, MethodCallHandlerPtr);
 
-			// Sync call - with soap exceptions etc. Does validation if WSDL provided.
-			Memory::Variant	Call (String methodName, Memory::Variant args);
+			// blocks reading on input and invokes callback as needed
+			void	ProcessNextCall();
 	};
