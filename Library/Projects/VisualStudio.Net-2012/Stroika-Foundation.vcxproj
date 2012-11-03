@@ -307,12 +307,18 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Execution-Platform-Windows-Exception.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.cpp" />
@@ -520,13 +526,19 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.h" />
@@ -668,12 +680,17 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\ResourceAccessor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
