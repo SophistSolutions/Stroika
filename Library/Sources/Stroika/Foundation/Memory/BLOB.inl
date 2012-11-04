@@ -35,12 +35,12 @@ namespace   Stroika {
                 fRep_->fData = vector<Byte> (start, end);
             }
             template    <>
-            void    BLOB::As (vector<Byte>* into) const
+            inline	void    BLOB::As (vector<Byte>* into) const
             {
                 *into = fRep_->fData;
             }
             template    <>
-            vector<Byte> BLOB::As () const
+            inline	vector<Byte> BLOB::As () const
             {
                 return fRep_->fData;
             }
