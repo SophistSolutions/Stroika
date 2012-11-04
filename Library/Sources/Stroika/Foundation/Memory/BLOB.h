@@ -34,10 +34,10 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation::Configuration;
             using   namespace   Stroika::Foundation::Memory;
 
-            
-			/**
-			 */
-			class   BLOB {
+
+            /**
+             */
+            class   BLOB {
             public:
                 BLOB ();
                 BLOB (const vector<Byte>& data);

@@ -42,14 +42,14 @@ namespace   Stroika {
 #endif
             template    <>
             void    BLOB::As (vector<Byte>* into) const
-			{
+            {
                 *into = fRep->fData;
-			}
+            }
             template    <>
             vector<Byte> BLOB::As () const
-			{
+            {
                 return fRep->fData;
-			}
+            }
             inline  bool    BLOB::empty () const
             {
                 return fRep->fData.size () == 0;
