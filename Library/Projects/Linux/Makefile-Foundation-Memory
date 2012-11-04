@@ -9,6 +9,7 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Memor
 VPATH = $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)BLOB.o\
 	$(ObjDir)BlockAllocated.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)MemoryAllocator.o\

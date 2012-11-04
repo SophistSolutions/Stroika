@@ -444,6 +444,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -963,6 +966,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1379,6 +1385,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
 </Project>
