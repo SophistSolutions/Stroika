@@ -61,6 +61,6 @@ private:
  ********************************************************************************
  */
 SocketStream::SocketStream (Socket sd)
-	: BinaryTiedStreams (BinaryStream::_SharedIRep (new IRep_ (sd)))
+    : BinaryTiedStreams (BinaryStream::_SharedIRep (new IRep_ (sd)))
 {
 }

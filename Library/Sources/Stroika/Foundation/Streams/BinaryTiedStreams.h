@@ -19,10 +19,10 @@
 /**
  *  \file
  *
- *	TODO:
- *			@todo	Do a better job TIEING these together. For example assert about no seekability? Or ???
- *					somehow better handle calls to common seek interface? Maybe make seek private/issekable, so you
- *					have to cast to right subobject...
+ *  TODO:
+ *          @todo   Do a better job TIEING these together. For example assert about no seekability? Or ???
+ *                  somehow better handle calls to common seek interface? Maybe make seek private/issekable, so you
+ *                  have to cast to right subobject...
  *
  */
 
@@ -36,20 +36,20 @@ namespace   Stroika {
              *  \brief  BinaryTiedStreams are logically two closely related streams - one input and one output
              *
              *  A BinaryTiedStreams is really two separate streams - tied together into one object. The typical
-			 *	use-case for a BinaryTiedStream is a communications channel with another process. So for example,
-			 *	pipes, or a TCP-socket-stream (IO::Network::SocketStream) would be 'tied'.
-			 *
-			 *	BinaryTiedStreams are generally not seekable, but if you want to seek, you must first cast to
-			 *	the appropriate subobject (either the BinaryInputStream or BinaryOutputStream to get the right
-			 *	stream object, and then seek on that.
-			 *
-			 *	Note that this is significantly differnt from a BinaryInputOutputStream (which represents
-			 *	a single stream that can both be written two and read from).
-			 *
-			 *	The input and output streams MAY shared a common shared_ptr<> rep, but are not required to.
-			 *
-			 *	Note - this interpreation of the word "TIED" is perhaps misleading different from the meaning used in
-			 *	std::iostream!
+             *  use-case for a BinaryTiedStream is a communications channel with another process. So for example,
+             *  pipes, or a TCP-socket-stream (IO::Network::SocketStream) would be 'tied'.
+             *
+             *  BinaryTiedStreams are generally not seekable, but if you want to seek, you must first cast to
+             *  the appropriate subobject (either the BinaryInputStream or BinaryOutputStream to get the right
+             *  stream object, and then seek on that.
+             *
+             *  Note that this is significantly differnt from a BinaryInputOutputStream (which represents
+             *  a single stream that can both be written two and read from).
+             *
+             *  The input and output streams MAY shared a common shared_ptr<> rep, but are not required to.
+             *
+             *  Note - this interpreation of the word "TIED" is perhaps misleading different from the meaning used in
+             *  std::iostream!
              */
             class   BinaryTiedStreams : public Streams::BinaryInputStream, public Streams::BinaryOutputStream {
             protected:

@@ -19,7 +19,7 @@
 /**
  *  \file
  *
- *	TODO:
+ *  TODO:
  *
  */
 
@@ -40,9 +40,9 @@ namespace   Stroika {
              *  If the BinaryInputOutputStream is seekable, then the same seek offset applies to BOTH the input and
              *  output sides. If you wish to have separate seek offsets, maintain two separate input and output stream
              *  objects.
-			 *
-			 *	Note that this concept applies to a file, but NOT to a socket (tcp) stream. A TCP/stream
-			 *	really consists of two related (paired) streams going in opposite directions.
+             *
+             *  Note that this concept applies to a file, but NOT to a socket (tcp) stream. A TCP/stream
+             *  really consists of two related (paired) streams going in opposite directions.
              */
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:

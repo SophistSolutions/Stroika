@@ -28,14 +28,14 @@ namespace   Stroika {
                 public:
                     nonvirtual  const Byte*     begin () const;
                     nonvirtual  const Byte*     end () const;
-                
-				public:
+
+                public:
                     nonvirtual  size_t    size () const;
 
-				public:
-					/*
-					 * @todo	Consider different return value - streams? - or some new BLOB type.
-					 */
+                public:
+                    /*
+                     * @todo    Consider different return value - streams? - or some new BLOB type.
+                     */
                     nonvirtual  vector<Byte>    GetData () const;
 
                 private:

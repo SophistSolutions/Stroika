@@ -21,7 +21,7 @@ using   namespace   Stroika::Foundation::Streams;
  ********************************************************************************
  */
 BinaryTiedStreams::BinaryTiedStreams (const BinaryStream::_SharedIRep& inOutRep)
-	: BinaryInputStream (std::dynamic_pointer_cast<BinaryInputStream::_IRep> (inOutRep))
+    : BinaryInputStream (std::dynamic_pointer_cast<BinaryInputStream::_IRep> (inOutRep))
     , BinaryOutputStream (std::dynamic_pointer_cast<BinaryOutputStream::_IRep> (inOutRep))
 {
     RequireMember (inOutRep.get (), BinaryInputStream::_IRep);
@@ -29,7 +29,7 @@ BinaryTiedStreams::BinaryTiedStreams (const BinaryStream::_SharedIRep& inOutRep)
 }
 
 BinaryTiedStreams::BinaryTiedStreams (const BinaryInputStream& in, const BinaryOutputStream& out)
-	: BinaryInputStream (in)
+    : BinaryInputStream (in)
     , BinaryOutputStream (out)
 {
 }
