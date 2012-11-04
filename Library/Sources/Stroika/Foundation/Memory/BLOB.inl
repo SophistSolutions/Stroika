@@ -10,9 +10,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
-#include    "../Execution/ModuleInit.h"
-
+#include    "../Memory/Common.h"
 
 
 namespace   Stroika {
@@ -20,65 +20,59 @@ namespace   Stroika {
         namespace   Memory {
 
             //  class   BLOB
-            inline  BLOB::BLOB ():
-                fRep (DEBUG_NEW Rep ())
+            inline  BLOB::BLOB ()
+                : fRep_ (DEBUG_NEW _IRep ())
             {
             }
-            inline  BLOB::BLOB (const vector<Byte>& data):
-                fRep (DEBUG_NEW Rep ())
+            inline  BLOB::BLOB (const vector<Byte>& data)
+                : fRep_ (DEBUG_NEW _IRep ())
             {
-                fRep->fData = data;
+                fRep_->fData = data;
             }
-            inline  BLOB::BLOB (const Byte* start, const Byte* end):
-                fRep (DEBUG_NEW Rep ())
+            inline  BLOB::BLOB (const Byte* start, const Byte* end)
+                : fRep_ (DEBUG_NEW _IRep ())
             {
-                fRep->fData = vector<Byte> (start, end);
+                fRep_->fData = vector<Byte> (start, end);
             }
-#if 0
-            inline  BLOB::operator const vector<Byte>& () const
-            {
-                return fRep->fData;
-            }
-#endif
             template    <>
             void    BLOB::As (vector<Byte>* into) const
             {
-                *into = fRep->fData;
+                *into = fRep_->fData;
             }
             template    <>
             vector<Byte> BLOB::As () const
             {
-                return fRep->fData;
+                return fRep_->fData;
             }
             inline  bool    BLOB::empty () const
             {
-                return fRep->fData.size () == 0;
+                return fRep_->fData.size () == 0;
             }
             inline  void    BLOB::clear ()
             {
                 if (not empty ()) {
-                    fRep = shared_ptr<Rep> (DEBUG_NEW Rep ());
+                    fRep_ = shared_ptr<_IRep> (DEBUG_NEW _IRep ());
                 }
             }
             inline  const Byte* BLOB::begin () const
             {
-                return Containers::Start (fRep->fData);
+                return Containers::Start (fRep_->fData);
             }
             inline  const Byte* BLOB::end () const
             {
-                return Containers::End (fRep->fData);
+                return Containers::End (fRep_->fData);
             }
             inline  size_t  BLOB::GetSize () const
             {
-                return fRep->fData.size ();
+                return fRep_->fData.size ();
             }
             inline  size_t  BLOB::length () const
             {
-                return fRep->fData.size ();
+                return fRep_->fData.size ();
             }
             inline  size_t  BLOB::size () const
             {
-                return fRep->fData.size ();
+                return fRep_->fData.size ();
             }
             inline  bool    operator== (const BLOB& lhs, const BLOB& rhs)
             {
@@ -98,7 +92,6 @@ namespace   Stroika {
                 vector<Byte> R   =   rhs.As<vector<Byte>> ();
                 return L < R;
             }
-
 
 
         }

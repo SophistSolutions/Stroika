@@ -7,18 +7,26 @@
 #include    "../StroikaPreComp.h"
 
 #include    <memory>
-#include    <map>
 #include    <vector>
 
 #include    "../Configuration/Common.h"
-#include    "../Containers/Common.h"
-#include    "../Memory/Common.h"
 
 
 
-/*
+/**
  * TODO:
  *
+ *      @todo   Make IRep virtual
+ *      @todo   Add MemoryMappedFileBLOB to Foundation/File section – and have it subclass
+ *              BLOB (object slicing) – and have different CTOR, and different virtual Rep
+ *              (decide semantics – not clear – readonly)
+ *      @todo   DO ABSTRACT IREP, and one concrete one for represetning as vector<byte>, and one
+ *              which is static cosnst re-usable always zero (empty).
+ *      @todo   Think since all blobs readonly, must deifne this to only allow being applied to readonly files. Not sure always possible? Cuz of file corruption (but how is that difernt htna memory corruption?).
+ *              Not sure how to doucmetn/deal with this.
+ *      @todo   Document that BLOBs are ALWAYS readonly. They can NEVER be changed (but of course you can create new ones). This is crucial for caching reasons. Copy by value semantics, but often copy by reference perofmrance (refcounted).
+ *      @todo   Create overloads in the MD5/SHA1 hash code taking BLOBs as arguments.
+ *      @todo   Do CTOR that uses iterator start/end not just const Byte* start, const Byte* end.
  */
 
 
@@ -39,42 +47,69 @@ namespace   Stroika {
              */
             class   BLOB {
             public:
+                /**
+                 */
                 BLOB ();
                 BLOB (const vector<Byte>& data);
                 BLOB (const Byte* start, const Byte* end);
 
             public:
+                /**
+                 */
                 nonvirtual  bool    empty () const;
+
             public:
+                /**
+                 */
                 nonvirtual  void    clear ();
 
             public:
                 /**
-                 * Convert BLOB losslessly into a standard C++ type (right now just <vector<Byte>>
+                 *  Convert BLOB losslessly into a standard C++ type (right now just <vector<Byte>>
                  *  supported)
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;
                 template    <typename   T>
                 nonvirtual  void   As (T* into) const;
+
             public:
-                //nonvirtual  operator const vector<Byte>& () const;
-            public:
+                /**
+                 */
                 nonvirtual  const Byte* begin () const;
+                /**
+                 */
                 nonvirtual  const Byte* end () const;
+
             public:
+                /**
+                 */
                 nonvirtual  size_t      GetSize () const;
+                /**
+                 */
                 nonvirtual  size_t      size () const;
+                /**
+                 */
                 nonvirtual  size_t      length () const;
 
-            private:
-                struct  Rep {
+            protected:
+                /**
+                 */
+                struct  _IRep {
                     vector<Byte>    fData;
                 };
-                shared_ptr<Rep> fRep;
+
+            private:
+                shared_ptr<_IRep>   fRep_;
             };
+            /**
+             */
             bool    operator< (const BLOB& lhs, const BLOB& rhs);
+            /**
+             */
             bool    operator> (const BLOB& lhs, const BLOB& rhs);
+            /**
+             */
             bool    operator== (const BLOB& lhs, const BLOB& rhs);
 
             template    <>
