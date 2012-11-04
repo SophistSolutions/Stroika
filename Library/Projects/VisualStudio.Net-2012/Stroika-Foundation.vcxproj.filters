@@ -441,6 +441,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp">
       <Filter>Sources\Execution\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -957,6 +960,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h">
       <Filter>Sources\Execution\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1370,6 +1376,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl">
       <Filter>Sources\Execution\Resources\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
 </Project>

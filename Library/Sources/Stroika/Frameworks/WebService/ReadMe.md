@@ -21,7 +21,7 @@ TODO/DESIGN NOTES:
 	};
 
 
-	// Need CFX-style interceptors mechanism... maybe not for v1.0?
+	// TODO: Need CFX-style interceptors mechanism (for security)... maybe not for v1.0?
 	class	SOAPStub {
 		public:
 			class MethodCallHandler {

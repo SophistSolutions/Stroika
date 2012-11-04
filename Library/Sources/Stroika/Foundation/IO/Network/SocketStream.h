@@ -7,9 +7,8 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Streams/BinaryInputOutputStream.h"
+#include    "../../Streams/BinaryTiedStreams.h"
 #include    "Socket.h"
-
 
 
 
@@ -18,13 +17,7 @@
  *  \file
  *
  *		TODO:
- *
- *			@todo	Major problem! SocketStream REALLY should be modeled as TWO Binary streams - NOT using
- *					BinaryInputOutputStream. They are two RELATED streams - but do not share a common
- *					seek position. They share a common FILE DESCRIPTOR - but they are untied streams.
- *					<<MAYBE thats a concept that should go into the stream code???
- *					<<< Whatever we do - see comments in header of BinaryInputOutputStream - and
- *					fix code there and use fix here>>>
+ *			
  */
 
 namespace   Stroika {
@@ -32,19 +25,13 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
-#if 0
-                // Platform Socket descriptor - file descriptor on unix (something like this on windoze)
-                typedef int SocketDescriptor;
-#endif
-
-
                 /*
-                 * A SocketStream wraps a a socket as a Binary Stream (input and output) - but note that the two steams are totally
-                 * separate, and and have almost nothing todo with one another. Writes to the output dont appear in the input.
+                 *	A SocketStream wraps a a socket as a BinaryTiedStreams - two separate by related streams.
                  *
-                 * The only real conneciton is that they share a common socket, and if IT is closed, then the whole SocketStream will stop working.
+                 *	The only real conneciton is that they share a common socket, and if IT is closed,
+				 *	then the whole SocketStream will stop working.
                  */
-                class   SocketStream : public Streams::BinaryInputOutputStream {
+                class   SocketStream : public Streams::BinaryTiedStreams {
                 private:
                     class   IRep_;
                 public:

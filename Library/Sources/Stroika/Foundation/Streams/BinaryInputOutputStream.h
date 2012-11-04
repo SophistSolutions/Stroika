@@ -20,13 +20,6 @@
  *  \file
  *
  *	TODO:
- *			@todo	Consdier adding something LIKE BinaryIntputOutputStream which two RELATED streams
- *					but that dont share a common offset, and where writing on side has nothing
- *					todo with what yhou would read.
- *
- *					This kind of stream is whats used for TCP communications or PIPES. Maybe call it
- *					a BiStream??? Not sure? Bad name, but??? Whatever we do here - fixup SocketStream
- *					to correspond!!!
  *
  */
 

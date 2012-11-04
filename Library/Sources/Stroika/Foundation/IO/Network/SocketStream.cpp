@@ -30,11 +30,11 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-class   SocketStream::IRep_ : public virtual _SharedInputIRep::element_type, public virtual _SharedOutputIRep::element_type {
+class   SocketStream::IRep_ : public virtual BinaryInputStream::_IRep, public virtual BinaryOutputStream::_IRep {
 public:
     IRep_ (Socket sd)
-        : _SharedInputIRep::element_type ()
-        , _SharedOutputIRep::element_type ()
+        : BinaryInputStream::_IRep ()
+        , BinaryOutputStream::_IRep ()
         , fSD_ (sd) {
     }
 
@@ -61,6 +61,6 @@ private:
  ********************************************************************************
  */
 SocketStream::SocketStream (Socket sd)
-    : BinaryInputOutputStream (_SharedIRep (new IRep_ (sd)))
+	: BinaryTiedStreams (BinaryStream::_SharedIRep (new IRep_ (sd)))
 {
 }
