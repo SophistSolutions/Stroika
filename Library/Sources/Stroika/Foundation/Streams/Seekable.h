@@ -35,7 +35,8 @@ namespace   Stroika {
 
 
             /**
-             * Offset is signed, because you can use a negative # from the end or from the current position.
+             * SignedSeekOffsetType is signed variant of SeekOffsetType - used to specify a seek offset which can sometimes be
+             * negative (backwards).
              */
             typedef int64_t SignedSeekOffsetType;
 
@@ -77,14 +78,20 @@ namespace   Stroika {
             class   Seekable {
             public:
                 virtual ~Seekable ();
+
+
             public:
+                /**
+                 * GetOffset () returns the currently seeked offset. This is the same as Seek (FromCurrent_W, 0).
+                 */
                 nonvirtual  SeekOffsetType  GetOffset () const;
             protected:
                 virtual SeekOffsetType  _GetOffset () const                                     =   0;
 
             public:
                 /**
-                 * The new position, measured in bytes, is obtained by adding offset bytes to the position specified by whence
+                 * The new position, measured in bytes, is obtained by adding offset bytes to the position specified by whence.
+                 * Seek () returns the new resulting position.
                  */
                 nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset);
                 nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset);
