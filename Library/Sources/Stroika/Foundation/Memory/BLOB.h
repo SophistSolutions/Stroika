@@ -54,6 +54,8 @@ namespace   Stroika {
 
 
             /**
+			 *	A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
+			 *	change.
              */
             class   BLOB {
             public:
@@ -89,9 +91,12 @@ namespace   Stroika {
 
             public:
                 /**
+				 *
+				 *	Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
                  */
                 nonvirtual  const Byte* begin () const;
                 /**
+				 *	Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
                  */
                 nonvirtual  const Byte* end () const;
 
@@ -108,6 +113,9 @@ namespace   Stroika {
 
             public:
                 /**
+				 *	This is like memcmp() - it returns == 0, if the RHS and LHS are the same, and it
+				 *	returns < 0 if the first byte where the two regions differ is less than the first byte
+				 *	of the RHS (where they differ).
                  */
                 nonvirtual  int      compare (const BLOB& rhs) const;
 

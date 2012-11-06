@@ -35,3 +35,28 @@ pair<const Byte*, const Byte*>   Memory::BLOB::ZeroRep_::GetBounds () const
     return pair<const Byte*, const Byte*> (nullptr, nullptr);
 }
 
+
+
+
+
+
+
+
+int  Memory::BLOB::compare (const BLOB& rhs) const
+{
+    pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
+    pair<const Byte*, const Byte*>   r =   rhs.fRep_->GetBounds ();
+
+	size_t	lSize = l.second-l.first;
+	size_t	rSize = r.second-r.first;
+	size_t	nCommonBytes = min (lSize, rSize);
+	int tmp = ::memcmp (l.first, r.first, nCommonBytes);
+	if (tmp != 0) {
+		return tmp;
+	}
+	// if tmp is zero, and same size - its really zero. But if lhs shorter than right, say lhs < right
+	if (lSize == rSize) {
+		return 0;
+	}
+	return (lSize < rSize)? -1 : 1;
+}
