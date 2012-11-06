@@ -35,7 +35,7 @@ namespace   Stroika {
             protected:
                 virtual size_t          _Read (Character* intoStart, Character* intoEnd) override;
                 virtual SeekOffsetType  _GetOffset () const override;
-                virtual void            _Seek (Whence whence, SeekOffsetType offset) override;
+                virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override;
 
             private:
                 BinaryInputStream  fSource_;

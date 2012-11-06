@@ -29,9 +29,15 @@ namespace   Stroika {
 
 
             /**
+             * SeekOffsetType is unsigned, normally, because for most purposes its zero based. See SignedSeekOffsetType.
+             */
+            typedef uint64_t SeekOffsetType;
+
+
+            /**
              * Offset is signed, because you can use a negative # from the end or from the current position.
              */
-            typedef int64_t SeekOffsetType;
+            typedef int64_t SignedSeekOffsetType;
 
 
             /**
@@ -80,10 +86,10 @@ namespace   Stroika {
                 /**
                  * The new position, measured in bytes, is obtained by adding offset bytes to the position specified by whence
                  */
-                nonvirtual  void        Seek (SeekOffsetType offset);
-                nonvirtual  void        Seek (Whence whence, SeekOffsetType offset);
+                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset);
+                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset);
             protected:
-                virtual void            _Seek (Whence whence, SeekOffsetType offset)            =   0;
+                virtual SeekOffsetType      _Seek (Whence whence, SignedSeekOffsetType offset)      =   0;
             };
 
         }

@@ -47,7 +47,8 @@ Streams::SeekOffsetType TextInputStreamBinaryAdapter::_GetOffset () const
     return 0;
 }
 
-void    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SeekOffsetType offset)
+SeekOffsetType    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset)
 {
     AssertNotImplemented ();
+    return 0;
 }

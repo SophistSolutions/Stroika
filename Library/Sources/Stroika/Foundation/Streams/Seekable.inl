@@ -23,13 +23,13 @@ namespace   Stroika {
             {
                 return _GetOffset ();
             }
-            inline  void    Seekable::Seek (SeekOffsetType offset)
+            inline  SeekOffsetType    Seekable::Seek (SignedSeekOffsetType offset)
             {
-                _Seek (FromStart_W, offset);
+                return _Seek (FromStart_W, offset);
             }
-            inline  void    Seekable::Seek (Whence whence, SeekOffsetType offset)
+            inline  SeekOffsetType    Seekable::Seek (Whence whence, SignedSeekOffsetType offset)
             {
-                _Seek (whence, offset);
+                return _Seek (whence, offset);
             }
 
 

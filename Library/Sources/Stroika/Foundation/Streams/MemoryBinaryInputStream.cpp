@@ -57,7 +57,7 @@ public:
         return fCursor_ - fData_.begin ();
     }
 
-    virtual void            _Seek (Whence whence, SeekOffsetType offset) override {
+    virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);
         switch (whence) {
             case    FromStart_W: {
@@ -96,6 +96,7 @@ public:
                 break;
         }
         Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
+        return GetOffset ();
     }
 
 private:
