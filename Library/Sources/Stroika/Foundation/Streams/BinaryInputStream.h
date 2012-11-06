@@ -40,6 +40,15 @@
  *      @todo   Perhaps add a GetBytesAvailable() method. This is effectively like converting
  *              blocking to safe read calls...
  *
+ *      @todo   Consider adding GetLength() - as an alias for:
+ *                  oldOffset o = GetOffset();
+ *                  l =  Seek (FromEnd_W, 0);
+ *                  Seek (FromStart_W, o);
+ *                  return l;
+ *              The reason to add this - as a virtual function - is that it can be more efficient and semantically pure
+ *              (multithreading). Do here - not in Seekable - cuz only sensible for read streams, not write streams. Well defined.
+ *              Issue is - probably REQUIRE Seekable() for this. But its possibly sensible even for non-seekable streams???
+ *
  */
 
 

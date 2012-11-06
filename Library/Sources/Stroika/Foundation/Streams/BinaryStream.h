@@ -87,7 +87,8 @@ namespace   Stroika {
                 /**
                  * \brief   Returns true iff this object was constructed with a seekable input stream rep.
                  *
-                 *  Returns true iff this object was constructed with a seekable input stream rep.
+                 *  Returns true iff this object was constructed with a seekable input stream rep. Note -
+                 *  seekability cannot change over the lifetime of an object.
                  */
                 nonvirtual  bool    IsSeekable () const;
 
