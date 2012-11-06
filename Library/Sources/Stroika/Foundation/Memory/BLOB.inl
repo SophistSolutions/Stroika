@@ -44,13 +44,13 @@ namespace   Stroika {
 
 
             struct  BLOB::BasicRep_ : public _IRep {
-				//  really not sure what size to use???
+                //  really not sure what size to use???
                 //  May not be any universal, good answer...
                 //  Remember - users can subclass BLOB, and provider their own
                 //  'rep' type tuned to their application.
-                SmallStackBuffer<Byte, 64>    fData;        
+                SmallStackBuffer<Byte, 64>    fData;
 
-				BasicRep_ (const Byte* start, const Byte* end);
+                BasicRep_ (const Byte* start, const Byte* end);
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
                 DECLARE_USE_BLOCK_ALLOCATION (BasicRep_);

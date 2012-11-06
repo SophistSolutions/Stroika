@@ -55,17 +55,17 @@ namespace   Stroika {
                 AssertNotNull (fSeekable_);
                 return fSeekable_->GetOffset ();
             }
-            inline  void        BinaryStream::Seek (SeekOffsetType offset)
+            inline  SeekOffsetType        BinaryStream::Seek (SignedSeekOffsetType offset)
             {
                 Require (IsSeekable ());
                 AssertNotNull (fSeekable_);
-                fSeekable_->Seek (offset);
+                return fSeekable_->Seek (offset);
             }
-            inline  void        BinaryStream::Seek (Whence whence, SeekOffsetType offset)
+            inline  SeekOffsetType        BinaryStream::Seek (Whence whence, SignedSeekOffsetType offset)
             {
                 Require (IsSeekable ());
                 AssertNotNull (fSeekable_);
-                fSeekable_->Seek (whence, offset);
+                return fSeekable_->Seek (whence, offset);
             }
 
 
