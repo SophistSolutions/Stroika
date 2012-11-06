@@ -26,13 +26,6 @@
  *              BLOB (object slicing) – and have different CTOR, and different virtual Rep
  *              (decide semantics – not clear – readonly)
  *
- *      @todo   Think since all blobs readonly, must deifne this to only allow being applied to readonly files.
- *              Not sure always possible? Cuz of file corruption (but how is that difernt htna memory corruption?).
- *              Not sure how to doucmetn/deal with this.
- *
- *      @todo   Document that BLOBs are ALWAYS readonly. They can NEVER be changed (but of course you can create new ones).
- *              This is crucial for caching reasons. Copy by value semantics, but often copy by reference perofmrance (refcounted).
- *
  *      @todo   Create overloads in the MD5/SHA1 hash code taking BLOBs as arguments.
  *
  *      @todo   Do CTOR that uses iterator start/end not just const Byte* start, const Byte* end.
@@ -107,7 +100,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *
                  *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
                  */
                 nonvirtual  const Byte* begin () const;
