@@ -28,10 +28,12 @@
  *      @todo   DO ABSTRACT IREP, and one concrete one for represetning as vector<byte>, and one
  *              which is static cosnst re-usable always zero (empty).
  *
- *      @todo   Think since all blobs readonly, must deifne this to only allow being applied to readonly files. Not sure always possible? Cuz of file corruption (but how is that difernt htna memory corruption?).
+ *      @todo   Think since all blobs readonly, must deifne this to only allow being applied to readonly files.
+ *              Not sure always possible? Cuz of file corruption (but how is that difernt htna memory corruption?).
  *              Not sure how to doucmetn/deal with this.
  *
- *      @todo   Document that BLOBs are ALWAYS readonly. They can NEVER be changed (but of course you can create new ones). This is crucial for caching reasons. Copy by value semantics, but often copy by reference perofmrance (refcounted).
+ *      @todo   Document that BLOBs are ALWAYS readonly. They can NEVER be changed (but of course you can create new ones).
+ *              This is crucial for caching reasons. Copy by value semantics, but often copy by reference perofmrance (refcounted).
  *
  *      @todo   Create overloads in the MD5/SHA1 hash code taking BLOBs as arguments.
  *
@@ -39,6 +41,12 @@
  *
  */
 
+
+
+//TODO - fix this - this is a temporary hack to get stuff compiling
+#ifndef qWierdPrivateBLOBBug
+#define qWierdPrivateBLOBBug 1
+#endif
 
 
 
@@ -62,6 +70,14 @@ namespace   Stroika {
                 BLOB ();
                 BLOB (const vector<Byte>& data);
                 BLOB (const Byte* start, const Byte* end);
+
+            protected:
+                struct  _IRep;
+
+                /**
+                 * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
+                 */
+                BLOB (const shared_ptr<_IRep>& rep);
 
             public:
                 /**
@@ -102,12 +118,22 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t      length () const;
 
+            public:
+                /**
+                 */
+                nonvirtual  int      compare (const BLOB& rhs) const;
+
             protected:
                 /**
                  */
-                struct  _IRep {
-                    vector<Byte>    fData;
-                };
+                struct  _IRep;
+
+            private:
+#if qWierdPrivateBLOBBug
+            public:
+#endif
+                struct  BasicRep_;
+                struct  ZeroRep_ ;
 
             private:
                 shared_ptr<_IRep>   fRep_;
