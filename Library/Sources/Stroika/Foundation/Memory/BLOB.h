@@ -16,17 +16,9 @@
 /**
  * TODO:
  *
- *      @todo   Make IRep virtual
- *
- *      @todo   Do REAL IRep with virtual methods todo stuff like getting iterator values, and size etc. Include compare() -> int method, and
- *              use that for operator==, < >, etc...
- *
  *      @todo   Add MemoryMappedFileBLOB to Foundation/File section – and have it subclass
  *              BLOB (object slicing) – and have different CTOR, and different virtual Rep
  *              (decide semantics – not clear – readonly)
- *
- *      @todo   DO ABSTRACT IREP, and one concrete one for represetning as vector<byte>, and one
- *              which is static cosnst re-usable always zero (empty).
  *
  *      @todo   Think since all blobs readonly, must deifne this to only allow being applied to readonly files.
  *              Not sure always possible? Cuz of file corruption (but how is that difernt htna memory corruption?).
@@ -81,13 +73,9 @@ namespace   Stroika {
 
             public:
                 /**
+				 *	Returns true iff the size of the BLOB is zero.
                  */
                 nonvirtual  bool    empty () const;
-
-            public:
-                /**
-                 */
-                nonvirtual  void    clear ();
 
             public:
                 /**

@@ -97,12 +97,6 @@ namespace   Stroika {
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
                 return tmp.first == tmp.second;
             }
-            inline  void    BLOB::clear ()
-            {
-                if (not empty ()) {
-                    fRep_ = shared_ptr<_IRep> (DEBUG_NEW ZeroRep_ ());
-                }
-            }
             inline  const Byte* BLOB::begin () const
             {
                 return fRep_->GetBounds ().first;
