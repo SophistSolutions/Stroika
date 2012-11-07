@@ -18,24 +18,11 @@
 /**
  *  \file
  *
- *      @todo   Unclear about lifetime of stream objects. Right now - the overall design is agnostic.
- *              But I could redo class X as X (envelope) and X::IRep is implementaiton using shared_ptr<>.
- *              This would have the advantage of making the lifetime issues clear and simple.
- *              But right now - so far - things seem to be going OK without that.
- *
- *      @todo   Consider template basic_istream<>
- *              and do of BYTE and CHARACTER (for binary and text i/ostreams). Abstract bases.
- *              Points the way towards creating streams of OTHER sorts of objects if desired.
- *
  *      @todo   Explain in docs how Stroika streams differ from iostream
  *              o   MUCH MUCH easier to implement your own complaint stream
  *              o   Separarate interface from implementation (thats why easier to implement)
  *              o   Doesn’t mix text with binary APIs. Keeps them logically separate (view as
  *                  you will – diff – if better or worse)
- *
- *      @todo   Consider if we should use
- *              typedef shared_ptr<BinaryInputStream>   BinaryInputStreamPtr;
- *              or just use direct classes. Very unclear.
  *
  *      @todo   Perhaps add a GetBytesAvailable() method. This is effectively like converting
  *              blocking to safe read calls...
@@ -45,9 +32,10 @@
  *                  l =  Seek (FromEnd_W, 0);
  *                  Seek (FromStart_W, o);
  *                  return l;
- *              The reason to add this - as a virtual function - is that it can be more efficient and semantically pure
- *              (multithreading). Do here - not in Seekable - cuz only sensible for read streams, not write streams. Well defined.
- *              Issue is - probably REQUIRE Seekable() for this. But its possibly sensible even for non-seekable streams???
+ *              The reason to add this - as a virtual function - is that it can be more efficient and
+ *				semantically pure (multithreading). Do here - not in Seekable - cuz only sensible for
+ *				read streams, not write streams. Well defined. Issue is - probably REQUIRE Seekable()
+ *				for this. But its possibly sensible even for non-seekable streams???
  *
  */
 
@@ -65,6 +53,10 @@ namespace   Stroika {
              *
              * Design Overview:
              *
+             *      o   See BinaryStream for details about memory management, but the basic idea is
+             *          that BinaryInputStream acts as a smart-pointer to an abstract
+             *          BinaryInputStream::_IRep.
+             *
              *      o   All read's on a BinaryInputStream are BLOCKING. If there is a desire to have a
              *          non-blocking read, then create a new mixin interface and through that interface
              *          you can do non-blocking reads, but this Read() method must always block.
@@ -80,6 +72,9 @@ namespace   Stroika {
              *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an
              *          input/output stream. Similarly, they can both be mixed together with Seekable.
              *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *
+             *      o   See Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
+             *
              */
             class   BinaryInputStream : public BinaryStream {
             protected:
