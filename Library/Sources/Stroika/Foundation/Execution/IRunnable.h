@@ -18,9 +18,9 @@
  *
  * TODO:
  *      @todo   Consider if IRunnable should inherit from shared_ptr<T>::enable_shared_from_this<>? Reason
- *				for YES is that it may sometimes be useful. We also ONLY use IRunnable with shared_ptr<T> -
- *				so probably causes no harm. I gues sit depends how hard it is to mixin later (mix Irunnable
- *				and enable_shared_from_this)?
+ *              for YES is that it may sometimes be useful. We also ONLY use IRunnable with shared_ptr<T> -
+ *              so probably causes no harm. I gues sit depends how hard it is to mixin later (mix Irunnable
+ *              and enable_shared_from_this)?
  */
 
 
@@ -29,11 +29,11 @@ namespace   Stroika {
         namespace   Execution {
 
             /**
-             *	This simple class is the basis of Stroika deferred run-task support (and threading etc).
-			 *	Just create Shared<IRunnable> entites and you can pass the tasks around, and the shared
-			 *	semantics exactly keep all the results and code etc alive until the last reference.
-			 *
-			 *	@see SimpleRunnable
+             *  This simple class is the basis of Stroika deferred run-task support (and threading etc).
+             *  Just create Shared<IRunnable> entites and you can pass the tasks around, and the shared
+             *  semantics exactly keep all the results and code etc alive until the last reference.
+             *
+             *  @see SimpleRunnable
              */
             class   IRunnable {
             private:

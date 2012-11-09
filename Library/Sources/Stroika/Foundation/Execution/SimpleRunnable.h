@@ -24,11 +24,11 @@ namespace   Stroika {
         namespace   Execution {
 
             /**
-             *	SimpleRunnable is an easy way to map a simple object or function (optionally with args) to
-			 *	an IRunnable - the basic type used in threading and background processing classes.
-			 *
-			 *	Note - this class isn't free. Using std::function as a way to capture your funciton is
-			 *	less efficient than just doing your own IRunnable subclass directly.
+             *  SimpleRunnable is an easy way to map a simple object or function (optionally with args) to
+             *  an IRunnable - the basic type used in threading and background processing classes.
+             *
+             *  Note - this class isn't free. Using std::function as a way to capture your funciton is
+             *  less efficient than just doing your own IRunnable subclass directly.
              */
             class   SimpleRunnable : public IRunnable {
             public:
