@@ -33,9 +33,9 @@
  *                  Seek (FromStart_W, o);
  *                  return l;
  *              The reason to add this - as a virtual function - is that it can be more efficient and
- *				semantically pure (multithreading). Do here - not in Seekable - cuz only sensible for
- *				read streams, not write streams. Well defined. Issue is - probably REQUIRE Seekable()
- *				for this. But its possibly sensible even for non-seekable streams???
+ *              semantically pure (multithreading). Do here - not in Seekable - cuz only sensible for
+ *              read streams, not write streams. Well defined. Issue is - probably REQUIRE Seekable()
+ *              for this. But its possibly sensible even for non-seekable streams???
  *
  */
 
