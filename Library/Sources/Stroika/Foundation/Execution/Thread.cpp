@@ -132,7 +132,7 @@ using   Debug::TraceContextBumper;
  ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const shared_ptr<IRunnable>& runnable)
+Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
 #if     qUseThreads_StdCPlusPlus
     : fThread_ ()
 #elif   qUseThreads_WindowsNative
@@ -426,19 +426,13 @@ Thread::Thread ()
 {
 }
 
-Thread::Thread (void (*fun2CallOnce) ())
+Thread::Thread (const std::function<void()>& fun2CallOnce)
     : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce))))
 {
     Rep_::DoCreate (&fRep_);
 }
 
-Thread::Thread (void (*fun2CallOnce) (void* arg), void* arg)
-    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce, arg))))
-{
-    Rep_::DoCreate (&fRep_);
-}
-
-Thread::Thread (const shared_ptr<IRunnable>& runnable)
+Thread::Thread (const IRunnablePtr& runnable)
     : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (runnable)))
 {
     Rep_::DoCreate (&fRep_);

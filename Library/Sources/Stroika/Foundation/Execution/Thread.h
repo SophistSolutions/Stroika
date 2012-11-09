@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <functional>
 #if     qUseThreads_StdCPlusPlus
 #include    <thread>
 #elif   qUseThreads_WindowsNative
@@ -218,9 +219,8 @@ namespace   Stroika {
                 //
                 //
                 // fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
-                explicit Thread (void (*fun2CallOnce) ());
-                explicit Thread (void (*fun2CallOnce) (void* arg), void* arg);
-                explicit Thread (const shared_ptr<IRunnable>& runnable);
+                explicit Thread (const std::function<void()>& fun2CallOnce);
+                explicit Thread (const IRunnablePtr& runnable);
 
 #if         qUseThreads_WindowsNative
             public:

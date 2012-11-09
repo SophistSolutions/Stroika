@@ -22,11 +22,6 @@ using   namespace   Stroika::Foundation::Execution;
  */
 void    SimpleRunnable::Run ()
 {
-    (fFun2CallOnce) (fArg);
+    fCall_ ();
 }
 
-void    SimpleRunnable::FakeZeroArg_ (void* arg)
-{
-    void (*realFunCall) ()  =   reinterpret_cast<void (*) ()> (arg);
-    (realFunCall) ();
-}

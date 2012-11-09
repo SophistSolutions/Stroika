@@ -802,7 +802,7 @@ FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& direc
     fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter)),
     fQuitting (false)
 {
-    fThread = Execution::Thread (&ThreadProc, this);
+    fThread = Execution::Thread (bind (&ThreadProc, this));
     fThread.SetThreadName (L"DirectoryChangeWatcher");
     fThread.Start ();
 }

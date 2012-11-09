@@ -45,7 +45,7 @@ ConnectionManager::~ConnectionManager ()
 
 void    ConnectionManager::Start ()
 {
-    fThreads_.AddTask (Execution::SimpleObjRunnable<ConnectionManager>::MAKE (&ConnectionManager::DoMainConnectionLoop_, this));
+    fThreads_.AddTask (Execution::SimpleRunnable::MAKE (bind (&ConnectionManager::DoMainConnectionLoop_, this)));
 }
 
 void    ConnectionManager::Abort ()

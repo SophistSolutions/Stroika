@@ -6,14 +6,16 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <functional>
+
 #include    "../Memory/BlockAllocated.h"
 
 #include    "IRunnable.h"
 
 
-/*
- * TODO:
- *      o   Probably want to do variants on this - maybe templated think like STL-style functor...
+/**
+ *  \file
+ *
  */
 
 
@@ -21,58 +23,29 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            /*
-             * SimpleRunnable is an easy way to map a simple object or function (optionally with args) to an IRunnable - the
-             * basic type used in threading and background processing classes.
+            /**
+             *	SimpleRunnable is an easy way to map a simple object or function (optionally with args) to
+			 *	an IRunnable - the basic type used in threading and background processing classes.
+			 *
+			 *	Note - this class isn't free. Using std::function as a way to capture your funciton is
+			 *	less efficient than just doing your own IRunnable subclass directly.
              */
             class   SimpleRunnable : public IRunnable {
             public:
-                SimpleRunnable (void (*fun2CallOnce) ());
-                SimpleRunnable (void (*fun2CallOnce) (void* arg), void* arg);
+                SimpleRunnable (const std::function<void()>& fun2CallOnce);
 
             public:
                 virtual void    Run () override;
 
             public:
-                static  shared_ptr<IRunnable>    MAKE (void (*fun2CallOnce) ());
-                static  shared_ptr<IRunnable>    MAKE (void (*fun2CallOnce) (void* arg), void* arg);
+                static  IRunnablePtr    MAKE (const std::function<void()>& fun2CallOnce);
 
             private:
-                static  void    FakeZeroArg_ (void* arg);
-
-            private:
-                void (*fFun2CallOnce) (void* arg);
-                void* fArg;
+                std::function<void()>   fCall_;
 
             public:
                 DECLARE_USE_BLOCK_ALLOCATION(SimpleRunnable);
             };
-
-
-
-            // This can go away once we have the abilitiy to convert lambda functions to regular functions
-            template    <typename   OBJ>
-            class   SimpleObjRunnable : public IRunnable {
-            public:
-                SimpleObjRunnable (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
-
-            public:
-                virtual void    Run () override;
-
-            public:
-                static  shared_ptr<IRunnable>    MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr);
-
-            private:
-                OBJ*    fObjPtr_;
-                void    (OBJ::*fPtrToMemberFunction_)();
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION(SimpleObjRunnable);
-            };
-
-
-
-
 
         }
     }

@@ -14,44 +14,14 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            inline  SimpleRunnable::SimpleRunnable (void (*fun2CallOnce) ())
-                : fFun2CallOnce (FakeZeroArg_)
-                , fArg (reinterpret_cast<void*> (fun2CallOnce))
+            inline  SimpleRunnable::SimpleRunnable (const std::function<void()>& fun2CallOnce)
+                : fCall_ (fun2CallOnce)
             {
             }
-            inline  SimpleRunnable::SimpleRunnable (void (*fun2CallOnce) (void* arg), void* arg)
-                : fFun2CallOnce (fun2CallOnce)
-                , fArg (arg)
+            inline  IRunnablePtr    SimpleRunnable::MAKE (const std::function<void()>& fun2CallOnce)
             {
+                return IRunnablePtr (DEBUG_NEW SimpleRunnable (fun2CallOnce));
             }
-            inline  shared_ptr<IRunnable>    SimpleRunnable::MAKE (void (*fun2CallOnce) ())
-            {
-                return shared_ptr<IRunnable> (DEBUG_NEW SimpleRunnable (fun2CallOnce));
-            }
-            inline  shared_ptr<IRunnable>    SimpleRunnable::MAKE (void (*fun2CallOnce) (void* arg), void* arg)
-            {
-                return shared_ptr<IRunnable> (DEBUG_NEW SimpleRunnable (fun2CallOnce, arg));
-            }
-
-
-
-            template    <typename   OBJ>
-            inline  SimpleObjRunnable<OBJ>::SimpleObjRunnable (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
-                : fPtrToMemberFunction_ (ptrToMemberFunction)
-                , fObjPtr_ (objPtr)
-            {
-            }
-            template    <typename   OBJ>
-            inline  shared_ptr<IRunnable>    SimpleObjRunnable<OBJ>::MAKE (void (OBJ::*ptrToMemberFunction)(), OBJ* objPtr)
-            {
-                return shared_ptr<IRunnable> (DEBUG_NEW SimpleObjRunnable<OBJ> (ptrToMemberFunction, objPtr));
-            }
-            template    <typename   OBJ>
-            void    SimpleObjRunnable<OBJ>::Run ()
-            {
-                ((*fObjPtr_).*(fPtrToMemberFunction_)) ();
-            }
-
 
         }
     }

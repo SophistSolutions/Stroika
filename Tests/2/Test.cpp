@@ -48,7 +48,7 @@ namespace	{
 					}
 			};
 
-			Thread	thread (&FRED::DoIt, const_cast<char*> ("foo"));
+			Thread	thread (bind (&FRED::DoIt, const_cast<char*> ("foo")));
 			thread.Start ();
 			thread.WaitForDone ();
 		}
@@ -82,8 +82,8 @@ namespace	{
 			};
 
 			int	updaterValue	=	0;
-			Thread	thread1 (&FRED::DoIt, &updaterValue);
-			Thread	thread2 (&FRED::DoIt, &updaterValue);
+			Thread	thread1 (bind (&FRED::DoIt, &updaterValue));
+			Thread	thread2 (bind (&FRED::DoIt, &updaterValue));
 			thread1.Start ();
 			thread2.Start ();
 			thread1.WaitForDone ();
@@ -139,8 +139,8 @@ namespace	{
 			    sRegTest3Event_T1_.Reset ();
 			    sRegTest3Event_T2_.Reset ();
 			    int	updaterValue	=	0;
-			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
-			    Thread	thread2 (&FRED2::DoIt, &updaterValue);
+			    Thread	thread1 (bind (&FRED1::DoIt, &updaterValue));
+			    Thread	thread2 (bind (&FRED2::DoIt, &updaterValue));
 			    thread1.Start ();
 			    thread2.Start ();
                 // Both threads start out waiting - until we get things rolling telling one to start.
@@ -190,8 +190,8 @@ namespace	{
 			    sRegTest3Event_T1_.Reset ();
 			    sRegTest3Event_T2_.Reset ();
 			    int	updaterValue	=	0;
-			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
-			    Thread	thread2 (&FRED2::DoIt, &updaterValue);
+			    Thread	thread1 (bind (&FRED1::DoIt, &updaterValue));
+			    Thread	thread2 (bind (&FRED2::DoIt, &updaterValue));
 			    thread1.Start ();
 			    thread2.Start ();
                 // Both threads start out waiting - until we get things rolling telling one to start.
@@ -231,7 +231,7 @@ namespace	{
 
 			    sRegTest3Event_T1_.Reset ();
 			    int	updaterValue	=	0;
-			    Thread	thread1 (&FRED1::DoIt, &updaterValue);
+			    Thread	thread1 (bind (&FRED1::DoIt, &updaterValue));
 			    thread1.Start ();
 
                 // At this point the thread SHOULD block and wait 30 seconds
@@ -317,8 +317,8 @@ namespace	{
 						}
 				};
 				Lockable<int>	updaterValue	=	0;
-				Thread	thread1 (&FRED::DoIt, &updaterValue);
-				Thread	thread2 (&FRED::DoIt, &updaterValue);
+				Thread	thread1 (bind (&FRED::DoIt, &updaterValue));
+				Thread	thread2 (bind (&FRED::DoIt, &updaterValue));
 				thread1.Start ();
 				thread2.Start ();
 				thread1.WaitForDone ();
@@ -419,7 +419,7 @@ namespace	{
 						}
 				};
 				int	intVal	=	3;
-				shared_ptr<Execution::IRunnable>	task	=	SimpleRunnable::MAKE (FRED::DoIt, &intVal);
+				shared_ptr<Execution::IRunnable>	task	=	SimpleRunnable::MAKE (bind (FRED::DoIt, &intVal));
 				p.AddTask (task);
 				p.WaitForTask (task);
 				p.AbortAndWaitForDone ();
@@ -453,8 +453,8 @@ namespace	{
 				ThreadPool	p;
 				p.SetPoolSize (threadPoolSize);
 				int	updaterValue	=	0;
-				shared_ptr<Execution::IRunnable>	task1	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
-				shared_ptr<Execution::IRunnable>	task2	=	SimpleRunnable::MAKE (&FRED::DoIt, &updaterValue);
+				shared_ptr<Execution::IRunnable>	task1	=	SimpleRunnable::MAKE (bind (&FRED::DoIt, &updaterValue));
+				shared_ptr<Execution::IRunnable>	task2	=	SimpleRunnable::MAKE (bind (&FRED::DoIt, &updaterValue));
 				p.AddTask (task1);
 				p.AddTask (task2);
 				p.WaitForTask (task1);

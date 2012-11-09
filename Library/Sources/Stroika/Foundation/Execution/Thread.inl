@@ -38,7 +38,7 @@ namespace   Stroika {
 
             class   Thread::Rep_ {
             public:
-                Rep_ (const shared_ptr<IRunnable>& runnable);
+                Rep_ (const IRunnablePtr& runnable);
                 ~Rep_ ();
 
             public:
