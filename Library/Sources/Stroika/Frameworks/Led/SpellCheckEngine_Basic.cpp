@@ -894,13 +894,13 @@ vector<Led_tChar>   SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () 
             size_t  prevCopyTo  =   totalBufSizeSoFar;
             totalBufSizeSoFar += (*i).length ();
             buf.GrowToSize (totalBufSizeSoFar);
-            copy ((*i).begin (), (*i).end (), static_cast<Led_tChar*> (buf) + prevCopyTo);
+            (void)::memcpy (static_cast<Led_tChar*> (buf) + prevCopyTo, Containers::Start (*i), i->size () * sizeof (Led_tChar));
         }
         {
             size_t  prevCopyTo  =   totalBufSizeSoFar;
             totalBufSizeSoFar += kLineTerm_Length;
             buf.GrowToSize (totalBufSizeSoFar);
-            copy (kLineTerm, kLineTerm + kLineTerm_Length, static_cast<Led_tChar*> (buf) + prevCopyTo);
+            (void)::memcpy (static_cast<Led_tChar*> (buf) + prevCopyTo, kLineTerm, kLineTerm_Length * sizeof (Led_tChar));
         }
     }
     return vector<Led_tChar> (static_cast<Led_tChar*> (buf), static_cast<Led_tChar*> (buf) + totalBufSizeSoFar);
