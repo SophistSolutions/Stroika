@@ -209,16 +209,14 @@ namespace   Stroika {
 #endif
 
             public:
-                //
-                // No arg- constructor is available for use in applications like thread pools.
-                //
+                /**
+                 * No arg- constructor is available for use in applications like thread pools.
+                 */
                 Thread ();
 
-                // TODO:
-                //          (o)     Add more function-pointer overloads (e.g. function with no args, and function with 2 args - and maybe templated variant?
-                //
-                //
-                // fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
+                /**
+                 *  fun2CallOnce is called precisely once by this thread CTOR, but called in another thread with the arg 'arg'.
+                 */
                 explicit Thread (const std::function<void()>& fun2CallOnce);
                 explicit Thread (const IRunnablePtr& runnable);
 

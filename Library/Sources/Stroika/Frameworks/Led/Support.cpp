@@ -951,8 +951,8 @@ vector<wstring> Led::UnpackVectorOfStringsFromVariantArray (const VARIANT& v)
 void    Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char* levelPrefix)
 {
     {
-		string	label	=	objectName == nullptr? string (): Characters::Format (" (named '%s')", objectName);
-		string	msg		=	Characters::Format ( "Dumping interfaces for object%s at 0x%x:\n", label.c_str (), reinterpret_cast<int> (obj));
+        string  label   =   objectName == nullptr ? string () : Characters::Format (" (named '%s')", objectName);
+        string  msg     =   Characters::Format ( "Dumping interfaces for object%s at 0x%x:\n", label.c_str (), reinterpret_cast<int> (obj));
         ::OutputDebugStringA (msg.c_str ());
 
         if (levelPrefix == nullptr) {
@@ -1033,8 +1033,8 @@ void    Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, con
 void    Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const char* levelPrefix)
 {
     {
-		string	label	=	iteratorName == nullptr? string (): Characters::Format (" (named '%s')", iteratorName);
-		string	msg		=	Characters::Format ( "Dumping objects (and their interface names) for iterator%s at 0x%x\n", label.c_str (), reinterpret_cast<int> (iter));
+        string  label   =   iteratorName == nullptr ? string () : Characters::Format (" (named '%s')", iteratorName);
+        string  msg     =   Characters::Format ( "Dumping objects (and their interface names) for iterator%s at 0x%x\n", label.c_str (), reinterpret_cast<int> (iter));
         ::OutputDebugStringA (msg.c_str ());
         if (levelPrefix == nullptr) {
             levelPrefix = "\t";
