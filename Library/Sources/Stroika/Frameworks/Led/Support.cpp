@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/CString/Utilities.h"
+#include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/StringUtils.h"
 #include    "../../Foundation/Execution/Exceptions.h"
@@ -950,17 +951,9 @@ vector<wstring> Led::UnpackVectorOfStringsFromVariantArray (const VARIANT& v)
 void    Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char* levelPrefix)
 {
     {
-        size_t                      labelLen    =   ((objectName == nullptr) ? 0 : ::strlen (objectName)) + 100;
-        Memory::SmallStackBuffer<char>  labelBuf (labelLen);
-        if (objectName == nullptr) {
-            labelBuf[0] = '\0';
-        }
-        else {
-            (void)::sprintf (labelBuf, " (named '%s')", objectName);
-        }
-        Memory::SmallStackBuffer<char>  msgBuf (labelLen + 1000);
-        (void)::sprintf (msgBuf, "Dumping interfaces for object%s at 0x%x:\n", static_cast<char*> (labelBuf), reinterpret_cast<int> (obj));
-        ::OutputDebugStringA (msgBuf);
+		string	label	=	objectName == nullptr? string (): Characters::Format (" (named '%s')", objectName);
+		string	msg		=	Characters::Format ( "Dumping interfaces for object%s at 0x%x:\n", label.c_str (), reinterpret_cast<int> (obj));
+        ::OutputDebugStringA (msg.c_str ());
 
         if (levelPrefix == nullptr) {
             levelPrefix = "\t";
@@ -1040,18 +1033,9 @@ void    Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, con
 void    Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const char* levelPrefix)
 {
     {
-        size_t                      labelLen    =   ((iteratorName == nullptr) ? 0 : ::strlen (iteratorName)) + 100;
-        Memory::SmallStackBuffer<char>  labelBuf (labelLen);
-        if (iteratorName == nullptr) {
-            labelBuf[0] = '\0';
-        }
-        else {
-            (void)::sprintf (labelBuf, " (named '%s')", iteratorName);
-        }
-        Memory::SmallStackBuffer<char>  msgBuf (labelLen + 1000);
-        (void)::sprintf (msgBuf, "Dumping objects (and their interface names) for iterator%s at 0x%x\n", static_cast<char*> (labelBuf), reinterpret_cast<int> (iter));
-        ::OutputDebugStringA (msgBuf);
-
+		string	label	=	iteratorName == nullptr? string (): Characters::Format (" (named '%s')", iteratorName);
+		string	msg		=	Characters::Format ( "Dumping objects (and their interface names) for iterator%s at 0x%x\n", label.c_str (), reinterpret_cast<int> (iter));
+        ::OutputDebugStringA (msg.c_str ());
         if (levelPrefix == nullptr) {
             levelPrefix = "\t";
         }
