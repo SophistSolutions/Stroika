@@ -221,6 +221,10 @@ namespace   Stroika {
 
 
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4250)
+#endif
 
             /*
             @CLASS:         StandardStyledTextImager::StyleDatabaseRep
@@ -249,6 +253,9 @@ namespace   Stroika {
 #endif
             };
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 
 

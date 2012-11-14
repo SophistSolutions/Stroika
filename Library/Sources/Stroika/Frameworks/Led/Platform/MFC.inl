@@ -831,7 +831,7 @@ namespace   Stroika {
                      */
                     Led_Region  r;
                     GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
-                    return r.PtInRegion (AsCPoint (clickedWhere));
+                    return !!r.PtInRegion (AsCPoint (clickedWhere));
                 }
                 template    <typename   BASECLASS>
                 void    Led_MFC_DragAndDropWindow<BASECLASS>::HandleDragSelect (UINT /*nFlags*/, CPoint oPoint)

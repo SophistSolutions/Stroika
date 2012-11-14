@@ -527,6 +527,10 @@ namespace   Stroika {
 
 
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4250)
+#endif
 
                 /*
                 @CLASS:         Led_MFC_CViewHelper<BASECLASS>
@@ -614,6 +618,9 @@ namespace   Stroika {
                     DECLARE_MESSAGE_MAP ()
                 };
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 
 
