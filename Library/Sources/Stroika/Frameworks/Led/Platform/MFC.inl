@@ -320,7 +320,7 @@ namespace   Stroika {
                 template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
                 void    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnEnable (BOOL bEnable)
                 {
-                    OnEnable_Msg (bEnable);
+                    OnEnable_Msg (!!bEnable);
                 }
                 template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
                 void    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnTimer (UINT_PTR nEventID)
@@ -1104,8 +1104,8 @@ namespace   Stroika {
                             InternalizeBestFlavor (flavors);
                         }
                         catch (...) {
-#if     _MFC_VER > 0x0A00
-// Known broken in 0x0421 and 0x0600 anx 0x700 (MSVC.Net), and 0x710 (MSVC.NET 2003), and 0x0A00 (MSVC.net 2010)
+#if     _MFC_VER > 0x0B00
+// Known broken in 0x0421 and 0x0600 anx 0x700 (MSVC.Net), and 0x710 (MSVC.NET 2003), and 0x0A00 (MSVC.net 2010), and 0x0B00 = Microsoft Foundation Classes version 11.00
 #pragma message "See if MFC has fixed this bug yet"
 #endif
                             // Cannot re-throw here, due to MFC bug in COleDropTarget::XDropTarget::Drop (), where
