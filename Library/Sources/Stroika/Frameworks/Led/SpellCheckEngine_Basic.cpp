@@ -45,7 +45,7 @@ namespace   {
         return isascii (c) and isupper (c);
     }
 
-    inline  bool    AsymetricCaseInsensativeCompare (Led_tChar wordChar, Led_tChar dictChar)
+    inline  bool    AsymmetricCaseInsensativeCompare (Led_tChar wordChar, Led_tChar dictChar)
     {
         if (wordChar == dictChar) {
             return true;
@@ -55,12 +55,12 @@ namespace   {
         }
         return false;
     }
-    inline  bool    AsymetricCaseInsensativeCompare (const Led_tChar* word, const Led_tChar* dictWord)
+    inline  bool    AsymmetricCaseInsensativeCompare (const Led_tChar* word, const Led_tChar* dictWord)
     {
         const Led_tChar*    wi  =   word;
         const Led_tChar*    di  =   dictWord;
         for (; ; ++wi, ++di) {
-            if (not AsymetricCaseInsensativeCompare (*wi, *di)) {
+            if (not AsymmetricCaseInsensativeCompare (*wi, *di)) {
                 return false;
             }
             if (*wi == '\0' and * di == '\0') {
@@ -541,15 +541,15 @@ float   SpellCheckEngine_Basic::Heuristic (const Led_tString& misspelledWord, co
             float   prevH   =   h;      // saved H so we can see how much we adjusted for transposition bonus
 
             // do case mapping - REDO using CodePage.h. code(IsAlpha) etc... add a ToLower(C)
-            if (AsymetricCaseInsensativeCompare (misspelledWord[i], candidateWord[i])) {
+            if (AsymmetricCaseInsensativeCompare (misspelledWord[i], candidateWord[i])) {
                 h -= thisCharImportance * 0.1f;
             }
             else {
                 // see if the right character is just before or after (a transpose? or missing character?)
-                if (i > 0 and AsymetricCaseInsensativeCompare (misspelledWord[i], candidateWord[i - 1])) {
+                if (i > 0 and AsymmetricCaseInsensativeCompare (misspelledWord[i], candidateWord[i - 1])) {
                     h -= thisCharImportance * 0.5f;
                 }
-                else if (i + 1 < cwl and AsymetricCaseInsensativeCompare (misspelledWord[i], candidateWord[i + 1])) {
+                else if (i + 1 < cwl and AsymmetricCaseInsensativeCompare (misspelledWord[i], candidateWord[i + 1])) {
                     h -= thisCharImportance * 0.5f;
                 }
                 else {

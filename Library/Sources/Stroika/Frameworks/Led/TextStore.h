@@ -932,7 +932,7 @@ namespace   Stroika {
                             <p>The part which is a change from Led 2.3 (and earlier) is the details of WHICH zero-width overlap cases
                         are now considered overlap. I think the new rule is simpler, and more intuitive. See Led 2.3 for the old rule/code.</p>
                             <p>NB: This routine is mainly called by the @'TextStore::CollectAllMarkersInRange' () family of functions.</p>
-                            <p>NB:  This routine is <b>NOT</b> symetric. By this I mean that Overlap (A,B) is not always the same
+                            <p>NB:  This routine is <b>NOT</b> symmetric. By this I mean that Overlap (A,B) is not always the same
                         as Overlap (B,A). The reason for this is because we specially treat the case of a zero-width first arg to
                         overlap. And we make no such special treatment of the second argument.</p>
                             <p>See SPR#0745 for more details. Also, SPR#0489, and SPR#420.</p>

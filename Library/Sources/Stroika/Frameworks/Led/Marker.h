@@ -717,7 +717,7 @@ namespace   Stroika {
             @METHOD:        Contains
             @DESCRIPTION:   <p>Four overloads. Basically this tests if the first marker is contained in the second.
                         </p>
-                            <p>Note that Led doesn't treat the beginning and ending of a marker symetrically. It
+                            <p>Note that Led doesn't treat the beginning and ending of a marker symmetrically. It
                         is considered legitimate containment if the marker start positions are equal, but <em>not</em>
                         if the marker end positions are equal</p>
             */
