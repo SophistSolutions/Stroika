@@ -219,8 +219,10 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
                 int second  =   0;
                 int tzHr    =   0;
                 int tzMn    =   0;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
+#endif
                 int nItems  =   0;
                 bool    tzKnown =   false;
                 bool    tzUTC   =   false;
@@ -233,7 +235,9 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
                     nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
                     tzKnown = (nItems >= 7);
                 }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (pop)
+#endif
                 Date        d;
                 TimeOfDay   t;
                 if (nItems >= 3) {

@@ -994,16 +994,8 @@ namespace   Stroika {
                     }
                     else {
                         throw ReadEOFException ();
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8066
-#pragma warn -8008
-#endif
                         Assert (false);
                         return 0; // NOT REACHED
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
                     }
                 }
                 inline  char    StyledTextIOReader::PeekNextChar () const
@@ -1016,16 +1008,8 @@ namespace   Stroika {
                     }
                     else {
                         throw ReadEOFException ();
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8066
-#pragma warn -8008
-#endif
-                        Assert (false);
+                        AssertNotReached ();
                         return 0; // NOT REACHED
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
                     }
                 }
                 inline  void    StyledTextIOReader::ConsumeNextChar () const

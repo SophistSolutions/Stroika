@@ -3686,7 +3686,7 @@ namespace   Stroika {
 #if     qPlatform_MacOS
                 return (fFontStyle & italic);
 #elif   qPlatform_Windows
-                return fFontInfo.lfItalic;
+                return !!fFontInfo.lfItalic;
 #elif   qXWindows
                 return fItalics;
 #endif
@@ -3711,7 +3711,7 @@ namespace   Stroika {
 #if     qPlatform_MacOS
                 return (fFontStyle & underline);
 #elif   qPlatform_Windows
-                return fFontInfo.lfUnderline;
+                return !!fFontInfo.lfUnderline;
 #elif   qXWindows
                 return fUnderline;
 #endif
@@ -3795,7 +3795,7 @@ namespace   Stroika {
 #elif   qPlatform_Windows
             inline  bool    Led_FontSpecification::GetStyle_Strikeout () const
             {
-                return fFontInfo.lfStrikeOut;
+                return !!fFontInfo.lfStrikeOut;
             }
             inline  void    Led_FontSpecification::SetStyle_Strikeout (bool isStrikeout)
             {

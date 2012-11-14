@@ -33,11 +33,6 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             void    SmallStackBuffer<T, BUF_SIZE>::GrowToSize_ (size_t nElements)
             {
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
                 Require (nElements > (NEltsOf (fBuffer_)));
                 // if we were using buffer, then assume whole thing, and if we malloced, save
                 // size in unused buffer
@@ -45,9 +40,6 @@ namespace   Stroika {
                 size_t  oldEltCount =   (fPointer_ == fBuffer_) ?
                                         NEltsOf (fBuffer_) :
                                         *(size_t*)&fBuffer_;
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
                 if (nElements > oldEltCount) {
                     /*
                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
@@ -101,16 +93,21 @@ namespace   Stroika {
                     delete[] fPointer_;
                 }
             }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// SADLY - THIS PRAGMA DOESNT SILENCE VC11 -- MUST FIND A MORE EFFECTIVE WAY -- LGP 2012-11-14
+#pragma warning (push)
+#pragma warning (4 : 4996)      // MSVC unneeded warning about std::copy
+#endif
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>&   SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
             {
                 GrowToSize (rhs.fSize_);
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC unneeded warning about std::copy
                 std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
-#pragma warning (pop)
                 return *this;
             }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
             template    <typename   T, size_t BUF_SIZE>
             inline  typename SmallStackBuffer<T, BUF_SIZE>::iterator     SmallStackBuffer<T, BUF_SIZE>::begin ()
             {

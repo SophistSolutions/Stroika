@@ -1281,7 +1281,7 @@ bool    Led_StdDialogHelper::GetItemChecked (DialogItemID itemID) const
     ::GetDialogItem (GetDialogPtr (), itemID, &itemType, &itemHandle, &itemRect);
     return !!::GetControlValue (ControlHandle (itemHandle));
 #elif   qPlatform_Windows
-    return ::IsDlgButtonChecked (GetHWND (), itemID);
+    return !!::IsDlgButtonChecked (GetHWND (), itemID);
 #elif   qXWindows && qUseGTKForLedStandardDialogs
     Assert (false); //NYI
     return false;
@@ -1313,7 +1313,7 @@ bool    Led_StdDialogHelper::GetItemEnabled (DialogItemID itemID) const
     ::GetDialogItem (GetDialogPtr (), itemID, &itemType, &itemHandle, &itemRect);
     return !!::IsControlEnabled (ControlHandle (itemHandle));
 #elif   qPlatform_Windows
-    return ::IsWindowEnabled (GetDlgItem (GetHWND (), itemID));
+    return !!::IsWindowEnabled (GetDlgItem (GetHWND (), itemID));
 #elif   qXWindows && qUseGTKForLedStandardDialogs && 0
     Assert (false); //NYI
     return false;
@@ -2448,13 +2448,13 @@ void    Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
 
 void    Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnOK ()
 {
-    fKeepChecking = ::IsDlgButtonChecked (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg);
+    fKeepChecking = !!::IsDlgButtonChecked (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg);
     inherited::OnOK ();
 }
 
 void    Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 {
-    fKeepChecking = ::IsDlgButtonChecked (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg);
+    fKeepChecking = !!::IsDlgButtonChecked (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg);
     inherited::OnCancel ();
 }
 #endif

@@ -113,11 +113,6 @@ namespace   Stroika {
             {
                 using   namespace   Private;
 
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
                 /*
                     * It is hoped that since all these comparisons can be evaluated at compile
                     * time, they will be. Then this code reduces to just a return of a single
@@ -147,19 +142,11 @@ namespace   Stroika {
                 else if (sizeof (T) <= 76)      {   return (sSizeof_76_NextLink);       }
                 else if (sizeof (T) <= 80)      {   return (sSizeof_80_NextLink);       }
                 else                            {   return (sNextLink);                 }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
             }
             template    <typename   T>  inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink)
             {
                 using   namespace   Private;
 
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
                 /*
                     * It is hoped that since all these comparisons can be evaluated at compile
                     * time, they will be. Then this code reduces to just an assignement to a single
@@ -186,24 +173,13 @@ namespace   Stroika {
                 else if (sizeof (T) <= 76)      {   sSizeof_76_NextLink = nextLink;     }
                 else if (sizeof (T) <= 80)      {   sSizeof_80_NextLink = nextLink;     }
                 else                            {   sNextLink = nextLink;               }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
             }
 #endif
             template    <typename   T>  inline  void*   BlockAllocated<T>::operator new (size_t n)
             {
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
                 Assert (sizeof (T) >= sizeof (void*));  //  cuz we overwrite first sizeof(void*) for link
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
 
 #if     qAllowBlockAllocation
                 Execution::AutoCriticalSection  critSec (Private::GetCritSection_ ());
@@ -238,11 +214,6 @@ namespace   Stroika {
             template    <typename   T>  void    BlockAllocated<T>::GetMem_ ()
             {
                 using   namespace   Private;
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
 #if     qDebug
                 /*
                  * Temporary hack to verify were getting the most out of our blockallocator.
@@ -280,9 +251,6 @@ namespace   Stroika {
                      */
                     SetNextLink_ (GetMem_Util_ (sizeof (T)));
                 }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
             }
 
             template    <typename   T>  void*   BlockAllocated<T>::sNextLink = nullptr;

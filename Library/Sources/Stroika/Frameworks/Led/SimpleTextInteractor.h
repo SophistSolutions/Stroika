@@ -24,11 +24,8 @@ namespace   Stroika {
         namespace   Led {
 
 
-#if     __MWERKS__
-            // Shut-off SetDefaultFont() warning instantiating InteractorImagerMixinHelper<>
-#pragma warn_hidevirtual    off
-#endif
-#if     qQuiteAnnoyingDominanceWarnings
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
 #pragma warning (disable : 4250)
 #endif
             /*
@@ -65,11 +62,8 @@ namespace   Stroika {
             public:
                 virtual    void    SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate) override;
             };
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (default : 4250)
-#endif
-#if     __MWERKS__
-#pragma warn_hidevirtual    reset
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
 #endif
 
 

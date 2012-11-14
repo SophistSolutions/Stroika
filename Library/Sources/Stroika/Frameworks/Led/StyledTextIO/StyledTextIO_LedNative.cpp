@@ -113,8 +113,8 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     Led_FontSpecification   fsp;
     fsp.SetStyle_Plain ();  // so all style valid bits set...
     fsp.SetStyle_Bold (srcData.fBoldWeight >= PortableStyleRunData_Version4::eBoldnessBold);
-    fsp.SetStyle_Italic (srcData.fItalic);
-    fsp.SetStyle_Underline (srcData.fUnderline);
+    fsp.SetStyle_Italic (!!srcData.fItalic);
+    fsp.SetStyle_Underline (!!srcData.fUnderline);
     short   fontSize    =   Led_BufToUSHORT (&srcData.fFontSize);
     if (fontSize < 3 or fontSize > 128) {
         fontSize = 12;      // a reasonable default for bogus/corrupt data
@@ -211,9 +211,9 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     _DO_ALIGN_ASSERTS_Version5_ ();
     Led_FontSpecification   fsp;
     fsp.SetStyle_Plain ();  // so all style valid bits set...
-    fsp.SetStyle_Bold (srcData.fStyleSet & (1 << srcData.eBold));
-    fsp.SetStyle_Italic (srcData.fStyleSet & (1 << srcData.eItalic));
-    fsp.SetStyle_Underline (srcData.fStyleSet & (1 << srcData.eUnderline));
+    fsp.SetStyle_Bold (!! (srcData.fStyleSet & (1 << srcData.eBold)));
+    fsp.SetStyle_Italic (!! (srcData.fStyleSet & (1 << srcData.eItalic)));
+    fsp.SetStyle_Underline (!! (srcData.fStyleSet & (1 << srcData.eUnderline)));
 #if     qPlatform_MacOS
     fsp.SetStyle_Outline (srcData.fStyleSet & (1 << srcData.eOutline));
     fsp.SetStyle_Shadow (srcData.fStyleSet & (1 << srcData.eShadow));
@@ -334,9 +334,9 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     _DO_ALIGN_ASSERTS_Version6_ ();
     Led_FontSpecification   fsp;
     fsp.SetStyle_Plain ();  // so all style valid bits set...
-    fsp.SetStyle_Bold (srcData.fStyleSet & (1 << srcData.eBold));
-    fsp.SetStyle_Italic (srcData.fStyleSet & (1 << srcData.eItalic));
-    fsp.SetStyle_Underline (srcData.fStyleSet & (1 << srcData.eUnderline));
+    fsp.SetStyle_Bold (!! (srcData.fStyleSet & (1 << srcData.eBold)));
+    fsp.SetStyle_Italic (!! (srcData.fStyleSet & (1 << srcData.eItalic)));
+    fsp.SetStyle_Underline (!! (srcData.fStyleSet & (1 << srcData.eUnderline)));
 #if     qPlatform_MacOS
     fsp.SetStyle_Outline (srcData.fStyleSet & (1 << srcData.eOutline));
     fsp.SetStyle_Shadow (srcData.fStyleSet & (1 << srcData.eShadow));

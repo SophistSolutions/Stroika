@@ -170,6 +170,10 @@ namespace   Stroika {
                 typedef Platform::Led_Win32_SimpleWndProc_HelperWithSDKMessages <Platform::Led_Win32_Helper <SimpleTextInteractor> >    LedDialogWidget_BASE;
             }
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4250)
+#endif
             class   LedDialogWidget : public LedDialogWidget_Private::LedDialogWidget_BASE {
             private:
                 typedef LedDialogWidget_Private::LedDialogWidget_BASE   inherited;
@@ -199,6 +203,10 @@ namespace   Stroika {
                 SimpleTextStore             fTextStore;
                 SingleUndoCommandHandler    fCommandHandler;
             };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
+
 #endif
 
 
@@ -281,6 +289,10 @@ namespace   Stroika {
 
 #if     qPlatform_Windows
             protected:
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (disable : 4250)
+#endif
                 struct  MyTextWidget : public LedDialogWidget {
                     typedef LedDialogWidget inherited;
 
@@ -290,6 +302,9 @@ namespace   Stroika {
 
                     LedComboBoxWidget*  fComboBox;
                 };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
                 friend  struct  MyTextWidget;
 #endif
 

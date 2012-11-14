@@ -69,7 +69,7 @@ namespace   Stroika {
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
-#pragma warning (disable : 4250)        //qQuiteAnnoyingDominanceWarnings
+#pragma warning (disable : 4250)
 #endif
 
 
@@ -563,8 +563,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (pop)

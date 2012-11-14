@@ -674,15 +674,8 @@ namespace   Stroika {
                         return (row - 1);
                     }
                 }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#endif
                 Assert (false);
                 return (0); // if we get here - must have been before our line...
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
             }
 
 

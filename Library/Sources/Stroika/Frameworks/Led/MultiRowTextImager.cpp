@@ -1079,16 +1079,8 @@ namespace   Stroika {
                         return (curRow);        // Then we used all the space we could have - and that is a good row!
                     }
                 }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
                 Assert (false);
                 return (potentialTopRow);   // NotReached / silence compiler warnings
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
             }
 
             bool    MultiRowTextImager::PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow)

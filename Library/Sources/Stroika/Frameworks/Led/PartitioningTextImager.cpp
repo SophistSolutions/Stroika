@@ -160,15 +160,8 @@ PartitionMarker*        Partition::GetPartitionMarkerContainingPosition (size_t 
             return (pm);
         }
     }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#endif
-    Assert (false);
+    AssertNotReached ();
     return (nullptr);
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
 }
 
 /*

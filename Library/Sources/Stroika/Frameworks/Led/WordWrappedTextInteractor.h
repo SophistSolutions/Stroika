@@ -26,13 +26,9 @@ namespace   Stroika {
 
 
 
-#if     qSilenceAnnoyingCompilerWarnings && __MWERKS__
-            // Shut-off SetDefaultFont() warning instantiating InteractorImagerMixinHelper<>
-#pragma warn_hidevirtual    off
-#endif
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
-#pragma warning (disable : 4250)        //qQuiteAnnoyingDominanceWarnings
+#pragma warning (disable : 4250)
 #endif
 
 
@@ -99,9 +95,6 @@ namespace   Stroika {
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (pop)
-#endif
-#if     qSilenceAnnoyingCompilerWarnings && __MWERKS__
-#pragma warn_hidevirtual    reset
 #endif
 
 

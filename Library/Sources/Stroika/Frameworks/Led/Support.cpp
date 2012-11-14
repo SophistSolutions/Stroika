@@ -1927,11 +1927,6 @@ void    Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...
             }
             else    {
                 //  Compare for a TRUE or a FALSE
-#if     defined (__MWERKS__)
-#define stricmp strcmp
-                // TMP HACK - we don't build with MWERKS for the PC anyhow - just test compiles...
-                // LGP 960617
-#endif
                 if (0 == stricmp(pExtract, "TRUE")) {
                     *pBool = TRUE;
                 }

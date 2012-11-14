@@ -755,7 +755,7 @@ namespace   Stroika {
                         nChar = '\b';
                     }
 
-                    OnTypedNormalCharacter (nChar, false, ::GetKeyState (VK_SHIFT) & 0x8000, false, ::GetKeyState (VK_CONTROL) & 0x8000, ::GetKeyState (VK_MENU) & 0x8000);
+                    OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if     qSupportWindowsSDKCallbacks
                     HWND    hWnd    =   GetValidatedHWND ();
@@ -794,7 +794,7 @@ namespace   Stroika {
                         nChar = '\b';
                     }
 
-                    OnTypedNormalCharacter (nChar, false, ::GetKeyState (VK_SHIFT) & 0x8000, false, ::GetKeyState (VK_CONTROL) & 0x8000, ::GetKeyState (VK_MENU) & 0x8000);
+                    OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if     qSupportWindowsSDKCallbacks
                     HWND    hWnd    =   GetValidatedHWND ();
@@ -1193,7 +1193,7 @@ namespace   Stroika {
                         return true;
                     }
                     else {
-                        return DefWindowProc (WM_SETCURSOR, WPARAM (hWnd), MAKELPARAM (nHitTest, message));
+                        return !!DefWindowProc (WM_SETCURSOR, WPARAM (hWnd), MAKELPARAM (nHitTest, message));
                     }
                 }
                 template    <typename   BASE_INTERACTOR>
@@ -1441,16 +1441,9 @@ namespace   Stroika {
                             break;
 
                         default: {
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#endif
                                 Assert (false); // should be safe to ignore these - but if there are any xtras
                                 // I'd like to know...And asserts will be compiled out before
                                 // shipping- LGP 941026
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
                             }
                             break;
                     }
@@ -1587,7 +1580,7 @@ namespace   Stroika {
                     // we don't handle anything but scrolling just now (comment from MFC).
                     // Not really sure how these special keys are SUPPOSED to be treated?
                     if (keyState & (MK_SHIFT | MK_CONTROL)) {
-                        return DefWindowProc (WM_MOUSEWHEEL, wParam, lParam);
+                        return !!DefWindowProc (WM_MOUSEWHEEL, wParam, lParam);
                     }
 
                     short   zDelta      =   (short)HIWORD (wParam);     //GET_WHEEL_DELTA_WPARAM (wParam);
@@ -1773,7 +1766,7 @@ namespace   Stroika {
                 bool    Led_Win32_Helper<BASE_INTERACTOR>::QueryInputKeyStrokesPending () const
                 {
                     MSG msg;
-                    return (::PeekMessage (&msg, GetValidatedHWND (), WM_KEYDOWN, WM_KEYDOWN, PM_NOREMOVE));
+                    return (!!::PeekMessage (&msg, GetValidatedHWND (), WM_KEYDOWN, WM_KEYDOWN, PM_NOREMOVE));
                 }
                 template    <typename   BASE_INTERACTOR>
                 Led_Tablet  Led_Win32_Helper<BASE_INTERACTOR>::AcquireTablet () const
@@ -1936,7 +1929,7 @@ namespace   Stroika {
                         }
                     }
                     else {
-                        OnTypedNormalCharacter ('\t', false, ::GetKeyState (VK_SHIFT) & 0x8000, false, ::GetKeyState (VK_CONTROL) & 0x8000, ::GetKeyState (VK_MENU) & 0x8000);
+                        OnTypedNormalCharacter ('\t', false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 #if     qSupportWindowsSDKCallbacks
                         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
@@ -2951,12 +2944,12 @@ namespace   Stroika {
                 inline  bool    SimpleWin32WndProcHelper::IsWindowUNICODE () const
                 {
                     Require_Window_Realized ();
-                    return ::IsWindowUnicode (GetHWND ());
+                    return !!::IsWindowUnicode (GetHWND ());
                 }
                 inline  bool    SimpleWin32WndProcHelper::IsWindowShown () const
                 {
                     Require_Window_Realized ();
-                    return ::IsWindowVisible (GetHWND ());
+                    return !!::IsWindowVisible (GetHWND ());
                 }
                 inline  void    SimpleWin32WndProcHelper::SetWindowVisible (bool shown)
                 {
@@ -3310,7 +3303,7 @@ namespace   Stroika {
                             return OnMouseWheel_Msg (wParam, lParam);
 #endif
                         case WM_ENABLE:
-                            OnEnable_Msg (bool (wParam));
+                            OnEnable_Msg (!!wParam);
                             break;
                         case WM_NCDESTROY:
                             OnNCDestroy_Msg ();

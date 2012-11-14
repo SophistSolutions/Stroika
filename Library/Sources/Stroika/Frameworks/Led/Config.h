@@ -483,14 +483,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 
 
 
-/*
-@CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
-@DESCRIPTION:   <p>Replaces 'qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings', 'qQuiteAnnoyingDominanceWarnings',
-    'qQuiteAnnoyingDebugSymbolTruncationWarnings'</p>
- */
-#ifndef qSilenceAnnoyingCompilerWarnings
-#define qSilenceAnnoyingCompilerWarnings            1
-#endif
 
 
 

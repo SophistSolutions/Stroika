@@ -161,7 +161,7 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, bool* value
     RequireNotNull (value);
     int tmp     =   0;
     if (LookupPref (prefName, &tmp)) {
-        *value = tmp;
+        *value = !!tmp;
         return true;
     }
     return false;

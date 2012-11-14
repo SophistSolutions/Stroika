@@ -41,7 +41,9 @@ using   namespace   Stroika::Foundation::Execution::Platform::Windows;
 
 
 // for InternetGetConnectedState
+#if     _MSC_VER
 #pragma comment(lib, "Wininet.lib")
+#endif
 
 
 

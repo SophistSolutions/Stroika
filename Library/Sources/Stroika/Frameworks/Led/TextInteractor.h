@@ -30,10 +30,6 @@ namespace   Stroika {
 
 
 
-#if     qSilenceAnnoyingCompilerWarnings && __MWERKS__
-            // Shut-off SetWindowRect() warning
-#pragma warn_hidevirtual    off
-#endif
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4786)        //qQuiteAnnoyingDebugSymbolTruncationWarnings
@@ -59,10 +55,6 @@ namespace   Stroika {
 
 
 
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8022
-#endif
 
 
 
@@ -754,9 +746,6 @@ namespace   Stroika {
             };
 
 
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
 
 
 
@@ -1938,9 +1927,6 @@ namespace   Stroika {
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (pop)
-#endif
-#if     qSilenceAnnoyingCompilerWarnings && __MWERKS__
-#pragma warn_hidevirtual    reset
 #endif
 
 

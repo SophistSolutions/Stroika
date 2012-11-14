@@ -60,11 +60,11 @@ namespace   Stroika {
              **************** Compiler/Lib bug workarounds... **************
              */
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4786)      //  qQuiteAnnoyingDebugSymbolTruncationWarnings
-#pragma warning (4 : 4800)      //  qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#pragma warning (4 : 4250)      //  qQuiteAnnoyingDominanceWarnings
-#endif
+//#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+//#pragma warning (4 : 4786)      //  qQuiteAnnoyingDebugSymbolTruncationWarnings
+//#pragma warning (4 : 4800)      //  qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
+//#pragma warning (4 : 4250)      //  qQuiteAnnoyingDominanceWarnings
+//#endif
 
 
 
@@ -1071,10 +1071,6 @@ public:\
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4800)  //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#endif
 
 #if     !qHasIsAscii && defined (isascii)
             //#warning  "You probably should define qHasIsAscii for your compiler."
@@ -1730,7 +1726,7 @@ namespace   Stroika {
                 return (result > 0);
 #endif
 #elif   qPlatform_Windows
-                return (::IsClipboardFormatAvailable (clipType));
+                return (!!::IsClipboardFormatAvailable (clipType));
 #elif   qXWindows
                 // Wild guess - no good answer yet - LGP 2003-05-06
                 return true;
@@ -1790,11 +1786,5 @@ namespace   Stroika {
     }
 }
 
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
 
 #endif  /*_Stroika_Frameworks_Led_Support_h_*/

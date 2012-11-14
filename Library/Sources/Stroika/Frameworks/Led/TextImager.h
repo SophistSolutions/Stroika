@@ -1146,16 +1146,8 @@ namespace   Stroika {
                         return d;
                     }
                 }
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma push
-#pragma warn -8008
-#pragma warn -8066
-#endif
-                Assert (false);
+                AssertNotReached ();
                 return afterPos;
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma pop
-#endif
             }
             inline  bool    TextImager::StandardTabStopList::operator== (const StandardTabStopList& rhs) const
             {

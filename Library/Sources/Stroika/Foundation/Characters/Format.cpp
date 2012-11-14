@@ -212,12 +212,16 @@ double  Characters::String2Float (const wstring& s)
 double  Characters::String2Float (const wstring& s, double returnValIfInvalidString)
 {
     double  num =   returnValIfInvalidString;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
+#endif
     if (::swscanf (s.c_str (), L"%lf", &num) == 1) {
         return num;
     }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (pop)
+#endif
     return returnValIfInvalidString;
 }
 

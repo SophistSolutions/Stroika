@@ -46,7 +46,8 @@ namespace   Stroika {
 
 
 
-#if     qQuiteAnnoyingDominanceWarnings
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
 #pragma warning (disable : 4250)
 #endif
             /*
@@ -106,8 +107,8 @@ namespace   Stroika {
 #endif
             };
 
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (default : 4250)
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
 #endif
 
 
@@ -119,7 +120,8 @@ namespace   Stroika {
 
 
 
-#if     qQuiteAnnoyingDominanceWarnings
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
 #pragma warning (disable : 4250)
 #endif
             /*
@@ -178,8 +180,8 @@ namespace   Stroika {
 #endif
             };
 
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (default : 4250)
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
 #endif
 
 
@@ -190,7 +192,8 @@ namespace   Stroika {
 
 
 
-#if     qQuiteAnnoyingDominanceWarnings
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
 #pragma warning (disable : 4250)
 #endif
             /*
@@ -221,8 +224,8 @@ namespace   Stroika {
                 DECLARE_DYNCREATE(LedDialogText)
 #endif
             };
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (default : 4250)
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
 #endif
 
 

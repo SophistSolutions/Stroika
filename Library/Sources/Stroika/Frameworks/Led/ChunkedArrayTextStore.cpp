@@ -19,9 +19,6 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-#if     qSilenceAnnoyingCompilerWarnings && __BCPLUSPLUS__
-#pragma warn -8008
-#endif
 
 
 
