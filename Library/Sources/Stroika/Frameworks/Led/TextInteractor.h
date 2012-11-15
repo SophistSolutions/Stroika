@@ -406,7 +406,7 @@ namespace   Stroika {
                 virtual     void        SetSelection (size_t start, size_t end) override;
                 nonvirtual  void        SetSelection (size_t start, size_t end, UpdateMode updateMode);
                 nonvirtual  void        SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode = eDefaultUpdate);
-                nonvirtual  void        ScrollByIfRoom (long downBy, UpdateMode updateMode = eDefaultUpdate);
+                nonvirtual  void        ScrollByIfRoom (ptrdiff_t downBy, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual  void        ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual  void        SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual  void        SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
@@ -1249,7 +1249,7 @@ namespace   Stroika {
                     for (typename RANGE_VEC_TYPE::const_iterator j = fRanges.begin (); j != fRanges.end (); ++j) {
                         const RangeElt& re  =   *j;
                         if (re.fExternalCmds.first <= externalCommandNumber and externalCommandNumber <= re.fExternalCmds.second) {
-                            size_t                          offset  =   externalCommandNumber - re.fExternalCmds.first;
+                            TARGET_COMMAND_NUMBER           offset  =   externalCommandNumber - re.fExternalCmds.first;
                             TextInteractor::CommandNumber   cmdNum  =   re.fInternalCmds.first + offset;
                             Assert (cmdNum <= re.fInternalCmds.second);
                             return cmdNum;

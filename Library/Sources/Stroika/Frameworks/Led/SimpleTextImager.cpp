@@ -218,7 +218,7 @@ Led_Distance    SimpleTextImager::MeasureSegmentBaseLine (size_t /*from*/, size_
     return bl;
 }
 
-bool    SimpleTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, long ith) const
+bool    SimpleTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const
 {
     for (; ith > 0; ith--) {
         if (not GetNextRowReference (adjustMeInPlace)) {
@@ -325,7 +325,7 @@ size_t      SimpleTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
     return GetStartOfRow (GetLastRowReferenceInWindow ());
 }
 
-long    SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
+ptrdiff_t    SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
 {
     Assert (long (GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
     size_t          pos         =   long (GetMarkerPositionOfStartOfWindow ()) + deltaChars;
@@ -334,13 +334,13 @@ long    SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long de
     return (deltaChars >= 0) ? rowDiff : -long(rowDiff);
 }
 
-long    SimpleTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const
+ptrdiff_t	SimpleTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const
 {
     RowReference    row = GetIthRowReferenceFromHere (GetTopRowReferenceInWindow (), deltaRows);
     return (long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ()));
 }
 
-void    SimpleTextImager::ScrollByIfRoom (long downByRows)
+void    SimpleTextImager::ScrollByIfRoom (ptrdiff_t downByRows)
 {
     RowReference    newTopRow   =   GetTopRowReferenceInWindow ();
     (void)GetIthRowReferenceFromHere (&newTopRow, downByRows);              // ignore result cuz we did say - IF-ROOM!

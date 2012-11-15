@@ -336,7 +336,7 @@ namespace   Stroika {
                     nonvirtual  void    StopAutoscrollTimer ();
                 private:
                     enum    { eAutoscrollingTimerEventID        =   434 };  // Magic#
-                    UINT        fAutoScrollTimerID;     // zero means no timer
+                    UINT_PTR	fAutoScrollTimerID;     // zero means no timer
 
 
 
@@ -794,7 +794,7 @@ namespace   Stroika {
                         nChar = '\b';
                     }
 
-                    OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
+                    OnTypedNormalCharacter (static_cast<Led_tChar> (nChar), false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if     qSupportWindowsSDKCallbacks
                     HWND    hWnd    =   GetValidatedHWND ();
@@ -1421,7 +1421,7 @@ namespace   Stroika {
                                     // Make sure nPos matches nTrackPos after tracking done
                                     scrollInfo.cbSize = sizeof (scrollInfo);
                                     scrollInfo.fMask = SIF_POS;
-                                    scrollInfo.nPos = newPos;
+                                    scrollInfo.nPos = static_cast<UINT> (newPos);
                                     SetVScrollInfo (GetScrollBarType (v), scrollInfo);
 #endif
                                 }
@@ -1543,7 +1543,7 @@ namespace   Stroika {
                                 // Make sure nPos matches nTrackPos after tracking done
                                 scrollInfo.cbSize = sizeof (scrollInfo);
                                 scrollInfo.fMask = SIF_POS;
-                                scrollInfo.nPos = newPos;
+                                scrollInfo.nPos = static_cast<int> (newPos);
                                 SetHScrollInfo (GetScrollBarType (h), scrollInfo);
 #endif
 
@@ -2274,8 +2274,8 @@ namespace   Stroika {
 
                             scrollInfo.nMin = 0;    // always use zero as base
                             scrollInfo.nMax = GetLength ();
-                            scrollInfo.nPage = verticalWindowSpan;
-                            scrollInfo.nPos = startOfWindow;
+                            scrollInfo.nPage = static_cast<UINT> (verticalWindowSpan);
+                            scrollInfo.nPos = static_cast<int> (startOfWindow);
 
                             // set pagesize ++ since that appears to be what the MS SDK expects. They expect
                             // min+page > (not >=) max implies the evevator is full, and nPos+nPage> (not >=) nMax implies at END OF DOC
@@ -2569,7 +2569,7 @@ namespace   Stroika {
                     len2 = Led_NLToNative (buf, len, buf2, len2);
 #if     qWideCharacters
                     // Assume they want ANSI code page text?
-                    int nChars  =   ::WideCharToMultiByte (CP_ACP, 0, buf2, len2, lpText, cchTextMax - 1, NULL, NULL);
+                    int nChars  =   ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, NULL, NULL);
 #else
                     size_t  nChars = Led_Min (size_t (cchTextMax) - 1, len2);
                     ::memcpy (lpText, buf2, nChars);
@@ -3263,7 +3263,7 @@ namespace   Stroika {
                             return OnIME_ENDCOMPOSITION_Msg (wParam, lParam);
 #endif
                         case WM_KEYDOWN:
-                            OnKeyDown_Msg (wParam, lParam);
+                            OnKeyDown_Msg (static_cast<UINT> (wParam), lParam);
                             break;
                         case WM_SETCURSOR:
                             return OnSetCursor_Msg ((HWND) wParam, LOWORD(lParam), HIWORD(lParam));

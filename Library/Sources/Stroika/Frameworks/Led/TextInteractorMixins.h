@@ -66,7 +66,7 @@ namespace   Stroika {
                 nonvirtual  void    SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate) {
                     TextInteractor::SetWindowRect (windowRect, updateMode);
                 }
-                nonvirtual  void    ScrollByIfRoom (long downByRows, UpdateMode updateMode = eDefaultUpdate) {
+                nonvirtual  void    ScrollByIfRoom (ptrdiff_t downByRows, UpdateMode updateMode = eDefaultUpdate) {
                     TextInteractor::ScrollByIfRoom (downByRows, updateMode);
                 }
                 nonvirtual  void    ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate) {

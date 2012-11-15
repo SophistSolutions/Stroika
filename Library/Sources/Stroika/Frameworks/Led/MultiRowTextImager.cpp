@@ -115,7 +115,7 @@ namespace   Stroika {
                 return GetPartitionElementCacheInfo (row.GetPartitionMarker ());
             }
 
-            bool    MultiRowTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, long ith) const
+            bool    MultiRowTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const
             {
                 for (; ith > 0; ith--) {
                     if (not GetNextRowReference (adjustMeInPlace)) {
@@ -276,7 +276,7 @@ namespace   Stroika {
                 return GetStartOfRow (GetLastRowReferenceInWindow ());
             }
 
-            long    MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
+            ptrdiff_t    MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
             {
                 Assert (long (GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
                 size_t          pos         =   long (GetMarkerPositionOfStartOfWindow ()) + deltaChars;
@@ -285,13 +285,13 @@ namespace   Stroika {
                 return (deltaChars >= 0) ? rowDiff : -long(rowDiff);
             }
 
-            long    MultiRowTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const
+            ptrdiff_t    MultiRowTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const
             {
                 RowReference    row = GetIthRowReferenceFromHere (GetTopRowReferenceInWindow (), deltaRows);
                 return (long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ()));
             }
 
-            void    MultiRowTextImager::ScrollByIfRoom (long downByRows)
+            void    MultiRowTextImager::ScrollByIfRoom (ptrdiff_t downByRows)
             {
                 RowReference    newTopRow   =   GetTopRowReferenceInWindow ();
                 (void)GetIthRowReferenceFromHere (&newTopRow, downByRows);              // ignore result cuz we did say - IF-ROOM!

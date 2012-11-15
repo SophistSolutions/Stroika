@@ -326,12 +326,12 @@ namespace   Stroika {
                 @METHOD:        TextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow
                 @DESCRIPTION:   <p></p>
                 */
-                virtual     long        CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const   =   0;
+                virtual     ptrdiff_t	CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const   =   0;
                 /*
                 @METHOD:        TextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow
                 @DESCRIPTION:   <p></p>
                 */
-                virtual     long        CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const    =   0;
+                virtual     ptrdiff_t	CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const    =   0;
 
 
                 // NB:  Though you CAN ask for, or set the top row by number - this is VASTLY less efficient than
@@ -345,7 +345,7 @@ namespace   Stroika {
                     OK to ask to scroll further than allowed - return true
                     if any scrolling (not necesarily same amont requested) done</p>
                 */
-                virtual     void        ScrollByIfRoom (long downByRows)                                        =   0;
+                virtual     void        ScrollByIfRoom (ptrdiff_t downByRows)                                        =   0;
 
                 /*
                 @METHOD:        TextImager::ScrollSoShowing

@@ -1743,7 +1743,7 @@ void    TextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMo
     tim->SetTopRowInWindow (newTopRow);
 }
 
-void    TextInteractor::ScrollByIfRoom (long downBy, UpdateMode updateMode)
+void    TextInteractor::ScrollByIfRoom (ptrdiff_t downBy, UpdateMode updateMode)
 {
     TemporarilySetUpdateMode    updateModeSetter (*this, updateMode);
     TextImager* tim =   this;   // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!

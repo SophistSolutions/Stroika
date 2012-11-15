@@ -1459,7 +1459,7 @@ namespace   Stroika {
                         AfxThrowArchiveException (CArchiveException::endOfFile);
                     }
                     // Replace the editing edit buffer with the newly loaded data
-                    nLen = Led_NormalizeTextToNL (buf, nLen, buf, nLen);
+                    nLen = static_cast<UINT> (Led_NormalizeTextToNL (buf, nLen, buf, nLen));
                     if (ValidateTextForCharsetConformance (buf, nLen)) {
                         Replace (0, 0, buf, nLen);
                     }
@@ -1851,10 +1851,10 @@ namespace   Stroika {
 
 
 //  class   Led_MFC_TmpCmdUpdater
-                inline  Led_MFC_TmpCmdUpdater::Led_MFC_TmpCmdUpdater (CCmdUI* pCmdUI):
-                    fCmdUI (pCmdUI),
-                    fCmdNum (MFC_CommandNumberMapping::Get ().Lookup (pCmdUI->m_nID)),
-                    fEnabled (false)
+                inline  Led_MFC_TmpCmdUpdater::Led_MFC_TmpCmdUpdater (CCmdUI* pCmdUI)
+                    : fCmdUI (pCmdUI)
+                    , fCmdNum (MFC_CommandNumberMapping::Get ().Lookup (pCmdUI->m_nID))
+                    , fEnabled (false)
                 {
                     RequireNotNull (fCmdUI);
                 }

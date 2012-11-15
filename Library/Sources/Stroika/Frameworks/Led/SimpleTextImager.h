@@ -143,8 +143,8 @@ namespace   Stroika {
                 nonvirtual  bool    GetPreviousRowReference (RowReference* adjustMeInPlace) const;  // return true if there is a previous, and false if at the beginning
 
                 // NB: if ith==1, that means do NOTHING - for convenience...
-                nonvirtual  bool            GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, long ith) const;     // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
-                nonvirtual  RowReference    GetIthRowReferenceFromHere (RowReference fromHere, long ith) const;             // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
+                nonvirtual  bool            GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const;     // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
+                nonvirtual  RowReference    GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const;             // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
                 nonvirtual  RowReference    GetIthRowReference (size_t ith) const;                                              // ERROR if ith doesn't exist...(1 th is first row)
 
                 nonvirtual  size_t  GetRowNumber (RowReference rowRef) const;   // Use of row numbers is discouraged, but this routine
@@ -164,9 +164,9 @@ namespace   Stroika {
                 virtual    size_t      GetMarkerPositionOfStartOfWindow () const override;
                 virtual    size_t      GetMarkerPositionOfEndOfWindow () const override;
                 virtual    size_t      GetMarkerPositionOfStartOfLastRowOfWindow () const override;
-                virtual    long        CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const override;
-                virtual    long        CalculateCharDeltaFromRowDeltaFromTopOfWindow (long deltaRows) const override;
-                virtual    void        ScrollByIfRoom (long downByRows);       // if downBy negative then up
+                virtual    ptrdiff_t   CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const override;
+                virtual    ptrdiff_t   CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const override;
+                virtual    void        ScrollByIfRoom (ptrdiff_t downByRows);       // if downBy negative then up
                 // OK to ask to scroll further
                 // than allowed - return true
                 // if any scrolling (not necesarily
@@ -451,7 +451,7 @@ namespace   Stroika {
                         It calls @'SimpleTextImager::GetIthRowReferenceFromHere' todo its work (which returns a bool rather than asserting).</p>
                             <p>See also @'SimpleTextImager::GetNextRowReference', @'SimpleTextImager::GetPreviousRowReference'.</p>
             */
-            inline  SimpleTextImager::RowReference  SimpleTextImager::GetIthRowReferenceFromHere (RowReference fromHere, long ith) const
+            inline  SimpleTextImager::RowReference  SimpleTextImager::GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const
             {
                 bool    result  =   GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
