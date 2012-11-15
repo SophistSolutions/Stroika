@@ -64,8 +64,8 @@ protected:
                 }
                 break;
             case    FromCurrent_W: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fStart_;
-                    Streams::SeekOffsetType newOffset   =   curOffset + offset;
+                    Streams::SeekOffsetType         curOffset   =   fCursor_ - fStart_;
+                    Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
@@ -76,8 +76,8 @@ protected:
                 }
                 break;
             case    FromEnd_W: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fStart_;
-                    Streams::SeekOffsetType newOffset   =   (fEnd_ - fStart_) + offset;
+                    Streams::SeekOffsetType         curOffset   =   fCursor_ - fStart_;
+                    Streams::SignedSeekOffsetType   newOffset   =   (fEnd_ - fStart_) + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
