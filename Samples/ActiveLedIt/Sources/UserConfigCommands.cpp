@@ -331,7 +331,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_Enabled (VARIANT_BOOL* pVal)
 
 STDMETHODIMP ActiveLedIt_CurrentEventArguments::put_Enabled (VARIANT_BOOL val)
 {
-    fEnabled = val;
+    fEnabled = !!val;
     return S_OK;
 }
 
@@ -349,7 +349,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_Checked (VARIANT_BOOL* pVal)
 
 STDMETHODIMP ActiveLedIt_CurrentEventArguments::put_Checked (VARIANT_BOOL val)
 {
-    fChecked = val;
+    fChecked = !!val;
     return S_OK;
 }
 

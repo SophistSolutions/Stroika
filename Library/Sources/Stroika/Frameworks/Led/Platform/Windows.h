@@ -336,7 +336,7 @@ namespace   Stroika {
                     nonvirtual  void    StopAutoscrollTimer ();
                 private:
                     enum    { eAutoscrollingTimerEventID        =   434 };  // Magic#
-                    UINT_PTR	fAutoScrollTimerID;     // zero means no timer
+                    UINT_PTR    fAutoScrollTimerID;     // zero means no timer
 
 
 
@@ -2557,6 +2557,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetText (WPARAM wParam, LPARAM lParam)
                 {
+                    using   namespace Stroika::Foundation;
                     int     cchTextMax  =   (int)wParam;
                     LPSTR   lpText      =   (LPSTR)lParam;
                     Require (cchTextMax > 0);   // cuz we require appending NUL character
@@ -2580,6 +2581,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgSetText (WPARAM /*wParam*/, LPARAM lParam)
                 {
+                    using   namespace Stroika::Foundation;
                     LPSTR   lpText  =   (LPSTR)lParam;
 
                     /*
@@ -2774,6 +2776,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgReplaceSel (WPARAM wParam, LPARAM lParam)
                 {
+                    using   namespace   Stroika::Foundation;
                     Assert (wParam == 0);
                     LPCTSTR text    =   (LPCTSTR)lParam;
 

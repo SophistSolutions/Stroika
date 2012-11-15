@@ -16,9 +16,6 @@
 const   unsigned int    kMaxNumUndoLevels   =   1024;
 #endif
 
-#if     qLedUsesNamespaces
-using   namespace   Led;
-#endif
 
 
 #define qSupportGenRandomCombosCommand  0

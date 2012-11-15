@@ -16,6 +16,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Frameworks::Led;
 
 

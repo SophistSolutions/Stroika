@@ -23,6 +23,8 @@ using   namespace   Stroika::Frameworks::Led;
 using   namespace   Stroika::Frameworks::Led::Platform;
 
 
+
+
 class   LedItViewController {
 public:
     LedItViewController ();
@@ -63,22 +65,16 @@ public:
 
 
 
-#if     qTypedefConfusedAccessCheckingCompilerBug
-class   LedItViewAlmostBASE : public Led_MFC_ExceptionHandlerHelper< Led_MFC_X <WordProcessor> > {
-};
-#else
 typedef Led_MFC_ExceptionHandlerHelper< Led_MFC_X <WordProcessor> > LedItViewAlmostBASE;
+
+
+
+
+
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4250)
 #endif
-
-
-
-
-
-
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (disable : 4250)
-#endif
-
 
 class   LedItView : public WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE> {
 private:
@@ -200,9 +196,11 @@ public:
     virtual    void    Dump (CDumpContext& dc) const override;
 #endif
 };
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (default : 4250)
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
 #endif
+
+
 
 
 

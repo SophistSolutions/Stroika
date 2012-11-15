@@ -334,7 +334,7 @@ ptrdiff_t    SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (lo
     return (deltaChars >= 0) ? rowDiff : -long(rowDiff);
 }
 
-ptrdiff_t	SimpleTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const
+ptrdiff_t   SimpleTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const
 {
     RowReference    row = GetIthRowReferenceFromHere (GetTopRowReferenceInWindow (), deltaRows);
     return (long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ()));

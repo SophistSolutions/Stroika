@@ -35,15 +35,11 @@ class   LedItDocument;
 
 
 #if     qPlatform_Windows
-#if     qTypedefConfusedAccessCheckingCompilerBug
-class   LedItViewAlmostBASE : public Platform::Led_MFC_X <WordProcessor> {
-};
-#else
 typedef Platform::Led_MFC_X <WordProcessor> LedItViewAlmostBASE;
 #endif
-#endif
 
-#if     qQuiteAnnoyingDominanceWarnings
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
 #pragma warning (disable : 4250)
 #endif
 class   LedItView :
@@ -152,8 +148,8 @@ public:
 #endif
 #endif
 };
-#if     qQuiteAnnoyingDominanceWarnings
-#pragma warning (default : 4250)
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
 #endif
 
 

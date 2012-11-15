@@ -1425,9 +1425,9 @@ long    ActiveLedItControl::OLE_Find (long searchFrom, const VARIANT& findText, 
     USES_CONVERSION;
     parameters.fMatchString = OLE2A (findText.bstrVal);
 #endif
-    parameters.fWrapSearch = wrapSearch;
-    parameters.fWholeWordSearch = wholeWordSearch;
-    parameters.fCaseSensativeSearch = caseSensativeSearch;
+    parameters.fWrapSearch = !!wrapSearch;
+    parameters.fWholeWordSearch = !!wholeWordSearch;
+    parameters.fCaseSensativeSearch = !!caseSensativeSearch;
 
     size_t  whereTo =   fTextStore.Find (parameters, searchFrom);
 
@@ -1520,7 +1520,7 @@ BOOL    ActiveLedItControl::OLE_GetDirty ()
 
 void    ActiveLedItControl::OLE_SetDirty (BOOL dirty)
 {
-    fDataDirty = dirty;
+    fDataDirty = !!dirty;
 }
 
 void    ActiveLedItControl::OnBrowseHelpCommand ()
@@ -1672,8 +1672,8 @@ void ActiveLedItControl::FireUpdateUserCommand (const wstring& internalCmdName, 
         Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_CurrentEventArguments>::CreateInstance (&o));
         o->fInternalName = internalCmdName;
         o->fName = *name;
-        o->fEnabled = *enabled;
-        o->fChecked = *checked;
+        o->fEnabled = !!*enabled;
+        o->fChecked = !!*checked;
         fCurrentEventArguments = o;
         FireOLEEvent (DISPID_UpdateUserCommand);
         *name = o->fName;
@@ -1876,7 +1876,7 @@ BOOL    ActiveLedItControl::OLE_GetReadOnly ()
         }
     }
     try {
-        bool    result  =   fEditor.GetStyle () & ES_READONLY;
+        bool    result  =   !! (fEditor.GetStyle () & ES_READONLY);
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
@@ -1890,7 +1890,7 @@ void    ActiveLedItControl::OLE_SetReadOnly (BOOL bNewValue)
             if (fOnCreateExtras.get () == NULL) {
                 fOnCreateExtras = auto_ptr<OnCreateExtras> (new OnCreateExtras ());
             }
-            fOnCreateExtras.get ()->fReadOnly = static_cast<bool> (bNewValue);
+            fOnCreateExtras.get ()->fReadOnly = !!bNewValue;
         }
         else {
             fEditor.SetReadOnly (bNewValue);
@@ -1924,7 +1924,7 @@ void    ActiveLedItControl::OLE_SetEnabled (BOOL bNewValue)
             if (fOnCreateExtras.get () == NULL) {
                 fOnCreateExtras = auto_ptr<OnCreateExtras> (new OnCreateExtras ());
             }
-            fOnCreateExtras.get ()->fEnabled = static_cast<bool> (bNewValue);
+            fOnCreateExtras.get ()->fEnabled = !!bNewValue;
         }
         else {
             if (bNewValue) {
@@ -1949,7 +1949,7 @@ void    ActiveLedItControl::OLE_SetEnableAutoChangesBackgroundColor (BOOL bNewVa
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     try {
         IdleManager::NonIdleContext nonIdleContext;
-        fEditor.fEnableAutoChangesBackgroundColor = bNewValue;
+        fEditor.fEnableAutoChangesBackgroundColor = !!bNewValue;
         fEditor.Refresh ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
@@ -2426,7 +2426,7 @@ void    ActiveLedItControl::SetSupportContextMenu (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != GetSupportContextMenu ()) {
-        fEditor.SetSupportContextMenu (bNewValue);
+        fEditor.SetSupportContextMenu (!!bNewValue);
     }
 }
 
@@ -2439,7 +2439,7 @@ void    ActiveLedItControl::OLE_SetHideDisabledContextMenuItems (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != OLE_GetHideDisabledContextMenuItems ()) {
-        fEditor.SetHideDisabledContextMenuItems (bNewValue);
+        fEditor.SetHideDisabledContextMenuItems (!!bNewValue);
     }
 }
 
@@ -2452,7 +2452,7 @@ void    ActiveLedItControl::SetSmartCutAndPaste (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != GetSmartCutAndPaste ()) {
-        fEditor.SetSmartCutAndPasteMode (bNewValue);
+        fEditor.SetSmartCutAndPasteMode (!!bNewValue);
     }
 }
 
@@ -2470,7 +2470,7 @@ void    ActiveLedItControl::OLE_SetSmartQuoteMode (BOOL bNewValue)
     CHECK_DEMO_AND_BEEP_AND_RETURN();
 #if     qWideCharacters
     if (bNewValue != OLE_GetSmartQuoteMode ()) {
-        fEditor.SetSmartQuoteMode (bNewValue);
+        fEditor.SetSmartQuoteMode (!!bNewValue);
     }
 #endif
 }
@@ -2484,7 +2484,7 @@ void    ActiveLedItControl::SetWrapToWindow (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != GetWrapToWindow ()) {
-        fEditor.SetWrapToWindow (bNewValue);
+        fEditor.SetWrapToWindow (!!bNewValue);
     }
 }
 
@@ -2497,7 +2497,7 @@ void    ActiveLedItControl::SetShowParagraphGlyphs (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != GetShowParagraphGlyphs ()) {
-        fEditor.SetShowParagraphGlyphs (bNewValue);
+        fEditor.SetShowParagraphGlyphs (!!bNewValue);
     }
 }
 
@@ -2510,7 +2510,7 @@ void    ActiveLedItControl::SetShowTabGlyphs (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != GetShowTabGlyphs ()) {
-        fEditor.SetShowTabGlyphs (bNewValue);
+        fEditor.SetShowTabGlyphs (!!bNewValue);
     }
 }
 
@@ -2523,7 +2523,7 @@ void    ActiveLedItControl::SetShowSpaceGlyphs (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != GetShowSpaceGlyphs ()) {
-        fEditor.SetShowSpaceGlyphs (bNewValue);
+        fEditor.SetShowSpaceGlyphs (!!bNewValue);
     }
 }
 
@@ -2536,7 +2536,7 @@ void    ActiveLedItControl::OLE_SetUseSelectEOLBOLRowHilightStyle (BOOL bNewValu
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != OLE_GetUseSelectEOLBOLRowHilightStyle ()) {
-        fEditor.SetUseSelectEOLBOLRowHilightStyle (bNewValue);
+        fEditor.SetUseSelectEOLBOLRowHilightStyle (!!bNewValue);
         fEditor.Refresh ();
     }
 }
@@ -2550,7 +2550,7 @@ void    ActiveLedItControl::OLE_SetShowSecondaryHilight (BOOL bNewValue)
 {
     CHECK_DEMO_AND_BEEP_AND_RETURN();
     if (bNewValue != OLE_GetShowSecondaryHilight ()) {
-        fEditor.SetUseSecondaryHilight (bNewValue);
+        fEditor.SetUseSecondaryHilight (!!bNewValue);
         fEditor.Refresh ();
     }
 }
@@ -2616,7 +2616,7 @@ void    ActiveLedItControl::OLE_SetHidableTextColored (BOOL bNewValue)
     try {
         ColoredUniformHidableTextMarkerOwner*   uhtmo   =   dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
         AssertNotNull (uhtmo);
-        uhtmo->SetColored (bNewValue);
+        uhtmo->SetColored (!!bNewValue);
         fEditor.Refresh ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
@@ -3311,7 +3311,7 @@ BOOL    ActiveLedItControl::OLE_CommandEnabled (const VARIANT& command)
                 fEnabled (false) {
             }
             virtual    void    Enable (BOOL bOn) override {
-                fEnabled = bOn;
+                fEnabled = !!bOn;
                 m_bEnableChanged = TRUE;
             }
             virtual    void    SetCheck (int /*nCheck*/) override {
@@ -3930,7 +3930,7 @@ void    ActiveLedItControl::SetSelBold (long bold)
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
         Led_IncrementalFontSpecification    applyFontSpec;
-        applyFontSpec.SetStyle_Bold (bold);
+        applyFontSpec.SetStyle_Bold (!!bold);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
@@ -3962,7 +3962,7 @@ void    ActiveLedItControl::SetSelItalic (long italic)
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
         Led_IncrementalFontSpecification    applyFontSpec;
-        applyFontSpec.SetStyle_Italic (italic);
+        applyFontSpec.SetStyle_Italic (!!italic);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
@@ -3994,7 +3994,7 @@ void    ActiveLedItControl::SetSelStrikeThru (long strikeThru)
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
         Led_IncrementalFontSpecification    applyFontSpec;
-        applyFontSpec.SetStyle_Strikeout (strikeThru);
+        applyFontSpec.SetStyle_Strikeout (!!strikeThru);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
     CATCH_AND_HANDLE_EXCEPTIONS();
@@ -4026,7 +4026,7 @@ void    ActiveLedItControl::SetSelUnderline (long underline)
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
         Led_IncrementalFontSpecification    applyFontSpec;
-        applyFontSpec.SetStyle_Underline (underline);
+        applyFontSpec.SetStyle_Underline (!!underline);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
     CATCH_AND_HANDLE_EXCEPTIONS();

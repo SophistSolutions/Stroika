@@ -7,11 +7,7 @@
 
 #include    "Stroika/Frameworks/Led/Config.h"
 
-#include "resource.h"
+#include    "resource.h"
 
-
-#if     qLedUsesNamespaces
-using   namespace   Led;
-#endif
 
 #endif // !defined(AFX_LEDTESTWIN32_H__9AC26CB9_EF88_4376_B9C4_990B8B92C9A5__INCLUDED_)

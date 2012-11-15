@@ -19,10 +19,13 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
 
 using   namespace   Stroika::Frameworks::Led;
 
+using   Stroika::Foundation::Characters::CodePagesInstalled;
+using   Stroika::Foundation::Characters::CodePage;
+using   Stroika::Foundation::Characters::kCodePage_UTF8;
+using   Stroika::Foundation::Characters::GetDefaultSDKCodePage;
 
 
 const   CodePage    kDefaultNewDocCodePage  =   CodePagesInstalled ().IsCodePageAvailable (kCodePage_UTF8) ? kCodePage_UTF8 : GetDefaultSDKCodePage ();
@@ -82,11 +85,11 @@ private:
 
     // utilities to pick save/open file names
 public:
-    static  bool    DoPromptSaveAsFileName (CString* fileName, CodePage* codePage);
-    static  bool    DoPromptSaveCopyAsFileName (CString* fileName, CodePage* codePage);
-    static  bool    DoPromptOpenFileName (CString* fileName, CodePage* codePage);
+    static  bool    DoPromptSaveAsFileName (::CString* fileName, CodePage* codePage);
+    static  bool    DoPromptSaveCopyAsFileName (::CString* fileName, CodePage* codePage);
+    static  bool    DoPromptOpenFileName (::CString* fileName, CodePage* codePage);
 private:
-    static  bool    DoPromptFileName (CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage);
+    static  bool    DoPromptFileName (::CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage);
 
 #if     qDebug
 public:

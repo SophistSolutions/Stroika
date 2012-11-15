@@ -292,7 +292,7 @@ size_t  TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
     Led_tChar       charBuf[64];
     const size_t    kBufSize        =   sizeof (charBuf) / sizeof(charBuf[0]);
     Assert (afterPos < INT_MAX);    // cuz of casts - cannot go up to UINT_MAX
-	for (ptrdiff_t curPos = afterPos - 1; curPos > -1; curPos--) {
+    for (ptrdiff_t curPos = afterPos - 1; curPos > -1; curPos--) {
         Assert (curPos >= 0);
         if (lastReadAtPos > static_cast<size_t> (curPos)) {
             if (lastReadAtPos > kBufSize) {

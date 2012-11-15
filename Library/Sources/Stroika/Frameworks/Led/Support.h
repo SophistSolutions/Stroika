@@ -60,14 +60,6 @@ namespace   Stroika {
              **************** Compiler/Lib bug workarounds... **************
              */
 
-//#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-//#pragma warning (4 : 4786)      //  qQuiteAnnoyingDebugSymbolTruncationWarnings
-//#pragma warning (4 : 4800)      //  qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-//#pragma warning (4 : 4250)      //  qQuiteAnnoyingDominanceWarnings
-//#endif
-
-
-
 #if     qSTLTemplatesErroniouslyRequireOpLessCuzOfOverExpanding
 #define STLOpLessDeclare_BWA(T)\
 public:\

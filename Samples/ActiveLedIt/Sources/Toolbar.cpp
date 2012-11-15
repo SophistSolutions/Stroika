@@ -186,7 +186,7 @@ LRESULT     ActiveLedIt_IconButtonToolbarElement::OnLButtonDown (UINT uMsg, WPAR
             case    eIconButton_Sticky:
             case    eIconButton_Toggle: {
                     if (IsWindowEnabled ()) {
-                        bool    wasPushed   =   SendMessage (BM_GETSTATE) & BST_PUSHED;
+                        bool    wasPushed   =   !! (SendMessage (BM_GETSTATE) & BST_PUSHED);
                         fPressedOnClick = wasPushed;
                         if (fIconButtonStyle == eIconButton_Sticky) {
                             SendMessage (BM_SETSTATE, BST_PUSHED);
@@ -441,7 +441,7 @@ STDMETHODIMP    ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
                     CComVariant         result;
                     Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &CComVariant (fCommand), &result));
                     Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
-                    enabled = result.boolVal;
+                    enabled = !!result.boolVal;
                 }
             }
             EnableWindow (enabled);
@@ -452,7 +452,7 @@ STDMETHODIMP    ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
                     CComVariant         result;
                     Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &CComVariant (fCommand), &result));
                     Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
-                    checked = result.boolVal;
+                    checked = !!result.boolVal;
                 }
                 SendMessage (BM_SETSTATE, checked ? BST_PUSHED : 0);
             }

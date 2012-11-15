@@ -48,6 +48,10 @@ namespace   Stroika {
 
 
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4250)
+#endif
             /*
             @CLASS:         WaterMarkHelper<TEXTSTORE,WORDPROCESSOR>
             @DESCRIPTION:   <p>TEXTSTORE defaults to @'ChunkedArrayTextStore' and WORDPROCESSOR defaults to @'WordProcessor' </p>
@@ -122,6 +126,9 @@ namespace   Stroika {
                 Led_Rect        fCachedIntoRect;
                 Led_Tablet      fCachedIntoTablet;
             };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 
 

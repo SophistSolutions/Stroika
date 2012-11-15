@@ -864,7 +864,11 @@ void    TextLayoutBlock_Basic::Construct_ICU (const TextDirection* initialDirect
 void    TextLayoutBlock_Basic::Construct_Default ()
 {
     // Only do something for UNICODE/wide-chars - otherwise - just copy the chars by value...
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+    Memory::Private::VC_BWA_std_copy (static_cast<Led_tChar*> (fRealText), static_cast<Led_tChar*> (fRealText) + fTextLength, static_cast<Led_tChar*> (fVirtualText));
+#else
     copy (static_cast<Led_tChar*> (fRealText), static_cast<Led_tChar*> (fRealText) + fTextLength, static_cast<Led_tChar*> (fVirtualText));
+#endif
     if (fTextLength != 0) {
         ScriptRunElt    thisCharElt;
         thisCharElt.fDirection = eLeftToRight;
@@ -932,7 +936,11 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from):
         const   Led_tChar*  s   =   nullptr;
         const   Led_tChar*  e   =   nullptr;
         from.PeekAtRealText_ (&s, &e);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+        Memory::Private::VC_BWA_std_copy (s, e, const_cast<Led_tChar*> (fRep->fRealText));
+#else
         copy (s, e, const_cast<Led_tChar*> (fRep->fRealText));
+#endif
     }
 
     fRep->fVirtualText = fRep->fRealText + strLength;
@@ -940,12 +948,20 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from):
         const   Led_tChar*  s   =   nullptr;
         const   Led_tChar*  e   =   nullptr;
         from.PeekAtVirtualText_ (&s, &e);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+        Memory::Private::VC_BWA_std_copy (s, e, const_cast<Led_tChar*> (fRep->fVirtualText));
+#else
         copy (s, e, const_cast<Led_tChar*> (fRep->fVirtualText));
+#endif
     }
 
     fRep->fScriptRuns = reinterpret_cast<const ScriptRunElt*> (fRep->fVirtualText + strLength);
     fRep->fScriptRunsEnd = fRep->fScriptRuns + scriptRuns.size ();
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+    Memory::Private::VC_BWA_std_copy (scriptRuns.begin (), scriptRuns.end (), const_cast<ScriptRunElt*> (fRep->fScriptRuns));
+#else
     copy (scriptRuns.begin (), scriptRuns.end (), const_cast<ScriptRunElt*> (fRep->fScriptRuns));
+#endif
 }
 
 TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock_Copy& from):
@@ -1001,13 +1017,13 @@ void    TextLayoutBlock_Copy::BlockRep::operator delete (void* p)
  *********************** TextLayoutBlock_VirtualSubset **************************
  ********************************************************************************
  */
-TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBlock& subsetOf, size_t start, size_t end):
-    inherited (),
-    fSubsetOf (subsetOf),
-    fStart (start),
-    fEnd (end),
-    fScriptRuns (),
-    fRealText (end - start)
+TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBlock& subsetOf, size_t start, size_t end)
+    : inherited ()
+    , fSubsetOf (subsetOf)
+    , fStart (start)
+    , fEnd (end)
+    , fScriptRuns ()
+    , fRealText (end - start)
 {
     vector<ScriptRunElt>    origRuns        =   fSubsetOf.GetScriptRuns ();
     size_t                  offsetSoFar     =   0;
@@ -1034,7 +1050,11 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
              * right text.
              */
             size_t      runEltLen   =   runRelEnd - runRelStart;
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+            Memory::Private::VC_BWA_std_copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
+#else
             copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
+#endif
             s.fRealStart = offsetSoFar;
             offsetSoFar += runEltLen;
             s.fRealEnd = offsetSoFar;

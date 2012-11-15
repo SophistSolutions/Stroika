@@ -56,8 +56,12 @@ namespace   Stroika {
                 /**
                  *  \brief  Safe variant of strncpy() - which always NUL-terminates the string
                  *
-                 * Copy the C-string pointed to by 'src' to the location pointed to by 'dest'. This function will always
-                 * nul-terminate, and it is illegal to call it with a value of zero for nEltsInDest.
+                 * Copy the C-string pointed to by 'src' to the location pointed to by 'dest'. 'nEltsInDest' -
+                 * as the name suggests - is the number of elements in the array pointed to by 'dest' - not
+                 * the max string length for 'dest.
+                 *
+                 * This function will always nul-terminate, and it is illegal to call it with a value
+                 * of zero for nEltsInDest.
                  *
                  * This is basically like strcpy/strncpy, except with better logic for nul-termination.
                  */

@@ -1118,7 +1118,10 @@ namespace   Stroika {
 
 
 
-
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4250)
+#endif
             /*
             @CLASS:         TrivialImager_Interactor<TEXTSTORE,IMAGER>
             @DESCRIPTION:   <p>Handy little template, if you want to use the power of Led, but just to wrap a particular imager,
@@ -1155,6 +1158,9 @@ namespace   Stroika {
                 virtual         void    RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const  override {}
                 virtual         void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const override {}
             };
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 
 

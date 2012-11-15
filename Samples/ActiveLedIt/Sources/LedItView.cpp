@@ -1033,9 +1033,9 @@ long    LedItView::OLE_FindReplace (long searchFrom, const Led_tString& findText
 {
     TextStore::SearchParameters parameters;
     parameters.fMatchString         =   findText;
-    parameters.fWrapSearch          =   wrapSearch;
-    parameters.fWholeWordSearch     =   wholeWordSearch;
-    parameters.fCaseSensativeSearch =   caseSensativeSearch;
+    parameters.fWrapSearch          =   !!wrapSearch;
+    parameters.fWholeWordSearch     =   !!wholeWordSearch;
+    parameters.fCaseSensativeSearch =   !!caseSensativeSearch;
 
     size_t  whereTo =   GetTextStore ().Find (parameters, searchFrom);
     if (whereTo != kBadIndex) {

@@ -4,8 +4,10 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    <afxwin.h>
 #include    <afxodlgs.h>       // MFC OLE dialog classes
 
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Frameworks/Led/StdDialogs.h"
 
 #include    "FontMenu.h"
@@ -645,7 +647,7 @@ void    LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
 
             case    kFontSizeOtherCmdID: {
                     TCHAR   nameBuf[1024];
-                    _tcscpy (nameBuf, _T ("Other"));
+                    Characters::CString::Copy (nameBuf, _T ("Other"), NEltsOf (nameBuf));
                     pCmdUI->SetCheck (false);
                     {
                         int pointSize   =   GetDefaultFont ().GetPointSize ();
@@ -920,7 +922,7 @@ void    LedLineItView::OnChooseFontCommand ()
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     {
-        (void)::_tcscpy (lf.lfFaceName, GetDefaultFont ().GetFontNameSpecifier ().fName);
+        Characters::CString::Copy (lf.lfFaceName, GetDefaultFont ().GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
         Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));    // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight = (GetDefaultFont ().GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;
@@ -997,10 +999,3 @@ BOOL    FontDlgWithNoColorNoStyles::OnInitDialog ()
     }
     return result;
 }
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

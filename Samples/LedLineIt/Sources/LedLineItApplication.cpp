@@ -6,6 +6,7 @@
 
 #include    <afx.h>
 
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Frameworks/Led/StdDialogs.h"
 #include    "Stroika/Frameworks/Led/Platform/Windows_FileRegistration.h"
 
@@ -161,7 +162,7 @@ inline  Led_SDK_String  GetLongPathName (const Led_SDK_String& pathName)
 {
     TCHAR szPath[_MAX_PATH];
     Require (pathName.length () < _MAX_PATH);
-    ::_tcscpy (szPath, pathName.c_str ());
+    Characters::CString::Copy (szPath, pathName.c_str (), NEltsOf (szPath));
     WIN32_FIND_DATA fileData;
     HANDLE hFind = ::FindFirstFile (szPath, &fileData);
     if (hFind != INVALID_HANDLE_VALUE) {
@@ -192,7 +193,7 @@ public:
 
 public:
     virtual    void    OnFileOpen () override {
-        CString fileName;
+        ::CString fileName;
         int codePage    =   0;
         if (LedLineItDocument::DoPromptOpenFileName (&fileName, &codePage)) {
             OpenDocumentFile (fileName, codePage);
@@ -200,7 +201,7 @@ public:
     }
 
 public:
-    virtual    BOOL DoPromptFileName(CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/) override {
+    virtual    BOOL DoPromptFileName(::CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/) override {
         Assert (false); // shouldn't be called - cuz we now override OnFileOpen () to avoid it...
         return false;
     }
@@ -754,7 +755,7 @@ void    LedLineItApplication::OnChooseDefaultFontCommand ()
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     {
-        (void)::_tcscpy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName);
+        Characters::CString::Copy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
         Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));    // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight = (fsp.GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;
@@ -850,12 +851,3 @@ BOOL    LedLineItApplication::ProcessShellCommand (CCommandLineInfo& rCmdInfo)
     STD_EXCEPT_CATCHER (*this);
     return false;
 }
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
