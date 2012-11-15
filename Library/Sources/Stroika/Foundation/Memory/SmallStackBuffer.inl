@@ -11,7 +11,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <string.h>
+#include    <cstring>
 
 #include    "../Debug/Assertions.h"
 #include    "Common.h"
@@ -19,6 +19,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
+
             //  class   SmallStackBuffer<T,BUF_SIZE>
             template    <typename   T, size_t BUF_SIZE>
             inline  void    SmallStackBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements)
@@ -45,12 +46,6 @@ namespace   Stroika {
                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
                     */
                     nElements = max (nElements, oldEltCount * 2);
-
-#if     qVERYLargeOpNewFailsToFail
-                    if (nElements > 512 * 1024 * 1024) {
-                        ThrowOutOfMemoryException ();
-                    }
-#endif
 
                     T*  newPtr = DEBUG_NEW T [nElements];           // NB: We are careful not to update our size field til this has succeeded (exception safety)
 
@@ -83,7 +78,11 @@ namespace   Stroika {
                 , fPointer_ (fBuffer_)
             {
                 GrowToSize (from.fSize_);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
+#else
                 std::copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
+#endif
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
@@ -93,21 +92,17 @@ namespace   Stroika {
                     delete[] fPointer_;
                 }
             }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// SADLY - THIS PRAGMA DOESNT SILENCE VC11 -- MUST FIND A MORE EFFECTIVE WAY -- LGP 2012-11-14
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC unneeded warning about std::copy
-#endif
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>&   SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
             {
                 GrowToSize (rhs.fSize_);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
+#else
                 std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
+#endif
                 return *this;
             }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
             template    <typename   T, size_t BUF_SIZE>
             inline  typename SmallStackBuffer<T, BUF_SIZE>::iterator     SmallStackBuffer<T, BUF_SIZE>::begin ()
             {
@@ -140,14 +135,6 @@ namespace   Stroika {
                 GrowToSize (s + 1);
                 fPointer_[s] = e;
             }
-#if     qCompilerBuggyOverloadingConstOperators
-            template    <typename   T, size_t BUF_SIZE>
-            inline  SmallStackBuffer<T, BUF_SIZE>::operator T* () const
-            {
-                AssertNotNull (fPointer_);
-                return (const_cast<T*> (fPointer_));
-            }
-#else
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::operator T* ()
             {
@@ -160,7 +147,7 @@ namespace   Stroika {
                 AssertNotNull (fPointer_);
                 return (fPointer_);
             }
-#endif
+
         }
     }
 }

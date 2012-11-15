@@ -1191,20 +1191,24 @@ inline  COLORREF    Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const
 }
 
 
-Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor):
-    //fMappingTable (),
-    fDibData (nullptr),
-    fDibDataByteCount (0),
-    fHMemDC (nullptr),
-    fBaseDC (baseHDC),
-    fSize (size),
-    fColorTable (),
-    fDibSection (nullptr),
-    fOldBitmap (nullptr),
-    fHilightBackColor (hilightBackColor.GetOSRep ()),
-    fHilightForeColor (hilightForeColor.GetOSRep ()),
-    fOldBackColor (oldBackColor.GetOSRep ()),
-    fOldForeColor (oldForeColor.GetOSRep ())
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4351)
+#endif
+Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+    : fDibData (nullptr)
+    //fMappingTable ()
+    , fDibDataByteCount (0)
+    , fHMemDC (nullptr)
+    , fBaseDC (baseHDC)
+    , fSize (size)
+    , fColorTable ()
+    , fDibSection (nullptr)
+    , fOldBitmap (nullptr)
+    , fHilightBackColor (hilightBackColor.GetOSRep ())
+    , fHilightForeColor (hilightForeColor.GetOSRep ())
+    , fOldBackColor (oldBackColor.GetOSRep ())
+    , fOldForeColor (oldForeColor.GetOSRep ())
 {
     CreateStandardColorTable (fColorTable, fHilightBackColor, fHilightForeColor, fOldBackColor, fOldForeColor);
     fDibSection = Create8BitDIBSection (baseHDC, size.h, size.v, fColorTable, &fDibData);
@@ -1215,6 +1219,9 @@ Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color
     fOldBitmap = reinterpret_cast<HBITMAP> (::SelectObject (fHMemDC, fDibSection));
     MakeMappingTable ();
 }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
 
 Led_Tablet_::RecolorHelper::~RecolorHelper ()
 {

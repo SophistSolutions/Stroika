@@ -74,6 +74,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
+
             /*
              *  API to return memory allocation statistics. Generally - these will be inaccurate,
              *  unless certain defines are set in Memory.cpp - but at least some stats can be
@@ -97,8 +98,22 @@ namespace   Stroika {
                 void    ForceCheckpoint ();
                 void    DumpLeaksSinceLastCheckpoint ();
             }
-        }
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+            namespace Private {
+                /**
+                 *  Sadly, using pragmas to disable warnings didn't work with VC11. VC_BWA_std_copy
+                 *  provides a little shared code for a worakround - implemenation of std::copy that - while probably
+                 *  inferior to the default - at least isn't much inferior, and doesn't give those
+                 *  annoying warnings.
+                 */
+                template<class _InIt, class _OutIt> inline
+                void    VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest);
+            }
+#endif
+
+
+        }
     }
 }
 #endif  /*_Stroika_Foundation_Memory_Basic_h_*/

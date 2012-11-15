@@ -220,7 +220,7 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     fsp.SetStyle_Condensed (srcData.fStyleSet & (1 << srcData.eCondensed));
     fsp.SetStyle_Extended (srcData.fStyleSet & (1 << srcData.eExtended));
 #elif   qPlatform_Windows
-    fsp.SetStyle_Strikeout (srcData.fStyleSet & (1 << srcData.eStrikeout));
+    fsp.SetStyle_Strikeout (!! (srcData.fStyleSet & (1 << srcData.eStrikeout)));
 #endif
     short   fontSize    =   Led_BufToUSHORT (&srcData.fPointSize);
     if (fontSize < 3 or fontSize > 128) {
@@ -343,7 +343,7 @@ inline  StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortD
     fsp.SetStyle_Condensed (srcData.fStyleSet & (1 << srcData.eCondensed));
     fsp.SetStyle_Extended (srcData.fStyleSet & (1 << srcData.eExtended));
 #elif   qPlatform_Windows
-    fsp.SetStyle_Strikeout (srcData.fStyleSet & (1 << srcData.eStrikeout));
+    fsp.SetStyle_Strikeout (!! (srcData.fStyleSet & (1 << srcData.eStrikeout)));
 #endif
     if (srcData.fStyleSet & (1 << srcData.eSubscript)) {
         fsp.SetStyle_SubOrSuperScript (Led_FontSpecification::eSubscript);

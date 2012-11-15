@@ -337,7 +337,11 @@ void    TextLayoutBlock::CopyOutRealText (const ScriptRunElt& scriptRunElt, Led_
     const Led_tChar*    s   =   nullptr;
     const Led_tChar*    e   =   nullptr;
     PeekAtRealText (scriptRunElt, &s, &e);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+    Memory::Private::VC_BWA_std_copy (s, e, buf);
+#else
     copy (s, e, buf);
+#endif
 }
 
 void    TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
@@ -345,7 +349,11 @@ void    TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, L
     const Led_tChar*    s   =   nullptr;
     const Led_tChar*    e   =   nullptr;
     PeekAtVirtualText (scriptRunElt, &s, &e);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+    Memory::Private::VC_BWA_std_copy (s, e, buf);
+#else
     copy (s, e, buf);
+#endif
 }
 
 void    TextLayoutBlock::PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
@@ -519,7 +527,11 @@ void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_t
     fRealText.GrowToSize (textLength);
     fVirtualText.GrowToSize (textLength);
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+    Memory::Private::VC_BWA_std_copy (realText, realText + textLength, static_cast<Led_tChar*> (fRealText));
+#else
     copy (realText, realText + textLength, static_cast<Led_tChar*> (fRealText));
+#endif
 
 #if     qDebugHack_UpperCaseCharsTratedAsRTL
     {

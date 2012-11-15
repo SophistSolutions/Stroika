@@ -29,6 +29,8 @@ namespace   Stroika {
                 // typically sizeof(SmallStackBuffer<T,BUF_SIZE>) will come to roughly 4K, and always at least something.
 
                 NB: this code is only safe for POD-types - not for types with constructors etc.
+
+                Note this class is provides NO THREADSAFETY. It is NOT safe to update and read from separate threads.
             */
             template    < typename   T, size_t BUF_SIZE = ((4096 / sizeof(T)) == 0 ? 1 : (4096 / sizeof(T))) >
             class   SmallStackBuffer {
@@ -38,19 +40,16 @@ namespace   Stroika {
                 ~SmallStackBuffer ();
 
             public:
-                SmallStackBuffer<T, BUF_SIZE>&   operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
+                nonvirtual  SmallStackBuffer<T, BUF_SIZE>&   operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
 
             public:
-#if     qCompilerBuggyOverloadingConstOperators
-                operator T* () const;
-#else
                 operator const T* () const;
                 operator T* ();
-#endif
 
             public:
                 typedef T*          iterator;
                 typedef const T*    const_iterator;
+
             public:
                 nonvirtual  iterator        begin ();
                 nonvirtual  iterator        end ();
