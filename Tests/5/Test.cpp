@@ -688,8 +688,8 @@ namespace	{
 			Test17_RegExp_Match_ ();
 			Test17_RegExp_Search_ ();
 		#if		qCompilerAndStdLib_Supports_regex_replace
-			VerifyTestResult (String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::eECMAScript)).size () == 1);
-			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::eECMAScript));
+			VerifyTestResult (String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)).size () == 1);
+			vector<String>	r	=	String (L"<h2>Egg prices</h2>").Find (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
 			VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
 			VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
 		#endif
@@ -704,17 +704,17 @@ namespace	{
 	void	Test18_Compare_ ()
 		{
 			const	String	kHELLOWorld	=	String (L"Hello world");
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, String::eWithCase_CO) == 0);
-			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), String::eWithCase_CO) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, String::CompareOptions::eWithCase_CO) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), String::CompareOptions::eWithCase_CO) == 0);
 
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::eWithCase_CO) < 0);
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::eCaseInsensitive_CO) == 0);
-			VerifyTestResult (String (L"fred").Compare (L"fredy", String::eCaseInsensitive_CO) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::eCaseInsensitive_CO) < 0);
-			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::eCaseInsensitive_CO) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"fredy", String::eWithCase_CO) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::eWithCase_CO) > 0);
-			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::eWithCase_CO) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eWithCase_CO) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eCaseInsensitive_CO) == 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive_CO) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eCaseInsensitive_CO) < 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive_CO) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eWithCase_CO) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eWithCase_CO) > 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eWithCase_CO) < 0);
 		}
 }
 

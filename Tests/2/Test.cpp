@@ -272,7 +272,7 @@ namespace	{
                 }
                 
                 // Thread MUST be done/terminated by this point
-                VerifyTestResult (thread1.GetStatus () == Thread::eCompleted);
+                VerifyTestResult (thread1.GetStatus () == Thread::Status::eCompleted);
 		    }
     }
 	void	RegressionTest3_WaitableEvents_ ()

@@ -79,10 +79,10 @@ namespace	{
 			{
 				// Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
 				//		-- LGP 2011-10-08
-				VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 15 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
-				VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::eCurrentLocale_PF).GetAsSecondsCount () == 16 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::PrintFormat::eCurrentLocale_PF).GetAsSecondsCount () == 15 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::PrintFormat::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale_PF).GetAsSecondsCount () == 3 * 60 * 60);
+				VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::PrintFormat::eCurrentLocale_PF).GetAsSecondsCount () == 16 * 60 * 60);
 			}
 
 			{
@@ -105,27 +105,27 @@ namespace	{
 namespace	{
 	void	VERIFY_ROUNDTRIP_XML_ (const Date& d) 
 		{
-			VerifyTestResult (Date::Parse (d.Format (Date::eXML_PF), Date::eXML_PF) == d);
+			VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eXML_PF), Date::PrintFormat::eXML_PF) == d);
 		}
 
 	void	Test_3_TestDate_ ()
 		{
 			{
-				Date	d (Year (1903), eApril, DayOfMonth (4));
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
+				Date	d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+				VerifyTestResult (d.Format (Date::PrintFormat::eXML_PF) == L"1903-04-04");
 				VERIFY_ROUNDTRIP_XML_ (d);
 				d.AddDays (4);
 				VERIFY_ROUNDTRIP_XML_ (d);
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-08");
+				VerifyTestResult (d.Format (Date::PrintFormat::eXML_PF) == L"1903-04-08");
 				d.AddDays (-4);
 				VERIFY_ROUNDTRIP_XML_ (d);
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1903-04-04");
+				VerifyTestResult (d.Format (Date::PrintFormat::eXML_PF) == L"1903-04-04");
 			}
 			{
 				Date	d	=	Date::Parse (L"09/14/1752", locale::classic ());
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d == Date::kMin);
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+				VerifyTestResult (d.Format (Date::PrintFormat::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 			{
 				Date	d;
@@ -138,7 +138,7 @@ namespace	{
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ().GetDate ());
 				VerifyTestResult (not (DateTime::Now ().GetDate () < d));
-				VerifyTestResult (d.Format (Date::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+				VerifyTestResult (d.Format (Date::PrintFormat::eXML_PF) == L"1752-09-14");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 			#if		qPlatform_Windows
 			{
@@ -163,8 +163,8 @@ namespace	{
 			}
 			#endif
 			{
-				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF) == Date (Year (2001), Time::eNovember, DayOfMonth (1)));
-				VerifyTestResult (Date::Parse (L"11/1/2001", Date::eJavascript_PF).Format (Date::eJavascript_PF) == L"11/01/2001");
+				VerifyTestResult (Date::Parse (L"11/1/2001", Date::PrintFormat::eJavascript_PF) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
+				VerifyTestResult (Date::Parse (L"11/1/2001", Date::PrintFormat::eJavascript_PF).Format (Date::PrintFormat::eJavascript_PF) == L"11/01/2001");
 			}
 			{
 				VerifyTestResult (Date::kMin < Date::kMax);
@@ -182,8 +182,8 @@ namespace	{
 	void	Test_4_TestDateTime_ ()
 		{
 			{
-				DateTime	d	=	Date (Year (1903), eApril, DayOfMonth (4));
-				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1903-04-04");
+				DateTime	d	=	Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+				VerifyTestResult (d.Format (DateTime::PrintFormat::eXML_PF) == L"1903-04-04");
 			}
 			{
 				DateTime	d;
@@ -196,8 +196,8 @@ namespace	{
 				VerifyTestResult (not d.empty ());
 				VerifyTestResult (d < DateTime::Now ());
 				VerifyTestResult (DateTime::Now () > d);
-				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::eUTC_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
-				VerifyTestResult (d.Format (DateTime::eXML_PF) == L"1752-09-14T00:00:00Z");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+				d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::Timezone::eUTC_TZ);	// so that compare works - cuz we dont know timezone we'll run test with...
+				VerifyTestResult (d.Format (DateTime::PrintFormat::eXML_PF) == L"1752-09-14T00:00:00Z");	// xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
 			}
 			#if		qPlatform_Windows
 			{
@@ -218,23 +218,23 @@ namespace	{
 	void	Test_5_DateTimeTimeT_ ()
 		{
 			{
-				DateTime	d	=	Date (Year (2000), eApril, DayOfMonth (20));
+				DateTime	d	=	Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20));
 				VerifyTestResult (d.As<time_t> () == 956188800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", locale ()));
+				DateTime	d	=	DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", locale ()));
 				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::PrintFormat::eCurrentLocale_PF));
 				VerifyTestResult (d.As<time_t> () == 802278000);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3am", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3am", TimeOfDay::PrintFormat::eCurrentLocale_PF));
 				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale_PF));
 				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
 			}
 			{
@@ -356,12 +356,12 @@ namespace	{
 	void	Test_8_DateTimeWithDuration_ ()
 		{
 			{
-				DateTime	d	=	DateTime (Date (Year (1995), eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::eCurrentLocale_PF));
+				DateTime	d	=	DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale_PF));
 				VerifyTestResult (d.As<time_t> () == 802234800);	// source - http://www.onlineconversion.com/unix_time.htm
 				const	Duration	k30Days		=	Duration (L"P30D");
 				DateTime	d2	=	d + k30Days;
 				VerifyTestResult (d2.GetDate ().GetYear () == Year (1995));
-				VerifyTestResult (d2.GetDate ().GetMonth () == eJuly);
+				VerifyTestResult (d2.GetDate ().GetMonth () == MonthOfYear::eJuly);
 				VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth (4));
 				VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
 			}
@@ -386,7 +386,7 @@ namespace	{
 			 * This test wont always work, but at least for now seems to work on the systems i test on.
 			 */
 			{
-				DateTime	n	=	DateTime (Date (Year (2011), eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()));
+				DateTime	n	=	DateTime (Date (Year (2011), MonthOfYear::eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()));
 				bool		isDst	=	IsDaylightSavingsTime (n);
 				DateTime	n2	=	n.AddDays (180);
 				VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));

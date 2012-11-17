@@ -134,7 +134,7 @@ namespace	{
 				stringstream	tmp;
 				tmp << kExample;
 				VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
-				VerifyTestResult (v1.GetType () == VariantValue::eMap);
+				VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
 			}
 
 		}

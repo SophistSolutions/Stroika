@@ -46,11 +46,11 @@ namespace	{
 				relBuf.GrowToSize (relEncodedSize);
 				VerifyTestResult (ATL::Base64Encode (Containers::Start (b), static_cast<int> (totalSize), relBuf, &relEncodedSize));
 				relBuf[relEncodedSize] = '\0';
-				if (lb == Cryptography::eCRLF_LB) {
+				if (lb == Cryptography::LineBreak::eCRLF_LB) {
 					return (static_cast<const char*> (relBuf));
 				}
 				else {
-					VerifyTestResult (lb == Cryptography::eLF_LB);
+					VerifyTestResult (lb == Cryptography::LineBreak::eLF_LB);
 					string	result;
 					result.reserve (relEncodedSize);
 					for (int i = 0; i < relEncodedSize; ++i) {
@@ -75,8 +75,8 @@ namespace	{
 	inline	void	VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
 		{
 			#if		qPlatform_Windows
-				VerifyTestResult (Cryptography::EncodeBase64 (bytes, Cryptography::eCRLF_LB) == EncodeBase64_ATL_ (bytes, Cryptography::eCRLF_LB));
-				VerifyTestResult (Cryptography::EncodeBase64 (bytes, Cryptography::eLF_LB) == EncodeBase64_ATL_ (bytes, Cryptography::eLF_LB));
+				VerifyTestResult (Cryptography::EncodeBase64 (bytes, Cryptography::LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, Cryptography::LineBreak::eCRLF_LB));
+				VerifyTestResult (Cryptography::EncodeBase64 (bytes, Cryptography::LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, Cryptography::LineBreak::eLF_LB));
 			#endif
 		}
 	inline	void	VERIFY_ATL_DECODE_ ()
