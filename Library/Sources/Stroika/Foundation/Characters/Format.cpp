@@ -6,6 +6,7 @@
 #include    <cstdarg>
 #include    <cstdlib>
 #include    <iomanip>
+#include	 <limits>
 #include    <sstream>
 
 #include    "../Containers/Common.h"
@@ -158,37 +159,41 @@ wstring Characters::Format (const wchar_t* format, ...)
  */
 unsigned int Characters::HexString2Int (const string& s)
 {
+	using	std::numeric_limits;
     unsigned    long    l   =   strtoul (s.c_str (), nullptr, 16);
-    if (l >= UINT_MAX) {
-        return UINT_MAX;
+    if (l >= numeric_limits<unsigned int>::max ()) {
+        return numeric_limits<unsigned int>::max ();
     }
     return l;
 }
 
 unsigned int Characters::HexString2Int (const wchar_t* s)
 {
+	using	std::numeric_limits;
     RequireNotNull (s);
     unsigned    long    l   =   wcstoul (s, nullptr, 16);
-    if (l >= UINT_MAX) {
-        return UINT_MAX;
+    if (l >= numeric_limits<unsigned int>::max ()) {
+        return numeric_limits<unsigned int>::max ();
     }
     return l;
 }
 
 unsigned int Characters::HexString2Int (const wstring& s)
 {
+	using	std::numeric_limits;
     unsigned    long    l   =   wcstoul (s.c_str (), nullptr, 16);
-    if (l >= UINT_MAX) {
-        return UINT_MAX;
+    if (l >= numeric_limits<unsigned int>::max ()) {
+        return numeric_limits<unsigned int>::max ();
     }
     return l;
 }
 
 unsigned int Characters::HexString2Int (const String& s)
 {
+	using	std::numeric_limits;
     unsigned    long    l   =   wcstoul (s.c_str (), nullptr, 16);
-    if (l >= UINT_MAX) {
-        return UINT_MAX;
+    if (l >= numeric_limits<unsigned int>::max ()) {
+        return numeric_limits<unsigned int>::max ();
     }
     return l;
 }
@@ -205,49 +210,53 @@ unsigned int Characters::HexString2Int (const String& s)
  */
 int Characters::String2Int (const string& s)
 {
+	using	std::numeric_limits;
     long    l   =   strtol (s.c_str (), nullptr, 10);
-    if (l <= INT_MIN) {
-        return INT_MIN;
+    if (l <= numeric_limits<int>::min ()) {
+        return numeric_limits<int>::min ();
     }
-    if (l >= INT_MAX) {
-        return INT_MAX;
+    if (l >= numeric_limits<int>::max ()) {
+        return numeric_limits<int>::max ();
     }
     return l;
 }
 
 int Characters::String2Int (const wstring& s)
 {
+	using	std::numeric_limits;
     long    l   =   wcstol (s.c_str (), nullptr, 10);
-    if (l <= INT_MIN) {
-        return INT_MIN;
+    if (l <= numeric_limits<int>::min ()) {
+        return numeric_limits<int>::min ();
     }
-    if (l >= INT_MAX) {
-        return INT_MAX;
+    if (l >= numeric_limits<int>::max ()) {
+        return numeric_limits<int>::max ();
     }
     return l;
 }
 
 int Characters::String2Int (const wchar_t* s)
 {
+	using	std::numeric_limits;
     RequireNotNull (s);
     long    l   =   wcstol (s, nullptr, 10);
-    if (l <= INT_MIN) {
-        return INT_MIN;
+    if (l <= numeric_limits<int>::min ()) {
+        return numeric_limits<int>::min ();
     }
-    if (l >= INT_MAX) {
-        return INT_MAX;
+    if (l >= numeric_limits<int>::max ()) {
+        return numeric_limits<int>::max ();
     }
     return l;
 }
 
 int Characters::String2Int (const String& s)
 {
+	using	std::numeric_limits;
     long    l   =   wcstol (s.c_str (), nullptr, 10);
-    if (l <= INT_MIN) {
-        return INT_MIN;
+    if (l <= numeric_limits<int>::min ()) {
+        return numeric_limits<int>::min ();
     }
-    if (l >= INT_MAX) {
-        return INT_MAX;
+    if (l >= numeric_limits<int>::max ()) {
+        return numeric_limits<int>::max ();
     }
     return l;
 }

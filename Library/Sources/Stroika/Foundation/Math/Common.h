@@ -21,6 +21,8 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Math {
 
+        	using	std::numeric_limits;
+
             double  nan ();
 
             const   double  kE  =   2.71828182845904523536;
