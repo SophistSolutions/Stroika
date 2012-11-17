@@ -1030,14 +1030,16 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
     size_t                  subsetLen       =   fEnd - fStart;
     const Led_tChar*        fullRealText    =   fSubsetOf.PeekAtRealText ();
     for (vector<ScriptRunElt>::const_iterator i = origRuns.begin (); i != origRuns.end (); ++i) {
-        int     offsetStart =   (*i).fVirtualStart;
-        int     offsetEnd   =   (*i).fVirtualEnd;
+        size_t     offsetStart =   (*i).fVirtualStart;
+        size_t     offsetEnd   =   (*i).fVirtualEnd;
 
-        int runRelStart = max (offsetStart, static_cast<int> (fStart));
-        int runRelEnd = min (offsetEnd, static_cast<int> (fEnd));
+        size_t runRelStart = max (offsetStart, static_cast<size_t> (fStart));
+        size_t runRelEnd = min (offsetEnd, static_cast<size_t> (fEnd));
         if (runRelStart < runRelEnd) {
             // then this is a run with some stuff in it
             ScriptRunElt    s   =   *i;
+            Assert (runRelStart >= fStart);
+            Assert (runRelEnd >= fStart);
             s.fVirtualStart = runRelStart - fStart;
             s.fVirtualEnd = runRelEnd - fStart;
 
@@ -1049,6 +1051,7 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
              * makes calls to get back the original real text for any given range of Virual text - you WILL at least get back the
              * right text.
              */
+            Assert (runRelEnd >= runRelStart);
             size_t      runEltLen   =   runRelEnd - runRelStart;
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
             Memory::Private::VC_BWA_std_copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
@@ -1058,6 +1061,7 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
             s.fRealStart = offsetSoFar;
             offsetSoFar += runEltLen;
             s.fRealEnd = offsetSoFar;
+            Containers::ReserveSpeedTweekAdd1 (fScriptRuns);
             fScriptRuns.push_back (s);
         }
     }
