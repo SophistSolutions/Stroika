@@ -526,7 +526,7 @@ void    LedLineItDocument::Serialize (CArchive& ar)
         if (LedLineItDocument::sHiddenDocOpenArg != kIGNORECodePage) {
             useCodePage =   sHiddenDocOpenArg;
             if (useCodePage == kAutomaticallyGuessCodePage) {
-                CodePagesGuesser::Confidence    conf    =   CodePagesGuesser::eLow;
+                CodePagesGuesser::Confidence    conf    =   CodePagesGuesser::Confidence::eLow;
                 size_t          bytesToStrip    =   0;
                 useCodePage =   CodePagesGuesser ().Guess (buf, nLen, &conf, &bytesToStrip);
             }
