@@ -1236,6 +1236,7 @@ void    ThroughTmpFileWriter::Commit ()
  */
 FileReader::FileReader (const TChar* fileName)
 {
+    RequireNotNull (fileName);
 #if     qPlatform_Windows
     const   bool    kUseWIN32FILEIOAPI  =   true;   // else on Win2k reading files throgh VMWare mounting mechanism -
     // get error on read... not real importnat - but if low-level Win32
@@ -1285,9 +1286,17 @@ FileReader::FileReader (const TChar* fileName)
         try {
             fileData = DEBUG_NEW Byte [fileLen];
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4267)
+#endif
+            /////// REALLY WRONG - MUST REWRITE...
             // READ IN DATA
             ::_lseek (fd, 0, SEEK_SET);
             ThrowIfFalseGetLastError (::_read (fd, fileData, fileLen) == int (fileLen));
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
         }
         catch (...) {
             ::_close (fd);

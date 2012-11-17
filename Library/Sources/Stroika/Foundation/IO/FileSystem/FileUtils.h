@@ -243,6 +243,12 @@ namespace   Stroika {
 
 
 
+                /**
+                  * @todo   This FileReader utility needs redesign, and probably should be deprecated.
+                  *         It's implementaiton fails when built for 64 bit mode (we just hide the errors) and you read
+                  *         using a 32-bit API, and fails to possibly work by API design reading a > 4GB file on a
+                  *         32-bit system.
+                  */
                 class   FileReader {
                 public:
                     FileReader (const TChar* fileName);
