@@ -21,7 +21,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Math {
 
-        	using	std::numeric_limits;
+            using   std::numeric_limits;
 
             double  nan ();
 
