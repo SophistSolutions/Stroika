@@ -773,6 +773,47 @@ namespace	{
 	}
 }
 
+namespace
+{
+	void	Test21_StringToIntEtc_ ()
+	{
+		{
+			VerifyTestResult (String2Int ("-3") == -3);
+			VerifyTestResult (String2Int ("3") == 3);
+			VerifyTestResult (String2Int (wstring (L"3")) == 3);
+			VerifyTestResult (String2Int (String (L"3")) == 3);
+		}
+		{
+			VerifyTestResult (String2Int ("") == 0);
+			VerifyTestResult (String2Int (L"") == 0);
+			VerifyTestResult (String2Int (wstring (L"")) == 0);
+			VerifyTestResult (String2Int (String ()) == 0);
+			VerifyTestResult (String2Int ("     ") == 0);
+		}
+		{
+			VerifyTestResult (HexString2Int ("") == 0);
+			VerifyTestResult (HexString2Int (L"") == 0);
+			VerifyTestResult (HexString2Int (wstring (L"")) == 0);
+			VerifyTestResult (HexString2Int (String ()) == 0);
+			VerifyTestResult (HexString2Int ("     ") == 0);
+		}
+		{
+			VerifyTestResult (Math::isnan (String2Float (String ())));
+			VerifyTestResult (Math::isnan (String2Float (string ())));
+			VerifyTestResult (Math::isnan (String2Float (wstring ())));
+			VerifyTestResult (Math::isnan (String2Float ("")));
+			VerifyTestResult (Math::isnan (String2Float (wstring (L""))));
+			VerifyTestResult (Math::isnan (String2Float (String ())));
+			VerifyTestResult (Math::isnan (String2Float ("     ")));
+		}
+		{
+			VerifyTestResult (Math::NearlyEquals (String2Float ("-44.4"), -44.4));
+			VerifyTestResult (Math::NearlyEquals (String2Float (L"-44.4"), -44.4));
+			VerifyTestResult (Math::NearlyEquals (String2Float (String (L"44.4333")), 44.4333));
+		}
+	}
+}
+
 
 namespace	{
 
@@ -800,6 +841,7 @@ namespace	{
 			Test18_Compare_ ();
 			Test19_ConstCharStar_ ();
 			Test20_CStringHelpers_ ();
+			Test21_StringToIntEtc_ ();
 		}
 }
 

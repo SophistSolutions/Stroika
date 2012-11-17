@@ -156,17 +156,43 @@ wstring Characters::Format (const wchar_t* format, ...)
  ****************************** HexString2Int ***********************************
  ********************************************************************************
  */
-int Characters::HexString2Int (const string& s)
+unsigned int Characters::HexString2Int (const string& s)
 {
-    return ::strtol (s.c_str (), nullptr, 16);
+    unsigned    long    l   =   strtoul (s.c_str (), nullptr, 16);
+    if (l >= UINT_MAX) {
+        return UINT_MAX;
+    }
+    return l;
 }
 
-int Characters::HexString2Int (const wstring& s)
+unsigned int Characters::HexString2Int (const wchar_t* s)
 {
-    // http://msdn.microsoft.com/en-us/library/w4z2wdyc(v=vs.80).aspx
-    // http://pubs.opengroup.org/onlinepubs/009695399/functions/wcstol.html
-    return ::wcstol (s.c_str (), nullptr, 16);
+    RequireNotNull (s);
+    unsigned    long    l   =   wcstoul (s, nullptr, 16);
+    if (l >= UINT_MAX) {
+        return UINT_MAX;
+    }
+    return l;
 }
+
+unsigned int Characters::HexString2Int (const wstring& s)
+{
+    unsigned    long    l   =   wcstoul (s.c_str (), nullptr, 16);
+    if (l >= UINT_MAX) {
+        return UINT_MAX;
+    }
+    return l;
+}
+
+unsigned int Characters::HexString2Int (const String& s)
+{
+    unsigned    long    l   =   wcstoul (s.c_str (), nullptr, 16);
+    if (l >= UINT_MAX) {
+        return UINT_MAX;
+    }
+    return l;
+}
+
 
 
 
@@ -179,20 +205,55 @@ int Characters::HexString2Int (const wstring& s)
  */
 int Characters::String2Int (const string& s)
 {
-    return ::atol (s.c_str ());
+    long    l   =   strtol (s.c_str (), nullptr, 10);
+    if (l <= INT_MIN) {
+        return INT_MIN;
+    }
+    if (l >= INT_MAX) {
+        return INT_MAX;
+    }
+    return l;
 }
 
 int Characters::String2Int (const wstring& s)
 {
-#if     defined (_MSC_VER)
-    return ::_wtol (s.c_str ());
-#else
-    // unclear if this is good/safe - cuz of - for example - funky wide japanese numbers etc... probaby must do better
-    // Also note use WideStringToNarrowSDKString() instead of WideStringToASCII - cuz the later asserts all valid ascii chars which may not be true here...
-    //      -- LGP 2011-08-18
-    return String2Int (WideStringToNarrowSDKString (s));
-#endif
+    long    l   =   wcstol (s.c_str (), nullptr, 10);
+    if (l <= INT_MIN) {
+        return INT_MIN;
+    }
+    if (l >= INT_MAX) {
+        return INT_MAX;
+    }
+    return l;
 }
+
+int Characters::String2Int (const wchar_t* s)
+{
+    RequireNotNull (s);
+    long    l   =   wcstol (s, nullptr, 10);
+    if (l <= INT_MIN) {
+        return INT_MIN;
+    }
+    if (l >= INT_MAX) {
+        return INT_MAX;
+    }
+    return l;
+}
+
+int Characters::String2Int (const String& s)
+{
+    long    l   =   wcstol (s.c_str (), nullptr, 10);
+    if (l <= INT_MIN) {
+        return INT_MIN;
+    }
+    if (l >= INT_MAX) {
+        return INT_MAX;
+    }
+    return l;
+}
+
+
+
 
 
 
@@ -203,27 +264,56 @@ int Characters::String2Int (const wstring& s)
  ********************************* String2Float *********************************
  ********************************************************************************
  */
-double  Characters::String2Float (const wstring& s)
+double  Characters::String2Float (const string& s)
 {
-    static  const   double  kBADVAL =   static_cast<double> (Math::nan ());
-    return String2Float (s, kBADVAL);
+    char*   e   =   nullptr;
+    double  d   =   strtod (s.c_str (), &e);
+    if (d == 0) {
+        if (s.c_str () == e) {
+            return Math::nan ();
+        }
+    }
+    return d;
 }
 
-double  Characters::String2Float (const wstring& s, double returnValIfInvalidString)
+double  Characters::String2Float (const wchar_t* s)
 {
-    double  num =   returnValIfInvalidString;
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
-#endif
-    if (::swscanf (s.c_str (), L"%lf", &num) == 1) {
-        return num;
+    RequireNotNull (s);
+    wchar_t*    e   =   nullptr;
+    double  d   =   wcstod (s, &e);
+    if (d == 0) {
+        if (s == e) {
+            return Math::nan ();
+        }
     }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
-    return returnValIfInvalidString;
+    return d;
 }
+
+double  Characters::String2Float (const wstring& s)
+{
+    wchar_t*    e   =   nullptr;
+    double  d   =   wcstod (s.c_str (), &e);
+    if (d == 0) {
+        if (s.c_str () == e) {
+            return Math::nan ();
+        }
+    }
+    return d;
+}
+
+double  Characters::String2Float (const String& s)
+{
+    wchar_t*    e   =   nullptr;
+    double  d   =   wcstod (s.c_str (), &e);
+    if (d == 0) {
+        if (s.c_str () == e) {
+            return Math::nan ();
+        }
+    }
+    return d;
+}
+
+
 
 
 

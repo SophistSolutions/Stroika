@@ -10,6 +10,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "CodePage.h"
+#include    "String.h"
 
 
 
@@ -112,12 +113,50 @@ namespace   Stroika {
             wstring Format (const wchar_t* format, ...);
 
 
-            int     HexString2Int (const string& s);
-            int     HexString2Int (const wstring& s);
+            /**
+             *  Convert the given hex-format string to an unsigned integer.
+             *  String2Int will return 0 if no valid parse, and UINT_MAX on overflow.
+             *
+             *  @see strtoul(), or @see wcstol (). This is a simple wrapper on strtoul() or wcstoul().
+             *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
+             *  Use strtoul etc directly to see if the string parsed properly.
+             */
+            unsigned int     HexString2Int (const string& s);
+            unsigned int     HexString2Int (const wchar_t* s);
+            unsigned int     HexString2Int (const wstring& s);
+            unsigned int     HexString2Int (const String& s);
+
+            /**
+             *  Convert the given decimal-format integral string to an integer.
+             *  String2Int will return 0 if no valid parse, and INT_MIN on underflow,
+             *  INT_MAX on overflow.
+             *
+             *  @see strtol(), or @see wcstol (). This is a simple wrapper on strtol() / wcstol ().
+             *  strtol() is more flexible. This is merely meant to be an often convenient wrapper.
+             *  Use strtol etc directly to see if the string parsed properly.
+             */
             int     String2Int (const string& s);
+            int     String2Int (const wchar_t* s);
             int     String2Int (const wstring& s);
-            double  String2Float (const wstring& s);    // returns R4LLib::nan () if invalid string
-            double  String2Float (const wstring& s, double returnValIfInvalidString);
+            int     String2Int (const String& s);
+
+            /**
+             *  Convert the given decimal-format floating point string to an double.
+             *  String2Float will return nan () if no valid parse.
+             *
+             *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod ()
+             *  except that it returns nan() on invalid data, instead of zero.
+             *
+             *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
+             *  Use strtod etc directly to see if the string parsed properly.
+             */
+            double  String2Float (const string& s);
+            double  String2Float (const wchar_t* s);
+            double  String2Float (const wstring& s);
+            double  String2Float (const String& s);
+
+            /**
+             */
             wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
 
         }
