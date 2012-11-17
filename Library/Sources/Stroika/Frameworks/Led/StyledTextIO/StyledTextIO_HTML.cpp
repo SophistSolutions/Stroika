@@ -40,14 +40,16 @@ namespace {
 
     bool    ParseStringToInt_ (const string& s, int* t)
     {
-        int l   =   0;
-        if (::sscanf (s.c_str (), "%d", &l) < 1) {
-            return false;
-        }
-        else {
-            *t = l;
-            return true;
-        }
+        int		l   =   0;
+		char*	e	=	nullptr;
+		l = strtol (s.c_str (), &e, 10);
+		if (s.c_str () == e) {
+			return false;
+		}
+		else {
+			*t = l;
+			return true;
+		}
     }
 
     inline  bool    IsASCIISpace (Led_tChar c)
