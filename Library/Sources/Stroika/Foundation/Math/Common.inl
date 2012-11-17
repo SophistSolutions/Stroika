@@ -10,8 +10,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <limits>
-
 #include    "../Debug/Assertions.h"
 
 
@@ -125,6 +123,15 @@ namespace   Stroika {
             inline  unsigned long long  RoundDownTo (unsigned long long x, unsigned long long toNearest)
             {
                 return Private::RoundDownTo_UnSignedHelper_<unsigned long long> (x, toNearest);
+            }
+
+
+
+
+            template    <typename   FloatType>
+            inline  FloatType   NearlyEquals (FloatType l, FloatType r, FloatType epsilon)
+            {
+                return std::fabs ( a - b ) < epsilon;
             }
 
         }

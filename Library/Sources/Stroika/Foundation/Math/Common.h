@@ -7,6 +7,8 @@
 #include    "../StroikaPreComp.h"
 
 #include    <cmath>         // though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
+#include    <limits>
+
 
 /*
  *  TODO:
@@ -40,6 +42,13 @@ namespace   Stroika {
              */
             template    <typename T>
             T   RoundDownTo (T x, T toNearest);
+
+
+            /**
+             *  NearlyEquals() can be used as a utility for floating point comparisons.
+             */
+            template    <typename   FloatType>
+            FloatType   NearlyEquals (FloatType l, FloatType r, FloatType epsilon = 1000 * numerical_limits<FloatType>::epsilon());
 
         }
     }
