@@ -29,32 +29,28 @@
 
 
 
-
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
-            /// VERY PRELIMINARY DRAFT
+            /**
+             *      @todo   VERY PRELIMINARY DRAFT
+             */
             class   RegularExpression {
             public:
                 // not sure what these types mean - find out and document clearly
-                enum SyntaxType { eECMAScript, eBasic };
+            enum class SyntaxType : uint8_t { eECMAScript, eBasic };
             public:
-                explicit RegularExpression (const String& re, SyntaxType syntaxType = eBasic)
-                    : fVal (re)
-                    , fSyntaxType (syntaxType) {
-                }
+                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eBasic);
 
             private:
-                SyntaxType fSyntaxType;
+                SyntaxType fSyntaxType_;
 
             public:
-                String  GetAsStr () const { return fVal; }
-                SyntaxType  GetSyntaxType () const { return fSyntaxType; }
+                String  GetAsStr () const;
+                SyntaxType  GetSyntaxType () const;
             private:
-                String  fVal;
+                String  fVal_;
             };
 
         }
@@ -64,6 +60,7 @@ namespace   Stroika {
 
 
 #endif  /*_Stroika_Foundation_Characters_RegularExpression_h_*/
+
 
 
 /*

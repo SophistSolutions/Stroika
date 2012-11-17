@@ -142,7 +142,7 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
     , fTLSAbortFlag (nullptr)           // Can only be set properly within the MAINPROC of the thread
 #endif
     , fStatusCriticalSection ()
-    , fStatus (eNotYetRunning)
+    , fStatus (Status::eNotYetRunning)
     , fOK2StartEvent_ ()
 #if     qUseThreads_StdCPlusPlus
     , fThreadDone_ ()
@@ -188,7 +188,7 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 
 Thread::Rep_::~Rep_ ()
 {
-    Assert (fStatus != eRunning);
+    Assert (fStatus != Status::eRunning);
 #if     qUseThreads_StdCPlusPlus
     // In case thread ran and terminated without any ever waiting for it.
     //
@@ -259,8 +259,8 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             bool    doRun   =   false;
             {
                 AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-                if (incRefCnt->fStatus == eNotYetRunning) {
-                    incRefCnt->fStatus = eRunning;
+                if (incRefCnt->fStatus == Status::eNotYetRunning) {
+                    incRefCnt->fStatus = Status::eRunning;
                     doRun = true;
                 }
             }
@@ -270,7 +270,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
                 AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-                incRefCnt->fStatus = eCompleted;
+                incRefCnt->fStatus = Status::eCompleted;
             }
 #if     qUseThreads_StdCPlusPlus
             incRefCnt->fThreadDone_.Set ();
@@ -284,7 +284,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
                 AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-                incRefCnt->fStatus = eCompleted;
+                incRefCnt->fStatus = Status::eCompleted;
             }
 #if     qUseThreads_StdCPlusPlus
             incRefCnt->fThreadDone_.Set ();
@@ -298,7 +298,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
                 AutoCriticalSection enterCritcalSection (incRefCnt->fStatusCriticalSection);
-                incRefCnt->fStatus = eCompleted;
+                incRefCnt->fStatus = Status::eCompleted;
             }
 #if     qUseThreads_StdCPlusPlus
             incRefCnt->fThreadDone_.Set ();
@@ -336,7 +336,7 @@ unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter)
 
 void    Thread::Rep_::NotifyOfAbort ()
 {
-    Require (fStatus == eAborting or fStatus == eCompleted);
+    Require (fStatus == Status::eAborting or fStatus == Status::eCompleted);
     //TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbort"));
     // CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
     AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
@@ -348,7 +348,7 @@ void    Thread::Rep_::NotifyOfAbort ()
     *fTLSAbortFlag = true;
 #elif   qUseThreads_StdCPlusPlus
 #elif   qUseThreads_WindowsNative
-    if (fStatus == eAborting) {
+    if (fStatus == Status::eAborting) {
         Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
     }
 #endif
@@ -394,11 +394,12 @@ void    CALLBACK    Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
 {
     TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
-    Require (rep->fStatus == eAborting || rep->fStatus == eCompleted);
+    Require (rep->fStatus == Status::eAborting || rep->fStatus == Status::eCompleted);
     Require (GetCurrentThreadID () == rep->GetID ());
     rep->ThrowAbortIfNeeded ();
-    Require (rep->fStatus == eCompleted);   // normally we don't reach this - but we could if we've already been marked completed somehow
+    // normally we don't reach this - but we could if we've already been marked completed somehow
     // before the abortProc got called/finsihed...
+    Require (rep->fStatus == Status::eCompleted);
 }
 #endif
 
@@ -526,10 +527,10 @@ void    Thread::Abort ()
 
     // first try to send abort exception, and then - if force - get serious!
     AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
-    if (fRep_->fStatus != eCompleted) {
-        fRep_->fStatus = eAborting;
+    if (fRep_->fStatus != Status::eCompleted) {
+        fRep_->fStatus = Status::eAborting;
     }
-    if (fRep_->fStatus == eAborting) {
+    if (fRep_->fStatus == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfAbort ();
 #if     qPlatform_POSIX
@@ -565,7 +566,7 @@ void    Thread::Abort_Forced_Unsafe ()
     IgnoreExceptionsForCall (WaitForDone (5.0f));
     AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
 #if         qUseThreads_WindowsNative
-    if (fRep_->fStatus != eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
+    if (fRep_->fStatus != Status::eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
         // This is VERY bad to do. Put assert here that it never happens...
         Assert (false);
         ::TerminateThread (fRep_->fThread_, -1);
@@ -610,7 +611,7 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
         // then its effectively already done.
         return;
     }
-    if (fRep_->fStatus == eCompleted) {
+    if (fRep_->fStatus == Status::eCompleted) {
         return;
     }
     if (timeout < 0) {
@@ -628,7 +629,7 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
     HANDLE  thread  =   nullptr;
     {
         AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
-        if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
+        if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus != Status::eCompleted) {
             doWait = true;
             thread = fRep_->fThread_;
         }
@@ -662,7 +663,7 @@ void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsT
     HANDLE  thread  =   nullptr;
     {
         AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
-        if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus != eCompleted) {
+        if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus != Status::eCompleted) {
             thread = fRep_->fThread_;
         }
     }
@@ -680,7 +681,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
 {
     DurationSecondsType timeoutAt   =   Time::GetTickCount () + timeout;
     // CRUDDY impl - but decent enuf for first draft
-    while (GetStatus () != Thread::eCompleted) {
+    while (GetStatus () != Thread::Status::eCompleted) {
         DurationSecondsType time2Wait   =   timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0) {
             DoThrow (WaitTimedOutException ());
@@ -694,7 +695,7 @@ Thread::Status  Thread::GetStatus_ () const
 {
     Require (fRep_.get () != nullptr);
     if (fRep_.get () == nullptr) {
-        return eNull;
+        return Status::eNull;
     }
     AutoCriticalSection enterCritcalSection (fRep_->fStatusCriticalSection);
     return fRep_->fStatus;

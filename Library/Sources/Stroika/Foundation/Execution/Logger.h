@@ -84,7 +84,7 @@ namespace   Stroika {
 
                      UPDATE DOCS
                  */
-                enum    Priority {
+            enum class  Priority : uint8_t {
                     // Names and numbers for syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
                     eInfo_P             =   6,              // SYSLOG name LOG_INFO     -   The message is purely informational
                     eNotice_P           =   5,              // SYSLOG name LOG_NOTICE   -   The message describes a normal but important event

@@ -44,13 +44,13 @@ namespace   {
     {
         SYSTEMTIME  st;
         memset (&st, 0, sizeof (st));
-        MonthOfYear m   =   eEmptyMonthOfYear;
-        DayOfMonth  d   =   eEmptyDayOfMonth;
-        Year        y   =   eEmptyYear;
+        MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+        DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+        Year        y   =   Year::eEmptyYear;
         date.mdy (&m, &d, &y);
-        st.wYear = y;
-        st.wMonth = m;
-        st.wDay = d;
+        st.wYear = static_cast<WORD> (y);
+        st.wMonth = static_cast<WORD> (m);
+        st.wDay = static_cast<WORD> (d);
         return st;
     }
 }
@@ -69,24 +69,24 @@ namespace   {
      */
     Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
-        if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
+        if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
             return Date::kEmptyJulianRep;
         }
 
-        Require (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14))));
+        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
 
         Date::JulianRepType c;
         Date::JulianRepType ya;
-        if (month > 2) {
-            month = static_cast<MonthOfYear> (month - 3);
+        if (static_cast<int> (month) > 2) {
+            month = static_cast<MonthOfYear> (static_cast<int> (month) - 3);
         }
         else {
-            month = static_cast<MonthOfYear> (month + 9);
-            year = static_cast<Year> (year - 1);
+            month = static_cast<MonthOfYear> (static_cast<int> (month) + 9);
+            year = static_cast<Year> (static_cast<int> (year) - 1);
         }
-        c = year / 100;
-        ya = year - 100 * c;
-        return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * month + 2) / 5 + day + 1721119);
+        c = static_cast<int> (year) / 100;
+        ya = static_cast<int> (year) - 100 * c;
+        return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
     }
 }
 
@@ -95,10 +95,10 @@ namespace   {
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
-        if (month == eEmptyMonthOfYear or day == eEmptyDayOfMonth or year == eEmptyYear) {
+        if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
             return Date::kEmptyJulianRep;
         }
-        if (year > 1752 or (year == 1752 and (month > eSeptember or (month == eSeptember and day >= 14)))) {
+        if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14)))) {
             return jday_ (month, day, year);
         }
         else {
@@ -120,9 +120,9 @@ namespace   {
     {
         struct tm tm;
         memset(&tm, 0, sizeof(tm));
-        tm.tm_year = d.GetYear () - 1900;
-        tm.tm_mon = d.GetMonth () - 1;
-        tm.tm_mday = d.GetDayOfMonth ();
+        tm.tm_year = static_cast<int> (d.GetYear ()) - 1900;
+        tm.tm_mon = static_cast<int> (d.GetMonth ()) - 1;
+        tm.tm_mday = static_cast<int> (d.GetDayOfMonth ());
         return tm;
     }
 }
@@ -180,7 +180,7 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
         return Date ();
     }
     switch (pf) {
-        case    eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale_PF: {
 #if     qPlatform_Windows
                 /*
                  * Windows Parser does better job than POSIX one - for reasons which elude me.
@@ -193,7 +193,7 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
 #endif
             }
             break;
-        case    eXML_PF: {
+        case    PrintFormat::eXML_PF: {
                 /*
                  * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
                  */
@@ -216,7 +216,7 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
                 }
             }
             break;
-        case    eJavascript_PF: {
+        case    PrintFormat::eJavascript_PF: {
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
@@ -294,7 +294,7 @@ wstring Date::Format (PrintFormat pf) const
         return wstring ();
     }
     switch (pf) {
-        case    eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale_PF: {
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
@@ -303,11 +303,11 @@ wstring Date::Format (PrintFormat pf) const
 #endif
             }
             break;
-        case    eXML_PF: {
+        case    PrintFormat::eXML_PF: {
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
-                MonthOfYear m   =   eEmptyMonthOfYear;
-                DayOfMonth  d   =   eEmptyDayOfMonth;
-                Year        y   =   eEmptyYear;
+                MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+                DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+                Year        y   =   Year::eEmptyYear;
                 mdy (&m, &d, &y);
 #if     qSupportValgrindQuirks
                 // Makes little sense - even buf[0] not sufficient - but this silences lots of warnings.
@@ -318,7 +318,7 @@ wstring Date::Format (PrintFormat pf) const
                 return buf;
             }
             break;
-        case    eJavascript_PF: {
+        case    PrintFormat::eJavascript_PF: {
                 /*
                  *  From
                  *      http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
@@ -331,9 +331,9 @@ wstring Date::Format (PrintFormat pf) const
                  *  See also        explicit Date (const wstring& rep, Javascript);
                  */
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
-                MonthOfYear m   =   eEmptyMonthOfYear;
-                DayOfMonth  d   =   eEmptyDayOfMonth;
-                Year        y   =   eEmptyYear;
+                MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+                DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+                Year        y   =   Year::eEmptyYear;
                 mdy (&m, &d, &y);
 #if     qSupportValgrindQuirks
                 // Makes little sense - even buf[0] not sufficient - but this silences lots of warnings.
@@ -446,32 +446,32 @@ Date::JulianRepType Date::DaysSince () const
 
 Year    Date::GetYear () const
 {
-    MonthOfYear m   =   eEmptyMonthOfYear;
-    DayOfMonth  d   =   eEmptyDayOfMonth;
-    Year        y   =   eEmptyYear;
+    MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+    DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+    Year        y   =   Year::eEmptyYear;
     mdy (&m, &d, &y);
     return y;
 }
 
 MonthOfYear Date::GetMonth () const
 {
-    MonthOfYear m   =   eEmptyMonthOfYear;
-    DayOfMonth  d   =   eEmptyDayOfMonth;
-    Year        y   =   eEmptyYear;
+    MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+    DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+    Year        y   =   Year::eEmptyYear;
     mdy (&m, &d, &y);
-    Ensure (empty () or 1 <= m and m <= 12);
-    Ensure (0 <= m and m <= 12);
+    Ensure (empty () or 1 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
+    Ensure (0 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
     return m;
 }
 
 DayOfMonth  Date::GetDayOfMonth () const
 {
-    MonthOfYear m   =   eEmptyMonthOfYear;
-    DayOfMonth  d   =   eEmptyDayOfMonth;
-    Year        y   =   eEmptyYear;
+    MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+    DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+    Year        y   =   Year::eEmptyYear;
     mdy (&m, &d, &y);
-    Ensure (empty () or 1 <= d and d <= 31);
-    Ensure (0 <= d and d <= 31);
+    Ensure (empty () or 1 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
+    Ensure (0 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
     return d;
 }
 
@@ -489,9 +489,9 @@ void    Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     RequireNotNull (day);
     RequireNotNull (year);
     if (fJulianDateRep_ == kEmptyJulianRep) {
-        *month = eEmptyMonthOfYear;
-        *day = eEmptyDayOfMonth;
-        *year = eEmptyYear;
+        *month = MonthOfYear::eEmptyMonthOfYear;
+        *day = DayOfMonth::eEmptyDayOfMonth;
+        *year = Year::eEmptyYear;
         return;
     }
     JulianRepType   m;
@@ -579,17 +579,17 @@ int Time::YearDifference (const Date& lhs, const Date& rhs)
     Require (not lhs.empty ());     // since meaning of diff wouldn't make much sense
     Require (not rhs.empty ());     // ditto
 
-    MonthOfYear lm  =   eEmptyMonthOfYear;
-    DayOfMonth  ld  =   eEmptyDayOfMonth;
-    Year        ly  =   eEmptyYear;
+    MonthOfYear lm  =   MonthOfYear::eEmptyMonthOfYear;
+    DayOfMonth  ld  =   DayOfMonth::eEmptyDayOfMonth;
+    Year        ly  =   Year::eEmptyYear;
     lhs.mdy (&lm, &ld, &ly);
 
-    MonthOfYear rm  =   eEmptyMonthOfYear;
-    DayOfMonth  rd  =   eEmptyDayOfMonth;
-    Year        ry  =   eEmptyYear;
+    MonthOfYear rm  =   MonthOfYear::eEmptyMonthOfYear;
+    DayOfMonth  rd  =   DayOfMonth::eEmptyDayOfMonth;
+    Year        ry  =   Year::eEmptyYear;
     rhs.mdy (&rm, &rd, &ry);
 
-    int diff    =   ly - ry;
+    int diff    =   static_cast<int> (ly) - static_cast<int> (ry);
 
     if (lm < rm or (lm == rm and ld < rd)) {
         diff--;

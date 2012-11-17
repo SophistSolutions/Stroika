@@ -54,7 +54,7 @@ namespace   Stroika {
             using   Characters::TString;
 
 
-            enum    DayOfWeek {
+enum class  DayOfWeek : uint8_t {
                 eMonday = 1,
                 eTuesday = 2,
                 eWednesday = 3,
@@ -68,7 +68,7 @@ namespace   Stroika {
 
 
 
-            enum    MonthOfYear {
+enum class  MonthOfYear : uint8_t {
                 eEmptyMonthOfYear   = 0,        // only zero if date empty
                 eJanuary = 1,
                 eFebruary = 2,
@@ -88,7 +88,7 @@ namespace   Stroika {
 
 
 
-            enum    DayOfMonth {
+enum  class     DayOfMonth : uint8_t {
                 eEmptyDayOfMonth = 0,       // only zero if date empty
                 eFirstDayOfMonth = 1,
                 eLastDayOfMonth = 31,
@@ -96,13 +96,13 @@ namespace   Stroika {
 
 
 
-            enum    DayOfYear {
+enum class  DayOfYear : uint16_t {
                 eFirstDayOfYear = 1,
                 eLastDayOfYear = 366,
             };
 
 
-            enum    Year {
+enum class Year : int {
                 eEmptyYear = SHRT_MIN,
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX,
@@ -154,7 +154,7 @@ namespace   Stroika {
                 explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
-                enum    PrintFormat {
+            enum class PrintFormat : uint8_t {
                     eCurrentLocale_PF,
                     eXML_PF,
                     eJavascript_PF,
@@ -186,7 +186,7 @@ namespace   Stroika {
                 nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = eCurrentLocale_PF) const;
+                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale_PF) const;
                 nonvirtual  wstring Format (const locale& l) const;
 
 #if     qPlatform_Windows

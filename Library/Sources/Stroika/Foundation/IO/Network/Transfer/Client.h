@@ -110,7 +110,7 @@ namespace   Stroika {
                         wstring fSubjectCompanyName;
                         wstring fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
                         wstring fIssuer;
-                        enum ValidationStatus {
+enum class ValidationStatus : uint8_t {
                             eNoSSL,
                             eSSLOK,
                             eCertNotYetValid,   // start date too soon

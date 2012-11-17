@@ -127,12 +127,12 @@ namespace   {
                 return Containers::CompareResultNormalizeHelper<ptrdiff_t, int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
             }
             virtual int Compare (const Character* rhsStart, const Character* rhsEnd, String::CompareOptions co) const override {
-                Require (co == eWithCase_CO or co == eCaseInsensitive_CO);
+                Require (co == CompareOptions::eWithCase_CO or co == CompareOptions::eCaseInsensitive_CO);
                 Assert (_fStart <= _fEnd);
                 switch (co) {
-                    case    eWithCase_CO:
+                    case    CompareOptions::eWithCase_CO:
                         return Compare_CS_ (rhsStart, rhsEnd);
-                    case    eCaseInsensitive_CO:
+                    case    CompareOptions::eCaseInsensitive_CO:
                         return Compare_CI_ (rhsStart, rhsEnd);
                     default:
                         AssertNotReached ();
@@ -772,7 +772,7 @@ vector<pair<size_t, size_t>>  String::Search (const String& string2SearchFor, Co
 namespace   {
     regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
     {
-        regex_constants::syntax_option_type f   =   (st == RegularExpression::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
+        regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
         return f;
     }
 }

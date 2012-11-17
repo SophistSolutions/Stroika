@@ -13,9 +13,13 @@ namespace   Stroika {
 
             class   Angle {
             public:
-                enum AngleFormat { eRadians, eDegrees, eGradians };
+            enum class AngleFormat : uint8_t {
+                    eRadians,
+                    eDegrees,
+                    eGradians
+                };
                 Angle ();
-                Angle (double angle, AngleFormat angleFormat = eRadians);
+                Angle (double angle, AngleFormat angleFormat = AngleFormat::eRadians);
 
                 nonvirtual  double  AsRadians () const;
                 nonvirtual  double  AsDegrees () const;

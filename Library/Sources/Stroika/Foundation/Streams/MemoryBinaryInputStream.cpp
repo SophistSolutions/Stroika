@@ -60,7 +60,7 @@ public:
     virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);
         switch (whence) {
-            case    FromStart_W: {
+            case    Whence::FromStart_W: {
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
@@ -70,7 +70,7 @@ public:
                     fCursor_ = fData_.begin () + offset;
                 }
                 break;
-            case    FromCurrent_W: {
+            case    Whence::FromCurrent_W: {
                     Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
                     Streams::SeekOffsetType newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
@@ -82,7 +82,7 @@ public:
                     fCursor_ = fData_.begin () + newOffset;
                 }
                 break;
-            case    FromEnd_W: {
+            case    Whence::FromEnd_W: {
                     Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
                     Streams::SeekOffsetType newOffset   =   fData_.GetSize () + offset;
                     if (newOffset < 0) {

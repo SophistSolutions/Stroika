@@ -240,10 +240,10 @@ namespace   {
                     ++(state->stepcount);
                     if (state->stepcount == CHARS_PER_LINE / 4) {
                         switch (state->fLineBreak) {
-                            case    eLF_LB:
+                            case    LineBreak::eLF_LB:
                                 *codechar++ = '\n';
                                 break;
-                            case    eCRLF_LB:
+                            case    LineBreak::eCRLF_LB:
                                 *codechar++ = '\r';
                                 *codechar++ = '\n';
                                 break;

@@ -217,17 +217,17 @@ namespace   Stroika {
                     return (true);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::eWithCase_CO) == 0;
+                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase_CO) == 0;
             }
             inline  bool    operator== (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::eWithCase_CO) == 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase_CO) == 0;
             }
             inline  bool    operator== (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::eWithCase_CO) == 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase_CO) == 0;
             }
             inline  bool    operator< (const String& lhs, const String& rhs)
             {
@@ -235,17 +235,17 @@ namespace   Stroika {
                     return (false);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::eWithCase_CO) < 0;
+                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase_CO) < 0;
             }
             inline  bool    operator< (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::eWithCase_CO) >= 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase_CO) >= 0;
             }
             inline  bool    operator< (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::eWithCase_CO) < 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase_CO) < 0;
             }
             inline  bool    operator<= (const String& lhs, const String& rhs)
             {
@@ -253,17 +253,17 @@ namespace   Stroika {
                     return (false);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::eWithCase_CO) <= 0;
+                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase_CO) <= 0;
             }
             inline  bool    operator<= (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::eWithCase_CO) > 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase_CO) > 0;
             }
             inline  bool    operator<= (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::eWithCase_CO) <= 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase_CO) <= 0;
             }
             inline  bool    operator!= (const String& lhs, const String& rhs)
             {
@@ -303,20 +303,6 @@ namespace   Stroika {
             }
 
 
-#if 0
-            //  class   String_CharArray
-            inline  String_CharArray::String_CharArray (const String_CharArray& s)
-                : String (s)
-            {
-            }
-            inline  String_CharArray& String_CharArray::operator= (const String_CharArray& s)
-            {
-                String::operator= (s);
-                return (*this);
-            }
-#endif
-
-
 
 
             //  class   String_BufferedArray
@@ -354,6 +340,7 @@ namespace   Stroika {
                 String::operator= (s);
                 return (*this);
             }
+
         }
     }
 }

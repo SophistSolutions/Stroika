@@ -90,13 +90,13 @@ namespace   {
     {
         SYSTEMTIME  st;
         memset (&st, 0, sizeof (st));
-        MonthOfYear m   =   eEmptyMonthOfYear;
-        DayOfMonth  d   =   eEmptyDayOfMonth;
-        Year        y   =   eEmptyYear;
+        MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
+        DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
+        Year        y   =   Year::eEmptyYear;
         date.mdy (&m, &d, &y);
-        st.wYear = y;
-        st.wMonth = m;
-        st.wDay = d;
+        st.wYear = static_cast<WORD> (y);
+        st.wMonth = static_cast<WORD> (m);
+        st.wDay = static_cast<WORD> (d);
         return st;
     }
 #endif
@@ -196,7 +196,7 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
         return Date ();
     }
     switch (pf) {
-        case    eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale_PF: {
 #if         qPlatform_Windows
                 /*
                  * Windows Parser does better job than POSIX one - for reasons which elude me.
@@ -210,7 +210,7 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
                 return DateTime ();
             }
             break;
-        case    eXML_PF: {
+        case    PrintFormat::eXML_PF: {
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
@@ -246,13 +246,13 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
                 if (nItems >= 5) {
                     t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
                 }
-                Timezone    tz  =   eUnknown_TZ;
+                Timezone    tz  =   Timezone::eUnknown_TZ;
                 if (tzKnown) {
                     if (tzUTC) {
-                        tz = eUTC_TZ;   // really wrong - should map given time to UTC??? - check HR value ETC
+                        tz = Timezone::eUTC_TZ;   // really wrong - should map given time to UTC??? - check HR value ETC
                     }
                     else {
-                        tz = eLocalTime_TZ; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
+                        tz = Timezone::eLocalTime_TZ; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
                     }
 
                     // CHECK TZ
@@ -260,7 +260,7 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
                     // not sure what todo if READ tz doesn't match localtime? Maybe convert to GMT??
                 }
                 else {
-                    tz = eLocalTime_TZ;
+                    tz = Timezone::eLocalTime_TZ;
                 }
                 return DateTime (d, t, tz);
             }
@@ -321,9 +321,9 @@ DateTime    DateTime::Parse (const wstring& rep, LCID lcid)
 
 DateTime    DateTime::AsLocalTime () const
 {
-    if (GetTimezone () == eUTC_TZ) {
+    if (GetTimezone () == Timezone::eUTC_TZ) {
         DateTime    tmp =   AddSeconds (-GetLocaltimeToGMTOffset ());
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eLocalTime_TZ);
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eLocalTime_TZ);
     }
     else {
         // treat BOTH unknown and localetime as localtime
@@ -333,12 +333,12 @@ DateTime    DateTime::AsLocalTime () const
 
 DateTime    DateTime::AsUTC () const
 {
-    if (GetTimezone () == eUTC_TZ) {
+    if (GetTimezone () == Timezone::eUTC_TZ) {
         return *this;
     }
     else {
         DateTime    tmp =   AddSeconds (GetLocaltimeToGMTOffset ());
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), eUTC_TZ);
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eUTC_TZ);
     }
 }
 
@@ -348,7 +348,7 @@ DateTime    DateTime::Now ()
     SYSTEMTIME  st;
     memset (&st, 0, sizeof (st));
     ::GetLocalTime (&st);
-    return DateTime (st, eLocalTime_TZ);
+    return DateTime (st, Timezone::eLocalTime_TZ);
 #elif   qPlatform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
@@ -365,7 +365,7 @@ wstring DateTime::Format (PrintFormat pf) const
         return wstring ();
     }
     switch (pf) {
-        case    eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale_PF: {
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
@@ -373,12 +373,12 @@ wstring DateTime::Format (PrintFormat pf) const
 #endif
             }
             break;
-        case    eXML_PF: {
-                wstring r       =   fDate_.Format (Date::eXML_PF);
-                wstring timeStr =   fTimeOfDay_.Format (TimeOfDay::eXML_PF);
+        case    PrintFormat::eXML_PF: {
+                wstring r       =   fDate_.Format (Date::PrintFormat::eXML_PF);
+                wstring timeStr =   fTimeOfDay_.Format (TimeOfDay::PrintFormat::eXML_PF);
                 if (not timeStr.empty ()) {
                     r += L"T" + timeStr;
-                    if (GetTimezone () == eUTC_TZ) {
+                    if (GetTimezone () == Timezone::eUTC_TZ) {
                         r += L"Z";
                     }
                     else {
@@ -394,7 +394,7 @@ wstring DateTime::Format (PrintFormat pf) const
                     // TODO:
                     //      This probably shouldn't be needed!!! - think through more carefully.
                     //          --LGP 2011-10-07
-                    DateTime    parsed  =   DateTime::Parse (r, eXML_PF);
+                    DateTime    parsed  =   DateTime::Parse (r, PrintFormat::eXML_PF);
                     if (parsed.GetTimezone () != GetTimezone ()) {
                         parsed = DateTime (parsed.GetDate (), parsed.GetTimeOfDay (), parsed.GetTimezone ());
                     }
@@ -481,9 +481,9 @@ time_t  DateTime::As () const
 {
     struct tm tm;
     memset(&tm, 0, sizeof(tm));
-    tm.tm_year = fDate_.GetYear () - 1900;
-    tm.tm_mon = fDate_.GetMonth () - 1;
-    tm.tm_mday = fDate_.GetDayOfMonth ();
+    tm.tm_year = static_cast<int> (fDate_.GetYear ()) - 1900;
+    tm.tm_mon = static_cast<int> (fDate_.GetMonth ()) - 1;
+    tm.tm_mday = static_cast<int> (fDate_.GetDayOfMonth ());
     unsigned int    totalSecondsRemaining   =   fTimeOfDay_.GetAsSecondsCount ();
     tm.tm_hour = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
@@ -507,9 +507,9 @@ tm  DateTime::As () const
 {
     struct tm tm;
     memset(&tm, 0, sizeof(tm));
-    tm.tm_year = fDate_.GetYear () - 1900;
-    tm.tm_mon = fDate_.GetMonth () - 1;
-    tm.tm_mday = fDate_.GetDayOfMonth ();
+    tm.tm_year = static_cast<int> (fDate_.GetYear ()) - 1900;
+    tm.tm_mon = static_cast<int> (fDate_.GetMonth ()) - 1;
+    tm.tm_mday = static_cast<int> (fDate_.GetDayOfMonth ());
     unsigned int    totalSecondsRemaining   =   fTimeOfDay_.GetAsSecondsCount ();
     tm.tm_hour = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
@@ -522,8 +522,6 @@ tm  DateTime::As () const
     Ensure (0 <= tm.tm_sec and tm.tm_sec <= 59);
     return tm;
 }
-
-
 
 #if     qPlatform_POSIX
 template    <>
@@ -620,7 +618,7 @@ int DateTime::Compare (const DateTime& rhs) const
         }
     }
     Assert (not empty () and not rhs.empty ());
-    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == eUnknown_TZ)  or (rhs.GetTimezone () == eUnknown_TZ)) {
+    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::eUnknown_TZ)  or (rhs.GetTimezone () == Timezone::eUnknown_TZ)) {
         int cmp =   GetDate ().Compare (rhs.GetDate ());
         if (cmp == 0) {
             cmp = GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());

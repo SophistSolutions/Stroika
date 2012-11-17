@@ -32,7 +32,7 @@ namespace   Stroika {
             inline  VariantValue::Type  VariantValue::GetType () const
             {
                 if (fVal_.get () == nullptr) {
-                    return eNull;
+                    return Type::eNull;
                 }
                 return fVal_->GetType ();
             }

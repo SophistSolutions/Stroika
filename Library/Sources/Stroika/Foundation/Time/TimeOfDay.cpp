@@ -246,7 +246,7 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
         return TimeOfDay ();
     }
     switch (pf) {
-        case    eCurrentLocale_PF:  {
+        case    PrintFormat::eCurrentLocale_PF:  {
 #if     qPlatform_Windows
 #if     0
                 Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));    // not a REAL assert, but for debugging - to see what diffs there are - probably none
@@ -257,7 +257,7 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
                 return Parse (rep, locale ());
 #endif
             }
-        case    eXML_PF: {
+        case    PrintFormat::eXML_PF: {
                 int hour    =   0;
                 int minute  =   0;
                 int secs    =   0;
@@ -387,14 +387,14 @@ wstring TimeOfDay::Format (PrintFormat pf) const
         return wstring ();
     }
     switch (pf) {
-        case    eCurrentLocale_PF:  {
+        case    PrintFormat::eCurrentLocale_PF:  {
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
                 Format (locale ());
 #endif
             }
-        case    eXML_PF: {
+        case    PrintFormat::eXML_PF: {
                 uint32_t    hour = fTime_ / (60 * 60);
                 uint32_t    minutes = (fTime_ - hour * 60 * 60) / 60;
                 uint32_t    secs = fTime_ - hour * 60 * 60 - minutes * 60;

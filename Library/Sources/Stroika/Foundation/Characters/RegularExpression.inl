@@ -15,6 +15,21 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+            //  class  RegularExpression
+            inline  RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType)
+                : fVal_ (re)
+                , fSyntaxType_ (syntaxType)
+            {
+            }
+            inline  String  RegularExpression::GetAsStr () const
+            {
+                return fVal_;
+            }
+            inline  RegularExpression::SyntaxType  RegularExpression::GetSyntaxType () const
+            {
+                return fSyntaxType_;
+            }
+
         }
     }
 }

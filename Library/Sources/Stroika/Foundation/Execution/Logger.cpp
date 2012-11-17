@@ -23,7 +23,7 @@ Logger  Logger::sThe_;
 
 Logger::Logger ()
     : fAppender_ ()
-    , fMinLogLevel_ (eInfo_P)
+    , fMinLogLevel_ (Priority::eInfo_P)
 {
 }
 

@@ -21,7 +21,7 @@ namespace   Stroika {
              *  When seeking, you can see an offset from the start (typical/start) or from the end of the stream,
              *  or from the current position)
              */
-            enum    Whence {
+enum class Whence : uint8_t {
                 FromStart_W,
                 FromCurrent_W,
                 FromEnd_W,

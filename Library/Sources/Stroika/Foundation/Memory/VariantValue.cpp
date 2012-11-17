@@ -29,52 +29,52 @@ VariantValue::VariantValue ()
 }
 
 VariantValue::VariantValue (bool val)
-    : fVal_ (DEBUG_NEW TValRep<bool, eBoolean> (val))
+    : fVal_ (DEBUG_NEW TValRep<bool, Type::eBoolean> (val))
 {
 }
 
 VariantValue::VariantValue (int val)
-    : fVal_ (DEBUG_NEW TValRep<int, eInteger> (val))
+    : fVal_ (DEBUG_NEW TValRep<int, Type::eInteger> (val))
 {
 }
 
 VariantValue::VariantValue (float val)
-    : fVal_ (DEBUG_NEW TValRep<FloatType, eFloat> (val))
+    : fVal_ (DEBUG_NEW TValRep<FloatType, Type::eFloat> (val))
 {
 }
 
 VariantValue::VariantValue (double val)
-    : fVal_ (DEBUG_NEW TValRep<FloatType, eFloat> (val))
+    : fVal_ (DEBUG_NEW TValRep<FloatType, Type::eFloat> (val))
 {
 }
 
 VariantValue::VariantValue (const Date& val)
-    : fVal_ (DEBUG_NEW TValRep<Date, eDate> (val))
+    : fVal_ (DEBUG_NEW TValRep<Date, Type::eDate> (val))
 {
 }
 
 VariantValue::VariantValue (const DateTime& val)
-    : fVal_ (DEBUG_NEW TValRep<DateTime, eDateTime> (val))
+    : fVal_ (DEBUG_NEW TValRep<DateTime, Type::eDateTime> (val))
 {
 }
 
 VariantValue::VariantValue (const wchar_t* val)
-    : fVal_ (DEBUG_NEW TValRep<wstring, eString> (val))
+    : fVal_ (DEBUG_NEW TValRep<wstring, Type::eString> (val))
 {
 }
 
 VariantValue::VariantValue (const wstring& val)
-    : fVal_ (DEBUG_NEW TValRep<wstring, eString> (val))
+    : fVal_ (DEBUG_NEW TValRep<wstring, Type::eString> (val))
 {
 }
 
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
-    : fVal_ (DEBUG_NEW TValRep<map<wstring, VariantValue>, eMap> (val))
+    : fVal_ (DEBUG_NEW TValRep<map<wstring, VariantValue>, Type::eMap> (val))
 {
 }
 
 VariantValue::VariantValue (const vector<VariantValue>& val)
-    : fVal_ (DEBUG_NEW TValRep<vector<VariantValue>, eArray> (val))
+    : fVal_ (DEBUG_NEW TValRep<vector<VariantValue>, Type::eArray> (val))
 {
 }
 
@@ -84,38 +84,38 @@ bool    VariantValue::empty () const
         return true;
     }
     switch (fVal_->GetType ()) {
-        case    eBoolean:
-        case    eInteger: {
+        case    Type::eBoolean:
+        case    Type::eInteger: {
                 // cannot be empty
                 return false;
             }
-        case    eFloat: {
-                TValRep<FloatType, eFloat>*  v   =   dynamic_cast<TValRep<FloatType, eFloat>*> (fVal_.get ());
+        case    Type::eFloat: {
+                TValRep<FloatType, Type::eFloat>*  v   =   dynamic_cast<TValRep<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return std::isnan (v->fVal) != 0;
             }
-        case    eDate: {
-                TValRep<Date, eDate>*    v   =   dynamic_cast<TValRep<Date, eDate>*> (fVal_.get ());
+        case    Type::eDate: {
+                TValRep<Date, Type::eDate>*    v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
-        case    eDateTime: {
-                TValRep<DateTime, eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, eDateTime>*> (fVal_.get ());
+        case    Type::eDateTime: {
+                TValRep<DateTime, Type::eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
-        case    eMap: {
-                TValRep<map<wstring, VariantValue>, eMap>*    v   =   dynamic_cast<TValRep<map<wstring, VariantValue>, eMap>*> (fVal_.get ());
+        case    Type::eMap: {
+                TValRep<map<wstring, VariantValue>, Type::eMap>*    v   =   dynamic_cast<TValRep<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
-        case    eArray: {
-                TValRep<vector<VariantValue>, eArray>*   v   =   dynamic_cast<TValRep<vector<VariantValue>, eArray>*> (fVal_.get ());
+        case    Type::eArray: {
+                TValRep<vector<VariantValue>, Type::eArray>*   v   =   dynamic_cast<TValRep<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -132,16 +132,16 @@ bool    VariantValue::As () const
         return false;
     }
     switch (fVal_->GetType ()) {
-        case    eBoolean: {
-                TValRep<bool, eBoolean>* v   =   dynamic_cast<TValRep<bool, eBoolean>*> (fVal_.get ());
+        case    Type::eBoolean: {
+                TValRep<bool, Type::eBoolean>* v   =   dynamic_cast<TValRep<bool, Type::eBoolean>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eString: {
+        case    Type::eString: {
                 //return tmp != L"false";           // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
                 return As<wstring> () == L"true";   // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
             }
-        case    eInteger: {
+        case    Type::eInteger: {
                 return As<int> () != 0;
             }
         default: {
@@ -158,18 +158,18 @@ int VariantValue::As () const
         return 0;
     }
     switch (fVal_->GetType ()) {
-        case    eFloat: {
-                TValRep<FloatType, eFloat>*  v   =   dynamic_cast<TValRep<FloatType, eFloat>*> (fVal_.get ());
+        case    Type::eFloat: {
+                TValRep<FloatType, Type::eFloat>*  v   =   dynamic_cast<TValRep<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<int> (v->fVal);
             }
-        case    eInteger: {
-                TValRep<int, eInteger>*  v   =   dynamic_cast<TValRep<int, eInteger>*> (fVal_.get ());
+        case    Type::eInteger: {
+                TValRep<int, Type::eInteger>*  v   =   dynamic_cast<TValRep<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::String2Int (v->fVal);
             }
@@ -193,18 +193,18 @@ double VariantValue::As () const
         return 0.0f;
     }
     switch (fVal_->GetType ()) {
-        case    eInteger: {
-                TValRep<int, eInteger>*  v   =   dynamic_cast<TValRep<int, eInteger>*> (fVal_.get ());
+        case    Type::eInteger: {
+                TValRep<int, Type::eInteger>*  v   =   dynamic_cast<TValRep<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<float> (v->fVal);
             }
-        case    eFloat: {
-                TValRep<FloatType, eFloat>*  v   =   dynamic_cast<TValRep<FloatType, eFloat>*> (fVal_.get ());
+        case    Type::eFloat: {
+                TValRep<FloatType, Type::eFloat>*  v   =   dynamic_cast<TValRep<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 // NB. this may return NAN if string not a well-formed number (including empty string case)
                 return Characters::String2Float (v->fVal);
@@ -223,20 +223,20 @@ Date VariantValue::As() const
         return Date ();
     }
     switch (fVal_->GetType ()) {
-        case    eDate: {
-                TValRep<Date, eDate>*    v   =   dynamic_cast<TValRep<Date, eDate>*> (fVal_.get ());
+        case    Type::eDate: {
+                TValRep<Date, Type::eDate>*         v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eDateTime: {
-                TValRep<DateTime, eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, eDateTime>*> (fVal_.get ());
+        case    Type::eDateTime: {
+                TValRep<DateTime, Type::eDateTime>* v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.GetDate ();
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*    v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Date::Parse (v->fVal, Date::eXML_PF);
+                return Date::Parse (v->fVal, Date::PrintFormat::eXML_PF);
             }
         default: {
                 Assert (false); // bad type (or not yet supported)
@@ -252,20 +252,20 @@ DateTime VariantValue::As () const
         return DateTime ();
     }
     switch (fVal_->GetType ()) {
-        case    eDate: {
-                TValRep<Date, eDate>*    v   =   dynamic_cast<TValRep<Date, eDate>*> (fVal_.get ());
+        case    Type::eDate: {
+                TValRep<Date, Type::eDate>*    v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return DateTime (v->fVal);
             }
-        case    eDateTime: {
-                TValRep<DateTime, eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, eDateTime>*> (fVal_.get ());
+        case    Type::eDateTime: {
+                TValRep<DateTime, Type::eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return DateTime::Parse (v->fVal, DateTime::eXML_PF);
+                return DateTime::Parse (v->fVal, DateTime::PrintFormat::eXML_PF);
             }
         default: {
                 Assert (false); // bad type (or not yet supported)
@@ -281,38 +281,38 @@ wstring VariantValue::As () const
         return wstring ();
     }
     switch (fVal_->GetType ()) {
-        case    eDate: {
-                TValRep<Date, eDate>*    v   =   dynamic_cast<TValRep<Date, eDate>*> (fVal_.get ());
+        case    Type::eDate: {
+                TValRep<Date, Type::eDate>*    v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.Format ();
             }
-        case    eDateTime: {
-                TValRep<DateTime, eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, eDateTime>*> (fVal_.get ());
+        case    Type::eDateTime: {
+                TValRep<DateTime, Type::eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.Format ();
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eBoolean: {
-                TValRep<bool, eBoolean>* v   =   dynamic_cast<TValRep<bool, eBoolean>*> (fVal_.get ());
+        case    Type::eBoolean: {
+                TValRep<bool, Type::eBoolean>* v   =   dynamic_cast<TValRep<bool, Type::eBoolean>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal ? L"true" : L"false";
             }
-        case    eInteger: {
-                TValRep<int, eInteger>*  v   =   dynamic_cast<TValRep<int, eInteger>*> (fVal_.get ());
+        case    Type::eInteger: {
+                TValRep<int, Type::eInteger>*  v   =   dynamic_cast<TValRep<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Format (L"%d", v->fVal);
             }
-        case    eFloat: {
-                TValRep<FloatType, eFloat>*  v   =   dynamic_cast<TValRep<FloatType, eFloat>*> (fVal_.get ());
+        case    Type::eFloat: {
+                TValRep<FloatType, Type::eFloat>*  v   =   dynamic_cast<TValRep<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Float2String (v->fVal);
             }
-        case    eMap: {
-                TValRep<map<wstring, VariantValue>, eMap>*    v   =   dynamic_cast<TValRep<map<wstring, VariantValue>, eMap>*> (fVal_.get ());
+        case    Type::eMap: {
+                TValRep<map<wstring, VariantValue>, Type::eMap>*    v   =   dynamic_cast<TValRep<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"map[";
@@ -325,8 +325,8 @@ wstring VariantValue::As () const
                 tmp << L"]";
                 return tmp.str ();
             }
-        case    eArray: {
-                TValRep<vector<VariantValue>, eArray>*   v   =   dynamic_cast<TValRep<vector<VariantValue>, eArray>*> (fVal_.get ());
+        case    Type::eArray: {
+                TValRep<vector<VariantValue>, Type::eArray>*   v   =   dynamic_cast<TValRep<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"[";
@@ -353,8 +353,8 @@ map<wstring, VariantValue>   VariantValue::As () const
         return map<wstring, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
-        case    eMap: {
-                TValRep<map<wstring, VariantValue> , eMap>*   v   =   dynamic_cast<TValRep<map<wstring, VariantValue> , eMap>*> (fVal_.get ());
+        case    Type::eMap: {
+                TValRep<map<wstring, VariantValue> , Type::eMap>*   v   =   dynamic_cast<TValRep<map<wstring, VariantValue> , Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -372,8 +372,8 @@ vector<VariantValue> VariantValue::As () const
         return vector<VariantValue> ();
     }
     switch (fVal_->GetType ()) {
-        case    eArray: {
-                TValRep<vector<VariantValue>, eArray>*   v   =   dynamic_cast<TValRep<vector<VariantValue>, eArray>*> (fVal_.get ());
+        case    Type::eArray: {
+                TValRep<vector<VariantValue>, Type::eArray>*   v   =   dynamic_cast<TValRep<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -390,28 +390,28 @@ wstring VariantValue::FormatXML () const
         return wstring ();
     }
     switch (fVal_->GetType ()) {
-        case    eDate: {
-                TValRep<Date, eDate>*    v   =   dynamic_cast<TValRep<Date, eDate>*> (fVal_.get ());
+        case    Type::eDate: {
+                TValRep<Date, Type::eDate>*    v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format (Date::eXML_PF);
+                return v->fVal.Format (Date::PrintFormat::eXML_PF);
             }
-        case    eDateTime: {
-                TValRep<DateTime, eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, eDateTime>*> (fVal_.get ());
+        case    Type::eDateTime: {
+                TValRep<DateTime, Type::eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format (DateTime::eXML_PF);
+                return v->fVal.Format (DateTime::PrintFormat::eXML_PF);
             }
-        case    eString: {
-                TValRep<wstring, eString>*   v   =   dynamic_cast<TValRep<wstring, eString>*> (fVal_.get ());
+        case    Type::eString: {
+                TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
-        case    eBoolean: {
-                TValRep<bool, eBoolean>* v   =   dynamic_cast<TValRep<bool, eBoolean>*> (fVal_.get ());
+        case    Type::eBoolean: {
+                TValRep<bool, Type::eBoolean>* v   =   dynamic_cast<TValRep<bool, Type::eBoolean>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal ? L"true" : L"false";
             }
-        case    eFloat: {
-                TValRep<FloatType, eFloat>*  v   =   dynamic_cast<TValRep<FloatType, eFloat>*> (fVal_.get ());
+        case    Type::eFloat: {
+                TValRep<FloatType, Type::eFloat>*  v   =   dynamic_cast<TValRep<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Float2String (v->fVal);
             }
@@ -427,8 +427,8 @@ bool    Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
     VariantValue::Type  rt  =   rhs.GetType ();
     if (lt != rt) {
         // specail case - comparing a string with a bool or bool with a string
-        if (lt == VariantValue::eBoolean and rt == VariantValue::eString or
-                lt == VariantValue::eString and rt == VariantValue::eBoolean
+        if (lt == VariantValue::Type::eBoolean and rt == VariantValue::Type::eString or
+                lt == VariantValue::Type::eString and rt == VariantValue::Type::eBoolean
            ) {
             // compare as STRING  - in case someone compares true with 'FRED' (we want that to come out as a FALSE compare result)
             return  lhs.As<wstring> () == rhs.As<wstring> ();
@@ -436,21 +436,21 @@ bool    Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
         return false;
     }
     switch (lt) {
-        case    VariantValue::eNull:
+        case    VariantValue::Type::eNull:
             return true;
-        case    VariantValue::eBoolean:
+        case    VariantValue::Type::eBoolean:
             return lhs.As<bool> () == rhs.As<bool> ();
-        case    VariantValue::eInteger:
+        case    VariantValue::Type::eInteger:
             return lhs.As<int> () == rhs.As<int> ();
-        case    VariantValue::eFloat:
+        case    VariantValue::Type::eFloat:
             return lhs.As<VariantValue::FloatType> () == rhs.As<VariantValue::FloatType> ();
-        case    VariantValue::eDate:
+        case    VariantValue::Type::eDate:
             return lhs.As<Date> () == rhs.As<Date> ();
-        case    VariantValue::eDateTime:
+        case    VariantValue::Type::eDateTime:
             return lhs.As<DateTime> () == rhs.As<DateTime> ();
-        case    VariantValue::eString:
+        case    VariantValue::Type::eString:
             return lhs.As<wstring> () == rhs.As<wstring> ();
-        case    VariantValue::eArray: {
+        case    VariantValue::Type::eArray: {
                 // same iff all elts same
                 vector<VariantValue>    lhsV    =   lhs.As<vector<VariantValue>> ();
                 vector<VariantValue>    rhsV    =   rhs.As<vector<VariantValue>> ();
@@ -464,7 +464,7 @@ bool    Memory::operator== (const VariantValue& lhs, const VariantValue& rhs)
                 }
                 return true;
             }
-        case    VariantValue::eMap: {
+        case    VariantValue::Type::eMap: {
                 // same iff all elts same
                 map<wstring, VariantValue>   lhsM    =   lhs.As<map<wstring, VariantValue>> ();
                 map<wstring, VariantValue>   rhsM    =   rhs.As<map<wstring, VariantValue>> ();

@@ -283,7 +283,7 @@ namespace   Stroika {
 #endif
 
             public:
-                enum Status {
+            enum class Status : uint8_t {
                     eNull,              // null thread object
                     eNotYetRunning,     // created, but start not yet called
                     eRunning,           // in the context of the 'Run' method

@@ -18,9 +18,9 @@ namespace   Stroika {
 
             vector<Byte>    DecodeBase64 (const string& s);
 
-            enum    LineBreak { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
-            string          EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb = eAuto_LB);
-            string          EncodeBase64 (const vector<Byte>& b, LineBreak lb = eAuto_LB);
+enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
+            string          EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb = LineBreak::eAuto_LB);
+            string          EncodeBase64 (const vector<Byte>& b, LineBreak lb = LineBreak::eAuto_LB);
 
         }
     }

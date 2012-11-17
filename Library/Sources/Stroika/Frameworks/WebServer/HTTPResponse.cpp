@@ -63,14 +63,14 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
     : fSocket_ (s)
     , fUnderlyingOutStream_ (outStream)
     , fUseOutStream_ (outStream)
-    , fState_ (eInProgress)
+    , fState_ (State::eInProgress)
     , fStatus_ (StatusCodes::kOK)
     , fStatusOverrideReason_ ()
     , fHeaders_ ()
     , fContentType_ (ct)
     , fCodePage_ (Characters::kCodePage_UTF8)
     , fBytes_ ()
-    , fContentSizePolicy_ (eAutoCompute_CSP)
+    , fContentSizePolicy_ (ContentSizePolicy::eAutoCompute_CSP)
     , fContentSize_ (0)
 {
     AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server");
@@ -78,46 +78,46 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
 
 HTTPResponse::~HTTPResponse ()
 {
-    Require (fState_ == eCompleted);
+    Require (fState_ == State::eCompleted);
 }
 
 void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
 {
-    Require (csp == eAutoCompute_CSP or csp == eNone_CSP);
+    Require (csp == ContentSizePolicy::eAutoCompute_CSP or csp == ContentSizePolicy::eNone_CSP);
     fContentSizePolicy_ = csp;
 }
 
 void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 {
-    Require (csp == eExact_CSP);
-    Require (fState_ == eInProgress);
+    Require (csp == ContentSizePolicy::eExact_CSP);
+    Require (fState_ == State::eInProgress);
     fContentSizePolicy_ = csp;
     fContentSize_ = size;
 }
 
 void    HTTPResponse::SetContentType (const InternetMediaType& contentType)
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     fContentType_ = contentType;
 }
 
 void    HTTPResponse::SetCodePage (Characters::CodePage codePage)
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     Require (fBytes_.empty ());
     fCodePage_ = codePage;
 }
 
 void    HTTPResponse::SetStatus (Status newStatus, const String& overrideReason)
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     fStatus_ = newStatus;
     fStatusOverrideReason_ = overrideReason;
 }
 
 void    HTTPResponse::AddHeader (String headerName, String value)
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
     ClearHeader (headerName);
     fHeaders_.insert (map<String, String>::value_type (headerName, value));
@@ -125,13 +125,13 @@ void    HTTPResponse::AddHeader (String headerName, String value)
 
 void    HTTPResponse::ClearHeader ()
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     fHeaders_.clear ();
 }
 
 void    HTTPResponse::ClearHeader (String headerName)
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
     map<String, String>::iterator i = fHeaders_.find (headerName);
     if (i != fHeaders_.end ()) {
@@ -148,8 +148,8 @@ map<String, String>  HTTPResponse::GetEffectiveHeaders () const
 {
     map<String, String>  tmp =   GetSpecialHeaders ();
     switch (GetContentSizePolicy ()) {
-        case    eAutoCompute_CSP:
-        case    eExact_CSP: {
+        case    ContentSizePolicy::eAutoCompute_CSP:
+        case    ContentSizePolicy::eExact_CSP: {
                 wostringstream  buf;
                 buf << fContentSize_;
                 tmp.insert (map<String, String>::value_type (IO::Network::HTTP::HeaderName::kContentLength, buf.str ()));
@@ -170,7 +170,7 @@ map<String, String>  HTTPResponse::GetEffectiveHeaders () const
 
 void    HTTPResponse::Flush ()
 {
-    if (fState_ == eInProgress) {
+    if (fState_ == State::eInProgress) {
         {
             String  statusMsg   =   fStatusOverrideReason_.empty () ? IO::Network::HTTP::Exception::GetStandardTextForStatus (fStatus_, true) : fStatusOverrideReason_;
             wstring version =   L"1.1";
@@ -190,15 +190,15 @@ void    HTTPResponse::Flush ()
 
         const char  kCRLF[] =   "\r\n";
         fUseOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
-        fState_ = eInProgressHeaderSentState;
+        fState_ = State::eInProgressHeaderSentState;
     }
     // write BYTES to fOutStream
     if (not fBytes_.empty ()) {
-        Assert (fState_ != eCompleted); // We PREVENT any writes when completed
+        Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
         fUseOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
         fBytes_.clear ();
     }
-    if (fState_ != eCompleted) {
+    if (fState_ != State::eCompleted) {
         fUseOutStream_.Flush ();
     }
     Ensure (fBytes_.empty ());
@@ -206,28 +206,28 @@ void    HTTPResponse::Flush ()
 
 void    HTTPResponse::End ()
 {
-    Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
+    Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Flush ();
-    fState_ = eCompleted;
-    Ensure (fState_ == eCompleted);
+    fState_ = State::eCompleted;
+    Ensure (fState_ == State::eCompleted);
     Ensure (fBytes_.empty ());
 }
 
 void    HTTPResponse::Abort ()
 {
-    if (fState_ != eCompleted) {
-        fState_ = eCompleted;
+    if (fState_ != State::eCompleted) {
+        fState_ = State::eCompleted;
         fUseOutStream_.Abort ();
         fSocket_.Close ();
         fBytes_.clear ();
     }
-    Ensure (fState_ == eCompleted);
+    Ensure (fState_ == State::eCompleted);
     Ensure (fBytes_.empty ());
 }
 
 void    HTTPResponse::Redirect (const String& url)
 {
-    Require (fState_ == eInProgress);
+    Require (fState_ == State::eInProgress);
     fBytes_.clear ();
 
     // PERHAPS should clear some header values???
@@ -235,18 +235,18 @@ void    HTTPResponse::Redirect (const String& url)
     AddHeader (L"Location", url);           // needed for redirect
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
-    fState_ = eCompleted;
+    fState_ = State::eCompleted;
 }
 
 void    HTTPResponse::write (const Byte* s, const Byte* e)
 {
-    Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
-    Require ((fState_ == eInProgress) or (GetContentSizePolicy () != eAutoCompute_CSP));
+    Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
+    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute_CSP));
     Require (s <= e);
     if (s < e) {
         Containers::ReserveSpeedTweekAddN (fBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
         fBytes_.insert (fBytes_.end (), s, e);
-        if (GetContentSizePolicy () == eAutoCompute_CSP) {
+        if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute_CSP) {
             // Because for autocompute - illegal to call flush and then write
             fContentSize_ = fBytes_.size ();
         }
@@ -255,15 +255,15 @@ void    HTTPResponse::write (const Byte* s, const Byte* e)
 
 void    HTTPResponse::write (const wchar_t* s, const wchar_t* e)
 {
-    Require ((fState_ == eInProgress) or (fState_ == eInProgressHeaderSentState));
-    Require ((fState_ == eInProgress) or (GetContentSizePolicy () != eAutoCompute_CSP));
+    Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
+    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute_CSP));
     Require (s <= e);
     if (s < e) {
         wstring tmp = wstring (s, e);
         string cpStr = Characters::WideStringToNarrow (tmp, fCodePage_);
         if (not cpStr.empty ()) {
             fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (cpStr.c_str ()), reinterpret_cast<const Byte*> (cpStr.c_str () + cpStr.length ()));
-            if (GetContentSizePolicy () == eAutoCompute_CSP) {
+            if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute_CSP) {
                 // Because for autocompute - illegal to call flush and then write
                 fContentSize_ = fBytes_.size ();
             }

@@ -97,7 +97,7 @@ namespace   Stroika {
                  * eUnknown_TZ - for the most part - is treated as if it were localtime (except with compare). However - the "Kind" function
                  * returns Unknown in case your application wants to treat it differently.
                  */
-                enum Timezone {
+            enum class Timezone : uint8_t {
                     eLocalTime_TZ,
                     eUTC_TZ,
                     eUnknown_TZ,
@@ -110,7 +110,7 @@ namespace   Stroika {
                  *
                  * To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
-                DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = eUnknown_TZ);
+                DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = Timezone::eUnknown_TZ);
 
             public:
                 /*
@@ -118,10 +118,10 @@ namespace   Stroika {
                  * the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
                  * or unknown it will convert it to a localtime value.
                  */
-                explicit DateTime (time_t unixTime, Timezone tz = eUnknown_TZ);
+                explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown_TZ);
                 /*
                  */
-                explicit DateTime (const tm& tmTime, Timezone tz = eUnknown_TZ);
+                explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown_TZ);
 
 #if     qPlatform_POSIX
             public:
@@ -130,17 +130,17 @@ namespace   Stroika {
 
 #if     qPlatform_Windows
             public:
-                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = eLocalTime_TZ);
+                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime_TZ);
 
                 /*
                  * Most windows APIs return filetimes in UTC (or so it appears). Because of this, our default interpretation of a
                  * FILETIME structure as as UTC. Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  */
-                explicit DateTime (const FILETIME& fileTime, Timezone tz = eUTC_TZ);
+                explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC_TZ);
 #endif
 
             public:
-                enum    PrintFormat {
+            enum class  PrintFormat : uint8_t {
                     eCurrentLocale_PF,
                     eXML_PF,
                 };
@@ -185,7 +185,7 @@ namespace   Stroika {
                 nonvirtual  DateTime    AsUTC () const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = eCurrentLocale_PF) const;
+                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale_PF) const;
                 nonvirtual  wstring Format (const locale& l) const;
 
 #if     qPlatform_Windows

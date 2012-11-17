@@ -125,7 +125,7 @@ namespace   Stroika {
                 Require (GetCurrentThreadID () == GetID ());
 #endif
                 AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
-                if (fStatus == eAborting) {
+                if (fStatus == Status::eAborting) {
                     DoThrow (ThreadAbortException ());
                 }
             }
@@ -176,7 +176,7 @@ namespace   Stroika {
             inline  Thread::Status  Thread::GetStatus () const
             {
                 if (fRep_.get () == nullptr) {
-                    return eNull;
+                    return Status::eNull;
                 }
                 return GetStatus_ ();
             }

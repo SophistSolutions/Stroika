@@ -384,8 +384,8 @@ RetryWithNoCERTCheck:
 
         Response::SSLResultInfo resultSSLInfo;
         resultSSLInfo.fValidationStatus = sslExceptionProblem ?
-                                          Response::SSLResultInfo::eSSLFailure :
-                                          Response::SSLResultInfo::eSSLOK
+                                          Response::SSLResultInfo::ValidationStatus::eSSLFailure :
+                                          Response::SSLResultInfo::ValidationStatus::eSSLOK
                                           ;
         if (certInfo.lpszSubjectInfo != nullptr) {
             wstring subject =   certInfo.lpszSubjectInfo;
@@ -405,16 +405,16 @@ RetryWithNoCERTCheck:
         Date    endCertDate     =   DateTime (certInfo.ftExpiry).GetDate ();
         Date    now             =   DateTime::GetToday ();
         if (now < startCertDate) {
-            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::eCertNotYetValid;
+            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertNotYetValid;
         }
         else if (endCertDate < now) {
-            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::eCertExpired;
+            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertExpired;
         }
 
         if (not Characters::StringsCIEqual (fURL_.fHost, resultSSLInfo.fSubjectCommonName) and
                 not Characters::StringsCIEqual (fURL_.fHost, L"www." + resultSSLInfo.fSubjectCommonName)
            ) {
-            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::eHostnameMismatch;
+            resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }
         if (certInfo.lpszSubjectInfo != nullptr) {
             ::LocalFree (certInfo.lpszSubjectInfo);

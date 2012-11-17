@@ -116,7 +116,7 @@ void    FileSystem::CheckFileAccess (const TString& fileFullPath, bool checkCanR
 
     if (not FileExists (fileFullPath)) {
 // FOR NOW - MIMIC OLD CODE - BUT FIX TO CHECK READ AND WRITE (AND BOTH) ACCESS DEPENDING ON ARGS) -- LGP 2009-08-15
-        Execution::DoThrow (FileAccessException (fileFullPath, IO::eRead_FAM));
+        Execution::DoThrow (FileAccessException (fileFullPath, IO::FileAccessMode::eRead_FAM));
     }
 }
 
@@ -616,7 +616,7 @@ void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath)
 //
 // If I DONT do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
     if (not FileExists (srcFile)) {
-        Execution::DoThrow (FileAccessException (srcFile, IO::eRead_FAM));
+        Execution::DoThrow (FileAccessException (srcFile, IO::FileAccessMode::eRead_FAM));
     }
     CreateDirectoryForFile (destPath);
     ThrowIfFalseGetLastError (::CopyFile (destPath.c_str (), srcFile.c_str (), false));

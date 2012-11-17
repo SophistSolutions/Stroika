@@ -51,7 +51,7 @@ namespace   Stroika {
                 // to represent a VariantValue internally, but either double or float (maybe more) can be used to access
                 typedef double  FloatType;
             public:
-                enum Type {
+            enum class Type : uint8_t {
                     eNull,
                     eBoolean,
                     eInteger,

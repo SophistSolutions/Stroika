@@ -115,25 +115,25 @@ namespace   {
     void    PrettyPrint_ (const Memory::VariantValue& v, ostream& out, int indentLevel)
     {
         switch (v.GetType ()) {
-            case    Memory::VariantValue::eNull:
+            case    Memory::VariantValue::Type::eNull:
                 PrettyPrint_Null_ (out);
                 break;
-            case    Memory::VariantValue::eBoolean:
+            case    Memory::VariantValue::Type::eBoolean:
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
-            case    Memory::VariantValue::eInteger:
+            case    Memory::VariantValue::Type::eInteger:
                 PrettyPrint_ (v.As<int> (), out);
                 break;
-            case    Memory::VariantValue::eFloat:
+            case    Memory::VariantValue::Type::eFloat:
                 PrettyPrint_ (v.As<float> (), out);
                 break;
-            case    Memory::VariantValue::eString:
+            case    Memory::VariantValue::Type::eString:
                 PrettyPrint_ (v.As<wstring> (), out);
                 break;
-            case    Memory::VariantValue::eMap:
+            case    Memory::VariantValue::Type::eMap:
                 PrettyPrint_ (v.As<map<wstring, Memory::VariantValue>> (), out, indentLevel);
                 break;
-            case    Memory::VariantValue::eArray:
+            case    Memory::VariantValue::Type::eArray:
                 PrettyPrint_ (v.As<vector<Memory::VariantValue>> (), out, indentLevel);
                 break;
             default:

@@ -78,7 +78,7 @@ namespace   Stroika {
                 // we normalize to be within a given day (seconds since midnight)
                 explicit TimeOfDay (uint32_t t);
 
-                enum    PrintFormat {
+            enum  class PrintFormat : uint8_t {
                     eCurrentLocale_PF,
                     eXML_PF,
                 };
@@ -119,7 +119,7 @@ namespace   Stroika {
                 nonvirtual  uint8_t GetSeconds () const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = eCurrentLocale_PF) const;
+                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale_PF) const;
                 nonvirtual  wstring Format (const locale& l) const;
 
 #if     qPlatform_Windows

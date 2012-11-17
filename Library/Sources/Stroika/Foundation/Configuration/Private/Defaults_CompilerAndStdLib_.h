@@ -665,8 +665,38 @@
             </p>
 */
 #ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug  defined (_MSC_VER)
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug  1
+#else
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug  0
 #endif
+#endif
+
+
+
+
+
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_StrongEnumWithOperatorAndBug
+@DESCRIPTION:   <p>
+            enum class A { x=1, y = 2 };
+            A tmp;
+            if (tmp & A::x) ...
+            </p>
+*/
+#ifndef qCompilerAndStdLib_StrongEnumWithOperatorAndBug
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+#define qCompilerAndStdLib_StrongEnumWithOperatorAndBug  1
+#else
+#define qCompilerAndStdLib_StrongEnumWithOperatorAndBug  0
+#endif
+#endif
+
+
 
 
 

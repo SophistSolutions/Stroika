@@ -89,7 +89,7 @@ Response::SSLResultInfo::SSLResultInfo ()
     , fSubjectCompanyName ()
     , fStyleOfValidation ()
     , fIssuer ()
-    , fValidationStatus (eNoSSL)
+    , fValidationStatus (ValidationStatus::eNoSSL)
 {
 }
 

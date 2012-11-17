@@ -351,9 +351,9 @@ void    Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars
     RequireNotNull (outChars);
     RequireNotNull (outCharCnt);
     size_t                          outBufSize  =   *outCharCnt;
-    CodePagesGuesser::Confidence    confidence  =   CodePagesGuesser::eLow;
+    CodePagesGuesser::Confidence    confidence  =   CodePagesGuesser::Confidence::eLow;
     CodePage                        cp          =   CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
-    if (confidence <= CodePagesGuesser::eLow) {
+    if (confidence <= CodePagesGuesser::Confidence::eLow) {
         cp = kCodePage_UTF8;
     }
     CodePageConverter cpCvt (cp, CodePageConverter::eHandleBOM);
@@ -1673,7 +1673,7 @@ CodePagesInstalled::CodePagesInstalled ()
 CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* confidence, size_t* bytesFromFrontToStrip)
 {
     if (confidence != nullptr) {
-        *confidence = eLow;
+        *confidence = Confidence::eLow;
     }
     if (bytesFromFrontToStrip != nullptr) {
         *bytesFromFrontToStrip = 0;
@@ -1683,7 +1683,7 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
         unsigned char   c1  =   reinterpret_cast<const unsigned char*> (input)[1];
         if (c0 == 0xff and c1 == 0xfe) {
             if (confidence != nullptr) {
-                *confidence = eHigh;
+                *confidence = Confidence::eHigh;
             }
             if (bytesFromFrontToStrip != nullptr) {
                 *bytesFromFrontToStrip = 2;
@@ -1692,7 +1692,7 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
         }
         if (c0 == 0xfe and c1 == 0xff) {
             if (confidence != nullptr) {
-                *confidence = eHigh;
+                *confidence = Confidence::eHigh;
             }
             if (bytesFromFrontToStrip != nullptr) {
                 *bytesFromFrontToStrip = 2;
@@ -1703,7 +1703,7 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
             unsigned char   c2  =   reinterpret_cast<const unsigned char*> (input)[2];
             if (c0 == 0xef and c1 == 0xbb and c2 == 0xbf) {
                 if (confidence != nullptr) {
-                    *confidence = eHigh;
+                    *confidence = Confidence::eHigh;
                 }
                 if (bytesFromFrontToStrip != nullptr) {
                     *bytesFromFrontToStrip = 3;
@@ -1717,7 +1717,7 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
             unsigned char   c4  =   reinterpret_cast<const unsigned char*> (input)[4];
             if (c0 == 0x2b and c1 == 0x2f and c2 == 0x76 and c3 == 0x38 and c4 == 0x2d) {
                 if (confidence != nullptr) {
-                    *confidence = eHigh;
+                    *confidence = Confidence::eHigh;
                 }
                 if (bytesFromFrontToStrip != nullptr) {
                     *bytesFromFrontToStrip = 5;
@@ -1732,7 +1732,7 @@ CodePage    CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidenc
      * Final ditch efforts if we don't recognize any prefix.
      */
     if (confidence != nullptr) {
-        *confidence = eLow;
+        *confidence = Confidence::eLow;
     }
     return Characters::GetDefaultSDKCodePage ();
 }

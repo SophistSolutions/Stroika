@@ -111,6 +111,8 @@ namespace   Stroika {
             // like strcmp() < 0 impless less, = 0 implies equal, and > 0 implies >
             int     StringsCICmp (const wstring& l, const wstring& r);
 
+
+            /// GET RID OF THIS TUFF - AND MOVE TO String::CompareOptions
             enum    StringCompareOptions {
                 eWithCase_CO,
                 eCaseInsensitive_CO,
@@ -124,12 +126,6 @@ namespace   Stroika {
             struct  CaseInsensativeLess : public binary_function<wstring, wstring, bool> {
                 bool operator()(const wstring& _Left, const wstring& _Right) const;
             };
-
-#if 0
-            // Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
-            template    <typename T>
-            size_t  Length (const T* p);
-#endif
 
 
             string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);

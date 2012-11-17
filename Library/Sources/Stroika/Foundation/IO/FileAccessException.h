@@ -28,7 +28,7 @@ namespace   Stroika {
             // list of exceptions. Probably should do separate handler so can customize messages...
             class   FileAccessException : public Execution::StringException {
             public:
-                FileAccessException (const TString& fileName = TString (), FileAccessMode fileAccessMode = eReadWrite_FAM);
+                FileAccessException (const TString& fileName = TString (), FileAccessMode fileAccessMode = FileAccessMode::eReadWrite_FAM);
 
             public:
                 nonvirtual  TString         GetFileName () const;
