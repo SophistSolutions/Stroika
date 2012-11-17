@@ -23,33 +23,18 @@ namespace   {
     wstring mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode)
     {
         wstring message;
-#if qCompilerAndStdLib_StrongEnumWithOperatorAndBug
-        if ((static_cast<int> (fileAccessMode) & static_cast<int> (FileAccessMode::eRead_FAM)) and (static_cast<int> (fileAccessMode) & static_cast<int> (FileAccessMode::eWrite_FAM))) {
+        if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead_FAM) and static_cast<bool> (fileAccessMode & FileAccessMode::eWrite_FAM)) {
             message = L"Cannot read from or write to file";
         }
-        else if (static_cast<int> (fileAccessMode) & static_cast<int> (FileAccessMode::eRead_FAM)) {
+        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead_FAM)) {
             message = L"Cannot read from file";
         }
-        else if (static_cast<int> (fileAccessMode) & static_cast<int> (FileAccessMode::eWrite_FAM)) {
+        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eWrite_FAM)) {
             message = L"Cannot write to file";
         }
         else {
             message = L"Access failure for file";
         }
-#else
-        if ((fileAccessMode & FileAccessMode::eRead_FAM) and (fileAccessMode & FileAccessMode::eWrite_FAM)) {
-            message = L"Cannot read from or write to file";
-        }
-        else if (fileAccessMode & FileAccessMode::eRead_FAM) {
-            message = L"Cannot read from file";
-        }
-        else if (fileAccessMode & FileAccessMode::eWrite_FAM) {
-            message = L"Cannot write to file";
-        }
-        else {
-            message = L"Access failure for file";
-        }
-#endif
         if (not fileName.empty ()) {
             message = Characters::Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (Characters::TString2Wide (fileName), 100, false).c_str ());
         }

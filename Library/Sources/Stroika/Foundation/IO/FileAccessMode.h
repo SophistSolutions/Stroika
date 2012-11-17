@@ -21,7 +21,23 @@ enum class FileAccessMode : uint8_t {
                 // composite values
                 eReadWrite_FAM  = eRead_FAM | eWrite_FAM,
             };
+			FileAccessMode operator& (FileAccessMode l, FileAccessMode r);
+			FileAccessMode operator| (FileAccessMode l, FileAccessMode r);
 
+
+
+
+			/**
+			 * @todo add .inl file
+			 */
+			inline FileAccessMode operator& (FileAccessMode l, FileAccessMode r)
+			{
+				return FileAccessMode (static_cast<int> (l) & static_cast<int> (r));
+			}
+			inline FileAccessMode operator| (FileAccessMode l, FileAccessMode r)
+			{
+				return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
+			}
         }
     }
 }
