@@ -46,16 +46,11 @@ namespace   Stroika {
             T   RoundDownTo (T x, T toNearest);
 
 
-// Til I can test on GCC...
-#ifndef qSomeWeirdMSVCTemplateCompilerBug
-#define qSomeWeirdMSVCTemplateCompilerBug  defined (_MSC_VER)
-#endif // !qSomeWeirdMSVCTemplateCompilerBug
-
 
             /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
              */
-#if  qSomeWeirdMSVCTemplateCompilerBug
+#if  qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
             template    <typename   T>
             T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<float>::epsilon()));
 #else

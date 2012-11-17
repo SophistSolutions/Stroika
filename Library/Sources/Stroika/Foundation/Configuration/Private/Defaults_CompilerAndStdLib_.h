@@ -657,6 +657,16 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+@DESCRIPTION:   <p>
+			template    <typename   T>
+            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<T>::epsilon()));
+			</p>
+*/
+#ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug  defined (_MSC_VER)
+#endif
 
 
 
