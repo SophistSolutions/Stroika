@@ -22,6 +22,10 @@ using   namespace   Stroika::Foundation::IO;
 namespace   {
     wstring mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode)
     {
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4800)
+#endif
         wstring message;
         if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead_FAM) and static_cast<bool> (fileAccessMode & FileAccessMode::eWrite_FAM)) {
             message = L"Cannot read from or write to file";
@@ -35,6 +39,9 @@ namespace   {
         else {
             message = L"Access failure for file";
         }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (pop)
+#endif
         if (not fileName.empty ()) {
             message = Characters::Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (Characters::TString2Wide (fileName), 100, false).c_str ());
         }
