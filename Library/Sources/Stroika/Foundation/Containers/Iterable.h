@@ -9,6 +9,9 @@
  *
  *  TODO:
  *
+ *		@todo	Consider renaming Iterable<T> to Collection<T>. Or at least document
+ *				why not...
+ *
  *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
  *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
  *              More()...
