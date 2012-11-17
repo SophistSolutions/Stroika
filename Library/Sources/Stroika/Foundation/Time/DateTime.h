@@ -50,15 +50,15 @@
  *          an API standpoint if the internl rep was BIGGER (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
  *          SharedByValue<> template. Maybe a boondoggle?
  *
- *      o   Future direction – consider representing as big struct
+ *      o   Future direction ï¿½ consider representing as big struct
  *          o   Like with STRUCT DATETIME or struct tm
  *              o   Int year
  *              o   Int month
- *              o   ….
- *          o   And maybe store cached string reps for common cases – as optimization – and
+ *              o   ï¿½.
+ *          o   And maybe store cached string reps for common cases ï¿½ as optimization ï¿½ and
  *              store cached second-offset (mutable) for quick compares
- *          o   Note in docs – for future versions – the min/max date COULD be expanded
- *          o   Note for timeofday – it COULD be enhanced in the future to store TOD as
+ *          o   Note in docs ï¿½ for future versions ï¿½ the min/max date COULD be expanded
+ *          o   Note for timeofday ï¿½ it COULD be enhanced in the future to store TOD as
  *              fractional number of seconds. COULD use LINUX style struct with number of seconds and fixed
  *              point like number of nanoseconds (or some such)
  *
@@ -125,7 +125,7 @@ namespace   Stroika {
 
 #if     qPlatform_POSIX
             public:
-                explicit DateTime (const timespec& tmTime, Timezone tz = eUnknown_TZ);
+                explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown_TZ);
 #endif
 
 #if     qPlatform_Windows
