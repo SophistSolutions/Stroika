@@ -131,7 +131,7 @@ namespace   Stroika {
             template    <typename   FloatType>
             inline  FloatType   NearlyEquals (FloatType l, FloatType r, FloatType epsilon)
             {
-                return std::fabs ( a - b ) < epsilon;
+                return std::fabs ( l - r ) < epsilon;
             }
 
         }
