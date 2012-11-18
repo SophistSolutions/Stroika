@@ -487,7 +487,7 @@ void    LedLineItDocument::Serialize (CArchive& ar)
         size_t  eob         =   fTextStore.GetLength ();
         bool    firstTime   =   true;
         while (offset < eob) {
-            size_t  charsToWrite    =   Led_Min (kBufSize, eob - offset);
+            size_t  charsToWrite    =   min (kBufSize, eob - offset);
             fTextStore.CopyOut (offset, charsToWrite, buf);
             offset += charsToWrite;
 #if     qPlatform_MacOS

@@ -686,7 +686,7 @@ void    LedItView::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_
         // edge of the window. NB: because of this choice, we must 'InvalidateAllCaches' when the
         // WindowRect changes in our SetWindowRect() override.
         if (rhs != NULL) {
-            *rhs = (Led_Max (GetWindowRect ().GetWidth (), 1));
+            *rhs = (max (GetWindowRect ().GetWidth (), Led_Distance (1)));
         }
     }
 }

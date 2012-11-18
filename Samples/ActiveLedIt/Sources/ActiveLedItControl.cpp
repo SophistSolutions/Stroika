@@ -3671,8 +3671,8 @@ void    ActiveLedItControl::SetSelStart (long start)
     fEditor.GetSelection (&s, &e);
     size_t  l   =   e - s;
     size_t  bufLen  =   fEditor.GetLength ();
-    size_t  newStart = Led_Min (static_cast<size_t> (start), bufLen);
-    size_t  newEnd = Led_Min (newStart + l, bufLen);
+    size_t  newStart = min (static_cast<size_t> (start), bufLen);
+    size_t  newEnd = min (newStart + l, bufLen);
     fEditor.SetSelection (newStart, newEnd);
 }
 
@@ -3698,7 +3698,7 @@ void    ActiveLedItControl::SetSelLength (long length)
     fEditor.GetSelection (&s, &e);
     size_t  l   =   e - s;
     size_t  bufLen  =   fEditor.GetLength ();
-    size_t  newEnd = Led_Min (s + length, bufLen);
+    size_t  newEnd = min (s + static_cast<size_t> (length), bufLen);
     fEditor.SetSelection (s, newEnd);
 }
 

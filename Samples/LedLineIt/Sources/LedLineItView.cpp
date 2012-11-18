@@ -514,9 +514,9 @@ Led_Distance    LedLineItView::ComputeMaxHScrollPos () const
          */
         Led_Distance    width   =   CalculateLongestRowInWindowPixelWidth ();
         if (GetHScrollPos () != 0) {
-            width = Led_Max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
+            width = max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
         }
-        fCachedLayoutWidth = Led_Max (width, 1);
+        fCachedLayoutWidth = max (width, Led_Distance (1));
     }
     Led_Distance    wWidth  =   GetWindowRect ().GetWidth ();
     if (fCachedLayoutWidth > wWidth) {

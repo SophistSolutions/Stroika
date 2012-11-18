@@ -661,7 +661,7 @@ void    LedItView::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_
         Led_Coordinate  l   =   0;
         Led_Coordinate  r   =   0;
         inherited::GetLayoutMargins (row, &l, &r);
-        r = Led_Max (static_cast<Led_Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
+        r = max (static_cast<Led_Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
         Ensure (r > l);
         if (lhs != NULL) {
             *lhs = l;
