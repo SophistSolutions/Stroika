@@ -576,9 +576,9 @@
 @DESCRIPTION:   <p>https://connect.microsoft.com/VisualStudio/feedback/details/572138
     From the C++0x FCD (N3092 5.1.2/6):
         "The closure type for a lambda-expression with no lambda-capture has a public non-virtual non-explicit const conversion
-        function to pointer to function having the same parameter and return types as the closure type’s function call operator.
+        function to pointer to function having the same parameter and return types as the closure typeï¿½s function call operator.
         The value returned by this conversion function shall be the address of a function that, when invoked, has the same effect
-        as invoking the closure type’s function call operator."
+        as invoking the closure typeï¿½s function call operator."
     Not implemented in VS.net 2010
     Often results in compiler error "No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called"
 </p>
@@ -689,7 +689,7 @@
 #ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #else
 #define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       qCompilerAndStdLib_Supports_constexpr
 #endif
