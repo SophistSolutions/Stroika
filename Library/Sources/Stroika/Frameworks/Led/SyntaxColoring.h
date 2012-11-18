@@ -87,7 +87,7 @@ namespace   Stroika {
                     KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t) = Led_tStrnCmp);
 
                 public:
-                    nonvirtual  size_t		MaxKeywordLength () const;
+                    nonvirtual  size_t      MaxKeywordLength () const;
                     nonvirtual  size_t      KeywordLength (const Led_tChar* t, size_t nTChars) const;
 
                 private:

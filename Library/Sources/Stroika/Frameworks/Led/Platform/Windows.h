@@ -2623,10 +2623,10 @@ namespace   Stroika {
                     DWORD iSelEnd     =   static_cast<DWORD> (GetSelectionEnd ());
 
                     if (wParam != NULL) {
-						*reinterpret_cast<DWORD*> (wParam) = iSelStart;
+                        *reinterpret_cast<DWORD*> (wParam) = iSelStart;
                     }
                     if (lParam != NULL) {
-						*reinterpret_cast<DWORD*> (lParam) = iSelEnd;
+                        *reinterpret_cast<DWORD*> (lParam) = iSelEnd;
                     }
 
                     DWORD dw = (((WORD)iSelStart) << 16) | ((WORD)iSelEnd);
