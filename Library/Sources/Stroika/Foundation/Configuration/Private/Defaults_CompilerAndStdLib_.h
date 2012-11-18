@@ -682,6 +682,25 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+@DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
+*/
+#ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#else
+#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       qCompilerAndStdLib_Supports_constexpr
+#endif
+
+#endif
+
+
+
+
+
+
 
 
 
@@ -778,7 +797,7 @@
 /*
 * NB: we can lose these macros once all our compilers support the new C++ syntax.
 */
-#if  qCompilerAndStdLib_Supports_constexpr
+#if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     static	constexpr TYPE NAME = VALUE;
 #else
