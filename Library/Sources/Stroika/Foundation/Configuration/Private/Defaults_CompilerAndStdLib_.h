@@ -518,7 +518,10 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdatomic)
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
+#if     defined (__clang__)
+//at least fails with clang 3.0
+#define qCompilerAndStdLib_Supports_lambda_default_argument		(__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
+#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_Supports_stdatomic   0
 #elif     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
 // really is supported, but fake off for now til we fix it --LGP 2012-10-20
@@ -564,14 +567,17 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_lambda_default_argument
-@DESCRIPTION:   <p>Defined true if the compiler supports lamba functions as default arguments to other functions</p>
+@DESCRIPTION:   <p>Defined true if the compiler supports lambda functions as default arguments to other functions</p>
 */
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument
 
-#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
-#define qCompilerAndStdLib_Supports_lambda_default_argument 0
+#if     defined (__clang__)
+//at least fails with clang 3.0
+#define qCompilerAndStdLib_Supports_lambda_default_argument		(__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
+#elif   defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
+#define qCompilerAndStdLib_Supports_lambda_default_argument 	0
 #else
-#define qCompilerAndStdLib_Supports_lambda_default_argument 1
+#define qCompilerAndStdLib_Supports_lambda_default_argument 	1
 #endif
 
 #endif
