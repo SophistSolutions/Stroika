@@ -780,7 +780,7 @@
 */
 #if  qCompilerAndStdLib_Supports_constexpr
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
-    constexpr TYPE NAME = VALUE;
+    static	constexpr TYPE NAME = VALUE;
 #else
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     enum  { NAME = VALUE };
