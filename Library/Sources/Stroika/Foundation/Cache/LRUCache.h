@@ -70,7 +70,7 @@ namespace   Stroika {
                 typedef ELEMENT     ElementType;
                 typedef KEY         KeyType;
                 // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                enum    { HASH_TABLE_SIZE   =   1 };
+				DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, 1);
                 static  KeyType ExtractKey (const ElementType& e);
                 // If KeyType different type than ElementType we need a hash for that too
                 static  size_t  Hash (const KeyType& e);

@@ -140,10 +140,8 @@ enum class Year : int {
             class   Date {
             public:
                 typedef unsigned int    JulianRepType;
-                //enum { kMinJulianRep = 0 };
-                //Use constexpr and type JulianRepType when compilers support it --LGP 2011-10-05
-                enum { kMinJulianRep = 2361222 };       // This number corresponds to 1752-09-14
-                enum { kEmptyJulianRep = UINT_MAX };
+				DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kMinJulianRep, 2361222);  // This number corresponds to 1752-09-14
+				DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kEmptyJulianRep, UINT_MAX);
 
             public:
                 class   FormatException;

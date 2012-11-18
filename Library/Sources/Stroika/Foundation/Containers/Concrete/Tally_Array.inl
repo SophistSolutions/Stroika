@@ -48,10 +48,9 @@ namespace   Stroika {
                 private:
                     Array_Patch<TallyEntry<T> > fData;
 
-                    enum {
-                        kNotFound = (size_t) - 1,
-                    };
-                    nonvirtual  size_t  Find (TallyEntry<T>& item) const;
+					DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound, (size_t) - 1);
+
+					nonvirtual  size_t  Find (TallyEntry<T>& item) const;
 
                     friend  class   Tally_Array<T>;
                     friend  class   Tally_ArrayMutatorRep<T>;
