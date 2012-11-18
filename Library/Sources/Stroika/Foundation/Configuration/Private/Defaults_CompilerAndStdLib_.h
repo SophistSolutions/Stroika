@@ -26,7 +26,19 @@
  *******************************************************************
  */
 
-#if     defined (__GNUC__)
+#if     defined (__clang__)
+
+//// DRAFT SUPPORT FOR CLANG++--- VERY MININAL TESTING AND NOT NOT CLOSE TO WORKING
+
+// Must check CLANG first, since it also defines GCC
+//#define __clang_major__ 3
+//#define __clang_minor__ 0
+//#define __clang_patchlevel__ 0
+#if     __clang_major__ < 3 || (__clang_major__ == 3 && (__clang_minor__ < 0))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.0")
+#endif
+
+#elif	defined (__GNUC__)
 
 #if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
 #pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
@@ -126,7 +138,7 @@
 */
 #if     !defined (qCompilerAndStdLib_StdFindOverloadBug)
 
-#if     defined (__GNUC__)
+#if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_StdFindOverloadBug       ( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #else
 #define qCompilerAndStdLib_StdFindOverloadBug       0
@@ -145,7 +157,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_ConstructorDelegation
 
-#if     defined (__GNUC__)
+#if     defined (__GNUC__)  && !defined (__clang__)
 
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
 
@@ -222,7 +234,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_regex_search
 
-#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#if     defined (__GNUC__) && !defined (__clang__) &&  (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #define qCompilerAndStdLib_Supports_regex_search            0
 #else
 #define qCompilerAndStdLib_Supports_regex_search            1
@@ -243,7 +255,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_regex_replace
 
-#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #define qCompilerAndStdLib_Supports_regex_replace       0
 #else
 #define qCompilerAndStdLib_Supports_regex_replace       1
@@ -312,7 +324,7 @@
 // template the way GCC 4.6.3 appears to require        -- LGP 2012-07-27
 #ifndef qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
 
-#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 1
 #else
 #define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 0
@@ -422,7 +434,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_errno_t)
 
-#if     defined (__GNUC__)
+#if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_errno_t 0
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_errno_t 1
@@ -530,7 +542,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_override)
 
-#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
+#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
 #define qCompilerAndStdLib_Supports_override    0
 #elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 #define qCompilerAndStdLib_Supports_override    0
@@ -556,7 +568,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument
 
-#if     defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
+#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
 #define qCompilerAndStdLib_Supports_lambda_default_argument 0
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument 1
