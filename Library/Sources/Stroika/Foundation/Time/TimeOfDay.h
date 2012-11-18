@@ -28,7 +28,7 @@
  *
  *      o   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
- *      o   Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
+ *      o   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
  *          Maybe where they differ doesn't matter for this class?
  *
  *      o   Locale based parsing code seems quite poor. Haven't really evaluated locale-based print code (but I'm not optimistic).
@@ -79,8 +79,8 @@ namespace   Stroika {
                 explicit TimeOfDay (uint32_t t);
 
             enum  class PrintFormat : uint8_t {
-                    eCurrentLocale_PF,
-                    eXML_PF,
+                    eCurrentLocale,
+                    eXML,
                 };
                 static  TimeOfDay   Parse (const wstring& rep, PrintFormat pf);
                 static  TimeOfDay   Parse (const wstring& rep, const locale& l);
@@ -119,7 +119,7 @@ namespace   Stroika {
                 nonvirtual  uint8_t GetSeconds () const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale_PF) const;
+                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
                 nonvirtual  wstring Format (const locale& l) const;
 
 #if     qPlatform_Windows

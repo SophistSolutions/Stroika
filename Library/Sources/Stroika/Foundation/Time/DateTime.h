@@ -40,7 +40,7 @@
  *
  *      o   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
- *      o   Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
+ *      o   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
  *          Maybe where they differ doesn't matter for this class?
  *
  *      o   Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on bad conversions I think - moistly an issue for
@@ -141,8 +141,8 @@ namespace   Stroika {
 
             public:
             enum class  PrintFormat : uint8_t {
-                    eCurrentLocale_PF,
-                    eXML_PF,
+                    eCurrentLocale,
+                    eXML,
                 };
                 static  DateTime    Parse (const wstring& rep, PrintFormat pf);
                 static  DateTime    Parse (const wstring& rep, const locale& l);
@@ -185,7 +185,7 @@ namespace   Stroika {
                 nonvirtual  DateTime    AsUTC () const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale_PF) const;
+                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
                 nonvirtual  wstring Format (const locale& l) const;
 
 #if     qPlatform_Windows

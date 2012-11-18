@@ -704,17 +704,17 @@ namespace	{
 	void	Test18_Compare_ ()
 		{
 			const	String	kHELLOWorld	=	String (L"Hello world");
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, String::CompareOptions::eWithCase_CO) == 0);
-			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), String::CompareOptions::eWithCase_CO) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, String::CompareOptions::eWithCase) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), String::CompareOptions::eWithCase) == 0);
 
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eWithCase_CO) < 0);
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eCaseInsensitive_CO) == 0);
-			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive_CO) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eCaseInsensitive_CO) < 0);
-			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive_CO) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eWithCase_CO) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eWithCase_CO) > 0);
-			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eWithCase_CO) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eWithCase) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eCaseInsensitive) == 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eCaseInsensitive) < 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eWithCase) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eWithCase) > 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eWithCase) < 0);
 		}
 }
 

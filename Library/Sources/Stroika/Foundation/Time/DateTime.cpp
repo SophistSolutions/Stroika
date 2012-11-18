@@ -196,7 +196,7 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
         return Date ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale: {
 #if         qPlatform_Windows
                 /*
                  * Windows Parser does better job than POSIX one - for reasons which elude me.
@@ -210,7 +210,7 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
                 return DateTime ();
             }
             break;
-        case    PrintFormat::eXML_PF: {
+        case    PrintFormat::eXML: {
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
@@ -365,7 +365,7 @@ wstring DateTime::Format (PrintFormat pf) const
         return wstring ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale: {
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
@@ -373,9 +373,9 @@ wstring DateTime::Format (PrintFormat pf) const
 #endif
             }
             break;
-        case    PrintFormat::eXML_PF: {
-                wstring r       =   fDate_.Format (Date::PrintFormat::eXML_PF);
-                wstring timeStr =   fTimeOfDay_.Format (TimeOfDay::PrintFormat::eXML_PF);
+        case    PrintFormat::eXML: {
+                wstring r       =   fDate_.Format (Date::PrintFormat::eXML);
+                wstring timeStr =   fTimeOfDay_.Format (TimeOfDay::PrintFormat::eXML);
                 if (not timeStr.empty ()) {
                     r += L"T" + timeStr;
                     if (GetTimezone () == Timezone::eUTC_TZ) {
@@ -394,7 +394,7 @@ wstring DateTime::Format (PrintFormat pf) const
                     // TODO:
                     //      This probably shouldn't be needed!!! - think through more carefully.
                     //          --LGP 2011-10-07
-                    DateTime    parsed  =   DateTime::Parse (r, PrintFormat::eXML_PF);
+                    DateTime    parsed  =   DateTime::Parse (r, PrintFormat::eXML);
                     if (parsed.GetTimezone () != GetTimezone ()) {
                         parsed = DateTime (parsed.GetDate (), parsed.GetTimeOfDay (), parsed.GetTimezone ());
                     }

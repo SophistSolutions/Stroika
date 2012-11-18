@@ -33,7 +33,7 @@
  *
  *      o   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
- *      o   Consider replacing eXML_PF with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
+ *      o   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
  *          Maybe where they differ doesn't matter for this class?
  *          o   Replace (research first) use of name XML here with iso8601.
  *              + maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
@@ -65,9 +65,9 @@ enum class  DayOfWeek : uint8_t {
                 eFirstDayOfWeek = eMonday,
                 eLastDayOfWeek = eSunday,
 
-				// Can do for (i = eSTART; i != eEND; i = Inc (i));
-				eSTART = eFirstDayOfWeek,
-				eEND = eLastDayOfWeek+1,
+                // Can do for (i = eSTART; i != eEND; i = Inc (i));
+                eSTART = eFirstDayOfWeek,
+                eEND = eLastDayOfWeek + 1,
             };
 
 
@@ -88,26 +88,26 @@ enum class  MonthOfYear : uint8_t {
                 eDecember = 12,
                 eFirstMonthOfYear = eJanuary,
                 eLastMonthOfYear = eDecember,
-				
-				// Can do for (i = eSTART; i != eEND; i = Inc (i));
-				eSTART = eFirstMonthOfYear,
-				eEND = eLastMonthOfYear + 1,
+
+                // Can do for (i = eSTART; i != eEND; i = Inc (i));
+                eSTART = eFirstMonthOfYear,
+                eEND = eLastMonthOfYear + 1,
             };
 
 
 
 enum  class     DayOfMonth : uint8_t {
                 eEmptyDayOfMonth = 0,       // only zero if date empty
-				e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
-				e11 = 11, e12, e13, e14, e15, e16, e17, e18, e19, e20,
-				e21 = 21, e22, e23, e24, e25, e26, e27, e28, e29, e30,
-				e31,
+                e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
+                e11 = 11, e12, e13, e14, e15, e16, e17, e18, e19, e20,
+                e21 = 21, e22, e23, e24, e25, e26, e27, e28, e29, e30,
+                e31,
                 eFirstDayOfMonth = 1,
                 eLastDayOfMonth = 31,
-				
-				// Can do for (i = eSTART; i != eEND; i = Inc (i));
-				eSTART = eFirstDayOfMonth,
-				eEND = eLastDayOfMonth + 1,
+
+                // Can do for (i = eSTART; i != eEND; i = Inc (i));
+                eSTART = eFirstDayOfMonth,
+                eEND = eLastDayOfMonth + 1,
             };
 
 
@@ -121,11 +121,11 @@ enum class  DayOfYear : uint16_t {
 enum class Year : short {
                 eEmptyYear = SHRT_MIN,
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
-                eLastfYear = SHRT_MAX-1,
-				
-				// Can do for (i = eSTART; i != eEND; i = Inc (i));
-				eSTART = eFirstYear,
-				eEND = eLastfYear + 1,
+                eLastfYear = SHRT_MAX - 1,
+
+                // Can do for (i = eSTART; i != eEND; i = Inc (i));
+                eSTART = eFirstYear,
+                eEND = eLastfYear + 1,
             };
 
 
@@ -160,8 +160,8 @@ enum class Year : short {
             class   Date {
             public:
                 typedef unsigned int    JulianRepType;
-				DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kMinJulianRep, 2361222);  // This number corresponds to 1752-09-14
-				DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kEmptyJulianRep, UINT_MAX);
+                DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kMinJulianRep, 2361222);  // This number corresponds to 1752-09-14
+                DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kEmptyJulianRep, UINT_MAX);
 
             public:
                 class   FormatException;
@@ -173,9 +173,9 @@ enum class Year : short {
 
             public:
             enum class PrintFormat : uint8_t {
-                    eCurrentLocale_PF,
-                    eXML_PF,
-                    eJavascript_PF,
+                    eCurrentLocale,
+                    eXML,
+                    eJavascript,
                 };
                 static  Date    Parse (const wstring& rep, PrintFormat pf);
                 static  Date    Parse (const wstring& rep, const locale& l);
@@ -204,7 +204,7 @@ enum class Year : short {
                 nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale_PF) const;
+                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
                 nonvirtual  wstring Format (const locale& l) const;
 
 #if     qPlatform_Windows

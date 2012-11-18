@@ -86,13 +86,13 @@ namespace   Stroika {
                  */
             enum class  Priority : uint8_t {
                     // Names and numbers for syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
-                    eInfo				=   6,              // SYSLOG name LOG_INFO     -   The message is purely informational
+                    eInfo               =   6,              // SYSLOG name LOG_INFO     -   The message is purely informational
                     eNotice             =   5,              // SYSLOG name LOG_NOTICE   -   The message describes a normal but important event
                     eWarning            =   4,              // SYSLOG name LOG_WARNING  -   The message is a warning
                     eError              =   3,              // SYSLOG name LOG_ERR      -   The message describes an error
                     eCriticalError      =   2,              // SYSLOG name LOG_CRIT     -   The message states a critical condition
-                    eAlertError		    =   1,              // SYSLOG name LOG_ALERT    -   Action on the message must be taken immediately
-                    eEmergency	        =   0,              // SYSLOG name LOG_EMERG    -   The message says the system is unusable
+                    eAlertError         =   1,              // SYSLOG name LOG_ALERT    -   Action on the message must be taken immediately
+                    eEmergency          =   0,              // SYSLOG name LOG_EMERG    -   The message says the system is unusable
                 };
             public:
                 // EITHER RENAME AND DO ORDER DIFRNELY OR DONT TIE NNUMBERS TO SYSLOG NUMBERS

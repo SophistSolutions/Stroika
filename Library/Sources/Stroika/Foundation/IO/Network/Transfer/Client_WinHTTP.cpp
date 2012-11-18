@@ -282,9 +282,9 @@ RetryWithNoCERTCheck:
 
     try {
         //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
-		if (request.fData.size () > numeric_limits<DWORD>::max ()) {
-			DoThrow (StringException (L"Too large a message to send using WinHTTP"));
-		}
+        if (request.fData.size () > numeric_limits<DWORD>::max ()) {
+            DoThrow (StringException (L"Too large a message to send using WinHTTP"));
+        }
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (4 : 4267)

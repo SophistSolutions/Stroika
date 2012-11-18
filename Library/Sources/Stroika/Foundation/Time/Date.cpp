@@ -180,7 +180,7 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
         return Date ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale: {
 #if     qPlatform_Windows
                 /*
                  * Windows Parser does better job than POSIX one - for reasons which elude me.
@@ -193,7 +193,7 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
 #endif
             }
             break;
-        case    PrintFormat::eXML_PF: {
+        case    PrintFormat::eXML: {
                 /*
                  * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
                  */
@@ -216,7 +216,7 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
                 }
             }
             break;
-        case    PrintFormat::eJavascript_PF: {
+        case    PrintFormat::eJavascript: {
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
@@ -294,7 +294,7 @@ wstring Date::Format (PrintFormat pf) const
         return wstring ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale_PF: {
+        case    PrintFormat::eCurrentLocale: {
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
@@ -303,7 +303,7 @@ wstring Date::Format (PrintFormat pf) const
 #endif
             }
             break;
-        case    PrintFormat::eXML_PF: {
+        case    PrintFormat::eXML: {
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
                 MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
                 DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
@@ -318,7 +318,7 @@ wstring Date::Format (PrintFormat pf) const
                 return buf;
             }
             break;
-        case    PrintFormat::eJavascript_PF: {
+        case    PrintFormat::eJavascript: {
                 /*
                  *  From
                  *      http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
