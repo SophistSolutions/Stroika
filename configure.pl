@@ -37,6 +37,7 @@ my $ENABLE_TRACE2FILE = -1;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
+my $COMPILER_DRIVER = "";
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
 # just regular
@@ -62,6 +63,7 @@ sub	DoHelp_
 	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
 	print("	    --c-define {ARG}             /* Define C++ / CPP define for the given target */\n");
 	print("	    --make-define {ARG}          /* Define makefile define for the given target */\n");
+	print("	    --compiler-driver {ARG}      /* default is g++ */\n");
 
 print(" >>> MUST ADD HAS_FEATURE\n");
 	exit (0);
@@ -96,6 +98,11 @@ sub	ParseCommandLine_
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
+		}
+		if (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
+			$i++;
+			$var = $ARGV[$i];
+			$COMPILER_DRIVER = $var;
 		}
 		if ((lc ($var) eq "-target") or (lc ($var) eq "--target")) {
 			$i++;
@@ -280,7 +287,7 @@ sub WriteStroikaConfigCHeader
 	#open(OUT,">$configFileCName");
 	open(OUT,">:crlf", "$configFileCName");
 	print (OUT "/*\n");
-	print (OUT " * Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved\n");
+	print (OUT " * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved\n");
 	print (OUT " */\n");
 	print (OUT "#ifndef	_Stroika_Foundation_Configuration_StroikaConfig_h_\n");
 	print (OUT "#define	_Stroika_Foundation_Configuration_StroikaConfig_h_	1\n");
@@ -408,6 +415,15 @@ sub	WriteConfigFile_
 	my $PROJECTPLATFORMSUBDIR='';
 	if ("$^O" eq "linux") {
 		$PROJECTPLATFORMSUBDIR = 'Linux';
+
+		if ($COMPILER_DRIVER eq "") {
+			$COMPILER_DRIVER = "g++";
+ 		}
+		#$COMPILER_DRIVER = "clang++";
+		#$COMPILER_DRIVER = "gcc";
+		#$COMPILER_DRIVER = "g++-4.6";
+		#$COMPILER_DRIVER = "g++ -V4.5";
+		#$COMPILER_DRIVER = "g++ -V4.6";
 	}
 	if ("$^O" eq "cygwin") {
 		# first try vs 2k12
@@ -442,6 +458,17 @@ sub	WriteConfigFile_
 	open(OUT,">$masterXMLConfigFile");
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
+	print (OUT "    <Platform>$platform</Platform>\n");
+	print (OUT "    <Target>$target</Target>\n");
+
+	print (OUT "    <COMPILER_DRIVER>$COMPILER_DRIVER</COMPILER_DRIVER>\n");
+	print (OUT "    <ENABLE_ASSERTIONS>$ENABLE_ASSERTIONS</ENABLE_ASSERTIONS>\n");
+	print (OUT "    <ENABLE_LIBCURL>$ENABLE_LIBCURL</ENABLE_LIBCURL>\n");
+	print (OUT "    <ENABLE_WINHTTP>$ENABLE_WINHTTP</ENABLE_WINHTTP>\n");
+	print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");
+	print (OUT "    <INCLUDE_SYMBOLS>$INCLUDE_SYMBOLS</INCLUDE_SYMBOLS>\n");
+	print (OUT "    <COPTIMIZE_FLAGS>$COPTIMIZE_FLAGS</COPTIMIZE_FLAGS>\n");
+	print (OUT "    <STATIC_LINK_GCCRUNTIME>$STATIC_LINK_GCCRUNTIME</STATIC_LINK_GCCRUNTIME>\n");
 	print (OUT "</Configuration>\n");
 	close(OUT);
 }
@@ -453,7 +480,7 @@ sub WriteStroikaConfigMakeHeader
 {
 	open(OUT,">$configFileMakeName");
 	print (OUT "#\n");
-	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2011.  All rights reserved\n");
+	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved\n");
 	print (OUT "#\n");
 	print (OUT "\n");
 	print (OUT "\n");
@@ -501,11 +528,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "#C++-Compiler\n");
-	print (OUT "CPlusPlus=	g++\n");
-	print (OUT "#CPlusPlus=	gcc\n");
-	print (OUT "#CPlusPlus=	g++-4.6\n");
-	print (OUT "#CPlusPlus=	g++ -V4.5\n");
-	print (OUT "#CPlusPlus=	g++ -V4.6\n");
+	print (OUT "CPlusPlus=	$COMPILER_DRIVER\n");
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");
