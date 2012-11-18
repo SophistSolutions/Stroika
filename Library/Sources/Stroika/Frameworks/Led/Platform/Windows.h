@@ -1552,7 +1552,7 @@ namespace   Stroika {
                                 // things really get recomputed
 #endif
 
-                                SetHScrollPos (min<Led_Coordinate> (newPos, ComputeMaxHScrollPos ()));
+                                SetHScrollPos (min<Led_Coordinate> (static_cast<Led_Coordinate> (newPos), ComputeMaxHScrollPos ()));
                             }
                             break;
 
@@ -1598,7 +1598,7 @@ namespace   Stroika {
 
                     // Pin - cuz result can be 'WHEEL_PAGESCROLL' - or just exceed a single page - and we are only supposed to scroll a max of
                     // page per delta/WHEEL_DELTA, according to WM_MOUSEWHEEL docs.
-                    int totalRowsInWindow   =   GetTotalRowsInWindow ();
+                    int totalRowsInWindow   =   static_cast<int> (GetTotalRowsInWindow ());
                     scrollLines = min (scrollLines, totalRowsInWindow);
 
                     ScrollByIfRoom (-nTicks * scrollLines, eImmediateUpdate);
@@ -2596,7 +2596,7 @@ namespace   Stroika {
                         Memory::SmallStackBuffer<Led_tChar> buf (len);
 #if     qWideCharacters
                         // Assume they want ANSI code page text?
-                        len =   static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, len, buf, len));
+                        len =   static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, static_cast<int> (len), buf, static_cast<int> (len)));
 #else
                         ::memcpy (buf, lpText, len);
 #endif
@@ -2814,14 +2814,14 @@ namespace   Stroika {
                         nEnd = 0;
                     }
                     if (size_t (nEnd) > GetEnd ()) {
-                        nEnd = GetEnd ();
+                        nEnd = static_cast<int> (GetEnd ());
                     }
                     if (nStart > nEnd) {
                         int tmp =   nStart;
                         nStart = nEnd;
                         nEnd = tmp;
                     }
-                    SetSelection (nStart, nEnd);
+                    SetSelection (static_cast<size_t> (nStart), static_cast<size_t> (nEnd));
                     return 0;   // result ignored...
                 }
                 template    <typename   BASECLASS>
@@ -3284,16 +3284,16 @@ namespace   Stroika {
                             OnTimer_Msg (wParam, reinterpret_cast<TIMERPROC*> (lParam));
                             break;
                         case WM_LBUTTONDOWN:
-                            OnLButtonDown_Msg (wParam, MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                            OnLButtonDown_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                             break;
                         case WM_LBUTTONUP:
-                            OnLButtonUp_Msg (wParam, MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                            OnLButtonUp_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                             break;
                         case WM_LBUTTONDBLCLK:
-                            OnLButtonDblClk_Msg (wParam, MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                            OnLButtonDblClk_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                             break;
                         case WM_MOUSEMOVE:
-                            OnMouseMove_Msg (wParam, MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                            OnMouseMove_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                             break;
                         case WM_VSCROLL:
                             OnVScroll_Msg (LOWORD (wParam), (short)HIWORD (wParam), HWND (lParam));
