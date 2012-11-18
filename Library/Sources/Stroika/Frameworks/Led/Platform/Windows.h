@@ -2273,7 +2273,7 @@ namespace   Stroika {
                             scrollInfo.fMask = SIF_PAGE | SIF_POS | SIF_RANGE;
 
                             scrollInfo.nMin = 0;    // always use zero as base
-                            scrollInfo.nMax = GetLength ();
+                            scrollInfo.nMax = static_cast<int> (GetLength ());
                             scrollInfo.nPage = static_cast<UINT> (verticalWindowSpan);
                             scrollInfo.nPos = static_cast<int> (startOfWindow);
 
@@ -2596,7 +2596,7 @@ namespace   Stroika {
                         Memory::SmallStackBuffer<Led_tChar> buf (len);
 #if     qWideCharacters
                         // Assume they want ANSI code page text?
-                        len =   ::MultiByteToWideChar (CP_ACP, 0, lpText, len, buf, len);
+                        len =   static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, len, buf, len));
 #else
                         ::memcpy (buf, lpText, len);
 #endif

@@ -25,6 +25,14 @@ using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 
 
+/**
+ *  @todo   Must fix to properly support 32-bit and 64-bit safety
+ */
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (4 : 4244)
+#pragma warning (4 : 4267)
+#endif
+
 
 
 

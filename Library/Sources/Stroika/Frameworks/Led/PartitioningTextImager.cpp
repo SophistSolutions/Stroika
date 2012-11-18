@@ -485,11 +485,11 @@ TextDirection   PartitioningTextImager::GetTextDirection (size_t charPosition)  
 Led_Distance    PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
 {
 #if     !qCacheTextMeasurementsForPM || qDebug
-    size_t  referenceValue  =   CalcSegmentSize_REFERENCE (from, to);
+    Led_Distance  referenceValue  =   CalcSegmentSize_REFERENCE (from, to);
 #endif
 
 #if     qCacheTextMeasurementsForPM
-    size_t  value           =   CalcSegmentSize_CACHING (from, to);
+    Led_Distance  value           =   CalcSegmentSize_CACHING (from, to);
     Assert (value == referenceValue);
     return value;
 #else
