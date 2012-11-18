@@ -2619,14 +2619,14 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetSel (WPARAM wParam, LPARAM lParam)
                 {
-                    int iSelStart   =   GetSelectionStart ();
-                    int iSelEnd     =   GetSelectionEnd ();
+                    DWORD iSelStart   =   static_cast<DWORD> (GetSelectionStart ());
+                    DWORD iSelEnd     =   static_cast<DWORD> (GetSelectionEnd ());
 
                     if (wParam != NULL) {
-                        *((int*)wParam) = iSelStart;
+						*reinterpret_cast<DWORD*> (wParam) = iSelStart;
                     }
                     if (lParam != NULL) {
-                        *((int*)lParam) = iSelEnd;
+						*reinterpret_cast<DWORD*> (lParam) = iSelEnd;
                     }
 
                     DWORD dw = (((WORD)iSelStart) << 16) | ((WORD)iSelEnd);

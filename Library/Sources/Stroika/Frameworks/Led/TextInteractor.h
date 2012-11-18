@@ -1275,11 +1275,11 @@ namespace   Stroika {
                         return (*i).first;
                     }
                 }
-                for (typename RANGE_VEC_TYPE::const_iterator j = fRanges.begin (); j != fRanges.end (); ++j) {
+                for (auto j = fRanges.begin (); j != fRanges.end (); ++j) {
                     const RangeElt& re  =   *j;
                     if (re.fInternalCmds.first <= cmdNum and cmdNum <= re.fInternalCmds.second) {
                         size_t                  offset  =   cmdNum - re.fInternalCmds.first;
-                        TARGET_COMMAND_NUMBER   tarCmd  =   re.fExternalCmds.first + offset;
+                        TARGET_COMMAND_NUMBER   tarCmd  =   static_cast<TARGET_COMMAND_NUMBER> (re.fExternalCmds.first + offset);
                         Assert (tarCmd <= re.fExternalCmds.second);
                         return tarCmd;
                     }

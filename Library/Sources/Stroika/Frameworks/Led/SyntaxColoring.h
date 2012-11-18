@@ -87,7 +87,7 @@ namespace   Stroika {
                     KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t) = Led_tStrnCmp);
 
                 public:
-                    nonvirtual  unsigned    MaxKeywordLength () const;
+                    nonvirtual  size_t		MaxKeywordLength () const;
                     nonvirtual  size_t      KeywordLength (const Led_tChar* t, size_t nTChars) const;
 
                 private:
@@ -307,7 +307,7 @@ namespace   Stroika {
                 }
                 fMaxKeywordLength = u;
             }
-            inline  unsigned    TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const
+            inline  size_t    TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const
             {
                 return fMaxKeywordLength;
             }
