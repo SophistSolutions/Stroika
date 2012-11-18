@@ -127,12 +127,12 @@ namespace   {
                 return Containers::CompareResultNormalizeHelper<ptrdiff_t, int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
             }
             virtual int Compare (const Character* rhsStart, const Character* rhsEnd, String::CompareOptions co) const override {
-                Require (co == CompareOptions::eWithCase_CO or co == CompareOptions::eCaseInsensitive_CO);
+                Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
                 Assert (_fStart <= _fEnd);
                 switch (co) {
-                    case    CompareOptions::eWithCase_CO:
+                    case    CompareOptions::eWithCase:
                         return Compare_CS_ (rhsStart, rhsEnd);
-                    case    CompareOptions::eCaseInsensitive_CO:
+                    case    CompareOptions::eCaseInsensitive:
                         return Compare_CI_ (rhsStart, rhsEnd);
                     default:
                         AssertNotReached ();

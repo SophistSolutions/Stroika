@@ -217,17 +217,17 @@ namespace   Stroika {
                     return (true);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase_CO) == 0;
+                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase) == 0;
             }
             inline  bool    operator== (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase_CO) == 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase) == 0;
             }
             inline  bool    operator== (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase_CO) == 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase) == 0;
             }
             inline  bool    operator< (const String& lhs, const String& rhs)
             {
@@ -235,17 +235,17 @@ namespace   Stroika {
                     return (false);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase_CO) < 0;
+                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase) < 0;
             }
             inline  bool    operator< (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase_CO) >= 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase) >= 0;
             }
             inline  bool    operator< (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase_CO) < 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase) < 0;
             }
             inline  bool    operator<= (const String& lhs, const String& rhs)
             {
@@ -253,17 +253,17 @@ namespace   Stroika {
                     return (false);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase_CO) <= 0;
+                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase) <= 0;
             }
             inline  bool    operator<= (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase_CO) > 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase) > 0;
             }
             inline  bool    operator<= (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase_CO) <= 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase) <= 0;
             }
             inline  bool    operator!= (const String& lhs, const String& rhs)
             {

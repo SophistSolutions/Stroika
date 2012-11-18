@@ -62,6 +62,9 @@ namespace   Stroika {
                     eString,
                     eArray,
                     eMap,           // string to variant
+
+					eSTART = eNull,
+					eEND = eMap+1,
                 };
 
             public:

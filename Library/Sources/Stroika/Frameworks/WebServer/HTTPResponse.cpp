@@ -70,7 +70,7 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
     , fContentType_ (ct)
     , fCodePage_ (Characters::kCodePage_UTF8)
     , fBytes_ ()
-    , fContentSizePolicy_ (ContentSizePolicy::eAutoCompute_CSP)
+    , fContentSizePolicy_ (ContentSizePolicy::eAutoCompute)
     , fContentSize_ (0)
 {
     AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server");
@@ -83,13 +83,13 @@ HTTPResponse::~HTTPResponse ()
 
 void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
 {
-    Require (csp == ContentSizePolicy::eAutoCompute_CSP or csp == ContentSizePolicy::eNone_CSP);
+    Require (csp == ContentSizePolicy::eAutoCompute or csp == ContentSizePolicy::eNone);
     fContentSizePolicy_ = csp;
 }
 
 void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 {
-    Require (csp == ContentSizePolicy::eExact_CSP);
+    Require (csp == ContentSizePolicy::eExact);
     Require (fState_ == State::eInProgress);
     fContentSizePolicy_ = csp;
     fContentSize_ = size;
@@ -148,8 +148,8 @@ map<String, String>  HTTPResponse::GetEffectiveHeaders () const
 {
     map<String, String>  tmp =   GetSpecialHeaders ();
     switch (GetContentSizePolicy ()) {
-        case    ContentSizePolicy::eAutoCompute_CSP:
-        case    ContentSizePolicy::eExact_CSP: {
+        case    ContentSizePolicy::eAutoCompute:
+        case    ContentSizePolicy::eExact: {
                 wostringstream  buf;
                 buf << fContentSize_;
                 tmp.insert (map<String, String>::value_type (IO::Network::HTTP::HeaderName::kContentLength, buf.str ()));
@@ -241,12 +241,12 @@ void    HTTPResponse::Redirect (const String& url)
 void    HTTPResponse::write (const Byte* s, const Byte* e)
 {
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
-    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute_CSP));
+    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
     Require (s <= e);
     if (s < e) {
         Containers::ReserveSpeedTweekAddN (fBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
         fBytes_.insert (fBytes_.end (), s, e);
-        if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute_CSP) {
+        if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
             // Because for autocompute - illegal to call flush and then write
             fContentSize_ = fBytes_.size ();
         }
@@ -256,14 +256,14 @@ void    HTTPResponse::write (const Byte* s, const Byte* e)
 void    HTTPResponse::write (const wchar_t* s, const wchar_t* e)
 {
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
-    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute_CSP));
+    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
     Require (s <= e);
     if (s < e) {
         wstring tmp = wstring (s, e);
         string cpStr = Characters::WideStringToNarrow (tmp, fCodePage_);
         if (not cpStr.empty ()) {
             fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (cpStr.c_str ()), reinterpret_cast<const Byte*> (cpStr.c_str () + cpStr.length ()));
-            if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute_CSP) {
+            if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
                 // Because for autocompute - illegal to call flush and then write
                 fContentSize_ = fBytes_.size ();
             }

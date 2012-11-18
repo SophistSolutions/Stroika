@@ -25,7 +25,7 @@ namespace   Stroika {
             }
             inline  SeekOffsetType    Seekable::Seek (SignedSeekOffsetType offset)
             {
-                return _Seek (Whence::FromStart_W, offset);
+                return _Seek (Whence::eFromStart, offset);
             }
             inline  SeekOffsetType    Seekable::Seek (Whence whence, SignedSeekOffsetType offset)
             {

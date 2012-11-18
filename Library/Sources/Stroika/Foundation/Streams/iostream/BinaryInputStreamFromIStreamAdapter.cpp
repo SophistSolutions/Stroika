@@ -51,13 +51,13 @@ protected:
 
     virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
         switch (whence) {
-            case    Whence::FromStart_W:
+            case    Whence::eFromStart:
                 fOriginalStream_.seekg (offset, ios::beg);
                 break;
-            case    Whence::FromCurrent_W:
+            case    Whence::eFromCurrent:
                 fOriginalStream_.seekg (offset, ios::cur);
                 break;
-            case    Whence::FromEnd_W:
+            case    Whence::eFromEnd:
                 fOriginalStream_.seekg (offset, ios::end);
                 break;
         }

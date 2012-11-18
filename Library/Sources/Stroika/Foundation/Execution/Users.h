@@ -17,10 +17,10 @@ namespace   Stroika {
         namespace   Execution {
 
 enum class  UserNameFormat : uint8_t {
-                ePrettyName_UNF,
-                eDEFAULT_UNF = ePrettyName_UNF,
+                ePrettyName,
+                eDEFAULT = ePrettyName,
             };
-            Characters::String  GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT_UNF);
+            Characters::String  GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
 
         }
     }

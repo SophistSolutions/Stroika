@@ -64,6 +64,10 @@ enum class  DayOfWeek : uint8_t {
                 eSunday = 7,
                 eFirstDayOfWeek = eMonday,
                 eLastDayOfWeek = eSunday,
+
+				// Can do for (i = eSTART; i != eEND; i = Inc (i));
+				eSTART = eFirstDayOfWeek,
+				eEND = eLastDayOfWeek+1,
             };
 
 
@@ -84,14 +88,26 @@ enum class  MonthOfYear : uint8_t {
                 eDecember = 12,
                 eFirstMonthOfYear = eJanuary,
                 eLastMonthOfYear = eDecember,
+				
+				// Can do for (i = eSTART; i != eEND; i = Inc (i));
+				eSTART = eFirstMonthOfYear,
+				eEND = eLastMonthOfYear + 1,
             };
 
 
 
 enum  class     DayOfMonth : uint8_t {
                 eEmptyDayOfMonth = 0,       // only zero if date empty
+				e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
+				e11 = 11, e12, e13, e14, e15, e16, e17, e18, e19, e20,
+				e21 = 21, e22, e23, e24, e25, e26, e27, e28, e29, e30,
+				e31,
                 eFirstDayOfMonth = 1,
                 eLastDayOfMonth = 31,
+				
+				// Can do for (i = eSTART; i != eEND; i = Inc (i));
+				eSTART = eFirstDayOfMonth,
+				eEND = eLastDayOfMonth + 1,
             };
 
 
@@ -102,10 +118,14 @@ enum class  DayOfYear : uint16_t {
             };
 
 
-enum class Year : int {
+enum class Year : short {
                 eEmptyYear = SHRT_MIN,
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
-                eLastfYear = SHRT_MAX,
+                eLastfYear = SHRT_MAX-1,
+				
+				// Can do for (i = eSTART; i != eEND; i = Inc (i));
+				eSTART = eFirstYear,
+				eEND = eLastfYear + 1,
             };
 
 

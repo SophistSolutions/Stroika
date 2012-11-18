@@ -29,8 +29,8 @@
  *
  *      @todo   Consider adding GetLength() - as an alias for:
  *                  oldOffset o = GetOffset();
- *                  l =  Seek (FromEnd_W, 0);
- *                  Seek (FromStart_W, o);
+ *                  l =  Seek (eFromEnd, 0);
+ *                  Seek (eFromStart, o);
  *                  return l;
  *              The reason to add this - as a virtual function - is that it can be more efficient and
  *              semantically pure (multithreading). Do here - not in Seekable - cuz only sensible for

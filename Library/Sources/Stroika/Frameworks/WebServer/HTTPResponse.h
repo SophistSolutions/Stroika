@@ -33,7 +33,7 @@
  *      (o)     Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
  *              usage.
  *
- *      (o)     eExact_CSP is UNTESTED, and should have CHECKING code - so if a user writes a differnt amount, we detect and assert out.
+ *      (o)     eExact is UNTESTED, and should have CHECKING code - so if a user writes a differnt amount, we detect and assert out.
  *              But that can be deferered because it probably works fine for the the case where its used properly.
  */
 
@@ -100,9 +100,9 @@ namespace   Stroika {
 
             public:
             enum class ContentSizePolicy : uint8_t {
-                    eAutoCompute_CSP,
-                    eExact_CSP,
-                    eNone_CSP
+                    eAutoCompute,
+                    eExact,
+                    eNone
                 };
                 nonvirtual  ContentSizePolicy   GetContentSizePolicy () const;
                 /*

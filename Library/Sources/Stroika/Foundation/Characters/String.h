@@ -247,8 +247,8 @@ namespace   Stroika {
 
             public:
             enum class CompareOptions : uint8_t {
-                    eWithCase_CO,
-                    eCaseInsensitive_CO,
+                    eWithCase,
+                    eCaseInsensitive,
                 };
 
             public:
@@ -317,7 +317,7 @@ namespace   Stroika {
                  *  Details on the regular expression language/format can be found at:
                  *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
                  */
-                nonvirtual  bool    Match (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase_CO) const;
+                nonvirtual  bool    Match (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /*
@@ -331,8 +331,8 @@ namespace   Stroika {
 
                  */
                 // 2 overloads - wtih string - its a literal search, with regexp it does regexp search
-                nonvirtual  vector<pair<size_t, size_t>>  Search (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase_CO) const;
-                nonvirtual  vector<pair<size_t, size_t>>  Search (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase_CO) const;
+                nonvirtual  vector<pair<size_t, size_t>>  Search (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  vector<pair<size_t, size_t>>  Search (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /*
@@ -341,8 +341,8 @@ namespace   Stroika {
                 * See regex_replace () for definition of the regEx language
                 *       TODO: GIVE EXAMPLES
                  */
-                nonvirtual  vector<String>  Find (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase_CO) const;
-                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase_CO) const;
+                nonvirtual  vector<String>  Find (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /*
@@ -353,8 +353,8 @@ namespace   Stroika {
                 * See regex_replace () for definition of the regEx language
                 *       TODO: GIVE EXAMPLES
                  */
-                nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase_CO) const;
-                nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase_CO) const;
+                nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
 #if     !qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported

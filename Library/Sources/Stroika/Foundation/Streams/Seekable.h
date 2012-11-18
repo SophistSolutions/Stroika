@@ -22,9 +22,9 @@ namespace   Stroika {
              *  or from the current position)
              */
 enum class Whence : uint8_t {
-                FromStart_W,
-                FromCurrent_W,
-                FromEnd_W,
+                eFromStart,
+                eFromCurrent,
+                eFromEnd,
             };
 
 
@@ -82,7 +82,7 @@ enum class Whence : uint8_t {
 
             public:
                 /**
-                 * GetOffset () returns the currently seeked offset. This is the same as Seek (FromCurrent_W, 0).
+                 * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
                 nonvirtual  SeekOffsetType  GetOffset () const;
             protected:
