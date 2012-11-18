@@ -160,7 +160,7 @@ Main::State Main::GetState () const
 {
 #if     qPlatform_POSIX
     if (GetServicePID () != 0) {
-        return eRunning;
+        return State::eRunning;
     }
 #endif
     return State::eStopped;    // otherwise (esp on other platforms where not implemented) must  be stopped
