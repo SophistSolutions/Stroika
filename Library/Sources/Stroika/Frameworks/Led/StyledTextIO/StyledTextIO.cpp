@@ -460,7 +460,7 @@ size_t  StyledTextIOSrcStream_Memory::read (void* buffer, size_t bytes)
     fCurPtr = curBytePtr + bytes;
     return bytes;
 #else
-    bytes = Led_Min (fBytesLeft, bytes);
+    bytes = min (fBytesLeft, bytes);
     ::memcpy (buffer, fCurPtr, bytes);
     fCurPtr = ((char*)fCurPtr) + bytes;
     fBytesLeft -= bytes;
@@ -548,7 +548,7 @@ void    StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
          */
         long    logEOF  =   0;
         Led_ThrowOSErr (::GetEOF (fFileDescriptor, &logEOF));
-        targetSeekPos = Led_Min (logEOF, targetSeekPos);
+        targetSeekPos = min (logEOF, targetSeekPos);
 #else
         Assert (false); // NYI
 #endif
@@ -571,7 +571,7 @@ size_t  StyledTextIOSrcStream_FileDescriptor::read (void* buffer, size_t bytes)
 NotherRead:
     if (fCurSeekPos >= fBufferWindowStart and fCurSeekPos < fBufferWindowEnd) {
         Assert (bytes > bytesCopiedSoFar);
-        size_t  bytesToCopyNow  =   Led_Min ((bytes - bytesCopiedSoFar), (fBufferWindowEnd - fCurSeekPos));
+        size_t  bytesToCopyNow  =   min ((bytes - bytesCopiedSoFar), (fBufferWindowEnd - fCurSeekPos));
         Assert (bytesToCopyNow > 0);
         Assert (bytesToCopyNow <= bytes);
         memcpy (&((char*)buffer)[bytesCopiedSoFar], &fInputBuffer[fCurSeekPos - fBufferWindowStart], bytesToCopyNow);
@@ -684,7 +684,7 @@ size_t  StyledTextIOWriterSinkStream_Memory::current_offset () const
 void    StyledTextIOWriterSinkStream_Memory::seek_to (size_t to)
 {
     Require (to >= 0);
-    to = Led_Min (to, fBytesUsed);
+    to = min (to, fBytesUsed);
     fCurPtr = fData + to;
 }
 
@@ -728,7 +728,7 @@ void    StyledTextIOWriterSinkStream_Memory::write (const void* buffer, size_t b
     memcpy (fCurPtr, buffer, bytes);
     buffer = ((char*)buffer) + bytes;
     fCurPtr = ((char*)fCurPtr) + bytes;
-    fBytesUsed = Led_Max (size_t (fCurPtr - fData), fBytesUsed);
+    fBytesUsed = max (size_t (fCurPtr - fData), fBytesUsed);
 }
 
 

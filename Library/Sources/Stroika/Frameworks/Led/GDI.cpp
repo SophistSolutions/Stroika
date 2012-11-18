@@ -1695,7 +1695,7 @@ void    Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
             break;
         }
 
-        size_t  charsThisTime   =   Led_Min (charsToGo, kMaxChars);
+        size_t  charsThisTime   =   min (charsToGo, kMaxChars);
         for (size_t tabIndex = 1; tabIndex < charsThisTime; tabIndex++) {
             if (text[i + tabIndex] == '\t') {
                 charLocations[i + tabIndex] = runningCharCount;
@@ -2463,7 +2463,7 @@ Led_SDK_String  Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, co
         if (::sscanf (size.c_str (), "%d", &thisPointSize) == 1) {
             int     pointSizeDiff   =   abs (thisPointSize - (fspPointSize * 10));
             float   scoreAdj        =   (100.0f - (pointSizeDiff / 10.0f)) / 10.0f;
-            scoreAdj = Led_Max (0.0f, scoreAdj);
+            scoreAdj = max (0.0f, scoreAdj);
             thisScore += scoreAdj;
         }
         if (weight == fspWeight) {
@@ -3027,7 +3027,7 @@ Led_Size    Led::Led_GetDIBImageSize (const Led_DIB* dib)
 
     if (IS_WIN30_DIB (dib)) {
         const BITMAPINFOHEADER& hdr =   dib->bmiHeader;
-        return (Led_Size (Led_Abs (Led_ByteSwapFromWindows (hdr.biHeight)), Led_Abs (Led_ByteSwapFromWindows (hdr.biWidth))));
+        return (Led_Size (abs (Led_ByteSwapFromWindows (hdr.biHeight)), abs (Led_ByteSwapFromWindows (hdr.biWidth))));
     }
     else {
         const BITMAPCOREHEADER& hdr =   *(reinterpret_cast<const BITMAPCOREHEADER*> (dib));

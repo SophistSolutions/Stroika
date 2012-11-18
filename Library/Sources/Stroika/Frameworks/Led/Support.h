@@ -556,13 +556,6 @@ public:\
 
 
 
-#define Led_Min(lhs,rhs)    (((lhs)>(rhs))?(rhs):(lhs))
-#define Led_Max(lhs,rhs)    (((lhs)<(rhs))?(rhs):(lhs))
-#define Led_Abs(val)        (((val)<0)?(-(val)):(val))
-
-
-
-
 
 
 

@@ -184,7 +184,7 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& 
             // On Windows - CF_TEXT always GUARANTEED to be NUL-terminated, and the
             // length field is often wrong (rounded up to some chunk size, with garbage
             // text at the end...
-            nTChars = Led_Min (nTChars, Led_tStrlen (buffp));   // do Led_Min in case clip data corrupt
+            nTChars = min (nTChars, Led_tStrlen (buffp));   // do min in case clip data corrupt
         }
 #endif
 
@@ -213,7 +213,7 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& 
 #if     qPlatform_MacOS
         HFSFlavor   flavorData;
         memset (&flavorData, 0, sizeof flavorData);
-        memcpy (&flavorData, fileSpecBuffer, Led_Min (sizeof flavorData, fileSpecBufferLength));
+        memcpy (&flavorData, fileSpecBuffer, min (sizeof flavorData, fileSpecBufferLength));
         const FSSpec*   realFileName        =   &flavorData.fileSpec;
         Led_ClipFormat  suggestedClipFormat =   flavorData.fileType;
 #elif   qPlatform_Windows
@@ -424,7 +424,7 @@ size_t  ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat,
         return 0;
     }
     else {
-        size_t  copyNBytes  =   Led_Min (bufSize, i->second.size ());
+        size_t  copyNBytes  =   min (bufSize, i->second.size ());
         (void)::memcpy (buf, &*(i->second.begin ()), copyNBytes);
         Ensure (copyNBytes <= bufSize);
         return copyNBytes;
@@ -432,7 +432,7 @@ size_t  ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat,
 #else
     Led_ClipboardObjectAcquire clip (clipFormat);
     if (clip.GoodClip ()) {
-        size_t  copyNBytes  =   Led_Min (bufSize, clip.GetDataLength ());
+        size_t  copyNBytes  =   min (bufSize, clip.GetDataLength ());
         (void)::memcpy (buf, clip.GetData (), copyNBytes);
         Ensure (copyNBytes <= bufSize);
         return copyNBytes;
@@ -549,7 +549,7 @@ size_t  ReadWriteMemBufferPackage::ReadFlavorData (Led_ClipFormat clipFormat, si
 {
     for (size_t i = 0; i < fPackages.size (); i++) {
         if (fPackages[i].fFormat == clipFormat) {
-            size_t  copyNBytes  =   Led_Min (bufSize, fPackages[i].fData.size ());
+            size_t  copyNBytes  =   min (bufSize, fPackages[i].fData.size ());
             // Note - this kookie &* stuff is to work around bugs in some STLs - that don't let you convert an iterator to a pointer.- SPR#0847
             memcpy (buf, &*fPackages[i].fData.begin (), copyNBytes);
             Ensure (copyNBytes <= bufSize);

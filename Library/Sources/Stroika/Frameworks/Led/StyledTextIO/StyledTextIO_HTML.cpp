@@ -482,8 +482,8 @@ const size_t        HTMLInfo::kDefaultEntityRefMapTable_Count   =   NEltsOf (HTM
 
 int HTMLInfo::HTMLFontSizeToRealFontSize (int size)
 {
-    size = Led_Min (size, 7);
-    size = Led_Max (size, 1);
+    size = min (size, 7);
+    size = max (size, 1);
     switch (size) {
         case    1:
             return (7);
@@ -1977,8 +1977,8 @@ void    StyledTextIOReader_HTML::EndParaIfOpen ()
 
 void    StyledTextIOReader_HTML::SetHTMLFontSize (int to)
 {
-    fHTMLFontSize = Led_Min (to, 7);
-    fHTMLFontSize = Led_Max (fHTMLFontSize, 1);
+    fHTMLFontSize = min (to, 7);
+    fHTMLFontSize = max (fHTMLFontSize, 1);
     Led_FontSpecification   fsp =   fFontStack.back ();
     fsp.SetPointSize (HTMLInfo::HTMLFontSizeToRealFontSize (fHTMLFontSize));
     fFontStack.back () = fsp;

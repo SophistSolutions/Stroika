@@ -226,7 +226,7 @@ size_t  Led_MFCReaderDAndDFlavorPackage::ReadFlavorData (Led_ClipFormat clipForm
     size_t  sizeCopied  =   0;
     if (hObj != NULL) {
         size_t  realSize    =   ::GlobalSize (hObj);
-        sizeCopied  =   Led_Min (realSize, bufSize);
+        sizeCopied  =   min (realSize, bufSize);
         (void)::memcpy (buf, ::GlobalLock (hObj), sizeCopied);
         ::GlobalUnlock (hObj);
         ::GlobalFree (hObj);

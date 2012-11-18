@@ -746,9 +746,9 @@ Led_Distance    SimpleTextImager::ComputeMaxHScrollPos () const
          */
         Led_Distance    width   =   CalculateLongestRowInWindowPixelWidth ();
         if (GetHScrollPos () != 0) {
-            width = Led_Max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
+            width = max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
         }
-        maxHWidth = Led_Max (width, 1);
+        maxHWidth = max<Led_Distance> (width, 1);
     }
     Led_Distance    wWidth  =   GetWindowRect ().GetWidth ();
     if (maxHWidth > wWidth) {

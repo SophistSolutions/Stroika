@@ -1989,9 +1989,9 @@ Led_Distance    WordProcessor::ComputeMaxHScrollPos () const
         Led_Tablet      tablet              =   tablet_;
         Led_Distance    width   =   tablet->CvtFromTWIPSH (CalculateFarthestRightMargin ());
         if (GetHScrollPos () != 0) {
-            width = Led_Max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
+            width = max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
         }
-        cachedLayoutWidth = Led_Max (width, 1);
+        cachedLayoutWidth = max (width, Led_Distance (1));
     }
     Led_Distance    wWidth  =   GetWindowRect ().GetWidth ();
     if (cachedLayoutWidth > wWidth) {
@@ -3338,7 +3338,7 @@ Led_Distance    WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) c
         Memory::SmallStackBuffer<Led_Distance>  distanceResults (len);
         Led_FontSpecification               nextCharsFontStyle  =   GetStyleInfo (paragraphMarkerPos);
         Led_FontSpecification               useBulletFont       =   GetStaticDefaultFont ();
-        useBulletFont.SetPointSize (Led_Max (14, nextCharsFontStyle.GetPointSize ()));
+        useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
         MeasureSegmentWidth_ (useBulletFont, paragraphMarkerPos, paragraphMarkerPos + len,
                               leader.c_str (), distanceResults
                              );
@@ -3574,7 +3574,7 @@ void    WordProcessor::DrawRowSegments (Led_Tablet tablet, const Led_Rect& curre
                     xxx.SetLeft (xxx.GetLeft () - GetListLeaderLength (rowStart));
                     Led_FontSpecification               nextCharsFontStyle  =   GetStyleInfo (rowStart);
                     Led_FontSpecification               useBulletFont       =   GetStaticDefaultFont ();
-                    useBulletFont.SetPointSize (Led_Max (14, nextCharsFontStyle.GetPointSize ()));
+                    useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
                     Led_Coordinate  baseLine    =   xxx.GetTop () + MeasureSegmentBaseLine (rowStart, rowStart);
                     DrawSegment_ (tablet, useBulletFont,
                                   rowStart, rowStart + listLeader.length (),
@@ -3606,7 +3606,7 @@ void    WordProcessor::DrawRowSegments (Led_Tablet tablet, const Led_Rect& curre
                 const Led_tChar newline =   '\n';
                 Led_FontSpecification   nextCharsFontStyle  =   GetStyleInfo (rowEnd);
                 Led_FontSpecification   useFont             =   GetStaticDefaultFont ();
-                useFont.SetPointSize (Led_Max (14, nextCharsFontStyle.GetPointSize ()));
+                useFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
                 useFont.SetTextColor (Led_Color::kGray);
                 Led_Rect        yyy =   adjustedDrawInto;
                 Led_Distance    segmentWidth        =   CalcSegmentSize (rowStart, rowEnd);
@@ -3835,7 +3835,7 @@ Led_Distance    WordProcessor::MeasureMinSegDescent (size_t from, size_t to) con
             itsBaseline = re.fMarker->MeasureSegmentBaseLine (this, re, reFrom, reTo);
             itsHeight = re.fMarker->MeasureSegmentHeight (this, re, reFrom, reTo);
         }
-        minHeightBelow = Led_Min (minHeightBelow, (itsHeight - itsBaseline));
+        minHeightBelow = min (minHeightBelow, (itsHeight - itsBaseline));
         indexIntoText += reLength;
     }
     return minHeightBelow;
@@ -5128,7 +5128,7 @@ WordProcessorTextIOSrcStream::Table*    WordProcessorTextIOSrcStream::GetTableAt
          *  Make sure we create a TableIOMapper for just the subset of the document selected. For now, this just
          *  applies to ROWS (no support yet for selecting columns).
          */
-        size_t  realCoordEnd    =   Led_Min (maybeTable.fResult->GetEnd (), GetSelEnd ());
+        size_t  realCoordEnd    =   min (maybeTable.fResult->GetEnd (), GetSelEnd ());
         Assert (realCoordStart < realCoordEnd);
         if (fUseTableSelection) {
             size_t  rowSelStart     =   0;
@@ -7279,7 +7279,7 @@ void        Table::PerformLayout ()
              *  But - since we're COMPUTING the appropriate cell HEIGHT - we must add in the top/bottom cell margins.
              */
             rowHeight += defaultCellMargin.top + defaultCellMargin.bottom;
-            rowHeight = Led_Max (rowHeight, 5);     // assure some min height
+            rowHeight = max (rowHeight, Led_Distance (5));     // assure some min height
             fRows[r].fHeight = rowHeight;
             runningHeight += rowHeight;
 
@@ -7922,7 +7922,7 @@ void    WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowR
     // edge of the window. NB: because of this choice, we must 'InvalidateAllCaches' when the
     // WindowRect changes in our SetWindowRect() OVERRIDE.
     if (rhs != nullptr) {
-        *rhs = (Led_Max (GetWindowRect ().GetWidth (), 1));
+        *rhs = (max (Led_Coordinate (GetWindowRect ().GetWidth ()), Led_Coordinate (1)));
     }
 }
 

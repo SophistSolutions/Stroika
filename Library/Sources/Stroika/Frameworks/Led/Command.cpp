@@ -75,15 +75,15 @@ size_t  CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
     const   char    kUndo[] =       "Undo";
     const   char    kReUndo[]   =   "Redo";
     if (CanUndo ()) {
-        bufSize = Led_Min (bufSize, strlen (kUndo));
+        bufSize = min (bufSize, strlen (kUndo));
         memcpy (buf, kUndo, bufSize);
     }
     else if (CanRedo ()) {
-        bufSize = Led_Min (bufSize, strlen (kReUndo));
+        bufSize = min (bufSize, strlen (kReUndo));
         memcpy (buf, kReUndo, bufSize);
     }
     else {
-        bufSize = Led_Min (bufSize, strlen (kCantUndo));
+        bufSize = min (bufSize, strlen (kCantUndo));
         memcpy (buf, kCantUndo, bufSize);
     }
     return bufSize;

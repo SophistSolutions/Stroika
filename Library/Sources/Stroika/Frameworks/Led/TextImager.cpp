@@ -646,7 +646,7 @@ void    TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToSho
         else if (andTryRRR.right > windowRect.right) {
             Led_Coordinate  howFarOffRight  =   andTryRRR.right - windowRect.right;
             hsp += howFarOffRight;  // now the char should be just barely showing.
-            hsp = Led_Min (hsp, maxHScrollPos);
+            hsp = min (hsp, maxHScrollPos);
         }
     }
     Assert (hsp >= 0);
@@ -669,7 +669,7 @@ void    TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToSho
         else if (rrr.GetRight () > windowRect.GetRight ()) {
             Led_Coordinate  howFarOffRight  =   rrr.GetRight () - windowRect.GetRight ();
             hsp += howFarOffRight;  // now the char should be just barely showing.
-            hsp = Led_Min (hsp, maxHScrollPos);
+            hsp = min (hsp, maxHScrollPos);
         }
     }
 
@@ -721,7 +721,7 @@ Led_Distance    TextImager::CalculateLongestRowInWindowPixelWidth () const
     Led_Distance    longestRowWidth =   0;
     for (size_t curOffset = startOfWindow; curOffset < endOfWindow; ) {
         Led_Distance    thisRowWidth    =   CalcSegmentSize (curOffset, GetEndOfRowContainingPosition (curOffset));
-        longestRowWidth = Led_Max (longestRowWidth, thisRowWidth);
+        longestRowWidth = max (longestRowWidth, thisRowWidth);
         {
             size_t  newOffset = GetStartOfNextRowFromRowContainingPosition (curOffset);
             if (newOffset <= curOffset) {
@@ -886,7 +886,7 @@ size_t  TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirec
                                 // try to maintain the same horizontal position across lines
                                 size_t  positionInLine  =   fromPos - GetTextStore ().GetStartOfLine (fromLine);    // ZERO RELATIVE
                                 Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
-                                positionInLine = Led_Min (positionInLine, GetTextStore ().GetLineLength (newLine));     // don't go past end of new line...
+                                positionInLine = min (positionInLine, GetTextStore ().GetLineLength (newLine));     // don't go past end of new line...
 #if     qMultiByteCharacters
                                 // Don't split a mbyte character
                                 Memory::SmallStackBuffer<Led_tChar> buf (positionInLine);
@@ -955,7 +955,7 @@ size_t  TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirec
                                 // try to maintain the same horizontal position across rows
                                 size_t  positionInLine  =   fromPos - GetTextStore ().GetStartOfLine (fromLine);    // ZERO RELATIVE
                                 Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
-                                positionInLine = Led_Min (positionInLine, GetTextStore ().GetLineLength (newLine));         // don't go past end of new line...
+                                positionInLine = min (positionInLine, GetTextStore ().GetLineLength (newLine));         // don't go past end of new line...
                                 return (GetTextStore ().GetStartOfLine (newLine) + positionInLine);
                             }
                         }

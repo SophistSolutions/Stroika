@@ -833,7 +833,7 @@ void    StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* ima
     ::TextSize (9);
     Led_Distance    string2Width    =       ::TextWidth (url, 0, urlStrLen);
 
-    distanceResults[0] += Led_Max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
+    distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
 
 #elif   qPlatform_Windows
     // First add in width of picture
@@ -864,7 +864,7 @@ void    StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* ima
     Led_Win_Obj_Selector    font2Selector (tablet, font2);
     Led_Distance    string2Width    =   dc->GetTextExtent (Led_ANSI2SDKString (url).c_str (), urlStrLen).cx;
 
-    distanceResults[0] += Led_Max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
+    distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
 #endif
 #endif
 }
@@ -884,9 +884,9 @@ Led_Distance    StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextIm
     // but this is good enuf - I believe - LGP 960314
 #if     qPlatform_MacOS
     Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle) sURLPict);
-    return Led_Max (Led_GetMacPictHeight (sURLPict), 36) + 2 * kDefaultEmbeddingMargin.v;
+    return max (Led_GetMacPictHeight (sURLPict), 36) + 2 * kDefaultEmbeddingMargin.v;
 #elif   qPlatform_Windows
-    return Led_Max (Led_GetDIBImageSize (sURLPict).v, 36) + 2 * kDefaultEmbeddingMargin.v;
+    return max (Led_GetDIBImageSize (sURLPict).v, 36) + 2 * kDefaultEmbeddingMargin.v;
 #endif
 #endif
 }
@@ -1945,7 +1945,7 @@ static  PixMap**    MakePixMapFromDIB (const Led_DIB* dib)
         switch (bitCount) {
             case    8: {
                     // we use the same CLUT, so this should be OK
-                    memcpy (dstRow, srcRow, Led_Min (srcRowBytes, dstRowBytes));
+                    memcpy (dstRow, srcRow, min (srcRowBytes, dstRowBytes));
                 }
                 break;
 

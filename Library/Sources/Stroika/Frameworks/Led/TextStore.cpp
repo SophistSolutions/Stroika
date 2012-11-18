@@ -302,7 +302,7 @@ size_t  TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
                 lastReadAtPos = 0;
             }
             Assert (lastReadAtPos >= 0);
-            CopyOut (lastReadAtPos, Led_Min (kBufSize, GetLength ()), charBuf);
+            CopyOut (lastReadAtPos, min (kBufSize, GetLength ()), charBuf);
         }
         Assert (curPos - lastReadAtPos < kBufSize);
         Led_tChar&  thisChar    =   charBuf[curPos - lastReadAtPos];
@@ -353,7 +353,7 @@ size_t  TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
         if (lastReadAtPos == 0 or lastReadAtPos + kBufSize <= curPos) {
             lastReadAtPos = curPos;
             Assert (lastReadAtPos >= 0);
-            CopyOut (lastReadAtPos, Led_Min (kBufSize, GetLength () - (lastReadAtPos)), charBuf);
+            CopyOut (lastReadAtPos, min (kBufSize, GetLength () - (lastReadAtPos)), charBuf);
         }
         Assert (curPos - lastReadAtPos < kBufSize);
         Led_tChar&  thisChar    =   charBuf[curPos - lastReadAtPos];
@@ -399,7 +399,7 @@ size_t  TextStore::FindPreviousCharacter (size_t beforePos) const
 
             Assert (bytesReadOutSoFar < beforePos);
             bytesReadOutSoFar += chunkSize;
-            bytesReadOutSoFar = Led_Min (bytesReadOutSoFar, beforePos - 1);     // don't read more than there is!!!
+            bytesReadOutSoFar = min (bytesReadOutSoFar, beforePos - 1);     // don't read more than there is!!!
             Assert (bytesReadOutSoFar > 0);
             if (bytesReadOutSoFar > sizeof (_stackBuf_)) {
                 if (buf != _stackBuf_) {

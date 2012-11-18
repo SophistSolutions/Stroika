@@ -176,7 +176,7 @@ struct  PortableStyleRunData_Version5 {
     }
     static  unsigned char   RecordLenFromNameLen (unsigned char len) {
         size_t  xtra    =   offsetof (PortableStyleRunData_Version5, fFontName);
-        return (unsigned char) Led_Min (xtra + size_t (len), 256);
+        return (unsigned char) min (xtra + size_t (len), size_t (256));
     }
 };
 inline  void    _DO_ALIGN_ASSERTS_Version5_ ()
@@ -295,7 +295,7 @@ struct  PortableStyleRunData_Version6 {
     }
     static  unsigned char   RecordLenFromNameLen (unsigned char len) {
         size_t  xtra    =   offsetof (PortableStyleRunData_Version6, fFontName);
-        return (unsigned char) Led_Min (xtra + size_t (len), 256);
+        return (unsigned char) min (xtra + size_t (len), size_t (256));
     }
 };
 inline  void    _DO_ALIGN_ASSERTS_Version6_ ()

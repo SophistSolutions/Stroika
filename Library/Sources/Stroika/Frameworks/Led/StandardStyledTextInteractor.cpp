@@ -753,7 +753,7 @@ StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (
     Require (textStyleDatabase.get () != nullptr);
     Require (fSelStart >= 0);
     Require (fSelEnd >= 0);
-    fSelEnd = Led_Min (fSelEnd, textStore->GetEnd ());
+    fSelEnd = min (fSelEnd, textStore->GetEnd ());
 }
 
 StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart, size_t selectionEnd):
@@ -769,13 +769,13 @@ StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (StandardStyledText
     Require (fStyleRunDatabase.get () != nullptr);
     Require (fSelStart >= 0);
     Require (fSelEnd >= 0);
-    fSelEnd = Led_Min (fSelEnd, fTextStore->GetEnd ());
+    fSelEnd = min (fSelEnd, fTextStore->GetEnd ());
 }
 
 size_t  StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t maxTChars)
 {
     AssertNotNull (intoBuf);
-    size_t  bytesToRead =   Led_Min (maxTChars, fSelEnd - fCurOffset);
+    size_t  bytesToRead =   min (maxTChars, fSelEnd - fCurOffset);
     Assert (bytesToRead <= maxTChars);
     fTextStore->CopyOut (fCurOffset, bytesToRead, intoBuf);
     fCurOffset += bytesToRead;
@@ -791,7 +791,7 @@ void    StandardStyledTextIOSrcStream::seek_to (size_t to)
 {
     Require (to >= 0);
     to += fSelStart;
-    to = Led_Min (to, fSelEnd);
+    to = min (to, fSelEnd);
     fCurOffset = to;
     Ensure (fCurOffset >= fSelStart);
     Ensure (fCurOffset <= fSelEnd);

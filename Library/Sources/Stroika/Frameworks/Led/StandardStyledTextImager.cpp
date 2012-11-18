@@ -453,7 +453,7 @@ void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollo
         InfoSummaryRecord   isr =   styleInfos[i];
         size_t  length  =   isr.fLength;
         Assert (nTCharsFollowing >= lengthUsedSoFar);
-        length = Led_Min (nTCharsFollowing - lengthUsedSoFar, length);
+        length = min (nTCharsFollowing - lengthUsedSoFar, length);
         SetStyleInfo (setAt, length, Led_IncrementalFontSpecification (isr));
         setAt += length;
         lengthUsedSoFar += length;

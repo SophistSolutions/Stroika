@@ -799,7 +799,7 @@ void    ChunkedArrayTextStore::CopyOut (size_t from, size_t count, Led_tChar* bu
         // better not be copying any bytes then!!!
         TextChunk*  t   =   fTextChunks[chunkIdx.fChunk];
         AssertNotNull (t);
-        size_t  copyFromThisGuy =   Led_Min (bytesToGo, t->GetLength () - (chunkIdx.fOffset));
+        size_t  copyFromThisGuy =   min (bytesToGo, t->GetLength () - (chunkIdx.fOffset));
         t->CopyOut (chunkIdx.fOffset, copyFromThisGuy, &buffer[count - bytesToGo]);
 
         // For next time through the loop
@@ -954,7 +954,7 @@ void    ChunkedArrayTextStore::InsertAfter_ (const Led_tChar* what, size_t howMa
              *  and otherwise - keep building new chunks, and inserting them.
              */
             size_t  bytesToGo       =   howMany;
-            size_t  copyFromThisGuy =   Led_Min (bytesToGo, t->GetBytesCanAccommodate ());
+            size_t  copyFromThisGuy =   min (bytesToGo, t->GetBytesCanAccommodate ());
             t->InsertAfter (&what[bytesXfered], copyFromThisGuy, chunkIdx.fOffset);
 
             bytesToGo -= copyFromThisGuy;
@@ -978,7 +978,7 @@ void    ChunkedArrayTextStore::InsertAfter_ (const Led_tChar* what, size_t howMa
                     // we'll have to create another...
                     t = AtomicAddChunk (chunkIdx.fChunk);
                     AssertNotNull (t);
-                    copyFromThisGuy =   Led_Min (bytesToGo, t->GetBytesCanAccommodate ());
+                    copyFromThisGuy =   min (bytesToGo, t->GetBytesCanAccommodate ());
                     t->InsertAfter (&what[bytesXfered], copyFromThisGuy, 0);
                     bytesToGo -= copyFromThisGuy;
                     bytesXfered += copyFromThisGuy;
@@ -1010,7 +1010,7 @@ void    ChunkedArrayTextStore::DeleteAfter_ (size_t howMany, size_t after)
         AssertNotNull (t);
 
         // Now try to insert what we can into this section...
-        size_t  deleteFromThisGuy   =   Led_Min (bytesToGo, t->GetLength () - (chunkIdx.fOffset));
+        size_t  deleteFromThisGuy   =   min (bytesToGo, t->GetLength () - (chunkIdx.fOffset));
         Assert (deleteFromThisGuy != 0);
         t->DeleteAfter (deleteFromThisGuy, chunkIdx.fOffset);
         bytesToGo -= deleteFromThisGuy;
@@ -1066,7 +1066,7 @@ void    ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t len
 
 #if     qKeepChunkedArrayStatistics
     camoh->fTotalMarkersPresent++;
-    camoh->fPeakTotalMarkersPresent = Led_Max (camoh->fPeakTotalMarkersPresent, camoh->fTotalMarkersPresent);
+    camoh->fPeakTotalMarkersPresent = max (camoh->fPeakTotalMarkersPresent, camoh->fTotalMarkersPresent);
 #endif
     Invariant ();
 }
@@ -1443,7 +1443,7 @@ Marker* ChunkedArrayTextStore::AddHackMarkerHelper_ (Marker* insideMarker, size_
 #if     qKeepChunkedArrayStatistics
         GetAMOH (insideMarker)->fTotalHackMarkersAlloced++;
         GetAMOH (insideMarker)->fTotalHackMarkersPresent++;
-        GetAMOH (insideMarker)->fPeakHackMarkersPresent = Led_Max (GetAMOH (insideMarker)->fPeakHackMarkersPresent, GetAMOH (insideMarker)->fTotalHackMarkersPresent);
+        GetAMOH (insideMarker)->fPeakHackMarkersPresent = max (GetAMOH (insideMarker)->fPeakHackMarkersPresent, GetAMOH (insideMarker)->fTotalHackMarkersPresent);
 #endif
     }
     catch (...) {

@@ -1407,7 +1407,7 @@ namespace   Stroika {
 #else
                                     newPos  =   scrollInfo.nPos;
 #endif
-                                    newPos = Led_Min (newPos, GetLength ());
+                                    newPos = min (newPos, GetLength ());
 
                                     /*
                                      *  Beware about the fact that the verticalWindow size changes as we scroll (since it
@@ -1488,20 +1488,20 @@ namespace   Stroika {
                             break;
 
                         case    SB_LINEDOWN: {
-                                SetHScrollPos (Led_Min (GetHScrollPos () + increment, ComputeMaxHScrollPos ()));
+                                SetHScrollPos (min<Led_Coordinate> (GetHScrollPos () + increment, ComputeMaxHScrollPos ()));
                             }
                             break;
 
                         case    SB_LINEUP: {
                                 if (GetHScrollPos () > 0) {
-                                    SetHScrollPos (Led_Max (0, int (GetHScrollPos ()) - increment));
+                                    SetHScrollPos (max<Led_Coordinate> (0, int (GetHScrollPos ()) - increment));
                                 }
                             }
                             break;
 
                         case    SB_PAGEDOWN: {
                                 const Led_Coordinate    kPixelsAtATime  =   GetWindowRect ().GetWidth () / 2;
-                                SetHScrollPos (Led_Min (GetHScrollPos () + kPixelsAtATime, ComputeMaxHScrollPos ()));
+                                SetHScrollPos (min<Led_Coordinate> (GetHScrollPos () + kPixelsAtATime, ComputeMaxHScrollPos ()));
                             }
                             break;
 
@@ -1552,7 +1552,7 @@ namespace   Stroika {
                                 // things really get recomputed
 #endif
 
-                                SetHScrollPos (Led_Min (newPos, ComputeMaxHScrollPos ()));
+                                SetHScrollPos (min<Led_Coordinate> (newPos, ComputeMaxHScrollPos ()));
                             }
                             break;
 
@@ -2572,7 +2572,7 @@ namespace   Stroika {
                     // Assume they want ANSI code page text?
                     int nChars  =   ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, NULL, NULL);
 #else
-                    size_t  nChars = Led_Min (size_t (cchTextMax) - 1, len2);
+                    size_t  nChars = min (size_t (cchTextMax) - 1, len2);
                     ::memcpy (lpText, buf2, nChars);
 #endif
                     lpText[nChars] = '\0';

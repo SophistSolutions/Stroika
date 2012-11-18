@@ -95,8 +95,8 @@ void    StyleMarkerSummarySink::Append (Marker* m)
     RequireNotNull (m);
     StyleMarker*    styleMarker =   dynamic_cast<StyleMarker*>(m);
     if (styleMarker != nullptr) {
-        size_t  start   =   Led_Max (styleMarker->GetStart (), fFrom);
-        size_t  end     =   Led_Min (styleMarker->GetEnd (), fTo);
+        size_t  start   =   max (styleMarker->GetStart (), fFrom);
+        size_t  end     =   min (styleMarker->GetEnd (), fTo);
 
         /*
          *  Assure the marker were adding will fit neatly.
@@ -498,8 +498,8 @@ Led_Distance    StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) 
             itsBaseline = re.fMarker->MeasureSegmentBaseLine (this, re, reFrom, reTo);
             itsHeight = re.fMarker->MeasureSegmentHeight (this, re, reFrom, reTo);
         }
-        maxHeightAbove = Led_Max (maxHeightAbove, itsBaseline);
-        maxHeightBelow = Led_Max (maxHeightBelow, (itsHeight - itsBaseline));
+        maxHeightAbove = max (maxHeightAbove, itsBaseline);
+        maxHeightBelow = max (maxHeightBelow, (itsHeight - itsBaseline));
         indexIntoText += reLength;
     }
     return maxHeightAbove + maxHeightBelow;
@@ -525,10 +525,10 @@ Led_Distance    StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to
         size_t  reTo        =   reFrom + reLength;
         Assert (indexIntoText <= to - from);
         if (re.fMarker == nullptr) {
-            maxHeight = Led_Max (maxHeight, MeasureSegmentBaseLine_ (GetDefaultFont (), reFrom, reTo));
+            maxHeight = max (maxHeight, MeasureSegmentBaseLine_ (GetDefaultFont (), reFrom, reTo));
         }
         else {
-            maxHeight = Led_Max (maxHeight, re.fMarker->MeasureSegmentBaseLine (this, re, reFrom, reTo));
+            maxHeight = max (maxHeight, re.fMarker->MeasureSegmentBaseLine (this, re, reFrom, reTo));
         }
         indexIntoText += reLength;
     }

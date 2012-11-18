@@ -2216,8 +2216,8 @@ namespace   Stroika {
             */
             inline  const Rect_Base<POINT_TYPE, SIZE_TYPE>&  Rect_Base<POINT_TYPE, SIZE_TYPE>::operator*= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& intersectWith)
             {
-                POINT_TYPE  topLeft     =   Led_Max (GetTopLeft (), intersectWith.GetTopLeft ());
-                POINT_TYPE  botRight    =   Led_Min (GetBotRight (), intersectWith.GetBotRight ());
+                POINT_TYPE  topLeft     =   max (GetTopLeft (), intersectWith.GetTopLeft ());
+                POINT_TYPE  botRight    =   min (GetBotRight (), intersectWith.GetBotRight ());
                 POINT_TYPE  newSize     =   botRight - topLeft;
                 if (newSize >= Led_Point (0, 0)) {
                     *this = THIS_TYPE (topLeft, SIZE_TYPE (newSize));
@@ -3052,7 +3052,7 @@ namespace   Stroika {
             inline  Led_Rect    InsetRect (const Led_Rect& r, int vBy, int hBy)
             {
                 return Led_Rect (r.GetTop () + vBy, r.GetLeft () + hBy,
-                                 Led_Max (0, long (r.GetHeight ()) - 2 * vBy), Led_Max (0, long (r.GetWidth ()) - 2 * hBy)
+                                 max (0L, Led_Coordinate (r.GetHeight ()) - 2 * vBy), max (0L, Led_Coordinate (r.GetWidth ()) - 2 * hBy)
                                 );
             }
             /*

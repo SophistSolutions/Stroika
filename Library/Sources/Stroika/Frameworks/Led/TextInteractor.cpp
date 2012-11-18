@@ -1264,10 +1264,10 @@ void    TextInteractor::SetSelection (size_t start, size_t end)
              */
             UpdateMode  useUpdateMode   =   (updateMode == eImmediateUpdate) ? eDelayedUpdate : updateMode;
 
-            size_t  lhsOuter    =   Led_Min (oldSelectionStart, GetSelectionStart ());  // left of ALL 4
-            size_t  rhsOuter    =   Led_Max (oldSelectionEnd, GetSelectionEnd ());      // right of ALL 4
-            size_t  lhsInner    =   Led_Max (oldSelectionStart, GetSelectionStart ());  // the two inner ones - lhsInner could be >=< rhsInner
-            size_t  rhsInner    =   Led_Min (oldSelectionEnd, GetSelectionEnd ());
+            size_t  lhsOuter    =   min (oldSelectionStart, GetSelectionStart ());  // left of ALL 4
+            size_t  rhsOuter    =   max (oldSelectionEnd, GetSelectionEnd ());      // right of ALL 4
+            size_t  lhsInner    =   max (oldSelectionStart, GetSelectionStart ());  // the two inner ones - lhsInner could be >=< rhsInner
+            size_t  rhsInner    =   min (oldSelectionEnd, GetSelectionEnd ());
             Assert (lhsOuter <= rhsOuter);  // See!- left of ALL 4
             Assert (lhsOuter <= lhsInner);
             Assert (lhsOuter <= rhsInner);
@@ -1420,8 +1420,8 @@ bool    TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickC
                     newPos  =   newSelStart;
                 }
                 if (extendSelection) {
-                    newSelStart = Led_Min (newSelStart, GetSelectionStart ());
-                    newSelEnd = Led_Max (newSelEnd, GetSelectionEnd ());
+                    newSelStart = min (newSelStart, GetSelectionStart ());
+                    newSelEnd = max (newSelEnd, GetSelectionEnd ());
                 }
 
                 /*
@@ -1553,15 +1553,15 @@ void    TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t 
     const   int kHScrollIncrementFactor =   4;
     if (newMousePos.h < GetWindowRect ().left) {
         if (GetHScrollPos () > 0) {
-            SetHScrollPos (Led_Max (0, int (GetHScrollPos ()) - increment * kHScrollIncrementFactor));
+            SetHScrollPos (max (0, int (GetHScrollPos ()) - increment * kHScrollIncrementFactor));
         }
     }
     else if (newMousePos.h > GetWindowRect ().right) {
-        SetHScrollPos (Led_Min (static_cast<size_t> (GetHScrollPos () + increment * kHScrollIncrementFactor), ComputeMaxHScrollPos ()));
+        SetHScrollPos (min (static_cast<Led_Coordinate> (GetHScrollPos () + increment * kHScrollIncrementFactor), static_cast<Led_Coordinate> (ComputeMaxHScrollPos ())));
     }
 
-    size_t  newSelStart =   Led_Min (rhsPos, dragAnchor);
-    size_t  newSelEnd   =   Led_Max (rhsPos, dragAnchor);
+    size_t  newSelStart =   min (rhsPos, dragAnchor);
+    size_t  newSelEnd   =   max (rhsPos, dragAnchor);
     WhileTrackingConstrainSelection (&newSelStart, &newSelEnd);
     SetSelection (newSelStart, newSelEnd, eImmediateUpdate);
 

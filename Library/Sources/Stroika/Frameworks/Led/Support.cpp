@@ -289,7 +289,7 @@ float   Led::Led_GetTickCount ()
     double  resultTime      =   (timeOfLastEvent + (curTime - sLastEventReferenceTime));
 
     // avoid timewarp
-    resultTime = Led_Max (resultTime, sLastTickCountReturned);
+    resultTime = max (resultTime, sLastTickCountReturned);
     sLastTickCountReturned = resultTime;
     return resultTime;
 #endif

@@ -542,7 +542,7 @@ namespace   Stroika {
                             fTextStore.SetMarkerEnd (m, from);
 
                             size_t                  lenLeftToFixup  =   itsOldEnd - from;
-                            size_t                  ourNewLen       =   Led_Min (lenLeftToFixup, (to - from));
+                            size_t                  ourNewLen       =   min (lenLeftToFixup, (to - from));
                             MARKER* newMarker   =   new MARKER (fsp);
                             fTextStore.AddMarker (newMarker, from, ourNewLen, this);
 

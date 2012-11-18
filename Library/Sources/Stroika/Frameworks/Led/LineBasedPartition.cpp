@@ -74,8 +74,8 @@ void    LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateI
         *   we do splits - we lose the ability to process the rest of the insertion, and
         *   there could be multiple newlines inserted.
         */
-        size_t  startOfInsert   =   Led_Max (updateInfo.fReplaceFrom, pm->GetStart ());
-        size_t  endOfInsert     =   Led_Min (updateInfo.GetResultingRHS (), pm->GetEnd ());
+        size_t  startOfInsert   =   max (updateInfo.fReplaceFrom, pm->GetStart ());
+        size_t  endOfInsert     =   min (updateInfo.GetResultingRHS (), pm->GetEnd ());
         for (size_t i = endOfInsert; i > startOfInsert ; i--) {
             CheckForSplits (pm, updateInfo, i);
         }
