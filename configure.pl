@@ -14,6 +14,11 @@ use constant false => 0;
 use constant true  => 1;
 
 
+#### TODO!!!
+####		NOTE - in process of rewrite so we EMIT xml config file
+####		in GenerateConfiguration.pl, and then use ApplyConfiguration.pl
+####		to create Intermeidate directoreis and create makefiles etc.
+####		THEN - configure.pl becomes a trivial wrapper on the two...
 
 
 
