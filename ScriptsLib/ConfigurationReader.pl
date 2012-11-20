@@ -92,6 +92,14 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<ENABLE_TRACE2FILE>");
+		if (defined $pps) {
+			$configuration {'ENABLE_TRACE2FILE'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<ENABLE_ASSERTIONS>");
+		if (defined $pps) {
+			$configuration {'ENABLE_ASSERTIONS'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
 		if (defined $pps) {
 			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;

@@ -18,6 +18,7 @@ my $target			=	"";
 
 my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
 
+my $forceWriteConfig	=	true;
 
 
 
@@ -49,6 +50,7 @@ sub	DoHelp_
 {
 	print("Usage:\n");
 	print("	GenerateConfiguration.pl OPTIONS where options can be:\n");
+	print("	    --only-if-unconfigured       /* Opposite of --force - only rebuilds the configfiles if absent */\n");
 	print("	    --default-for-platform       /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
 	print("	    --platform {PLATFORM}        /* specifies the directory under Builds/Intermediate Files to create */\n");
 	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
@@ -184,58 +186,61 @@ sub	ParseCommandLine_Remaining_
 {
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
-		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
+		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
+			$forceWriteConfig = false;
+		}
+		elsif (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraCDefines[@useExtraCDefines] = $var;
 		}
-		if (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
+		elsif (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
 		}
-		if ((lc ($var) eq "-enable-assertions") or (lc ($var) eq "--enable-assertions")) {
+		elsif ((lc ($var) eq "-enable-assertions") or (lc ($var) eq "--enable-assertions")) {
 			$ENABLE_ASSERTIONS = 1;
 		}
-		if ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
+		elsif ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
 			$ENABLE_ASSERTIONS = 0;
 		}
-		if ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
+		elsif ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
 			$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 		}
-		if ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
+		elsif ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
 			$ENABLE_LIBCURL = 1;
 		}
-		if ((lc ($var) eq "-no-has-libcurl") or (lc ($var) eq "--no-has-libcurl")) {
+		elsif ((lc ($var) eq "-no-has-libcurl") or (lc ($var) eq "--no-has-libcurl")) {
 			$ENABLE_LIBCURL = 0;
 		}
-		if ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
+		elsif ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
 			$ENABLE_WINHTTP = 1;
 		}
-		if ((lc ($var) eq "-no-has-winhttp") or (lc ($var) eq "--no-has-winhttp")) {
+		elsif ((lc ($var) eq "-no-has-winhttp") or (lc ($var) eq "--no-has-winhttp")) {
 			$ENABLE_WINHTTP = 0;
 		}
-		if ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
+		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
 			$ENABLE_TRACE2FILE = 1;
 		}
-		if ((lc ($var) eq "-disable-trace2file") or (lc ($var) eq "--disable-trace2file")) {
+		elsif ((lc ($var) eq "-disable-trace2file") or (lc ($var) eq "--disable-trace2file")) {
 			$ENABLE_TRACE2FILE = 0;
 		}
-		if ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
+		elsif ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
 			$STATIC_LINK_GCCRUNTIME = 1;
 		}
-		if ((lc ($var) eq "-disable-static-link-gccruntime") or (lc ($var) eq "--disable-static-link-gccruntime")) {
+		elsif ((lc ($var) eq "-disable-static-link-gccruntime") or (lc ($var) eq "--disable-static-link-gccruntime")) {
 			$STATIC_LINK_GCCRUNTIME = 0;
 		}
-		if ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
+		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
 			$i++;
 			$var = $ARGV[$i];
 			$COPTIMIZE_FLAGS = $var;
 		}
-		if ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
+		elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
 			SetDefaultForPlatform_ ();
 		}
-		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
+		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
 		}
 	}
@@ -250,6 +255,17 @@ sub	CHECK_OPTIONS_
 
 sub	ParseCommandLine_
 {
+	if (false) {
+		# Helpful to debug scripts...
+		print "Entering GenerateConfiguration.pl (";
+		for ($i = 0; $i <= $#ARGV; $i++) {
+			my $var = $ARGV[$i];
+			print ($var);
+			print (" ");
+		}
+		print (")\n");
+	}
+
 	SetInitialDefaults_ ();
 	
 	ParseCommandLine_Platform_ ();
@@ -326,6 +342,12 @@ sub	WriteConfigFile_
 
 mkdir ($intermediateFiles);
 
-print("Writing \"$masterXMLConfigFile\"...\n");
-WriteConfigFile_ ();
+if ($forceWriteConfig) {
+	print("Forcing recreate of \"$masterXMLConfigFile\"...\n");
+}
+
+if (not (-e $masterXMLConfigFile) or $forceWriteConfig) {
+	print("Writing \"$masterXMLConfigFile\"...\n");
+	WriteConfigFile_ ();
+}
 

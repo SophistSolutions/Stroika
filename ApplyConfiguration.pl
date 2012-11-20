@@ -59,7 +59,6 @@ sub	ParseCommandLine_
 		my $var = $ARGV[$i];
 		if (lc ($var) eq "-force" or lc ($var) eq "--force") {
 			$forceRecreate = true;
-			print "Forcing recreate...\n";
 		}
 		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
 			$forceRecreate = false;
@@ -168,7 +167,6 @@ sub mkDirWithLinks3
 
 
 sub MakeUnixDirs {
-print "entering MakeUUNIXDIR\n";
 	if ($forceRecreate) {
 		system ("rm -rf $intermediateFiles/$platform");
 	}
