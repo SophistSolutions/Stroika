@@ -46,7 +46,7 @@ sub	ParseCommandLine_
 
 sub	DoRun_
 {
-	$newArgs = "GenerateConfiguration.pl ";
+	$newArgs = "perl GenerateConfiguration.pl ";
 	foreach $var (@genConfigureArgs)
 	{
 	 $newArgs = $newArgs . " " . $var;
@@ -54,7 +54,7 @@ sub	DoRun_
 	system ($newArgs);
 
 
-	$newArgs = "ApplyConfiguration.pl ";
+	$newArgs = "perl ApplyConfiguration.pl ";
 	foreach $var (@applyConfigureArgs)
 	{
 	 $newArgs = $newArgs . " " . $var;
