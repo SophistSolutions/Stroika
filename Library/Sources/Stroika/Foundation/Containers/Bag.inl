@@ -101,13 +101,13 @@ namespace   Stroika {
                 if (&_GetRep () == &items._GetRep ()) {
                     // Copy - so we don't update this while we are copying from it...
                     Bag<T>  copiedItems =   items;
-                    For (it, copiedItems) {
-                        _GetRep ().Add (it.Current ());
+for (T i : copiedItems) {
+                        _GetRep ().Add (i);
                     }
                 }
                 else {
-                    For (it, items) {
-                        _GetRep ().Add (it.Current ());
+for (T i : items) {
+                        _GetRep ().Add (i);
                     }
                 }
             }
