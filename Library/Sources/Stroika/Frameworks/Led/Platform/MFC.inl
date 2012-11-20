@@ -1481,7 +1481,7 @@ namespace   Stroika {
                     CopyOut (0, nLen, buf);
                     Memory::SmallStackBuffer<Led_tChar> buf2 (2 * nLen);
                     nLen = Led_NLToNative (buf, nLen, buf2, 2 * nLen);
-                    ar.Write (buf2, nLen * sizeof(Led_tChar));
+                    ar.Write (buf2, static_cast<UINT> (nLen * sizeof(Led_tChar)));
 
                     ASSERT_VALID (this);
                 }

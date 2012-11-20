@@ -493,7 +493,7 @@ namespace   Stroika {
                     nonvirtual  void    StartDragAutoscrollTimer ();
                     nonvirtual  void    StopDragAutoscrollTimer ();
                     enum    { eAutoscrolling4DragTimerEventID   =   435 };  // Magic#
-                    UINT    fDragAutoScrollTimerID;                         // zero means no timer
+                    UINT_PTR    fDragAutoScrollTimerID;                     // zero means no timer
 
                 private:
                     struct  LedStartDragAndDropContext {

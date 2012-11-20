@@ -2739,9 +2739,9 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineFromChar (WPARAM wParam, LPARAM /*lParam*/)
                 {
-                    int nIndex =    int (wParam);
+                    ptrdiff_t nIndex =    ptrdiff_t (wParam);
                     if (nIndex == -1) {
-                        nIndex = GetSelectionStart ();
+                        nIndex = static_cast<ptrdiff_t> (GetSelectionStart ());
                     }
                     if (nIndex < 0) {
                         nIndex = 0;
@@ -2802,8 +2802,8 @@ namespace   Stroika {
                     // This code doesn't EXACTLY reproduce the quirks of the SDK Docs for this function
                     // (in particular if nStart == 0, and removing a caret) - but it should be close
                     // enough...
-                    int nStart  =   int (wParam);
-                    int nEnd    =   int (lParam);
+                    ptrdiff_t nStart  =   ptrdiff_t (wParam);
+                    ptrdiff_t nEnd    =   ptrdiff_t (lParam);
                     if (nEnd == -1) {
                         nEnd = GetLength ();
                     }
@@ -2814,14 +2814,12 @@ namespace   Stroika {
                         nEnd = 0;
                     }
                     if (size_t (nEnd) > GetEnd ()) {
-                        nEnd = static_cast<int> (GetEnd ());
+                        nEnd = static_cast<ptrdiff_t> (GetEnd ());
                     }
                     if (nStart > nEnd) {
-                        int tmp =   nStart;
-                        nStart = nEnd;
-                        nEnd = tmp;
+						std::swap (nStart, nEnd);
                     }
-                    SetSelection (static_cast<size_t> (nStart), static_cast<size_t> (nEnd));
+                    SetSelection (static_cast<ptrdiff_t> (nStart), static_cast<ptrdiff_t> (nEnd));
                     return 0;   // result ignored...
                 }
                 template    <typename   BASECLASS>
@@ -3250,7 +3248,7 @@ namespace   Stroika {
                             OnSize_Msg ();
                             break;
                         case WM_CHAR:
-                            OnChar_Msg (wParam, lParam);
+                            OnChar_Msg (static_cast<UINT> (wParam), lParam);
                             break;
 #if     qWideCharacters
                         case WM_UNICHAR:
