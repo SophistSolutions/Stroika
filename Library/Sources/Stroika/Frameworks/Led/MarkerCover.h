@@ -182,7 +182,7 @@ namespace   Stroika {
                     MarkersOfATypeMarkerSink2Vector<Marker> result;
                     fTextStore.CollectAllMarkersInRangeInto_OrSurroundings (0, fTextStore.GetLength () + 1, this, result);
                     vector<Marker*>::const_iterator end =   result.fResult.end ();
-                    for (vector<Marker*>::const_iterator i = result.fResult.begin (); i != end; ++i) {
+                    for (auto i = result.fResult.begin (); i != end; ++i) {
                         fTextStore.RemoveMarker (*i);
                         delete *i;
                     }
@@ -306,7 +306,7 @@ namespace   Stroika {
             {
                 MarkerVector                        markers =   GetInfoMarkers (charAfterPos, nTCharsFollowing);
                 vector<pair<MARKERINFO, size_t> >    result;
-                for (typename MarkerVector::const_iterator i = markers.begin (); i != markers.end (); ++i) {
+                for (auto i = markers.begin (); i != markers.end (); ++i) {
                     // Simply append makerinfo's, but be careful on the endpoints. We have have cut one or both endpoints off slightly
                     if (i == markers.begin ()) {
                         result.push_back (pair<MARKERINFO, size_t> ((*i)->GetInfo (), min ((*i)->GetEnd () - charAfterPos, nTCharsFollowing)));
@@ -392,7 +392,7 @@ namespace   Stroika {
                      */
                     totalStart = charAfterPos;
                     size_t  curPos  =   charAfterPos;
-                    for (typename vector<pair<INCREMENTALMARKERINFO, size_t> >::const_iterator i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
+                    for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
                         size_t  from    =   curPos;
                         size_t  to      =   from;
                         {
@@ -417,7 +417,7 @@ namespace   Stroika {
                 try {
                     {
                         size_t  curPos  =   charAfterPos;
-                        for (typename vector<pair<INCREMENTALMARKERINFO, size_t> >::const_iterator i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
+                        for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
                             size_t  from    =   curPos;
                             size_t  to      =   from;
                             {
@@ -462,7 +462,7 @@ namespace   Stroika {
             {
                 vector<pair<INCREMENTALMARKERINFO, size_t> > tmp;
                 tmp.reserve (infoForMarkers.size ());
-                for (typename vector<pair<MARKERINFO, size_t> >::const_iterator i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
+                for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
                     tmp.push_back (pair<INCREMENTALMARKERINFO, size_t> (INCREMENTALMARKERINFO ((*i).first), (*i).second));
                 }
                 SetInfos (charAfterPos, tmp);
@@ -515,7 +515,7 @@ namespace   Stroika {
 
                 bool    changedAnythingHERE =   false;
                 // iterate through markers, and create an ordered list of the MARKERs which overlap our change
-                for (typename MarkerVector::const_iterator mi = miStart; mi != miEnd; mi++) {
+                for (auto mi = miStart; mi != miEnd; mi++) {
                     MARKER* m   =   *mi;
                     AssertMember (m, MARKER);
 
@@ -703,7 +703,7 @@ namespace   Stroika {
             void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) noexcept {
                 // all effected text is diff if we did a replace or not - if no, then from-to,
                 // else from to from+textInserted (cuz from-to deleted)
-                for (typename MarkerVector::const_iterator i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
+                for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
                     MARKER* m   =   *i;
                     if (m->GetLength () == 0) {
                         fMarkersToBeDeleted.SafeAccumulateMarkerForDeletion (m);
@@ -837,7 +837,7 @@ namespace   Stroika {
                 // Walk through - and see we have a cover, and non-overlapping...
                 Assert (markers.size () > 0);
                 size_t  lastEnd =   0;
-                for (typename MarkerVector::const_iterator i = markers.begin (); i != markers.end (); i++) {
+                for (auto i = markers.begin (); i != markers.end (); i++) {
                     MARKER* m   =   *i;
                     AssertMember (m, MARKER);
                     Assert (m->GetLength () > 0);   // we should eliminate all zero-length markers...

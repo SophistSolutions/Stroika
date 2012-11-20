@@ -150,7 +150,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     {
         // First see if its in the Q
         AutoCriticalSection critSection (fCriticalSection_);
-        for (list<TaskType>::iterator i = fTasks_.begin (); i != fTasks_.end (); ++i) {
+        for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
             if (*i == task) {
                 fTasks_.erase (i);
                 return;
@@ -172,7 +172,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     Thread  thread2Kill;
     {
         AutoCriticalSection critSection (fCriticalSection_);
-        for (vector<Thread>::iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    ct  =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
@@ -193,7 +193,7 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
     {
         // First see if its in the Q
         AutoCriticalSection critSection (fCriticalSection_);
-        for (list<TaskType>::const_iterator i = fTasks_.begin (); i != fTasks_.end (); ++i) {
+        for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
             if (*i == task) {
                 return true;
             }
@@ -207,7 +207,7 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
     Require (task.get () != nullptr);
     {
         AutoCriticalSection critSection (fCriticalSection_);
-        for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    rTask   =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
@@ -243,7 +243,7 @@ vector<ThreadPool::TaskType>    ThreadPool::GetTasks () const
         AutoCriticalSection critSection (fCriticalSection_);
         result.reserve (fTasks_.size () + fThreads_.size ());
         result.insert (result.begin (), fTasks_.begin (), fTasks_.end ());          // copy pending tasks
-        for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
@@ -261,7 +261,7 @@ vector<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
     {
         AutoCriticalSection critSection (fCriticalSection_);
         result.reserve (fThreads_.size ());
-        for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
@@ -280,7 +280,7 @@ size_t  ThreadPool::GetTasksCount () const
         // First see if its in the Q
         AutoCriticalSection critSection (fCriticalSection_);
         count += fTasks_.size ();
-        for (vector<Thread>::const_iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
@@ -303,7 +303,7 @@ void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
             AutoCriticalSection critSection (fCriticalSection_);
             threadsToShutdown = fThreads_;
         }
-        for (vector<Thread>::const_iterator i = threadsToShutdown.begin (); i != threadsToShutdown.end (); ++i) {
+        for (auto i = threadsToShutdown.begin (); i != threadsToShutdown.end (); ++i) {
             i->WaitForDone (endAt - Time::GetTickCount ());
         }
     }
@@ -317,7 +317,7 @@ void    ThreadPool::Abort ()
         // Clear the task Q and then abort each thread
         AutoCriticalSection critSection (fCriticalSection_);
         fTasks_.clear ();
-        for (vector<Thread>::iterator i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             i->Abort ();
         }
     }

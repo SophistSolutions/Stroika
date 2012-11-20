@@ -62,7 +62,7 @@ namespace   Stroika {
             template    <typename CONTAINER>
             bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny)
             {
-                for (typename CONTAINER::const_iterator i = types.begin (); i != types.end (); ++i) {
+                for (auto i = types.begin (); i != types.end (); ++i) {
                     if (i->IsA (type2SeeIfMatchesAny)) {
                         return true;
                     }

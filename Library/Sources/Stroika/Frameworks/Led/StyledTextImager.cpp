@@ -84,7 +84,7 @@ StyleMarkerSummarySink::StyleMarkerSummarySink (size_t from, size_t to, const Te
     }
     typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
     vector<ScriptRunElt>    scriptRuns  =   text.GetScriptRuns ();
-    for (vector<ScriptRunElt>::const_iterator i = scriptRuns.begin (); i != scriptRuns.end (); ++i) {
+    for (auto i = scriptRuns.begin (); i != scriptRuns.end (); ++i) {
         Assert ((*i).fRealEnd <= (to - from));
         SplitIfNeededAt (from + (*i).fRealEnd);
     }
@@ -108,7 +108,7 @@ void    StyleMarkerSummarySink::Append (Marker* m)
          *  Now walk the buckets and fit the new marker into each bucket as appropriate.
          */
         size_t  upTo    =   fFrom;
-        for (vector<RunElement>::iterator i = fBuckets.begin (); i != fBuckets.end (); ++i) {
+        for (auto i = fBuckets.begin (); i != fBuckets.end (); ++i) {
             if (start <= upTo and upTo + (*i).fLength <= end) {
                 CombineElements (&*i, styleMarker);
             }
@@ -130,7 +130,7 @@ void    StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
     Require (markerPos >= fFrom);
     Require (markerPos <= fTo);
     size_t  upTo = fFrom;
-    for (vector<RunElement>::iterator i = fBuckets.begin (); i != fBuckets.end (); ++i) {
+    for (auto i = fBuckets.begin (); i != fBuckets.end (); ++i) {
         size_t  eltStart    =   upTo;
         size_t  eltEnd      =   upTo + (*i).fLength;
         if (markerPos >= eltStart and markerPos <= eltEnd and markerPos != eltStart and markerPos != eltEnd) {
@@ -209,12 +209,12 @@ vector<StyledTextImager::RunElement>    StyledTextImager::StyleMarkerSummarySink
             // sort by virtual start
             sort (scriptRuns.begin (), scriptRuns.end (), TextLayoutBlock::LessThanVirtualStart ());
         }
-        for (vector<ScriptRunElt>::const_iterator i = scriptRuns.begin (); i != scriptRuns.end (); ++i) {
+        for (auto i = scriptRuns.begin (); i != scriptRuns.end (); ++i) {
             // Grab all StyledTextImager::RunElement elements from this run and copy them out
             const ScriptRunElt& se                  =   *i;
             size_t              styleRunStart       =   0;
             size_t              runEltsBucketStart  =   runElements.size ();
-            for (vector<RunElement>::const_iterator j = fBuckets.begin (); j != fBuckets.end (); ++j) {
+            for (auto j = fBuckets.begin (); j != fBuckets.end (); ++j) {
                 size_t  styleRunEnd =   styleRunStart + (*j).fLength;
                 if (se.fRealStart <= styleRunStart and styleRunEnd <= se.fRealEnd) {
                     if (se.fDirection == eLeftToRight) {

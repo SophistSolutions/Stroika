@@ -60,7 +60,7 @@ public:
     }
     virtual     size_t  GetLength () const override {
         size_t  len =   0;
-        for (vector<ParaInfoNSize>::const_iterator i = fSavedInfo.begin (); i != fSavedInfo.end (); ++i) {
+        for (auto i = fSavedInfo.begin (); i != fSavedInfo.end (); ++i) {
             len += (*i).second;
         }
         return len;
@@ -287,7 +287,7 @@ void    ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, size_t nTCh
 
 void    ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t> >& infoForMarkers)
 {
-    for (vector<pair<WordProcessor::IncrementalParagraphInfo, size_t> >::const_iterator i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
+    for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
         if ((*i).first.GetMargins_Valid ()) {
             fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
             break;
@@ -373,7 +373,7 @@ void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector&
      *  If not - then adjust the style runs so they do.
      */
     if (fPartition.get () != nullptr) {
-        for (MarkerVector::const_iterator i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
+        for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
             ParagraphInfoMarker*    m           =   *i;
             AssertNotNull (m);
             size_t                  m_start;        // Use these temporaries as speed tweeks -LGP990310
@@ -469,7 +469,7 @@ void    ParagraphDatabaseRep::Invariant_ () const
         sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
         PartitionMarker*        lastPartitionElt        =   nullptr;
         ParagraphInfoMarker*    lastParagraphInfoMarker =   nullptr;
-        for (MarkerVector::const_iterator i = markers.begin (); i != markers.end (); ++i) {
+        for (auto i = markers.begin (); i != markers.end (); ++i) {
             ParagraphInfoMarker*    m   =   *i;
             Assert (m->GetLength () != 0);
             PartitionMarker*    curPartitionElt =   fPartition->GetPartitionMarkerContainingPosition (m->GetStart ());
@@ -515,7 +515,7 @@ void    WordProcessor::WPIdler::SpendIdleTime ()
         typedef WordProcessor::Table    Table;
         vector<Table*>  tables = fWP->GetTablesInRange (0, fWP->GetEnd ());
         bool            maybeMoreTables =   false;
-        for (vector<Table*>::iterator i = tables.begin (); i != tables.end (); ++i) {
+        for (auto i = tables.begin (); i != tables.end (); ++i) {
             Table*  t   =   *i;
             if (t->fNeedLayout != Table::eDone) {
                 Table::TemporarilySetOwningWP   owningWPSetter (*t, *fWP);
@@ -877,7 +877,7 @@ bool    CheckForCommonParaValue (EXTRACTOR /*INGORED_BUT_HERE_FOR_OVERLOADING*/,
     Assert (v.size () != 0);
     if (v.size () >= 1) {
         T   maybeCommonValue = EXTRACTOR () (v[0].first);
-        for (vector<pair<WordProcessor::ParagraphInfo, size_t> >::const_iterator i = v.begin () + 1; i != v.end (); ++i) {
+        for (auto i = v.begin () + 1; i != v.end (); ++i) {
             if (EXTRACTOR () ((*i).first) != maybeCommonValue) {
                 return false;
             }
@@ -1711,7 +1711,7 @@ void    WordProcessor::SetSelection (size_t start, size_t end)
             vector<Table*>  tables2 =   GetTablesInRange (checkRangeStart2, checkRangeEnd2);
             tables.insert (tables.end (), tables2.begin (), tables2.end ());    // append the vectors
         }
-        for (vector<Table*>::iterator i = tables.begin (); i != tables.end (); ++i) {
+        for (auto i = tables.begin (); i != tables.end (); ++i) {
             Table*  t   =   *i;
             Table::TemporarilySetOwningWP   owningWPSetter (*t, *const_cast<WordProcessor*> (this));
             t->SetCellSelection (0, t->GetRowCount (), 0, t->GetColumnCount ());
@@ -3522,7 +3522,7 @@ void    WordProcessor::DrawBefore (const Led_Rect& subsetToDraw, bool printing)
 
     // Check the current window-display region has no unprocessed tables, and process any if needed
     vector<Table*>  tables = GetTablesInRange (winStart, winEnd);
-    for (vector<Table*>::iterator i = tables.begin (); i != tables.end (); ++i) {
+    for (auto i = tables.begin (); i != tables.end (); ++i) {
         Table*  t   =   *i;
         if (t->fNeedLayout != Table::eDone) {
             Table::TemporarilySetOwningWP   owningWPSetter (*t, *this);
@@ -4882,7 +4882,7 @@ void    WordProcessorTextIOSinkStream::Flush ()
     if (fEndOfBuffer and fIgnoreLastParaAttributes) {
         const vector<Led_tChar>&    t   =   GetCachedText ();
         {
-            for (vector<Led_tChar>::const_reverse_iterator i = t.rbegin (); i != t.rend (); ++i) {
+            for (auto i = t.rbegin (); i != t.rend (); ++i) {
                 if (*i == '\n') {
                     break;
                 }
@@ -4902,7 +4902,7 @@ void    WordProcessorTextIOSinkStream::Flush ()
 #if     qDebug
         {
             size_t  curInsert   =   whereToInsert;
-            for (vector<ParaInfoNSize>::const_iterator i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
+            for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
                 curInsert += (*i).second;
             }
             Assert (curInsert == GetInsertionStart ());
@@ -4942,13 +4942,13 @@ void    WordProcessorTextIOSinkStream::Flush ()
     {
         vector<pair<size_t, size_t> >    hidePairs;
         size_t  curInsert   =   whereToInsert;
-        for (DiscontiguousRun<bool>::const_iterator i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
+        for (auto i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
             if ((*i).fData) {
                 hidePairs.push_back (pair<size_t, size_t> (curInsert, curInsert + (*i).fElementLength));
             }
             curInsert += (*i).fElementLength;
         }
-        for (vector<pair<size_t, size_t> >::reverse_iterator i = hidePairs.rbegin (); i != hidePairs.rend (); ++i) {
+        for (auto i = hidePairs.rbegin (); i != hidePairs.rend (); ++i) {
             fHidableTextDatabase->MakeRegionHidable ((*i).first, (*i).second);
         }
         fHidableTextRuns.clear ();
@@ -5153,7 +5153,7 @@ void    WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_St
         TextStore&                              ts          =   fParagraphDatabase->GetTextStore ();
         MarkersOfATypeMarkerSink2Vector<Table>  tables;
         ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase.get (), tables);
-        for (vector<Table*>::iterator i = tables.fResult.begin (); i != tables.fResult.end (); ++i) {
+        for (auto i = tables.fResult.begin (); i != tables.fResult.end (); ++i) {
             TableIOMapper tiom (**i);
             size_t  rows    =   tiom.GetRows ();
             for (size_t r = 0; r < rows; ++r) {
@@ -5168,7 +5168,7 @@ void    WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_St
                     typedef StyledTextIOWriter::SrcStream::Table::CellInfo  CellInfo;
                     vector<CellInfo>    cellInfos;
                     tiom.GetRowInfo (r, &cellInfos);
-                    for (vector<CellInfo>::const_iterator i = cellInfos.begin (); i != cellInfos.end (); ++i) {
+                    for (auto i = cellInfos.begin (); i != cellInfos.end (); ++i) {
                         colorsUsed->insert ((*i).f_clcbpat);
                     }
                 }
@@ -5410,7 +5410,7 @@ void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t fro
 // must go one forward/back to make sure we get new chars inserted BEFORE a table or just after one
 //  vector<Table*>  tables  =   GetTablesInRange (from, to);
     vector<Table*>  tables  =   GetTablesInRange (ts.FindPreviousCharacter (from), ts.FindNextCharacter (to));
-    for (vector<Table*>::iterator i = tables.begin (); i != tables.end (); ++i) {
+    for (auto i = tables.begin (); i != tables.end (); ++i) {
         Table*  t   =   *i;
         if (t->GetLength () != 0) {
             size_t  tableEnd    =   t->GetEnd ();
@@ -5559,7 +5559,7 @@ void    WordProcessor::WPPartition::Invariant_ () const
      *  Assure that for ALL existing tables, their starts and ends correspond to PM start/ends.
      */
     vector<Table*>  tables  =   GetTablesInRange (0, GetTextStore ().GetLength ());
-    for (vector<Table*>::iterator i = tables.begin (); i != tables.end (); ++i) {
+    for (auto i = tables.begin (); i != tables.end (); ++i) {
         Table*              t   =   *i;
         if (t->GetLength () != 0) {
             PartitionMarker*    pm  =   GetPartitionMarkerContainingPosition (t->GetStart ());
@@ -5861,7 +5861,7 @@ vector<Led_Rect>    Table::GetRowHilightRects () const
          *  Add the hilight rect BEFORE and AFTER (if needed) the table - but leave out the
          *  table rect itself to handle separately.
          */
-        for (vector<Led_Rect>::const_iterator i = hilightRects.begin (); i != hilightRects.end (); ++i) {
+        for (auto i = hilightRects.begin (); i != hilightRects.end (); ++i) {
             if (tableRect != *i) {
                 if (not (*i).IsEmpty ()) {
                     result.push_back (*i);
@@ -5890,7 +5890,7 @@ vector<Led_Rect>    Table::GetRowHilightRects () const
             if (rowSelEnd - rowSelStart == 1 and colSelEnd - colSelStart == 1 and GetIntraCellMode ()) {
                 TemporarilyAllocateCellWithTablet   wp (*const_cast<Table*> (this), rowSelStart, colSelStart);
                 vector<Led_Rect>    cellHilightRegions  =   wp->GetSelectionWindowRects (wp->GetSelectionStart (), wp->GetSelectionEnd ());
-                for (vector<Led_Rect>::const_iterator i = cellHilightRegions.begin (); i != cellHilightRegions.end (); ++i) {
+                for (auto i = cellHilightRegions.begin (); i != cellHilightRegions.end (); ++i) {
                     result.push_back (*i);
                 }
             }
@@ -5914,10 +5914,10 @@ vector<Led_Rect>    Table::GetRowHilightRects () const
 #if     qDebug
     {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
-        for (vector<Led_Rect>::const_iterator orit = result.begin (); orit != result.end (); ++orit) {
+        for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
             Ensure ((*orit).GetHeight () > 0);
-            for (vector<Led_Rect>::const_iterator irit = orit + 1; irit != result.end (); ++irit) {
+            for (auto irit = orit + 1; irit != result.end (); ++irit) {
                 Led_Rect    hr  =   *irit;
                 Ensure (hr.GetWidth () > 0);
                 Ensure (hr.GetHeight () > 0);
@@ -7312,7 +7312,7 @@ void        Table::PerformLayout ()
 
         {
             Led_Distance    totalHeight =   0;
-            for (vector<RowInfo>::const_iterator i = fRows.begin (); i != fRows.end (); ++i) {
+            for (auto i = fRows.begin (); i != fRows.end (); ++i) {
                 totalHeight += (*i).fHeight;
             }
             fTotalHeight = totalHeight + (spacing + border.v) * (fRows.size () + 1);

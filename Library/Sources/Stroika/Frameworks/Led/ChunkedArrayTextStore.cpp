@@ -278,7 +278,7 @@ inline  void    ChunkedArrayMarkerHook::AddToChildList (Marker* marker)
 inline  size_t  ChunkedArrayMarkerHook::CountChildren () const
 {
     size_t  nChildren   =   0;
-    for (Marker* curChild = fFirstSubMarker; curChild != NULL; curChild = OurStuff (curChild)->fNextSubMarker) {
+    for (auto curChild = fFirstSubMarker; curChild != NULL; curChild = OurStuff (curChild)->fNextSubMarker) {
         nChildren++;
     }
     return (nChildren);
@@ -286,7 +286,7 @@ inline  size_t  ChunkedArrayMarkerHook::CountChildren () const
 inline  bool    ChunkedArrayMarkerHook::CountChildrenMoreThan (size_t n) const      // return true iff at least n children
 {
     size_t  nChildren   =   0;
-    for (Marker* curChild = fFirstSubMarker; curChild != NULL; curChild = OurStuff (curChild)->fNextSubMarker) {
+    for (auto curChild = fFirstSubMarker; curChild != NULL; curChild = OurStuff (curChild)->fNextSubMarker) {
         nChildren++;
         if (nChildren >= n) {
             return true;
@@ -552,7 +552,7 @@ RoutineTop:
         // breadth-wise than depth-wise (no recursion/function call) so probably faster to check
         // this way (assuming we get negative answers) even though we visit each node twice (assuming
         // we end up with a yes
-        for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
+        for (auto mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
             ChunkedArrayMarkerHook* misStuff    =   OurStuff (mi);
             Assert (misStuff->fParent == m);
             if (not misStuff->fIsHackMarker) {
@@ -561,7 +561,7 @@ RoutineTop:
             mi = misStuff->fNextSubMarker;
         }
 
-        for (Marker* mi  = OurStuff (m)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
+        for (auto mi  = OurStuff (m)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
             Assert (OurStuff (mi)->fIsHackMarker);
             // Save args, then push new args
             stack.GrowToSize (stackDepth + 1);
@@ -591,7 +591,7 @@ public:
         Marker* parent  =   OurStuff (m)->fParent;
         AssertNotNull (parent);
         Marker* prevMarker  =   NULL;
-        for (Marker* mi = OurStuff (parent)->fFirstSubMarker; mi != NULL; (prevMarker = mi), (mi = OurStuff (mi)->fNextSubMarker)) {
+        for (auto mi = OurStuff (parent)->fFirstSubMarker; mi != NULL; (prevMarker = mi), (mi = OurStuff (mi)->fNextSubMarker)) {
             Assert (OurStuff (mi)->fParent == parent);
             if (mi == m) {
                 if (prevMarker == NULL) {
@@ -1709,7 +1709,7 @@ ChunkedArrayTextStore::ChunkAndOffset   ChunkedArrayTextStore::FindChunkIndex_ (
 
 void    ChunkedArrayTextStore::AdjustMarkersForInsertAfter (size_t after, size_t howMany)
 {
-    for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
+    for (auto i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
         ChunkedArrayMarkerOwnerHook*    camoh   =   dynamic_cast<ChunkedArrayMarkerOwnerHook*> ((*i)->fTextStoreHook);
         AssertNotNull (camoh);
         AdjustMarkersForInsertAfter1 (after, howMany, &camoh->fRootMarker);
@@ -1775,7 +1775,7 @@ AfterCallPoint:
 
 void    ChunkedArrayTextStore::AdjustMarkersForDeleteAfter (size_t after, size_t howMany)
 {
-    for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
+    for (auto i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
         ChunkedArrayMarkerOwnerHook*    camoh   =   dynamic_cast<ChunkedArrayMarkerOwnerHook*> ((*i)->fTextStoreHook);
         AssertNotNull (camoh);
         AdjustMarkersForDeleteAfter1 (after, howMany, &camoh->fRootMarker);
@@ -1911,7 +1911,7 @@ AfterCallPoint:
 void    ChunkedArrayTextStore::Invariant_ () const
 {
     TextStore::Invariant_ ();
-    for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
+    for (auto i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
         ChunkedArrayMarkerOwnerHook*    camoh   =   dynamic_cast<ChunkedArrayMarkerOwnerHook*> ((*i)->fTextStoreHook);
         AssertNotNull (camoh);
         WalkSubTreeAndCheckInvariants (&camoh->fRootMarker);

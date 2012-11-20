@@ -1048,7 +1048,7 @@ void    SinkStreamDestination::SetCellX (Led_TWIPS cellx)
          *  The cellx value specifies the ENDPOINT of the cell, and we prefer to keep track of the WIDTH of each cell.
          */
         Led_TWIPS   sub =   Led_TWIPS (0);
-        for (vector<CellInfo>::const_iterator i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
+        for (auto i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
             sub += (*i).f_cellx;
         }
         fNextCellInfo.f_cellx = cellx - sub;
@@ -1133,7 +1133,7 @@ void    SinkStreamDestination::DoStartRow ()
     fSinkStream.StartTableRow ();
     {
         vector<Led_TWIPS>   cellWidths;
-        for (vector<CellInfo>::const_iterator i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
+        for (auto i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
             const Led_TWIPS kMinWidth   =   Led_TWIPS (0);
             Led_TWIPS   thisCellW   =   (*i).f_cellx;
             if (i == fThisRow.fCellInfosForThisRow.begin ()) {
@@ -3136,7 +3136,7 @@ bool    StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerConte
     else {
         TextImager::StandardTabStopList*    curTabs =   &readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops;
         Led_Coordinate                      lastStop    =   0;
-        for (vector<Led_TWIPS>::const_iterator i = curTabs->fTabStops.begin (); i != curTabs->fTabStops.end (); ++i) {
+        for (auto i = curTabs->fTabStops.begin (); i != curTabs->fTabStops.end (); ++i) {
             lastStop += *i;
         }
         Led_TWIPS   newStop =   Led_TWIPS (controlWord.fValue);
@@ -4194,7 +4194,7 @@ void    StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
 
 #if     qUseCompiledSetHack
     bitset<256> compiledSet;
-    for (const char* p = setOfChars; *p != '\0'; p++) {
+    for (auto p = setOfChars; *p != '\0'; p++) {
         compiledSet[(unsigned char)*p] = true;
     }
 #endif

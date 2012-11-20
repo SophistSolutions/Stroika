@@ -72,7 +72,7 @@ void    ConnectionManager::AddHandler (const shared_ptr<HTTPRequestHandler>& h)
 void    ConnectionManager::RemoveHandler (const shared_ptr<HTTPRequestHandler>& h)
 {
     Execution::AutoCriticalSection  critSec (fHandlers_);
-    for (list<shared_ptr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+    for (auto i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
         if (*i == h) {
             fHandlers_.erase (i);
             return;
@@ -111,7 +111,7 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
             DoOneConnection_ (conn);
 
             Execution::AutoCriticalSection  critSec (fActiveConnections_);
-            for (list<shared_ptr<HTTPConnection>>::iterator i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
+            for (auto i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
                 if (*i == conn) {
                     fActiveConnections_.erase (i);
                     break;
@@ -132,7 +132,7 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<HTTPConnection> c)
         shared_ptr<HTTPRequestHandler>   h;
         {
             Execution::AutoCriticalSection  critSec (fHandlers_);
-            for (list<shared_ptr<HTTPRequestHandler> >::iterator i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+            for (auto i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
                 if ((*i)->CanHandleRequest (*c)) {
                     h = *i;
                 }

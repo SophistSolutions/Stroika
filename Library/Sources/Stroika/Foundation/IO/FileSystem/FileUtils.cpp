@@ -432,7 +432,7 @@ void    FileSystem::CreateDirectory (const TString& directoryPath, bool createPa
             }
 
             // Now go in reverse order - checking if the exist - and if so - stop going back
-            for (vector<TString>::reverse_iterator i = paths.rbegin (); i != paths.rend (); ++i) {
+            for (auto i = paths.rbegin (); i != paths.rend (); ++i) {
                 //NB: this avoids matching files - we know dir - cuz name ends in /
                 if (access(i->c_str (), R_OK) == 0) {
                     // ignore this one
@@ -441,7 +441,7 @@ void    FileSystem::CreateDirectory (const TString& directoryPath, bool createPa
                     // THEN - starting at the one that doesn't exist - go from top-down again
                     int skipThisMany    =   (i - paths.rbegin ());
                     Assert (skipThisMany < paths . size ())
-                    for (vector<TString>::iterator ii = paths.begin () + skipThisMany; ii != paths.end (); ++ii) {
+                    for (auto ii = paths.begin () + skipThisMany; ii != paths.end (); ++ii) {
                         CreateDirectory (*ii, false);
                     }
                     break;
@@ -875,7 +875,7 @@ AppTempFileManager::AppTempFileManager ():
         // no biggie, but avoid spaces in tmpfile path name (but dont try too hard, should be
         // harmless)
         //  -- LGP 2009-08-16
-        for (TString::iterator i = exeFileName.begin (); i != exeFileName.end (); ++i) {
+        for (auto i = exeFileName.begin (); i != exeFileName.end (); ++i) {
             if (*i == ' ') {
                 *i = '-';
             }
@@ -1005,7 +1005,7 @@ TempFileLibrarian::~TempFileLibrarian ()
 {
 #if     qPlatform_Windows
     if (fDeleteFilesOnDescruction) {
-        for (set<TString>::iterator it = fFiles.begin (); it != fFiles.end (); ++it) {
+        for (auto it = fFiles.begin (); it != fFiles.end (); ++it) {
             // item could be a file or directory, so see if dir delete works, and only if that fails,
             // then try to delete the item as a directory ... all silently ignoring failures...
             if (::DeleteFile (it->c_str ()) == 0) {

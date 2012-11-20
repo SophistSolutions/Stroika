@@ -146,7 +146,7 @@ namespace   {
 
         // toupper each lower-case character preceeded by a space
         bool    prevCharSpace   =   true;   // so we upper first char
-        for (typename STR::iterator i = r.begin (); i != r.end (); ++i) {
+        for (auto i = r.begin (); i != r.end (); ++i) {
             if (prevCharSpace) {
                 *i = TOUPPER (*i);
             }
@@ -187,7 +187,7 @@ namespace   {
 
         // toupper each lower-case character preceeded by a ENDOFSENTECE PUNCT
         bool    nextCharStartsSentence  =   true;   // so we upper first char
-        for (typename STR::iterator i = r.begin (); i != r.end (); ++i) {
+        for (auto i = r.begin (); i != r.end (); ++i) {
             if (nextCharStartsSentence and !ISSPACE (*i)) {
                 *i = TOUPPER (*i);
                 nextCharStartsSentence = false;

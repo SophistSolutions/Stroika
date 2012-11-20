@@ -1457,7 +1457,7 @@ Led_Tablet_::~Led_Tablet_ ()
     }
 #elif   qXWindows
     ::XFreeGC (fDisplay, fGC);
-    for (map<string, XFontStruct*>::const_iterator   i = fFontCache.begin (); i != fFontCache.end (); ++i) {
+    for (auto i = fFontCache.begin (); i != fFontCache.end (); ++i) {
         ::XFreeFont (fDisplay, i->second);
     }
 #endif
@@ -2447,7 +2447,7 @@ Led_SDK_String  Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, co
     Led_SDK_String  fspWeight       =   fsp.GetStyle_Bold () ? "bold" : "medium";
     Led_SDK_String  fspItalics      =   fsp.GetStyle_Italic () ? "i" : "r";
     const           string  kMatchAny   =   "*";
-    for (vector<string>::const_iterator i = fontsList.begin (); i != fontsList.end (); ++i) {
+    for (auto i = fontsList.begin (); i != fontsList.end (); ++i) {
         Led_SDK_String  name;
         Led_SDK_String  size;
         Led_SDK_String  weight;

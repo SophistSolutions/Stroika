@@ -587,7 +587,7 @@ void    LedComboBoxWidget::MyComboListBoxPopup::UpdatePopupItems ()
     if (IsWindowRealized ()) {
         SendMessage (LB_RESETCONTENT, 0, 0);
         bool    usingUNICODEWnd =   IsWindowUNICODE ();
-        for (vector<Led_tString>::const_iterator i = fComboBox->fPopupItems.begin (); i != fComboBox->fPopupItems.end (); ++i) {
+        for (auto i = fComboBox->fPopupItems.begin (); i != fComboBox->fPopupItems.end (); ++i) {
             if (usingUNICODEWnd) {
                 SendMessage (LB_ADDSTRING, 0, reinterpret_cast<LPARAM> (Led_tString2WideString (*i).c_str ()));
             }
@@ -3753,7 +3753,7 @@ void    Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
         if (not fCurrentMisspellInfo->fSuggestions.empty ()) {
             changeText = fCurrentMisspellInfo->fSuggestions[0];
 #if     qPlatform_Windows
-            for (vector<Led_tString>::const_iterator i = fCurrentMisspellInfo->fSuggestions.begin (); i != fCurrentMisspellInfo->fSuggestions.end (); ++i) {
+            for (auto i = fCurrentMisspellInfo->fSuggestions.begin (); i != fCurrentMisspellInfo->fSuggestions.end (); ++i) {
                 ::SendMessage (GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_SuggestedList),
                                LB_ADDSTRING,
                                0,

@@ -183,14 +183,14 @@ namespace   {
             if (i != TString::npos) {
                 mfname.erase (i);
             }
-            for (TString::iterator i = mfname.begin (); i != mfname.end (); ++i) {
+            for (auto i = mfname.begin (); i != mfname.end (); ++i) {
                 if (*i == ' ') {
                     *i = '-';
                 }
             }
         }
         TString nowstr  =   ToTString (Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML));
-        for (TString::iterator i = nowstr.begin (); i != nowstr.end (); ++i) {
+        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
             if (*i == ':') {
                 *i = '-';
             }

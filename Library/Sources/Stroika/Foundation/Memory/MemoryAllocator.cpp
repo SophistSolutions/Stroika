@@ -213,7 +213,7 @@ namespace   {
         RequireNotNull (totalAllocated);
         sizeSet->clear ();
         *totalAllocated = 0;
-        for (PTRMAP::const_iterator i = m.begin (); i != m.end (); ++i) {
+        for (auto i = m.begin (); i != m.end (); ++i) {
             sizeSet->insert (i->second);
             (*totalAllocated) += i->second;
         }
@@ -221,7 +221,7 @@ namespace   {
     unsigned int    ExtractCountUsedForSize_ (const PTRMAP& m, size_t eltSize)
     {
         unsigned int    result  =   0;
-        for (PTRMAP::const_iterator i = m.begin (); i != m.end (); ++i) {
+        for (auto i = m.begin (); i != m.end (); ++i) {
             if (i->second == eltSize) {
                 result++;
             }
@@ -287,7 +287,7 @@ size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 {
     AutoCriticalSection enterCriticalSection (fCritSection_);
     size_t  total   =   0;
-    for (PTRMAP::const_iterator i = fAllocations_.begin (); i != fAllocations_.end (); ++i) {
+    for (auto i = fAllocations_.begin (); i != fAllocations_.end (); ++i) {
         total += i->second;
     }
     return total;
@@ -319,9 +319,9 @@ namespace   {
 #if 0
         {
             //REALLY COULD USE STROIKA TALLY HERE
-            for (set<size_t>::const_iterator si = sizes.begin (); si != sizes.end (); ++si) {
+            for (auto si = sizes.begin (); si != sizes.end (); ++si) {
                 unsigned int cnt    =   0;
-                for (PTRMAP::const_iterator i = fAllocMap.begin (); i != fAllocMap.end (); ++i) {
+                for (auto i = fAllocMap.begin (); i != fAllocMap.end (); ++i) {
                     if (i->second == *si) {
                         cnt++;
                     }
@@ -333,7 +333,7 @@ namespace   {
         {
             // See how the current values differ from the previous run
             set<size_t>::const_iterator psi =   prevSizes.begin ();
-            for (set<size_t>::const_iterator  si = sizes.begin (); si != sizes.end ();) {
+            for (auto  si = sizes.begin (); si != sizes.end ();) {
                 /*
                  * try to iterate two lists at same time - bump the pointer which is further behind
                  */

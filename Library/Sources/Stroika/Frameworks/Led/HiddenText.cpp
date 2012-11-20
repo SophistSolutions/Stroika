@@ -65,7 +65,7 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
                 // Note - this kookie &* stuff is to work around bugs in some STLs - that don't let you convert an iterator to a pointer.- SPR#0847
                 GetTextStore ().RemoveMarkers (&*tmp.begin (), tmp.size ());
             }
-            for (MarkerList::const_iterator i = markers.begin (); i != markers.end (); ++i) {
+            for (auto i = markers.begin (); i != markers.end (); ++i) {
                 delete (*i);
             }
         }
@@ -95,7 +95,7 @@ void    HidableTextMarkerOwner::HideAll (size_t from, size_t to)
     MarkerList  markers =   CollectAllInRange (from, to);
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
     // proceed in reverse direction - so that any markers being shown won't affect our text offsets
-    for (MarkerList::reverse_iterator i = markers.rbegin (); i != markers.rend (); ++i) {
+    for (auto i = markers.rbegin (); i != markers.rend (); ++i) {
         if (TextStore::Overlap (**i, from, to)) {
             (*i)->Hide ();
         }
@@ -121,7 +121,7 @@ void    HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
     MarkerList  markers =   CollectAllInRange (from, to);
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
     // proceed in reverse direction - so that any markers being shown won't affect our text offsets
-    for (MarkerList::reverse_iterator i = markers.rbegin (); i != markers.rend (); ++i) {
+    for (auto i = markers.rbegin (); i != markers.rend (); ++i) {
         if (TextStore::Overlap (**i, from, to)) {
 #if     qDebug
             HidableTextMarkerOwner::Invariant_ ();  // don't make virtual call - cuz that might not be fully valid til end of routine...
@@ -172,7 +172,7 @@ void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
     if (from > 0) {
         MarkerList      tmp =   CollectAllInRange (from - 1, from);
         // Can sometimes have more than one, if two different hidable region markers didn't get coalesced.
-        for (MarkerList::const_iterator i = tmp.begin (); i != tmp.end (); ++i) {
+        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
             if ((*i)->IsShown () and (*i)->GetEnd () == from) {
                 prevNonEmptyMarker = *i;
                 break;
@@ -185,7 +185,7 @@ void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
         TextStore::SimpleUpdater    updater (fTextStore, from, to);
 
         // iterate through markers, and eliminate all but one of them. The last one - if it exists - we'll enlarge.
-        for (MarkerList::const_iterator i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
+        for (auto i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
             if (prevNonEmptyMarker == nullptr) {
                 Assert (i == hidableTextMarkersInRange.begin ());   // must have been first marker...
                 prevNonEmptyMarker = *i;
@@ -256,7 +256,7 @@ void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
 
             // iterate through markers, and eliminate all of them, except maybe on the endpoints - if they have stuff outside
             // this range
-            for (MarkerList::const_iterator i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
+            for (auto i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
                 if (i == hidableTextMarkersInRange.begin () and (*i)->GetStart () < from) {
                     // merely adjust its end-point so not overlapping this region. Be careful if he
                     // used to extend past to, and cons up NEW marker for that part.
@@ -307,7 +307,7 @@ DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions (size_t from, 
     MarkerList  markers =   CollectAllInRange (from, to);
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
     size_t      relStartFrom    =   from;
-    for (MarkerList::const_iterator i = markers.begin (); i != markers.end (); ++i) {
+    for (auto i = markers.begin (); i != markers.end (); ++i) {
         size_t  mStart;
         size_t  mEnd;
         (*i)->GetRange (&mStart, &mEnd);
@@ -460,7 +460,7 @@ void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noe
     if (updateInfo.fTextModified) {
         // cull empty markers
         MarkerList  markers =   CollectAllInRange_OrSurroundings (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
-        for (MarkerList::const_iterator i = markers.begin (); i != markers.end (); ++i) {
+        for (auto i = markers.begin (); i != markers.end (); ++i) {
             HidableTextMarker*  m   =   *i;
             if (m->GetLength () == 0) {
                 fMarkersToBeDeleted.AccumulateMarkerForDeletion (m);
@@ -569,7 +569,7 @@ void    UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to
 Led_FontSpecification       HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
 {
     Led_FontSpecification   fsp;
-    for (vector<StyledTextImager::StyleMarker*>::const_iterator i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
+    for (auto i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
         if (StandardStyledTextImager::StandardStyleMarker* m = dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (*i)) {
             fsp.MergeIn (m->fFontSpecification);
         }
@@ -616,7 +616,7 @@ void    ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
 {
     // Now walk all existing markers, and set their fColor field!!!
     MarkerList  markers =   CollectAllInRange_OrSurroundings (0, GetTextStore ().GetEnd () + 1);
-    for (MarkerList::const_iterator i = markers.begin (); i != markers.end (); ++i) {
+    for (auto i = markers.begin (); i != markers.end (); ++i) {
         LightUnderlineHidableTextMarker*    m   =   dynamic_cast<LightUnderlineHidableTextMarker*> (*i);
         AssertNotNull (m);
         if (fColored) {

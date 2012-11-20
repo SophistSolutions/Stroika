@@ -512,7 +512,7 @@ namespace   {
             size_t  brk =   elt.find('=');
             if (brk != string::npos) {
                 string  val =   elt.substr (brk + 1);
-                for (string::iterator i = val.begin (); i != val.end (); ++i) {
+                for (auto i = val.begin (); i != val.end (); ++i) {
                     switch (*i) {
                         case    '+':
                             *i = ' ';
@@ -559,7 +559,7 @@ void    URLQueryDecoder::RemoveFieldIfAny (const wstring& idx)
 wstring URLQueryDecoder::ComputeQueryString () const
 {
     string  result;
-    for (map<wstring, wstring>::const_iterator i = fMap.begin (); i != fMap.end (); ++i) {
+    for (auto i = fMap.begin (); i != fMap.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (result);
         if (not result.empty ()) {
             result += "&";

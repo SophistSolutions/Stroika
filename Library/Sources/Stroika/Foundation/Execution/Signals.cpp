@@ -39,7 +39,7 @@ namespace   {
             Assert (i != sHandlers_.end ());
             handlers = i->second;
         }
-        for (set<SignalHandlerType>::const_iterator i = handlers.begin (); i != handlers.end (); ++i) {
+        for (auto i = handlers.begin (); i != handlers.end (); ++i) {
             if (*i != SignalHandlerRegistry::kIGNORED) {
                 (*i) (signal);
             }
@@ -74,7 +74,7 @@ set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
     set<SignalIDType>   result;
     {
         AutoCriticalSection critSec (sCritSection_);
-        for (map<SignalIDType, set<SignalHandlerType>>::const_iterator i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
+        for (auto i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
             result.insert (i->first);
         }
     }

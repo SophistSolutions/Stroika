@@ -30,7 +30,7 @@ string  XML::QuoteForXMLAttribute (const string& s)
 {
     string  r;
     r.reserve (s.size () * 6 / 5);  // wild guess about good estimate
-    for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
+    for (auto i = s.begin (); i != s.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (r);
         switch (*i) {
             case    '&':
@@ -60,7 +60,7 @@ string  XML::QuoteForXMLAttribute (const wstring& s)
 {
     string  r;
     r.reserve (s.size () * 7 / 5);  // wild guess about good estimate
-    for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
+    for (auto i = s.begin (); i != s.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (r);
         switch (*i) {
             case    '&':
@@ -126,7 +126,7 @@ string  XML::QuoteForXML (const string& s)
 {
     string  r;
     r.reserve (s.size () * 6 / 5);  // wild guess about good estimate
-    for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
+    for (auto i = s.begin (); i != s.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (r);
         switch (*i) {
             case    '&':
@@ -165,7 +165,7 @@ string  XML::QuoteForXML (const wstring& s)
 {
     string  r;
     r.reserve (s.size () * 7 / 5);  // wild guess about good estimate
-    for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
+    for (auto i = s.begin (); i != s.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (r);
         switch (*i) {
             case    '&':

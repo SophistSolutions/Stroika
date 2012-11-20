@@ -898,7 +898,7 @@ VARIANT Led::CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v)
 VARIANT Led::CreateSafeArrayOfBSTR (const vector<wstring>& v)
 {
     vector<const wchar_t*>  tmp;
-    for (vector<wstring>::const_iterator i = v.begin (); i != v.end (); ++i) {
+    for (auto i = v.begin (); i != v.end (); ++i) {
         // I hope (assure?) this doesn't create temporaries and take .c_str () of temporaries
         tmp.push_back ((*i).c_str ());
     }

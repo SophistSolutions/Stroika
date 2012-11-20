@@ -59,7 +59,7 @@ namespace   {
     {
         out << "\"";
         string  tmp =   Characters::WideStringToUTF8 (v);
-        for (string::const_iterator i = tmp.begin (); i != tmp.end (); ++i) {
+        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
             switch (*i) {
                 case '\"':
                     out << "\\\"";
@@ -84,7 +84,7 @@ namespace   {
     void    PrettyPrint_ (const vector<Memory::VariantValue>& v, ostream& out, int indentLevel)
     {
         out << "[" << endl;
-        for (vector<Memory::VariantValue>::const_iterator i = v.begin (); i != v.end (); ++i) {
+        for (auto i = v.begin (); i != v.end (); ++i) {
             Indent_ (out, indentLevel + 1);
             PrettyPrint_ (*i, out, indentLevel + 1);
             if (i + 1 != v.end ()) {
@@ -98,7 +98,7 @@ namespace   {
     void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, ostream& out, int indentLevel)
     {
         out << "{" << endl;
-        for (map<wstring, Memory::VariantValue>::const_iterator i = v.begin (); i != v.end ();) {
+        for (auto i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel + 1);
             PrettyPrint_ (i->first, out, indentLevel + 1);
             out << " : ";

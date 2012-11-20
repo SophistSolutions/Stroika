@@ -1430,7 +1430,7 @@ namespace   Stroika {
             template    <typename ARRAY_CONTAINER, class    T>
             size_t  IndexOf (const ARRAY_CONTAINER& array, T item)
             {
-                for (typename ARRAY_CONTAINER::const_iterator i = array.begin (); i != array.end (); ++i) {
+                for (auto i = array.begin (); i != array.end (); ++i) {
                     if (*i == item) {
                         return (i - array.begin ());
                     }

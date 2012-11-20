@@ -348,7 +348,7 @@ void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t en
 void    SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
 {
     RequireNotNull (owner); // though it can be TextStore::kAnyMarkerOwner.
-    for (vector<Marker*>::const_iterator i = fMarkers.begin (); i != fMarkers.end (); i++) {
+    for (auto i = fMarkers.begin (); i != fMarkers.end (); i++) {
         Marker* m   =   *i;
         AssertNotNull (m);
         if (Overlap (*m, from, to)) {

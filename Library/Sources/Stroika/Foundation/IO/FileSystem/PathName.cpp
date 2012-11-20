@@ -77,7 +77,7 @@ TString FileSystem::SafeFilenameChars (const TString& s)
     wstring tmp =   TString2Wide (s);   // analyze as wide-char string so we don't mis-identify
     // characters (by looking at lead bytes etc)
 Again:
-    for (wstring::iterator i = tmp.begin (); i != tmp.end (); ++i) {
+    for (auto i = tmp.begin (); i != tmp.end (); ++i) {
         switch (*i) {
             case    '\\':
                 *i = '_';

@@ -786,7 +786,7 @@ namespace   Stroika {
                 fMarkers (m),
                 fSlideBy (slideBy)
             {
-                for (typename vector<MARKER*>::iterator i = fMarkers.begin (); i != fMarkers.end (); ++i) {
+                for (auto i = fMarkers.begin (); i != fMarkers.end (); ++i) {
                     size_t  start   =   0;
                     size_t  end     =   0;
                     (*i)->GetRange (&start, &end);
@@ -796,7 +796,7 @@ namespace   Stroika {
             template    <typename   MARKER>
             TemporaryMarkerSlideDown<MARKER>::~TemporaryMarkerSlideDown ()
             {
-                for (typename vector<MARKER*>::iterator i = fMarkers.begin (); i != fMarkers.end (); ++i) {
+                for (auto i = fMarkers.begin (); i != fMarkers.end (); ++i) {
                     size_t  start   =   0;
                     size_t  end     =   0;
                     (*i)->GetRange (&start, &end);

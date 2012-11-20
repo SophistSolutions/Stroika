@@ -278,7 +278,7 @@ void    Win32UIFileAssociationRegistrationHelper::DoIt () noexcept {
 
 bool    Win32UIFileAssociationRegistrationHelper::RegisteredToSomeoneElse () const
 {
-    for (vector<Win32UIFileAssociationInfo>::const_iterator i = fInfoRecs.begin (); i != fInfoRecs.end (); ++i) {
+    for (auto i = fInfoRecs.begin (); i != fInfoRecs.end (); ++i) {
         /*
          *  NB: Only check if the progid and the open command are the same as us. Don't bother reporting to the user we need to
          *  update things if all that differs is the icon, or something like that.
@@ -312,7 +312,7 @@ bool    Win32UIFileAssociationRegistrationHelper::RegisteredToSomeoneElse () con
 void    Win32UIFileAssociationRegistrationHelper::ApplyChangesSilently ()
 {
     // for each info guy - check that ALL already pointed to our app
-    for (vector<Win32UIFileAssociationInfo>::const_iterator i = fInfoRecs.begin (); i != fInfoRecs.end (); ++i) {
+    for (auto i = fInfoRecs.begin (); i != fInfoRecs.end (); ++i) {
         Win32FileAssociationRegistrationHelper  registryAssoc ((*i).fFileSuffix);
         Led_SDK_String  defaultIcon =   (*i).fDefaultIcon;
         Led_SDK_String  editCommandLine =   (*i).fShellEditCommandLine;

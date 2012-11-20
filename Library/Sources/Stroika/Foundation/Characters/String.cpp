@@ -74,7 +74,7 @@ namespace   {
             }
             virtual     bool    Contains (Character item) const override {
                 Assert (_fStart <= _fEnd);
-                for (const wchar_t* i = _fStart; i != _fEnd; ++i) {
+                for (auto i = _fStart; i != _fEnd; ++i) {
                     if (*i == item) {
                         return true;
                     }
@@ -803,7 +803,7 @@ vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co)
     std::wsmatch res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
-    for (wsmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
+    for (auto i = res.begin (); i != res.end (); ++i) {
         result.push_back (String (*i));
     }
     return result;
@@ -818,7 +818,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     std::wsmatch res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
-    for (wsmatch::const_iterator i = res.begin (); i != res.end (); ++i) {
+    for (auto i = res.begin (); i != res.end (); ++i) {
         result.push_back (String (*i));
     }
     return result;

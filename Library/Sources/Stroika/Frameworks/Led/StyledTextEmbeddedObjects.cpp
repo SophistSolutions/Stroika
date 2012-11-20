@@ -957,7 +957,7 @@ Led_tString StandardURLStyleMarker::GetDisplayString () const
      *  Replace tab characters with space characters, since tabs won't get aligned properly, and wouldn't make much
      *  sense anyhow (SPR#1131).
      */
-    for (string::iterator i = displayText.begin (); i != displayText.end (); ++i) {
+    for (auto i = displayText.begin (); i != displayText.end (); ++i) {
         if (*i == '\t') {
             *i = ' ';
         }
@@ -973,7 +973,7 @@ Led_FontSpecification   StandardURLStyleMarker::GetDisplayFont (const RunElement
         fsp = sm->fFontSpecification;
     }
     else {
-        for (vector<StyledTextImager::StyleMarker*>::const_iterator i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
+        for (auto i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
             StandardStyledTextImager::StandardStyleMarker*  sm  =   dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (*i);
             if (sm != nullptr) {
                 fsp = sm->fFontSpecification;

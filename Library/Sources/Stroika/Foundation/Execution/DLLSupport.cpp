@@ -51,7 +51,7 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
 #endif
     }
     catch (...) {
-        for (vector<TString>::const_iterator i = searchPath.begin (); i != searchPath.end (); ++i) {
+        for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
             TString modulePath = *i + TSTR ("\\") + dllName;
 #if     qPlatform_Windows
             fModule = ::LoadLibrary (modulePath.c_str ());

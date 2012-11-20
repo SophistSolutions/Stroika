@@ -241,7 +241,7 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
     }
     String  useHeaderStrBuf;
     {
-        for (map<String, String>::const_iterator i = useHeadersMap.begin (); i != useHeadersMap.end (); ++i) {
+        for (auto i = useHeadersMap.begin (); i != useHeadersMap.end (); ++i) {
             useHeaderStrBuf += i->first + L": " + i->second + L"\r\n";
         }
     }
@@ -358,7 +358,7 @@ RetryWithNoCERTCheck:
     {
         vector<Byte>    bytesArray;
         bytesArray.reserve (totalBytes);
-        for (list<vector<Byte> >::const_iterator i = bytesRead.begin (); i != bytesRead.end (); ++i) {
+        for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             Containers::STL::Append2Vector (&bytesArray, *i);
         }
         response.fData = bytesArray;

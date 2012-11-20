@@ -135,7 +135,7 @@ namespace {
     static  inline  bool    ParseColorString (string colorStr, Led_Color* color)
     {
 #if     qStaticInitializerOfPairOfStringStringInternalCompilerBug
-        for (vector<pair<string, string> >::const_iterator i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
+        for (auto i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
             if (Led_CasedStringsEqual (colorStr, i->first)) {
                 colorStr = i->second;
                 break;
@@ -928,7 +928,7 @@ void    StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* t
         }
         else {
             const vector<StyledTextIOReader_HTML::EntityRefMapEntry>&   entityRefs  =   GetEntityRefMapTable ();
-            for (vector<EntityRefMapEntry>::const_iterator i = entityRefs.begin (); i != entityRefs.end (); ++i) {
+            for (auto i = entityRefs.begin (); i != entityRefs.end (); ++i) {
                 if (refName == (*i).fEntityRefName) {
 #if     qWideCharacters
                     EmitText (&(*i).fCharValue, 1);
@@ -2448,7 +2448,7 @@ void    StyledTextIOWriter_HTML::WriteOpenCloseTag (WriterContext& /*writerConte
 */
 bool    StyledTextIOWriter_HTML::IsTagOnStack (WriterContext& writerContext, const string& tagName)
 {
-    for (vector<string>::const_iterator i = writerContext.fTagStack.begin (); i != writerContext.fTagStack.end (); ++i) {
+    for (auto i = writerContext.fTagStack.begin (); i != writerContext.fTagStack.end (); ++i) {
         if (*i == tagName) {    // XML - and our writer - are case sensative
             return true;
         }
@@ -2473,7 +2473,7 @@ static  inline  string  PrintColorString (Led_Color color)
     buf[8] = '\0';
     string  result  = string (buf);
 #if     qStaticInitializerOfPairOfStringStringInternalCompilerBug
-    for (vector<pair<string, string> >::const_iterator i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
+    for (auto i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
         if (Led_CasedStringsEqual (buf, "\"" + i->second + "\"")) {
             //result = "\'" + i->first + "\'";
             result = i->first;
@@ -2591,7 +2591,7 @@ string  StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
     // as entities - which are interpreted as UNICODE chars
     string  result;
     result.reserve (text.length ());
-    for (wstring::const_iterator i = text.begin (); i != text.end (); ++i) {
+    for (auto i = text.begin (); i != text.end (); ++i) {
         if (static_cast<unsigned int> (*i) <= 127) {
             char    c   =   static_cast<char> (*i);
             result.append (&c, 1);

@@ -499,7 +499,7 @@ namespace   Stroika {
             }
             inline  void    Partition::DoAboutToSplitCalls (PartitionMarker* pm, size_t at, vector<void*>* infos) const noexcept
             {
-                for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
+                for (auto it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     void*   info;
                     (*it)->AboutToSplit (pm, at, &info);
                     infos->push_back (info);
@@ -509,14 +509,14 @@ namespace   Stroika {
             {
                 Assert (infos.size () == fPartitionWatchers.size ());
                 vector<void*>::const_iterator infoIt = infos.begin ();
-                for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
+                for (auto it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     (*it)->DidSplit (*infoIt);
                     ++infoIt;
                 }
             }
             inline  void    Partition::DoAboutToCoaleceCalls (PartitionMarker* pm, vector<void*>* infos) const noexcept
             {
-                for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
+                for (auto it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     void*   info;
                     (*it)->AboutToCoalece (pm, &info);
                     infos->push_back (info);
@@ -526,7 +526,7 @@ namespace   Stroika {
             {
                 Assert (infos.size () == fPartitionWatchers.size ());
                 vector<void*>::const_iterator infoIt = infos.begin ();
-                for (vector<PartitionWatcher*>::const_iterator it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
+                for (auto it = fPartitionWatchers.begin (); it != fPartitionWatchers.end (); ++it) {
                     (*it)->DidCoalece (*infoIt);
                     ++infoIt;
                 }

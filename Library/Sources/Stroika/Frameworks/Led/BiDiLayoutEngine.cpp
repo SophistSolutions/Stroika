@@ -285,7 +285,7 @@ TextLayoutBlock::~TextLayoutBlock ()
 TextDirection   TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) const
 {
     vector<ScriptRunElt>    runs        =   GetScriptRuns ();
-    for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
+    for (auto i = runs.begin (); i != runs.end (); ++i) {
         if ((*i).fRealStart <= realCharOffset and realCharOffset < (*i).fRealEnd) {
             return (*i).fDirection;
         }
@@ -312,7 +312,7 @@ size_t  TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const
 {
     Require (i < GetTextLength ());
     vector<ScriptRunElt>    runs        =   GetScriptRuns ();
-    for (vector<ScriptRunElt>::const_iterator runIt = runs.begin (); runIt != runs.end (); ++runIt) {
+    for (auto runIt = runs.begin (); runIt != runs.end (); ++runIt) {
         const ScriptRunElt& se  =   *runIt;
         if (se.fVirtualStart <= i and i < se.fVirtualEnd) {
             if (se.fDirection == eLeftToRight) {
@@ -419,7 +419,7 @@ void    TextLayoutBlock::Invariant_ () const
 
     // Make sure each scriptrun elt is non-empty
     {
-        for (vector<ScriptRunElt>::const_iterator j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
+        for (auto j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
             Assert ((*j).fRealStart < len);
             Assert ((*j).fRealEnd <= len);
             Assert ((*j).fVirtualStart < len);
@@ -440,7 +440,7 @@ void    TextLayoutBlock::Invariant_ () const
             bool    foundVirtual    =   false;
             size_t  nRealFound      =   0;
             size_t  nVirtualFound   =   0;
-            for (vector<ScriptRunElt>::const_iterator j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
+            for (auto j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
                 if ((*j).fRealStart <= i and i < (*j).fRealEnd) {
                     Assert (not foundReal);
                     foundReal = true;
@@ -584,7 +584,7 @@ void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_t
 
 #if     qDebugHack_ReverseDirections
     {
-        for (vector<ScriptRunElt>::iterator i = fScriptRuns.begin (); i != fScriptRuns.end (); ++i) {
+        for (auto i = fScriptRuns.begin (); i != fScriptRuns.end (); ++i) {
             ScriptRunElt&   se  =   *i;
             TextDirection   newDir  =   (se.fDirection == eLeftToRight) ? eRightToLeft : eLeftToRight;
             se.fDirection = newDir;
@@ -755,7 +755,7 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
                     /*
                      *  Walk through the RTL run and see if we need to mirror any characters.
                      */
-                    for (Led_tChar* cur = vT + s.fVirtualStart; cur < vT + s.fVirtualStart + (s.fRealEnd - s.fRealStart); ++cur) {
+                    for (auto cur = vT + s.fVirtualStart; cur < vT + s.fVirtualStart + (s.fRealEnd - s.fRealStart); ++cur) {
                         Led_tChar   mirrorChar  =   '\0';
                         if (CharacterProperties::IsMirrored (*cur, &mirrorChar)) {
                             *cur = mirrorChar;
@@ -1029,7 +1029,7 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
     size_t                  offsetSoFar     =   0;
     size_t                  subsetLen       =   fEnd - fStart;
     const Led_tChar*        fullRealText    =   fSubsetOf.PeekAtRealText ();
-    for (vector<ScriptRunElt>::const_iterator i = origRuns.begin (); i != origRuns.end (); ++i) {
+    for (auto i = origRuns.begin (); i != origRuns.end (); ++i) {
         size_t     offsetStart =   (*i).fVirtualStart;
         size_t     offsetEnd   =   (*i).fVirtualEnd;
 

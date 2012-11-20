@@ -305,7 +305,7 @@ wstring         Characters::StringVectorEncoding::Encode (const vector<wstring>&
     result.reserve (v.size () *  10 + 10);
 
     result += L"(";
-    for (vector<wstring>::const_iterator i = v.begin (); i != v.end (); ++i) {
+    for (auto i = v.begin (); i != v.end (); ++i) {
         Containers::ReserveSpeedTweekAddN (result, i->length () + 25);
         result += L"(";
         {
@@ -330,7 +330,7 @@ vector<wstring> Characters::StringVectorEncoding::Decode (const wstring& encoded
          */
         bool    inString    =   false;
         wstring curAccumulatedString;
-        for (wstring::const_iterator i = encodedString.begin () + 1; i + 1 != encodedString.end ();) {
+        for (auto i = encodedString.begin () + 1; i + 1 != encodedString.end ();) {
             // Better be looking at open paren - start of
             if (inString) {
                 if (*i == ')') {

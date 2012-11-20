@@ -1138,7 +1138,7 @@ Led_Rect    TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t 
         vector<ScriptRunElt> runs   =   text.GetScriptRuns ();
         if (runs.size () > 1) {
             // Only needed if there are nested runs...
-            for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
+            for (auto i = runs.begin (); i != runs.end (); ++i) {
                 const ScriptRunElt& se  =   *i;
                 if (TextStore::Overlap (startOfRow + se.fRealStart, startOfRow + se.fRealEnd, fromMarkerPos, toMarkerPos)) {
                     /*
@@ -1270,7 +1270,7 @@ vector<Led_Rect>    TextImager::GetRowHilightRects (const TextLayoutBlock& text,
         typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
         vector<ScriptRunElt> runs   =   text.GetScriptRuns ();
         //NB: it doesn't matter what order we iterate over the blocks and draw their hilight
-        for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
+        for (auto i = runs.begin (); i != runs.end (); ++i) {
             const ScriptRunElt& se  =   *i;
             size_t              hRunStart   =   max (se.fRealStart + rowStart, hilightStart);
             size_t              hRunEnd     =   min (se.fRealEnd + rowStart, hilightEnd);
@@ -1320,10 +1320,10 @@ vector<Led_Rect>    TextImager::GetRowHilightRects (const TextLayoutBlock& text,
 #if     qDebug
     {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
-        for (vector<Led_Rect>::const_iterator orit = result.begin (); orit != result.end (); ++orit) {
+        for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
             Ensure ((*orit).GetHeight () > 0);
-            for (vector<Led_Rect>::const_iterator irit = orit + 1; irit != result.end (); ++irit) {
+            for (auto irit = orit + 1; irit != result.end (); ++irit) {
                 Led_Rect    hr  =   *irit;
                 Ensure (hr.GetWidth () > 0);
                 Ensure (hr.GetHeight () > 0);
@@ -1407,7 +1407,7 @@ vector<Led_Rect>    TextImager::GetSelectionWindowRects (size_t from, size_t to)
         vector<Led_Rect>    hilightRects        =   GetRowHilightRects (text, startOfRow, endOfRow, GetSelectionStart (), GetSelectionEnd ());
         Led_Coordinate      newMinTop           =   lastRowBottom;
         Led_Coordinate      newMaxBottom        =   lastRowBottom;
-        for (vector<Led_Rect>::const_iterator i = hilightRects.begin (); i != hilightRects.end (); ++i) {
+        for (auto i = hilightRects.begin (); i != hilightRects.end (); ++i) {
             Led_Rect    hilightRect =   *i;
             Require (hilightRect.GetWidth () >= 0);
             Assert (hilightRect.GetHeight () > 0);
@@ -1440,10 +1440,10 @@ vector<Led_Rect>    TextImager::GetSelectionWindowRects (size_t from, size_t to)
 #if     qDebug
     {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
-        for (vector<Led_Rect>::const_iterator orit = result.begin (); orit != result.end (); ++orit) {
+        for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
             Ensure ((*orit).GetHeight () > 0);
-            for (vector<Led_Rect>::const_iterator irit = orit + 1; irit != result.end (); ++irit) {
+            for (auto irit = orit + 1; irit != result.end (); ++irit) {
                 Led_Rect    hr  =   *irit;
                 Ensure (hr.GetWidth () > 0);
                 Ensure (hr.GetHeight () > 0);
@@ -1468,7 +1468,7 @@ void    TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t
 {
     RequireNotNull (r);
     vector<Led_Rect>    selRects    =   GetSelectionWindowRects (from, to);
-    for (vector<Led_Rect>::const_iterator i = selRects.begin (); i != selRects.end (); ++i) {
+    for (auto i = selRects.begin (); i != selRects.end (); ++i) {
         AddRectangleToRegion (*i, r);
     }
 }
@@ -1629,7 +1629,7 @@ void    TextImager::DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRo
 
     if (GetSelectionShown ()) {
         vector<Led_Rect>    hilightRects    =   GetRowHilightRects (text, rowStart, rowEnd, GetSelectionStart (), GetSelectionEnd ());
-        for (vector<Led_Rect>::const_iterator i = hilightRects.begin (); i != hilightRects.end (); ++i) {
+        for (auto i = hilightRects.begin (); i != hilightRects.end (); ++i) {
             Led_Rect    hilightRect =   *i;
 #if     qDebug
             {
@@ -1911,7 +1911,7 @@ void    TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification
     if (pixelsDrawn != nullptr) {
         *pixelsDrawn = 0;
     }
-    for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
+    for (auto i = runs.begin (); i != runs.end (); ++i) {
         const ScriptRunElt& se  =   *i;
         size_t  runLength   =   se.fVirtualEnd - se.fVirtualStart;
 

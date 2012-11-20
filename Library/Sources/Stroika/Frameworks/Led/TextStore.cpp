@@ -791,7 +791,7 @@ void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* c
     {
         vector<MarkerOwner*>::const_iterator    start   =   GetMarkerOwners ().begin ();
         vector<MarkerOwner*>::const_iterator    end     =   GetMarkerOwners ().end ();
-        for (vector<MarkerOwner*>::const_iterator i = start; i != end; ++i) {
+        for (auto i = start; i != end; ++i) {
             (*i)->AboutToUpdateText (updateInfo);
         }
     }
@@ -819,7 +819,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     {
         vector<MarkerOwner*>::reverse_iterator  start   =   markerOwners.rbegin ();
         vector<MarkerOwner*>::reverse_iterator  end     =   markerOwners.rend ();
-        for (vector<MarkerOwner*>::reverse_iterator i = start; i != end; ++i) {
+        for (auto i = start; i != end; ++i) {
             Assert (GetMarkerOwners () == markerOwners);
             (*i)->EarlyDidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);
@@ -838,7 +838,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     {
         vector<Marker*>::const_reverse_iterator start   =   markers.rbegin ();
         vector<Marker*>::const_reverse_iterator end     =   markers.rend ();
-        for (vector<Marker*>::const_reverse_iterator i = start; i != end; ++i) {
+        for (auto i = start; i != end; ++i) {
             (*i)->DidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);
         }
@@ -847,7 +847,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     {
         vector<MarkerOwner*>::reverse_iterator  start   =   markerOwners.rbegin ();
         vector<MarkerOwner*>::reverse_iterator  end     =   markerOwners.rend ();
-        for (vector<MarkerOwner*>::reverse_iterator i = start; i != end; ++i) {
+        for (auto i = start; i != end; ++i) {
             Assert (GetMarkerOwners () == markerOwners);
             (*i)->DidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);

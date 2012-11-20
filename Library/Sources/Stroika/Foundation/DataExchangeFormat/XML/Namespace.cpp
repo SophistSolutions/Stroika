@@ -29,7 +29,7 @@ using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
 void    NamespaceDefinitionsList::Add (const wstring& uri, const wstring& prefix)
 {
 #if     defined(_DEBUG)
-    for (vector<NamespaceDefinition>::const_iterator i = fNamespaces.begin (); i != fNamespaces.end (); ++i) {
+    for (auto i = fNamespaces.begin (); i != fNamespaces.end (); ++i) {
         Assert (uri != i->fURI);
         Assert (prefix.empty () or prefix != i->fPrefix);
     }

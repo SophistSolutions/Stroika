@@ -390,7 +390,7 @@ namespace   Stroika {
 
                 fFSP = Led_FontSpecification ();
                 RunElement  result  =   inherited::MungeRunElement (inRunElt);
-                for (vector<StyleMarker*>::iterator i = result.fSupercededMarkers.begin (); i != result.fSupercededMarkers.end (); ++i) {
+                for (auto i = result.fSupercededMarkers.begin (); i != result.fSupercededMarkers.end (); ++i) {
                     if (SSM* ssm = dynamic_cast<SSM*> (*i)) {
                         fFSP = ssm->fFontSpecification;
                     }

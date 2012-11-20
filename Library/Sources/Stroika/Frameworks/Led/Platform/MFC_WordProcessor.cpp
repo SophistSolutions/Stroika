@@ -200,7 +200,7 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
              *  and see that we are not creating OLE objects, and if we are, then skip the paint event and save the window
              *  so we can RE-INVALIDATE it (here).
              */
-            for (set<HWND>::const_iterator i = Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.begin ();
+            for (auto i = Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.begin ();
                     i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.end ();
                     ++i) {
                 Verify (::InvalidateRect (*i, NULL, true) != 0);

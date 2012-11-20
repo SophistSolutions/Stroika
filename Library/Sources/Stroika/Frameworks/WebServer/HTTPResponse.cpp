@@ -181,7 +181,7 @@ void    HTTPResponse::Flush ()
 
         {
             map<String, String>  headers2Write   =   GetEffectiveHeaders ();
-            for (map<String, String>::const_iterator i = headers2Write.begin (); i != headers2Write.end (); ++i) {
+            for (auto i = headers2Write.begin (); i != headers2Write.end (); ++i) {
                 wstring tmp =   Characters::Format (L"%s: %s\r\n", i->first.c_str (), i->second.c_str ());
                 string  utf8    =   String (tmp).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));

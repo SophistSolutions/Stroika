@@ -149,7 +149,7 @@ void    IdleManager::UpdateIdleMgrImplState ()
 {
     if (fIdleManagerOSImpl != nullptr) {
         float   idleFreq            =   kNeverCallIdler;
-        for (map<Idler*, IdlerInfo>::iterator i = fIdlers.begin (); i != fIdlers.end (); ++i) {
+        for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
             idleFreq = min (idleFreq, i->second.fIdlerFrequency);
         }
         if (not fEnterIdlers.empty ()) {
@@ -174,7 +174,7 @@ void    IdleManager::CallSpendTime ()
 {
     SetInIdleMode (true);   // not SURE this is the best place to call this - maybe SB called from OSREP only???
     float   now =   Led_GetTickCount ();
-    for (map<Idler*, IdlerInfo>::iterator i = fIdlers.begin (); i != fIdlers.end (); ++i) {
+    for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
         // only call SpendTime if its been requested
         if (i->second.fLastCalledAt + i->second.fIdlerFrequency <= now) {
             Idler*  idler   =   i->first;
@@ -187,7 +187,7 @@ void    IdleManager::CallSpendTime ()
 
 void    IdleManager::CallEnterIdle ()
 {
-    for (vector<EnterIdler*>::iterator i = fEnterIdlers.begin (); i != fEnterIdlers.end (); ++i) {
+    for (auto i = fEnterIdlers.begin (); i != fEnterIdlers.end (); ++i) {
         EnterIdler* enterIdler  =   *i;
         AssertNotNull (enterIdler);
         enterIdler->OnEnterIdle ();

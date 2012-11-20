@@ -845,7 +845,7 @@ void    StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_S
         if (totalTextLength != 0) {
             styleRuns = GetStyleInfo (0, totalTextLength);
         }
-        for (vector<InfoSummaryRecord>::const_iterator i = styleRuns.begin (); i != styleRuns.end (); ++i) {
+        for (auto i = styleRuns.begin (); i != styleRuns.end (); ++i) {
             if (fontNames != nullptr) {
                 fontNames->insert ((*i).GetFontName ());
             }

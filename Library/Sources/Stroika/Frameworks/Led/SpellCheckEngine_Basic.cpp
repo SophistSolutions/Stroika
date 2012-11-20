@@ -206,7 +206,7 @@ bool    SpellCheckEngine_Basic::LookupWord_ (const Led_tString& checkWord, Led_t
             {
                 bool        allUpper        =   true;
                 Led_tString caseFixedWord   =   checkWord;
-                for (Led_tString::iterator i = caseFixedWord.begin (); i != caseFixedWord.end (); ++i) {
+                for (auto i = caseFixedWord.begin (); i != caseFixedWord.end (); ++i) {
                     if (IsASCIIUpper (*i)) {
                         *i = tolower (*i);
                     }
@@ -318,7 +318,7 @@ bool    SpellCheckEngine_Basic::LookupWordHelper_ (const Led_tString& checkWord,
 {
     Invariant ();
 
-    for (vector<const Dictionary*>::const_iterator i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
+    for (auto i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
         const Dictionary*   dict        =   *i;
         AssertNotNull (dict);
 
@@ -423,7 +423,7 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
     }
 
     // Iterate over each dictionary
-    for (vector<const Dictionary*>::const_iterator i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
+    for (auto i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
         const Dictionary*   dict        =   *i;
         AssertNotNull (dict);
         const InfoBlock*    ibsStart    =   NULL;
@@ -686,7 +686,7 @@ void    SpellCheckEngine_Basic::Invariant_ () const
 {
     Assert (sizeof (InfoBlock) == sizeof (int));    // Not a REAL requirement - but we want to make sure - for the most part - the
     // compiler lays this out for us to be SMALL.
-    for (vector<const Dictionary*>::const_iterator i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
+    for (auto i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
         const Dictionary*   dict        =   *i;
         AssertNotNull (dict);
         const InfoBlock*    ibsStart    =   NULL;
@@ -893,7 +893,7 @@ vector<Led_tChar>   SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () 
 #endif
     const size_t    kLineTerm_Length =   NEltsOf (kLineTerm) - 1;
     size_t  totalBufSizeSoFar   =   0;
-    for (set<Led_tString>::const_iterator i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
+    for (auto i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
         {
             size_t  prevCopyTo  =   totalBufSizeSoFar;
             totalBufSizeSoFar += (*i).length ();
@@ -920,7 +920,7 @@ void    SpellCheckEngine_Basic::EditableDictionary::ConstructInfoBlocksEtcFromWo
 
     size_t  totalBlockSize  =   0;
     {
-        for (set<Led_tString>::const_iterator i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
+        for (auto i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
             totalBlockSize += (*i).length ();
         }
     }
@@ -933,7 +933,7 @@ void    SpellCheckEngine_Basic::EditableDictionary::ConstructInfoBlocksEtcFromWo
      *  and the InfoBlock list at the same time.
      */
     Led_tChar*  intoBufPtr  =   fDictBufStart;
-    for (set<Led_tString>::const_iterator i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
+    for (auto i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
         copy ((*i).begin (), (*i).end (), intoBufPtr);
 
         InfoBlock   iB;

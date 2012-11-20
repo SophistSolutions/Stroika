@@ -316,7 +316,7 @@ wstring VariantValue::As () const
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"map[";
-                for (map<wstring, VariantValue>::const_iterator i = v->fVal.begin (); i != v->fVal.end (); ++i) {
+                for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
                     if (i != v->fVal.begin ()) {
                         tmp << L", ";
                     }
@@ -330,7 +330,7 @@ wstring VariantValue::As () const
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"[";
-                for (vector<VariantValue>::const_iterator i = v->fVal.begin (); i != v->fVal.end (); ++i) {
+                for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
                     if (i != v->fVal.begin ()) {
                         tmp << L", ";
                     }

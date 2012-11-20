@@ -628,7 +628,7 @@ void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Dista
     }
     size_t          rowRelCharLoc   =   charLoc - rowStart;
     Led_Distance    spannedSoFar    =   0;
-    for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
+    for (auto i = runs.begin (); i != runs.end (); ++i) {
         const ScriptRunElt& se  =   *i;
         size_t  runLength   =   se.fRealEnd - se.fRealStart;
         // See if we are STRICTLY inside the run, or maybe at the last character of the last run
@@ -706,7 +706,7 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
     }
     Led_Distance    spannedSoFar    =   0;
     TextDirection   lastRunDir      =   eLeftToRight;
-    for (vector<ScriptRunElt>::const_iterator i = runs.begin (); i != runs.end (); ++i) {
+    for (auto i = runs.begin (); i != runs.end (); ++i) {
         const ScriptRunElt& se              =   *i;
         Led_Distance        thisSpanWidth   =   CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
         Led_Distance        segVisStart     =   spannedSoFar;
@@ -851,7 +851,7 @@ void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker*
 void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const noexcept
 {
     PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-    for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
+    for (auto i = fCache.begin (); i != fCache.end (); ++i) {
         if ((*i).fValidFor.fPM == pm) {
             CacheEltLRUCacheTraits::Clear (&(*i));
         }
@@ -868,7 +868,7 @@ void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarke
 void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const noexcept
 {
     PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-    for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
+    for (auto i = fCache.begin (); i != fCache.end (); ++i) {
         if ((*i).fValidFor.fPM == pm) {
             CacheEltLRUCacheTraits::Clear (&(*i));
         }
@@ -908,7 +908,7 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
             break;
         }
 // Could optimize this further.... (MUCH)
-        for (LRUCache<CacheElt, CacheEltLRUCacheTraits>::CacheIterator i = fCache.begin (); i != fCache.end (); ++i) {
+        for (auto i = fCache.begin (); i != fCache.end (); ++i) {
             if ((*i).fValidFor.fPM == pm) {
                 CacheEltLRUCacheTraits::Clear (&(*i));
             }

@@ -300,7 +300,7 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nByte
 void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<string>& value)
 {
     RequireNotNull (prefName);
-    for (vector<string>::const_iterator i = value.begin (); i != value.end (); ++i) {
+    for (auto i = value.begin (); i != value.end (); ++i) {
         StorePref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
     }
 }
@@ -308,7 +308,7 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector
 void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector<wstring>& value)
 {
     RequireNotNull (prefName);
-    for (vector<wstring>::const_iterator i = value.begin (); i != value.end (); ++i) {
+    for (auto i = value.begin (); i != value.end (); ++i) {
         StorePref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
     }
 }

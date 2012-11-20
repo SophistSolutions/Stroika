@@ -603,7 +603,7 @@ namespace   Stroika {
                 RunElement  newRunElement   =   inRunElt;
                 Require (inRunElt.fMarker == (StyleMarker*)this);
                 newRunElement.fMarker = nullptr;
-                for (vector<StyleMarker*>::iterator i = newRunElement.fSupercededMarkers.begin (); i != newRunElement.fSupercededMarkers.end (); ) {
+                for (auto i = newRunElement.fSupercededMarkers.begin (); i != newRunElement.fSupercededMarkers.end (); ) {
                     if (newRunElement.fMarker == nullptr or newRunElement.fMarker->GetPriority () < (*i)->GetPriority ()) {
                         newRunElement.fMarker = (*i);
                         i = newRunElement.fSupercededMarkers.erase (i);
