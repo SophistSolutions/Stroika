@@ -864,7 +864,7 @@ namespace   Stroika {
 #endif
 #endif
 
-                    OnTypedNormalCharacter (nChar, false, ::GetKeyState (VK_SHIFT) & 0x8000, false, ::GetKeyState (VK_CONTROL) & 0x8000, ::GetKeyState (VK_MENU) & 0x8000);
+                    OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if     qSupportWindowsSDKCallbacks
                     HWND    hWnd    =   GetValidatedHWND ();

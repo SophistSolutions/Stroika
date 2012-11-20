@@ -1352,7 +1352,7 @@ void    Led_URLManager::Open_ActiveX (const string& url)
 {
     Memory::SmallStackBuffer<wchar_t>   wideURLBuf (url.length () + 1);
     {
-        int nWideChars = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), url.length (), wideURLBuf, url.length ());
+        int nWideChars = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), static_cast<int> (url.length ()), wideURLBuf, static_cast<int> (url.length ()));
         wideURLBuf[nWideChars] = '\0';
     }
     IUnknown*   pUnk    =   nullptr;        // implies we are an OLE-ignorant app. But I'm not sure what else I'm supposed to pass here!
