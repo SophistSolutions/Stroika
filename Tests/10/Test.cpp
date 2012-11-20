@@ -46,9 +46,9 @@ namespace	{
 				}
 
 				VerifyTestResult(s.GetLength() == kTestSize);
-				For (it, sCont) {
+				for (size_t i : sCont) {
 					size_t	oldLength = s.GetLength ();
-					VerifyTestResult(s.Contains(it.Current ()));
+					VerifyTestResult(s.Contains(i));
 					VerifyTestResult(s.Contains(s.GetLength ()));
 					s.Remove (s.GetLength ());
 					VerifyTestResult(s.GetLength () == oldLength-1);
@@ -60,7 +60,7 @@ namespace	{
 				}
 
 				{
-					For (it, s) {
+					for (size_t it : s) {
 						for(size_t i = 1; i <= kTestSize; i++) {
 							VerifyTestResult(s.Contains(i));
 							VerifyTestResult(s.GetLength() == kTestSize - i + 1);
@@ -78,8 +78,8 @@ namespace	{
 				}
 				VerifyTestResult(s.GetLength() == kTestSize);
 				{
-					For (it, s) {
-						s.Remove(it);
+					for (size_t i : s) {
+						s.Remove(i);
 					}
 					VerifyTestResult(s.IsEmpty());
 					VerifyTestResult(s.GetLength() == 0);
@@ -90,8 +90,8 @@ namespace	{
 				}
 				VerifyTestResult(s.GetLength() == kTestSize);
 
-				For(it2, s) {
-					s.Remove(it2.Current());
+				for (size_t i : s) {
+					s.Remove(i);
 				}
 				VerifyTestResult(s.GetLength() == 0);
 			}
@@ -107,9 +107,9 @@ namespace	{
 				VerifyTestResult(s.GetLength() == kTestSize);
 
 				size_t i =	1;
-				For(it, s) {
-					For(it2, s) {
-						For(it3, s) {
+				for (size_t it : s) {
+					for (size_t it2 : s) {
+						for (Iterator<size_t> it3 = s.begin (); it3 != s.end (); ++it3) {
 							s.Update (it3, i);
 							s.Remove(it3);
 							s.Add(i);
@@ -136,22 +136,22 @@ namespace	{
 			}
 
 			for(size_t i = 1; i <= s.GetLength(); i++) {
-				For(it, s) {
-					if(it.Current() == i) {
+				for (size_t it : s) {
+					if(it == i) {
 						break;
 					}
 				}
 			}
-			For(it, s) {
-				For(it1, s) {
+			for (size_t it : s) {
+				for (size_t it1 : s) {
 					s.RemoveAll();
 				}
 			}
 			VerifyTestResult(s.IsEmpty());
 			VerifyTestResult(s.GetLength() == 0);
 
-			For(it1, s) {
-				For(it2, s) {
+			for (size_t it1 : s) {
+				for (size_t it2 : s) {
 					VerifyTestResult(false);
 				}
 			}

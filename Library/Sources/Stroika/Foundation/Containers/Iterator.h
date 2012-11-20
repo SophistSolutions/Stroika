@@ -467,17 +467,6 @@ namespace   Stroika {
                 nonvirtual bool Done () const;
             };
 
-
-
-            /*
-             For macro:
-             This will be removed when compilers support ranged for. Just replace For with for, and the comma with a colon
-             For (it, myBag) with for (it : myBag)
-
-             ****OBSOLETE*****
-             */
-#define For(_it,_Container)         for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
-
         }
     }
 }

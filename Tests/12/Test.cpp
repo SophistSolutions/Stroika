@@ -29,6 +29,17 @@ using	Concrete::Tally_Array;
 using	Concrete::Tally_LinkedList;
 
 
+/*
+@todo	FIX For() macro usage - with Tally test  code...
+
+For macro:
+This will be removed when compilers support ranged for. Just replace For with for, and the comma with a colon
+For (it, myBag) with for (it : myBag)
+
+****OBSOLETE*****
+*/
+#define For(_it,_Container)         for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
+
 
 namespace	{
 
@@ -39,7 +50,7 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 
 	VerifyTestResult (s.GetLength () == 0);
 
-	For (it, s ) {
+	for (TallyEntry<size_t> i : s) {
 		VerifyTestResult (false);
 	}
 
@@ -51,15 +62,14 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 			s.Add (i);
 		}
 
-
-		For (it, s) {
+		for (TallyMutator<size_t> it = s.begin (); it != s.end (); ++it) {
 			it.UpdateCount (1);
 		}
 
 		VerifyTestResult (s.GetLength () == kTestSize);
 
 		{
-			For (it, s) {
+			for (TallyEntry<size_t> it : s) {
 				for (size_t i = 1; i <= kTestSize; i++) {
 					VerifyTestResult (s.Contains (i));
 					VerifyTestResult (s.GetLength () == kTestSize - i + 1);

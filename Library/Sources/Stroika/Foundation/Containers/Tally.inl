@@ -90,16 +90,16 @@ namespace   Stroika {
             size_t Tally<T>::TotalTally () const
             {
                 size_t sum = 0;
-                For (it, It (*this)) {
-                    sum += it.Current ().fCount;
+for (TallyEntry<T> i : It (*this)) {
+                    sum += i.fCount;
                 }
                 return (sum);
             }
             template    <typename T>
             Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
             {
-                For (it,  It (t)) {
-                    Add (it.Current ().fItem, it.Current ().fCount);
+for (TallyEntry<T> i : It (t)) {
+                    Add (i.fItem, i.fCount);
                 }
                 return (*this);
             }
@@ -307,8 +307,8 @@ namespace   Stroika {
                     return (false);
                 }
 
-                For (it, typename Tally<T>::It (lhs)) {
-                    if (it.Current ().fCount != rhs.TallyOf (it.Current ().fItem)) {
+for (TallyEntry<T> i : typename Tally<T>::It (lhs)) {
+                    if (i.fCount != rhs.TallyOf (i.fItem)) {
                         return (false);
                     }
                 }

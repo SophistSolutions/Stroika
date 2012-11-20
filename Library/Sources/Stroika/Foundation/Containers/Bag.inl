@@ -135,8 +135,8 @@ for (T i : items) {
                     RemoveAll ();
                 }
                 else {
-                    For (it, items) {
-                        _GetRep ().Remove (it.Current ());
+for (T i : items) {
+                        _GetRep ().Remove (i);
                     }
                 }
             }
@@ -149,8 +149,8 @@ for (T i : items) {
             size_t    Bag<T>::TallyOf (T item) const
             {
                 size_t  count = 0;
-                For (it, (*this)) {
-                    if (it.Current () == item) {
+for (T i : *this) {
+                    if (i == item) {
                         count++;
                     }
                 }
@@ -177,8 +177,8 @@ for (T i : items) {
                 }
 
                 // n^2 algorithm!!!
-                For (it, lhs) {
-                    if (lhs.TallyOf (it.Current ()) != rhs.TallyOf (it.Current ())) {
+for (T i : lhs) {
+                    if (lhs.TallyOf (i) != rhs.TallyOf (i)) {
                         return (false);
                     }
                 }
