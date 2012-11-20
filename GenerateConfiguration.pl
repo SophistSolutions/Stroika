@@ -12,7 +12,7 @@ use constant false => 0;
 use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
 
-my $intermediateFiles	=	"test_IntermediateFiles/";
+my $intermediateFiles	=	"IntermediateFiles/";
 my $platform			=	"";
 my $target			=	"";
 
@@ -40,9 +40,6 @@ my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
 
-#quite unclear why this is needed - or even if it is - but it appears to be that
-# just regular
-my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 
 
 
