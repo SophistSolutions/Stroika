@@ -73,10 +73,10 @@ sub	ParseCommandLine_
 sub	ConfigParam2BoolInt
 {
 	my $v = shift;
-	if ($v == "0") {
+	if ($v eq "0") {
 		return 0;
 	}
-	if ($v == "1") {
+	if ($v eq "1") {
 		return 1;
 	}
 	return DEFAULT_BOOL_OPTIONS;
