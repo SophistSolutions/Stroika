@@ -1048,7 +1048,7 @@ void    Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName
     IUnknown*   nextObj =   nullptr;
     for (size_t i = 0; SUCCEEDED (iter->Next (1, &nextObj, nullptr)); ++i) {
         char    nameBuf[1024];
-        (void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", i);
+        (void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
         char    levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2);  // assert MUCH less
         Characters::CString::Copy (levelPrefixBuf, levelPrefix, NEltsOf (levelPrefixBuf));

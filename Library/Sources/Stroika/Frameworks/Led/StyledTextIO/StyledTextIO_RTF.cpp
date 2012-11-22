@@ -4115,7 +4115,7 @@ unsigned char   StyledTextIOReader_RTF::GetNextRTFHexByte () const
     while (c == '\n' or c == '\r') {
         c = GetNextChar ();     // Skip CR/LFs
     }
-    unsigned char   value;
+    unsigned char   value = '\0';
     if (c >= '0' and c <= '9') {
         value = c - '0';
     }
@@ -4135,7 +4135,7 @@ unsigned char   StyledTextIOReader_RTF::GetNextRTFHexByte () const
     while (c == '\n' or c == '\r') {
         c = GetNextChar ();     // Skip CR/LFs
     }
-    unsigned char   value2;
+    unsigned char   value2 = '\0';
     if (c >= '0' and c <= '9') {
         value2 = c - '0';
     }

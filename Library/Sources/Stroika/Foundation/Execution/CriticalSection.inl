@@ -22,6 +22,9 @@ namespace   Stroika {
             {
 #if qUseThreads_WindowsNative
                 memset (&fCritSec_, 0, sizeof(fCritSec_));
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 28125)
+#endif
                 ::InitializeCriticalSection (&fCritSec_);
 #endif
             }

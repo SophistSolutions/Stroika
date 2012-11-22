@@ -90,7 +90,10 @@ URL::URL ()
 
 #if qPlatform_Windows
 namespace   {
-    void    OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6262)
+#endif
+	void    OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
     {
         RequireNotNull (protocol);
         RequireNotNull (host);

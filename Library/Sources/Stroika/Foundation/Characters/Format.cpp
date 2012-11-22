@@ -66,6 +66,9 @@ string  Characters::Format (const char* format, ...)
     return tmp;
 }
 
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6262)
+#endif
 wstring Characters::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);

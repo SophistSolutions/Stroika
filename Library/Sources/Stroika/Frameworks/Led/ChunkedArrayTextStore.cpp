@@ -1231,7 +1231,10 @@ void    ChunkedArrayTextStore::PossiblyAddHackMarkers (Marker* insideMarker)
             for (Marker* curMarker = OurStuff (insideMarker)->fFirstSubMarker; curMarker != NULL;) {
                 Marker* nextMarker  =   OurStuff (curMarker)->fNextSubMarker;
                 if (curMarker != lhs and curMarker != rhs) {    // skip hack markers
-                    if (QUICK_Contains (*curMarker, *lhs)) {
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6011)
+#endif
+					if (QUICK_Contains (*curMarker, *lhs)) {
                         AssertNotNull (prevMarker);     // cuz two hack markers come first
                         // Now remove old, and re-call add marker
                         OurStuff (prevMarker)->fNextSubMarker = OurStuff (curMarker)->fNextSubMarker;

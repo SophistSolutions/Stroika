@@ -120,21 +120,6 @@ const   bool    kRunning32BitGDI    =   true;                                   
 #else
 const   bool    kRunning32BitGDI    =   ((::GetVersion () & 0x80000000) == 0);  // I BELIEVE this is how we can test we are under NT!!!
 #endif                                                                              // Should be a better way to check for 32bit GDI!!!
-// LGP 950504
-#if     qWorkAroundWin95UNICODECharImagingBugs
-inline  bool    _IsWin95Helper_ ()
-{
-    OSVERSIONINFO   osvi;
-    GetVersionEx (&osvi);
-    return (
-               (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) and
-               (osvi.dwMajorVersion == 4) and
-               (osvi.dwMinorVersion == 0)
-           )
-           ;
-}
-const   bool    kRunningWin95GDI    =   not kRunning32BitGDI and _IsWin95Helper_ ();
-#endif
 #endif
 
 
@@ -178,110 +163,9 @@ inline  GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDep
 
 
 #if     qPlatform_Windows
-#if     qWideCharacters && (qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBugs)
-inline  bool    CodePageBetterOffUsingWideCharVersion (UINT codePage)
-{
-    switch (codePage) {
-        case    Characters::kCodePage_SJIS:
-        case    Characters::kCodePage_Korean:
-        case    Characters::kCodePage_GB2312:
-        case    Characters::kCodePage_BIG5:
-            return true;
-        default:
-            return false;
-    }
-}
-#endif
-#if     qWideCharacters && (qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBugs)
-inline  void    Win32_GetTextExtentExPoint_Win95n98WorkAround (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
-{
-    Assert (nChars >= 0);
-    Memory::SmallStackBuffer<char>  buf (2 * nChars);
-
-
-    /*
-     *  Under both Win95 and Win98 - the GetTextExtentExPointW function doesn't work. So I must use
-     *  GetTextExtentExPointA. But GetTextExtentExPointA () doesn't work for multibyte character sets.
-     *  So - the compromise is to use GetTextExtentExPointA () when I can - and fall back on GetTextExtentPoint32W
-     *  which DOES seem to work on Win95/98 - albeit much more slowly).
-     */
-    bool    needToUseSlowLoopWithGetTextExtentPoint32W  =   false;
-    {
-        for (size_t i = 0; i < nChars; ++i) {
-            if (str[i] >= static_cast<wchar_t> (256)) {
-                needToUseSlowLoopWithGetTextExtentPoint32W = true;
-                break;
-            }
-        }
-    }
-
-    if (needToUseSlowLoopWithGetTextExtentPoint32W) {
-        lpSize->cx = 0;
-        lpSize->cy = 0;
-        for (size_t i = 0; i < nChars; ++i) {
-            SIZE    size;
-            Verify (::GetTextExtentPoint32W (hdc, &str[i], 1, &size));
-            lpSize->cx += size.cx;
-            lpSize->cy = max (size.cy, lpSize->cy);
-            alpDx[i] = lpSize->cx;
-        }
-        return;
-    }
-    UINT    codePage    =   Platform::Windows::Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
-    int nChars2 =   ::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars * 2, nullptr, nullptr);
-    Assert (lpnFit == nullptr); // cuz we don't support handling/mapping this # back not needed right now - LGP 980422
-    Memory::SmallStackBuffer<int>   tmpAlpDxArray (nChars2);
-    Verify (::GetTextExtentExPointA (hdc, buf, nChars2, maxExtent, nullptr, tmpAlpDxArray, lpSize));
-    // Now walk through the tmpAlpDxArray, and as we find CHARACTER boundaries in the text, map that to CHARACTER (by one)
-    // boundaries in the UNICODE based array
-    const char* mbyteStrIter = buf;
-    const int* mbyteAlpDxIter = tmpAlpDxArray;
-    for (size_t i = 0; i < nChars; ++i, mbyteAlpDxIter++) {
-        int nBytesInThisChar    =   ::WideCharToMultiByte (codePage, 0, &str[i], 1, nullptr, 0, nullptr, nullptr);
-        Assert (nBytesInThisChar == 1 or nBytesInThisChar == 2);
-        if (nBytesInThisChar == 2) {
-            mbyteAlpDxIter++;
-        }
-        alpDx[i] = *mbyteAlpDxIter;
-    }
-    Assert (mbyteAlpDxIter - static_cast<int*>(tmpAlpDxArray) == nChars2);  // be sure the sum we get is the sum of the individual chars... Else maybe we read off end of array!
-}
-#endif
-#if     qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
-inline  void    Win32_GetTextExtentPoint_Win95WorkAround (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
-{
-    UINT    codePage    =   Platform::Windows::Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
-    if (CodePageBetterOffUsingWideCharVersion (codePage)) {
-        Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
-        return;
-    }
-    Memory::SmallStackBuffer<char>  buf (2 * nChars);
-    int nChars2 =   ::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars * 2, nullptr, nullptr);
-    Verify (::GetTextExtentPointA (hdc, buf, nChars2, lpSize));
-}
-#endif
-#if     qWideCharacters && qWorkAroundWin95UNICODECharImagingBugs
-inline  void    Win32_TextOut_Win95WorkAround (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
-{
-    UINT    codePage    =   Platform::Windows::Win32CharSetToCodePage (::GetTextCharset (hdc));    // Was CP_ACP...
-    if (CodePageBetterOffUsingWideCharVersion (codePage)) {
-        Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
-        return;
-    }
-    Memory::SmallStackBuffer<char>  buf (2 * nChars);
-    int nChars2 =   ::WideCharToMultiByte (codePage, 0, str, nChars, buf, nChars * 2, nullptr, nullptr);
-    Verify (::TextOutA (hdc, xStart, yStart, buf, nChars2));
-}
-#endif
 inline  void    Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 {
 #if     qWideCharacters
-#if     qWorkAroundWin95UNICODECharImagingBugs || qWorkAroundWin98UNICODECharImagingBug
-    if (not kRunning32BitGDI) {
-        Win32_GetTextExtentExPoint_Win95n98WorkAround (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize);
-        return;
-    }
-#endif
     Verify (::GetTextExtentExPointW (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
 #else
     Verify (::GetTextExtentExPointA (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
@@ -290,12 +174,6 @@ inline  void    Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_
 inline  void    Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
 {
 #if     qWideCharacters
-#if     qWorkAroundWin95UNICODECharImagingBugs
-    if (kRunningWin95GDI) {
-        Win32_GetTextExtentPoint_Win95WorkAround (hdc, str, nChars, lpSize);
-        return;
-    }
-#endif
     Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
 #else
     Verify (::GetTextExtentPointA (hdc, str, nChars, lpSize));
@@ -304,12 +182,6 @@ inline  void    Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nCh
 inline  void    Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
 {
 #if     qWideCharacters
-#if     qWorkAroundWin95UNICODECharImagingBugs
-    if (kRunningWin95GDI) {
-        Win32_TextOut_Win95WorkAround (hdc, xStart, yStart, str, nChars);
-        return;
-    }
-#endif
     Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
 #else
     Verify (::TextOutA (hdc, xStart, yStart, str, nChars));

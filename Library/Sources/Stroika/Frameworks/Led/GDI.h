@@ -49,50 +49,6 @@ namespace   Stroika {
 
 
 
-
-
-            /*
-            @CONFIGVAR:     qWorkAroundWin95UNICODECharImagingBugs
-            @DESCRIPTION:   <p>Contrary to the MSDEV 50 online docs, many of the Win32 UNICODE versions of GDI functions don't work,
-                or worse - only half-way work.</p>
-                    <p>For example, GetTextExtentExPointW DOESN'T WORK AT ALL, TextOutW works pretty well, but draws
-                underlines the wrong width...(for proportional fonts).</p>
-                    <p>Turning this feature on makes the code work under Win95/Win98 and NT, but makes the NT code a little slower.</p>
-                    <p>NB: This has NO EFFECT unless you have built for UNICODE (@'qWideCharacters').</p>
-                    <p>Turn ON by default.</p>
-             */
-#ifndef qWorkAroundWin95UNICODECharImagingBugs
-#define qWorkAroundWin95UNICODECharImagingBugs  1
-#endif
-
-
-
-
-
-
-            /*
-            @CONFIGVAR:     qWorkAroundWin98UNICODECharImagingBugs
-            @DESCRIPTION:   <p>See @'qWorkAroundWin95UNICODECharImagingBugs.</p>
-                    <p>This is very similar, but a strict subset of the problems in @'qWorkAroundWin95UNICODECharImagingBugs'.
-                In other words, some were fixed, and some weren't.</p>
-                    <p>Turn ON by default.</p>
-             */
-#ifndef qWorkAroundWin98UNICODECharImagingBugs
-#define qWorkAroundWin98UNICODECharImagingBugs  1
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
             /*
             @CLASS:         Led_Coordinate
             @DESCRIPTION:   <p><code>Led_Coordinate</code> is the <code>signed</code> analog of @'Led_Distance'.
@@ -3092,6 +3048,7 @@ namespace   Stroika {
 #if     qPlatform_Windows
                 // Get the limits of the 'workarea'
                 RECT rWorkArea;
+				memset(&rWorkArea, 0, sizeof (rWorkArea));
                 BOOL  bResult = SystemParametersInfo (SPI_GETWORKAREA, sizeof(RECT), &rWorkArea,  0);
                 if (!bResult) {
                     rWorkArea.left = rWorkArea.top = 0;

@@ -568,8 +568,11 @@ void    Thread::Abort_Forced_Unsafe ()
 #if         qUseThreads_WindowsNative
     if (fRep_->fStatus != Status::eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
         // This is VERY bad to do. Put assert here that it never happens...
-        Assert (false);
-        ::TerminateThread (fRep_->fThread_, -1);
+        AssertNotReached ();
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6258)
+#endif
+		::TerminateThread (fRep_->fThread_, -1);
     }
 #else
     AssertNotImplemented ();

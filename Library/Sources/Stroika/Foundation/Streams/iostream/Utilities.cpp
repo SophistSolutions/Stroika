@@ -38,6 +38,9 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     in.seekg (0, ios_base::end);
     streamoff   end     =   in.tellg ();
     Assert (start <= end);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6237)
+#endif
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
         Execution::DoThrow (Execution::StringException (L"stream too large"));
     }
@@ -57,6 +60,9 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     in.seekg (0, ios_base::end);
     streamoff   end     =   in.tellg ();
     Assert (start <= end);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6237)
+#endif
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
         Execution::DoThrow (Execution::StringException (L"stream too large"));
     }
@@ -131,6 +137,9 @@ vector<Byte>    Streams::iostream::ReadBytes (istream& in)
     in.seekg (0, ios_base::end);
     streamoff   end     =   in.tellg ();
     Assert (start <= end);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6237)
+#endif
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
         Execution::DoThrow (StringException (L"stream too large"));
     }

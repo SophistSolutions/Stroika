@@ -117,6 +117,9 @@ namespace {
         }
 
     public:
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress: 6262)
+#endif
         virtual     MisspellingInfo*    GetNextMisspelling () override {
             SpellCheckEngine*   sce =   fTI.GetSpellCheckEngine ();
             if (sce != nullptr) {
