@@ -68,10 +68,10 @@ namespace   Stroika {
                     ~IdleManagerOSImpl_Win32 ();
 
                 public:
-                    virtual    void    StartSpendTimeCalls () override;
-                    virtual    void    TerminateSpendTimeCalls () override;
-                    virtual    float   GetSuggestedFrequency () const override;
-                    virtual    void    SetSuggestedFrequency (float suggestedFrequency) override;
+                    virtual    void										StartSpendTimeCalls () override;
+                    virtual    void										TerminateSpendTimeCalls () override;
+                    virtual    Foundation::Time::DurationSecondsType	GetSuggestedFrequency () const override;
+                    virtual    void										SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
 
                 protected:
                     nonvirtual  void    OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
@@ -85,8 +85,8 @@ namespace   Stroika {
                 private:
                     enum    { eTimerEventID     =   34252 };    // Magic#
                     HWND        fIdleWnd;
-                    float       fSuggestedFrequency;
-                    UINT_PTR    fTimerID;
+                    Foundation::Time::DurationSecondsType   fSuggestedFrequency;
+                    UINT_PTR								fTimerID;
                 };
 
 
@@ -288,12 +288,12 @@ namespace   Stroika {
                     }
                 }
 
-                float   IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
+                Foundation::Time::DurationSecondsType   IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
                 {
                     return fSuggestedFrequency;
                 }
 
-                void    IdleManagerOSImpl_Win32::SetSuggestedFrequency (float suggestedFrequency)
+                void    IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)
                 {
                     if (fSuggestedFrequency != suggestedFrequency) {
                         fSuggestedFrequency = suggestedFrequency;

@@ -91,9 +91,9 @@ namespace   Stroika {
                 bool    fInIdleMode;
 
             public:
-                static  float   kNeverCallIdler;
-                virtual float   GetIdlerFrequncy (Idler* idler);
-                virtual void    SetIdlerFrequncy (Idler* idler, float idlerFrequency);
+                static  Foundation::Time::DurationSecondsType   kNeverCallIdler;
+                virtual Foundation::Time::DurationSecondsType   GetIdlerFrequncy (Idler* idler);
+                virtual void									SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSecondsType idlerFrequency);
 
 
             public:
@@ -122,8 +122,8 @@ namespace   Stroika {
             private:
                 struct  IdlerInfo {
                     IdlerInfo ();
-                    float   fIdlerFrequency;
-                    float   fLastCalledAt;
+                    Foundation::Time::DurationSecondsType   fIdlerFrequency;
+                    Foundation::Time::DurationSecondsType	fLastCalledAt;
                 };
                 map<Idler*, IdlerInfo>  fIdlers;
                 bool                    fNeedMgrIdleCalls;
@@ -166,10 +166,10 @@ namespace   Stroika {
                 IdleManagerOSImpl ();
 
             public:
-                virtual void    StartSpendTimeCalls ()                                  =   0;
-                virtual void    TerminateSpendTimeCalls ()                              =   0;
-                virtual float   GetSuggestedFrequency () const                          =   0;
-                virtual void    SetSuggestedFrequency (float suggestedFrequency)        =   0;
+                virtual void									StartSpendTimeCalls ()                                  =   0;
+                virtual void									TerminateSpendTimeCalls ()                              =   0;
+                virtual Foundation::Time::DurationSecondsType   GetSuggestedFrequency () const                          =   0;
+                virtual void									SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)        =   0;
 
             protected:
                 virtual void    CallSpendTime ();

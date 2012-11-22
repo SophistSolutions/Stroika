@@ -7,6 +7,7 @@
 #include    "../../Foundation/StroikaPreComp.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/Debug/Assertions.h"
+#include	"../../Foundation/Time/Realtime.h"
 
 /*
 @MODULE:    LedSupport
@@ -812,9 +813,8 @@ public:\
 
 
 
-            void    Led_BeepNotify ();
-            float   Led_GetTickCount ();        // return tickount in floating point seconds
-            float   Led_GetDoubleClickTime ();  // time-interval which defines how quick we consider two consecutive clicks a dbl-click
+            void									Led_BeepNotify ();
+            Foundation::Time::DurationSecondsType   Led_GetDoubleClickTime ();  // time-interval which defines how quick we consider two consecutive clicks a dbl-click
 
 #if     qXWindows
             extern  void    (*gBeepNotifyCallBackProc) ();

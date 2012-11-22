@@ -127,7 +127,6 @@ namespace {
                 bool        firstTry    =   true;
                 size_t      startRegion =   fTI.GetSelectionEnd ();
 SecondTry:
-                ;
                 {
                     // regardless of the startRegion - back up the search to the start of the interesected word. The only
                     // exception is if the size of our charBuf isn't big enough to go past the startRegion position (cuz
@@ -1468,7 +1467,7 @@ bool    TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickC
     }
 #if     0
     DbgTrace ("TextInteractor::ProcessSimpleClick (tickCount=%f, newMousePos=(%d,%d), clickCount=%d, extendSel=%d, newSelStart=%d, newSelEnd=%d)\n",
-              Led_GetTickCount (), clickedAt.v, clickedAt.h, clickCount, extendSelection, GetSelectionStart (), GetSelectionEnd ()
+              Time::GetTickCount (), clickedAt.v, clickedAt.h, clickCount, extendSelection, GetSelectionStart (), GetSelectionEnd ()
              );
 #endif
     return true;
@@ -1478,7 +1477,7 @@ bool    TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickC
 @METHOD:        TextInteractor::UpdateClickCount
 @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection.</p>
 */
-void    TextInteractor::UpdateClickCount (float clickAtTime, const Led_Point& clickAtLocation)
+void    TextInteractor::UpdateClickCount (Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation)
 {
     if (ClickTimesAreCloseForDoubleClick (clickAtTime) and PointsAreCloseForDoubleClick (clickAtLocation)) {
         IncrementCurClickCount (clickAtTime);
@@ -1493,7 +1492,7 @@ void    TextInteractor::UpdateClickCount (float clickAtTime, const Led_Point& cl
 @METHOD:        TextInteractor::ClickTimesAreCloseForDoubleClick
 @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection. See also @'TextInteractor::UpdateClickCount' ().</p>
 */
-bool    TextInteractor::ClickTimesAreCloseForDoubleClick (float thisClick)
+bool    TextInteractor::ClickTimesAreCloseForDoubleClick (Time::DurationSecondsType thisClick)
 {
     return (fLastClickedAt + Led_GetDoubleClickTime () >=  thisClick);
 }
@@ -1524,9 +1523,9 @@ bool    TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p)
 void    TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor)
 {
 #if     qDynamiclyChooseAutoScrollIncrement
-    float   now =   Led_GetTickCount ();
-    static  float   sLastTimeThrough    =   0.0f;
-    const   float   kClickThreshold     =   Led_GetDoubleClickTime () / 3;
+    Foundation::Time::DurationSecondsType			now					=   Time::GetTickCount ();
+    static  Foundation::Time::DurationSecondsType   sLastTimeThrough    =   0.0f;
+    const   Foundation::Time::DurationSecondsType   kClickThreshold     =   Led_GetDoubleClickTime () / 3;
     bool    firstClick  =   (now - sLastTimeThrough > kClickThreshold);
 
     int     increment   =   firstClick ? 1 : 2;
@@ -1575,7 +1574,7 @@ void    TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t 
 #endif
 #if     0
     DbgTrace ("TextInteractor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), dragAnchor=%d, newSelStart=%d, newSelEnd=%d)\n",
-              Led_GetTickCount (), newMousePos.v, newMousePos.h, dragAnchor, newSelStart, newSelEnd
+              Time::GetTickCount (), newMousePos.v, newMousePos.h, dragAnchor, newSelStart, newSelEnd
              );
 #endif
 }
@@ -3361,13 +3360,13 @@ float       TextInteractor::GetTickCountBetweenBlinks ()
 
 bool    TextInteractor::DelaySomeForScrollBarClick ()
 {
-    const   float   kDelayAfterFirstTicks   =   0.20f;      // maybe should use ::GetDblClickTime()???
-    const   float   kDelayAfterOtherTicks   =   0.02f;      // This delay is so on really fast computers, text doesn't scroll too quickly
-    const   int     kTimesForFirstClick     =   2;
-    const   float   kLongTime               =   1.0f;       // any click after this time deemed we start again with first-tick
-    static  short   sTimesThruBeforeReset;
+    const   Time::DurationSecondsType   kDelayAfterFirstTicks   =   0.20f;      // maybe should use ::GetDblClickTime()???
+    const   Time::DurationSecondsType   kDelayAfterOtherTicks   =   0.02f;      // This delay is so on really fast computers, text doesn't scroll too quickly
+    const   int							kTimesForFirstClick     =   2;
+    const   Time::DurationSecondsType   kLongTime               =   1.0f;       // any click after this time deemed we start again with first-tick
+    static  short						sTimesThruBeforeReset;
 
-    float   now =   Led_GetTickCount ();
+    Foundation::Time::DurationSecondsType   now =   Time::GetTickCount ();
     if (fLastScrolledAt == 0 or fLastScrolledAt + kLongTime < now) {
         fLastScrolledAt = now + kDelayAfterFirstTicks;
         sTimesThruBeforeReset = 1;

@@ -836,7 +836,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 void    Led_MFC_DragAndDropWindow<BASECLASS>::HandleDragSelect (UINT /*nFlags*/, CPoint oPoint)
                 {
-                    const float kTimeEnoughToRestoreSelection   =   0.3f;
+                    const Foundation::Time::DurationSecondsType kTimeEnoughToRestoreSelection   =   0.3f;
 
                     if (GetStyle () & WS_DISABLED) {
                         return;
@@ -866,7 +866,7 @@ namespace   Stroika {
                         Led_Region  selectionRegion;
                         GetSelectionWindowRegion (&selectionRegion, GetSelectionStart (), GetSelectionEnd ());
 
-                        float   startDragSelectAt   =   Led_GetTickCount ();    // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
+						Foundation::Time::DurationSecondsType   startDragSelectAt   =   Time::GetTickCount ();    // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
                         DROPEFFECT  dropResult  =   DROPEFFECT_COPY;
                         if (not (GetStyle () & ES_READONLY)) {
                             // Assure we don't change read-only text.
@@ -883,7 +883,7 @@ namespace   Stroika {
                         switch (dropResult) {
                             case    DROPEFFECT_NONE: {
                                     AssertNotNull (sCurrentDragInfo);
-                                    if (Led_GetTickCount () - startDragSelectAt > kTimeEnoughToRestoreSelection) {
+                                    if (Time::GetTickCount () - startDragSelectAt > kTimeEnoughToRestoreSelection) {
                                         /*
                                         *   SPR#1374 - on aborted drag - restore the selection to its original value, rather
                                         *   than setting it to an empty selection where the user had clicked.
@@ -1488,7 +1488,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 void    Led_MFC_CViewHelper<BASECLASS>::OnLButtonDown (UINT nFlags, CPoint oPoint)
                 {
-                    UpdateClickCount (Led_GetTickCount (), AsLedPoint (oPoint));
+                    UpdateClickCount (Time::GetTickCount (), AsLedPoint (oPoint));
 
                     if (m_pDocument != NULL and dynamic_cast<COleDocument*> (m_pDocument) != NULL) {
                         // Any time we get a click, make sure there are no active in-place activations.

@@ -31,7 +31,13 @@ using   namespace   Stroika::Foundation::Time;
 
 DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
 {
-#if     qPlatform_Windows
+#if     qPlatform_MacOS
+    return (float (::TickCount ()) / 60.0f);
+#elif   qPlatform_POSIX
+    timespec ts;
+    Verify (clock_gettime (CLOCK_REALTIME, &ts) == 0);
+    return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
+#elif   qPlatform_Windows
     static  bool            sInited =   false;
     static  LARGE_INTEGER   sPerformanceFrequency;
     if (not sInited) {
@@ -49,10 +55,6 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
         Verify (::QueryPerformanceCounter (&counter));
         return static_cast<DurationSecondsType> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
     }
-#elif   qPlatform_POSIX
-    timespec ts;
-    Verify (clock_gettime (CLOCK_REALTIME, &ts) == 0);
-    return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 #else
     return time (0);    //tmphack... not good but better than assert erorr
 #endif

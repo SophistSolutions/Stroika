@@ -6,6 +6,8 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include	"../../Foundation/Time/Realtime.h"
+
 
 /*
 @MODULE:    TextInteractor
@@ -26,7 +28,6 @@
 namespace   Stroika {
     namespace   Frameworks {
         namespace   Led {
-
 
 
 
@@ -334,16 +335,16 @@ namespace   Stroika {
 
             public:
                 nonvirtual  unsigned    GetCurClickCount () const;
-                nonvirtual  void        SetCurClickCount (unsigned curClickCount, float lastClickAt);
+                nonvirtual  void        SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt);
             protected:
-                nonvirtual  void        IncrementCurClickCount (float lastClickAt);
-                nonvirtual  void        UpdateClickCount (float clickAtTime, const Led_Point& clickAtLocation);
-                virtual     bool        ClickTimesAreCloseForDoubleClick (float thisClick);
+                nonvirtual  void        IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt);
+                nonvirtual  void        UpdateClickCount (Foundation::Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation);
+                virtual     bool        ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
                 virtual     bool        PointsAreCloseForDoubleClick (const Led_Point& p);
             private:
-                unsigned    fClickCount;
-                float       fLastClickedAt;
-                Led_Point   fLastMouseDownAt;
+                unsigned								fClickCount;
+                Foundation::Time::DurationSecondsType	fLastClickedAt;
+                Led_Point								fLastMouseDownAt;
 
 
             protected:
@@ -676,7 +677,7 @@ namespace   Stroika {
             public:
                 virtual     bool    DelaySomeForScrollBarClick ();
             private:
-                float   fLastScrolledAt;
+                Foundation::Time::DurationSecondsType   fLastScrolledAt;
 
 
             public:
@@ -1526,7 +1527,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' (). This is seldom called directly - except perhaps to RESET
                         the count to zero or one. This is typically just called internally through @'TextInteractor::UpdateClickCount'.</p>
             */
-            inline  void    TextInteractor::SetCurClickCount (unsigned curClickCount, float lastClickAt)
+            inline  void    TextInteractor::SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt)
             {
                 fClickCount = curClickCount;
                 fLastClickedAt = lastClickAt;
@@ -1536,7 +1537,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' () and @'TextInteractor::SetCurClickCount' ().
                         This is typically just called internally through @'TextInteractor::UpdateClickCount'.</p>
             */
-            inline  void    TextInteractor::IncrementCurClickCount (float lastClickAt)
+            inline  void    TextInteractor::IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt)
             {
                 fClickCount++;
                 fLastClickedAt = lastClickAt;

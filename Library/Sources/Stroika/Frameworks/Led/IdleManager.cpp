@@ -5,6 +5,8 @@
 
 #include    <algorithm>
 
+#include	"../../Foundation/Time/Realtime.h"
+
 #include    "IdleManager.h"
 
 
@@ -78,8 +80,8 @@ IdleManager::Cleanup::~Cleanup ()
  ********************************** IdleManager *********************************
  ********************************************************************************
  */
-IdleManager*    IdleManager::sThe               =   nullptr;
-float           IdleManager::kNeverCallIdler    =   100.0f;
+IdleManager*				IdleManager::sThe               =   nullptr;
+Time::DurationSecondsType   IdleManager::kNeverCallIdler    =   100.0f;
 
 
 void    IdleManager::AddIdler (Idler* idler)
@@ -124,7 +126,7 @@ void    IdleManager::RemoveEnterIdler (EnterIdler* enterIdler)
     UpdateIdleMgrImplState ();
 }
 
-float   IdleManager::GetIdlerFrequncy (Idler* idler)
+Time::DurationSecondsType   IdleManager::GetIdlerFrequncy (Idler* idler)
 {
     RequireNotNull (idler);
     map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
@@ -133,7 +135,7 @@ float   IdleManager::GetIdlerFrequncy (Idler* idler)
     return i->second.fIdlerFrequency;
 }
 
-void    IdleManager::SetIdlerFrequncy (Idler* idler, float idlerFrequency)
+void    IdleManager::SetIdlerFrequncy (Idler* idler, Time::DurationSecondsType idlerFrequency)
 {
     RequireNotNull (idler);
     map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
@@ -148,12 +150,12 @@ void    IdleManager::SetIdlerFrequncy (Idler* idler, float idlerFrequency)
 void    IdleManager::UpdateIdleMgrImplState ()
 {
     if (fIdleManagerOSImpl != nullptr) {
-        float   idleFreq            =   kNeverCallIdler;
+        Time::DurationSecondsType   idleFreq            =   kNeverCallIdler;
         for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
             idleFreq = min (idleFreq, i->second.fIdlerFrequency);
         }
         if (not fEnterIdlers.empty ()) {
-            const float kMinEnterIdleFreqCheck  =   0.5f;
+            const Time::DurationSecondsType kMinEnterIdleFreqCheck  =   0.5f;
             idleFreq = min (idleFreq, kMinEnterIdleFreqCheck);
         }
         bool    shouldNeedIdleMgr   =   (idleFreq != kNeverCallIdler);
@@ -173,13 +175,13 @@ void    IdleManager::UpdateIdleMgrImplState ()
 void    IdleManager::CallSpendTime ()
 {
     SetInIdleMode (true);   // not SURE this is the best place to call this - maybe SB called from OSREP only???
-    float   now =   Led_GetTickCount ();
+	Foundation::Time::DurationSecondsType   now =   Time::GetTickCount ();
     for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
         // only call SpendTime if its been requested
         if (i->second.fLastCalledAt + i->second.fIdlerFrequency <= now) {
             Idler*  idler   =   i->first;
             idler->SpendIdleTime ();
-            now = Led_GetTickCount ();      // update 'now' since we could have spent alot of time in 'SpendIdleTime'
+            now = Time::GetTickCount ();      // update 'now' since we could have spent alot of time in 'SpendIdleTime'
             i->second.fLastCalledAt = now;
         }
     }

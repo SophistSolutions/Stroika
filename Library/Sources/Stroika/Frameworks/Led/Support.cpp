@@ -257,45 +257,6 @@ static  double  Led::GetThisMachineCurTime ()
 }
 #endif
 
-/*
-@METHOD:        Led_GetTickCount
-@DESCRIPTION:   <p>Get the number of seconds since some constant, system-specified reference time. This is used
-            to tell how much time has elapsed since a particular event.</p>
-                <p>Note - though this is based on the same reference time as an time values packed into event records,
-            it maybe differently normalized. These times are all in seconds, whereas event records are often in
-            other units (ticks - 1/60 of a second, or milliseconds).</p>
-                <p>In the case of X-Windows - this business is very complicated because there are two different times
-            one might be intersted in. There is the time on the client (where Led is running) and the time on the X-Server
-            (users computer screen). Alas - X11R4 appears to have quite weak support for time - and offers no way I've found
-            to accurately get the time from the users computer. As a result - with X-Windows - you must arrange to call
-            @'SyncronizeLedXTickCount' for each event that specifies a time value (as soon as that event arrives). This
-            data - together with time values from the client (where Led is running) computer will be used to provide a
-            better approximation of the true elapsed time.</p>
-*/
-float   Led::Led_GetTickCount ()
-{
-#if     qPlatform_MacOS
-    return (float (::TickCount ()) / 60.0f);
-#elif   qPlatform_Windows
-    return (float (::GetTickCount ()) / 1000.0f);
-#elif   qXWindows
-    static  float       sLastTickCountReturned;             // hack so we don't time-warp (out of sync between X client and could
-    // cause time to go backwards cuz of our computations without this hack
-    float   timeOfLastEvent =   float (sLastXWindowsEventTime) / 1000.0f;
-    double  curTime         =   GetThisMachineCurTime ();
-    if (sLastEventReferenceTime == 0) {
-        sLastEventReferenceTime = curTime;
-    }
-    double  resultTime      =   (timeOfLastEvent + (curTime - sLastEventReferenceTime));
-
-    // avoid timewarp
-    resultTime = max (resultTime, sLastTickCountReturned);
-    sLastTickCountReturned = resultTime;
-    return resultTime;
-#endif
-}
-
-
 #if     qXWindows
 /*
 @METHOD:        gBeepNotifyCallBackProc
@@ -305,7 +266,7 @@ void    (*Led::gBeepNotifyCallBackProc) ()   =   nullptr;
 
 /*
 @METHOD:        SyncronizeLedXTickCount
-@DESCRIPTION:   <p>X-Windows specific magic. See @'Led_GetTickCount'.</p>
+@DESCRIPTION:   <p>X-Windows specific magic. See @'Time::GetTickCount'.</p>
 */
 void    Led::SyncronizeLedXTickCount (unsigned long xTickCount)
 {
@@ -315,7 +276,7 @@ void    Led::SyncronizeLedXTickCount (unsigned long xTickCount)
 
 /*
 @METHOD:        LedTickCount2XTime
-@DESCRIPTION:   <p>X-Windows specific. See also @'SyncronizeLedXTickCount' and @'Led_GetTickCount'. Maps Led_GetTickCount ()
+@DESCRIPTION:   <p>X-Windows specific. See also @'SyncronizeLedXTickCount' and @'Time::GetTickCount'. Maps Time::GetTickCount ()
             result to the sort of time value you can stick into an XEvent record.</p>
 */
 unsigned long   Led::LedTickCount2XTime (float ledTickCount)
@@ -332,7 +293,7 @@ unsigned long   Led::LedTickCount2XTime (float ledTickCount)
 @DESCRIPTION:   <p>Returns the amount of time (in seconds) between clicks which the OS deems should be interpretted
             as a double click.</p>
 */
-float   Led::Led_GetDoubleClickTime ()
+Time::DurationSecondsType   Led::Led_GetDoubleClickTime ()
 {
 #if     qPlatform_MacOS
     return (float (::GetDblTime ()) / 60.0f);

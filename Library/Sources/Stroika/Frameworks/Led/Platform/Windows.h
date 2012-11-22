@@ -1286,7 +1286,7 @@ namespace   Stroika {
                 template    <typename   BASE_INTERACTOR>
                 void    Led_Win32_Helper<BASE_INTERACTOR>::OnLButtonDown_Msg (UINT nFlags, int x, int y)
                 {
-                    UpdateClickCount (Led_GetTickCount (), Led_Point (y, x));
+                    UpdateClickCount (Time::GetTickCount (), Led_Point (y, x));
                     OnNormalLButtonDown (nFlags, Led_Point (y, x));
                 }
                 template    <typename   BASE_INTERACTOR>
@@ -1303,7 +1303,7 @@ namespace   Stroika {
                 template    <typename   BASE_INTERACTOR>
                 void    Led_Win32_Helper<BASE_INTERACTOR>::OnLButtonDblClk_Msg (UINT /*nFlags*/, int x, int y)
                 {
-                    IncrementCurClickCount (Led_GetTickCount ());
+                    IncrementCurClickCount (Time::GetTickCount ());
 
                     bool    extendSelection =   !!(::GetKeyState (VK_SHIFT) & 0x8000);
                     if (not ProcessSimpleClick (Led_Point (y, x), GetCurClickCount (), extendSelection, &fDragAnchor)) {
@@ -1342,9 +1342,9 @@ namespace   Stroika {
                     }
 
 #if     qDynamiclyChooseAutoScrollIncrement
-                    float   now =   Led_GetTickCount ();
-                    static  float   sLastTimeThrough    =   0.0f;
-                    const   float   kClickThreshold     =   Led_GetDoubleClickTime () / 3;
+					Foundation::Time::DurationSecondsType			now =   Time::GetTickCount ();
+                    static  Foundation::Time::DurationSecondsType   sLastTimeThrough    =   0.0f;
+                    const   Foundation::Time::DurationSecondsType   kClickThreshold     =   Led_GetDoubleClickTime () / 3;
                     bool    firstClick  =   (now - sLastTimeThrough > kClickThreshold);
 
                     int     increment   =   firstClick ? 1 : 2;
@@ -1466,9 +1466,9 @@ namespace   Stroika {
                     }
 
 #if     qDynamiclyChooseAutoScrollIncrement
-                    float   now =   Led_GetTickCount ();
-                    static  float   sLastTimeThrough    =   0.0f;
-                    const   float   kClickThreshold     =   Led_GetDoubleClickTime ();
+                    Foundation::Time::DurationSecondsType			now =   Time::GetTickCount ();
+                    static  Foundation::Time::DurationSecondsType   sLastTimeThrough    =   0.0f;
+                    const   Foundation::Time::DurationSecondsType   kClickThreshold     =   Led_GetDoubleClickTime ();
                     bool    firstClick  =   (now - sLastTimeThrough > kClickThreshold);
 
                     int     increment   =   firstClick ? 1 : 10;
@@ -1970,7 +1970,7 @@ namespace   Stroika {
                 */
                 inline  void    Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept {
                     if (updateInfo.fTextModified) {
-                        SetCurClickCount (0, Led_GetTickCount ());
+                        SetCurClickCount (0, Time::GetTickCount ());
                     }
                     fDragAnchor = min (fDragAnchor, GetEnd ());     // SPR#0637 reported we could sometimes get crash while mousing/typing. This SHOULD prevent fDragAnchor ever
                     // getting invalid... NB: I never reproduced the problem.

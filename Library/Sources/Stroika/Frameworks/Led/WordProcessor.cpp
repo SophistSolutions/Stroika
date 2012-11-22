@@ -509,8 +509,8 @@ void    WordProcessor::WPIdler::SpendIdleTime ()
     AssertNotNull (pdbRep);
     if (pdbRep->fSomeInvalidTables) {
         const   float   kMaxTime    =   0.2f;
-        float           startTime   =   Led_GetTickCount ();
-        float           endTime     =   startTime + kMaxTime;
+        Foundation::Time::DurationSecondsType	startTime   =   Time::GetTickCount ();
+        Foundation::Time::DurationSecondsType   endTime     =   startTime + kMaxTime;
         AssertNotNull (fWP);
         typedef WordProcessor::Table    Table;
         vector<Table*>  tables = fWP->GetTablesInRange (0, fWP->GetEnd ());
@@ -520,7 +520,7 @@ void    WordProcessor::WPIdler::SpendIdleTime ()
             if (t->fNeedLayout != Table::eDone) {
                 Table::TemporarilySetOwningWP   owningWPSetter (*t, *fWP);
                 t->PerformLayout ();
-                if (endTime < Led_GetTickCount ()) {
+                if (endTime < Time::GetTickCount ()) {
                     maybeMoreTables = true;
                     break;
                 }
@@ -1874,7 +1874,7 @@ void    WordProcessor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t d
     inherited::WhileSimpleMouseTracking (newMousePos, dragAnchor);
 #if     0
     DbgTrace ("WordProcessor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), clickedOnChar=%d, dragAnchor=%d)\n",
-              Led_GetTickCount (), newMousePos.v, newMousePos.h, clickedOnChar, dragAnchor
+              Time::GetTickCount (), newMousePos.v, newMousePos.h, clickedOnChar, dragAnchor
              );
 #endif
 }
@@ -6786,7 +6786,7 @@ bool    Table::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, boo
 
                 // pass along click to embedded WP
                 TemporarilyAllocateCellWithTablet   wp (*this, rowSelStart, colSelStart);
-                wp->SetCurClickCount (fCurrentOwningWP->GetCurClickCount (), Led_GetTickCount ());
+                wp->SetCurClickCount (fCurrentOwningWP->GetCurClickCount (), Time::GetTickCount ());
                 Assert (fCurrentOwningWP->GetCurClickCount () == clickCount);
                 wp->ProcessSimpleClick (TableCoordinates2Window (clickedAt), clickCount, extendSelection, &fIntraCellDragAnchor);
             }
@@ -6853,7 +6853,7 @@ void    Table::WhileSimpleMouseTracking (Led_Point newMousePos)
                 }
                 // pass along click to embedded WP
                 TemporarilyAllocateCellWithTablet   wp (*this, rowSelStart, colSelStart);
-                wp->SetCurClickCount (fCurrentOwningWP->GetCurClickCount (), Led_GetTickCount ());
+                wp->SetCurClickCount (fCurrentOwningWP->GetCurClickCount (), Time::GetTickCount ());
                 wp->WhileSimpleMouseTracking (TableCoordinates2Window (newMousePos), fIntraCellDragAnchor);
             }
         }
@@ -7057,7 +7057,7 @@ void    Table::SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t co
     }
 #if     0
     DbgTrace ("Table::SetCellSelection (table=0x%x, tickCount=%f, rs=%d, re=%d, cs=%d, ce=%d, changed=%d)\n",
-              this, Led_GetTickCount (), rowSelStart, rowSelEnd, colSelStart, colSelEnd, changed
+              this, Time::GetTickCount (), rowSelStart, rowSelEnd, colSelStart, colSelEnd, changed
              );
 #endif
 }
@@ -7100,7 +7100,7 @@ void    Table::SetIntraCellSelection (size_t selStart, size_t selEnd)
 {
     if (fIntraSelStart != selStart or fIntraSelEnd != selEnd) {
 #if     0
-        DbgTrace ("Table::SetIntraCellSelection (selStart = %d, selEnd = %d)- oldSel=(%d,%d), tickcount=%f\n", selStart, selEnd, fIntraSelStart, fIntraSelEnd, Led_GetTickCount ());
+        DbgTrace ("Table::SetIntraCellSelection (selStart = %d, selEnd = %d)- oldSel=(%d,%d), tickcount=%f\n", selStart, selEnd, fIntraSelStart, fIntraSelEnd, Time::GetTickCount ());
 #endif
         if (fCurrentOwningWP != nullptr) {
             fCurrentOwningWP->fCachedCurSelFontSpecValid = false;
