@@ -265,7 +265,7 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
 #pragma warning (push)
 #pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
 #endif
-                if (::swscanf (rep.c_str (), L"%d:%d:d", &hour, &minute, &secs) >= 2) {
+                if (::swscanf (rep.c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
                     hour = max (hour, 0);
                     hour = min (hour, 23);
                     minute = max (minute, 0);
