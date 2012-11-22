@@ -12,6 +12,21 @@
 #include    "../Configuration/Common.h"
 
 
+
+/**
+ * TODO:
+ *
+ *
+ *      @todo   Redo API - to use Stream API (and document you can use BLOB().As<BinaryInputStream>()
+ *
+ *      @todo   Do API for EncodeBase64 () templated on iterator (or using Stroika iterator???) of bytes.
+ *
+ *      @todo   EncodeBase64 should return STROIKA string, or BLOB - not std::string? Or maybe std::string
+ *              best - but document why - cuz always ascii data so more compact?? No - not good reason cuz
+ *              we can construct a SUBTYPE of String that takes advantage of it.
+ *
+ */
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
