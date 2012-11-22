@@ -158,6 +158,8 @@
  *          Maybe use per-thread global LOCALE settings. Discuss with KDJ.
  *          KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  *
+ *      o   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
+ *          and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
  */
 
 
