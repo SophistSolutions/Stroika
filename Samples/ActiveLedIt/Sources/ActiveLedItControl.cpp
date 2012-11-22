@@ -3099,13 +3099,13 @@ void    ActiveLedItControl::OLE_SetAcceleratorTable (VARIANT& newValue)
 HACCEL  ActiveLedItControl::GetCurrentWin32AccelTable ()
 {
     const   float   kTimeBetweenRecomputes  =   10.0f;
-    if (fWin32AccelTable == NULL or Led_GetTickCount () - fLastAccelTableUpdateAt > kTimeBetweenRecomputes) {
+    if (fWin32AccelTable == NULL or Time::GetTickCount () - fLastAccelTableUpdateAt > kTimeBetweenRecomputes) {
         {
             CComQIPtr<IALAcceleratorTable>  accelTable  =   fAcceleratorTable;
             if (accelTable.p != NULL) {
                 HACCEL  maybeNewAccelTable  =   NULL;
                 accelTable->GenerateWin32AcceleratorTable (&maybeNewAccelTable);
-                fLastAccelTableUpdateAt = Led_GetTickCount ();
+                fLastAccelTableUpdateAt = Time::GetTickCount ();
 
                 // Now - to avoid causing problems with callers of GetCurrentWin32AccelTable () that might want to hang onto a
                 // pointer (and wouldn't want it to get stale ;-)) - like OnGetControlInfo - try to avoid changing the handle
