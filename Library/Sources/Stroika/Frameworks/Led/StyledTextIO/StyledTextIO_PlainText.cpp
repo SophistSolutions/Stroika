@@ -124,11 +124,11 @@ StyledTextIOWriter_PlainText::StyledTextIOWriter_PlainText (SrcStream* srcStream
 {
 }
 
-void    StyledTextIOWriter_PlainText::Write ()
-{
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(suppress: 6262)
 #endif
+void    StyledTextIOWriter_PlainText::Write ()
+{
     Led_tChar   buf[8 * 1024];
     size_t  bytesRead   =   0;
     while ( (bytesRead = GetSrcStream ().readNTChars (buf, NEltsOf (buf))) != 0 ) {
