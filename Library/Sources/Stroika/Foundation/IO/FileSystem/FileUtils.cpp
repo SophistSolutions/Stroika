@@ -141,7 +141,7 @@ TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut)
     //
     {
         SHFILEINFO   info;
-		memset (&info, 0, sizeof (info));
+        memset (&info, 0, sizeof (info));
         if (::SHGetFileInfo (path2FileOrShortcut.c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
             return path2FileOrShortcut;
         }

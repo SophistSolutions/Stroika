@@ -3048,7 +3048,7 @@ namespace   Stroika {
 #if     qPlatform_Windows
                 // Get the limits of the 'workarea'
                 RECT rWorkArea;
-				memset(&rWorkArea, 0, sizeof (rWorkArea));
+                memset(&rWorkArea, 0, sizeof (rWorkArea));
                 BOOL  bResult = SystemParametersInfo (SPI_GETWORKAREA, sizeof(RECT), &rWorkArea,  0);
                 if (!bResult) {
                     rWorkArea.left = rWorkArea.top = 0;
