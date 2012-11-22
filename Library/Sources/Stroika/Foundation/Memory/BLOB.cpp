@@ -81,12 +81,14 @@ namespace {
                 size_t bytesToRead  =   intoEnd - intoStart;
                 size_t bytesLeft    =   fEnd - fCur;
                 bytesToRead = min (bytesLeft, bytesToRead);
-                memcpy (intoStart, fCur, bytesToRead);
+                (void)::memcpy (intoStart, fCur, bytesToRead);
                 fCur += bytesToRead;
                 return bytesToRead;
             }
             const Byte* fCur;
             const Byte* fEnd;
+
+            DECLARE_USE_BLOCK_ALLOCATION (REP);
         };
     };
 
