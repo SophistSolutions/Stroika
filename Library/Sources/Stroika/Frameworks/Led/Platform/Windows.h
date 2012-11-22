@@ -2817,7 +2817,7 @@ namespace   Stroika {
                         nEnd = static_cast<ptrdiff_t> (GetEnd ());
                     }
                     if (nStart > nEnd) {
-						std::swap (nStart, nEnd);
+                        std::swap (nStart, nEnd);
                     }
                     SetSelection (static_cast<ptrdiff_t> (nStart), static_cast<ptrdiff_t> (nEnd));
                     return 0;   // result ignored...
