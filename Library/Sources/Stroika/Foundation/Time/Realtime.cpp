@@ -47,7 +47,14 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
         sInited = true;
     }
     if (sPerformanceFrequency.QuadPart == 0) {
+#if     (_WIN32_WINNT >= 0x0600)
+        return (float (::GetTickCount64 ()) / 1000.0f);
+#else
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 28159)
+#endif
         return (float (::GetTickCount ()) / 1000.0f);
+#endif
     }
     else {
         LARGE_INTEGER   counter;

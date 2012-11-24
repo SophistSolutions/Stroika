@@ -509,7 +509,7 @@ void    WordProcessor::WPIdler::SpendIdleTime ()
     AssertNotNull (pdbRep);
     if (pdbRep->fSomeInvalidTables) {
         const   float   kMaxTime    =   0.2f;
-        Foundation::Time::DurationSecondsType	startTime   =   Time::GetTickCount ();
+        Foundation::Time::DurationSecondsType   startTime   =   Time::GetTickCount ();
         Foundation::Time::DurationSecondsType   endTime     =   startTime + kMaxTime;
         AssertNotNull (fWP);
         typedef WordProcessor::Table    Table;

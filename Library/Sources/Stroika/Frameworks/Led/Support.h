@@ -7,7 +7,7 @@
 #include    "../../Foundation/StroikaPreComp.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/Debug/Assertions.h"
-#include	"../../Foundation/Time/Realtime.h"
+#include    "../../Foundation/Time/Realtime.h"
 
 /*
 @MODULE:    LedSupport
@@ -813,7 +813,7 @@ public:\
 
 
 
-            void									Led_BeepNotify ();
+            void                                    Led_BeepNotify ();
             Foundation::Time::DurationSecondsType   Led_GetDoubleClickTime ();  // time-interval which defines how quick we consider two consecutive clicks a dbl-click
 
 #if     qXWindows

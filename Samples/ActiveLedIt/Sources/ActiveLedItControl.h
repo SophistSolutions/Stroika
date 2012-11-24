@@ -319,8 +319,8 @@ private:
 private:
     nonvirtual  HACCEL  GetCurrentWin32AccelTable ();
 private:
-    HACCEL						fWin32AccelTable;
-	Time::DurationSecondsType   fLastAccelTableUpdateAt;    // speed tweek
+    HACCEL                      fWin32AccelTable;
+    Time::DurationSecondsType   fLastAccelTableUpdateAt;    // speed tweek
 
 
 protected:

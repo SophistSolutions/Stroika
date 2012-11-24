@@ -118,10 +118,11 @@ namespace   Stroika {
                         </p>
                         <p>We provide a workaround for this problem by providing our own - friendlier stub routines for these
                     two OLEACC.DLL functions.</p>
-                        <p>Defaults to ON if _MFC_VER>=0x0700.</p>
+                        <p>Defaulted to ON if _MFC_VER>=0x0700.</p>
+                        <p>NOW Defaults off, since its hard to believe this would still exist</p>
                  */
 #ifndef qProvideLedStubsForOLEACCDLL
-#define qProvideLedStubsForOLEACCDLL                        (_MFC_VER>=0x0700)
+#define qProvideLedStubsForOLEACCDLL                       0
 #endif
 
 

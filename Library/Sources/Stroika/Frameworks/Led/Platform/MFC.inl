@@ -866,7 +866,7 @@ namespace   Stroika {
                         Led_Region  selectionRegion;
                         GetSelectionWindowRegion (&selectionRegion, GetSelectionStart (), GetSelectionEnd ());
 
-						Foundation::Time::DurationSecondsType   startDragSelectAt   =   Time::GetTickCount ();    // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
+                        Foundation::Time::DurationSecondsType   startDragSelectAt   =   Time::GetTickCount ();    // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
                         DROPEFFECT  dropResult  =   DROPEFFECT_COPY;
                         if (not (GetStyle () & ES_READONLY)) {
                             // Assure we don't change read-only text.
@@ -1155,11 +1155,16 @@ namespace   Stroika {
                     }
                     else {
                         LPOBJECTDESCRIPTOR  pObjDesc    =   (LPOBJECTDESCRIPTOR)::GlobalLock (hObjDesc);
-                        AssertNotNull (pObjDesc);
-                        pSize->cx = (int)pObjDesc->sizel.cx;
-                        pSize->cy = (int)pObjDesc->sizel.cy;
-                        pOffset->cx = (int)pObjDesc->pointl.x;
-                        pOffset->cy = (int)pObjDesc->pointl.y;
+                        if (pObjDesc == nullptr) {
+                            memset (pSize, 0, sizeof (*pSize));
+                            memset (pOffset, 0, sizeof (*pOffset));
+                        }
+                        else {
+                            pSize->cx = (int)pObjDesc->sizel.cx;
+                            pSize->cy = (int)pObjDesc->sizel.cy;
+                            pOffset->cx = (int)pObjDesc->pointl.x;
+                            pOffset->cy = (int)pObjDesc->pointl.y;
+                        }
                         ::GlobalUnlock (hObjDesc);
                         ::GlobalFree (hObjDesc);
                         return true;

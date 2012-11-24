@@ -93,7 +93,7 @@ namespace   Stroika {
             public:
                 static  Foundation::Time::DurationSecondsType   kNeverCallIdler;
                 virtual Foundation::Time::DurationSecondsType   GetIdlerFrequncy (Idler* idler);
-                virtual void									SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSecondsType idlerFrequency);
+                virtual void                                    SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSecondsType idlerFrequency);
 
 
             public:
@@ -123,7 +123,7 @@ namespace   Stroika {
                 struct  IdlerInfo {
                     IdlerInfo ();
                     Foundation::Time::DurationSecondsType   fIdlerFrequency;
-                    Foundation::Time::DurationSecondsType	fLastCalledAt;
+                    Foundation::Time::DurationSecondsType   fLastCalledAt;
                 };
                 map<Idler*, IdlerInfo>  fIdlers;
                 bool                    fNeedMgrIdleCalls;
@@ -166,10 +166,10 @@ namespace   Stroika {
                 IdleManagerOSImpl ();
 
             public:
-                virtual void									StartSpendTimeCalls ()                                  =   0;
-                virtual void									TerminateSpendTimeCalls ()                              =   0;
+                virtual void                                    StartSpendTimeCalls ()                                  =   0;
+                virtual void                                    TerminateSpendTimeCalls ()                              =   0;
                 virtual Foundation::Time::DurationSecondsType   GetSuggestedFrequency () const                          =   0;
-                virtual void									SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)        =   0;
+                virtual void                                    SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)        =   0;
 
             protected:
                 virtual void    CallSpendTime ();

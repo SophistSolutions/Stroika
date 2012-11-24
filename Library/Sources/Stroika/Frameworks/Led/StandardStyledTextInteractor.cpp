@@ -115,6 +115,10 @@ void    StandardStyledTextInteractor::HookLosingTextStore_ ()
     vector<SimpleEmbeddedObjectStyleMarker*>    embeddings  =   CollectAllEmbeddingMarkersInRange (0, GetLength ());
     for (size_t i = 0; i < embeddings.size (); i++) {
         SimpleEmbeddedObjectStyleMarker*    e   =   embeddings[i];
+        AssertNotNull (e);  // all embeddings returned must be non-null
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 28182)
+#endif
         if (e->GetOwner () == this) {
             PeekAtTextStore ()->RemoveMarker (e);
             delete e;

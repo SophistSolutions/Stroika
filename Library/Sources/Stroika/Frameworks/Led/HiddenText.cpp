@@ -186,9 +186,14 @@ void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 
         // iterate through markers, and eliminate all but one of them. The last one - if it exists - we'll enlarge.
         for (auto i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
+            AssertNotNull (*i);
             if (prevNonEmptyMarker == nullptr) {
                 Assert (i == hidableTextMarkersInRange.begin ());   // must have been first marker...
                 prevNonEmptyMarker = *i;
+                AssertNotNull (prevNonEmptyMarker);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 6011)
+#endif
                 if (from < prevNonEmptyMarker->GetStart ()) {
                     if (prevNonEmptyMarker->IsShown ()) {
                         fTextStore.SetMarkerStart (prevNonEmptyMarker, from);

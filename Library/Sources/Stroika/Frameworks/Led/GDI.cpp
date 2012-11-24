@@ -496,7 +496,7 @@ namespace {
          *  Cannot use ::GetStockObject (DEFAULT_PALETTE) - because - believe it or not - it returns a 20-entry pallete.
          */
         Memory::SmallStackBuffer<char>  palBuf (sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * 256);
-        LPLOGPALETTE                lplgPal = reinterpret_cast<LPLOGPALETTE> (static_cast<char*> (palBuf));
+        LPLOGPALETTE                    lplgPal = reinterpret_cast<LPLOGPALETTE> (static_cast<char*> (palBuf));
 
         lplgPal->palVersion = 0x300;
         lplgPal->palNumEntries = 256;
@@ -1164,19 +1164,23 @@ void    Led_Tablet_::RecolorHelper::DoRecolor (const Led_Rect& hilightArea)
 {
     HPALETTE    hPal    =   nullptr;
     HPALETTE    hOldPal =   nullptr;
-    if (::GetDeviceCaps (fBaseDC, RASTERCAPS) & RC_PALETTE) {
+    bool        isPaletteDevice = !!(::GetDeviceCaps (fBaseDC, RASTERCAPS) & RC_PALETTE);
+    if (isPaletteDevice) {
         // if it's a palette device, select and realize a palette
         // as a background palette (won't cause a problem is the
         // palette was not selected in the foreground in the main app
         hPal = CreatePaletteForColorTable (fColorTable);
+        Execution::ThrowIfNull (hPal);
         hOldPal = ::SelectPalette (fBaseDC, hPal, TRUE);
         ::RealizePalette (fBaseDC);
     }
 
     DoRecolor_CopyTo8BitManualMungePixAndBack (hilightArea);
 
-    if (::GetDeviceCaps (fBaseDC, RASTERCAPS) & RC_PALETTE) {
-        ::SelectPalette (fBaseDC, hOldPal, TRUE);
+    if (isPaletteDevice) {
+        if (hOldPal != nullptr) {
+            ::SelectPalette (fBaseDC, hOldPal, TRUE);
+        }
         ::DeleteObject (hPal);
     }
 }
@@ -3074,9 +3078,11 @@ Led_DIB*    Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
         bmiHdr.biCompression = BI_RGB;
         bmiHdr.biSizeImage = ((((bmiHdr.biWidth * bmiHdr.biBitCount) + 31) & ~31) >> 3) * bmiHdr.biHeight;
         size_t  nBytes  =   Led_GetDIBImageByteCount (reinterpret_cast<Led_DIB*> (&bmiHdr));
-//      dibResult = reinterpret_cast<Led_DIB*> (::operator new (nBytes));
         dibResult = reinterpret_cast<Led_DIB*> (new char [nBytes]);
         Assert (nBytes > sizeof (BITMAPINFOHEADER));
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 6386)
+#endif
         (void)::memcpy (dibResult, &bmiHdr, sizeof (bmiHdr));
     }
 

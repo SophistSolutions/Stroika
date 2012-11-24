@@ -693,6 +693,10 @@ namespace   Stroika {
                             size_t  bytesAvail      =   fWindowBottom_Offset - fCursor_Offset;  // must be > 0 UNLESS we are at EOF
                             size_t  thisReadCount   =   min (bytesAvail, bytesLeftToRead);
                             AssertNotNull (fCursor_Data);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// fCursor_Data is not null because of assertion above
+#pragma warning(suppress: 6387)
+#endif
                             (void)::memcpy (destCursor, fCursor_Data, thisReadCount);
                             destCursor += thisReadCount;
                             fCursor_Data += thisReadCount;

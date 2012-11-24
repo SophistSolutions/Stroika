@@ -110,7 +110,7 @@ static  struct  MFC_MODULE_INIT {
  ******************************** OLEACC.DLL ************************************
  ********************************************************************************
  */
-extern "C"  STDAPI  CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void** ppvObject)
+STDAPI  CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void** ppvObject)
 {
     HINSTANCE   oleACCDLL   =   ::LoadLibrary (_T ("OLEACC.dll"));
     HRESULT     hr          =   E_FAIL;
@@ -126,7 +126,7 @@ extern "C"  STDAPI  CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID 
     return hr;
 }
 
-extern "C"  STDAPI  AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** ppvObject)
+STDAPI  AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** ppvObject)
 {
     HINSTANCE   oleACCDLL   =   ::LoadLibrary (_T ("OLEACC.dll"));
     HRESULT     hr          =   E_FAIL;
@@ -142,7 +142,7 @@ extern "C"  STDAPI  AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID ri
     return hr;
 }
 
-extern "C"  STDAPI_(LRESULT)    LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN punk)
+STDAPI_(LRESULT)    LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN punk)
 {
     HINSTANCE   oleACCDLL   =   ::LoadLibrary (_T ("OLEACC.dll"));
     HRESULT     hr          =   E_FAIL;
@@ -227,7 +227,10 @@ size_t  Led_MFCReaderDAndDFlavorPackage::ReadFlavorData (Led_ClipFormat clipForm
     if (hObj != NULL) {
         size_t  realSize    =   ::GlobalSize (hObj);
         sizeCopied  =   min (realSize, bufSize);
-        (void)::memcpy (buf, ::GlobalLock (hObj), sizeCopied);
+        void* p =  ::GlobalLock (hObj);
+        if (p != nullptr and sizeCopied != 0) {
+            (void)::memcpy (buf, p, sizeCopied);
+        }
         ::GlobalUnlock (hObj);
         ::GlobalFree (hObj);
     }

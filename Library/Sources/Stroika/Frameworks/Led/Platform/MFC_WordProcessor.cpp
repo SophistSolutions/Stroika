@@ -250,6 +250,9 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
     else {
         Led_MFCReaderDAndDFlavorPackage*    dndfp = dynamic_cast<Led_MFCReaderDAndDFlavorPackage*> (&flavorPackage);
         AssertNotNull (dndfp);  // if not from clip, must be from Drag and Drop!
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 28182)
+#endif
         if (e->CreateFromData (dndfp->GetOleDataObject ()) == 0) {
             Led_ThrowBadFormatDataException ();
         }
@@ -442,6 +445,9 @@ void    Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPack
     else {
         Led_MFCWriterDAndDFlavorPackage*    dndfp = dynamic_cast<Led_MFCWriterDAndDFlavorPackage*> (&flavorPackage);
         AssertNotNull (dndfp);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 28182)
+#endif
         GetClipboardData (dndfp->GetOleDataSource ());
     }
 }
@@ -530,6 +536,10 @@ void    Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultD
         CLSID   myCLSID;
         GetClassID (&myCLSID);
         CheckGeneral (::WriteClassStg (pStorage, myCLSID));
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// safe because ips != null = due to assert on QueryInterface above
+#pragma warning (suppress: 6011)
+#endif
         CheckGeneral (ips->Save (pStorage, false));
         CheckGeneral (ips->SaveCompleted (pStorage));
 

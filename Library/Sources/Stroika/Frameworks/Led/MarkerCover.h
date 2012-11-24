@@ -609,6 +609,10 @@ namespace   Stroika {
                             // last marker, and otherwise it won't get found to 'cull'
                         }
                     }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// Asserts above make clear m not null
+#pragma warning (suppress: 28182)
+#endif
                     if (m->GetLength () != 0) {
                         prevNonEmptyMarker = m;
                     }

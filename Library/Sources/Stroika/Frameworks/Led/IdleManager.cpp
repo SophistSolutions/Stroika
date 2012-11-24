@@ -5,7 +5,7 @@
 
 #include    <algorithm>
 
-#include	"../../Foundation/Time/Realtime.h"
+#include    "../../Foundation/Time/Realtime.h"
 
 #include    "IdleManager.h"
 
@@ -80,7 +80,7 @@ IdleManager::Cleanup::~Cleanup ()
  ********************************** IdleManager *********************************
  ********************************************************************************
  */
-IdleManager*				IdleManager::sThe               =   nullptr;
+IdleManager*                IdleManager::sThe               =   nullptr;
 Time::DurationSecondsType   IdleManager::kNeverCallIdler    =   100.0f;
 
 
@@ -175,7 +175,7 @@ void    IdleManager::UpdateIdleMgrImplState ()
 void    IdleManager::CallSpendTime ()
 {
     SetInIdleMode (true);   // not SURE this is the best place to call this - maybe SB called from OSREP only???
-	Foundation::Time::DurationSecondsType   now =   Time::GetTickCount ();
+    Foundation::Time::DurationSecondsType   now =   Time::GetTickCount ();
     for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
         // only call SpendTime if its been requested
         if (i->second.fLastCalledAt + i->second.fIdlerFrequency <= now) {

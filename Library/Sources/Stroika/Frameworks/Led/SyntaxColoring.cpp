@@ -573,6 +573,10 @@ void    SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t
     {
         for (size_t i = 0; i < fMarkers.size (); ) {
             Marker* m   =   fMarkers[i];
+            AssertNotNull (m);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 28182)
+#endif
             if (
                 (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo)
                 or m->GetLength () == 0
@@ -712,6 +716,10 @@ void    WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size
     {
         for (size_t i = 0; i < fMarkers.size (); ) {
             Marker* m   =   fMarkers[i];
+            AssertNotNull (m);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (suppress: 28182)
+#endif
             if (
                 (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo)
                 or (m->GetEnd () <= windowStart or m->GetStart () >= windowEnd)

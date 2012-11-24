@@ -1342,7 +1342,7 @@ namespace   Stroika {
                     }
 
 #if     qDynamiclyChooseAutoScrollIncrement
-					Foundation::Time::DurationSecondsType			now =   Time::GetTickCount ();
+                    Foundation::Time::DurationSecondsType           now =   Time::GetTickCount ();
                     static  Foundation::Time::DurationSecondsType   sLastTimeThrough    =   0.0f;
                     const   Foundation::Time::DurationSecondsType   kClickThreshold     =   Led_GetDoubleClickTime () / 3;
                     bool    firstClick  =   (now - sLastTimeThrough > kClickThreshold);
@@ -1466,7 +1466,7 @@ namespace   Stroika {
                     }
 
 #if     qDynamiclyChooseAutoScrollIncrement
-                    Foundation::Time::DurationSecondsType			now =   Time::GetTickCount ();
+                    Foundation::Time::DurationSecondsType           now =   Time::GetTickCount ();
                     static  Foundation::Time::DurationSecondsType   sLastTimeThrough    =   0.0f;
                     const   Foundation::Time::DurationSecondsType   kClickThreshold     =   Led_GetDoubleClickTime ();
                     bool    firstClick  =   (now - sLastTimeThrough > kClickThreshold);

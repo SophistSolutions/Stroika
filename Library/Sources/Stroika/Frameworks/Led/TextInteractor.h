@@ -6,7 +6,7 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
-#include	"../../Foundation/Time/Realtime.h"
+#include    "../../Foundation/Time/Realtime.h"
 
 
 /*
@@ -342,9 +342,9 @@ namespace   Stroika {
                 virtual     bool        ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
                 virtual     bool        PointsAreCloseForDoubleClick (const Led_Point& p);
             private:
-                unsigned								fClickCount;
-                Foundation::Time::DurationSecondsType	fLastClickedAt;
-                Led_Point								fLastMouseDownAt;
+                unsigned                                fClickCount;
+                Foundation::Time::DurationSecondsType   fLastClickedAt;
+                Led_Point                               fLastMouseDownAt;
 
 
             protected:

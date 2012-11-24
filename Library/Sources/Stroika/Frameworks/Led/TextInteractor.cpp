@@ -126,8 +126,7 @@ namespace {
                 Led_tChar   charBuf[10 * 1024];     // buffer size doesn't matter much - but just has to be larger than the largest undef word we ever want to find...
                 bool        firstTry    =   true;
                 size_t      startRegion =   fTI.GetSelectionEnd ();
-SecondTry:
-                {
+SecondTry: {
                     // regardless of the startRegion - back up the search to the start of the interesected word. The only
                     // exception is if the size of our charBuf isn't big enough to go past the startRegion position (cuz
                     // then we'd be going backwards, and risk never moving forwards, in case of a large word)
@@ -1523,7 +1522,7 @@ bool    TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p)
 void    TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor)
 {
 #if     qDynamiclyChooseAutoScrollIncrement
-    Foundation::Time::DurationSecondsType			now					=   Time::GetTickCount ();
+    Foundation::Time::DurationSecondsType           now                 =   Time::GetTickCount ();
     static  Foundation::Time::DurationSecondsType   sLastTimeThrough    =   0.0f;
     const   Foundation::Time::DurationSecondsType   kClickThreshold     =   Led_GetDoubleClickTime () / 3;
     bool    firstClick  =   (now - sLastTimeThrough > kClickThreshold);
@@ -3362,9 +3361,9 @@ bool    TextInteractor::DelaySomeForScrollBarClick ()
 {
     const   Time::DurationSecondsType   kDelayAfterFirstTicks   =   0.20f;      // maybe should use ::GetDblClickTime()???
     const   Time::DurationSecondsType   kDelayAfterOtherTicks   =   0.02f;      // This delay is so on really fast computers, text doesn't scroll too quickly
-    const   int							kTimesForFirstClick     =   2;
+    const   int                         kTimesForFirstClick     =   2;
     const   Time::DurationSecondsType   kLongTime               =   1.0f;       // any click after this time deemed we start again with first-tick
-    static  short						sTimesThruBeforeReset;
+    static  short                       sTimesThruBeforeReset;
 
     Foundation::Time::DurationSecondsType   now =   Time::GetTickCount ();
     if (fLastScrolledAt == 0 or fLastScrolledAt + kLongTime < now) {

@@ -2697,11 +2697,11 @@ namespace   Stroika {
                 return (HFONT)::SelectObject (m_hDC, hFont);
             }
 #endif
-            inline  POINT Led_Tablet_::SetWindowOrg(int x, int y)
+            inline  POINT Led_Tablet_::SetWindowOrg (int x, int y)
             {
                 Assert (m_hDC != nullptr);
                 POINT point;
-
+                memset (&point, 0, sizeof (point));
                 if (m_hDC != m_hAttribDC)
                     Verify (::SetWindowOrgEx(m_hDC, x, y, &point));
                 if (m_hAttribDC != nullptr)
@@ -5101,6 +5101,10 @@ namespace   Stroika {
                     new Led_IME ();
                 }
                 AssertNotNull (sThe);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// This is OK because sThe is set in the Led_IME::CTOR
+#pragma warning (suppress: 6011)
+#endif
                 return (*sThe);
             }
             inline  void    Led_IME::Enable ()
