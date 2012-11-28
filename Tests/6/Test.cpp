@@ -63,6 +63,10 @@ namespace	{
 				CheckMatchesExpected_WRITER_ (v1, "4.7");
 			}
 			{
+				VariantValue	v1 =	L"\"";
+				CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"");
+			}
+			{
 				// array
 				vector<VariantValue>	v;
 				v.push_back (3);
@@ -160,6 +164,36 @@ namespace	{
 }
 
 
+
+
+namespace	{
+
+	void	CheckRoundtrip_encode_decode_unchanged (const VariantValue& v)
+		{
+			string	encodedRep;
+			{
+				stringstream	out;
+				DataExchangeFormat::JSON::PrettyPrint (v, out);
+				encodedRep = out.str ();
+			}
+			{
+				stringstream	tmp;
+				tmp << encodedRep;
+				VariantValue	vOut	=	DataExchangeFormat::JSON::Reader (tmp);
+				VerifyTestResult (vOut.GetType () == v.GetType ());
+				VerifyTestResult (vOut == v);
+			}
+		}
+
+	void	CheckStringQuoting_ ()
+		{
+			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
+			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
+			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
+		}
+}
+
+
 namespace	{
 
 	void	DoRegressionTests_ ()
@@ -167,6 +201,7 @@ namespace	{
 			DoRegressionTests_Writer_ ();
 			DoRegressionTests_Reader_ ();
 			CheckCanReadFromSmallBadSrc_ ();
+			CheckStringQuoting_ ();
 		}
 }
 
