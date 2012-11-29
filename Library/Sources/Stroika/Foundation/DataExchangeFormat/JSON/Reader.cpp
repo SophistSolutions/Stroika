@@ -19,7 +19,8 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 
 /*
  * TODO:
- *      No known issues
+ *      @todo	Support \u style Unicode characters (such as "\uFDD0"). Add to automated
+ *				tests when we support. Not clear this is needed on the writer side?
  */
 
 
