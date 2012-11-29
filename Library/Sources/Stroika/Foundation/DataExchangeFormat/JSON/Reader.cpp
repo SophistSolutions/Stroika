@@ -104,15 +104,15 @@ namespace   {
                 Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
             }
             c = NextChar_ (i, end);
-			if (c == '\\') {
-				// quoted character read...
-				if (IsAtEOF_ (i, end)) {
-					Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
-				}
-				c = NextChar_ (i, end);
-			}
             if (c == '\"') {
                 return Memory::VariantValue (result);
+            }
+            else if (c == '\\') {
+                // quoted character read...
+                if (IsAtEOF_ (i, end)) {
+                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
+                }
+                c = NextChar_ (i, end);
             }
             Containers::ReserveSpeedTweekAdd1 (result);
             result += c;    // must handle other character quoting (besides \u which was preflighted)

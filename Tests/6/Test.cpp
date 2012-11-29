@@ -146,10 +146,10 @@ namespace	{
 
 
 namespace	{
-	void	CheckCanReadFromSmallBadSrc_ ()
+	void	VerifyThisStringFailsToParse_ (const string& s)
 		{
 			stringstream	tmp;
-			tmp << "n";
+			tmp << s;
 			try {
 				VariantValue	v1	=	DataExchangeFormat::JSON::Reader (tmp);
 				VerifyTestResult (false);	// should get exception
@@ -160,6 +160,15 @@ namespace	{
 			catch (...) {
 				VerifyTestResult (false);	// should get BadFormatException
 			}
+		}
+	void	CheckCanReadFromSmallBadSrc_ ()
+		{
+			VerifyThisStringFailsToParse_ ("n");
+			VerifyThisStringFailsToParse_ ("'");
+			VerifyThisStringFailsToParse_ ("\"");
+			VerifyThisStringFailsToParse_ ("[");
+			VerifyThisStringFailsToParse_ ("}");
+			VerifyThisStringFailsToParse_ ("]");
 		}
 }
 
@@ -190,6 +199,7 @@ namespace	{
 			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
 			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
 			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
+			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\""));
 		}
 }
 
