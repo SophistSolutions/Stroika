@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
 #include	"Stroika/Foundation/StroikaPreComp.h"
@@ -200,6 +200,8 @@ namespace	{
 			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
 			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
 			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\""));
+			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\u20a9"));	//	₩
+			CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\"apple\""));
 		}
 }
 

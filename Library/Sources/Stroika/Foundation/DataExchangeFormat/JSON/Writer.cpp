@@ -14,8 +14,10 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 
 /*
  * TODO:
- *      (1) Must add support for quoted characters like '"' etc - which cause trouble inside json. Also - quoted utf-8 characters.
+ *      No known issues
  */
+
+
 
 
 
