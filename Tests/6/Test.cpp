@@ -111,6 +111,10 @@ namespace	{
 				CheckMatchesExpected_READER_ ("3", v1);
 			}
 			{
+				VariantValue	v1 =	L"\uFDD0";
+				CheckMatchesExpected_READER_ ("\"\\uFDD0\"", v1);
+			}
+			{
 				VariantValue	v1 =	4.7;
 				CheckMatchesExpected_READER_ ("4.7", v1);
 			}

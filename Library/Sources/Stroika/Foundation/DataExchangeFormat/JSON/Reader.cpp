@@ -17,10 +17,11 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchangeFormat;
 
 
+
 /*
  * TODO:
- *      @todo	Support \u style Unicode characters (such as "\uFDD0"). Add to automated
- *				tests when we support. Not clear this is needed on the writer side?
+ *      @todo   Review \u style Unicode characters (such as "\uFDD0") parsing. Its mostly right, but
+ *              some sloppiness about surrogates, versus 4-byte wchar_t, versus char16_, char32_t, etc.
  */
 
 
@@ -89,6 +90,21 @@ namespace   {
     Memory::VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end);
 
 
+    // throw if bad hex digit
+    unsigned int    HexChar2Num_ (char c)
+    {
+        if ('0' <= c and c <= '9') {
+            return c - '0';
+        }
+        if ('A' <= c and c <= 'F') {
+            return (c - 'A') + 10;
+        }
+        if ('a' <= c and c <= 'a') {
+            return (c - 'a') + 10;
+        }
+        Execution::DoThrow (BadFormatException (L"JSON: bad hex digit after \\u"));
+    }
+
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
     Memory::VariantValue    Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
@@ -114,6 +130,41 @@ namespace   {
                     Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
                 }
                 c = NextChar_ (i, end);
+                switch (c) {
+                    case    'b':
+                        c = '\b';
+                        break;
+                    case    'f':
+                        c = '\f';
+                        break;
+                    case    'n':
+                        c = '\n';
+                        break;
+                    case    'r':
+                        c = '\r';
+                        break;
+                    case    't':
+                        c = '\t';
+                        break;
+                    case    'u':    {
+                            // Not sure this is right -- But I hope so ... -- LGP 2012-11-29
+                            wchar_t newC    =   '\0';
+                            for (int n = 0; n < 4; ++n) {
+                                if (IsAtEOF_ (i, end)) {
+                                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
+                                }
+                                newC += HexChar2Num_ (static_cast<char> (NextChar_ (i, end)));
+                                if (n != 3) {
+                                    newC <<= 4;
+                                }
+                            }
+                            c = newC;
+                        }
+                        break;
+                    default: {
+                            // if we have \N for any unrecognized N, just treat it as N
+                        }
+                }
             }
             Containers::ReserveSpeedTweekAdd1 (result);
             result += c;    // must handle other character quoting (besides \u which was preflighted)
