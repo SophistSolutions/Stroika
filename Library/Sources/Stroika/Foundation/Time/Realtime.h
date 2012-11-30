@@ -6,8 +6,11 @@
 
 #include    "../StroikaPreComp.h"
 
+#if     qCompilerAndStdLib_Supports_constexpr
 #include    <limits>
-
+#else
+#include    <cfloat>
+#endif
 
 namespace   Stroika {
     namespace   Foundation {

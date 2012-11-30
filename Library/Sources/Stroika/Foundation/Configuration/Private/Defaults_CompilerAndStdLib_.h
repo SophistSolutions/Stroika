@@ -27,8 +27,7 @@
  */
 
 #if     defined (__clang__)
-
-//// DRAFT SUPPORT FOR CLANG++--- VERY MININAL TESTING AND NOT NOT CLOSE TO WORKING
+/////////////////////////////////////// DRAFT SUPPORT FOR CLANG++--- VERY MININAL TESTING AND NOT NOT CLOSE TO WORKING
 
 // Must check CLANG first, since it also defines GCC
 //#define __clang_major__ 3
@@ -212,10 +211,19 @@
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+// Maybe not totally broken for clang - but broken enough to disable for now...
+#if     defined (__clang__)
+
+#define qCompilerAndStdLib_Supports_constexpr   ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
+
+#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+
 #define qCompilerAndStdLib_Supports_constexpr   0
+
 #else
+
 #define qCompilerAndStdLib_Supports_constexpr   1
+
 #endif
 
 #endif
@@ -455,10 +463,19 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdchrono)
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
+#if     defined (__clang__)
+
+// Because of constexpr
+#define qCompilerAndStdLib_Supports_stdchrono       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
+
+#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
+
 #define qCompilerAndStdLib_Supports_stdchrono       0
+
 #else
+
 #define qCompilerAndStdLib_Supports_stdchrono       1
+
 #endif
 
 #endif
@@ -514,20 +531,27 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_stdatomic
-@DESCRIPTION:   <p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
+@DESCRIPTION:   <p>Controls whether or not the compiler supports std::atomic.</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdatomic)
 
 #if     defined (__clang__)
-//at least fails with clang 3.0
-#define qCompilerAndStdLib_Supports_lambda_default_argument     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
+
+#define qCompilerAndStdLib_Supports_stdatomic	(__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
+
 #elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
+
 #define qCompilerAndStdLib_Supports_stdatomic   0
+
 #elif     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
+
 // really is supported, but fake off for now til we fix it --LGP 2012-10-20
 #define qCompilerAndStdLib_Supports_stdatomic   0
+
 #else
+
 #define qCompilerAndStdLib_Supports_stdatomic   1
+
 #endif
 
 #endif
