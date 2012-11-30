@@ -537,7 +537,7 @@
 
 #if     defined (__clang__)
 
-#define qCompilerAndStdLib_Supports_stdatomic	(__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
+#define qCompilerAndStdLib_Supports_stdatomic   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
 
 #elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
 
