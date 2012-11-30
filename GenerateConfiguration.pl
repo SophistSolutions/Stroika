@@ -122,7 +122,6 @@ sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Linux') {
 		$COMPILER_DRIVER = "g++";
-		$COMPILER_DRIVER = "g++";
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++-4.6";
@@ -269,11 +268,15 @@ sub	ParseCommandLine_
 	SetInitialDefaults_ ();
 	
 	ParseCommandLine_Platform_ ();
+	SetDefaultForPlatform_ ();
+
 	ParseCommandLine_Target_ ();
+	
 	ParseCommandLine_CompilerDriver_ ();
+	SetDefaultForCompilerDriver_();
+
 	ParseCommandLine_Remaining_ ();
 
-	SetDefaultForPlatform_ ();
 	CHECK_OPTIONS_ ();
 }
 
