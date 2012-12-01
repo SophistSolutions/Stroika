@@ -28,6 +28,12 @@ namespace   Stroika {
             ENUM    Inc (ENUM e);
 
 
+// Can do for (i = eSTART; i != eEND; i = Inc (i));
+#define Define_Start_End_Count(FIRST_ITEM,LAST_ITEM)\
+    eSTART      =   FIRST_ITEM,\
+                    eEND        =   LAST_ITEM + 1,\
+                                    eCOUNT      =   eEND - eSTART,
+
 
 
 

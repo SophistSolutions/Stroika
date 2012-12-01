@@ -63,8 +63,7 @@ namespace   Stroika {
                     eArray,
                     eMap,           // string to variant
 
-                    eSTART = eNull,
-                    eEND = eMap + 1,
+                    Define_Start_End_Count(eNull, eMap)
                 };
 
             public:

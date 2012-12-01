@@ -65,9 +65,7 @@ enum class  DayOfWeek : uint8_t {
                 eFirstDayOfWeek = eMonday,
                 eLastDayOfWeek = eSunday,
 
-                // Can do for (i = eSTART; i != eEND; i = Inc (i));
-                eSTART = eFirstDayOfWeek,
-                eEND = eLastDayOfWeek + 1,
+                Define_Start_End_Count(eFirstDayOfWeek, eLastDayOfWeek)
             };
 
 
