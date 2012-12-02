@@ -189,7 +189,7 @@ namespace   {
                 }
             }
         }
-        TString nowstr  =   ToTString (Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML));
+        TString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsTString ();
         for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
             if (*i == ':') {
                 *i = '-';
