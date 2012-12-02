@@ -41,12 +41,12 @@ using   namespace   Time;
 
 #if     qPlatform_Windows
 namespace   {
-    wstring GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
+    String GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
     {
         int sizeNeeded  =   ::GetLocaleInfoW (Locale, LCType, nullptr, 0);
         SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
         Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
-        return wstring (buf);
+        return String (buf);
     }
 }
 #endif
@@ -69,7 +69,7 @@ namespace   {
 
 #if     qPlatform_Windows
 namespace   {
-    wstring GenTimeStr4TOD_ (LCID lcid, unsigned int hour, unsigned int minutes, unsigned int seconds)
+    String  GenTimeStr4TOD_ (LCID lcid, unsigned int hour, unsigned int minutes, unsigned int seconds)
     {
 // Consider rewriting using Win32 GetTimeFormat () - and just futzing with teh format string for the case
 // of zero minutes/seconds?? That might be more robust in case of changes in adding special tokens for some cultures/etc?
@@ -95,7 +95,7 @@ namespace   {
 
         // we could keep recomputing this, but why pay the runtime cost? Restart app to get new locale info
 #if     qPlatform_Windows
-        static  const   wstring kFormatStr  =   GetLocaleInfo_ (lcid, LOCALE_STIMEFORMAT);
+        static  const   wstring kFormatStr  =   GetLocaleInfo_ (lcid, LOCALE_STIMEFORMAT).As<wstring> ();
 #else
 #endif
 
@@ -104,8 +104,7 @@ namespace   {
         bool    skipSeconds =   seconds == 0;
         bool    skipMinutes =   skipSeconds and minutes == 0 and kFormatStr.find (L"tt") != wstring::npos;  // only do if showing AM/PM, else show 1300 for time - not 13...
 
-        wstring outBuf;
-        outBuf.reserve (kFormatStr.length () + 4);
+        String outBuf   =   String_BufferedArray (kFormatStr.length () + 4);
         for (auto i = kFormatStr.begin (); i != kFormatStr.end (); ++i) {
             switch (*i) {
                 case 'h': {
@@ -164,8 +163,8 @@ namespace   {
                              *  LOCALE_S2359
                              *      String for the PM designator. The maximum number of characters allowed for this string is nine.
                              */
-                            static  const   wstring kAMSTR  =   GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S1159);
-                            static  const   wstring kPMSTR  =   GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S2359);
+                            static  const   String kAMSTR  =   GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S1159);
+                            static  const   String kPMSTR  =   GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S2359);
                             ++i;
                             int pmFlag =    hour >= 12;
                             //outBuf += (pmFlag?L"PM":L"AM");
@@ -240,7 +239,7 @@ TimeOfDay::TimeOfDay (uint32_t t)
 {
 }
 
-TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
+TimeOfDay   TimeOfDay::Parse (const String& rep, PrintFormat pf)
 {
     if (rep.empty ()) {
         return TimeOfDay ();
@@ -286,14 +285,14 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, PrintFormat pf)
     }
 }
 
-TimeOfDay   TimeOfDay::Parse (const wstring& rep, const locale& l)
+TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
 {
     if (rep.empty ()) {
         return TimeOfDay ();
     }
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
     ios::iostate state  =   ios::goodbit;
-    wistringstream iss (rep);
+    wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm when;
@@ -349,7 +348,7 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, const locale& l)
 }
 
 #if     qPlatform_Windows
-TimeOfDay   TimeOfDay::Parse (const wstring& rep, LCID lcid)
+TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
         return TimeOfDay ();
@@ -362,9 +361,9 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, LCID lcid)
     catch (...) {
         // Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
         // Detect that - and try to interpret it appropriately.
-        wstring newRep = rep;
+        String newRep = rep;
         if (newRep.length () == 4 and
-                iswdigit (newRep[0]) and iswdigit (newRep[1]) and iswdigit (newRep[2]) and iswdigit (newRep[3])
+                newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()
            ) {
             newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
             ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
@@ -381,10 +380,10 @@ TimeOfDay   TimeOfDay::Parse (const wstring& rep, LCID lcid)
 }
 #endif
 
-wstring TimeOfDay::Format (PrintFormat pf) const
+String TimeOfDay::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale:  {
@@ -405,15 +404,15 @@ wstring TimeOfDay::Format (PrintFormat pf) const
             }
         default: {
                 AssertNotReached ();
-                return wstring ();
+                return String ();
             }
     }
 }
 
-wstring TimeOfDay::Format (const locale& l) const
+String TimeOfDay::Format (const locale& l) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
@@ -432,10 +431,10 @@ wstring TimeOfDay::Format (const locale& l) const
 }
 
 #if     qPlatform_Windows
-wstring TimeOfDay::Format (LCID lcid) const
+String TimeOfDay::Format (LCID lcid) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     else {
         uint32_t hour = fTime_ / (60 * 60);

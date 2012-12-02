@@ -174,7 +174,7 @@ Date::Date (Year year, MonthOfYear month, DayOfMonth day)
 {
 }
 
-Date    Date::Parse (const wstring& rep, PrintFormat pf)
+Date    Date::Parse (const String& rep, PrintFormat pf)
 {
     if (rep.empty ()) {
         return Date ();
@@ -243,14 +243,14 @@ Date    Date::Parse (const wstring& rep, PrintFormat pf)
     }
 }
 
-Date    Date::Parse (const wstring& rep, const locale& l)
+Date    Date::Parse (const String& rep, const locale& l)
 {
     if (rep.empty ()) {
         return Date ();
     }
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
     ios::iostate state  =   ios::goodbit;
-    wistringstream iss (rep);
+    wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm when;
@@ -267,7 +267,7 @@ Date    Date::Parse (const wstring& rep, const locale& l)
 }
 
 #if     qPlatform_Windows
-Date    Date::Parse (const wstring& rep, LCID lcid)
+Date    Date::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
         return Date ();
@@ -288,10 +288,10 @@ Date    Date::Parse (const wstring& rep, LCID lcid)
 }
 #endif
 
-wstring Date::Format (PrintFormat pf) const
+String Date::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale: {
@@ -299,7 +299,7 @@ wstring Date::Format (PrintFormat pf) const
                 return Format (LOCALE_USER_DEFAULT);
 #else
                 AssertNotImplemented ();
-                return wstring ();
+                return String ();
 #endif
             }
             break;
@@ -328,7 +328,7 @@ wstring Date::Format (PrintFormat pf) const
                  *          The following rules govern what the parse method can successfully parse:
                  *          Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96".
                  *
-                 *  See also        explicit Date (const wstring& rep, Javascript);
+                 *  See also        explicit Date (const String& rep, Javascript);
                  */
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
                 MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
@@ -346,16 +346,16 @@ wstring Date::Format (PrintFormat pf) const
             break;
         default: {
                 AssertNotReached ();
-                return wstring ();
+                return String ();
             }
             break;
     }
 }
 
-wstring Date::Format (const locale& l) const
+String Date::Format (const locale& l) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
@@ -369,15 +369,15 @@ wstring Date::Format (const locale& l) const
 }
 
 #if     qPlatform_Windows
-wstring Date::Format (LCID lcid) const
+String Date::Format (LCID lcid) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     SYSTEMTIME  st  =   toSYSTEM_ (*this);
     int nTChars =   ::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, nullptr, 0);
     if (nTChars == 0) {
-        return wstring ();
+        return String ();
     }
     else {
         SmallStackBuffer<TCHAR> buf (nTChars + 1);
@@ -386,15 +386,15 @@ wstring Date::Format (LCID lcid) const
     }
 }
 
-wstring Date::Format (const TString& format, LCID lcid) const
+String Date::Format (const String& format, LCID lcid) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     SYSTEMTIME  st  =   toSYSTEM_ (*this);
     int nTChars =   ::GetDateFormat (lcid, 0, &st, format.c_str (), nullptr, 0);
     if (nTChars == 0) {
-        return wstring ();
+        return String ();
     }
     else {
         SmallStackBuffer<TCHAR> buf (nTChars + 1);
@@ -405,15 +405,15 @@ wstring Date::Format (const TString& format, LCID lcid) const
 #endif
 
 #if     qPlatform_Windows
-wstring Date::LongFormat (LCID lcid) const
+String Date::LongFormat (LCID lcid) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     SYSTEMTIME  st  =   toSYSTEM_ (*this);
     int nTChars =   ::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
     if (nTChars == 0) {
-        return wstring ();
+        return String ();
     }
     else {
         SmallStackBuffer<TCHAR> buf (nTChars + 1);
@@ -614,7 +614,7 @@ float   Time::YearDifferenceF (const Date& lhs, const Date& rhs)
  ***************************** GetFormattedAge **********************************
  ********************************************************************************
  */
-wstring Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
+String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
 {
     if (birthDate.empty ()) {
         return L"?";
@@ -625,7 +625,7 @@ wstring Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
     }
 }
 
-wstring Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
+String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
 {
     if (birthDate.empty ()) {
         return L"?";

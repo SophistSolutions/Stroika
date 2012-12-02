@@ -14,7 +14,7 @@
 #include    <Windows.h>
 #endif
 
-#include    "../Characters/TString.h"
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Execution/StringException.h"
 
@@ -44,7 +44,8 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
-            using   Characters::TString;
+
+            using   Characters::String;
 
 
 
@@ -82,10 +83,10 @@ namespace   Stroika {
                     eCurrentLocale,
                     eXML,
                 };
-                static  TimeOfDay   Parse (const wstring& rep, PrintFormat pf);
-                static  TimeOfDay   Parse (const wstring& rep, const locale& l);
+                static  TimeOfDay   Parse (const String& rep, PrintFormat pf);
+                static  TimeOfDay   Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
-                static  TimeOfDay   Parse (const wstring& rep, LCID lcid);
+                static  TimeOfDay   Parse (const String& rep, LCID lcid);
 #endif
 
 
@@ -119,11 +120,11 @@ namespace   Stroika {
                 nonvirtual  uint8_t GetSeconds () const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
-                nonvirtual  wstring Format (const locale& l) const;
+                nonvirtual  String  Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+                nonvirtual  String  Format (const locale& l) const;
 
 #if     qPlatform_Windows
-                nonvirtual  wstring Format (LCID lcid) const;
+                nonvirtual  String  Format (LCID lcid) const;
 #endif
 
             public:

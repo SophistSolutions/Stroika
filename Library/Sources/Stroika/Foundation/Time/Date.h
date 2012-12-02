@@ -13,7 +13,7 @@
 #include    <Windows.h>
 #endif
 
-#include    "../Characters/TString.h"
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Execution/StringException.h"
 
@@ -51,7 +51,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
-            using   Characters::TString;
+            using   Characters::String;
 
 
 enum class  DayOfWeek : uint8_t {
@@ -175,10 +175,10 @@ enum class Year : short {
                     eXML,
                     eJavascript,
                 };
-                static  Date    Parse (const wstring& rep, PrintFormat pf);
-                static  Date    Parse (const wstring& rep, const locale& l);
+                static  Date    Parse (const String& rep, PrintFormat pf);
+                static  Date    Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
-                static  Date    Parse (const wstring& rep, LCID lcid);
+                static  Date    Parse (const String& rep, LCID lcid);
 #endif
 
             public:
@@ -202,14 +202,14 @@ enum class Year : short {
                 nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
             public:
-                nonvirtual  wstring Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
-                nonvirtual  wstring Format (const locale& l) const;
+                nonvirtual  String Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+                nonvirtual  String Format (const locale& l) const;
 
 #if     qPlatform_Windows
             public:
-                nonvirtual  wstring Format (LCID lcid) const;
-                nonvirtual  wstring Format (const TString& format, LCID lcid = LOCALE_USER_DEFAULT) const;              // See GetDateFormat () format args
-                nonvirtual  wstring LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
+                nonvirtual  String Format (LCID lcid) const;
+                nonvirtual  String Format (const String& format, LCID lcid = LOCALE_USER_DEFAULT) const;              // See GetDateFormat () format args
+                nonvirtual  String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
 #endif
 
             public:
@@ -253,8 +253,8 @@ enum class Year : short {
             float   YearDifferenceF (const Date& lhs, const Date& rhs);
 
 
-            wstring GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());   // returns ? if not a good src date
-            wstring GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool allowMonths = true, bool abbrevUnit = true);  // returns ? if not a good src date
+            String  GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());   // returns ? if not a good src date
+            String  GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool allowMonths = true, bool abbrevUnit = true);  // returns ? if not a good src date
 
         }
     }

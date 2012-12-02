@@ -284,12 +284,12 @@ wstring VariantValue::As () const
         case    Type::eDate: {
                 TValRep<Date, Type::eDate>*    v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format ();
+                return v->fVal.Format ().As<wstring> ();
             }
         case    Type::eDateTime: {
                 TValRep<DateTime, Type::eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format ();
+                return v->fVal.Format ().As<wstring> ();
             }
         case    Type::eString: {
                 TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());
@@ -393,12 +393,12 @@ wstring VariantValue::FormatXML () const
         case    Type::eDate: {
                 TValRep<Date, Type::eDate>*    v   =   dynamic_cast<TValRep<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format (Date::PrintFormat::eXML);
+                return v->fVal.Format (Date::PrintFormat::eXML).As<wstring> ();
             }
         case    Type::eDateTime: {
                 TValRep<DateTime, Type::eDateTime>*    v   =   dynamic_cast<TValRep<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format (DateTime::PrintFormat::eXML);
+                return v->fVal.Format (DateTime::PrintFormat::eXML).As<wstring> ();
             }
         case    Type::eString: {
                 TValRep<wstring, Type::eString>*   v   =   dynamic_cast<TValRep<wstring, Type::eString>*> (fVal_.get ());

@@ -190,7 +190,7 @@ DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
 }
 #endif
 
-DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
+DateTime    DateTime::Parse (const String& rep, PrintFormat pf)
 {
     if (rep.empty ()) {
         return Date ();
@@ -273,14 +273,14 @@ DateTime    DateTime::Parse (const wstring& rep, PrintFormat pf)
     }
 }
 
-DateTime    DateTime::Parse (const wstring& rep, const locale& l)
+DateTime    DateTime::Parse (const String& rep, const locale& l)
 {
     if (rep.empty ()) {
         return Date ();
     }
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
     ios::iostate state  =   ios::goodbit;
-    wistringstream iss (rep);
+    wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm when;
@@ -297,7 +297,7 @@ DateTime    DateTime::Parse (const wstring& rep, const locale& l)
 }
 
 #if     qPlatform_Windows
-DateTime    DateTime::Parse (const wstring& rep, LCID lcid)
+DateTime    DateTime::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
         return Date ();
@@ -359,7 +359,7 @@ DateTime    DateTime::Now ()
 #endif
 }
 
-wstring DateTime::Format (PrintFormat pf) const
+String DateTime::Format (PrintFormat pf) const
 {
     if (empty ()) {
         return wstring ();
@@ -374,8 +374,8 @@ wstring DateTime::Format (PrintFormat pf) const
             }
             break;
         case    PrintFormat::eXML: {
-                wstring r       =   fDate_.Format (Date::PrintFormat::eXML);
-                wstring timeStr =   fTimeOfDay_.Format (TimeOfDay::PrintFormat::eXML);
+                String  r       =   fDate_.Format (Date::PrintFormat::eXML);
+                String  timeStr =   fTimeOfDay_.Format (TimeOfDay::PrintFormat::eXML);
                 if (not timeStr.empty ()) {
                     r += L"T" + timeStr;
                     if (GetTimezone () == Timezone::eUTC_TZ) {
@@ -412,10 +412,10 @@ wstring DateTime::Format (PrintFormat pf) const
     }
 }
 
-wstring DateTime::Format (const locale& l) const
+String DateTime::Format (const locale& l) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
@@ -429,15 +429,15 @@ wstring DateTime::Format (const locale& l) const
 }
 
 #if     qPlatform_Windows
-wstring DateTime::Format (LCID lcid) const
+String DateTime::Format (LCID lcid) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     else {
-        wstring r   =   fDate_.Format (lcid);
+        String r   =   fDate_.Format (lcid);
         Assert (not r.empty ());
-        wstring tod =   fTimeOfDay_.Format (lcid);
+        String tod =   fTimeOfDay_.Format (lcid);
         if (not tod.empty ()) {
             r += L" " + tod;
         }
