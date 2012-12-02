@@ -355,3 +355,79 @@ wstring Characters::Float2String (double f, unsigned int precision)
 
 
 
+
+
+/*
+ ********************************************************************************
+ *************************** StripTrailingCharIfAny *****************************
+ ********************************************************************************
+ */
+namespace   {
+    template    <typename STRING>
+    inline  STRING  StripTrailingCharIfAny_HLPR (const STRING& str, typename STRING::value_type c)
+    {
+        if (str.size () > 0 and str[str.size () - 1] == c) {
+            STRING  tmp =   str;
+            tmp.erase (tmp.size () - 1);
+            return tmp;
+        }
+        return str;
+    }
+}
+
+string  Characters::StripTrailingCharIfAny (const string& s, char c)
+{
+    return StripTrailingCharIfAny_HLPR (s, c);
+}
+
+wstring Characters::StripTrailingCharIfAny (const wstring& s, wchar_t c)
+{
+    return StripTrailingCharIfAny_HLPR (s, c);
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************* LimitLength **********************************
+ ********************************************************************************
+ */
+namespace   {
+    template    <typename STRING>
+    inline  STRING  LimitLength_HLPR (const STRING& str, size_t maxLen, bool keepLeft, const STRING& kELIPSIS)
+    {
+        if (str.length () <= maxLen) {
+            return str;
+        }
+        size_t  useLen  =   maxLen;
+        if (useLen > kELIPSIS.length ()) {
+            useLen -= kELIPSIS.length ();
+        }
+        else {
+            useLen = 0;
+        }
+        if (keepLeft) {
+            return str.substr (0, useLen) + kELIPSIS;
+        }
+        else {
+            return kELIPSIS + str.substr (str.length () - useLen);
+        }
+    }
+}
+string  Characters::LimitLength (const string& str, size_t maxLen, bool keepLeft)
+{
+    return LimitLength_HLPR<string> (str, maxLen, keepLeft, "...");
+}
+
+wstring Characters::LimitLength (const wstring& str, size_t maxLen, bool keepLeft)
+{
+    return LimitLength_HLPR<wstring> (str, maxLen, keepLeft, L"...");
+}

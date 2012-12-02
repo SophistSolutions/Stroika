@@ -68,10 +68,6 @@ namespace   Stroika {
             using   std::basic_string;
 
 
-//See what this is used for? Seems too specific... See String::Trim()
-            string  StripTrailingCharIfAny (const string& s, char c);
-            wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
-
 
 
 
@@ -123,31 +119,6 @@ namespace   Stroika {
                 bool operator()(const wstring& _Left, const wstring& _Right) const;
             };
 
-
-            string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
-            wstring LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
-
-
-            template    <typename TCHAR>
-            basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text);
-            template    <typename TCHAR>
-            basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text);
-            template    <typename TCHAR>
-            basic_string<TCHAR> Trim (const basic_string<TCHAR>& text);
-
-
-
-
-            namespace   StringVectorEncoding {
-                /*
-                 *  Don't write this to a file, as the format of the encoding is subject to change. This is a
-                 *  work-in-progress, and just intended to solve - for now - an immediate need (list of ids passed through javascript)
-                 *
-                 *      -- LGP 2006-04-15
-                 */
-                wstring         Encode (const vector<wstring>& v);
-                vector<wstring> Decode (const wstring& encodedString);
-            }
 
         }
     }

@@ -159,6 +159,29 @@ namespace   Stroika {
              */
             wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
 
+
+            /*
+             *  This could be generalized to accomodate TRIM/merge with TRIM, but it sometimes used to trim other
+             *  characters (like trailing CRLF, or trailing '.').
+             */
+            string  StripTrailingCharIfAny (const string& s, char c);
+            wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
+
+
+            // NEED VARIANT FOR String??
+            string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
+            wstring LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
+
+
+            // NEED VARIANT FOR String?? Already a method of String???
+            template    <typename TCHAR>
+            basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text);
+            template    <typename TCHAR>
+            basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text);
+            template    <typename TCHAR>
+            basic_string<TCHAR> Trim (const basic_string<TCHAR>& text);
+
+
         }
     }
 }
