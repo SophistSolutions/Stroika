@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-require "ScriptsLib/BuildUtils.pl";
 
 my $BLD_TRG;
 
@@ -84,9 +83,10 @@ if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean") or (lc ($BLD_TRG)
 }
 
 if ($isBuildingMode) {
-	RunAndStopOnFailure ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
+	system ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
 }
 
+require "ScriptsLib/BuildUtils.pl";
 
 RunAndStopOnFailure ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
 
