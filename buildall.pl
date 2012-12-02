@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+require "ScriptsLib/BuildUtils.pl";
+
 my $BLD_TRG;
 
 foreach $i (@ARGV) {
@@ -82,11 +84,11 @@ if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean") or (lc ($BLD_TRG)
 }
 
 if ($isBuildingMode) {
-	system ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
+	RunAndStopOnFailure ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
 }
 
 
-system ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
+RunAndStopOnFailure ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
 
 
 my $useBld	=	$BLD_TRG;
@@ -97,10 +99,10 @@ if (lc ($BLD_TRG) eq "rebuild") {
 # No point in sub-builds for clean/clobber, since we adequately cleaned with the
 # above
 if ($isBuildingMode) {
-	system ("cd Library; perl buildall.pl $useBld");
-	system ("cd Tools; perl buildall.pl $useBld");
-	system ("cd Samples; perl buildall.pl $useBld");
-	system ("cd Tests; perl buildall.pl $useBld");
+	RunAndStopOnFailure ("cd Library; perl buildall.pl $useBld");
+	RunAndStopOnFailure ("cd Tools; perl buildall.pl $useBld");
+	RunAndStopOnFailure ("cd Samples; perl buildall.pl $useBld");
+	RunAndStopOnFailure ("cd Tests; perl buildall.pl $useBld");
 }
 
 if ($buildDocs) {
