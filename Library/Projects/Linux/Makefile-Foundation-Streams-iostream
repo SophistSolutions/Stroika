@@ -12,6 +12,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)BinaryInputStreamFromIStreamAdapter.o\
 	$(ObjDir)FStreamSupport.o\
+	$(ObjDir)TextInputStreamFromIStreamAdapter.o\
 	$(ObjDir)Utilities.o\
 	
 

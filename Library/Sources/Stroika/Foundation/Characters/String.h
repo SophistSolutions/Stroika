@@ -49,8 +49,8 @@
 /*
  * TODO:
  *
- *		o	Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like "ToLowerCase"
- *			are AMBIGUOUS.
+ *      o   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like "ToLowerCase"
+ *          are AMBIGUOUS.
  *
  *      o   CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
  *          MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
