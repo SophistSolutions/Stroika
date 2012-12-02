@@ -15,14 +15,14 @@ if ("$^O" eq "linux") {
 		$useBld = "all";
 	}
 	if ($useBld eq "rebuild") {
-	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make clobber");
-	    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make clobber");
+	    	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make clobber");
+	    	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make clobber");
 		$useBld = "all";
 	}
-    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make $useBld");
-    system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make $useBld");
+    	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/; make $useBld");
+    	system ("cd ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/; make $useBld");
 }
 else {
-    my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
-    system ("cd $useProjectDir; perl buildall.pl $useBld");
+    	my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
+    	system ("cd $useProjectDir; perl buildall.pl $useBld");
 }
