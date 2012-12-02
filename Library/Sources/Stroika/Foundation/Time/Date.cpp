@@ -392,13 +392,13 @@ String Date::Format (const String& format, LCID lcid) const
         return String ();
     }
     SYSTEMTIME  st  =   toSYSTEM_ (*this);
-    int nTChars =   ::GetDateFormat (lcid, 0, &st, format.c_str (), nullptr, 0);
+	int nTChars =   ::GetDateFormat (lcid, 0, &st, format.AsTString ().c_str (), nullptr, 0);
     if (nTChars == 0) {
         return String ();
     }
     else {
         SmallStackBuffer<TCHAR> buf (nTChars + 1);
-        (void)::GetDateFormat (lcid, 0, &st, format.c_str (), buf, nTChars + 1);
+        (void)::GetDateFormat (lcid, 0, &st, format.AsTString ().c_str (), buf, nTChars + 1);
         return TString2Wide (static_cast<const TCHAR*> (buf));
     }
 }
