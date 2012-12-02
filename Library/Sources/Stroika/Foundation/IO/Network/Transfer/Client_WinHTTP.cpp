@@ -421,8 +421,8 @@ RetryWithNoCERTCheck:
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertExpired;
         }
 
-        if (not Characters::StringsCIEqual (fURL_.fHost, resultSSLInfo.fSubjectCommonName) and
-                not Characters::StringsCIEqual (fURL_.fHost, L"www." + resultSSLInfo.fSubjectCommonName)
+        if (not Equals (fURL_.fHost, resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
+                not Equals (fURL_.fHost, L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)
            ) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }

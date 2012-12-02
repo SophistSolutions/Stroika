@@ -827,7 +827,7 @@ void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
     // has no idea about the font. This is NOT what we want. But unsure what we can do better at this point!
     fFontSpecifier = fontNum;
 #elif   qPlatform_Windows
-    Characters::CString::Copy (fFontInfo.lfFaceName, fontName.c_str (), NEltsOf (fFontInfo.lfFaceName));
+    Characters::CString::Copy (fFontInfo.lfFaceName, NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif   qXWindows
     fFontFamily = fontName;
@@ -837,7 +837,7 @@ void    Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
 #if     qPlatform_Windows
 Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
 {
-    Characters::CString::Copy (fName, from, NEltsOf (fName));
+    Characters::CString::Copy (fName, NEltsOf (fName), from);
 }
 #endif
 
@@ -846,7 +846,7 @@ void    Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameS
 #if     qPlatform_MacOS
     fFontSpecifier = fontNameSpecifier;
 #elif   qPlatform_Windows
-    Characters::CString::Copy (fFontInfo.lfFaceName, fontNameSpecifier.fName, NEltsOf (fFontInfo.lfFaceName));
+    Characters::CString::Copy (fFontInfo.lfFaceName, NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif   qXWindows
     fFontFamily = fontNameSpecifier;

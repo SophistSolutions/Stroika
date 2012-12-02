@@ -94,9 +94,9 @@ void    Characters::toupper (string* s)
  ********************************* Contains *************************************
  ********************************************************************************
  */
-bool    Characters::Contains (const wstring& string2Search, const wstring& substr, StringCompareOptions co)
+bool    Characters::Contains (const wstring& string2Search, const wstring& substr, CompareOptions co)
 {
-    if (co == eWithCase_CO) {
+    if (co == CompareOptions::eWithCase) {
         return string2Search.find (substr) != wstring::npos;
     }
     else {

@@ -194,6 +194,10 @@ namespace   Stroika {
             {
                 return RIndexOf (c);
             }
+            inline  void    String::push_back (wchar_t c)
+            {
+                InsertAt (c, GetLength ());
+            }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
@@ -217,17 +221,17 @@ namespace   Stroika {
                     return (true);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase) == 0;
+                return lhs.Compare (d.first, d.second, CompareOptions::eWithCase) == 0;
             }
             inline  bool    operator== (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase) == 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), CompareOptions::eWithCase) == 0;
             }
             inline  bool    operator== (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase) == 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), CompareOptions::eWithCase) == 0;
             }
             inline  bool    operator< (const String& lhs, const String& rhs)
             {
@@ -235,17 +239,17 @@ namespace   Stroika {
                     return (false);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase) < 0;
+                return lhs.Compare (d.first, d.second, CompareOptions::eWithCase) < 0;
             }
             inline  bool    operator< (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase) >= 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), CompareOptions::eWithCase) >= 0;
             }
             inline  bool    operator< (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase) < 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), CompareOptions::eWithCase) < 0;
             }
             inline  bool    operator<= (const String& lhs, const String& rhs)
             {
@@ -253,17 +257,17 @@ namespace   Stroika {
                     return (false);
                 }
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, String::CompareOptions::eWithCase) <= 0;
+                return lhs.Compare (d.first, d.second, CompareOptions::eWithCase) <= 0;
             }
             inline  bool    operator<= (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), String::CompareOptions::eWithCase) > 0;
+                return rhs.Compare (lhs, lhs + ::wcslen (lhs), CompareOptions::eWithCase) > 0;
             }
             inline  bool    operator<= (const String& lhs, const wchar_t* rhs)
             {
                 RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), String::CompareOptions::eWithCase) <= 0;
+                return lhs.Compare (rhs, rhs + ::wcslen (rhs), CompareOptions::eWithCase) <= 0;
             }
             inline  bool    operator!= (const String& lhs, const String& rhs)
             {
@@ -300,6 +304,13 @@ namespace   Stroika {
             inline  bool    operator>= (const String& lhs, const wchar_t* rhs)
             {
                 return (bool (not (lhs < rhs)));
+            }
+
+
+
+            inline  bool Equals (const String& lhs, const String& rhs, CompareOptions co)
+            {
+                return lhs.Compare (rhs, co) == 0;
             }
 
 

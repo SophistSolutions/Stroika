@@ -51,8 +51,8 @@ void    HTTPConnection::ReadHeaders ()
 {
     {
         // Read METHOD line
-        wstring line    =   fRequest_.fInputTextStream.ReadLine ();
-        vector<wstring> tokens = Characters::Tokenize<wstring> (line, L" ");
+        String line    =   fRequest_.fInputTextStream.ReadLine ();
+        vector<String> tokens = Characters::Tokenize<String> (line, L" ");
         if (tokens.size () < 3) {
             Execution::DoThrow (Execution::StringException (L"Bad METHOD REQUEST HTTP line"));
         }
@@ -68,7 +68,7 @@ void    HTTPConnection::ReadHeaders ()
         }
     }
     while (true) {
-        wstring line    =   fRequest_.fInputTextStream.ReadLine ();
+        String line    =   fRequest_.fInputTextStream.ReadLine ();
         if (line == L"\r\n" or line.empty ()) {
             return; // done
         }
@@ -79,8 +79,8 @@ void    HTTPConnection::ReadHeaders ()
             Execution::DoThrow (Execution::StringException (L"Bad HTTP REQUEST missing colon in headers"));
         }
         else {
-            String  hdr     =   String (line.substr (0, i)).Trim ();
-            String  value   =   String (line.substr (i + 1)).Trim ();
+            String  hdr     =   line.SubString (0, i).Trim ();
+            String  value   =   line.SubString (i + 1).Trim ();
             fRequest_.fHeaders.insert (map<String, String>::value_type (hdr, value));
         }
     }

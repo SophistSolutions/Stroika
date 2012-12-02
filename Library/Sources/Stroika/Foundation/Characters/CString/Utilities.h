@@ -64,13 +64,30 @@ namespace   Stroika {
                  * of zero for nEltsInDest.
                  *
                  * This is basically like strcpy/strncpy, except with better logic for nul-termination.
+                 *
+                 * Note - the arguments are not in exactly the same order as strncpy() - with the length of the buffer for the first string before
+                 * the second string.
                  */
                 template    <typename T>
-                void    Copy (T* dest, const T* src, size_t nEltsInDest);
+                void    Copy (T* dest, size_t nEltsInDest, const T* src);
                 template    <>
-                void    Copy (char* dest, const char* src, size_t nEltsInDest);
+                void    Copy (char* dest, size_t nEltsInDest, const char* src);
                 template    <>
-                void    Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest);
+                void    Copy (wchar_t* dest, size_t nEltsInDest, const wchar_t* src);
+
+
+                /**
+                 *  \brief  Safe variant of strncat() - which always NUL-terminates the string. DIFFERNT arguments however, so not safe direct substitution.
+                 *
+                 * Note - the arguments are not in exactly the same order as strncpy() - with the length of the buffer for the first string before
+                 * the second string.
+                 */
+                template    <typename T>
+                void    Cat (T* dest, size_t nEltsInDest, const T* src2Append);
+                template    <>
+                void    Cat (char* dest, size_t nEltsInDest, const char* src2Append);
+                template    <>
+                void    Cat (wchar_t* dest, size_t nEltsInDest, const wchar_t* src2Append);
 
             }
         }

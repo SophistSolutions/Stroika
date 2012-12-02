@@ -31,8 +31,16 @@ namespace   Stroika {
                 }
 
 
+                template    <typename T>
+                void    Copy (T* dest, size_t nEltsInDest, const T* src)
+                {
+                    // Only provide template specializations - but this variant so we get syntax error compiling instead of
+                    // link error if someone calls with other types...
+                    void* fail;
+                    dest = fail;
+                }
                 template    <>
-                inline  void    Copy (char* dest, const char* src, size_t nEltsInDest)
+                inline  void    Copy (char* dest, size_t nEltsInDest, const char* src)
                 {
                     RequireNotNull (dest);
                     RequireNotNull (src);
@@ -50,13 +58,61 @@ namespace   Stroika {
                     Ensure (Length (dest) < nEltsInDest);
                 }
                 template    <>
-                inline  void    Copy (wchar_t* dest, const wchar_t* src, size_t nEltsInDest)
+                inline  void    Copy (wchar_t* dest, size_t nEltsInDest, const wchar_t* src)
                 {
                     RequireNotNull (dest);
                     RequireNotNull (src);
                     Require (nEltsInDest >= 1);
                     wchar_t*        destEnd =   dest + nEltsInDest;
                     wchar_t*        di      =   dest;
+                    const wchar_t*  si      =   src;
+                    while ((*di++ = *si++) != '\0') {
+                        Assert (di <= destEnd);
+                        if (di == destEnd) {
+                            *(di - 1) = '\0';
+                            break;
+                        }
+                    }
+                    Ensure (Length (dest) < nEltsInDest);
+                }
+
+
+
+
+                template    <typename T>
+                void    Cat (T* dest, size_t nEltsInDest, const T* src)
+                {
+                    // Only provide template specializations - but this variant so we get syntax error compiling instead of
+                    // link error if someone calls with other types...
+                    void* fail;
+                    dest = fail;
+                }
+                template    <>
+                inline  void    Cat (char* dest, size_t nEltsInDest, const char* src)
+                {
+                    RequireNotNull (dest);
+                    RequireNotNull (src);
+                    Require (nEltsInDest >= 1);
+                    char*       destEnd =   dest + nEltsInDest;
+                    char*       di      =   dest + strlen (dest);
+                    const char* si      =   src;
+                    while ((*di++ = *si++) != '\0') {
+                        Assert (di <= destEnd);
+                        if (di == destEnd) {
+                            *(di - 1) = '\0';
+                            break;
+                        }
+                    }
+                    Ensure (Length (dest) < nEltsInDest);
+                }
+                template    <>
+                inline  void    Cat (wchar_t* dest, size_t nEltsInDest, const wchar_t* src)
+                {
+                    RequireNotNull (dest);
+                    RequireNotNull (src);
+                    Require (nEltsInDest >= 1);
+                    wchar_t*        destEnd =   dest + nEltsInDest;
+                    wchar_t*        di      =   dest + ::wcslen (dest);
                     const wchar_t*  si      =   src;
                     while ((*di++ = *si++) != '\0') {
                         Assert (di <= destEnd);

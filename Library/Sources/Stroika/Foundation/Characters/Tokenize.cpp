@@ -15,3 +15,16 @@ using   namespace   Stroika::Foundation::Memory;
 
 
 
+
+
+template    <>
+vector<String> Characters::Tokenize (const String& str, const String& delimiters)
+{
+    vector<wstring>     tmp =   Tokenize<wstring> (str.As<wstring> (), delimiters.As<wstring> ());
+    vector<String>      r;
+    r.reserve (tmp.size ());
+for (const wstring & w : tmp) {
+        r.push_back (String (w));
+    }
+    return r;
+}

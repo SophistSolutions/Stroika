@@ -365,7 +365,7 @@ void    FontComboBox::DrawItem (LPDRAWITEMSTRUCT lpDIS)
     {
         LOGFONT lf;
         memset(&lf, 0, sizeof(LOGFONT));
-        Characters::CString::Copy (lf.lfFaceName, static_cast<const TCHAR*> (strText), NEltsOf (lf.lfFaceName));
+        Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), static_cast<const TCHAR*> (strText));
         CWindowDC screenDC (NULL);
         HDC hDC = screenDC.m_hDC;
         ASSERT(hDC != NULL);

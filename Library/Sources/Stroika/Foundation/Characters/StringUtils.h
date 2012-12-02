@@ -13,6 +13,7 @@
 
 
 #include    "../Configuration/Common.h"
+#include    "Character.h"
 
 
 
@@ -112,16 +113,11 @@ namespace   Stroika {
             int     StringsCICmp (const wstring& l, const wstring& r);
 
 
-            /// GET RID OF THIS TUFF - AND MOVE TO String::CompareOptions
-            enum    StringCompareOptions {
-                eWithCase_CO,
-                eCaseInsensitive_CO,
-            };
             bool    StartsWith (const string& l, const string& prefix);
-            bool    StartsWith (const wchar_t* l, const wchar_t* prefix, StringCompareOptions co = eWithCase_CO);
-            bool    StartsWith (const wstring& l, const wstring& prefix, StringCompareOptions co = eWithCase_CO);
-            bool    EndsWith (const wstring& l, const wstring& suffix, StringCompareOptions co = eWithCase_CO);
-            bool    Contains (const wstring& string2Search, const wstring& substr, StringCompareOptions co = eWithCase_CO);
+            bool    StartsWith (const wchar_t* l, const wchar_t* prefix, CompareOptions co = CompareOptions::eWithCase);
+            bool    StartsWith (const wstring& l, const wstring& prefix, CompareOptions co = CompareOptions::eWithCase);
+            bool    EndsWith (const wstring& l, const wstring& suffix, CompareOptions co = CompareOptions::eWithCase);
+            bool    Contains (const wstring& string2Search, const wstring& substr, CompareOptions co = CompareOptions::eWithCase);
 
             struct  CaseInsensativeLess : public binary_function<wstring, wstring, bool> {
                 bool operator()(const wstring& _Left, const wstring& _Right) const;

@@ -27,16 +27,14 @@ TextInputStream::TextInputStream ()
 {
 }
 
-wstring TextInputStream::ReadLine ()
+String TextInputStream::ReadLine ()
 {
-    wstring result;
-    Character   c;
+    String      result;
     while (true) {
         Character   c   =   Read ();
         if (c.GetCharacterCode () == '\0') {
             return result;
         }
-        Containers::ReserveSpeedTweekAdd1 (result);
         result.push_back (c.GetCharacterCode ());
         if (c == '\n') {
             return result;
@@ -53,4 +51,17 @@ wstring TextInputStream::ReadLine ()
             return result;
         }
     }
+}
+
+String TextInputStream::ReadAll ()
+{
+    String      result;
+    while (true) {
+        Character   c   =   Read ();
+        if (c.GetCharacterCode () == '\0') {
+            return result;
+        }
+        result.push_back (c.GetCharacterCode ());
+    }
+    return result;
 }

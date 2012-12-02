@@ -35,6 +35,8 @@ namespace   Stroika {
                 return result;
             }
 
+            template    <>
+            vector<String> Tokenize (const String& str, const String& delimiters);
 
         }
     }

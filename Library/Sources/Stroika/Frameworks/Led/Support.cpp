@@ -1012,8 +1012,8 @@ void    Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName
         (void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
         char    levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2);  // assert MUCH less
-        Characters::CString::Copy (levelPrefixBuf, levelPrefix, NEltsOf (levelPrefixBuf));
-        strcat (levelPrefixBuf, "\t");
+        Characters::CString::Copy (levelPrefixBuf, NEltsOf (levelPrefixBuf), levelPrefix);
+        CString::Cat (levelPrefixBuf, NEltsOf (levelPrefixBuf), "\t");
         DumpSupportedInterfaces (nextObj, nameBuf, levelPrefixBuf);
         AssertNotNull (nextObj);
         nextObj->Release ();
@@ -1044,9 +1044,9 @@ Led_URLD::Led_URLD (const char* url, const char* title):
     fData.resize (resultURLDLen, '\0');
 
     char*   data    =   &fData.front ();
-    Characters::CString::Copy (data, url, resultURLDLen);
-    strcat (data, "\r");
-    strcat (data, title);
+    Characters::CString::Copy (data, resultURLDLen, url);
+    CString::Cat (data, fData.size () - 1, "\r");
+    CString::Cat (data, fData.size () - 1, title);
 }
 
 Led_URLD::Led_URLD (const void* urlData, size_t nBytes):

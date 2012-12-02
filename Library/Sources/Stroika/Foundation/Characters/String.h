@@ -37,6 +37,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <string>
+
 #include    "../Memory/SharedByValue.h"
 #include    "TString.h"
 
@@ -173,7 +175,6 @@ namespace   Stroika {
 
             const size_t    kBadStringIndex   = wstring::npos;
 
-
             class   RegularExpression;
 
             /*
@@ -246,12 +247,6 @@ namespace   Stroika {
                 nonvirtual  void        InsertAt (const String& s, size_t at);
                 nonvirtual  void        InsertAt (const wchar_t* from, const wchar_t* to, size_t at);
                 nonvirtual  void        InsertAt (const Character* from, const Character* to, size_t at);
-
-            public:
-            enum class CompareOptions : uint8_t {
-                    eWithCase,
-                    eCaseInsensitive,
-                };
 
             public:
                 /*
@@ -502,6 +497,14 @@ namespace   Stroika {
                 // need more overloads
                 nonvirtual  size_t rfind (wchar_t c) const;
 
+                // mimic (much of - need more overloads) STL variant
+                nonvirtual  void erase (size_t from = 0, size_t count = kBadStringIndex);
+
+                nonvirtual  void    push_back (wchar_t c);
+
+                // Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
+                // as Stroika::String::SubString (where the second argument is a 'to')
+                nonvirtual  String      substr (size_t from, size_t count = kBadStringIndex) const;
 
             protected:
                 class   _Rep;
@@ -592,7 +595,7 @@ namespace   Stroika {
 
                 virtual pair<const Character*, const Character*> GetData () const    = 0;
 
-                virtual int Compare (const Character* rhsStart, const Character* rhsEnd, String::CompareOptions co) const   =   0;
+                virtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const   =   0;
 
             public:
                 /*
@@ -624,6 +627,14 @@ namespace   Stroika {
             bool    operator>= (const String& lhs, const String& rhs);
             bool    operator>= (const wchar_t* lhs, const String& rhs);
             bool    operator>= (const String& lhs, const wchar_t* rhs);
+
+
+
+            /**
+             * @brief   Return true of the two argument strings are equal. This is equivilent to
+             *              lhs.compare (rhs, co);
+             */
+            bool Equals (const String& lhs, const String& rhs, CompareOptions co = CompareOptions::eWithCase);
 
 
 

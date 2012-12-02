@@ -55,6 +55,13 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
+enum class CompareOptions : uint8_t {
+                eWithCase,
+                eCaseInsensitive,
+            };
+
+
             class   Character   {
             public:
                 Character ();

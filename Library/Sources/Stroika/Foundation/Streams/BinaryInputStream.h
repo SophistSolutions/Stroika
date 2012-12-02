@@ -43,13 +43,17 @@
 
 namespace   Stroika {
     namespace   Foundation {
+
+        namespace Memory {
+            class BLOB;
+        }
         namespace   Streams {
 
             class   BinaryInputOutputStream;
 
 
             /**
-             *  \brief  BinaryInputStream is an abstract class defining the interface to a binary source of data.
+             *  \brief  BinaryInputStream is an 'abstract' class defining the interface to reading from a binary source of data.
              *
              * Design Overview:
              *
@@ -104,6 +108,10 @@ namespace   Stroika {
                  *  without prjudice about how much more is available.
                  */
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
+
+            public:
+                // Read until EOF, and accumulate all of it into a BLOB.
+                nonvirtual  Memory::BLOB ReadAll ();
 
             private:
                 friend  class   BinaryInputOutputStream;

@@ -6,9 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-
 #include    "../Characters/Character.h"
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 
 
@@ -30,6 +29,7 @@ namespace   Stroika {
         namespace   Streams {
 
             using   Characters::Character;
+            using   Characters::String;
 
             /**
              * Design Overview:
@@ -76,7 +76,11 @@ namespace   Stroika {
                 // _Read() method will be asked to read an extra character. The extra character will show up in subsequent other reads
                 //
                 // Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator it encounters as part of the read line.
-                nonvirtual  wstring ReadLine ();
+                nonvirtual  String ReadLine ();
+
+            public:
+                // Read until EOF, and accumulate all of it into a string
+                nonvirtual  String ReadAll ();
 
             protected:
                 // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read

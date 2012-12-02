@@ -212,32 +212,32 @@ namespace   Stroika {
                 }
                 return l.substr (0, prefix.length ()) == prefix;
             }
-            inline  bool    StartsWith (const wchar_t* l, const wchar_t* prefix, StringCompareOptions co)
+            inline  bool    StartsWith (const wchar_t* l, const wchar_t* prefix, CompareOptions co)
             {
-                // This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
+                // This is a good candiate for inlining because the CompareOptions 'co' is nearly ALWAYS a constant
                 RequireNotNull (l);
                 RequireNotNull (prefix);
                 size_t  prefixLen   =   ::wcslen (prefix);
                 switch (co) {
-                    case    eWithCase_CO:
+                    case    CompareOptions::eWithCase:
                         return wcsncmp (l, prefix, prefixLen) == 0;
-                    case    eCaseInsensitive_CO:
+                    case    CompareOptions::eCaseInsensitive:
                         return wcsncasecmp (l, prefix, prefixLen) == 0;
                 }
                 Assert (false);
                 return false; // not reached
             }
-            inline  bool    StartsWith (const wstring& l, const wstring& prefix, StringCompareOptions co)
+            inline  bool    StartsWith (const wstring& l, const wstring& prefix, CompareOptions co)
             {
-                // This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
+                // This is a good candiate for inlining because the CompareOptions 'co' is nearly ALWAYS a constant
                 size_t  prefixLen   =   prefix.length ();
                 if (l.length () < prefixLen) {
                     return false;
                 }
                 switch (co) {
-                    case    eWithCase_CO:
+                    case    CompareOptions::eWithCase:
                         return wcsncmp (l.c_str (), prefix.c_str (), prefixLen) == 0;
-                    case    eCaseInsensitive_CO:
+                    case    CompareOptions::eCaseInsensitive:
                         return wcsncasecmp (l.c_str (), prefix.c_str (), prefixLen) == 0;
                 }
                 Assert (false);
@@ -246,9 +246,9 @@ namespace   Stroika {
 
 
 
-            inline  bool    EndsWith (const wstring& l, const wstring& suffix, StringCompareOptions co)
+            inline  bool    EndsWith (const wstring& l, const wstring& suffix, CompareOptions co)
             {
-                // This is a good candiate for inlining because the StringCompareOptions 'co' is nearly ALWAYS a constant
+                // This is a good candiate for inlining because the CompareOptions 'co' is nearly ALWAYS a constant
                 size_t  lLen        =   l.length ();
                 size_t  suffixLen   =   suffix.length ();
                 if (lLen < suffixLen) {
@@ -256,9 +256,9 @@ namespace   Stroika {
                 }
                 size_t  i   =   lLen - suffixLen;
                 switch (co) {
-                    case    eWithCase_CO:
+                    case    CompareOptions::eWithCase:
                         return wcsncmp (l.c_str () + i, suffix.c_str (), suffixLen) == 0;
-                    case    eCaseInsensitive_CO:
+                    case    CompareOptions::eCaseInsensitive:
                         return wcsncasecmp (l.c_str () + i, suffix.c_str (), suffixLen) == 0;
                 }
                 Assert (false);

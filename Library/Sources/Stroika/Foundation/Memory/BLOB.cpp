@@ -4,12 +4,15 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Execution/CriticalSection.h"
+#include    "../Streams/BinaryInputStream.h"
 
 #include    "BLOB.h"
 
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Streams;
+
 
 
 

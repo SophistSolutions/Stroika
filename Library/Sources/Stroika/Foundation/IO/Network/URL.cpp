@@ -54,7 +54,7 @@ namespace   {
  ********************* Network::GetDefaultPortForProtocol ***********************
  ********************************************************************************
  */
-int     Network::GetDefaultPortForProtocol (const wstring& proto)
+int     Network::GetDefaultPortForProtocol (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
     if (proto == L"")       {       return 80;  }
@@ -88,12 +88,12 @@ URL::URL ()
 {
 }
 
-#if qPlatform_Windows
+#if     qPlatform_Windows
 namespace   {
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(suppress: 6262)
 #endif
-    void    OLD_Cracker (const wstring& w, wstring* protocol, wstring* host, wstring* port, wstring* relPath, wstring* query)
+    void    OLD_Cracker (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
     {
         RequireNotNull (protocol);
         RequireNotNull (host);
@@ -103,14 +103,14 @@ namespace   {
         DWORD   ingored =   0;
         wchar_t outBuf[10 * 1024];
 
-        wstring canonical;
+        String canonical;
         ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ingored, 0));
         canonical = outBuf;
 
         {
             size_t  e   =   canonical.find (':');
-            if (e != wstring::npos) {
-                *protocol = canonical.substr (0, e);
+            if (e != kBadStringIndex) {
+                *protocol = canonical.SubString (0, e);
             }
         }
 
@@ -120,30 +120,30 @@ namespace   {
 
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
-            wstring matchStr        =   *protocol + L"://" + *host;
-            size_t  startOfPath     =   canonical.find (matchStr);
-            if (startOfPath == wstring::npos) {
+            String  matchStr        =   *protocol + L"://" + *host;
+            size_t  startOfPath     =   canonical.IndexOf (matchStr);
+            if (startOfPath == kBadStringIndex) {
                 matchStr        =   *protocol + L":";
-                startOfPath     =   canonical.find (matchStr);
+                startOfPath     =   canonical.IndexOf (matchStr);
             }
-            if (startOfPath == wstring::npos) {
+            if (startOfPath == kBadStringIndex) {
                 startOfPath = canonical.length ();
             }
             else {
                 startOfPath += matchStr.length ();
             }
-            *relPath = canonical.substr (startOfPath);
+            *relPath = canonical.SubString (startOfPath);
 
             size_t  startOfQuery    =   relPath->find ('?');
-            if (startOfQuery != wstring::npos) {
-                *query = relPath->substr (startOfQuery + 1);
+            if (startOfQuery != kBadStringIndex) {
+                *query = relPath->SubString (startOfQuery + 1);
                 relPath->erase (startOfQuery);
             }
         }
     }
 }
 #endif
-URL::URL (const wstring& w)
+URL::URL (const String& w)
     : fProtocol ()
     , fHost ()
     , fPort (kDefaultPort)
@@ -165,8 +165,8 @@ URL::URL (const wstring& w)
 
     {
         size_t  e   =   w.find (':');
-        if (e != wstring::npos) {
-            fProtocol = tolower (w.substr (0, e));
+        if (e != kBadStringIndex) {
+            fProtocol = w.SubString (0, e).ToLowerCase ();
         }
     }
 
@@ -175,7 +175,7 @@ URL::URL (const wstring& w)
         size_t  len             =   w.length ();
         size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
         size_t  e               =   w.find (':');
-        if (e != wstring::npos) {
+        if (e != kBadStringIndex) {
             hostNameStart = e + 1;
         }
         i = hostNameStart;
@@ -192,21 +192,21 @@ URL::URL (const wstring& w)
             // then hostname extends to EOS, or first colon (for port#) or first '/'
             i = hostNameStart;
             for (; i != w.length (); ++i) {
-                wchar_t c   =   w[i];
+                wchar_t c   =   w[i].As<wchar_t> ();
                 if (c == ':' or c == '/' or c == '\\') {
                     break;
                 }
             }
             size_t  endOfHost       =   i;
-            fHost = w.substr (hostNameStart, endOfHost - hostNameStart);
+            fHost = w.SubString (hostNameStart, endOfHost);
 
             // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
                 if (w[i] == ':') {
-                    wstring num;
+                    String num;
                     ++i;
-                    while (i < w.length () && isdigit (w[i])) {
-                        num.push_back (w[i]);
+                    while (i < w.length () && w[i].IsDigit ()) {
+                        num.push_back (w[i].As<wchar_t> ());
                         ++i;
                     }
                     if (!num.empty ()) {
@@ -218,24 +218,24 @@ URL::URL (const wstring& w)
     }
 
     {
-        fRelPath = w.substr (i);
+        fRelPath = w.SubString (i);
 
         // It should be RELATIVE to that hostname and the slash is the separator character
         // NB: This is a change as of 2008-09-04 - so be careful in case anyone elsewhere dependend
         // on the leading slash!
         //      -- LGP 2008-09-04
         if (not fRelPath.empty () and fRelPath[0] == '/') {
-            fRelPath = fRelPath.substr (1);
+            fRelPath = fRelPath.SubString (1);
         }
 
         size_t  startOfFragment =   fRelPath.find ('#');
-        if (startOfFragment != wstring::npos) {
-            fFragment = fRelPath.substr (startOfFragment + 1);
+        if (startOfFragment != kBadStringIndex) {
+            fFragment = fRelPath.SubString (startOfFragment + 1);
             fRelPath.erase (startOfFragment);
         }
 
         size_t  startOfQuery    =   fRelPath.find ('?');
-        if (startOfQuery != wstring::npos) {
+        if (startOfQuery != kBadStringIndex) {
             fQuery = fRelPath.substr (startOfQuery + 1);
             fRelPath.erase (startOfQuery);
         }
@@ -244,15 +244,15 @@ URL::URL (const wstring& w)
 
 #if     qDebug && qPlatform_Windows
     {
-        wstring testProtocol;
-        wstring testHost;
-        wstring testPort;
-        wstring testRelPath;
-        wstring testQuery;
+        String testProtocol;
+        String testHost;
+        String testPort;
+        String testRelPath;
+        String testQuery;
         OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
         Assert (testProtocol == fProtocol);
         if (testProtocol == L"http") {
-            Assert (testHost == tolower (fHost));
+            Assert (testHost == fHost.ToLowerCase ());
             {
                 //Assert (testPort == fPort);
                 if (fPort == 80) {
@@ -263,14 +263,14 @@ URL::URL (const wstring& w)
                     //Assert (fPort == ::_wtoi (testPort.c_str ()));
                 }
             }
-            Assert (testRelPath == fRelPath || testRelPath.find (':') != wstring::npos || ((L"/" + fRelPath) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+            Assert (testRelPath == fRelPath || testRelPath.find (':') != kBadStringIndex || ((L"/" + fRelPath) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
             Assert (testQuery == fQuery or not fFragment.empty ()); // old code didn't check fragment
         }
     }
 #endif
 }
 
-URL::URL (const wstring& protocol, const wstring& host, int portNumber, const wstring& relPath, const wstring& query, const wstring& fragment)
+URL::URL (const String& protocol, const String& host, int portNumber, const String& relPath, const String& query, const String& fragment)
     : fProtocol (protocol)
     , fHost (host)
     , fPort (portNumber)
@@ -280,7 +280,7 @@ URL::URL (const wstring& protocol, const wstring& host, int portNumber, const ws
 {
 }
 
-URL::URL (const wstring& protocol, const wstring& host, const wstring& relPath, const wstring& query, const wstring& fragment)
+URL::URL (const String& protocol, const String& host, const String& relPath, const String& query, const String& fragment)
     : fProtocol (protocol)
     , fHost (host)
     , fPort (kDefaultPort)
@@ -290,7 +290,7 @@ URL::URL (const wstring& protocol, const wstring& host, const wstring& relPath, 
 {
 }
 
-URL URL::ParseHostRelativeURL (const wstring& w)
+URL URL::ParseHostRelativeURL (const String& w)
 {
     URL url;
     {
@@ -301,18 +301,18 @@ URL URL::ParseHostRelativeURL (const wstring& w)
         // on the leading slash!
         //      -- LGP 2008-09-04
         if (not url.fRelPath.empty () and url.fRelPath[0] == '/') {
-            url.fRelPath = url.fRelPath.substr (1);
+            url.fRelPath = url.fRelPath.SubString (1);
         }
 
         size_t  startOfFragment =   url.fRelPath.find ('#');
-        if (startOfFragment != wstring::npos) {
-            url.fFragment = url.fRelPath.substr (startOfFragment + 1);
+        if (startOfFragment != kBadStringIndex) {
+            url.fFragment = url.fRelPath.SubString (startOfFragment + 1);
             url.fRelPath.erase (startOfFragment);
         }
 
         size_t  startOfQuery    =   url.fRelPath.find ('?');
-        if (startOfQuery != wstring::npos) {
-            url.fQuery = url.fRelPath.substr (startOfQuery + 1);
+        if (startOfQuery != kBadStringIndex) {
+            url.fQuery = url.fRelPath.SubString (startOfQuery + 1);
             url.fRelPath.erase (startOfQuery);
         }
     }
@@ -325,10 +325,10 @@ bool    URL::IsSecure () const
     return fProtocol == L"https" or fProtocol == L"ftps" or fProtocol == L"ldaps";
 }
 
-wstring URL::GetURL () const
+String URL::GetURL () const
 {
-    wstring result;
-    result.reserve (10 + fHost.length () + fRelPath.length () + fQuery.length () + fFragment.length ());
+    String result;
+    //result.reserve (10 + fHost.length () + fRelPath.length () + fQuery.length () + fFragment.length ());
 
     if (fProtocol.empty ()) {
         result += L"http:";
@@ -358,11 +358,11 @@ wstring URL::GetURL () const
     return result;
 }
 
-wstring URL::GetHostRelPathDir () const
+String URL::GetHostRelPathDir () const
 {
-    wstring result  =   fRelPath;
-    size_t  i   =   result.rfind ('/');
-    if (i == wstring::npos) {
+    String  result  =   fRelPath;
+    size_t  i       =   result.rfind ('/');
+    if (i == kBadStringIndex) {
         result.clear ();
     }
     else {
@@ -461,7 +461,7 @@ http://ABC.com:/%7esmith/home.html
  *********************** EncodeURLQueryStringField ******************************
  ********************************************************************************
  */
-string  Network::EncodeURLQueryStringField (const wstring& s)
+string  Network::EncodeURLQueryStringField (const String& s)
 {
     //
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
@@ -469,7 +469,7 @@ string  Network::EncodeURLQueryStringField (const wstring& s)
     //
     // From http://tools.ietf.org/html/rfc3986#section-2.3
     //      unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    string  utf8Query   =   WideStringToUTF8 (s);
+    string  utf8Query   =   s.AsUTF8 ();
     string  result;
     size_t  sLength = utf8Query.length ();
     result.reserve (sLength);
@@ -506,7 +506,7 @@ string  Network::EncodeURLQueryStringField (const wstring& s)
 namespace   {
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
-    void    InitURLQueryDecoder_ (map<wstring, wstring>* m, const string& utf8Query)
+    void    InitURLQueryDecoder_ (map<String, String>* m, const string& utf8Query)
     {
         size_t  utfqLen =   utf8Query.length ();
         for (size_t i = 0; i < utfqLen; ) {
@@ -530,19 +530,19 @@ namespace   {
                             }
                     }
                 }
-                m->insert (map<wstring, wstring>::value_type (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val)));
+                m->insert (map<String, String>::value_type (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val)));
             }
-            if (e == wstring::npos) {
+            if (e == kBadStringIndex) {
                 break;
             }
             i = e + 1;
         }
     }
 }
-URLQueryDecoder::URLQueryDecoder (const wstring& query):
+URLQueryDecoder::URLQueryDecoder (const String& query):
     fMap ()
 {
-    InitURLQueryDecoder_ (&fMap, WideStringToUTF8 (query));
+    InitURLQueryDecoder_ (&fMap, query.AsUTF8 ());
 }
 
 URLQueryDecoder::URLQueryDecoder (const string& query):
@@ -551,15 +551,15 @@ URLQueryDecoder::URLQueryDecoder (const string& query):
     InitURLQueryDecoder_ (&fMap, query);
 }
 
-void    URLQueryDecoder::RemoveFieldIfAny (const wstring& idx)
+void    URLQueryDecoder::RemoveFieldIfAny (const String& idx)
 {
-    map<wstring, wstring>::iterator  i   =   fMap.find (idx);
+    map<String, String>::iterator  i   =   fMap.find (idx);
     if (i != fMap.end ()) {
         fMap.erase (i);
     }
 }
 
-wstring URLQueryDecoder::ComputeQueryString () const
+String URLQueryDecoder::ComputeQueryString () const
 {
     string  result;
     for (auto i = fMap.begin (); i != fMap.end (); ++i) {

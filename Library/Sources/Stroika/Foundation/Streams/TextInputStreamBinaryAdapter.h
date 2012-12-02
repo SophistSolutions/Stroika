@@ -8,6 +8,8 @@
 
 #include    <string>
 
+#include    "../Memory/BLOB.h"
+
 #include    "BinaryInputStream.h"
 #include    "Seekable.h"
 #include    "TextInputStream.h"
@@ -38,7 +40,9 @@ namespace   Stroika {
                 virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override;
 
             private:
-                BinaryInputStream  fSource_;
+                BinaryInputStream   fSource_;
+                String              fTmpHackTextRemaining_;
+                size_t              fOffset_;
             };
 
         }

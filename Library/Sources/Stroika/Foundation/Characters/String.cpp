@@ -126,7 +126,7 @@ namespace   {
                 }
                 return Containers::CompareResultNormalizeHelper<ptrdiff_t, int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
             }
-            virtual int Compare (const Character* rhsStart, const Character* rhsEnd, String::CompareOptions co) const override {
+            virtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const override {
                 Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
                 Assert (_fStart <= _fEnd);
                 switch (co) {
@@ -484,7 +484,7 @@ namespace   {
             virtual     void    SetLength (size_t newLength) override;
 
             virtual     const Character*    Peek () const override;
-            virtual int Compare (const _Rep& rhs, String::CompareOptions co) const override;
+            virtual int Compare (const _Rep& rhs, CompareOptions co) const override;
 
         private:
             SharedByValue<_Rep, _Rep_Cloner> fBase;
@@ -1039,6 +1039,28 @@ const wchar_t*  String::c_str () const
     }
 }
 
+void    String::erase (size_t from, size_t count)
+{
+    RemoveAt (from, count);
+    if (count == kBadStringIndex) {
+        RemoveAt (from, GetLength () - from);
+    }
+    else {
+        size_t  end =   min (GetLength () - from, GetLength ());    // really should worry more about overflow
+        RemoveAt (from, count);
+    }
+}
+
+String      String::substr (size_t from, size_t count) const
+{
+    if (count == kBadStringIndex) {
+        return SubString (from);
+    }
+    else {
+        size_t  end =   min (from + count, GetLength ());   // really should worry more about overflow
+        return SubString (from, end);
+    }
+}
 
 
 

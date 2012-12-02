@@ -1436,7 +1436,7 @@ void    LedItApplication::WinHelp (DWORD dwData, UINT nCmd)
         ASSERT(*lpszExt == '\\');
         *(lpszExt + 1) = '\0';
     }
-    (void)::_tcscat (directoryName, _T ("LedItDocs\\"));
+    Characters::CString::Cat (directoryName, NEltsOf(directoryName), _T ("LedItDocs\\"));
 
     // wrap in try/catch, and display error if no open???
     // (NB: we use .htm instead of .html cuz some old systems - I think maybe
@@ -1590,7 +1590,7 @@ void    LedItApplication::OnChooseDefaultFontCommand ()
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     {
-        Characters::CString::Copy (lf.lfFaceName, fsp.GetFontNameSpecifier ().fName, NEltsOf (lf.lfFaceName));
+        Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), fsp.GetFontNameSpecifier ().fName);
         Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName));    // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight = (fsp.GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;
@@ -2294,7 +2294,7 @@ inline  Led_SDK_String  GetLongPathName (const Led_SDK_String& pathName)
 {
     TCHAR szPath[_MAX_PATH];
     Require (pathName.length () < _MAX_PATH);
-    Characters::CString::Copy (szPath, pathName.c_str (), NEltsOf (szPath));
+    Characters::CString::Copy (szPath, NEltsOf (szPath), pathName.c_str ());
     WIN32_FIND_DATA fileData;
     HANDLE hFind = ::FindFirstFile (szPath, &fileData);
     if (hFind != INVALID_HANDLE_VALUE) {
@@ -2302,7 +2302,7 @@ inline  Led_SDK_String  GetLongPathName (const Led_SDK_String& pathName)
         if (lastSlash != NULL) {
             *lastSlash = '\0';
         }
-        ::_tcscat (szPath, _T ("\\"));
+        Characters::CString::Cat (szPath, NEltsOf (szPath), _T ("\\"));
         ::_tcsncat (szPath, fileData.cFileName, _MAX_PATH);
         szPath[_MAX_PATH - 1] = '\0';
         VERIFY (::FindClose (hFind));
@@ -2326,18 +2326,18 @@ CDocument*  LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName, FileFormat 
     TCHAR szTemp[_MAX_PATH];
     if (lpszFileName[0] == '\"')
         ++lpszFileName;
-    Characters::CString::Copy (szTemp, lpszFileName, NEltsOf (szTemp));
+    Characters::CString::Copy (szTemp, NEltsOf (szTemp), lpszFileName);
     LPTSTR lpszLast = _tcsrchr(szTemp, '\"');
     if (lpszLast != NULL)
         *lpszLast = 0;
     AfxFullPath(szPath, szTemp);
     TCHAR szLinkName[_MAX_PATH];
     if (AfxResolveShortcut(AfxGetMainWnd(), szPath, szLinkName, _MAX_PATH))
-        Characters::CString::Copy (szPath, szLinkName, NEltsOf (szPath));
+        Characters::CString::Copy (szPath, NEltsOf (szPath), szLinkName);
 
     // Also, to fix SPR#0345, we must use this (or SHGetFileInfo) hack
     // to get the long-file-name version of the file name.
-    Characters::CString::Copy (szPath, GetLongPathName (szPath).c_str (), NEltsOf (szPath));
+    Characters::CString::Copy (szPath, NEltsOf (szPath), GetLongPathName (szPath).c_str ());
 
     LedItDocument::sHiddenDocOpenArg = format;
     return (pTemplate->OpenDocumentFile (szPath));

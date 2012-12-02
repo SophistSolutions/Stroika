@@ -704,17 +704,17 @@ namespace	{
 	void	Test18_Compare_ ()
 		{
 			const	String	kHELLOWorld	=	String (L"Hello world");
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, String::CompareOptions::eWithCase) == 0);
-			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), String::CompareOptions::eWithCase) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, CompareOptions::eWithCase) == 0);
+			VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), CompareOptions::eWithCase) == 0);
 
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eWithCase) < 0);
-			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), String::CompareOptions::eCaseInsensitive) == 0);
-			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eCaseInsensitive) < 0);
-			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eCaseInsensitive) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"fredy", String::CompareOptions::eWithCase) < 0);
-			VerifyTestResult (String (L"fred").Compare (L"Fredy", String::CompareOptions::eWithCase) > 0);
-			VerifyTestResult (String (L"Fred").Compare (L"fredy", String::CompareOptions::eWithCase) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), CompareOptions::eWithCase) < 0);
+			VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), CompareOptions::eCaseInsensitive) == 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", CompareOptions::eCaseInsensitive) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", CompareOptions::eCaseInsensitive) < 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", CompareOptions::eCaseInsensitive) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"fredy", CompareOptions::eWithCase) < 0);
+			VerifyTestResult (String (L"fred").Compare (L"Fredy", CompareOptions::eWithCase) > 0);
+			VerifyTestResult (String (L"Fred").Compare (L"fredy", CompareOptions::eWithCase) < 0);
 		}
 }
 
@@ -749,24 +749,24 @@ namespace	{
 
 		{
 			char	buf[3] = {'1', '1', '1' };
-			CString::Copy (buf, "3", NEltsOf (buf));
+			CString::Copy (buf, NEltsOf (buf), "3");
 			VerifyTestResult (::strcmp (buf, "3") == 0);
 		}
 		{
 			wchar_t	buf[3] = {'1', '1', '1' };
-			CString::Copy (buf, L"3", NEltsOf (buf));
+			CString::Copy (buf, NEltsOf (buf), L"3");
 			VerifyTestResult (::wcscmp (buf, L"3") == 0);
 		}
 
 
 		{
 			char	buf[3] = {'1', '1', '1' };
-			CString::Copy (buf, "12345", NEltsOf (buf));
+			CString::Copy (buf, NEltsOf (buf), "12345");
 			VerifyTestResult (::strcmp (buf, "12") == 0);
 		}
 		{
 			wchar_t	buf[3] = {'1', '1', '1' };
-			CString::Copy (buf, L"12345", NEltsOf (buf));
+			CString::Copy (buf, NEltsOf (buf), L"12345");
 			VerifyTestResult (::wcscmp (buf, L"12") == 0);
 		}
 

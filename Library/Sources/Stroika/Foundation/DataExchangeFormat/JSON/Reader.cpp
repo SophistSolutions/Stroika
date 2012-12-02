@@ -8,6 +8,7 @@
 #include    "../../Characters/StringUtils.h"
 #include    "../../Characters/Format.h"
 #include    "../../Streams/iostream/Utilities.h"
+#include    "../../Streams/TextInputStreamBinaryAdapter.h"
 #include    "../BadFormatException.h"
 
 #include    "Reader.h"
@@ -52,21 +53,6 @@ namespace   {
 
 
 
-
-    wstring Prepass2UNICODE_ (const wstring& in)
-    {
-// even given unicode, we could have \u characters - mapem!!!
-// NYI
-        return in;
-    }
-    wstring Prepass2UNICODE_ (wistream& in)
-    {
-        return Prepass2UNICODE_ (Streams::iostream::ReadTextStream (in));
-    }
-    wstring Prepass2UNICODE_ (istream& in)
-    {
-        return Prepass2UNICODE_ (Streams::iostream::ReadTextStream (in));
-    }
 
 
 
@@ -436,16 +422,10 @@ namespace   {
  ******************** DataExchangeFormat::JSON::Reader **************************
  ********************************************************************************
  */
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (istream& in)
+Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::BinaryInputStream& in)
 {
-    wstring tmp =   Prepass2UNICODE_ (in);
+    wstring     tmp =   Streams::TextInputStreamBinaryAdapter (in).ReadAll ().As<wstring> ();
     wstring::const_iterator i = tmp.begin ();
     return Reader_value_ (&i, tmp.end ());
 }
 
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (wistream& in)
-{
-    wstring tmp =   Prepass2UNICODE_ (in);
-    wstring::const_iterator i = tmp.begin ();
-    return Reader_value_ (&i, tmp.end ());
-}

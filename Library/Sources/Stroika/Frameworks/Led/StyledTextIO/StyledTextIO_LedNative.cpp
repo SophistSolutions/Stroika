@@ -198,7 +198,7 @@ inline  PortableStyleRunData_Version5   mkPortableStyleRunData_Version5 (const S
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
     string  fontName    =   Led_SDKString2ANSI (isr.GetFontName ());
-    Characters::CString::Copy (data.fFontName, fontName.c_str (), NEltsOf (data.fFontName));
+    Characters::CString::Copy (data.fFontName, NEltsOf (data.fFontName), fontName.c_str ());
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
     data.fStyleSet |= isr.GetStyle_Bold () ? (1 << data.eBold) : 0;
@@ -316,7 +316,7 @@ inline  PortableStyleRunData_Version6   mkPortableStyleRunData_Version6 (const S
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
     string  fontName    =   Led_SDKString2ANSI (isr.GetFontName ());
-    Characters::CString::Copy (data.fFontName, fontName.c_str (), NEltsOf (data.fFontName));
+    Characters::CString::Copy (data.fFontName, NEltsOf (data.fFontName), fontName.c_str ());
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
     data.fStyleSet |= isr.GetStyle_Bold () ? (1 << data.eBold) : 0;

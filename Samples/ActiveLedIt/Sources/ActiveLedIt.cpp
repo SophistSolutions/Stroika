@@ -60,9 +60,7 @@ static  HRESULT CreateComponentCategory(CATID catid, WCHAR* catDescription)
     int len = wcslen(catDescription);
     if (len > 127)
         len = 127;
-    Characters::CString::Copy (catinfo.szDescription, catDescription, len);
-    // Make sure the description is null terminated.
-    catinfo.szDescription[len] = '\0';
+    Characters::CString::Copy (catinfo.szDescription, len, catDescription);
 
     hr = pcr->RegisterCategories(1, &catinfo);
     pcr->Release();

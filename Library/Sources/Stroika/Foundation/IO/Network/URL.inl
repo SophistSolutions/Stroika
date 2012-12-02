@@ -18,36 +18,36 @@ namespace   Stroika {
             namespace   Network {
 
                 //  class   URLQueryDecoder
-                inline  const map<wstring, wstring>& URLQueryDecoder::GetMap () const
+                inline  const map<String, String>& URLQueryDecoder::GetMap () const
                 {
                     return fMap;
                 }
-                inline  wstring     URLQueryDecoder::operator () (const wstring& idx) const
+                inline  String     URLQueryDecoder::operator () (const String& idx) const
                 {
-                    map<wstring, wstring>::const_iterator    i   =   fMap.find (idx);
+                    map<String, String>::const_iterator    i   =   fMap.find (idx);
                     if (i == fMap.end ()) {
-                        return wstring ();
+                        return String ();
                     }
                     else {
                         return (*i).second;
                     }
                 }
-                inline  wstring     URLQueryDecoder::operator () (const string& idx) const
+                inline  String     URLQueryDecoder::operator () (const string& idx) const
                 {
                     return operator () (Characters::UTF8StringToWide (idx));
                 }
-                inline  bool        URLQueryDecoder::HasField (const wstring& idx) const
+                inline  bool        URLQueryDecoder::HasField (const String& idx) const
                 {
-                    map<wstring, wstring>::const_iterator    i   =   fMap.find (idx);
+                    map<String, String>::const_iterator    i   =   fMap.find (idx);
                     return (i != fMap.end ());
                 }
                 inline  bool        URLQueryDecoder::HasField (const string& idx) const
                 {
                     return HasField (Characters::UTF8StringToWide (idx));
                 }
-                inline  void    URLQueryDecoder::AddField (const wstring& idx, const wstring& value)
+                inline  void    URLQueryDecoder::AddField (const String& idx, const String& value)
                 {
-                    fMap.insert (map<wstring, wstring>::value_type (idx, value));
+                    fMap.insert (map<String, String>::value_type (idx, value));
                 }
                 inline  void    URLQueryDecoder::RemoveFieldIfAny (const string& idx)
                 {
@@ -81,7 +81,7 @@ namespace   Stroika {
 
 
                 //  class   LabeledURL
-                inline  LabeledURL::LabeledURL (const wstring& url, const wstring& label)
+                inline  LabeledURL::LabeledURL (const String& url, const String& label)
                     : fURL (url)
                     , fLabel (label)
                 {

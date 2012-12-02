@@ -10,7 +10,6 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
-#include    "../Streams/BinaryInputStream.h"
 
 
 
@@ -49,6 +48,11 @@
 
 namespace   Stroika {
     namespace   Foundation {
+
+        namespace   Streams {
+            class   BinaryInputStream;
+        }
+
         namespace   Memory {
 
             using   namespace   std;
