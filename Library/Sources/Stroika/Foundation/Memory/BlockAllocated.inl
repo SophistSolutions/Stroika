@@ -38,6 +38,11 @@ namespace   Stroika {
 
                 inline  CriticalSection&    GetCritSection_ ()
                 {
+#if     qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
+                    if (sCritSection_ == nullptr) {
+                        sCritSection_ = new CriticalSection ();
+                    }
+#endif
                     AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
                     return *sCritSection_;
                 }

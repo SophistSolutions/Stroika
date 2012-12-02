@@ -28,8 +28,10 @@ CriticalSection*    Private::sCritSection_  =   nullptr;
 
 ActualModuleInit::ActualModuleInit ()
 {
+#if     !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
     Require (sCritSection_ == nullptr);
     sCritSection_ = DEBUG_NEW CriticalSection ();
+#endif
 }
 
 ActualModuleInit::~ActualModuleInit ()

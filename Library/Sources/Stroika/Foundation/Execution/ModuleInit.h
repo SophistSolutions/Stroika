@@ -17,6 +17,40 @@ namespace   Stroika {
 
             using   namespace   Configuration;
 
+
+            /**
+             *      @todo   Must fix qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
+             *              MAYBE use new feature - wherw e have some kind of templated module reference that doesn't include
+             *              #include of hte target mdoule.
+             *
+             *              The problem here is that this USES #include of a HEADER IN A MODULES HEADER as a proxy for
+             *              depependency on the module. The problem is - some modules depend on others in their CPP - NOT their
+             *              Header.
+             *
+             *              Workaround is we need a way to NAME another module (nothing C++ to name modules) - and create a depednecy
+             *              which bumps the module init CTOR/counter, but without #inluing tha tmodule> But THAT in your header!.
+             *
+             *              We can use a STYLZED name convetion and extern to reference other module depednency.
+             *              Something like
+             *                  IN BASE (one people deond on) module
+             *                      MmoduleDependable   _base_;         // burried in appropriate naemspaces
+             *
+             *                  In DEPNEDING mODULE:
+             *                      extern MmoduleDependable    _base_;
+             *                      namespace { ModuleDepenecy _xxx_ (_base_) };
+             *
+             *                  This allows DEPENDING to depend on a name in BASE, but witout #including it, and let the linker to hte dependnecy resolinvg owrk.
+             *
+             */
+#ifndef qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
+            // no particular reason for this value, but I only saw this on gcc -- LGP 2012-12-02
+            // must must fix anywhere/everywhere!
+#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    !qPlatform_Windows
+#endif // !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
+
+
+
+
             /*
              *  OVERVIEW:
              *
