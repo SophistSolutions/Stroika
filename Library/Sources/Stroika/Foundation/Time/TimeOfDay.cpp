@@ -332,7 +332,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
         "%I:%M:%S",
     };
     if (state & ios::failbit) {
-        string  tmp =   WideStringToNarrowSDKString (rep);
+        string  tmp =   WideStringToNarrowSDKString (rep.As<wstring> ());
         for (auto i = StartOfArray (kFmtStrs2Try); (state & ios::failbit) and (i != EndOfArray (kFmtStrs2Try)); ++i) {
             memset (&when, 0, sizeof (when));
             state = (strptime (tmp.c_str (), *i, &when) == nullptr) ? ios::failbit : ios::goodbit;
