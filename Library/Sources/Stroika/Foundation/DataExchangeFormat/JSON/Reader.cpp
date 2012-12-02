@@ -422,10 +422,18 @@ namespace   {
  ******************** DataExchangeFormat::JSON::Reader **************************
  ********************************************************************************
  */
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::BinaryInputStream& in)
+Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::TextInputStream& in)
 {
-    wstring     tmp =   Streams::TextInputStreamBinaryAdapter (in).ReadAll ().As<wstring> ();
+	/// TODO! Once we fix TextInputStream SMARTPOINTER stuff - we can lose this const-cast
+	Streams::TextInputStream&	IN_BWA_	=	const_cast<Streams::TextInputStream&> (in);
+
+    wstring     tmp =   IN_BWA_.ReadAll ().As<wstring> ();
     wstring::const_iterator i = tmp.begin ();
     return Reader_value_ (&i, tmp.end ());
+}
+
+Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::BinaryInputStream& in)
+{
+   return Reader (Streams::TextInputStreamBinaryAdapter (in));
 }
 

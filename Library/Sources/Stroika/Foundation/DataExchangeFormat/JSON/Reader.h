@@ -9,6 +9,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/VariantValue.h"
 #include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/TextInputStream.h"
 
 
 namespace   Stroika {
@@ -17,6 +18,7 @@ namespace   Stroika {
             namespace   JSON {
 
                 Memory::VariantValue    Reader (const Streams::BinaryInputStream& in);
+                Memory::VariantValue    Reader (const Streams::TextInputStream& in);
 
             }
         }
