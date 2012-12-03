@@ -24,6 +24,29 @@ using	namespace	Stroika::Foundation::IO::Network::Transfer;
 
 
 
+namespace {
+	void	TestURLParsing_ ()
+		{
+			{
+				URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
+				VerifyTestResult (url.GetEffectivePortNumber () == 80);
+				VerifyTestResult (url.fQuery == L"ThemeName=Cupertino");
+				VerifyTestResult (url.fHost.empty ());
+				VerifyTestResult (url.fFragment.empty ());
+				VerifyTestResult (url.fProtocol == L"http");
+			}
+			{
+				URL url (L"http://www.recordsforliving.com/");
+				VerifyTestResult (url.GetEffectivePortNumber () == 80);
+				VerifyTestResult (url.fQuery.empty ());
+				VerifyTestResult (url.fFragment.empty ());
+				VerifyTestResult (url.fHost == L"www.recordsforliving.com");
+				VerifyTestResult (url.fProtocol == L"http");
+			}
+		}
+}
+
+
 
 namespace	{
 	void	Test_1_SimpleFetch_Google_C_ (Connection c)
@@ -71,6 +94,8 @@ namespace	{
 	#endif
 	void	DoRegressionTests_ ()
 		{
+			TestURLParsing_ ();
+
 			DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
 
 			#if     qHasFeature_libcurl
@@ -87,8 +112,6 @@ namespace	{
 					DoRegressionTests_ForConnectionFactory_ (&mk_WinHTTP_);
 				#endif
 			#endif
-	
-	
 		}
 }
 

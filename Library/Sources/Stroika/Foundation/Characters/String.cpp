@@ -1041,26 +1041,30 @@ const wchar_t*  String::c_str () const
 
 void    String::erase (size_t from, size_t count)
 {
-    RemoveAt (from, count);
+    // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
+    size_t  max2Copy    =   static_cast<size_t> (max (0, static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from) - 1));
     if (count == kBadStringIndex) {
-        RemoveAt (from, GetLength () - from);
+        RemoveAt (from, max2Copy);
     }
     else {
-        size_t  end =   min (GetLength () - from, GetLength ());    // really should worry more about overflow
-        RemoveAt (from, count);
+        RemoveAt (from,  min (count, max2Copy));
     }
 }
 
 String      String::substr (size_t from, size_t count) const
 {
+    // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     if (count == kBadStringIndex) {
         return SubString (from);
     }
     else {
-        size_t  end =   min (from + count, GetLength ());   // really should worry more about overflow
+        size_t  end =   min (from + count, GetLength ());   // really should worry more about overflow (say if count is kBadStringIndex-1)
+        Assert (from <= end);
         return SubString (from, end);
     }
 }
+
+
 
 
 

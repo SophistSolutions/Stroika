@@ -49,6 +49,9 @@
 /*
  * TODO:
  *
+ *
+ *      o   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistnet with other APIs.
+ *
  *      o   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like "ToLowerCase"
  *          are AMBIGUOUS.
  *
