@@ -32,6 +32,7 @@ namespace {
 				VerifyTestResult (url.GetEffectivePortNumber () == 80);
 				VerifyTestResult (url.fQuery == L"ThemeName=Cupertino");
 				VerifyTestResult (url.fHost.empty ());
+				VerifyTestResult (url.fRelPath == L"StyleSheet.css");
 				VerifyTestResult (url.fFragment.empty ());
 				VerifyTestResult (url.fProtocol == L"http");
 			}
@@ -40,6 +41,7 @@ namespace {
 				VerifyTestResult (url.GetEffectivePortNumber () == 80);
 				VerifyTestResult (url.fQuery.empty ());
 				VerifyTestResult (url.fFragment.empty ());
+				VerifyTestResult (url.fRelPath.empty ());
 				VerifyTestResult (url.fHost == L"www.recordsforliving.com");
 				VerifyTestResult (url.fProtocol == L"http");
 			}

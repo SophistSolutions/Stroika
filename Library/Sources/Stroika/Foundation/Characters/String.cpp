@@ -184,7 +184,7 @@ namespace   {
             }
             virtual void    RemoveAt (size_t index, size_t amountToRemove) {
                 Assert (_fStart <= _fEnd);
-                Require (index + amountToRemove < GetLength ());
+                Require (index + amountToRemove <= GetLength ());
                 wchar_t*    lhs =   &PeekStart () [index];
                 wchar_t*    rhs =   &lhs [amountToRemove];
                 for (size_t i = (_fEnd - _fStart) - index - amountToRemove; i > 0; i--) {
@@ -658,7 +658,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
 
 void    String::RemoveAt (size_t index, size_t nCharsToRemove)
 {
-    Require (index + nCharsToRemove < GetLength ());
+    Require (index + nCharsToRemove <= GetLength ());
     try {
         _fRep->RemoveAt (index, nCharsToRemove);
     }
@@ -1042,12 +1042,12 @@ const wchar_t*  String::c_str () const
 void    String::erase (size_t from, size_t count)
 {
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
-    size_t  max2Copy    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from) - 1));
+    size_t  max2Erase    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
     if (count == kBadStringIndex) {
-        RemoveAt (from, max2Copy);
+        RemoveAt (from, max2Erase);
     }
     else {
-        RemoveAt (from,  min (count, max2Copy));
+        RemoveAt (from,  min (count, max2Erase));
     }
 }
 
@@ -1300,7 +1300,7 @@ void    String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Ch
 void    String_Substring_::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
 {
     Require (index < GetLength ());
-    Require ((index + amountToRemove) < GetLength ());
+    Require ((index + amountToRemove) <= GetLength ());
 
     Assert ((fFrom + index + amountToRemove) < fBase->GetLength ());
     fBase->RemoveAt (index, amountToRemove);
