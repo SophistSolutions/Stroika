@@ -1042,7 +1042,7 @@ const wchar_t*  String::c_str () const
 void    String::erase (size_t from, size_t count)
 {
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
-    size_t  max2Copy    =   static_cast<size_t> (max (0, static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from) - 1));
+    size_t  max2Copy    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from) - 1));
     if (count == kBadStringIndex) {
         RemoveAt (from, max2Copy);
     }
