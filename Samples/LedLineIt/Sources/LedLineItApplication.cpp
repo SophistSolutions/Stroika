@@ -480,7 +480,7 @@ void    LedLineItApplication::WinHelpInternal (DWORD_PTR dwData, UINT nCmd)
         ASSERT(*lpszExt == '\\');
         *(lpszExt + 1) = '\0';
     }
-    ::_tcscat (directoryName, _T ("LedLineItDocs\\"));
+    Characters::CString::Cat (directoryName, NEltsOf (directoryName), _T ("LedLineItDocs\\"));
 
     // wrap in try/catch, and display error if no open???
     // (NB: we use .htm instead of .html cuz some old systems - I think maybe

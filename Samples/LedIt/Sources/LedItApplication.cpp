@@ -2303,7 +2303,7 @@ inline  Led_SDK_String  GetLongPathName (const Led_SDK_String& pathName)
             *lastSlash = '\0';
         }
         Characters::CString::Cat (szPath, NEltsOf (szPath), _T ("\\"));
-        ::_tcsncat (szPath, fileData.cFileName, _MAX_PATH);
+        Characters::CString::Cat (szPath, NEltsOf (szPath), fileData.cFileName);
         szPath[_MAX_PATH - 1] = '\0';
         VERIFY (::FindClose (hFind));
     }

@@ -652,15 +652,15 @@ void    LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
                     {
                         int pointSize   =   GetDefaultFont ().GetPointSize ();
                         if (not IsPredefinedFontSize (pointSize)) {
-                            (void)::_tcscat (nameBuf, _T (" ("));
+                            Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T (" ("));
                             TCHAR   nBuf[100];
                             _stprintf (nBuf, _T ("%d"), GetDefaultFont ().GetPointSize ());
-                            (void)::_tcscat (nameBuf, nBuf);
-                            (void)::_tcscat (nameBuf, _T (")"));
+                            Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), nBuf);
+                            Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T (")"));
                             pCmdUI->SetCheck (true);
                         }
                     }
-                    (void)::_tcscat (nameBuf, _T ("..."));
+                    Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T ("..."));
                     pCmdUI->SetText (nameBuf);
                 }
                 break;

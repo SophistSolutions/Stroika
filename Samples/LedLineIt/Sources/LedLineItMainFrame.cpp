@@ -155,7 +155,7 @@ bool    LedLineItMainFrame::GetStatusBarShown () const
 #if     qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #pragma warning (disable : 4800)
 #endif
-    return fStatusBar.IsWindowVisible ();
+    return !!fStatusBar.IsWindowVisible ();
 #if     qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #pragma warning (default : 4800)
 #endif
