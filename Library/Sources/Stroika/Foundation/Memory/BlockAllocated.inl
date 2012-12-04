@@ -62,7 +62,7 @@ namespace   Stroika {
                         * a chunk which memory allocator can do a good job on.
                         */
                     const   size_t  kTargetMallocSize   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
-                    const   size_t  kChunks = std::max (static_cast<size_t> (kTargetMallocSize / sz), static_cast<size_t> (10));
+                    const   size_t  kChunks = max (static_cast<size_t> (kTargetMallocSize / sz), static_cast<size_t> (10));
 
                     /*
                         * Please note that the following line is NOT a memory leak. Please look at the
