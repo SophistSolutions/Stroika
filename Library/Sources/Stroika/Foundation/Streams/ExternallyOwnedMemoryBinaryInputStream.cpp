@@ -5,6 +5,8 @@
 
 #include    <algorithm>
 
+#include    "../Containers/Common.h"
+
 #include    "ExternallyOwnedMemoryBinaryInputStream.h"
 
 
