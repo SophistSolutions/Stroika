@@ -22,7 +22,7 @@ using   namespace   Stroika::Foundation::Streams;
  ************************ Streams::BinaryInputStream ****************************
  ********************************************************************************
  */
-Memory::BLOB BinaryInputStream::ReadAll ()
+Memory::BLOB BinaryInputStream::ReadAll () const
 {
     // Inefficient implementation
     vector<Byte>    r;
@@ -32,5 +32,4 @@ Memory::BLOB BinaryInputStream::ReadAll ()
         r.insert (r.end (), StartOfArray (buf), StartOfArray (buf) + n);
     }
     return Memory::BLOB (r);
-
 }

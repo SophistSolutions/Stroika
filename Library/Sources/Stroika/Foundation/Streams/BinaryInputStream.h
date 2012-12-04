@@ -24,6 +24,9 @@
  *              o   Doesn’t mix text with binary APIs. Keeps them logically separate (view as
  *                  you will – diff – if better or worse)
  *
+ *      @todo   Redo BinaryInputStream::ReadAll() more efficiently checking isSeekable() and the
+ *              precomputing size and doing just one read.
+ *
  *      @todo   Perhaps add a GetBytesAvailable() method. This is effectively like converting
  *              blocking to safe read calls...
  *
@@ -107,11 +110,11 @@ namespace   Stroika {
                  *  BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *  without prjudice about how much more is available.
                  */
-                nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
+                nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd) const;
 
             public:
                 // Read until EOF, and accumulate all of it into a BLOB.
-                nonvirtual  Memory::BLOB ReadAll ();
+                nonvirtual  Memory::BLOB ReadAll () const;
 
             private:
                 friend  class   BinaryInputOutputStream;

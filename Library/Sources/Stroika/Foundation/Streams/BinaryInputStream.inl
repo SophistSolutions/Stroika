@@ -33,7 +33,7 @@ namespace   Stroika {
             {
                 return dynamic_pointer_cast<_IRep> (BinaryStream::_GetRep ());
             }
-            inline  size_t  BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd)
+            inline  size_t  BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);

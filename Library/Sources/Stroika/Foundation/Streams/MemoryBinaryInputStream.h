@@ -17,6 +17,8 @@
 /*
  *  \file
  *
+ *      @todo   Create .INL file for 'implemenation details'.
+ *
  *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
  */
 
