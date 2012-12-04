@@ -72,9 +72,10 @@ namespace {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
             : BinaryInputStream (_SharedIRep (DEBUG_NEW REP (b))) {
         }
-        struct REP : BinaryInputStream::_IRep  {
+        struct REP : BinaryInputStream::_IRep, public Seekable  {
             REP (const Memory::BLOB& b)
                 : fCur (b.begin ())
+                , fStart (b.begin ())
                 , fEnd (b.end ()) {
             }
             virtual size_t  Read (Byte* intoStart, Byte* intoEnd)  override {
@@ -88,7 +89,51 @@ namespace {
                 fCur += bytesToRead;
                 return bytesToRead;
             }
+            virtual SeekOffsetType  _GetOffset () const override {
+                return fCur - fStart;
+            }
+            virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
+                switch (whence) {
+                    case    Whence::eFromStart: {
+                            if (offset < 0) {
+                                Execution::DoThrow (std::range_error ("seek"));
+                            }
+                            if (offset > (fEnd - fStart)) {
+                                Execution::DoThrow (std::range_error ("seek"));
+                            }
+                            fCur = fStart + offset;
+                        }
+                        break;
+                    case    Whence::eFromCurrent: {
+                            Streams::SeekOffsetType         curOffset   =   fCur - fStart;
+                            Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
+                            if (newOffset < 0) {
+                                Execution::DoThrow (std::range_error ("seek"));
+                            }
+                            if (newOffset > (fEnd - fStart)) {
+                                Execution::DoThrow (std::range_error ("seek"));
+                            }
+                            fCur = fStart + newOffset;
+                        }
+                        break;
+                    case    Whence::eFromEnd: {
+                            Streams::SeekOffsetType         curOffset   =   fCur - fStart;
+                            Streams::SignedSeekOffsetType   newOffset   =   (fEnd - fStart) + offset;
+                            if (newOffset < 0) {
+                                Execution::DoThrow (std::range_error ("seek"));
+                            }
+                            if (newOffset > (fEnd - fStart)) {
+                                Execution::DoThrow (std::range_error ("seek"));
+                            }
+                            fCur = fStart + newOffset;
+                        }
+                        break;
+                }
+                Ensure ((fStart <= fCur) and (fCur <= fEnd));
+                return GetOffset ();
+            }
             const Byte* fCur;
+            const Byte* fStart;
             const Byte* fEnd;
 
             DECLARE_USE_BLOCK_ALLOCATION (REP);

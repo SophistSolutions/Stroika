@@ -112,3 +112,8 @@ ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (start, end)))
 {
 }
+
+ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const vector<Byte>& v)
+    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (Containers::Start (v), Containers::End (v))))
+{
+}

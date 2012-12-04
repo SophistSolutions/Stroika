@@ -15,10 +15,13 @@
 #include	"Stroika/Foundation/Cryptography/MD5.h"
 #include	"Stroika/Foundation/Debug/Assertions.h"
 #include	"Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
 #include	"../TestHarness/TestHarness.h"
 
 using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::Cryptography;
+using	namespace	Stroika::Foundation::Streams;
 
 
 
@@ -37,7 +40,7 @@ namespace	{
 			}
 			return vector<Byte> ();
 		}
-	string	EncodeBase64_ATL_ (const vector<Byte>& b, Cryptography::LineBreak lb)
+	string	EncodeBase64_ATL_ (const vector<Byte>& b, LineBreak lb)
 		{
 			size_t	totalSize		=	b.size ();
 			if (totalSize != 0) {
@@ -46,11 +49,11 @@ namespace	{
 				relBuf.GrowToSize (relEncodedSize);
 				VerifyTestResult (ATL::Base64Encode (Containers::Start (b), static_cast<int> (totalSize), relBuf, &relEncodedSize));
 				relBuf[relEncodedSize] = '\0';
-				if (lb == Cryptography::LineBreak::eCRLF_LB) {
+				if (lb == LineBreak::eCRLF_LB) {
 					return (static_cast<const char*> (relBuf));
 				}
 				else {
-					VerifyTestResult (lb == Cryptography::LineBreak::eLF_LB);
+					VerifyTestResult (lb == LineBreak::eLF_LB);
 					string	result;
 					result.reserve (relEncodedSize);
 					for (int i = 0; i < relEncodedSize; ++i) {
@@ -75,8 +78,8 @@ namespace	{
 	inline	void	VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
 		{
 			#if		qPlatform_Windows
-				VerifyTestResult (Cryptography::EncodeBase64 (bytes, Cryptography::LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, Cryptography::LineBreak::eCRLF_LB));
-				VerifyTestResult (Cryptography::EncodeBase64 (bytes, Cryptography::LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, Cryptography::LineBreak::eLF_LB));
+				VerifyTestResult (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+				VerifyTestResult (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 			#endif
 		}
 	inline	void	VERIFY_ATL_DECODE_ ()
@@ -88,17 +91,17 @@ namespace	{
 }
 
 namespace	{
-	void	VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>&  bytes)
+	void	VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
 		{
-			VerifyTestResult (Cryptography::DecodeBase64 (Cryptography::EncodeBase64 (bytes)) == bytes);
+			VerifyTestResult (DecodeBase64 (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes))) == bytes);
 		}
 }
 
 namespace	{
 	void	DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
 		{
-			Verify (Cryptography::EncodeBase64 (originalUnEncodedBytes) == base64EncodedString);
-			Verify (Cryptography::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
+			Verify (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (originalUnEncodedBytes)) == base64EncodedString);
+			Verify (DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
 			VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
 			VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
 		}
@@ -113,7 +116,7 @@ namespace	{
 			{
 				const	char	kSrc[] = "This is a very good test of a very good test";
 				const	char	kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-				Verify (Cryptography::ComputeMD5Digest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == kEncodedVal);
+				Verify (ComputeMD5Digest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == kEncodedVal);
 			}
 
 			{

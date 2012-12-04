@@ -80,7 +80,7 @@ namespace   Stroika {
                 /**
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
-                BLOB (const shared_ptr<_IRep>& rep);
+                explicit BLOB (const shared_ptr<_IRep>& rep);
 
             public:
                 /**
@@ -90,8 +90,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Convert BLOB losslessly into a standard C++ type (right now just <vector<Byte>, or Streams::BinaryOutputStream>
-                 *  supported)
+                 *  Convert BLOB losslessly into a standard C++ type (right now just <vector<Byte>,
+                 *  or Streams::BinaryInputStream supported)
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;

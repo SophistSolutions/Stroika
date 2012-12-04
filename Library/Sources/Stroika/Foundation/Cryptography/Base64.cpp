@@ -14,6 +14,7 @@
 #include    "../DataExchangeFormat/BadFormatException.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
+#include    "../Memory/BLOB.h"              // ONLY FOR QUICKHACK IMPL OF ENCODE...
 #include    "../Memory/SmallStackBuffer.h"
 
 #include    "Base64.h"
@@ -138,19 +139,28 @@ namespace   {
     }
 }
 
-vector<Byte>    Cryptography::DecodeBase64 (const string& s)
+
+
+
+Memory::BLOB    Cryptography::DecodeBase64 (const string& s)
 {
     if (s.empty ()) {
-        return vector<Byte> ();
+        return Memory::BLOB ();
     }
     size_t dataSize1 = s.length ();
     SmallStackBuffer<Byte>  buf1 (dataSize1);   // MUCH more than big enuf
     base64_decodestate_ state;
     size_t r = base64_decode_block_ (Containers::Start (s), s.length (), buf1.begin (), &state);
     Assert (r <= dataSize1);
-    return vector<Byte> (buf1.begin (), buf1.begin () + r);
+    return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
+void    Cryptography::DecodeBase64 (const string& s, Streams::BinaryOutputStream& out)
+{
+    // QUICKIE implementation...
+    Memory::BLOB   tmp = DecodeBase64 (s);
+    out.Write (tmp.begin (), tmp.end ());
+}
 
 
 
@@ -274,8 +284,28 @@ namespace   {
     }
 }
 
-string  Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb)
+string  Cryptography::EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb)
 {
+#if 0
+    // Use look doing multiple base64_encode_block_() calls!
+#elif 1
+    // quick hack impl
+    Memory::BLOB    bytes = Streams::BinaryInputStream (from).ReadAll ();
+    const Byte* start = bytes.begin ();
+    const Byte* end = bytes.end ();
+    Require (start == end or start != nullptr);
+    Require (start == end or end != nullptr);
+    base64_encodestate state (lb);
+    size_t srcLen = end - start;
+    size_t bufSize = 4 * srcLen;
+    Assert (bufSize >= srcLen);  // no overflow!
+    SmallStackBuffer<char>  data (bufSize);
+    size_t mostBytesCopied =     base64_encode_block_ (start, srcLen, data.begin (), &state);
+    size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+    size_t totalBytes = mostBytesCopied + extraBytes;
+    Assert (totalBytes <= bufSize);
+    return string (data.begin (), data.begin () + totalBytes);
+#else
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
 
@@ -289,9 +319,5 @@ string  Cryptography::EncodeBase64 (const Byte* start, const Byte* end, LineBrea
     size_t totalBytes = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
     return string (data.begin (), data.begin () + totalBytes);
-}
-
-string  Cryptography::EncodeBase64 (const vector<Byte>& b, LineBreak lb)
-{
-    return EncodeBase64 (Containers::Start (b), Containers::End (b), lb);
+#endif
 }

@@ -10,6 +10,9 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/BLOB.h"
+#include    "../Streams/BinaryInputStream.h"
+#include    "../Streams/BinaryOutputStream.h"
 
 
 
@@ -17,13 +20,14 @@
  * TODO:
  *
  *
- *      @todo   Redo API - to use Stream API (and document you can use BLOB().As<BinaryInputStream>()
- *
- *      @todo   Do API for EncodeBase64 () templated on iterator (or using Stroika iterator???) of bytes.
- *
  *      @todo   EncodeBase64 should return STROIKA string, or BLOB - not std::string? Or maybe std::string
  *              best - but document why - cuz always ascii data so more compact?? No - not good reason cuz
  *              we can construct a SUBTYPE of String that takes advantage of it.
+ *
+ *      @todo   Consider if DecodeBase64 should take a binarystream as argument?
+ *
+ *      @todo   Tons todo optimizing this implementation (to not use temporary objects and
+ *              avoiding copying).
  *
  */
 
@@ -31,11 +35,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
 
-            vector<Byte>    DecodeBase64 (const string& s);
+            Memory::BLOB    DecodeBase64 (const string& s);
+            void            DecodeBase64 (const string& s, Streams::BinaryOutputStream& out);
 
 enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
-            string          EncodeBase64 (const Byte* start, const Byte* end, LineBreak lb = LineBreak::eAuto_LB);
-            string          EncodeBase64 (const vector<Byte>& b, LineBreak lb = LineBreak::eAuto_LB);
+            string          EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb = LineBreak::eAuto_LB);
 
         }
     }
