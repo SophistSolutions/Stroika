@@ -16,6 +16,9 @@
 /**
  *  \file
  *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
+ *
+ *      @todo   qCompilerAndStdLib_Supports_ConstructorDelegation - do like MemoryBinaryInputStream constructors
+ *              and replace vector<Byte> ctor
  */
 
 
@@ -36,9 +39,11 @@ namespace   Stroika {
              *
              *  NB: Be VERY careful about using this. It can be assigned to a BinaryInputStream pointer, and
              *  if any of its constructor arguments are destroyed, it will contain invalid memory references.
-             *  Use VERY CAREFULLY.
+             *  Use VERY CAREFULLY. If in doubt, use MemoryBinaryInputStream - which is MUCH safer.
              *
              *  ExternallyOwnedMemoryBinaryInputStream is Seekable.
+             *
+             *  @see MemoryBinaryInputStream
              */
             class   ExternallyOwnedMemoryBinaryInputStream : public BinaryInputStream {
             private:

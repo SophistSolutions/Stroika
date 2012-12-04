@@ -155,7 +155,7 @@ Memory::BLOB    Cryptography::DecodeBase64 (const string& s)
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
-void    Cryptography::DecodeBase64 (const string& s, Streams::BinaryOutputStream& out)
+void    Cryptography::DecodeBase64 (const string& s, Streams::BinaryOutputStream out)
 {
     // QUICKIE implementation...
     Memory::BLOB   tmp = DecodeBase64 (s);

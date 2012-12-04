@@ -158,7 +158,7 @@
 
 #if     defined (__GNUC__)  && !defined (__clang__)
 
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 6))
+#define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7))
 
 #elif   defined (_MSC_VER)
 

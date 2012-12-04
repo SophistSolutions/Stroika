@@ -120,3 +120,9 @@ MemoryBinaryInputStream::MemoryBinaryInputStream (const Byte* start, const Byte*
 {
 }
 
+#if     !qCompilerAndStdLib_Supports_ConstructorDelegation
+MemoryBinaryInputStream::MemoryBinaryInputStream (const vector<Byte>& v)
+    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (Containers::Start (v), Containers::End (v))))
+{
+}
+#endif

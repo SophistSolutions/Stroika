@@ -44,6 +44,14 @@ namespace   Stroika {
             private:
                 class   IRep_;
             public:
+#if     qCompilerAndStdLib_Supports_ConstructorDelegation
+                template    <typename IteratorT>
+                MemoryBinaryInputStream (IteratorT start, IteratorT end);
+                template    <typename ContainerOfT>
+                MemoryBinaryInputStream (const ContainerOfT& c);
+#else
+                MemoryBinaryInputStream (const vector<Byte>& v);
+#endif
                 MemoryBinaryInputStream (const Byte* start, const Byte* end);
             };
 
@@ -62,3 +70,15 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#if     qCompilerAndStdLib_Supports_ConstructorDelegation
+template    <typename IteratorT>
+inline  Stroika::Foundation::Streams::MemoryBinaryInputStream::MemoryBinaryInputStream (IteratorT start, IteratorT end)
+    : MemoryBinaryInputStream (&*start, &*end)
+{
+}
+template    <typename ContainerOfT>
+inline  Stroika::Foundation::Streams::MemoryBinaryInputStream::MemoryBinaryInputStream (const ContainerOfT& c)
+    : MemoryBinaryInputStream (c.begin (), c.end ())
+{
+}
+#endif
