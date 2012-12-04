@@ -89,7 +89,7 @@ namespace   Stroika {
                  *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
                  *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
                  *  BLOCKING until data is available, but can return with fewer bytes than bufSize
-                 *  without prjudice about how much more is available.
+                 *  without prejudice about how much more is available.
                  *
                  *  \pre not empty()
                  */

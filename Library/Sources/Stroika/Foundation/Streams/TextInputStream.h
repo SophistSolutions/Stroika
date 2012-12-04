@@ -61,7 +61,7 @@ namespace   Stroika {
 
             public:
                 // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
-                // BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
+                // BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
                 nonvirtual  size_t  Read (Character* intoStart, Character* intoEnd);
 
                 // Blocking read of a single character. Returns a NUL-character on EOF ('\0')
@@ -84,7 +84,7 @@ namespace   Stroika {
 
             protected:
                 // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
-                // BLOCKING until data is available, but can return with fewer bytes than bufSize without prjudice about how much more is available.
+                // BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
                 virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
 
             private:
