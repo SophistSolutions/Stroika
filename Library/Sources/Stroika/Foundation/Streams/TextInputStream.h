@@ -9,11 +9,14 @@
 #include    "../Characters/Character.h"
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
+#include    "TextStream.h"
 
 
 
 /**
  *  \file
+ *
+ *      @todo   CLEANUP - JUST DID DRAFT CONVERSION TO SAME SMARTPOINTER STYLE USED IN BINARYSTREAM
  *
  *      @todo   Maybe do the same factoring into IRep and smartpointer stuff for TextInputStream code we did
  *              for BinaryInputStream and BinaryOutputStream.
@@ -53,19 +56,36 @@ namespace   Stroika {
              *      We PROBABL>Y should make it a CONFIG PARAM (or param to ReadLine?) if we expect to find CR, LF, or CRLF. Reason is - on file ending in CR, we COULD block needlessly looking for LF
              *      after reading CR...
              */
-            class   TextInputStream {
+            class   TextInputStream : public TextStream {
             protected:
-                TextInputStream ();
-            public:
-                virtual ~TextInputStream ();
+                class   _IRep;
+
+            protected:
+                class   _IRep;
+
+            protected:
+                typedef shared_ptr<_IRep>   _SharedIRep;
+
+            protected:
+                /**
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 */
+                explicit TextInputStream (const _SharedIRep& rep);
+
+
+            protected:
+                /**
+                 *
+                 */
+                nonvirtual  _SharedIRep _GetRep () const;
 
             public:
                 // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
                 // BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
-                nonvirtual  size_t  Read (Character* intoStart, Character* intoEnd);
+                nonvirtual  size_t  Read (Character* intoStart, Character* intoEnd) const;
 
                 // Blocking read of a single character. Returns a NUL-character on EOF ('\0')
-                nonvirtual  Character   Read ();
+                nonvirtual  Character   Read () const;
 
             public:
                 // WANTED todo this - but cannot DO SO - without PEEK/SEEKABILITY!!!! (after you read CR, you must look ahead for LF, but cannot)
@@ -76,21 +96,44 @@ namespace   Stroika {
                 // _Read() method will be asked to read an extra character. The extra character will show up in subsequent other reads
                 //
                 // Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator it encounters as part of the read line.
-                nonvirtual  String ReadLine ();
+                nonvirtual  String ReadLine () const;
 
             public:
                 // Read until EOF, and accumulate all of it into a string
-                nonvirtual  String ReadAll ();
+                nonvirtual  String ReadAll () const;
 
+#if 0
             protected:
                 // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
                 // BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
                 virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
-
             private:
                 bool        fPutBackCharValid_;
                 Character   fPutBackCharacter_;
+#endif
             };
+
+            /**
+             *
+             */
+            class   TextInputStream::_IRep : public virtual TextStream::_IRep {
+            public:
+                _IRep ();
+                NO_COPY_CONSTRUCTOR(_IRep);
+                NO_ASSIGNMENT_OPERATOR(_IRep);
+
+            public:
+                /**
+                 * Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
+                 * BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
+                 */
+                virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
+
+            public:
+                // Needed for functions that do lookahead (like ReadString)
+                virtual  void _PutBack (Character c) const  =   0;
+            };
+
 
         }
     }

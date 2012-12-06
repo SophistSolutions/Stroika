@@ -16,32 +16,36 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
-            inline  TextInputStream::~TextInputStream ()
+            //  class   BinaryInputStream::_IRep
+            inline  TextInputStream::_IRep::_IRep ()
             {
             }
-            inline  size_t  TextInputStream::Read (Character* intoStart, Character* intoEnd)
+
+            //  class   TextInputStream
+            inline  TextInputStream::TextInputStream (const _SharedIRep& rep)
+                : TextStream (rep)
+            {
+            }
+            inline  TextInputStream::_SharedIRep  TextInputStream::_GetRep () const
+            {
+                return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
+            }
+            inline  size_t  TextInputStream::Read (Character* intoStart, Character* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                if (fPutBackCharValid_) {
-                    fPutBackCharValid_ = false;
-                    *intoStart = fPutBackCharacter_;
-                    return 1;
-                }
-                return _Read (intoStart, intoEnd);
+                RequireNotNull (_GetRep ().get ());
+                return _GetRep ()->_Read (intoStart, intoEnd);
             }
-            inline  Character   TextInputStream::Read ()
+            inline  Character   TextInputStream::Read () const
             {
-                if (fPutBackCharValid_) {
-                    fPutBackCharValid_ = false;
-                    return fPutBackCharacter_;
+                Character   c;
+                if (Read (&c, &c + 1) == 1) {
+                    return c;
                 }
-                Character   c   =   '\0';
-                size_t  n   =   _Read (&c, &c + 1);
-                Assert (n == 0 or n == 1);
-                return (n == 0) ? '\0' : c;
+                return '\0';
             }
+
         }
     }
 }

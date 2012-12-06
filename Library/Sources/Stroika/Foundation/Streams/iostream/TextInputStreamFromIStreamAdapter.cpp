@@ -16,40 +16,71 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 
 
 
-// TODO: HORRIBLE IMPL - DO LIKE BinaryInputStreamFromIStreamAdapter - but wait until
-// we do refactoring of TextInputStream
-//      -- LGP 2012-12-02
+class   TextInputStreamFromIStreamAdapter::IRep_ : public TextInputStream::_IRep, public Seekable {
+public:
+    IRep_ (wistream& originalStream)
+        : fOriginalStream_ (originalStream) {
+    }
+
+protected:
+    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override {
+        RequireNotNull (intoStart);
+        RequireNotNull (intoEnd);
+        Require (intoStart < intoEnd);
+
+        if (fOriginalStream_.eof ()) {
+            return 0;
+        }
+        size_t  maxToRead   =   intoEnd - intoStart;
+        fOriginalStream_.read (reinterpret_cast<wchar_t*> (intoStart), maxToRead);
+        size_t  n   =    static_cast<size_t> (fOriginalStream_.gcount ());      // cast safe cuz amount asked to read was also size_t
+
+        // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
+        if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
+            Execution::DoThrow (Execution::StringException (L"Failed to read from wistream"));
+        }
+        return n;
+    }
+
+    virtual  void _PutBack (Character c) const override {
+        AssertNotReached ();
+    }
+
+    virtual SeekOffsetType  _GetOffset () const override {
+        // instead of tellg () - avoids issue with EOF where fail bit set???
+        return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
+    }
+
+    virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override {
+        switch (whence) {
+            case    Whence::eFromStart:
+                fOriginalStream_.seekg (offset, ios::beg);
+                break;
+            case    Whence::eFromCurrent:
+                fOriginalStream_.seekg (offset, ios::cur);
+                break;
+            case    Whence::eFromEnd:
+                fOriginalStream_.seekg (offset, ios::end);
+                break;
+        }
+        return fOriginalStream_.tellg ();
+    }
+
+private:
+    wistream&    fOriginalStream_;
+};
+
+
 
 
 
 
 /*
  ********************************************************************************
- ********* Streams::iostream::BinaryInputStreamFromIStreamAdapter ***************
+ *********** Streams::iostream::TextInputStreamFromIStreamAdapter ***************
  ********************************************************************************
  */
-
 TextInputStreamFromIStreamAdapter::TextInputStreamFromIStreamAdapter (std::wistream& originalStream)
-    : fOriginalStream_ (originalStream)
+    : TextInputStream (shared_ptr<_IRep> (new IRep_ (originalStream)))
 {
-}
-
-size_t          TextInputStreamFromIStreamAdapter::_Read (Character* intoStart, Character* intoEnd)
-{
-    RequireNotNull (intoStart);
-    RequireNotNull (intoEnd);
-    Require (intoStart < intoEnd);
-
-    if (fOriginalStream_.eof ()) {
-        return 0;
-    }
-    size_t  maxToRead   =   intoEnd - intoStart;
-    fOriginalStream_.read (reinterpret_cast<wchar_t*> (intoStart), maxToRead);
-    size_t  n   =    static_cast<size_t> (fOriginalStream_.gcount ());      // cast safe cuz amount asked to read was also size_t
-
-    // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
-    if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-        Execution::DoThrow (Execution::StringException (L"Failed to read from wistream"));
-    }
-    return n;
 }

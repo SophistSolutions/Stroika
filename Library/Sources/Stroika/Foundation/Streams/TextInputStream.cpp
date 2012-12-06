@@ -3,8 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-
-
 #include    "../Containers/Common.h"
 
 #include    "TextInputStream.h"
@@ -16,18 +14,15 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
 
+
+
+
 /*
  ********************************************************************************
  ************************** Streams::TextInputStream ****************************
  ********************************************************************************
  */
-TextInputStream::TextInputStream ()
-    : fPutBackCharValid_ (false)
-    , fPutBackCharacter_ ()
-{
-}
-
-String TextInputStream::ReadLine ()
+String TextInputStream::ReadLine () const
 {
     String      result;
     while (true) {
@@ -45,15 +40,13 @@ String TextInputStream::ReadLine ()
                 result.push_back (c.GetCharacterCode ());
                 return result;
             }
-            Assert (not fPutBackCharValid_);
-            fPutBackCharValid_ = true;
-            fPutBackCharacter_ = c;
+            _GetRep ()->_PutBack (c);
             return result;
         }
     }
 }
 
-String TextInputStream::ReadAll ()
+String TextInputStream::ReadAll () const
 {
     String      result;
     while (true) {

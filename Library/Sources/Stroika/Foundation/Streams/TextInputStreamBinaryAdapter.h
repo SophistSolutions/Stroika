@@ -19,31 +19,21 @@
 /**
  *  \file
  *
- *      @todo   Must use either stdc++ multibyte code or Stroika CodePage code - currnetly a hack assuming input is ascii.
+ *      @todo   Cruddy, draft (but technically I think correct) implementation.
  */
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            using   Characters::Character;
-
             /**
              *
              */
-            class   TextInputStreamBinaryAdapter : public virtual TextInputStream, public virtual Seekable {
+            class   TextInputStreamBinaryAdapter : public TextInputStream {
+            private:
+                class   IRep_;
             public:
                 TextInputStreamBinaryAdapter (BinaryInputStream src);
-
-            protected:
-                virtual size_t          _Read (Character* intoStart, Character* intoEnd) override;
-                virtual SeekOffsetType  _GetOffset () const override;
-                virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override;
-
-            private:
-                BinaryInputStream   fSource_;
-                String              fTmpHackTextRemaining_;
-                size_t              fOffset_;
             };
 
         }

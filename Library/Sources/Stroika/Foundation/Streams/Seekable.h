@@ -17,6 +17,7 @@
  *
  *      @todo   Figure out if and/or how to do shared_ptr like feature as with BinaryInputStream,
  *              and or BinaryStream, etc...
+ *              <<<PRETTY SURE ANSER IS YES - EVEN IF NO SMARTPTR - AT LEAST DO SEPARATE IREP AND OWNER (as a helper providng indirection)>>>
  *
  *
  */
