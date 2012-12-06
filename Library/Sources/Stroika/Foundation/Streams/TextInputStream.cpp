@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Containers/Common.h"
+#include    "../Debug/Assertions.h"
 
 #include    "TextInputStream.h"
 
@@ -24,6 +25,7 @@ using   namespace   Stroika::Foundation::Streams;
  */
 String TextInputStream::ReadLine () const
 {
+    Require (IsSeekable ());
     String      result;
     while (true) {
         Character   c   =   Read ();
@@ -40,7 +42,7 @@ String TextInputStream::ReadLine () const
                 result.push_back (c.GetCharacterCode ());
                 return result;
             }
-            _GetRep ()->_PutBack (c);
+            Seek (Whence::eFromCurrent, -1);
             return result;
         }
     }

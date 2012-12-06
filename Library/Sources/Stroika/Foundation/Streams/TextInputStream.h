@@ -95,11 +95,26 @@ namespace   Stroika {
                 // Note - a call to this function will (often) read one more character than needed. That will be transparent, except that the underlying
                 // _Read() method will be asked to read an extra character. The extra character will show up in subsequent other reads
                 //
+                //*************** ABOVE COMMENTS - NEED REWRITE - TWO IDEAS HERE---
+                //          ONE IS TO MAKE READLINE REQUITE SEEKABILITY. TAHAT is what we do now.
+                //          ANOTHER idea is to have a helper object which mtains the state. This would be explicit in the
+                //          TEXTSTREAM pointer (managed) - and coule be assigned to otehr text streams (so would be semi-transparent.
+                //          BUt it could also be quite confusing in case of assignemnt. Unlcear if thats a good idea. OR - could ahve it
+                //          as explicit parameter. But that would be awkward.
+                //
+                //          SIMPLEST design is to require seekability. But maybe not the best - since full seekability is a hammer to kill a flea.
+                //
+                //          MAYBE - TWO OVERALPOSAD - REadLine() with no args requires seekability. ReadLine (with helper object) maintains state. So most
+                //          time syou get simple behavior and when you need to - you can get magic with keeping track of extra char???
+                //
                 // Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator it encounters as part of the read line.
                 nonvirtual  String ReadLine () const;
 
             public:
-                // Read until EOF, and accumulate all of it into a string
+                /**
+                 * Read from the current seek position, until EOF, and accumulate all of it into a String. Note - since the stream
+                 * may not start at the beginning, this isn't necessarily ALL that was in the stream -just all that remains.
+                 */
                 nonvirtual  String ReadAll () const;
 
 #if 0
@@ -128,10 +143,6 @@ namespace   Stroika {
                  * BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
                  */
                 virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
-
-            public:
-                // Needed for functions that do lookahead (like ReadString)
-                virtual  void _PutBack (Character c) const  =   0;
             };
 
 

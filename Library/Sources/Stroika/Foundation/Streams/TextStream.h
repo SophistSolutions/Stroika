@@ -106,9 +106,12 @@ namespace   Stroika {
                  *
                  *  The new position, measured in bytes, is obtained by adding offset bytes to the
                  *  position specified by whence.
+                 *
+                 *  Note: This method is const because Seekable is (or soon willbe) a 'smartptr' to a SeekableRep and
+                 *  the SmartPtr isnt being changed.
                  */
-                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset);
-                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset);
+                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
+                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;
 
             private:
                 _SharedIRep fRep_;

@@ -55,13 +55,13 @@ namespace   Stroika {
                 AssertNotNull (fSeekable_);
                 return fSeekable_->GetOffset ();
             }
-            inline  SeekOffsetType        TextStream::Seek (SignedSeekOffsetType offset)
+            inline  SeekOffsetType        TextStream::Seek (SignedSeekOffsetType offset) const
             {
                 Require (IsSeekable ());
                 AssertNotNull (fSeekable_);
                 return fSeekable_->Seek (offset);
             }
-            inline  SeekOffsetType        TextStream::Seek (Whence whence, SignedSeekOffsetType offset)
+            inline  SeekOffsetType        TextStream::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
                 Require (IsSeekable ());
                 AssertNotNull (fSeekable_);

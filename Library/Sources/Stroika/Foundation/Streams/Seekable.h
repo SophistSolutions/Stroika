@@ -19,6 +19,12 @@
  *              and or BinaryStream, etc...
  *              <<<PRETTY SURE ANSER IS YES - EVEN IF NO SMARTPTR - AT LEAST DO SEPARATE IREP AND OWNER (as a helper providng indirection)>>>
  *
+ *      @todo   Think out the (and document answer) of special case of need to seek back one. This
+ *              happens a ton with stuff like ReadString in TextInputStream. MAYBE have those
+ *              ReadString functions take a 'lookahead state' proxy object to store extra data?
+ *              A little awkward to use, but clean impl?  Maybe have TextInputStream manage those
+ *              objects itself silenetly (at least by default)?
+ *
  *
  */
 namespace   Stroika {

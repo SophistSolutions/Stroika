@@ -42,10 +42,6 @@ protected:
         return n;
     }
 
-    virtual  void _PutBack (Character c) const override {
-        AssertNotReached ();
-    }
-
     virtual SeekOffsetType  _GetOffset () const override {
         // instead of tellg () - avoids issue with EOF where fail bit set???
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);

@@ -65,17 +65,52 @@ protected:
 #endif
     }
 
-    virtual  void _PutBack (Character c) const override {
-        AssertNotReached ();
-    }
-
     virtual SeekOffsetType  _GetOffset () const override {
         return fOffset_;
     }
 
     virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override {
-        AssertNotImplemented ();    // easy todo with current hack impl, but trickier with a real one...
-        return 0;
+        switch (whence) {
+            case    Whence::eFromStart: {
+                    if (offset < 0) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    if (offset > (fTmpHackTextRemaining_.size ())) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
+                    fOffset_ = offset;
+                }
+                break;
+            case    Whence::eFromCurrent: {
+                    Streams::SeekOffsetType         curOffset   =   fOffset_;
+                    Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
+                    if (newOffset < 0) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    if (newOffset > (fTmpHackTextRemaining_.size ())) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
+                    fOffset_ = newOffset;
+                }
+                break;
+            case    Whence::eFromEnd: {
+                    Streams::SeekOffsetType         curOffset   =   fOffset_;
+                    Streams::SignedSeekOffsetType   newOffset   =   (fTmpHackTextRemaining_.size ()) + offset;
+                    if (newOffset < 0) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    if (newOffset > (fTmpHackTextRemaining_.size ())) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
+                    fOffset_ = newOffset;
+                }
+                break;
+        }
+        Ensure ((0 <= fOffset_) and (fOffset_ <= fTmpHackTextRemaining_.size ()));
+        return GetOffset ();
     }
 
 private:
@@ -85,26 +120,6 @@ private:
 };
 
 
-#if 0
-/**
-     *
-     */
-class   TextInputStreamBinaryAdapter : public virtual TextInputStream, public virtual Seekable {
-public:
-    TextInputStreamBinaryAdapter (BinaryInputStream src);
-
-protected:
-    virtual size_t          _Read (Character* intoStart, Character* intoEnd) override;
-    virtual SeekOffsetType  _GetOffset () const override;
-    virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override;
-
-private:
-    BinaryInputStream   fSource_;
-    String              fTmpHackTextRemaining_;
-    size_t              fOffset_;
-};
-
-#endif
 
 
 /*
@@ -112,57 +127,12 @@ private:
  ************************** Streams::TextInputStream ****************************
  ********************************************************************************
  */
-TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (BinaryInputStream src)
-    : TextInputStream (shared_ptr<_IRep> (new IRep_ (src)))
+TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (const BinaryInputStream& src)
+    : TextInputStream (mk_ (src))
 {
 }
 
-#if 0
-size_t  TextInputStreamBinaryAdapter::_Read (Character* intoStart, Character* intoEnd)
+shared_ptr<TextInputStreamBinaryAdapter::_IRep> TextInputStreamBinaryAdapter::mk_ (const BinaryInputStream& src)
 {
-    Require ((intoStart == intoEnd) or (intoStart != nullptr));
-    Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-#if 1
-    if (fTmpHackTextRemaining_.empty ()) {
-        // only happens once
-        Assert (fOffset_ == 0);
-        Memory::BLOB    b   =   fSource_.ReadAll ();
-        fTmpHackTextRemaining_ = Characters::MapUNICODETextWithMaybeBOMTowstring ((char*) (b.begin ()), (char*) (b.end ()));
-    }
-    Character* ci = intoStart;
-    for (; ci != intoEnd; ) {
-        if (fOffset_ >= fTmpHackTextRemaining_.length ()) {
-            return (ci - intoStart);
-        }
-        else {
-            *ci = fTmpHackTextRemaining_[fOffset_];
-            fOffset_++;
-            ++ci;
-        }
-    }
-    return (ci - intoStart);
-#else
-    Memory::SmallStackBuffer<Byte>  buf (intoEnd - intoStart);
-    size_t  n   =   fSource_.Read (buf.begin (), buf.end ());
-    size_t  outN    =   0;
-    for (size_t i = 0; i < n; ++i) {
-        intoStart[i] = Characters::Character ((char) * (buf.begin () + i));
-        outN++;
-    }
-    Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
-    return outN;
-#endif
+    return shared_ptr<_IRep> (new IRep_ (src));
 }
-
-Streams::SeekOffsetType TextInputStreamBinaryAdapter::_GetOffset () const
-{
-    return fOffset_;
-}
-
-SeekOffsetType    TextInputStreamBinaryAdapter::_Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset)
-{
-    AssertNotImplemented ();    // easy todo with current hack impl, but trickier with a real one...
-    return 0;
-}
-
-#endif

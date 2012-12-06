@@ -20,6 +20,15 @@
  *  \file
  *
  *      @todo   Cruddy, draft (but technically I think correct) implementation.
+ *
+ *      @todo   BUGGY with seek fucntionality. We ASSUME we always get called to read with the source
+ *              offset at zero. We dont even know that the source is seekable, but we
+ *              certainly dont know that!
+ *
+ *      @todo   Ultimately - do several implementations upon construction, depending on whether
+ *              or not the source is Seekable. Maybe also take configuration (CTOR) params to
+ *              indicate whether or not caching is desired (required to implement seekability on
+ *              non-seekable sources).
  */
 
 namespace   Stroika {
@@ -30,10 +39,12 @@ namespace   Stroika {
              *
              */
             class   TextInputStreamBinaryAdapter : public TextInputStream {
+            public:
+                TextInputStreamBinaryAdapter (const BinaryInputStream& src);
             private:
                 class   IRep_;
-            public:
-                TextInputStreamBinaryAdapter (BinaryInputStream src);
+            private:
+                shared_ptr<_IRep> mk_ (const BinaryInputStream& src);
             };
 
         }
