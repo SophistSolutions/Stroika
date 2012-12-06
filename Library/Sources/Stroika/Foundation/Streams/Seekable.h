@@ -12,6 +12,14 @@
 
 
 
+/**
+ *  \file
+ *
+ *      @todo   Figure out if and/or how to do shared_ptr like feature as with BinaryInputStream,
+ *              and or BinaryStream, etc...
+ *
+ *
+ */
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {

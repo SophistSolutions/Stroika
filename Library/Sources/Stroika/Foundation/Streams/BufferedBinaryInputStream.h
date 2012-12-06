@@ -14,17 +14,15 @@
 
 
 
-/*
+/**
  *  \file
  *
- *      @todo   Not actually implemented. Must think out if this should mixin
- *              Seekable or not. I THINK it must. I THINK if one SEEKS this, but the underlying
+ *      @todo   Seekable! Must think out if this should mixin Seekable or not. I THINK it must be.
+ *              I THINK if one SEEKS this, but the underlying
  *              class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
  *              BufferedBinaryInputStream::IRep_ IMPLEMENTATION NEEDED
  *
- *      @todo   Examine other choices in stream class. Decide between using the shared_ptr<> pattern,
- *              or just using references (and count on coding styles to manage lifetime issues).
- *
+ *      @todo   Add tuning parameters, such as buffer size
  *
  */
 
@@ -34,17 +32,17 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
             /**
-             *
+             *  @brief  BufferedBinaryInputStream is a BinaryInputStream which provides buffered access.
+             *          This is useful if calls to the underling stream source can be expensive. This class
+             *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
              */
             class   BufferedBinaryInputStream : public BinaryInputStream {
             private:
                 class   IRep_;
             public:
-                BufferedBinaryInputStream (const BinaryInputStream::_SharedIRep& realIn);
+                BufferedBinaryInputStream (const BinaryInputStream& realIn);
             };
-
 
         }
     }

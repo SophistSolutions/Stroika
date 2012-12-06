@@ -18,20 +18,20 @@ using   namespace   Stroika::Foundation::Streams;
 
 class   BufferedBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
 public:
-    IRep_ (const BinaryInputStream::_SharedIRep& realIn)
+    IRep_ (const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
         , fCriticalSection_ ()
         , fRealIn_ (realIn) {
     }
 
-    virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);
-        return fRealIn_->Read (intoStart, intoEnd);
+        return fRealIn_.Read (intoStart, intoEnd);
     }
 
 private:
-    mutable Execution::CriticalSection          fCriticalSection_;
-    BinaryInputStream::_SharedIRep              fRealIn_;
+    mutable Execution::CriticalSection      fCriticalSection_;
+    BinaryInputStream                       fRealIn_;
 };
 
 
@@ -44,7 +44,7 @@ private:
  ************************ Streams::BinaryInputStream ****************************
  ********************************************************************************
  */
-BufferedBinaryInputStream::BufferedBinaryInputStream (const shared_ptr<BinaryInputStream::_IRep>& realIn)
+BufferedBinaryInputStream::BufferedBinaryInputStream (const BinaryInputStream& realIn)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (realIn)))
 {
 }

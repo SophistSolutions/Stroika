@@ -63,7 +63,7 @@ namespace   Stroika {
                  *  BufSize must always be >= 1.
                  *  Writes always succeed fully or throw.
                  */
-                nonvirtual  void    Write (const Byte* start, const Byte* end);
+                nonvirtual  void    Write (const Byte* start, const Byte* end) const;
 
             private:
                 friend  class   BinaryInputOutputStream;

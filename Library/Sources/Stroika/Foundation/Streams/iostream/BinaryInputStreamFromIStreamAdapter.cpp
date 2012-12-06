@@ -49,7 +49,7 @@ protected:
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
     }
 
-    virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override {
         switch (whence) {
             case    Whence::eFromStart:
                 fOriginalStream_.seekg (offset, ios::beg);

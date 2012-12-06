@@ -29,7 +29,7 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  BinaryStream is an abstract class defining the interface to a binary source/sink of data.
+             *  \brief  BinaryStream is an 'abstract class' defining the interface to a binary source/sink of data.
              *
              *  BinaryStream is probably nearly useless (from a users point of view), in and of itself,
              *  but it helps to tie together and facilitate mixing BinaryInputStream and BinaryOutputStream
@@ -56,7 +56,7 @@ namespace   Stroika {
                 /**
                  * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
-                BinaryStream (const _SharedIRep& rep);
+                explicit BinaryStream (const _SharedIRep& rep);
 
             protected:
                 /**

@@ -17,9 +17,7 @@
 /*
  *  \file
  *
- *      @todo   Create .INL file for 'implemenation details'.
- *
- *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
+ *      @todo   Re-implement using atomics to avoid critical section (cheaper).
  */
 
 
@@ -30,10 +28,12 @@ namespace   Stroika {
         namespace   Streams {
 
             /**
-             *  \brief  MemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream (copies)
+             *  \brief  MemoryBinaryInputStream takes a block of binary data and exposes it as a
+             *          BinaryInputStream (copies)
              *
-             *  MemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream. It copies the
-             *  data - so after construction, there is no requirement on the data bounded by start/end.
+             *  MemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream.
+             *  It copies the data - so after construction, there is no requirement on the data bounded by
+             *  start/end.
              *
              *  MemoryBinaryInputStream is threadsafe - meaning Read() can safely be called from
              *  multiple threads at a time freely.
@@ -72,15 +72,4 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if     qCompilerAndStdLib_Supports_ConstructorDelegation
-template    <typename IteratorT>
-inline  Stroika::Foundation::Streams::MemoryBinaryInputStream::MemoryBinaryInputStream (IteratorT start, IteratorT end)
-    : MemoryBinaryInputStream (&*start, &*end)
-{
-}
-template    <typename ContainerOfT>
-inline  Stroika::Foundation::Streams::MemoryBinaryInputStream::MemoryBinaryInputStream (const ContainerOfT& c)
-    : MemoryBinaryInputStream (c.begin (), c.end ())
-{
-}
-#endif
+#include    "MemoryBinaryInputStream.inl"

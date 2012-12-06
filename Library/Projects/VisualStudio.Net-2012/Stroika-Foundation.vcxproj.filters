@@ -1395,5 +1395,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
       <Filter>Sources\Memory</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryBinaryInputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
   </ItemGroup>
 </Project>

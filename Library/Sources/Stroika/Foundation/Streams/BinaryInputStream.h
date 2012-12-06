@@ -56,7 +56,8 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  BinaryInputStream is an 'abstract' class defining the interface to reading from a binary source of data.
+             *  \brief  BinaryInputStream is an 'abstract' class defining the interface to reading from
+             *          a binary source of data.
              *
              * Design Overview:
              *
@@ -80,7 +81,12 @@ namespace   Stroika {
              *          input/output stream. Similarly, they can both be mixed together with Seekable.
              *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
              *
-             *      o   See Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
+             *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
+             *
+             *      @see MemoryBinaryInputStream for most common stream applications.
+             *
+             *      @see ExternallyOwnedMemoryBinaryInputStream for a more efficient, but slightly less safe
+             *          mapping to streams.
              *
              */
             class   BinaryInputStream : public BinaryStream {
@@ -94,7 +100,7 @@ namespace   Stroika {
                 /**
                  * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
-                BinaryInputStream (const _SharedIRep& rep);
+                explicit BinaryInputStream (const _SharedIRep& rep);
 
 
             protected:

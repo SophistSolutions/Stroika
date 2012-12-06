@@ -28,7 +28,8 @@ namespace   Stroika {
 
             using   Characters::Character;
 
-            /*
+            /**
+             *
              */
             class   TextInputStreamBinaryAdapter : public virtual TextInputStream, public virtual Seekable {
             public:

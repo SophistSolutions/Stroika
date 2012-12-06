@@ -52,7 +52,7 @@ namespace   Stroika {
                  *  \pre dynamic_cast(rep.get (), _SharedInputIRep::element_type) != nullptr
                  *  \pre dynamic_cast(rep.get (), _SharedOutputIRep::element_type) != nullptr
                  */
-                BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep);
+                explicit BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep);
 
             protected:
                 typedef BinaryInputStream::_SharedIRep      _SharedInputIRep;
