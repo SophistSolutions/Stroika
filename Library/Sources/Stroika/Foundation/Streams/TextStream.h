@@ -28,6 +28,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
+			// UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
             /**
              *  \brief  TextStream is an 'abstract class' defining the interface to a text source/sink of data.
              *

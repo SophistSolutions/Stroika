@@ -77,9 +77,10 @@ namespace   Stroika {
              *          a formatting effort (e.g. if the source is encrypted, and the stream is decrypting,
              *          then it might detect a format error and throw).
              *
-             *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make an
-             *          input/output stream. Similarly, they can both be mixed together with Seekable.
-             *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *      o   BinaryInputStream and BinaryOutputStream CAN be logically be mixed togehter to make an
+             *          input/output stream in one of two ways:
+			 *				@see BinaryInputOutputStream
+			 *				@see BinaryTiedStreams
              *
              *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
              *
@@ -119,7 +120,9 @@ namespace   Stroika {
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd) const;
 
             public:
-                // Read until EOF, and accumulate all of it into a BLOB.
+                /**
+				 *	Read from the current stream position until EOF, and accumulate all of it into a BLOB.
+				 */
                 nonvirtual  Memory::BLOB ReadAll () const;
 
             private:

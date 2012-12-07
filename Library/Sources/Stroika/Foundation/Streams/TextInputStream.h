@@ -25,6 +25,8 @@
  *              common mem-mgmt strategy and works better with other maybe native text streams
  *              (that dont wrap a binary stream).
  *
+ *		@todo	
+ *
  */
 
 
