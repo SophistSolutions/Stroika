@@ -30,6 +30,14 @@ namespace   Stroika {
             {
                 return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
             }
+            inline  size_t  TextInputStream::Read (wchar_t* intoStart, wchar_t* intoEnd) const
+            {
+                RequireNotNull (intoStart);
+                Require ((intoEnd - intoStart) >= 1);
+                RequireNotNull (_GetRep ().get ());
+                static_assert (sizeof (wchar_t) == sizeof (Character), "This cast assumes the types are the same");
+                return _GetRep ()->_Read (reinterpret_cast<Character*> (intoStart), reinterpret_cast<Character*> (intoEnd));
+            }
             inline  size_t  TextInputStream::Read (Character* intoStart, Character* intoEnd) const
             {
                 RequireNotNull (intoStart);

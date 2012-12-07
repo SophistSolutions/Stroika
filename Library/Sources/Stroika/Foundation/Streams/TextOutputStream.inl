@@ -35,14 +35,14 @@ namespace   Stroika {
             {
                 RequireNotNull (start);
                 Require (end - start >= 0);
-                _GetRep ()->_Write (start, end);
+                _GetRep ()->Write (start, end);
             }
             void    TextOutputStream::Write (const wchar_t* start, const wchar_t* end) const
             {
                 RequireNotNull (start);
                 Require (end - start >= 0);
                 static_assert (sizeof (wchar_t) == sizeof (Character), "This cast assumes the types are the same");
-                _GetRep ()->_Write (reinterpret_cast<const Character*> (start), reinterpret_cast<const Character*> (end));
+                _GetRep ()->Write (reinterpret_cast<const Character*> (start), reinterpret_cast<const Character*> (end));
             }
 
         }

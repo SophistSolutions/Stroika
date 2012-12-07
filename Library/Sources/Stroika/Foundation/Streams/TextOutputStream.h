@@ -26,14 +26,16 @@ namespace   Stroika {
             /*
              * Design Overview:
              *
-             *      o   TextInputStream and TextOutputStream CAN be naturally mixed togehter to make an input/output stream. Simlarly, they can both be
-             *          mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *      o   TextOutputStream represents a sink for Characters. It may or may not be Seekable, and can be
+             *          combined with a TextInputStream (@see TextStream for details).
              *
              *      o   One (potential) slight design flaw with this API, is that its not possible to have legal partial writes.
              *          But not supporting partial writes makes use much simpler (since callers don't need
              *          to worry about that case), and its practically never useful. In principle - this API could be
              *          extended so that an exception (or extra method to ask about last write) could include information
              *          about partial writes, but for now - I don't see any reason.
+             *
+             *  @See TextStream
              */
             class   TextOutputStream : public TextStream {
             protected:
@@ -44,7 +46,7 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable::_IRep - and if so - this automatically uses it.
                  */
                 explicit TextOutputStream (const _SharedIRep& rep);
 
@@ -57,7 +59,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Write the characters bounded by start and end. Start and End maybe equal, and only then can they be nullptr.
+                 *  Write the characters bounded by start and end. Start and End maybe equal, and only
+                 *  then can they be nullptr.
                  *
                  *  Writes always succeed fully or throw (no partial writes).
                  */
@@ -79,7 +82,7 @@ namespace   Stroika {
                  * pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                  * Writes always succeed fully or throw.
                  */
-                virtual void    _Write (const Character* start, const Character* end)           =   0;
+                virtual void    Write (const Character* start, const Character* end)           =   0;
             };
 
         }

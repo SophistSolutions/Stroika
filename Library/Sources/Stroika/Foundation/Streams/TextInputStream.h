@@ -16,23 +16,8 @@
 /**
  *  \file
  *
- *      @todo   CLEANUP - JUST DID DRAFT CONVERSION TO SAME SMARTPOINTER STYLE USED IN BINARYSTREAM
- *
- *      @todo   Maybe do the same factoring into IRep and smartpointer stuff for TextInputStream code we did
- *              for BinaryInputStream and BinaryOutputStream.
- *              Symetry is compelling. MIGHT not be needed? Cuz this COULD basically be used as a wrapper
- *              (TExtReader/TextWriter) on a more persistent stream. But that works too if we use the
- *              common mem-mgmt strategy and works better with other maybe native text streams
- *              (that dont wrap a binary stream).
- *
- *      @todo   ReadString And SeekBackOne, PutBackOne...
- *
- *              Think out the (and document answer) of special case of need to seek back one. This
- *              happens a ton with stuff like ReadString in TextInputStream. MAYBE have those
- *              ReadString functions take a 'lookahead state' proxy object to store extra data?
- *              A little awkward to use, but clean impl?  Maybe have TextInputStream manage those
- *              objects itself silenetly (at least by default)?
- *
+ *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
+ *              Then it would ONLY require Seekable() for CRLF or Auto.
  *
  */
 
@@ -63,12 +48,35 @@ namespace   Stroika {
              *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
              *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
              *
-             *BECAUSE OF DIFFICULTIES DOING SOME STUFF WE WANT - LIKE READLINE - and probably also characterset stuff - we MAY want to have TEXTINPUTSTREAM REQUIRE seekability>
-             *PROBABLY NO. BUT A THOUGHT... --LGP 2011-06-22
+             *  ReadString/Seekable/PutBack Design Choices:
+             *      o   Some common read methods with TextStreams (parsing) - involve some amount of lookahead.
+             *          Lookahead COULD be implemented a number of ways:
+             *          o   Seek backwards after fetching
+             *          o   Special 'put back' variable/API - which allows you to put back either one,
+             *              or a number of characters back into the input Q
+             *          o   A specail proxy object which stores the extra data, and maintains the context
+             *              of the state of pre-reading.
              *
-             *  TODO:
-             *      We PROBABL>Y should make it a CONFIG PARAM (or param to ReadLine?) if we expect to find CR, LF, or CRLF. Reason is - on file ending in CR, we COULD block needlessly looking for LF
-             *      after reading CR...
+             *      Each of these approaches has some advantages and disadvantages. Just using Seek() is
+             *      the simplest approach. IF all your streams support seeking, there is no reason for another
+             *      mechanism. But we dont want to alwys require seeking.
+             *
+             *      PutBack () is like Seek, but then the question is - do we support just a PutBack of
+             *      one character? So only lookahead of one character? That deals with many cases, but not all.
+             *      And how does it interact with Seek - if the stream happens to be seekable? And is the
+             *      PutBack buffer stored in the letter or envelope class? If in Letter, thats extra work
+             *      in every rep (barrier to providing your own stream subtypes). If in the envelope, it doesn't
+             *      work intuitively if two variables have separate smart pointers to the same underlying stream.
+             *      Reads and writes affect each other EXCPET for the putback buffer!
+             *
+             *      A special Proxy object is a good choice - but requires the caller todo a lot of extra
+             *      work. To some extent that can be automated by somewhat automatically maanging
+             *      the proxy storage object in the smartpointer, but thats alot of work and concept
+             *      for very little gain.
+             *
+             *      In the end - at least for now - I've decided on KISS - ReadLine() simply requires it
+             *      is Seekable. And there are plenty of wrapper stream classes you can use with any stream
+             *      to make them Seekable.
              */
             class   TextInputStream : public TextStream {
             protected:
@@ -79,7 +87,7 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable::_IRep - and if so - this automatically uses it.
                  */
                 explicit TextInputStream (const _SharedIRep& rep);
 
@@ -97,6 +105,7 @@ namespace   Stroika {
                  *  is available, but can return with fewer bytes than bufSize without prejudice about how much
                  *  more is available.
                  */
+                nonvirtual  size_t  Read (wchar_t* intoStart, wchar_t* intoEnd) const;
                 nonvirtual  size_t  Read (Character* intoStart, Character* intoEnd) const;
 
                 /**
@@ -105,26 +114,10 @@ namespace   Stroika {
                 nonvirtual  Character   Read () const;
 
             public:
-                // WANTED todo this - but cannot DO SO - without PEEK/SEEKABILITY!!!! (after you read CR, you must look ahead for LF, but cannot)
-                // We COULD define this API so it somehow worked out (set  aflag saying last read CR so if next Read of char is LF, then successive readlines work, but a bit kludgy)
-                // return result includes trailing CR and or LF, if any
-                //
-                // Note - a call to this function will (often) read one more character than needed. That will be transparent, except that the underlying
-                // _Read() method will be asked to read an extra character. The extra character will show up in subsequent other reads
-                //
-                //*************** ABOVE COMMENTS - NEED REWRITE - TWO IDEAS HERE---
-                //          ONE IS TO MAKE READLINE REQUITE SEEKABILITY. TAHAT is what we do now.
-                //          ANOTHER idea is to have a helper object which mtains the state. This would be explicit in the
-                //          TEXTSTREAM pointer (managed) - and coule be assigned to otehr text streams (so would be semi-transparent.
-                //          BUt it could also be quite confusing in case of assignemnt. Unlcear if thats a good idea. OR - could ahve it
-                //          as explicit parameter. But that would be awkward.
-                //
-                //          SIMPLEST design is to require seekability. But maybe not the best - since full seekability is a hammer to kill a flea.
-                //
-                //          MAYBE - TWO OVERALPOSAD - REadLine() with no args requires seekability. ReadLine (with helper object) maintains state. So most
-                //          time syou get simple behavior and when you need to - you can get magic with keeping track of extra char???
-                //
-                // Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator it encounters as part of the read line.
+                /*&
+                 * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
+                 * it encounters as part of the read line.
+                 */
                 nonvirtual  String ReadLine () const;
 
             public:
