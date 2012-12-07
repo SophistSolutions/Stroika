@@ -58,9 +58,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *  BufSize must always be >= 1.
-                 *  Writes always succeed fully or throw.
+                 *  Write the bytes bounded by start and end. Start and End maybe equal, and only
+                 *  then can they be nullptr.
+                 *
+                 *  Writes always succeed fully or throw (no partial writes).
                  */
                 nonvirtual  void    Write (const Byte* start, const Byte* end) const;
 

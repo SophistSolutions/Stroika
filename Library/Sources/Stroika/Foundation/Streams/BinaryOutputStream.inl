@@ -16,12 +16,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
             //  class   BinaryOutputStream::_IRep
             inline  BinaryOutputStream::_IRep::_IRep ()
             {
             }
-
 
 
             //  class   BinaryOutputStream
@@ -35,12 +33,13 @@ namespace   Stroika {
             }
             inline  void    BinaryOutputStream::Write (const Byte* start, const Byte* end) const
             {
-                RequireNotNull (start);
-                Require ((end - start) >= 1);
-                RequireNotNull (_GetRep ().get ());
-                _GetRep ()->Write (start, end);
+                Require (start <= end);
+                Require (start != nullptr or start == end);
+                Require (end != nullptr or start == end);
+                if (start != end) {
+                    _GetRep ()->Write (start, end);
+                }
             }
-
 
         }
     }

@@ -31,18 +31,19 @@ namespace   Stroika {
             {
                 return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
             }
-            void    TextOutputStream::Write (const Character* start, const Character* end) const
+            inline  void    TextOutputStream::Write (const Character* start, const Character* end) const
             {
-                RequireNotNull (start);
-                Require (end - start >= 0);
-                _GetRep ()->Write (start, end);
+                Require (start <= end);
+                Require (start != nullptr or start == end);
+                Require (end != nullptr or start == end);
+                if (start != end) {
+                    _GetRep ()->Write (start, end);
+                }
             }
-            void    TextOutputStream::Write (const wchar_t* start, const wchar_t* end) const
+            inline  void    TextOutputStream::Write (const wchar_t* start, const wchar_t* end) const
             {
-                RequireNotNull (start);
-                Require (end - start >= 0);
                 static_assert (sizeof (wchar_t) == sizeof (Character), "This cast assumes the types are the same");
-                _GetRep ()->Write (reinterpret_cast<const Character*> (start), reinterpret_cast<const Character*> (end));
+                Write (reinterpret_cast<const Character*> (start), reinterpret_cast<const Character*> (end));
             }
 
         }
