@@ -20,10 +20,10 @@
  *  \file
  *
  *      @todo   Cruddy, draft (but technically I think correct) implementation. Really need something
- *				smarter integrated with CodePage stuff - and Binary-Stream-based CodePage API, with
- *				an extra 'state' object to allow for pushing bytes in and getting none, and then one,
- *				or perhaps a pull API, where you pull (BinartInputStream) arg - or lambda - to
- *				pull text from.
+ *              smarter integrated with CodePage stuff - and Binary-Stream-based CodePage API, with
+ *              an extra 'state' object to allow for pushing bytes in and getting none, and then one,
+ *              or perhaps a pull API, where you pull (BinartInputStream) arg - or lambda - to
+ *              pull text from.
  *
  *      @todo   BUGGY with seek fucntionality. We ASSUME we always get called to read with the source
  *              offset at zero. We dont even know that the source is seekable, but we

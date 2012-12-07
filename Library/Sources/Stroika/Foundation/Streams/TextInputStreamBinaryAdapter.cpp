@@ -21,7 +21,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-class   TextInputStreamBinaryAdapter::IRep_ : public TextInputStream::_IRep, public Seekable {
+class   TextInputStreamBinaryAdapter::IRep_ : public TextInputStream::_IRep, public Seekable::_IRep {
 public:
     IRep_ (const BinaryInputStream& src)
         : fSource_ (src)
@@ -110,7 +110,7 @@ protected:
                 break;
         }
         Ensure ((0 <= fOffset_) and (fOffset_ <= fTmpHackTextRemaining_.size ()));
-        return GetOffset ();
+        return _GetOffset ();
     }
 
 private:

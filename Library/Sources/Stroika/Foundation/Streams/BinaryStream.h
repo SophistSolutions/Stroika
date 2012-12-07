@@ -28,7 +28,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
-			// UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
+            // UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
             /**
              *  \brief  BinaryStream is an 'abstract class' defining the interface to a binary source/sink of data.
              *
@@ -46,7 +46,7 @@ namespace   Stroika {
              *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
              *
              */
-            class   BinaryStream {
+            class   BinaryStream : public Seekable {
             protected:
                 class   _IRep;
 
@@ -84,36 +84,8 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
 
-            public:
-                /**
-                 * \brief   Returns true iff this object was constructed with a seekable input stream rep.
-                 *
-                 *  Returns true iff this object was constructed with a seekable input stream rep. Note -
-                 *  seekability cannot change over the lifetime of an object.
-                 */
-                nonvirtual  bool    IsSeekable () const;
-
-            public:
-                /**
-                 * \pre not empty();
-                 * \pre IsSeekable();
-                 */
-                nonvirtual  SeekOffsetType  GetOffset () const;
-
-            public:
-                /**
-                 * \pre not empty();
-                 * \pre IsSeekable();
-                 *
-                 *  The new position, measured in bytes, is obtained by adding offset bytes to the
-                 *  position specified by whence.
-                 */
-                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset);
-                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset);
-
             private:
                 _SharedIRep fRep_;
-                Seekable*   fSeekable_;
             };
 
 

@@ -28,7 +28,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
-			// UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
+            // UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
             /**
              *  \brief  TextStream is an 'abstract class' defining the interface to a text source/sink of data.
              *
@@ -46,7 +46,7 @@ namespace   Stroika {
              *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
              *
              */
-            class   TextStream {
+            class   TextStream  : public Seekable {
             protected:
                 class   _IRep;
 
@@ -84,39 +84,8 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
 
-            public:
-                /**
-                 * \brief   Returns true iff this object was constructed with a seekable input stream rep.
-                 *
-                 *  Returns true iff this object was constructed with a seekable input stream rep. Note -
-                 *  seekability cannot change over the lifetime of an object.
-                 */
-                nonvirtual  bool    IsSeekable () const;
-
-            public:
-                /**
-                 * \pre not empty();
-                 * \pre IsSeekable();
-                 */
-                nonvirtual  SeekOffsetType  GetOffset () const;
-
-            public:
-                /**
-                 * \pre not empty();
-                 * \pre IsSeekable();
-                 *
-                 *  The new position, measured in bytes, is obtained by adding offset bytes to the
-                 *  position specified by whence.
-                 *
-                 *  Note: This method is const because Seekable is (or soon willbe) a 'smartptr' to a SeekableRep and
-                 *  the SmartPtr isnt being changed.
-                 */
-                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
-                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;
-
             private:
                 _SharedIRep fRep_;
-                Seekable*   fSeekable_;
             };
 
 

@@ -10,28 +10,40 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Debug/Assertions.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
             //  class   Seekable
-            inline  Seekable::~Seekable ()
+            inline  Seekable::Seekable (_IRep* rep)
+                : fSeekableRep_ (rep)
             {
+            }
+            inline  bool    Seekable::IsSeekable () const
+            {
+                return fSeekableRep_ != nullptr;
+            }
+            inline  void    Seekable::_Clear ()
+            {
+                fSeekableRep_ = nullptr;
             }
             inline  SeekOffsetType  Seekable::GetOffset () const
             {
-                return _GetOffset ();
+                RequireNotNull (fSeekableRep_);
+                return fSeekableRep_->_GetOffset ();
             }
-            inline  SeekOffsetType    Seekable::Seek (SignedSeekOffsetType offset)
+            inline  SeekOffsetType    Seekable::Seek (SignedSeekOffsetType offset) const
             {
-                return _Seek (Whence::eFromStart, offset);
+                RequireNotNull (fSeekableRep_);
+                return fSeekableRep_->_Seek (Whence::eFromStart, offset);
             }
-            inline  SeekOffsetType    Seekable::Seek (Whence whence, SignedSeekOffsetType offset)
+            inline  SeekOffsetType    Seekable::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
-                return _Seek (whence, offset);
+                RequireNotNull (fSeekableRep_);
+                return fSeekableRep_->_Seek (whence, offset);
             }
-
 
         }
     }

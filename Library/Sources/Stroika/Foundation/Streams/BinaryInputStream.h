@@ -79,8 +79,8 @@ namespace   Stroika {
              *
              *      o   BinaryInputStream and BinaryOutputStream CAN be logically be mixed togehter to make an
              *          input/output stream in one of two ways:
-			 *				@see BinaryInputOutputStream
-			 *				@see BinaryTiedStreams
+             *              @see BinaryInputOutputStream
+             *              @see BinaryTiedStreams
              *
              *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
              *
@@ -121,8 +121,8 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	Read from the current stream position until EOF, and accumulate all of it into a BLOB.
-				 */
+                 *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
+                 */
                 nonvirtual  Memory::BLOB ReadAll () const;
 
             private:

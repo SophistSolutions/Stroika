@@ -28,8 +28,8 @@ namespace   Stroika {
 
             //  class   TextStream
             inline  TextStream::TextStream (const _SharedIRep& rep)
-                : fRep_ (rep)
-                , fSeekable_ (dynamic_cast<Seekable*> (rep.get ()))
+                : Seekable (dynamic_cast<Seekable::_IRep*> (rep.get ()))
+                , fRep_ (rep)
             {
             }
             inline  TextStream::_SharedIRep  TextStream::_GetRep () const
@@ -43,31 +43,8 @@ namespace   Stroika {
             inline  void    TextStream::clear ()
             {
                 fRep_.reset ();
-                fSeekable_ = nullptr;
+                Seekable::_Clear ();
             }
-            inline  bool    TextStream::IsSeekable () const
-            {
-                return fSeekable_ != nullptr;
-            }
-            inline  SeekOffsetType  TextStream::GetOffset () const
-            {
-                Require (IsSeekable ());
-                AssertNotNull (fSeekable_);
-                return fSeekable_->GetOffset ();
-            }
-            inline  SeekOffsetType        TextStream::Seek (SignedSeekOffsetType offset) const
-            {
-                Require (IsSeekable ());
-                AssertNotNull (fSeekable_);
-                return fSeekable_->Seek (offset);
-            }
-            inline  SeekOffsetType        TextStream::Seek (Whence whence, SignedSeekOffsetType offset) const
-            {
-                Require (IsSeekable ());
-                AssertNotNull (fSeekable_);
-                return fSeekable_->Seek (whence, offset);
-            }
-
 
         }
     }

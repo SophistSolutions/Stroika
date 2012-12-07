@@ -25,7 +25,14 @@
  *              common mem-mgmt strategy and works better with other maybe native text streams
  *              (that dont wrap a binary stream).
  *
- *		@todo	
+ *      @todo   ReadString And SeekBackOne, PutBackOne...
+ *
+ *              Think out the (and document answer) of special case of need to seek back one. This
+ *              happens a ton with stuff like ReadString in TextInputStream. MAYBE have those
+ *              ReadString functions take a 'lookahead state' proxy object to store extra data?
+ *              A little awkward to use, but clean impl?  Maybe have TextInputStream manage those
+ *              objects itself silenetly (at least by default)?
+ *
  *
  */
 

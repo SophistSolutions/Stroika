@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable {
+class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
     NO_DEFAULT_CONSTRUCTOR(IRep_);
     NO_COPY_CONSTRUCTOR(IRep_);
@@ -93,7 +93,7 @@ protected:
                 break;
         }
         Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
-        return GetOffset ();
+        return _GetOffset ();
     }
 
 private:

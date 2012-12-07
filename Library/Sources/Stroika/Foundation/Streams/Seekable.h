@@ -15,16 +15,6 @@
 /**
  *  \file
  *
- *      @todo   Figure out if and/or how to do shared_ptr like feature as with BinaryInputStream,
- *              and or BinaryStream, etc...
- *              <<<PRETTY SURE ANSER IS YES - EVEN IF NO SMARTPTR - AT LEAST DO SEPARATE IREP AND OWNER (as a helper providng indirection)>>>
- *
- *      @todo   Think out the (and document answer) of special case of need to seek back one. This
- *              happens a ton with stuff like ReadString in TextInputStream. MAYBE have those
- *              ReadString functions take a 'lookahead state' proxy object to store extra data?
- *              A little awkward to use, but clean impl?  Maybe have TextInputStream manage those
- *              objects itself silenetly (at least by default)?
- *
  *
  */
 namespace   Stroika {
@@ -91,26 +81,52 @@ enum class Whence : uint8_t {
              *          read calls to it and increment your own offset).
              */
             class   Seekable {
-            public:
-                virtual ~Seekable ();
+            protected:
+                class   _IRep;
 
+            protected:
+                Seekable (_IRep* rep);
+
+            public:
+                /**
+                 * \brief   Returns true iff this object was constructed with a seekable input stream rep.
+                 *
+                 *  Returns true iff this object was constructed with a seekable input stream rep. Note -
+                 *  seekability cannot change over the lifetime of an object.
+                 */
+                nonvirtual  bool    IsSeekable () const;
+
+            protected:
+                /**
+                 */
+                nonvirtual  void    _Clear ();
 
             public:
                 /**
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
                 nonvirtual  SeekOffsetType  GetOffset () const;
-            protected:
-                virtual SeekOffsetType  _GetOffset () const                                     =   0;
 
             public:
                 /**
                  * The new position, measured in bytes, is obtained by adding offset bytes to the position specified by whence.
                  * Seek () returns the new resulting position.
                  */
-                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset);
-                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset);
-            protected:
+                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
+                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;
+
+            private:
+                _IRep*   fSeekableRep_;
+            };
+
+
+            /**
+             */
+            class   Seekable::_IRep {
+            public:
+                virtual SeekOffsetType      _GetOffset () const                                     =   0;
+
+            public:
                 virtual SeekOffsetType      _Seek (Whence whence, SignedSeekOffsetType offset)      =   0;
             };
 

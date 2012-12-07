@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 
 
 
-class   TextInputStreamFromIStreamAdapter::IRep_ : public TextInputStream::_IRep, public Seekable {
+class   TextInputStreamFromIStreamAdapter::IRep_ : public TextInputStream::_IRep, public Seekable::_IRep {
 public:
     IRep_ (wistream& originalStream)
         : fOriginalStream_ (originalStream) {

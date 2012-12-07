@@ -72,7 +72,7 @@ namespace {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
             : BinaryInputStream (_SharedIRep (DEBUG_NEW REP (b))) {
         }
-        struct REP : BinaryInputStream::_IRep, public Seekable  {
+        struct REP : BinaryInputStream::_IRep, public Seekable::_IRep  {
             REP (const Memory::BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
@@ -130,7 +130,7 @@ namespace {
                         break;
                 }
                 Ensure ((fStart <= fCur) and (fCur <= fEnd));
-                return GetOffset ();
+                return _GetOffset ();
             }
             const Byte* fCur;
             const Byte* fStart;
