@@ -99,8 +99,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
-                 * Writes always succeed fully or throw.
+                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
+                 *  BufSize may be zero.
+                 *
+                 *  Writes always succeed fully or throw.
                  *
                  *  \pre not empty()
                  */

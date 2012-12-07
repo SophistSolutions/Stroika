@@ -16,7 +16,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
             //  class   BinaryInputOutputStream
             inline  BinaryInputOutputStream::_SharedInputIRep BinaryInputOutputStream::_GetInputRep () const
             {
@@ -30,7 +29,6 @@ namespace   Stroika {
                 RequireNotNull (result.get ());
                 return result;
             }
-
             inline  BinaryInputOutputStream::operator BinaryInputStream () const
             {
                 return BinaryInputStream (_GetInputRep ());
@@ -40,7 +38,14 @@ namespace   Stroika {
             {
                 return BinaryOutputStream (_GetOutputRep ());
             }
-
+            inline  size_t  BinaryInputOutputStream::Read (Byte* intoStart, Byte* intoEnd)
+            {
+                _GetInputRep ()->Read (intoStart, intoEnd);
+            }
+            inline  void    BinaryInputOutputStream::Write (const Byte* start, const Byte* end)
+            {
+                _GetOutputRep ()->Write (start, end);
+            }
 
         }
     }
