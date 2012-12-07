@@ -30,16 +30,17 @@ namespace   Stroika {
         namespace   Streams {
 
             /**
-             *  \brief  BinaryInputOutputStream is a stream that has BOTH a BinaryInputStream and an BinaryOutputStream.
+             *  \brief  BinaryInputOutputStream is a stream that has BOTH a BinaryInputStream and an
+			 *			BinaryOutputStream.
              *
-             *  BinaryInputOutputStream could have inherited from BinaryInputOutputStream and BinaryOutputStream, but then
-             *  it would have had two copies of the shared_ptr. It seemed more economical to have just one such base,
-             *  and make it easy to convert (conversion operator).
+             *  BinaryInputOutputStream could have inherited from BinaryInputOutputStream and
+			 *	BinaryOutputStream, but then it would have had two copies of the shared_ptr. It seemed
+			 *	more economical to have just one such base, and make it easy to convert (conversion operator).
              *
-             *  A BinaryInputOutputStream is a *combined* input and output stream. That means they are somehow related.
-             *  If the BinaryInputOutputStream is seekable, then the same seek offset applies to BOTH the input and
-             *  output sides. If you wish to have separate seek offsets, maintain two separate input and output stream
-             *  objects.
+             *  A BinaryInputOutputStream is a *combined* input and output stream. That means they are
+			 *	somehow related. If the BinaryInputOutputStream is seekable, then the same seek offset
+			 *	applies to BOTH the input and output sides. If you wish to have separate seek offsets,
+			 *	maintain two separate input and output stream objects.
              *
              *  Note that this concept applies to a file, but NOT to a socket (tcp) stream. A TCP/stream
              *  really consists of two related (paired) streams going in opposite directions.
@@ -47,7 +48,8 @@ namespace   Stroika {
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:
                 /**
-                 * BinaryStream::_SharedIRep arg - MUST inherit from BOTH Streams::BinaryInputStream::_IRep AND Streams::BinaryOutputStream::_IRep.
+                 *	BinaryStream::_SharedIRep arg - MUST inherit from BOTH Streams::BinaryInputStream::_IRep AND
+				 *	Streams::BinaryOutputStream::_IRep.
                  *
                  *  \pre dynamic_cast(rep.get (), _SharedInputIRep::element_type) != nullptr
                  *  \pre dynamic_cast(rep.get (), _SharedOutputIRep::element_type) != nullptr
