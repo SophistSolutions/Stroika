@@ -16,18 +16,33 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+            //  class   TextOutputStream::_IRep
+            inline  TextOutputStream::_IRep::_IRep ()
+            {
+            }
+
+
             //  class   TextOutputStream
-            inline  TextOutputStream::TextOutputStream ()
+            inline  TextOutputStream::TextOutputStream (const _SharedIRep& rep)
+                : TextStream (rep)
             {
             }
-            inline  TextOutputStream::~TextOutputStream ()
+            inline  TextOutputStream::_SharedIRep  TextOutputStream::_GetRep () const
             {
+                return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
             }
-            void    TextOutputStream::Write (const Character* start, const Character* end)
+            void    TextOutputStream::Write (const Character* start, const Character* end) const
             {
                 RequireNotNull (start);
-                Require (end - start >= 1);
-                _Write (start, end);
+                Require (end - start >= 0);
+                _GetRep ()->_Write (start, end);
+            }
+            void    TextOutputStream::Write (const wchar_t* start, const wchar_t* end) const
+            {
+                RequireNotNull (start);
+                Require (end - start >= 0);
+				static_assert (sizeof (wchar_t) == sizeof (Character), "This cast assumes the types are the same");
+                _GetRep ()->_Write (reinterpret_cast<const Character*> (start), reinterpret_cast<const Character*> (end));
             }
 
         }

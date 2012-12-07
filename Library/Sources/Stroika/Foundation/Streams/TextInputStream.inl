@@ -16,7 +16,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            //  class   BinaryInputStream::_IRep
+            //  class   TextInputStream::_IRep
             inline  TextInputStream::_IRep::_IRep ()
             {
             }
