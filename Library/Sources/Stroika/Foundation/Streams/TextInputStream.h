@@ -20,9 +20,10 @@
  *
  *      @todo   Maybe do the same factoring into IRep and smartpointer stuff for TextInputStream code we did
  *              for BinaryInputStream and BinaryOutputStream.
- *              Symetry is compelling. MIGHT not be needed? Cuz this COULD basically be used as a wrapper (TExtReader/TextWriter) on a more
- *              persistent stream. But that works too if we use the common mem-mgmt strategy and works better with other
- *              maybe native text streams (that dont wrap a binary stream).
+ *              Symetry is compelling. MIGHT not be needed? Cuz this COULD basically be used as a wrapper
+ *              (TExtReader/TextWriter) on a more persistent stream. But that works too if we use the
+ *              common mem-mgmt strategy and works better with other maybe native text streams
+ *              (that dont wrap a binary stream).
  *
  */
 
@@ -37,17 +38,21 @@ namespace   Stroika {
             /**
              * Design Overview:
              *
-             *      o   All read's on a TextInputStream are BLOCKING. If there is a desire to have a non-blocking read, then create a new mixin interface
-             *          and through that interface you can do non-blocking reads, but this Read() method must always block.
+             *      o   All read's on a TextInputStream are BLOCKING. If there is a desire to have a
+             *          non-blocking read, then create a new mixin interface and through that interface
+             *          you can do non-blocking reads, but this Read() method must always block.
              *
-             *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent calls to Read () will return EOF (unless some other
-             *          mechanism is used to tweak the state of the object, like a mixed in Seekable class and calling SEEK).
+             *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
+             *          calls to Read () will return EOF (unless some other mechanism is used to tweak
+             *          the state of the object, like a mixed in Seekable class and calling SEEK).
              *
-             *      o   Exceptions indicate something went wrong - like an IO error, or  formatting effort (e.g. if the source is encrypted,
-             *          and the stream is decrypting, then it might detect a format error and throw).
+             *      o   Exceptions indicate something went wrong - like an IO error, or  formatting
+             *          effort (e.g. if the source is encrypted, and the stream is decrypting, then
+             *          it might detect a format error and throw).
              *
-             *      o   TextInputStream and TextOutputStream CAN be naturally mixed togehter to make an input/output stream. Simlarly, they can both be
-             *          mixed together with Seekable. But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *      o   TextInputStream and TextOutputStream CAN be naturally mixed togehter to make
+             *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
+             *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
              *
              *BECAUSE OF DIFFICULTIES DOING SOME STUFF WE WANT - LIKE READLINE - and probably also characterset stuff - we MAY want to have TEXTINPUTSTREAM REQUIRE seekability>
              *PROBABLY NO. BUT A THOUGHT... --LGP 2011-06-22
@@ -57,9 +62,6 @@ namespace   Stroika {
              *      after reading CR...
              */
             class   TextInputStream : public TextStream {
-            protected:
-                class   _IRep;
-
             protected:
                 class   _IRep;
 
@@ -80,11 +82,17 @@ namespace   Stroika {
                 nonvirtual  _SharedIRep _GetRep () const;
 
             public:
-                // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
-                // BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
+                /**
+                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must
+                 *  always be >= 1. Returns 0 iff EOF, and otherwise number of characters read BLOCKING until data
+                 *  is available, but can return with fewer bytes than bufSize without prejudice about how much
+                 *  more is available.
+                 */
                 nonvirtual  size_t  Read (Character* intoStart, Character* intoEnd) const;
 
-                // Blocking read of a single character. Returns a NUL-character on EOF ('\0')
+                /**
+                 *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
+                 */
                 nonvirtual  Character   Read () const;
 
             public:
@@ -112,20 +120,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Read from the current seek position, until EOF, and accumulate all of it into a String. Note - since the stream
-                 * may not start at the beginning, this isn't necessarily ALL that was in the stream -just all that remains.
+                 *  Read from the current seek position, until EOF, and accumulate all of it into a String.
+                 *  Note - since the stream may not start at the beginning, this isn't necessarily ALL
+                 *  that was in the stream -just all that remains.
                  */
                 nonvirtual  String ReadAll () const;
-
-#if 0
-            protected:
-                // Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
-                // BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
-                virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
-            private:
-                bool        fPutBackCharValid_;
-                Character   fPutBackCharacter_;
-#endif
             };
 
             /**
@@ -139,12 +138,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
-                 * BLOCKING until data is available, but can return with fewer bytes than bufSize without prejudice about how much more is available.
+                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
+                 *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of characters read
+                 *  BLOCKING until data is available, but can return with fewer bytes than bufSize without
+                 *  prejudice about how much more is available.
                  */
                 virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
             };
-
 
         }
     }

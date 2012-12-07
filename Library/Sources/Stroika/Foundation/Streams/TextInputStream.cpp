@@ -18,6 +18,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
+
 /*
  ********************************************************************************
  ************************** Streams::TextInputStream ****************************
@@ -30,19 +31,23 @@ String TextInputStream::ReadLine () const
     while (true) {
         Character   c   =   Read ();
         if (c.GetCharacterCode () == '\0') {
+            // EOF
             return result;
         }
-        result.push_back (c.GetCharacterCode ());
+        result.push_back (c);
         if (c == '\n') {
             return result;
         }
         else if (c == '\r') {
             Character   c   =   Read ();
+            // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
             if (c == '\n') {
-                result.push_back (c.GetCharacterCode ());
+                result.push_back (c);
                 return result;
             }
-            Seek (Whence::eFromCurrent, -1);
+            else {
+                Seek (Whence::eFromCurrent, -1);
+            }
             return result;
         }
     }
@@ -52,11 +57,15 @@ String TextInputStream::ReadAll () const
 {
     String      result;
     while (true) {
-        Character   c   =   Read ();
-        if (c.GetCharacterCode () == '\0') {
-            return result;
+        Character buf[1024];
+        size_t n = Read (StartOfArray (buf), EndOfArray (buf));
+        Assert (0 <= n and n <= NEltsOf (buf));
+        if (n == 0) {
+            break;
         }
-        result.push_back (c.GetCharacterCode ());
+        else {
+            result.Append (StartOfArray (buf), StartOfArray (buf) + n);
+        }
     }
     return result;
 }
