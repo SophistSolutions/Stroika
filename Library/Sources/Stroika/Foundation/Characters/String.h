@@ -254,6 +254,13 @@ namespace   Stroika {
                 nonvirtual  void        InsertAt (const Character* from, const Character* to, size_t at);
 
             public:
+                // Note that it is legal, but pointless to pass in an empty string to insert
+                nonvirtual  void        Append (Character c);
+                nonvirtual  void        Append (const String& s);
+                nonvirtual  void        Append (const wchar_t* from, const wchar_t* to);
+                nonvirtual  void        Append (const Character* from, const Character* to);
+
+            public:
                 /*
                  * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1).
                  * It is an error if this implies removing characters off the end of the string.
@@ -506,6 +513,7 @@ namespace   Stroika {
                 nonvirtual  void erase (size_t from = 0, size_t count = kBadStringIndex);
 
                 nonvirtual  void    push_back (wchar_t c);
+                nonvirtual  void    push_back (Character c);
 
                 // Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
                 // as Stroika::String::SubString (where the second argument is a 'to')

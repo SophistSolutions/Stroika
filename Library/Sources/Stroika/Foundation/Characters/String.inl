@@ -99,6 +99,22 @@ namespace   Stroika {
             {
                 InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
             }
+            inline  void    String::Append (Character c)
+            {
+                InsertAt (c, GetLength ());
+            }
+            inline  void    String::Append (const String& s)
+            {
+                InsertAt (s, GetLength ());
+            }
+            inline  void    String::Append (const wchar_t* from, const wchar_t* to)
+            {
+                InsertAt (from, to, GetLength ());
+            }
+            inline  void    String::Append (const Character* from, const Character* to)
+            {
+                InsertAt (from, to, GetLength ());
+            }
             inline  String& String::operator+= (Character appendage)
             {
                 InsertAt (appendage, GetLength ());
@@ -195,6 +211,10 @@ namespace   Stroika {
                 return RIndexOf (c);
             }
             inline  void    String::push_back (wchar_t c)
+            {
+                InsertAt (c, GetLength ());
+            }
+            inline  void    String::push_back (Character c)
             {
                 InsertAt (c, GetLength ());
             }
