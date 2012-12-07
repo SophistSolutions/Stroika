@@ -124,10 +124,10 @@ enum class Whence : uint8_t {
              */
             class   Seekable::_IRep {
             public:
-                virtual SeekOffsetType      _GetOffset () const                                     =   0;
+                virtual SeekOffsetType      GetOffset () const                                     =   0;
 
             public:
-                virtual SeekOffsetType      _Seek (Whence whence, SignedSeekOffsetType offset)      =   0;
+                virtual SeekOffsetType      Seek (Whence whence, SignedSeekOffsetType offset)      =   0;
             };
 
         }

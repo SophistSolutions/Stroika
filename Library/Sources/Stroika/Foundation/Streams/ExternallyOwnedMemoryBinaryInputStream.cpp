@@ -49,12 +49,12 @@ protected:
         return nCopied; // this can be zero on EOF
     }
 
-    virtual SeekOffsetType  _GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);    // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
         return fCursor_ - fStart_;
     }
 
-    virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType            Seek (Whence whence, SignedSeekOffsetType offset) override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
@@ -93,7 +93,7 @@ protected:
                 break;
         }
         Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
-        return _GetOffset ();
+        return GetOffset ();
     }
 
 private:

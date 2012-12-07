@@ -65,11 +65,11 @@ protected:
 #endif
     }
 
-    virtual SeekOffsetType  _GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override {
         return fOffset_;
     }
 
-    virtual SeekOffsetType  _Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -110,7 +110,7 @@ protected:
                 break;
         }
         Ensure ((0 <= fOffset_) and (fOffset_ <= fTmpHackTextRemaining_.size ()));
-        return _GetOffset ();
+        return GetOffset ();
     }
 
 private:

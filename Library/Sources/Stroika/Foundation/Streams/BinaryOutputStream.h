@@ -27,7 +27,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
             class   BinaryInputOutputStream;
 
             /**
@@ -88,7 +87,6 @@ namespace   Stroika {
                  */
                 virtual void    Write (const Byte* start, const Byte* end)         =   0;
             };
-
 
         }
     }

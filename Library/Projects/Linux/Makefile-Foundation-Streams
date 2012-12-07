@@ -13,6 +13,7 @@ SubDirs	=	\
 	iostream	\
 
 Objs	=	\
+	$(ObjDir)BasicBinaryInputStream.o\
 	$(ObjDir)BinaryStream.o\
 	$(ObjDir)BinaryInputStream.o\
 	$(ObjDir)BinaryInputOutputStream.o\
@@ -20,7 +21,6 @@ Objs	=	\
 	$(ObjDir)BufferedBinaryInputStream.o\
 	$(ObjDir)BufferedBinaryOutputStream.o\
 	$(ObjDir)ExternallyOwnedMemoryBinaryInputStream.o\
-	$(ObjDir)MemoryBinaryInputStream.o\
 	$(ObjDir)Seekable.o\
 	$(ObjDir)TextStream.o\
 	$(ObjDir)TextInputStream.o\

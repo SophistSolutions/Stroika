@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_MemoryBinaryInputStream_h_
-#define _Stroika_Foundation_Streams_MemoryBinaryInputStream_h_  1
+#ifndef _Stroika_Foundation_Streams_BasicBinaryInputStream_h_
+#define _Stroika_Foundation_Streams_BasicBinaryInputStream_h_  1
 
 #include    "../StroikaPreComp.h"
 
@@ -28,40 +28,40 @@ namespace   Stroika {
         namespace   Streams {
 
             /**
-             *  \brief  MemoryBinaryInputStream takes a block of binary data and exposes it as a
+             *  \brief  BasicBinaryInputStream takes a block of binary data and exposes it as a
              *          BinaryInputStream (copies)
              *
-             *  MemoryBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream.
+             *  BasicBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream.
              *  It copies the data - so after construction, there is no requirement on the data bounded by
              *  start/end.
              *
-             *  MemoryBinaryInputStream is threadsafe - meaning Read() can safely be called from
+             *  BasicBinaryInputStream is threadsafe - meaning Read() can safely be called from
              *  multiple threads at a time freely.
              *
-             *  This BinaryInputStream is Seekable.
+             *  BasicBinaryInputStream is Seekable.
              *
-             *  @see ExternallyOwnedMemoryBinaryInputStream
+             *  @see ExternallyOwnedBasicBinaryInputStream
              */
-            class   MemoryBinaryInputStream : public BinaryInputStream {
+            class   BasicBinaryInputStream : public BinaryInputStream {
             private:
                 class   IRep_;
             public:
 #if     qCompilerAndStdLib_Supports_ConstructorDelegation
                 template    <typename IteratorT>
-                MemoryBinaryInputStream (IteratorT start, IteratorT end);
+                BasicBinaryInputStream (IteratorT start, IteratorT end);
                 template    <typename ContainerOfT>
-                MemoryBinaryInputStream (const ContainerOfT& c);
+                BasicBinaryInputStream (const ContainerOfT& c);
 #else
-                MemoryBinaryInputStream (const vector<Byte>& v);
+                BasicBinaryInputStream (const vector<Byte>& v);
 #endif
-                MemoryBinaryInputStream (const Byte* start, const Byte* end);
+                BasicBinaryInputStream (const Byte* start, const Byte* end);
             };
 
         }
     }
 }
 
-#endif  /*_Stroika_Foundation_Streams_MemoryBinaryInputStream_h_*/
+#endif  /*_Stroika_Foundation_Streams_BasicBinaryInputStream_h_*/
 
 
 
@@ -72,4 +72,4 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "MemoryBinaryInputStream.inl"
+#include    "BasicBinaryInputStream.inl"

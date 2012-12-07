@@ -89,10 +89,10 @@ namespace {
                 fCur += bytesToRead;
                 return bytesToRead;
             }
-            virtual SeekOffsetType  _GetOffset () const override {
+            virtual SeekOffsetType  GetOffset () const override {
                 return fCur - fStart;
             }
-            virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
+            virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
                 switch (whence) {
                     case    Whence::eFromStart: {
                             if (offset < 0) {
@@ -130,7 +130,7 @@ namespace {
                         break;
                 }
                 Ensure ((fStart <= fCur) and (fCur <= fEnd));
-                return _GetOffset ();
+                return GetOffset ();
             }
             const Byte* fCur;
             const Byte* fStart;

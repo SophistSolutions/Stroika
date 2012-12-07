@@ -11,7 +11,7 @@
 
 #include    "../Execution/OperationNotSupportedException.h"
 
-#include    "MemoryBinaryInputStream.h"
+#include    "BasicBinaryInputStream.h"
 
 
 
@@ -22,7 +22,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-class   MemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
+class   BasicBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
     NO_DEFAULT_CONSTRUCTOR(IRep_);
     NO_COPY_CONSTRUCTOR(IRep_);
@@ -56,12 +56,12 @@ public:
         return nCopied; // this can be zero on EOF
     }
 
-    virtual SeekOffsetType  _GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType            _Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
         Execution::AutoCriticalSection  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
@@ -100,14 +100,16 @@ public:
                 break;
         }
         Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
-        return _GetOffset ();
+        return GetOffset ();
     }
 
 private:
-    mutable Execution::CriticalSection          fCriticalSection_;
     // round size of usage up to around 1k (include vtableptr) - no real good reason - # doesnt matter much...
-    Memory::SmallStackBuffer < Byte, (1024 - sizeof(Execution::CriticalSection) - 2 * sizeof(Byte*)) >    fData_;
-    const Byte*                                 fCursor_;
+    DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(Execution::CriticalSection) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
+
+    mutable Execution::CriticalSection                  fCriticalSection_;
+    Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
+    const Byte*                                         fCursor_;
 };
 
 
@@ -116,16 +118,16 @@ private:
 
 /*
  ********************************************************************************
- ******************* Streams::iostream::MemoryBinaryInputStream *****************
+ ******************* Streams::iostream::BasicBinaryInputStream ******************
  ********************************************************************************
  */
-MemoryBinaryInputStream::MemoryBinaryInputStream (const Byte* start, const Byte* end)
+BasicBinaryInputStream::BasicBinaryInputStream (const Byte* start, const Byte* end)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (start, end)))
 {
 }
 
 #if     !qCompilerAndStdLib_Supports_ConstructorDelegation
-MemoryBinaryInputStream::MemoryBinaryInputStream (const vector<Byte>& v)
+BasicBinaryInputStream::BasicBinaryInputStream (const vector<Byte>& v)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (Containers::Start (v), Containers::End (v))))
 {
 }

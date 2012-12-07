@@ -32,17 +32,17 @@ namespace   Stroika {
             inline  SeekOffsetType  Seekable::GetOffset () const
             {
                 RequireNotNull (fSeekableRep_);
-                return fSeekableRep_->_GetOffset ();
+                return fSeekableRep_->GetOffset ();
             }
             inline  SeekOffsetType    Seekable::Seek (SignedSeekOffsetType offset) const
             {
                 RequireNotNull (fSeekableRep_);
-                return fSeekableRep_->_Seek (Whence::eFromStart, offset);
+                return fSeekableRep_->Seek (Whence::eFromStart, offset);
             }
             inline  SeekOffsetType    Seekable::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
                 RequireNotNull (fSeekableRep_);
-                return fSeekableRep_->_Seek (whence, offset);
+                return fSeekableRep_->Seek (whence, offset);
             }
 
         }
