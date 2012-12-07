@@ -23,8 +23,8 @@ namespace   Stroika {
 
 
             /**
-             *  When seeking, you can see an offset from the start (typical/start) or from the end of the stream,
-             *  or from the current position)
+             *  When seeking, you can see an offset from the start (typical/start) or from the end of the
+             *  stream, or from the current position)
              */
 enum class Whence : uint8_t {
                 eFromStart,
@@ -34,14 +34,17 @@ enum class Whence : uint8_t {
 
 
             /**
-             * SeekOffsetType is unsigned, normally, because for most purposes its zero based. See SignedSeekOffsetType.
+             *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
+             *  @see SignedSeekOffsetType.
              */
             typedef uint64_t SeekOffsetType;
 
 
             /**
-             * SignedSeekOffsetType is signed variant of SeekOffsetType - used to specify a seek offset which can sometimes be
-             * negative (backwards).
+             *  SignedSeekOffsetType is signed variant of SeekOffsetType - used to specify a seek
+             *  offset which can sometimes negative (backwards).
+             *
+             *  @see SignedSeekOffsetType.
              */
             typedef int64_t SignedSeekOffsetType;
 
@@ -49,15 +52,16 @@ enum class Whence : uint8_t {
             /**
              * Design Overview:
              *
-             *      o   Designed to be mixed with BinaryInputStream, BinaryOutputStream, TextInputStream,
-             *          or TextOutputStream.
+             *      o   Designed to be a base for TextStream and BinaryStream.
              *
-             *      o   It should be mixed in as a virtual base, so an IO stream shares a COMMON notion
-             *          of current offset. Note - this choice differs from iostreams, but mirrors
-             *          the choice in UNIX fileio ('read and write pointers the same).
+             *      o   Two basic parts - a 'smart-ish' pointer wrapper, and a virtual Rep.
+             *          The virtual Rep provides the API which implementers override. The
+             *          public part of the Seekable class itself provides the helpers
+             *          inherirted by the various Stream subclasses (e.g. BinaryInputStream
+             *          and TextOutputStream).
              *
-             *      o   If called on an input stream that has already returned EOF, may cause
-             *          subsequence Read() calls to NOT be at EOF.
+             *      o   Seek called on an input stream that has already returned EOF, may cause
+             *          subsequent Read() calls to NOT be at EOF.
              *
              *      o   Offsets are in whatever unit makes sense for the kind of stream this is mixed into,
              *          so for TextInputStreams, offsets are in CHARACTERS and in Binary streams, offsets
@@ -65,14 +69,11 @@ enum class Whence : uint8_t {
              *          streams (one combines them by use of a special TextStream that refers to another
              *          BinaryStream for actual IO).
              *
-             *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make
-             *          an input/output stream. Similarly, they can both be mixed together with Seekable.
-             *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
-             *
              *      o   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
              *          was simpler and more elegant to just keep things separate and use mixin classes
              *          like 'interfaces' - and use dynamic_cast<> to see what functionality is available
-             *          on a stream.
+             *          on a stream. At least thats so for the implementations. The wrapper class - Seekable -
+             *          does have an IsSeekable() method which just tests if we have a Seekable interface.
              *
              *      o   COULD have allowed for GetOffset() to work separately from Seek () - but decided
              *          this was a simpler API, and I could think of no cases where it was particularly
@@ -85,7 +86,7 @@ enum class Whence : uint8_t {
                 class   _IRep;
 
             protected:
-                Seekable (_IRep* rep);
+                explicit Seekable (_IRep* rep);
 
             public:
                 /**
@@ -98,6 +99,7 @@ enum class Whence : uint8_t {
 
             protected:
                 /**
+                 *  Used only be subclasses when they clear out their smart pointer.
                  */
                 nonvirtual  void    _Clear ();
 

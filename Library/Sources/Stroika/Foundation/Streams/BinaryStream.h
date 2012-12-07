@@ -19,6 +19,12 @@
  *  \file
  *
  *
+ *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
+ *          subclassing behavior...
+ *
+ *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
+ *
+ *
  */
 
 
@@ -27,10 +33,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
-            // UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
             /**
-             *  \brief  BinaryStream is an 'abstract class' defining the interface to a binary source/sink of data.
+             *  \brief  BinaryStream is an abstract class defining the interface to a binary source/sink
+             *          of data.
              *
              *  BinaryStream is probably nearly useless (from a users point of view), in and of itself,
              *  but it helps to tie together and facilitate mixing BinaryInputStream and BinaryOutputStream
@@ -39,11 +44,6 @@ namespace   Stroika {
              *  Note that BinaryStream is logically a 'smart pointer' - to an actual stream. This is then true
              *  of all its subclasses (e.g. BinaryInputStream, etc). This is very important to understand when
              *  assigning/copying BinaryStream (and subclass) objects.
-             *
-             *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
-             *          subclassing behavior...
-             *
-             *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
              *
              */
             class   BinaryStream : public Seekable {
@@ -55,7 +55,7 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable::_IRep - and if so - this automatically uses it.
                  */
                 explicit BinaryStream (const _SharedIRep& rep);
 
@@ -67,8 +67,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  empty() doesn't check the data in the stream, but instead checks if the BinaryStream smart pointer
-                 *  references any actual stream.
+                 *  empty() doesn't check the data in the stream, but instead checks if the BinaryStream
+                 *  smart pointer references any actual stream.
                  *
                  *  @see clear()
                  */
@@ -76,13 +76,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  clear () doesn't clear the data in the stream, but unreferences the BinaryStream smart pointer,
-                 *  so that.
+                 *  clear () doesn't clear the data in the stream, but unreferences the BinaryStream
+                 *  smart pointer.
                  *
                  *  @see empty()
                  */
                 nonvirtual  void    clear ();
-
 
             private:
                 _SharedIRep fRep_;

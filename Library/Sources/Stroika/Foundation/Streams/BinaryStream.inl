@@ -16,7 +16,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
             //  class   BinaryStream::_IRep
             inline  BinaryStream::_IRep::_IRep ()
             {
@@ -24,7 +23,6 @@ namespace   Stroika {
             inline  BinaryStream::_IRep::~_IRep ()
             {
             }
-
 
             //  class   BinaryStream
             inline  BinaryStream::BinaryStream (const _SharedIRep& rep)
@@ -45,7 +43,6 @@ namespace   Stroika {
                 fRep_.reset ();
                 Seekable::_Clear ();
             }
-
 
         }
     }

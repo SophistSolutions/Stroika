@@ -19,6 +19,12 @@
  *  \file
  *
  *
+ *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
+ *          subclassing behavior...
+ *
+ *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
+ *
+ *
  */
 
 
@@ -27,10 +33,8 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
-            // UPDATE DOCS ABOUT SEEKABLE AFTER I FIX..
             /**
-             *  \brief  TextStream is an 'abstract class' defining the interface to a text source/sink of data.
+             *  \brief  TextStream is an abstract class defining the interface to a text source/sink of data.
              *
              *  TextStream is probably nearly useless (from a users point of view), in and of itself,
              *  but it helps to tie together and facilitate mixing TextInputStream and TextOutputStream
@@ -39,12 +43,6 @@ namespace   Stroika {
              *  Note that TextStream is logically a 'smart pointer' - to an actual stream. This is then true
              *  of all its subclasses (e.g. TextInputStream, etc). This is very important to understand when
              *  assigning/copying TextStream (and subclass) objects.
-             *
-             *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
-             *          subclassing behavior...
-             *
-             *  @todo   Maybe use the word null(), or nullp(), or IsNull() instead of empty().
-             *
              */
             class   TextStream  : public Seekable {
             protected:
@@ -55,7 +53,7 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep arg - MAY also mixin Seekable::_IRep - and if so - this automatically uses it.
                  */
                 explicit TextStream (const _SharedIRep& rep);
 
