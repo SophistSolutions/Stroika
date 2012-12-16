@@ -80,7 +80,7 @@
  *          StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
  *
  *      o   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
- *          documentation, and make clearer,a nd document the tricky bits loosely
+ *          documentation, and make clearer, and document the tricky bits loosely
  *          alluded to in the appropriate place if the API is truely DOABLE.
  *
  *      o   At this stage - for our one trivial test - performance is now about 5% faster than
@@ -788,6 +788,45 @@ namespace   Stroika {
 
 
             /*
+            *
+            *   Design Overview:
+            *
+            *       This class looks and acts like a regular String object, but with the performance advantage
+            *   that it requires no (significant) free-store allocation. It allocates a 'rep' object from
+            *   block-allocation, and re-uses its argument pointers for actual string character storage.
+            *
+            *       Also important, it avoids having todo any copying of the original string.
+            *
+            *       It can avoid these costs under MANY - but not ALL circumstances. This underlying String
+            *   object may remain highly efficeint (working off stack memory) only so long as its original
+            *   String_ExternalMemoryOwnership_StackLifetime_ReadOnly exsts. Once that goes out of scope
+            *   the underlying StringRep must be 'morphed' effectively into a regular string-rep (if there
+            *   remain any references.
+            *
+            *       Also - SOME APIS (still TBD, but perhaps including c_str()) - will force that morphing
+            *   /copying.
+            *
+            *       This can STILL be a HUGE performance benefit. Consider a shim API between Xerces and
+            *   Stroika - for SAX - where lots of strings are efficiently passed by Xerces - and are forwarded
+            *   to Stroika 'SAX' APIs. But consider a usage, where several of the strings are never used.
+            *
+            *       The shim would be copying/converting these strings, all for no purpose, since they never
+            *   got used. This cost can be almost totally eliminated.
+            *
+            *       Plus - many - perhaps even most String API methods can be applied to these ligher cost
+            *   strings in that 'SAX Callback' scenario without ever constructing high-cost String objects.
+            *
+            *       But - if anyone ever does allocate one of those objects - no biggie. It just gets morphed
+            *   and the cost paid then.
+            *
+            *       THATS THE PLAN ANYHOW....
+            *
+
+            **
+            ** SERIOUS - NOT sure what todo about stuff like c_str() - as doc says below - no obvious limitation on lifetime! I GUESS we must simply
+            ** force such APIs to 'breakreferences' - as the note below says. THAT does appear to fix the problem - but at a cost - maybe too huge cost?
+            *
+            *
             *     o   Seriously reconsider design / semantics of String_ExternalMemoryOwnership_StackLifetime_ReadOnly/String_ExternalMemoryOwnership_StackLifetime_ReadWrite classes.
             *         There maybe a serious / hopeless bug having todo with threads and c_str(). Suppose in one thread we do:
             *             void    f()
