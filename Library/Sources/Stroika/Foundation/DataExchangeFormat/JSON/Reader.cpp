@@ -320,7 +320,7 @@ namespace   {
         Require (*i < end);
         switch (**i) {
             case    'f': {
-                    if (5 < (end - *i) and
+                    if (5 <= (end - *i) and
                             * ((*i) + 1) == 'a' and
                             * ((*i) + 2) == 'l' and
                             * ((*i) + 3) == 's' and
@@ -332,7 +332,7 @@ namespace   {
                 }
                 break;
             case    't': {
-                    if (4 < (end - *i) and
+                    if (4 <= (end - *i) and
                             * ((*i) + 1) == 'r' and
                             * ((*i) + 2) == 'u' and
                             * ((*i) + 3) == 'e'
@@ -343,7 +343,7 @@ namespace   {
                 }
                 break;
             case    'n': {
-                    if (4 < (end - *i) and
+                    if (4 <= (end - *i) and
                             * ((*i) + 1) == 'u' and
                             * ((*i) + 2) == 'l' and
                             * ((*i) + 3) == 'l'
