@@ -110,7 +110,8 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
 #endif
-                template    <typename T, Type t>    struct  TValRep;
+                template    <typename T, Type t>    
+				struct  TValRep;
             };
             bool    operator== (const VariantValue& lhs, const VariantValue& rhs);
             bool    operator!= (const VariantValue& lhs, const VariantValue& rhs);
