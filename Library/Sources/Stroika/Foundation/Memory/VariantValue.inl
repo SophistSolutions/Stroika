@@ -36,11 +36,13 @@ namespace   Stroika {
                 }
                 return fVal_->GetType ();
             }
+#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   RETURNTYPE>
             RETURNTYPE VariantValue::As () const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
+#endif
             inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs)
             {
                 return not (lhs == rhs);

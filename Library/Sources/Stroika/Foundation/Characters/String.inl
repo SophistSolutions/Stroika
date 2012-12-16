@@ -131,36 +131,38 @@ namespace   Stroika {
                 Require (i < GetLength ());
                 return (_fRep->GetAt (i));
             }
+#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   T>
             T   String::As () const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
             template    <typename   T>
             void    String::As (T* into) const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
             template    <typename   T>
             T   String::AsUTF8 () const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
             template    <typename   T>
             void    String::AsUTF8 (T* into) const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
             template    <typename   T>
             T   String::AsASCII () const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
             template    <typename   T>
             void    String::AsASCII (T* into) const
-			{
-				static_assert (false, "Only specifically specialized variants are supported");
-			}
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
+#endif
             template    <>
             inline  void    String::As (wstring* into) const
             {

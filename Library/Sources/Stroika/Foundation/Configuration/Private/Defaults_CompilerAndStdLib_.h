@@ -236,6 +236,33 @@
 
 
 
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+@DESCRIPTION:   <p>Defined true if the compiler generates errors for static assertions in functions
+            which should never be expanded. Such functions/static_assertions CAN be handy to make it
+            more obvious of type mismatches with As<> etc templates.</p>
+*/
+#ifndef qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+
+#if     defined (__GNUC__) && !defined (__clang__) &&  (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
+#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            1
+#else
+#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            0
+#endif
+
+#endif
+
+
+
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_regex_search
 @DESCRIPTION:   <p>Defined true if the compiler supports regex_search</p>
