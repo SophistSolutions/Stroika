@@ -47,8 +47,8 @@ namespace   Stroika {
                 class   IRep_;
             public:
 #if     qCompilerAndStdLib_Supports_ConstructorDelegation
-                template    <typename IteratorT>
-                BasicBinaryInputStream (IteratorT start, IteratorT end);
+                template    <typename RandomAccessIteratorT>
+                BasicBinaryInputStream (RandomAccessIteratorT start, RandomAccessIteratorT end);
                 template    <typename ContainerOfT>
                 BasicBinaryInputStream (const ContainerOfT& c);
 #else

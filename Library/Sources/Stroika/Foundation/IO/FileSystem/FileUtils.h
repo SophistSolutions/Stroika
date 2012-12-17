@@ -224,9 +224,9 @@ namespace   Stroika {
                     ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix = TSTR (".tmp"));
                     ~ThroughTmpFileWriter ();
 
-                private:    // NOT IMPLEMENTED
-                    ThroughTmpFileWriter (const ThroughTmpFileWriter&);
-                    const ThroughTmpFileWriter& operator= (const ThroughTmpFileWriter&);
+                private:
+                    NO_COPY_CONSTRUCTOR (ThroughTmpFileWriter);
+                    NO_ASSIGNMENT_OPERATOR (ThroughTmpFileWriter);
 
                 public:
                     nonvirtual operator TString () const;
@@ -253,6 +253,10 @@ namespace   Stroika {
                 public:
                     FileReader (const TChar* fileName);
                     ~FileReader ();
+
+                private:
+                    NO_COPY_CONSTRUCTOR (FileReader);
+                    NO_ASSIGNMENT_OPERATOR (FileReader);
 
                 public:
                     const Byte* GetFileStart () const;
@@ -281,6 +285,10 @@ namespace   Stroika {
                     MemoryMappedFileReader (const TChar* fileName);
                     ~MemoryMappedFileReader ();
 
+                private:
+                    NO_COPY_CONSTRUCTOR (MemoryMappedFileReader);
+                    NO_ASSIGNMENT_OPERATOR (MemoryMappedFileReader);
+
                 public:
                     const Byte* GetFileStart () const;
                     const Byte* GetFileEnd () const;
@@ -299,9 +307,10 @@ namespace   Stroika {
                 public:
                     DirectoryContentsIterator (const TString& pathExpr);        // can include wildcards - see ::FindFirstFile docs
                     ~DirectoryContentsIterator ();
+
                 private:
-                    DirectoryContentsIterator (const DirectoryContentsIterator&);
-                    nonvirtual  void    operator= (const DirectoryContentsIterator&);
+                    NO_COPY_CONSTRUCTOR (DirectoryContentsIterator);
+                    NO_ASSIGNMENT_OPERATOR (DirectoryContentsIterator);
 
                 public:
                     nonvirtual  bool    NotAtEnd () const;
