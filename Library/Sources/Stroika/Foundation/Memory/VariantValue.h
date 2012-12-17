@@ -14,12 +14,24 @@
 
 
 
+/**
+ *  TODO:
+ *
+ *      @todo   Add overload for Equals () - where it either DOES or DOESNT do coertions (like javascript == versus ===).
+ *
+ *      @todo   Redo (and clarify in docs) that all As<> functions do COERTION - if possible. And where its NOT possible,
+ *              generate EXCEPTIONS!
+ *          >>>>    map<wstring,VariantValue>   members= p.As<map<wstring,VariantValue>> ();
+ *          >>>>    … All these As<> operators – instead of asserting on bad types, if no conversion, generate EXCEPTIONS.
+ *          >>>>    This will work better – as a matter of design – because if data sources  and conversion…
+ *
+ *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here? Though probably not.
+ */
+
 // MIMICS (eventually - not totally yet) COM "VARIANT" type - not so much for COM integration, but
 // cuz its handy having such a thing (e.g. as gateway API to XML reader/writer code or JSON (my original motivaiton to write this now)
 //      -- LGP 2011-07-16
 
-
-// NOT SURE THIS LOGICALLY BELONGS IN "MEMORY" module but wasnt sure where else to put it.
 
 // ALSO, BASED on R4LLib "Value" type - but with Enumeration/ID/BLOB removed.
 //When we add ATOM support to Storika (parameterized based on R4LLIb Enumeration)
