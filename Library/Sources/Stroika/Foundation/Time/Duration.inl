@@ -21,7 +21,7 @@ namespace   Stroika {
             T   Duration::As () const
             {
                 static_assert (false, "Only specifically specialized variants are supported");
-			}
+            }
 #endif
 
             inline  bool operator<= (const Duration& lhs, const Duration& rhs)
