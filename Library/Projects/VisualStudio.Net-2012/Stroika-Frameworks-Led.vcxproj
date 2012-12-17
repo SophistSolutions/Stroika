@@ -392,92 +392,92 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\Windows\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Service\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\Windows\$(Configuration)\Library-Framework-Led\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <ClCompile>
@@ -490,6 +490,8 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -514,6 +516,8 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -538,6 +542,8 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -562,6 +568,8 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -586,6 +594,8 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -610,6 +620,8 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -640,6 +652,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -672,6 +686,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -704,6 +720,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -736,6 +754,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -768,6 +788,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -800,6 +822,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -832,6 +856,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -864,6 +890,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -896,6 +924,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -928,6 +958,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -960,6 +992,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -992,6 +1026,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
