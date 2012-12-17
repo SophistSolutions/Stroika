@@ -95,13 +95,15 @@ namespace   Stroika {
              */
             class   DateTime {
 
+            public:
                 /**
-                * Most of the time applications will utilize localtime. But occasionally its useful to use different timezones, and our approach to this
-                * is to simply convert everything to GMT.
-                *
-                * eUnknown - for the most part - is treated as if it were localtime (except with compare). However - the "Kind" function
-                * returns Unknown in case your application wants to treat it differently.
-                */
+                 *  Most of the time applications will utilize localtime. But occasionally its useful to use
+                 *  different timezones, and our approach to this is to simply convert everything to GMT.
+                 *
+                 *  eUnknown - for the most part - is treated as if it were localtime (except with compare).
+                 *  However - the "Kind" function returns Unknown in case your application wants to treat it
+                 *  differently.
+                 */
             enum class Timezone : uint8_t {
                     eLocalTime,
                     eUTC,
@@ -111,21 +113,23 @@ namespace   Stroika {
                 };
 
             public:
-                /*
-                 * Construct a DateTime record with the given date and time value. Presume that these values apply to the given timezone. This does
-                 * not adjust the value of date/time for the given tz - but just records that this datetime refers to the given timezone.
+                /**
+                 *  Construct a DateTime record with the given date and time value. Presume that these values
+                 *  apply to the given timezone. This does not adjust the value of date/time for the given tz -
+                 *  but just records that this datetime refers to the given timezone.
                  *
-                 * To change TO a target timezone, use AsUTC () or AsLocalTime ().
+                 *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
                 DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = Timezone::eUnknown);
 
             public:
-                /*
-                 * UNIX epoch time is inheritently timezone independent. However, the tz argumet tells
-                 * the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
-                 * or unknown it will convert it to a localtime value.
+                /**
+                 *  UNIX epoch time is inheritently timezone independent. However, the tz argumet tells
+                 *  the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
+                 *  or unknown it will convert it to a localtime value.
                  */
                 explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown);
+
                 /*
                  */
                 explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown);
@@ -140,8 +144,9 @@ namespace   Stroika {
                 explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime);
 
                 /*
-                 * Most windows APIs return filetimes in UTC (or so it appears). Because of this, our default interpretation of a
-                 * FILETIME structure as as UTC. Call DateTime (ft).AsLocalTime () to get the value returned in local time.
+                 *  Most windows APIs return filetimes in UTC (or so it appears). Because of this,
+                 *  our default interpretation of a FILETIME structure as as UTC.
+                 *  Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  */
                 explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC);
 #endif
@@ -161,9 +166,11 @@ namespace   Stroika {
 #endif
 
             public:
-                // If the date is empty - this is empty (no date with a time doesn't make much sense as a DateTime - use TimeOfDay by itself if thats
-                // what you want).
-                // Timezone is ignored for the purpose of 'empty' check.
+                /**
+                 *  If the date is empty - this is empty (no date with a time doesn't make much sense as a
+                 *  DateTime - use TimeOfDay by itself if thats what you want).
+                 *  Timezone is ignored for the purpose of 'empty' check.
+                 */
                 nonvirtual  bool    empty () const;
 
             public:
