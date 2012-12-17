@@ -210,6 +210,7 @@ DateTime    DateTime::Parse (const String& rep, PrintFormat pf)
                 return DateTime ();
             }
             break;
+        case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 int year    =   0;
                 int month   =   0;
@@ -246,13 +247,13 @@ DateTime    DateTime::Parse (const String& rep, PrintFormat pf)
                 if (nItems >= 5) {
                     t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
                 }
-                Timezone    tz  =   Timezone::eUnknown_TZ;
+                Timezone    tz  =   Timezone::eUnknown;
                 if (tzKnown) {
                     if (tzUTC) {
-                        tz = Timezone::eUTC_TZ;   // really wrong - should map given time to UTC??? - check HR value ETC
+                        tz = Timezone::eUTC;   // really wrong - should map given time to UTC??? - check HR value ETC
                     }
                     else {
-                        tz = Timezone::eLocalTime_TZ; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
+                        tz = Timezone::eLocalTime; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
                     }
 
                     // CHECK TZ
@@ -260,7 +261,7 @@ DateTime    DateTime::Parse (const String& rep, PrintFormat pf)
                     // not sure what todo if READ tz doesn't match localtime? Maybe convert to GMT??
                 }
                 else {
-                    tz = Timezone::eLocalTime_TZ;
+                    tz = Timezone::eLocalTime;
                 }
                 return DateTime (d, t, tz);
             }
@@ -321,9 +322,9 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
 
 DateTime    DateTime::AsLocalTime () const
 {
-    if (GetTimezone () == Timezone::eUTC_TZ) {
+    if (GetTimezone () == Timezone::eUTC) {
         DateTime    tmp =   AddSeconds (-GetLocaltimeToGMTOffset ());
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eLocalTime_TZ);
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eLocalTime);
     }
     else {
         // treat BOTH unknown and localetime as localtime
@@ -333,12 +334,12 @@ DateTime    DateTime::AsLocalTime () const
 
 DateTime    DateTime::AsUTC () const
 {
-    if (GetTimezone () == Timezone::eUTC_TZ) {
+    if (GetTimezone () == Timezone::eUTC) {
         return *this;
     }
     else {
         DateTime    tmp =   AddSeconds (GetLocaltimeToGMTOffset ());
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eUTC_TZ);
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eUTC);
     }
 }
 
@@ -348,11 +349,11 @@ DateTime    DateTime::Now ()
     SYSTEMTIME  st;
     memset (&st, 0, sizeof (st));
     ::GetLocalTime (&st);
-    return DateTime (st, Timezone::eLocalTime_TZ);
+    return DateTime (st, Timezone::eLocalTime);
 #elif   qPlatform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
-    return DateTime (time (nullptr), Timezone::eUTC_TZ).AsLocalTime ();
+    return DateTime (time (nullptr), Timezone::eUTC).AsLocalTime ();
 #else
     AssertNotImplemented ();
     return DateTime ();
@@ -373,12 +374,13 @@ String DateTime::Format (PrintFormat pf) const
 #endif
             }
             break;
+        case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
-                String  r       =   fDate_.Format (Date::PrintFormat::eXML);
-                String  timeStr =   fTimeOfDay_.Format (TimeOfDay::PrintFormat::eXML);
+                String  r       =   fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
+                String  timeStr =   fTimeOfDay_.Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
                 if (not timeStr.empty ()) {
                     r += L"T" + timeStr;
-                    if (GetTimezone () == Timezone::eUTC_TZ) {
+                    if (GetTimezone () == Timezone::eUTC) {
                         r += L"Z";
                     }
                     else {
@@ -618,7 +620,7 @@ int DateTime::Compare (const DateTime& rhs) const
         }
     }
     Assert (not empty () and not rhs.empty ());
-    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::eUnknown_TZ)  or (rhs.GetTimezone () == Timezone::eUnknown_TZ)) {
+    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::eUnknown)  or (rhs.GetTimezone () == Timezone::eUnknown)) {
         int cmp =   GetDate ().Compare (rhs.GetDate ());
         if (cmp == 0) {
             cmp = GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());

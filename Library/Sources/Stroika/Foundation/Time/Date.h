@@ -172,8 +172,11 @@ enum class Year : short {
             public:
             enum class PrintFormat : uint8_t {
                     eCurrentLocale,
+                    eISO8601,
                     eXML,
                     eJavascript,
+
+                    Define_Start_End_Count (eCurrentLocale, eJavascript)
                 };
                 static  Date    Parse (const String& rep, PrintFormat pf);
                 static  Date    Parse (const String& rep, const locale& l);

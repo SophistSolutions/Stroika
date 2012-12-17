@@ -22,17 +22,18 @@
 
 
 
-/*
+/**
  * TODO:
  *
- *      o   Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
+ *      @todo   Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
  *
- *      o   Add support for long double (and perhaps others?). And consider using long double for InternalNumericFormatType_;
+ *      @todo   Add support for long double (and perhaps others?). And consider using long double for
+ *              InternalNumericFormatType_;
  *
- *      o   Consider adding 'precision' property to PrettyPrintInfo. Think about precision support/design of
- *          boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
+ *      @todo   Consider adding 'precision' property to PrettyPrintInfo. Think about precision support/design of
+ *              boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
  *
- *      o   Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
+ *      @todo   Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
  *          o   Number of seconds. Anything less than that number is truncated.
  *          o   So .001 ‘precision’ means show 3.44444 as 3.444 and 60 means show 67 seconds as “one minute”
  *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentainl values?
@@ -46,24 +47,28 @@ namespace   Stroika {
         namespace   Time {
 
 
-            /*
+            /**
              * (basic) support for ISO 8601 Durations
              *      http://en.wikipedia.org/wiki/ISO_8601#Durations
              *
-             *  Note: according to glibc docs - year is always 365 days, month always 30 days, etc, as far as these duration objects
-             *  go - at least for conversion to/from time_t. Seek a better reference for this claim!
+             *  Note: according to glibc docs - year is always 365 days, month always 30 days, etc, as far
+             *  as these duration objects go - at least for conversion to/from time_t. Seek a better
+             *  reference for this claim!
              *
-             * Note also - there are two iso 8601 duration formats - one date like (YYYY-MM....) and this one P...T...3S).
-             * As far as I know - XML always uses the later. For now - this implementation only supports the later.
+             *  Note also - there are two iso 8601 duration formats - one date like (YYYY-MM....) and this
+             *  one P...T...3S). As far as I know - XML always uses the later. For now - this implementation
+             *  only supports the later.
              *
              *      See also: http://bugzilla/show_bug.cgi?id=468
              *
-             *  This class is roughly equivilent to the .Net Timespan class, and also might be called "time period".
+             *  This class is roughly equivilent to the .Net Timespan class, and also might be called
+             *  "time period".
              *
-             *  Note that a Duration maybe negative.
+             *  Note that a Duration may be negative.
              *
-             *  It is best to logically think of Duration as a number of seconds (at least lossly) – since for comparisons –
-             *  that’s how things are normalized. #days etc are dumbed down to number of seconds for comparison sakes.
+             *  It is best to logically think of Duration as a number of seconds (at least lossly) –
+             *  since for comparisons – that’s how things are normalized. #days etc are dumbed down
+             *  to number of seconds for comparison sakes.
              */
             class   Duration {
             public:
@@ -82,7 +87,7 @@ namespace   Stroika {
                 nonvirtual  bool    empty () const;
 
             public:
-                /*
+                /**
                  * Defined for
                  *      time_t
                  *      wstring

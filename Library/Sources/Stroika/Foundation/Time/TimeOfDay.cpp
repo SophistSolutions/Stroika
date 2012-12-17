@@ -247,15 +247,12 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, PrintFormat pf)
     switch (pf) {
         case    PrintFormat::eCurrentLocale:  {
 #if     qPlatform_Windows
-#if     0
-                Assert (Parse (rep, LOCALE_USER_DEFAULT) == Parse (rep, locale ()));    // not a REAL assert, but for debugging - to see what diffs there are - probably none
-                // added to test 2011-10-07
-#endif
                 return Parse (rep, LOCALE_USER_DEFAULT);
 #elif   qPlatform_POSIX
                 return Parse (rep, locale ());
 #endif
             }
+        case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 int hour    =   0;
                 int minute  =   0;
@@ -393,6 +390,7 @@ String TimeOfDay::Format (PrintFormat pf) const
                 Format (locale ());
 #endif
             }
+        case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 uint32_t    hour = fTime_ / (60 * 60);
                 uint32_t    minutes = (fTime_ - hour * 60 * 60) / 60;

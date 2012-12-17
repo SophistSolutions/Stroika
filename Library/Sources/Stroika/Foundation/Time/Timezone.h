@@ -15,18 +15,18 @@ namespace   Stroika {
 
             class   DateTime;
 
-            /*
+            /**
              * Checks if it is NOW DaylightSavingsTime
              */
             bool    IsDaylightSavingsTime ();
 
-            /*
+            /**
              * Checks if the given date is daylight savings time
              */
             bool    IsDaylightSavingsTime (const DateTime& d);
 
 
-            /*
+            /**
              * Return the number of seconds which must be added to a LocalTime value to get GMT.
              */
             time_t  GetLocaltimeToGMTOffset (bool applyDST = IsDaylightSavingsTime ());

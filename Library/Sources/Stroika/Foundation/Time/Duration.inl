@@ -16,6 +16,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
+            template    <typename T>
+            T   Duration::As () const
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
+
             inline  bool operator<= (const Duration& lhs, const Duration& rhs)
             {
                 return lhs.Compare (rhs) <= 0;
@@ -36,7 +42,6 @@ namespace   Stroika {
             {
                 return lhs.Compare (rhs) != 0;
             }
-
 
         }
 

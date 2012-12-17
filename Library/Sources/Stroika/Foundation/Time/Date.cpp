@@ -193,6 +193,7 @@ Date    Date::Parse (const String& rep, PrintFormat pf)
 #endif
             }
             break;
+        case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 /*
                  * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
@@ -303,6 +304,7 @@ String Date::Format (PrintFormat pf) const
 #endif
             }
             break;
+        case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
                 MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;

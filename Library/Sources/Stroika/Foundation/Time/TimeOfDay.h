@@ -24,18 +24,18 @@
 /*
  * TODO:
  *
- *      o   Consider getting rid of empty () method and empty state. Instead - in DateTime code - use Optional<>
+ *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
+*               use Optional<>
  *
- *      o   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
+ *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
- *      o   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
- *          Maybe where they differ doesn't matter for this class?
- *
- *      o   Locale based parsing code seems quite poor. Haven't really evaluated locale-based print code (but I'm not optimistic).
- *          I'm not sure if I have it wrong, or if it just sucks (main issue is Vis Studio integration - doesn't appear to pay attention to
- *          local settings from regional settings control panel, and doesn't seem at all flexible about what it accepts). But also the %X output
- *          (again - at least for windows/vis studio) looks terrible - military format - full zero precision - even if not needed?).
- *          MAYBE try %EX is the locale's alternative time representation.
+ *      @todo   Locale based parsing code seems quite poor. Haven't really evaluated locale-based
+ *              print code (but I'm not optimistic). I'm not sure if I have it wrong, or if it just
+ *              sucks (main issue is Vis Studio integration - doesn't appear to pay attention to
+ *              local settings from regional settings control panel, and doesn't seem at all flexible
+ *              about what it accepts). But also the %X output (again - at least for windows/vis studio)
+ *              looks terrible - military format - full zero precision - even if not needed?).
+ *              MAYBE try %EX is the locale's alternative time representation.
  *
  */
 
@@ -79,9 +79,13 @@ namespace   Stroika {
                 // we normalize to be within a given day (seconds since midnight)
                 explicit TimeOfDay (uint32_t t);
 
+
             enum  class PrintFormat : uint8_t {
                     eCurrentLocale,
+                    eISO8601,
                     eXML,
+
+                    Define_Start_End_Count (eCurrentLocale, eXML)
                 };
                 static  TimeOfDay   Parse (const String& rep, PrintFormat pf);
                 static  TimeOfDay   Parse (const String& rep, const locale& l);

@@ -25,32 +25,37 @@
 
 
 
-/*
+/**
  * TODO:
  *
  *
- *      o   Current logic for TIMEZONE conversion is questionable. When we output to XML, we output the timezone offset of the currnet timezone
- *          and the daylight savingstime value as of that date. But when we read date - we ignore the offset (assume its localetime).
+ *      @todo   Current logic for TIMEZONE conversion is questionable. When we output to XML,
+ *              we output the timezone offset of the currnet timezone and the daylight savingstime
+ *              value as of that date. But when we read date - we ignore the offset (assume its localetime).
  *
- *      o   We sometimes store datetime internally as localetime, and sometimes as UTC. Maybe we should alway use UTC? If we use localtime and the
- *          timezone changes while we are running (timezone or DST) - we could get funky results.
+ *      @todo   We sometimes store datetime internally as localetime, and sometimes as UTC. Maybe we
+ *              should alway use UTC? If we use localtime and the timezone changes while we are running
+ *              (timezone or DST) - we could get funky results.
  *
- *      o   Maybe use       wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
- *      o   Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
- *
- *      o   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
- *
- *      o   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
- *          Maybe where they differ doesn't matter for this class?
- *
- *      o   Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on bad conversions I think - moistly an issue for
- *          the locale-based stuff. Now it maybe just silently returns empty date/time/etc. Better to except!
+ *      @todo   Maybe use wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
 
- *      o   Only SetDate (const Date& d);/SetTimeOfDay are non-const methods. Consider making this const and just return a new date. Would matter from
- *          an API standpoint if the internl rep was BIGGER (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
- *          SharedByValue<> template. Maybe a boondoggle?
+ *      @todo   Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  *
- *      o   Future direction � consider representing as big struct
+ *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
+ *
+ *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should
+ *              support BOTH here? Maybe where they differ doesn't matter for this class?
+ *
+ *      @todo   Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on
+ *              bad conversions I think - moistly an issue for the locale-based stuff. Now it maybe just
+ *              silently returns empty date/time/etc. Better to except!
+
+ *      @todo   Only SetDate (const Date& d);/SetTimeOfDay are non-const methods. Consider making this const
+ *              and just return a new date. Would matter from an API standpoint if the internl rep was BIGGER
+ *              (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
+ *              SharedByValue<> template. Maybe a boondoggle?
+ *
+ *      @todo   Future direction � consider representing as big struct
  *          o   Like with STRUCT DATETIME or struct tm
  *              o   Int year
  *              o   Int month
@@ -89,18 +94,20 @@ namespace   Stroika {
              *          This is a bit like the floating point concept of negative infinity.
              */
             class   DateTime {
-            public:
-                /*
-                 * Most of the time applications will utilize localtime. But occasionally its useful to use different timezones, and our approach to this
-                 * is to simply convert everything to GMT.
-                 *
-                 * eUnknown_TZ - for the most part - is treated as if it were localtime (except with compare). However - the "Kind" function
-                 * returns Unknown in case your application wants to treat it differently.
-                 */
+
+                /**
+                * Most of the time applications will utilize localtime. But occasionally its useful to use different timezones, and our approach to this
+                * is to simply convert everything to GMT.
+                *
+                * eUnknown - for the most part - is treated as if it were localtime (except with compare). However - the "Kind" function
+                * returns Unknown in case your application wants to treat it differently.
+                */
             enum class Timezone : uint8_t {
-                    eLocalTime_TZ,
-                    eUTC_TZ,
-                    eUnknown_TZ,
+                    eLocalTime,
+                    eUTC,
+                    eUnknown,
+
+                    Define_Start_End_Count (eLocalTime, eUnknown)
                 };
 
             public:
@@ -110,7 +117,7 @@ namespace   Stroika {
                  *
                  * To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
-                DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = Timezone::eUnknown_TZ);
+                DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = Timezone::eUnknown);
 
             public:
                 /*
@@ -118,31 +125,34 @@ namespace   Stroika {
                  * the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
                  * or unknown it will convert it to a localtime value.
                  */
-                explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown_TZ);
+                explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown);
                 /*
                  */
-                explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown_TZ);
+                explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown);
 
 #if     qPlatform_POSIX
             public:
-                explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown_TZ);
+                explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown);
 #endif
 
 #if     qPlatform_Windows
             public:
-                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime_TZ);
+                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime);
 
                 /*
                  * Most windows APIs return filetimes in UTC (or so it appears). Because of this, our default interpretation of a
                  * FILETIME structure as as UTC. Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  */
-                explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC_TZ);
+                explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC);
 #endif
 
             public:
             enum class  PrintFormat : uint8_t {
                     eCurrentLocale,
+                    eISO8601,
                     eXML,
+
+                    Define_Start_End_Count (eCurrentLocale, eXML)
                 };
                 static  DateTime    Parse (const String& rep, PrintFormat pf);
                 static  DateTime    Parse (const String& rep, const locale& l);

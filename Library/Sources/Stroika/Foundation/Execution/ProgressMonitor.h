@@ -14,10 +14,26 @@
 #include    "CriticalSection.h"
 
 
+/**
+ * TODO:
+ *      @todo   ProgressRangeType SB class with oeprator to convert to/from float, but with assert about range
+ *              0..1
+ *
+ *      @todo   This all needs tons of code review, and careful rethinking/analysis.
+ *
+ *      @todo   Consider carefully if progress callback SB shared_ptr<> object. Document reason for choice.
+ */
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
+
+
+            /**
+             *
+             */
             typedef float   ProgressRangeType;
 
 
@@ -152,9 +168,9 @@ namespace   Stroika {
 #endif
 
             private:
-                ProgressMontior* fMainProgress;
-                float           fFromProg;
-                float           fToProg;
+                ProgressMontior*    fMainProgress;
+                float               fFromProg;
+                float               fToProg;
             };
 
         }
