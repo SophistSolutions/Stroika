@@ -144,7 +144,7 @@ namespace   Stroika {
                 static  string                      UnParseTime_ (InternalNumericFormatType_ t);
 
             private:
-                string  fDurationRep;
+                string  fDurationRep_;
             };
             template    <>
             time_t  Duration::As () const;
@@ -152,6 +152,10 @@ namespace   Stroika {
             wstring Duration::As () const;
             template    <>
             double  Duration::As () const;
+#if     qCompilerAndStdLib_Supports_stdchrono
+            template    <>
+            chrono::duration<double>  Duration::As () const;
+#endif
 
             bool operator< (const Duration& lhs, const Duration& rhs);
             bool operator<= (const Duration& lhs, const Duration& rhs);

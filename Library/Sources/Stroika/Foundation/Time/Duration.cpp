@@ -67,58 +67,58 @@ const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
 };
 
 Duration::Duration ()
-    : fDurationRep ()
+    : fDurationRep_ ()
 {
 }
 
 Duration::Duration (const wstring& durationStr)
-    : fDurationRep (WideStringToASCII (durationStr))
+    : fDurationRep_ (WideStringToASCII (durationStr))
 {
-    (void)ParseTime_ (fDurationRep);    // call for the side-effect of throw if bad format src string
+    (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
 }
 
 Duration::Duration (int32_t duration)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
 
 Duration::Duration (int64_t duration)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
 
 Duration::Duration (double duration)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
 
 #if     qCompilerAndStdLib_Supports_stdchrono
 Duration::Duration (const std::chrono::duration<double>& d)
-    : fDurationRep (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
 {
 }
 #endif
 
 void    Duration::clear ()
 {
-    fDurationRep.clear ();
+    fDurationRep_.clear ();
 }
 
 bool    Duration::empty () const
 {
-    return fDurationRep.empty ();
+    return fDurationRep_.empty ();
 }
 
 template    <>
 time_t  Duration::As () const
 {
-    return static_cast<time_t> (ParseTime_ (fDurationRep));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<time_t> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 template    <>
 double  Duration::As () const
 {
-    return ParseTime_ (fDurationRep);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 #if     qCompilerAndStdLib_Supports_stdchrono
@@ -131,7 +131,7 @@ namespace   Stroika {
             template    <>
             std::chrono::duration<double>  Duration::As () const
             {
-                return std::chrono::duration<double> (ParseTime_ (fDurationRep));
+                return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
             }
         }
     }
@@ -140,7 +140,7 @@ namespace   Stroika {
 template    <>
 std::chrono::duration<double>  Duration::As () const
 {
-    return std::chrono::duration<double> (ParseTime_ (fDurationRep));
+    return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
 }
 #endif
 #endif
@@ -148,7 +148,7 @@ std::chrono::duration<double>  Duration::As () const
 template    <>
 wstring Duration::As () const
 {
-    return ASCIIStringToWide (fDurationRep);
+    return ASCIIStringToWide (fDurationRep_);
 }
 
 namespace   {
