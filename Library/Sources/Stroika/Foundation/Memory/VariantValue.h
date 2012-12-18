@@ -112,17 +112,14 @@ namespace   Stroika {
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
-#if 0
-            public:
-                // bad name - historical - not sure whats better??? RETHINK - LGP 2011-07-16
-                nonvirtual  wstring FormatXML () const;
-#endif
 
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
 #endif
                 struct  IRep_;
+
+            private:
                 shared_ptr<IRep_>   fVal_;
 
             private:

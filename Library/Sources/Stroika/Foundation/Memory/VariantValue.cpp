@@ -87,36 +87,35 @@ bool    VariantValue::empty () const
     switch (fVal_->GetType ()) {
         case    Type::eBoolean:
         case    Type::eInteger: {
-                // cannot be empty
-                return false;
+                return false;       // cannot be empty
             }
         case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*      v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return std::isnan (v->fVal) != 0;
             }
         case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*            v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eDateTime: {
-                const TIRep_<DateTime, Type::eDateTime>*    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*       v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eMap: {
-                const TIRep_<map<wstring, VariantValue>, Type::eMap>*   v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eArray: {
-                const TIRep_<vector<VariantValue>, Type::eArray>*       v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -134,7 +133,7 @@ bool    VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eBoolean: {
-                const TIRep_<bool, Type::eBoolean>* v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -159,17 +158,17 @@ int VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*  v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<int> (v->fVal);
             }
         case    Type::eInteger: {
-                const TIRep_<int, Type::eInteger>*      v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*   v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::String2Int (v->fVal);
             }
@@ -193,17 +192,17 @@ double VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eInteger: {
-                const TIRep_<int, Type::eInteger>*      v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<float> (v->fVal);
             }
         case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*  v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*   v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 // NB. this may return NAN if string not a well-formed number (including empty string case)
                 return Characters::String2Float (v->fVal);
@@ -222,19 +221,19 @@ Date VariantValue::As() const
     }
     switch (fVal_->GetType ()) {
         case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*         v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eDateTime: {
-                const TIRep_<DateTime, Type::eDateTime>* v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.GetDate ();
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Date::Parse (v->fVal, Date::PrintFormat::eXML);
+                return Date::Parse (v->fVal, Date::PrintFormat::eISO8601);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
@@ -250,19 +249,19 @@ DateTime VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*            v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return DateTime (v->fVal);
             }
         case    Type::eDateTime: {
-                const TIRep_<DateTime, Type::eDateTime>*    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*       v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return DateTime::Parse (v->fVal, DateTime::PrintFormat::eXML);
+                return DateTime::Parse (v->fVal, DateTime::PrintFormat::eISO8601);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
@@ -278,37 +277,37 @@ wstring VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*            v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.Format ().As<wstring> ();
             }
         case    Type::eDateTime: {
-                const TIRep_<DateTime, Type::eDateTime>*    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.Format ().As<wstring> ();
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*       v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eBoolean: {
-                const TIRep_<bool, Type::eBoolean>*         v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal ? L"true" : L"false";
             }
         case    Type::eInteger: {
-                const TIRep_<int, Type::eInteger>*          v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Format (L"%d", v->fVal);
             }
         case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*      v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Float2String (v->fVal);
             }
         case    Type::eMap: {
-                const TIRep_<map<wstring, VariantValue>, Type::eMap>*    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"map[";
@@ -322,7 +321,7 @@ wstring VariantValue::As () const
                 return tmp.str ();
             }
         case    Type::eArray: {
-                const TIRep_<vector<VariantValue>, Type::eArray>*   v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"[";
@@ -349,7 +348,7 @@ map<wstring, VariantValue>   VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eMap: {
-                const TIRep_<map<wstring, VariantValue> , Type::eMap>*   v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue> , Type::eMap>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue> , Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -367,7 +366,7 @@ vector<VariantValue> VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eArray: {
-                const TIRep_<vector<VariantValue>, Type::eArray>*   v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -376,45 +375,6 @@ vector<VariantValue> VariantValue::As () const
             }
     }
 }
-
-#if 0
-wstring VariantValue::FormatXML () const
-{
-    if (fVal_.get () == nullptr) {
-        return wstring ();
-    }
-    switch (fVal_->GetType ()) {
-        case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal.Format (Date::PrintFormat::eXML).As<wstring> ();
-            }
-        case    Type::eDateTime: {
-                const TIRep_<DateTime, Type::eDateTime>*    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal.Format (DateTime::PrintFormat::eXML).As<wstring> ();
-            }
-        case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*   v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal;
-            }
-        case    Type::eBoolean: {
-                const TIRep_<bool, Type::eBoolean>* v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal ? L"true" : L"false";
-            }
-        case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*  v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
-                AssertNotNull (v);
-                return Characters::Float2String (v->fVal);
-            }
-        default: {
-                return As<wstring> ();
-            }
-    }
-}
-#endif
 
 bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool exactTypeMatchOnly)
 {
