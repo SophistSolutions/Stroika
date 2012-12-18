@@ -39,7 +39,7 @@ namespace   Stroika {
              *  These objects are internally efficiently copied (shared_ptr), but have copy
              *  by value semantics (since they are never modifyable).
              *
-             *  Note that it is never possible to create circular refrences (e.g. with Array or Map)
+             *  Note that it is never possible to create circular references (e.g. with Array or Map)
              *  types because these are constructed from existing already constructed VariantValue
              *  objects, and can never be modified thereafter.
              *
