@@ -39,12 +39,20 @@ namespace   Stroika {
              *  These objects are internally efficiently copied (shared_ptr), but have copy
              *  by value semantics (since they are never modifyable).
              *
-             *  Note that it is never possible to create circular references (e.g. with Array or Map)
-             *  types because these are constructed from existing already constructed VariantValue
-             *  objects, and can never be modified thereafter.
+             *  Design Notes:
+             *      o   Note that it is never possible to create circular references (e.g. with Array or Map)
+             *          types because these are constructed from existing already constructed VariantValue
+             *          objects, and can never be modified thereafter.
              *
-             *  Note that this VariantValue is analagous to, and inspired by, the Microsoft
-             *  COM VARIANT object type.
+             *      o   Note that this VariantValue is analagous to, and inspired by, the Microsoft
+             *          COM VARIANT object type.
+             *
+             *      o   The reason we chose to interpret As<T>() as generating an exception, instead of an
+             *          assertion, was based on experience using the VariantValue class. We found it was
+             *          typically used extracting data from an unreliable external source (typically JSON -
+             *          either from a web service or configuration data), and if that was mal-formed
+             *          (since there is no JSON schema) - we would assert. At least for this usage (and
+             *          that now seems the primary one) exceptions on  type mismatches seemed most helpful.
              */
             class   VariantValue {
             public:
