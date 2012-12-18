@@ -17,37 +17,19 @@
 /**
  *  TODO:
  *
- *      @todo   Add overload for Equals () - where it either DOES or DOESNT do coertions (like javascript == versus ===).
+ *      @todo   Redo (and clarify in docs) that all As<> functions do COERTION - if possible.
+ *              And where its NOT possible, generate EXCEPTIONS!
+ *              >>>>    map<wstring,VariantValue>   members= p.As<map<wstring,VariantValue>> ();
+ *              >>>>    … All these As<> operators – instead of asserting on bad types, if no
+ *              >>>>    conversion, generate EXCEPTIONS.
+ *              >>>>    This will work better – as a matter of design – because if data sources  and conversion…
  *
- *      @todo   Redo (and clarify in docs) that all As<> functions do COERTION - if possible. And where its NOT possible,
- *              generate EXCEPTIONS!
- *          >>>>    map<wstring,VariantValue>   members= p.As<map<wstring,VariantValue>> ();
- *          >>>>    … All these As<> operators – instead of asserting on bad types, if no conversion, generate EXCEPTIONS.
- *          >>>>    This will work better – as a matter of design – because if data sources  and conversion…
+ *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
+ *              Though probably not.
  *
- *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here? Though probably not.
+ *      @todo   Consider adding more integer types, like int32, int64, etc... COM VARIANT has many more
+ *              types than we do.
  */
-
-// MIMICS (eventually - not totally yet) COM "VARIANT" type - not so much for COM integration, but
-// cuz its handy having such a thing (e.g. as gateway API to XML reader/writer code or JSON (my original motivaiton to write this now)
-//      -- LGP 2011-07-16
-
-
-// ALSO, BASED on R4LLib "Value" type - but with Enumeration/ID/BLOB removed.
-//When we add ATOM support to Storika (parameterized based on R4LLIb Enumeration)
-// we can add that back here - possibly?
-// Also - must add back BLOB type!!!
-
-
-// ADD MORE INT TYPES (maybe int32/int64, or maybe long long and regular int?)
-
-
-// NB: This code is ALMOST the same as R4LLib::DTypes::Value - but not close enuf and not re-usable enuf to be used at all there.
-// THATS too bad!!! - any way to make this extensible?
-
-// WARN: DESIGN FLAW - BECAUSE OF INTERNAL USE OF REFCNTPTR, ONE CAN CREATE CIRCULAR REFERNCES, WHICH WOULD INFINITE LOOP ON PRINT (and other such).
-// SHOULD FIND A BETTER WAY TO BREAK THIS DOWN/PREVENT (maybe copy in array/map case?). Anyhow - it would only be in rare, or user-error cases
-//
 
 namespace   Stroika {
     namespace   Foundation {
@@ -56,19 +38,37 @@ namespace   Stroika {
             using   Time::Date;
             using   Time::DateTime;
 
-            // Simple refcounted copying value objects
+            /**
+             * \brief   Simple variant-value object, with basic (variant) types.
+             *
+             *  These objects are internally efficiently copied (shared_ptr), but have copy
+             *  by value semantics (since they are never modifyable).
+             *
+             *  Note that it is never possible to create circular refrences (e.g. with Array or Map)
+             *  types because these are constructed from existing already constructed VariantValue
+             *  objects, and can never be modified thereafter.
+             *
+             *  Note that this VariantValue is analagous to, and inspired by, the Microsoft
+             *  COM VARIANT object type.
+             */
             class   VariantValue {
             public:
-                // There are several floating point types - float, double, long double (and others?) This selects which we use
-                // to represent a VariantValue internally, but either double or float (maybe more) can be used to access
+                /*
+                 *  There are several floating point types - float, double, long double (and others?).
+                 *  This selects which we use to represent a VariantValue internally, but either double
+                 *  or float (maybe more) can be used to access
+                 */
                 typedef double  FloatType;
+
             public:
+                /**
+                 * \brief   Enumeration of variant types
+                 */
             enum class Type : uint8_t {
                     eNull,
                     eBoolean,
                     eInteger,
                     eFloat,
-                    eEnumeration,
                     eDate,
                     eDateTime,
                     eString,
@@ -99,10 +99,11 @@ namespace   Stroika {
                 nonvirtual  Type    GetType () const;
                 nonvirtual  bool    empty () const;
 
-                /*
-                 * Only these (enum Type) types supported. No generic 'As<>' implementation. There is no generic As<T> implementation.
-                 */
             public:
+                /**
+                 * Only these (enum Type) types supported. No generic 'As<>' implementation.
+                 *  There is no generic As<T> implementation.
+                 */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
 
@@ -114,19 +115,23 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
 #endif
-                struct  ValRep;
-            private:
-                shared_ptr<ValRep>   fVal_;
+                struct  IRep_;
+                shared_ptr<IRep_>   fVal_;
 
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
 #endif
                 template    <typename T, Type t>
-                struct  TValRep;
+                struct  TIRep_;
             };
+
+
+            bool    Equals (const VariantValue& lhs, const VariantValue& rhs, bool exactTypeMatchOnly = false);
+
             bool    operator== (const VariantValue& lhs, const VariantValue& rhs);
             bool    operator!= (const VariantValue& lhs, const VariantValue& rhs);
+
 
             template    <>
             nonvirtual bool VariantValue::As () const;

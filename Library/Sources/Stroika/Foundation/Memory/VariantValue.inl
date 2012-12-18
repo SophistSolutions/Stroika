@@ -16,19 +16,26 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
-            struct  VariantValue::ValRep {
+
+            struct  VariantValue::IRep_ {
+                virtual ~IRep_ () {}
                 virtual Type    GetType () const    =   0;
-                virtual ~ValRep () {}
             };
+
+
             template    <typename T, VariantValue::Type t>
-            struct  VariantValue::TValRep : VariantValue::ValRep {
-                TValRep (T v)
+            struct  VariantValue::TIRep_ : VariantValue::IRep_ {
+                TIRep_ (T v)
                     : fVal (v) {
                 }
-                virtual Type    GetType () const        {   return t; }
+                virtual Type    GetType () const override {
+                    return t;
+                }
                 T               fVal;
-                DECLARE_USE_BLOCK_ALLOCATION(TValRep);
+                DECLARE_USE_BLOCK_ALLOCATION(TIRep_);
             };
+
+
             inline  VariantValue::Type  VariantValue::GetType () const
             {
                 if (fVal_.get () == nullptr) {
@@ -43,9 +50,15 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
             }
 #endif
+
+
+            inline  bool    operator== (const VariantValue& lhs, const VariantValue& rhs)
+            {
+                return Equals (lhs, rhs);
+            }
             inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return not (lhs == rhs);
+                return not Equals (lhs, rhs);
             }
 
         }
