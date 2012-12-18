@@ -11,8 +11,8 @@
  *  @todo   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
  *          from Iterable<TallyEntry<T>>?
  *
- *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being constructed
- *          in the wrong state and requiring an initial ++.
+ *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
+ *          constructed in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
  *          MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
  *          to assure right behavior when not constructed. Be careful about MOVE semantics...
@@ -36,14 +36,16 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <iterator>
+
 #include    "../Configuration/Common.h"
 
 #include    "../Memory/SharedByValue.h"
 
 
+
 // SSW 9/19/2011: remove this restriction for more efficiency and flexibility
 #define qIteratorsRequireNoArgContructorForT    1
-
 
 
 
@@ -105,9 +107,9 @@ namespace   Stroika {
              *
              *      3.      Stroika iterators carry around their 'done' state all in one object.
              *              For compatability with existing C++ idiom, and some C++11 language features
-             *              Stroika allows  use of end(), and i != end() to check for if an iterator is done.
-             *              But internally, Stroika just checks i.Done(), and so can users of Stroika
-             *              iterators.
+             *              Stroika iterators inherit from std::iterator<> and allow use of end(),
+             *              and i != end() to check for if an iterator is done. But internally,
+             *              Stroika just checks i.Done(), and so can users of Stroika iterators.
              *
              *      4.      Stroika iterators are not 'random access'. They just go forwards, one step at a
              *              time. In STL, some kinds of iterators act more like pointers where you can do
@@ -150,10 +152,11 @@ namespace   Stroika {
              *  @see Iterable<T>
              */
             template    <typename T>
-            class  Iterator {
+            class  Iterator : public std::iterator<input_iterator_tag, T> {
             public:
                 /**
-                 *      \brief  ElementType is just a handly copy of the *T* template type which this Iterator<T> parameterizes access to.
+                 *      \brief  ElementType is just a handly copy of the *T* template type which this
+                 *              Iterator<T> parameterizes access to.
                  */
                 typedef T   ElementType;
 
@@ -169,7 +172,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
+                 *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
+                 *          by users).
                  */
                 typedef Memory::SharedByValue<IRep, Rep_Cloner_>   SharedByValueRepType;
 
@@ -179,8 +183,8 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
-                 *  This overload is usually not called directly. Instead, iterators are
-                 *  usually created from a container (eg. Bag<T>::begin()).
+                 *      This overload is usually not called directly. Instead, iterators are
+                 *      usually created from a container (eg. Bag<T>::begin()).
                  */
                 explicit Iterator (IRep* it);
 
@@ -204,7 +208,8 @@ namespace   Stroika {
                  *  \brief
                  *      Return the Current value pointed to by the Iterator<T> (same as Current())
                  *
-                 *  Support for range-based-for, and STL style iteration in general (containers must also support begin, end).
+                 *  Support for range-based-for, and STL style iteration in general (containers must also
+                 *  support begin, end).
                  *
                  *  This function is a synonym for @ref Current();
                  */
@@ -213,21 +218,25 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
-                 *      Advance iterator; support for range-based-for, and STL style iteration in general (containers must also support begin, end).
+                 *      Advance iterator; support for range-based-for, and STL style iteration in
+                 *      general (containers must also support begin, end).
                  *
                  *  Advance iterator; support for range-based-for, and STL style iteration in general
                  *  (containers must also support begin, end).
                  *
-                 *  operator++ can be called anytime as long as Done () is not true (must be called prior to operator++).
-                 *  It then it iterates to the  item in the container (i.e. it changes the value returned by Current).
+                 *  operator++ can be called anytime as long as Done () is not true (must be called
+                 *  prior to operator++). It then it iterates to the  item in the container (i.e. it
+                 *  changes the value returned by Current).
                  *
-                 *  Note - the value return by Current() is frozen (until the next operator++() call) when this method is called.
-                 *  Its legal to update the underlying container, but those values won't be seen until the next iteration.
+                 *  Note - the value return by Current() is frozen (until the next operator++() call)
+                 *  when this method is called. Its legal to update the underlying container, but those
+                 *  values won't be seen until the next iteration.
                  */
                 nonvirtual  void    operator++ ();
                 /**
                  *  \brief
-                 *      Advance iterator; support for range-based-for, and STL style iteration in general (containers must also support begin, end).
+                 *      Advance iterator; support for range-based-for, and STL style iteration in general
+                 *      (containers must also support begin, end).
                  *
                  *  This function is identical to @ref operator++();
                  *
@@ -240,8 +249,8 @@ namespace   Stroika {
                  *  \brief
                  *  Provides a limited notion of equality suitable for STL-style iteration and iterator comparison.
                  *
-                 *  Two iterators are considered WeakEquals() if they are BOTH Done(). If one is done, but the other not,
-                 *  they are not equal. If they are both not done, they are both equal if they are the
+                 *  Two iterators are considered WeakEquals() if they are BOTH Done(). If one is done, but the
+                 *  other not, they are not equal. If they are both not done, they are both equal if they are the
                  *  exact same rep.
                  *
                  *  Note - for WeakEquals(). The following assertion will fail:
@@ -284,8 +293,8 @@ namespace   Stroika {
                  *
                  *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
                  *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
-                 *  are considered StrongEquals (). This is mainly because we use a different representation for 'done' iterators.
-                 *  They are kind-of-fake iterator objects.
+                 *  are considered StrongEquals (). This is mainly because we use a different representation for 'done'
+                 *  iterators. They are kind-of-fake iterator objects.
                  *
                  *  NB:
                  *
@@ -408,7 +417,8 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
-                 *  Get a reference to the IRep owned by the iterator. This is an implementation detail, mainly intended for implementors.
+                 *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
+                 *      mainly intended for implementors.
                  *
                  *  Get a reference to the IRep owned by the iterator.
                  *  This is an implementation detail, mainly intended for implementors.
