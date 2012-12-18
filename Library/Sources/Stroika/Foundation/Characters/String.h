@@ -522,7 +522,7 @@ namespace   Stroika {
             protected:
                 class   _Rep;
                 struct  _Rep_Cloner {
-                    inline  _Rep*   Copy (const _Rep& t) const {
+                    inline  static  _Rep*   Copy (const _Rep& t) {
                         return String::Clone_ (t);
                     }
                 };
