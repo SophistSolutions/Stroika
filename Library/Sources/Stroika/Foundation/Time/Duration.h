@@ -25,6 +25,11 @@
 /**
  * TODO:
  *
+ *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
+ *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
+ *              handles either form of decimal separator! Add to regression tests, and make sure
+ *              it works.
+ *
  *      @todo   Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
  *
  *      @todo   Add support for long double (and perhaps others?). And consider using long double for
