@@ -17,12 +17,7 @@
 /**
  *  TODO:
  *
- *      @todo   Redo (and clarify in docs) that all As<> functions do COERTION - if possible.
- *              And where its NOT possible, generate EXCEPTIONS!
- *              >>>>    map<wstring,VariantValue>   members= p.As<map<wstring,VariantValue>> ();
- *              >>>>    … All these As<> operators – instead of asserting on bad types, if no
- *              >>>>    conversion, generate EXCEPTIONS.
- *              >>>>    This will work better – as a matter of design – because if data sources  and conversion…
+ *      @todo   Consider moving this class to DataExcahngeFormat module.
  *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
  *              Though probably not.
@@ -97,19 +92,31 @@ namespace   Stroika {
 
             public:
                 nonvirtual  Type    GetType () const;
+
+            public:
+                /**
+                 *  Return if the given object is logically 'empty'. The meaning of this depends
+                 *  on the type of the variant. For example, eNull type is always empty. Most
+                 *  other types are empty iff their native type (e.g. basic_string) is 'empty'.
+                 *  A FLOAT is empty iff its std::isnan().
+                 */
                 nonvirtual  bool    empty () const;
 
             public:
                 /**
                  * Only these (enum Type) types supported. No generic 'As<>' implementation.
                  *  There is no generic As<T> implementation.
+                 *
+                 *  If the caller attempts a conversion that isn't supported, or doesn't make sense
+                 *  then DataExchangeFormat::BadFormatException will be thrown.
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
-
+#if 0
             public:
                 // bad name - historical - not sure whats better??? RETHINK - LGP 2011-07-16
                 nonvirtual  wstring FormatXML () const;
+#endif
 
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

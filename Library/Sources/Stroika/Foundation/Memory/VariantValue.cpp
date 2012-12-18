@@ -6,6 +6,7 @@
 #include    <sstream>
 
 #include    "../Characters/Format.h"
+#include    "../DataExchangeFormat/BadFormatException.h"
 #include    "../Math/Common.h"
 
 #include    "VariantValue.h"
@@ -90,12 +91,12 @@ bool    VariantValue::empty () const
                 return false;
             }
         case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*  v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                const TIRep_<FloatType, Type::eFloat>*      v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return std::isnan (v->fVal) != 0;
             }
         case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
+                const TIRep_<Date, Type::eDate>*            v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -105,17 +106,17 @@ bool    VariantValue::empty () const
                 return v->fVal.empty ();
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*   v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                const TIRep_<wstring, Type::eString>*       v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eMap: {
-                const TIRep_<map<wstring, VariantValue>, Type::eMap>*    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
+                const TIRep_<map<wstring, VariantValue>, Type::eMap>*   v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>, Type::eMap>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eArray: {
-                const TIRep_<vector<VariantValue>, Type::eArray>*   v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
+                const TIRep_<vector<VariantValue>, Type::eArray>*       v   =   dynamic_cast<const TIRep_<vector<VariantValue>, Type::eArray>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -145,8 +146,7 @@ bool    VariantValue::As () const
                 return As<int> () != 0;
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return false;
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -164,7 +164,7 @@ int VariantValue::As () const
                 return static_cast<int> (v->fVal);
             }
         case    Type::eInteger: {
-                const TIRep_<int, Type::eInteger>*  v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
+                const TIRep_<int, Type::eInteger>*      v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -174,8 +174,7 @@ int VariantValue::As () const
                 return Characters::String2Int (v->fVal);
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return 0;
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -194,7 +193,7 @@ double VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eInteger: {
-                const TIRep_<int, Type::eInteger>*  v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
+                const TIRep_<int, Type::eInteger>*      v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<float> (v->fVal);
             }
@@ -210,8 +209,7 @@ double VariantValue::As () const
                 return Characters::String2Float (v->fVal);
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return 0.0f;
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -239,8 +237,7 @@ Date VariantValue::As() const
                 return Date::Parse (v->fVal, Date::PrintFormat::eXML);
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return Date ();
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -268,8 +265,7 @@ DateTime VariantValue::As () const
                 return DateTime::Parse (v->fVal, DateTime::PrintFormat::eXML);
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return DateTime ();
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -282,7 +278,7 @@ wstring VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eDate: {
-                const TIRep_<Date, Type::eDate>*    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
+                const TIRep_<Date, Type::eDate>*            v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.Format ().As<wstring> ();
             }
@@ -292,22 +288,22 @@ wstring VariantValue::As () const
                 return v->fVal.Format ().As<wstring> ();
             }
         case    Type::eString: {
-                const TIRep_<wstring, Type::eString>*   v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                const TIRep_<wstring, Type::eString>*       v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eBoolean: {
-                const TIRep_<bool, Type::eBoolean>* v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
+                const TIRep_<bool, Type::eBoolean>*         v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal ? L"true" : L"false";
             }
         case    Type::eInteger: {
-                const TIRep_<int, Type::eInteger>*  v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
+                const TIRep_<int, Type::eInteger>*          v   =   dynamic_cast<const TIRep_<int, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Format (L"%d", v->fVal);
             }
         case    Type::eFloat: {
-                const TIRep_<FloatType, Type::eFloat>*  v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                const TIRep_<FloatType, Type::eFloat>*      v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Float2String (v->fVal);
             }
@@ -340,8 +336,7 @@ wstring VariantValue::As () const
                 return tmp.str ();
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return wstring ();
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -359,8 +354,7 @@ map<wstring, VariantValue>   VariantValue::As () const
                 return v->fVal;
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return map<wstring, VariantValue> ();
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
@@ -378,12 +372,12 @@ vector<VariantValue> VariantValue::As () const
                 return v->fVal;
             }
         default: {
-                Assert (false); // bad type (or not yet supported)
-                return vector<VariantValue> ();
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
 }
 
+#if 0
 wstring VariantValue::FormatXML () const
 {
     if (fVal_.get () == nullptr) {
@@ -420,6 +414,7 @@ wstring VariantValue::FormatXML () const
             }
     }
 }
+#endif
 
 bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool exactTypeMatchOnly)
 {
