@@ -25,6 +25,33 @@
 #include    "../../Debug/Trace.h"
 #include    "../../IO/FileAccessException.h"
 #include    "../../Memory/SmallStackBuffer.h"
+#include    "FileUtils.h"
 #include    "WellKnownLocations.h"
 
 #include    "Directory.h"
+
+
+
+using	namespace	Stroika::Foundation;
+using	namespace	Stroika::Foundation::IO;
+using	namespace	Stroika::Foundation::IO::FileSystem;
+
+
+
+
+
+Directory::Directory (const TString& fileFullPath)
+	: fFileFullPath_ (fileFullPath)
+{
+}
+
+void    Directory:: AssureExists (bool createParentComponentsIfNeeded) const
+{
+	FileSystem::CreateDirectory (fFileFullPath_, createParentComponentsIfNeeded);
+}
+
+void    Directory:: AssureDeleted (bool autoDeleteContentsAsNeeded) const
+{
+	FileSystem::DeleteAllFilesInDirectory (fFileFullPath_);
+	::_trmdir (fFileFullPath_.c_str ());
+}

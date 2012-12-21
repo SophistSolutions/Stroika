@@ -24,7 +24,8 @@
 /**
  * TODO:
  *
- *          o
+ *      (o)     Add access /creation time etc calls
+ *      (o)     almost TOTALLY un-implemtend - miggrade code from FileUtils to here...
  */
 
 
@@ -40,11 +41,6 @@ namespace   Stroika {
                 using   Time::DateTime;
 
 
-                /*
-                 * TODO:
-                 *      (o)     Add access /creation time etc calls
-                 *      (o)     TOTALLY un-implemtend - miggrade code from FileUtils to here...
-                 */
 
 
                 /*
@@ -62,7 +58,7 @@ namespace   Stroika {
                     bool    Exists () const;    // returns true iff exsits AND is directory (what about slink?)
 
                     void    Delete () const;    // fails if exists after teh operaotion - Fails if doest exist
-                    void    AssureDeleted (bool autoDeleteContentsAsNeeded) const;
+                    void    AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
 
 
 
@@ -71,6 +67,9 @@ namespace   Stroika {
                     wstring As () const;
 
                     TString AsTString () const;
+
+				private:
+					TString	fFileFullPath_;
                 };
 
             }
