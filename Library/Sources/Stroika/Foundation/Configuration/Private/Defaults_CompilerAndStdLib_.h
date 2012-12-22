@@ -793,6 +793,10 @@
 
 
 
+#if     !qCompilerAndStdLib_Supports_constexpr
+// This works as an adequate workaround pretty often
+#define constexpr   const
+#endif
 
 
 
