@@ -366,11 +366,11 @@ namespace   Stroika {
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
-#if     !qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+#if     !qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
                 inline  static  bool    DefaultTrimArg_ (Character c)               {       return c.IsWhitespace ();       }
 #endif
 
-#if     qCompilerAndStdLib_Supports_lambda_default_argument && qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+#if     qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
                 /*
                  * String LTrim () scans the characters form the left to right, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,

@@ -598,8 +598,8 @@
 
 #if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
 #define qCompilerAndStdLib_Supports_override    0
-#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
-#define qCompilerAndStdLib_Supports_override    0
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_override    (_MSC_VER > _MS_VS_2k10_VER_)
 #else
 #define qCompilerAndStdLib_Supports_override    1
 #endif
@@ -625,8 +625,8 @@
 #if     defined (__clang__)
 //at least fails with clang 3.0
 #define qCompilerAndStdLib_Supports_lambda_default_argument     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
-#elif   defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
-#define qCompilerAndStdLib_Supports_lambda_default_argument     0
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_lambda_default_argument     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument     1
 #endif
@@ -654,10 +654,8 @@
 */
 #ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-
-//RETEST THIS WITH 2k12 -- LGP 2012-10-19
-#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   0
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (_MSC_VER >= _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
 #endif
@@ -667,6 +665,13 @@
 
 
 
+#ifndef	qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k12_VER_)
+#else
+#define	qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported && qCompilerAndStdLib_Supports_lambda_default_argument
+#endif
+#endif	qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
 
 
 
