@@ -464,6 +464,35 @@ namespace	{
 
 
 namespace	{
+	namespace	Test5_Apply_ {
+		void	DoIt_ ()
+		{
+			Bag<int>	b;
+
+			constexpr int FIRST = 0;
+			constexpr int LAST = 100;
+			for (int i = FIRST; i < LAST; ++i) {
+				b.Add (i);
+			}
+
+			{
+				static size_t count;
+				static size_t sum;
+				count = 0;
+				sum = 0;
+				b.Apply ([] (const int& i) {
+					count++;
+					sum += i;
+				});
+				VerifyTestResult (count == LAST-FIRST);
+				VerifyTestResult (sum == ((FIRST+(LAST-1))) * (LAST-FIRST) / 2);
+			}
+		}
+	}
+}
+
+
+namespace	{
 
 	void	DoRegressionTests_ ()
 	{
@@ -471,6 +500,7 @@ namespace	{
 		Test2_TallyOf_::RunBasicBagTestsOnEachConcreteType_ ();
 		Test3_Equals_::RunBasicBagTestsOnEachConcreteType_ ();
 		Test4_IteratorsBasics_::RunBasicBagTestsOnEachConcreteType_ ();
+		Test5_Apply_::DoIt_ ();
 	}
 	
 }
