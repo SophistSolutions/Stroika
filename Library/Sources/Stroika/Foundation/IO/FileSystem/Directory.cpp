@@ -36,6 +36,11 @@ using	namespace	Stroika::Foundation;
 using	namespace	Stroika::Foundation::IO;
 using	namespace	Stroika::Foundation::IO::FileSystem;
 
+#if     qPlatform_Windows
+using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
+#endif
+
+
 
 
 
@@ -45,13 +50,19 @@ Directory::Directory (const TString& fileFullPath)
 {
 }
 
-void    Directory:: AssureExists (bool createParentComponentsIfNeeded) const
+void    Directory::AssureExists (bool createParentComponentsIfNeeded) const
 {
 	FileSystem::CreateDirectory (fFileFullPath_, createParentComponentsIfNeeded);
 }
 
-void    Directory:: AssureDeleted (bool autoDeleteContentsAsNeeded) const
+void    Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 {
-	FileSystem::DeleteAllFilesInDirectory (fFileFullPath_);
-	::_trmdir (fFileFullPath_.c_str ());
+	if (autoDeleteContentsAsNeeded) {
+		FileSystem::DeleteAllFilesInDirectory (fFileFullPath_);
+	}
+#if		qPlatform_Windows
+	ThrowIfFalseGetLastError (::RemoveDirectory (fFileFullPath_.c_str ()));
+#elif	qPlatform_POSIX
+	 Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.c_str ()));
+#endif
 }
