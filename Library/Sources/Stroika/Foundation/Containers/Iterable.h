@@ -67,7 +67,8 @@ namespace   Stroika {
             class  Iterable {
             public:
                 /**
-                 *      \brief  ElementType is just a handly copy of the *T* template type which this Iterable<T> parameterizes access to.
+                 *      \brief  ElementType is just a handly copy of the *T* template type which this
+                 *              Iterable<T> parameterizes access to.
                  */
                 typedef T   ElementType;
 
@@ -187,7 +188,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  Run the argument bool-returning function (or lambda) on each element of the container, and return an iterator pointing at the first element found true.
+                 *  \brief  Run the argument bool-returning function (or lambda) on each element of the
+                 *          container, and return an iterator pointing at the first element found true.
                  *
                  *  Take the given function argument, and call it for each element of the container. This is
                  *  equivalent to:

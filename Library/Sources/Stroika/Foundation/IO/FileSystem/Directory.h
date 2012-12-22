@@ -68,8 +68,8 @@ namespace   Stroika {
 
                     TString AsTString () const;
 
-				private:
-					TString	fFileFullPath_;
+                private:
+                    TString fFileFullPath_;
                 };
 
             }

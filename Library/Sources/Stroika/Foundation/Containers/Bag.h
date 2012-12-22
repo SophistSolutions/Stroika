@@ -132,8 +132,8 @@ namespace   Stroika {
                 /**
                  *  \brief  Reduce the space used to store the Bag<T> contents.
                  *
-                 * This has no semantics, no observable behavior. But depending on the representation of the concrete
-                 * bag, calling this may save memory.
+                 *  This has no semantics, no observable behavior. But depending on the representation of
+                 *  the concrete bag, calling this may save memory.
                  */
                 nonvirtual  void    Compact ();
 
