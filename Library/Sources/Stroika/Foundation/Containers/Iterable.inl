@@ -30,7 +30,11 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Iterable<T>::_IRep::_Apply (typename _APPLY_ARGTYPE doToElement) const
             {
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 RequireNotNull (doToElement);
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                RequireNotNull (doToElement.second);
+#endif
                 //tmphack - must call ++ crap until we fix that
                 // -- LGP 2012-12-22
                 Iterator<T> i = MakeIterator ();
@@ -46,17 +50,29 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (bool (*doToElement) (const T& item)) const
+            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (typename _APPLYUNTIL_ARGTYPE doToElement) const
             {
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 RequireNotNull (doToElement);
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                RequireNotNull (doToElement.second);
+#endif
                 //tmphack - must call ++ crap until we fix that
                 // -- LGP 2012-12-22
                 Iterator<T> i = MakeIterator ();
                 ++i;
                 for (; i != Iterable<T>::end (); ++i) {
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                     if ((doToElement) (*i)) {
                         return i;
                     }
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                    if ((doToElement.second) (doToElement.first, *i)) {
+                        return i;
+                    }
+#else
+                    AssertNotImplemented ();
+#endif
                 }
                 return end ();
             }
@@ -194,7 +210,21 @@ namespace   Stroika {
             inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (bool (*doToElement) (const T& item)) const
             {
                 RequireNotNull (doToElement);
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 return _GetRep ().ApplyUntilTrue (doToElement);
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                struct CheapLambda_ {
+                    CheapLambda_ (bool (*doToElement) (const T& item))
+                        : fToDoItem (doToElement) {
+                    }
+                    bool (*fToDoItem) (const T& item);
+                    static bool DoToItem (const void* cookie, const T& item) {
+                        return (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
+                    }
+                };
+                return _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
+#endif
+
             }
         }
     }

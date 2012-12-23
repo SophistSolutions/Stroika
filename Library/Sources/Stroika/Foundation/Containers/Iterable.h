@@ -260,14 +260,13 @@ namespace   Stroika {
             public:
                 virtual ~_IRep ();
 
-
             public:
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 typedef const std::function<void(const T& item)>&   _APPLY_ARGTYPE;
+                typedef const std::function<bool(const T& item)>&   _APPLYUNTIL_ARGTYPE;
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 typedef pair<const void*, void (*) (const void* cookie, const T& item)> _APPLY_ARGTYPE;
-#else
-                typedef void (*APPLY_ARG_TYPE) (const T& item);
+                typedef pair<const void*, bool (*) (const void* cookie, const T& item)> _APPLYUNTIL_ARGTYPE;
 #endif
 
             public:
@@ -276,7 +275,7 @@ namespace   Stroika {
                 virtual size_t          GetLength () const                                          =   0;
                 virtual bool            IsEmpty () const                                            =   0;
                 virtual void            Apply (_APPLY_ARGTYPE doToElement) const                    =   0;
-                virtual Iterator<T>     ApplyUntilTrue (bool (*doToElement) (const T& item)) const  =   0;
+                virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE) const                  =   0;
 
             protected:
                 /*
@@ -285,7 +284,7 @@ namespace   Stroika {
                  */
                 nonvirtual  bool        _IsEmpty () const;
                 nonvirtual  void        _Apply (_APPLY_ARGTYPE doToElement) const;
-                nonvirtual  Iterator<T> _ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
+                nonvirtual  Iterator<T> _ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const;
             };
 
         }
