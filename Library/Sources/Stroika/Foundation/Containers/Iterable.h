@@ -9,6 +9,9 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iteratable<T>
+ *
  *      @todo   Consider renaming Iterable<T> to Collection<T>. Or at least document
  *              why not...
  *
@@ -29,10 +32,24 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <functional>
+
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
 #include    "Iterator.h"
+
+
+/**
+ *  Empirically, std::function seems to use way more code space (and must evaluate rest)
+ *  than the qAPPLY_IMPL_STRATEGY_COOKIE strategy, which is functionally equivilent from
+ *  the point of view of the public use API.
+ */
+#define qAPPLY_IMPL_STRATEGY_STDFUNCTION    1
+#define qAPPLY_IMPL_STRATEGY_COOKIE         2
+#ifndef qAPPLY_IMPL_STRATEGY
+#define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
+#endif // !qAPPLY_IMPL_STRATEGY
 
 
 
@@ -41,7 +58,8 @@ namespace   Stroika {
         namespace   Containers {
 
             /**
-             *  \brief Iterable<T> is a base class for containers which easily produce an Iterator<T> to traverse them.
+             *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
+             *          to traverse them.
              *
              *  Iterable<T> is a base class for containers which easily produce an Iterator<T> to traverse them.
              *
@@ -184,7 +202,8 @@ namespace   Stroika {
                  *
                  *  \pre    doToElement != nullptr
                  */
-                nonvirtual  void    Apply (void (*doToElement) (const T& item)) const;
+                nonvirtual  void    Apply (const std::function<void(const T& item)>& doToElement) const;
+                nonvirtual  void    ApplyStatic (void (*doToElement) (const T& item)) const;
 
             public:
                 /**
@@ -241,12 +260,22 @@ namespace   Stroika {
             public:
                 virtual ~_IRep ();
 
+
+            public:
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
+                typedef const std::function<void(const T& item)>&   _APPLY_ARGTYPE;
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                typedef pair<const void*, void (*) (const void* cookie, const T& item)> _APPLY_ARGTYPE;
+#else
+                typedef void (*APPLY_ARG_TYPE) (const T& item);
+#endif
+
             public:
                 virtual _IRep*          Clone () const                                              =   0;
                 virtual Iterator<T>     MakeIterator () const                                       =   0;
                 virtual size_t          GetLength () const                                          =   0;
                 virtual bool            IsEmpty () const                                            =   0;
-                virtual void            Apply (void (*doToElement) (const T& item)) const           =   0;
+                virtual void            Apply (_APPLY_ARGTYPE doToElement) const                    =   0;
                 virtual Iterator<T>     ApplyUntilTrue (bool (*doToElement) (const T& item)) const  =   0;
 
             protected:
@@ -254,8 +283,8 @@ namespace   Stroika {
                  * Helper functions to simplify implementation of above public APIs. These MAY or MAY NOT be used in
                  * actual subclasses.
                  */
-                nonvirtual bool         _IsEmpty () const;
-                nonvirtual  void        _Apply (void (*doToElement) (const T& item)) const;
+                nonvirtual  bool        _IsEmpty () const;
+                nonvirtual  void        _Apply (_APPLY_ARGTYPE doToElement) const;
                 nonvirtual  Iterator<T> _ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
             };
 

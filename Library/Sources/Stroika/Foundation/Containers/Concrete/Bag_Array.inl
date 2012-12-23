@@ -31,7 +31,7 @@ namespace   Stroika {
                     virtual Iterator<T>                     MakeIterator () const override;
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
-                    virtual void                            Apply (void (*doToElement) (const T& item)) const override;
+                    virtual void                            Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                     ApplyUntilTrue (bool (*doToElement) (const T& item)) const override;
 
                     // Bag<T>::_IRep overrides
@@ -136,7 +136,7 @@ namespace   Stroika {
                     return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
-                void      Bag_Array<T>::Rep_::Apply (void (*doToElement) (const T& item)) const
+                void      Bag_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     return _Apply (doToElement);
                 }

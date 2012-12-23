@@ -480,7 +480,7 @@ namespace	{
 				static size_t sum;
 				count = 0;
 				sum = 0;
-				b.Apply ([] (const int& i) {
+				b.ApplyStatic ([] (const int& i) {
 					count++;
 					sum += i;
 				});
