@@ -73,39 +73,6 @@ namespace   Stroika {
             };
 
 
-            /*
-            I THINK OBSOLETE - GET RID OF THIS..
-
-                Support for ranged for syntax: for (it : v) { it.Current (); }
-                This typedef lets you easily construct iterators other than the basic
-                iterator for the container.
-                Sample usage:
-                typedef RangedForIterator<Tally<T>, TallyMutator<T> >       Mutator;
-            */
-            template    <typename Container, typename IteratorClass>
-            class   RangedForIterator {
-            public:
-                RangedForIterator (Container& t) :
-                    fIt (t) {
-                }
-
-                RangedForIterator (const Container& t) :
-                    fIt (t) {
-                }
-                nonvirtual  IteratorClass    begin () const {
-                    return fIt;
-                }
-
-                IteratorClass end () const {
-                    return (IteratorClass::GetEmptyIterator ());
-                }
-
-            private:
-                IteratorClass   fIt;
-            };
-
-
-
             template    <typename T>
             class  Tally {
             public:
@@ -140,9 +107,15 @@ namespace   Stroika {
                 nonvirtual  Tally<T>&   operator+= (const Tally<T>& t);
 
             public:
+#if 0
                 nonvirtual  operator Iterator<T> () const;
                 nonvirtual  operator Iterator<TallyEntry<T> > () const;
                 nonvirtual  operator TallyMutator<T> ();
+#endif
+
+                nonvirtual  Iterator<TallyEntry<T>> ebegin () const;
+                nonvirtual  Iterator<TallyEntry<T>> eend () const;
+
 
                 // Support for ranged for, and stl syntax in general
                 nonvirtual  Iterator<T> begin () const;
@@ -151,11 +124,7 @@ namespace   Stroika {
                 nonvirtual  TallyMutator<T> begin ();
                 nonvirtual  TallyMutator<T> end ();
 
-                // by default, you only iterator over T, not TallyEntry<T>
-                // that is unfortunate in most uses of Tally, so you can modify your for call
-                // for (it, t) -> for (it, Tally::It (t))
-                // to get the more useful iterator
-                typedef RangedForIterator<Tally<T>, Iterator<TallyEntry<T>> >   It;
+
 
             protected:
 

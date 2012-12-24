@@ -35,9 +35,9 @@ namespace   Stroika {
                 virtual void    Remove (T item, size_t count)                   =   0;
                 virtual size_t  TallyOf (T item) const                          =   0;
 
-                nonvirtual  typename Iterator<T>::IRep*              MakeIterator ();
-                virtual typename Iterator<TallyEntry<T> >::IRep* MakeTallyIterator ()    =   0;
-                virtual TallyMutatorRep<T>*             MakeTallyMutator ()     =   0;
+                nonvirtual  typename Iterator<T>::IRep*             MakeIterator ();
+                virtual typename Iterator<TallyEntry<T> >::IRep*    MakeTallyIterator ()    =   0;
+                virtual TallyMutatorRep<T>*                         MakeTallyMutator ()     =   0;
             };
 
 
@@ -59,6 +59,7 @@ namespace   Stroika {
 
                 virtual bool            More (T* current, bool advance) override;
                 virtual typename Iterator<T>::IRep*  Clone () const override;
+                virtual bool    StrongEquals (typename Iterator<T>::IRep* rhs) override;
 
             private:
                 typename Iterator<TallyEntry<T> >::IRep* fIt;
@@ -90,16 +91,20 @@ namespace   Stroika {
             size_t Tally<T>::TotalTally () const
             {
                 size_t sum = 0;
-for (TallyEntry<T> i : It (*this)) {
-                    sum += i.fCount;
+
+// warning - dangerous - since TallyEntry::(T) CTOR exists, we can do for (TallyEntry<T> i : *this), and
+// it silently does the wrong thing!
+//for (TallyEntry<T> i : *this) {
+                for (Iterator<TallyEntry<T>> i = ebegin (); i != eend (); ++i) {
+                    sum += (*i).fCount;
                 }
                 return (sum);
             }
             template    <typename T>
             Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
             {
-for (TallyEntry<T> i : It (t)) {
-                    Add (i.fItem, i.fCount);
+                for (auto i = t.ebegin (); i != t.eend (); ++i) {
+                    Add ((*i).fItem, (*i).fCount);
                 }
                 return (*this);
             }
@@ -151,6 +156,7 @@ for (TallyEntry<T> i : It (t)) {
             {
                 fRep->Compact ();
             }
+#if 0
             template    <typename T>
             inline  Tally<T>::operator Iterator<T> () const
             {
@@ -175,20 +181,43 @@ for (TallyEntry<T> i : It (t)) {
                 tmp++;
                 return tmp;
             }
+#endif
+
+            template    <typename T>
+            inline  Iterator<TallyEntry<T>>    Tally<T>::ebegin () const
+            {
+                Iterator<TallyEntry<T>> tmp =   Iterator<TallyEntry<T>> (const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ());
+                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                tmp++;
+                return tmp;
+            }
+            template    <typename T>
+            inline  Iterator<TallyEntry<T>>       Tally<T>::eend () const
+            {
+                return (Iterator<TallyEntry<T>>::GetEmptyIterator ());
+            }
+
+
             template    <typename T>
             inline  Iterator<T>    Tally<T>::begin () const
             {
-                return operator Iterator<T> ();
+                Iterator<T> tmp = Iterator<T> (const_cast<Tally<T> *> (this)->fRep->MakeIterator ());
+                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                tmp++;
+                return tmp;
             }
             template    <typename T>
             inline  Iterator<T>    Tally<T>::end () const
             {
-                return (Iterator<T>::GetSentinal ());
+                return (Iterator<T>::GetEmptyIterator ());
             }
             template    <typename T>
             inline  TallyMutator<T>    Tally<T>::begin ()
             {
-                return operator TallyMutator<T> ();
+                TallyMutator<T>     tmp = (fRep->MakeTallyMutator ());
+                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                tmp++;
+                return tmp;
             }
             template    <typename T>
             inline  TallyMutator<T>    Tally<T>::end ()
@@ -311,9 +340,8 @@ for (TallyEntry<T> i : It (t)) {
                 if (lhs.GetLength () != rhs.GetLength ()) {
                     return (false);
                 }
-
-for (TallyEntry<T> i : typename Tally<T>::It (lhs)) {
-                    if (i.fCount != rhs.TallyOf (i.fItem)) {
+                for (auto i = rhs.ebegin (); i != rhs.eend (); ++i) {
+                    if ((*i).fCount != rhs.TallyOf ((*i).fItem)) {
                         return (false);
                     }
                 }
@@ -405,6 +433,12 @@ for (TallyEntry<T> i : typename Tally<T>::It (lhs)) {
             {
                 RequireNotNull (fIt);
                 return (new TallyIterateOnTRep<T> (fIt->Clone ()));
+            }
+            template    <typename T>
+            inline  bool    TallyIterateOnTRep<T>::StrongEquals (typename Iterator<T>::IRep* rhs)
+            {
+                AssertNotImplemented ();
+                return false;
             }
 
 

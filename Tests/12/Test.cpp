@@ -28,7 +28,7 @@ using	namespace	Stroika::Foundation::Containers;
 using	Concrete::Tally_Array;
 using	Concrete::Tally_LinkedList;
 
-
+#if 0
 /*
 @todo	FIX For() macro usage - with Tally test  code...
 
@@ -39,6 +39,40 @@ For (it, myBag) with for (it : myBag)
 ****OBSOLETE*****
 */
 #define For(_it,_Container)         for (auto _it = _Container.begin (); _it != _Container.end (); ++_it)
+
+
+/*
+I THINK OBSOLETE - GET RID OF THIS..
+
+    Support for ranged for syntax: for (it : v) { it.Current (); }
+    This typedef lets you easily construct iterators other than the basic
+    iterator for the container.
+    Sample usage:
+    typedef RangedForIterator<Tally<T>, TallyMutator<T> >       Mutator;
+*/
+template    <typename Container, typename IteratorClass>
+class   RangedForIterator {
+public:
+    RangedForIterator (Container& t) :
+        fIt (t) {
+    }
+
+    RangedForIterator (const Container& t) :
+        fIt (t) {
+    }
+    nonvirtual  IteratorClass    begin () const {
+        return fIt;
+    }
+
+    IteratorClass end () const {
+        return (IteratorClass::GetEmptyIterator ());
+    }
+
+private:
+    IteratorClass   fIt;
+};
+//typedef RangedForIterator<Tally<T>, Iterator<TallyEntry<T>> >   It;
+#endif
 
 
 namespace	{
@@ -86,7 +120,7 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 		}
 		VerifyTestResult (s.GetLength () == kTestSize);
 		{
-			For (it, s) {
+			for (auto it = s.begin (); it != s.end (); ++it) {
 				it.RemoveCurrent ();
 			}
 			VerifyTestResult (s.IsEmpty ());
@@ -97,7 +131,7 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 			s.Add (i);
 		}
 		VerifyTestResult (s.GetLength () == kTestSize);
-		For (it2, s) {
+		for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
 			s.Remove (it2.Current ().fItem);
 		}
 		VerifyTestResult (s.GetLength () == 0);
@@ -115,9 +149,9 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 		VerifyTestResult (s.GetLength () == kTestSize);
 		size_t i =	1;
 
-		For (it, s) {
-			For (it2, s) {
-				For (it3, s) {
+		for (auto it = s.begin (); it != s.end (); ++it) {
+			for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
+				for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
 					if (s.GetLength () != 0) {
 						it3.UpdateCount (3);
 						it3.RemoveCurrent ();
@@ -176,22 +210,22 @@ void	SimpleTallyTests (Tally<size_t>& s)
 	}
 
 	for (size_t i = 1; i <= s.GetLength (); i++) {
-		For (it, s) {
+		for (auto it = s.begin (); it != s.end (); ++it) {
 			if (it.Current ().fItem == i) {
 				break;
 			}
 		}
 	}
-	For (it, Tally<size_t>::It (s)) {
-		For (it1, s) {
+	for (auto it = s.ebegin (); it != s.eend (); ++it) {
+		for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
 			s.RemoveAll ();
 		}
 	}
 	VerifyTestResult (s.IsEmpty ());
 	VerifyTestResult (s.GetLength () == 0);
 
-	For (it1, s) {
-		For (it2, s) {
+	for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
+		for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
 			VerifyTestResult (false);
 		}
 	}
