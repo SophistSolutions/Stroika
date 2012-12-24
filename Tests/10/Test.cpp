@@ -33,8 +33,6 @@ namespace	{
 		{
 			const	size_t	kTestSize	= 100;
 
-			const	Bag<size_t>& sCont = s;
-
 			VerifyTestResult(s.GetLength() == 0);
 			/*
 			* Try removes while iterating forward.
@@ -46,7 +44,7 @@ namespace	{
 				}
 
 				VerifyTestResult(s.GetLength() == kTestSize);
-				for (size_t i : sCont) {
+				for (size_t i : s) {
 					size_t	oldLength = s.GetLength ();
 					VerifyTestResult(s.Contains(i));
 					VerifyTestResult(s.Contains(s.GetLength ()));
