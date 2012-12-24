@@ -15,34 +15,6 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            /*
-                Support for ranged for syntax: for (it : v) { it.Current (); }
-                This typedef lets you easily construct iterators other than the basic
-                iterator for the container.
-                Sample usage:
-                typedef RangedForIterator<Tally<T>, TallyMutator<T> >       Mutator;
-            */
-            template    <typename Container, typename IteratorClass>
-            class   RangedForIterator {
-            public:
-                RangedForIterator (Container& t) :
-                    fIt (t) {
-                }
-
-                RangedForIterator (const Container& t) :
-                    fIt (t) {
-                }
-                nonvirtual  IteratorClass    begin () const {
-                    return fIt;
-                }
-
-                IteratorClass end () const {
-                    return (IteratorClass::GetEmptyIterator ());
-                }
-
-            private:
-                IteratorClass   fIt;
-            };
 
 
 
@@ -107,8 +79,8 @@ namespace   Stroika {
             inline bool    Iterator<T>::Done () const
             {
                 // must redo to use cached done flag.
-				// Reason for cast stuff is to avoid Clone if unneeded.
-				//
+                // Reason for cast stuff is to avoid Clone if unneeded.
+                //
                 IRep*   rep =   const_cast<IRep*> (fIterator_.get ());
                 return not rep->More (nullptr, false);
             }

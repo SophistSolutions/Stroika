@@ -73,6 +73,39 @@ namespace   Stroika {
             };
 
 
+            /*
+            I THINK OBSOLETE - GET RID OF THIS..
+
+                Support for ranged for syntax: for (it : v) { it.Current (); }
+                This typedef lets you easily construct iterators other than the basic
+                iterator for the container.
+                Sample usage:
+                typedef RangedForIterator<Tally<T>, TallyMutator<T> >       Mutator;
+            */
+            template    <typename Container, typename IteratorClass>
+            class   RangedForIterator {
+            public:
+                RangedForIterator (Container& t) :
+                    fIt (t) {
+                }
+
+                RangedForIterator (const Container& t) :
+                    fIt (t) {
+                }
+                nonvirtual  IteratorClass    begin () const {
+                    return fIt;
+                }
+
+                IteratorClass end () const {
+                    return (IteratorClass::GetEmptyIterator ());
+                }
+
+            private:
+                IteratorClass   fIt;
+            };
+
+
+
             template    <typename T>
             class  Tally {
             public:
