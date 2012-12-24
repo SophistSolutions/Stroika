@@ -94,7 +94,10 @@ namespace   Stroika {
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
                 {
                     Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    return Iterator<T> (new Bag_LinkedList<T>::IteratorRep_ (*NON_CONST_THIS));
+                    Iterator<T> tmp = Iterator<T> (new Bag_LinkedList<T>::IteratorRep_ (*NON_CONST_THIS));
+                    //tmphack - fix iteraotr rep class itself
+                    tmp++;
+                    return tmp;
                 }
                 template    <typename T>
                 size_t  Bag_LinkedList<T>::Rep_::GetLength () const

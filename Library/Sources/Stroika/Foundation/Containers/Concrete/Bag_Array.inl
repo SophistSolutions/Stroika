@@ -123,7 +123,9 @@ namespace   Stroika {
                 Iterator<T>  Bag_Array<T>::Rep_::MakeIterator () const
                 {
                     Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    return Iterator<T> (new IteratorRep_ (*NON_CONST_THIS));
+                    Iterator<T> tmp = Iterator<T> (new IteratorRep_ (*NON_CONST_THIS));
+                    tmp++;  //tmphack - redo iterator impl itself
+                    return tmp;
                 }
                 template    <typename T>
                 size_t  Bag_Array<T>::Rep_::GetLength () const

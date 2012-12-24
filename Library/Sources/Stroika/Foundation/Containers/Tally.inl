@@ -154,21 +154,26 @@ for (TallyEntry<T> i : It (t)) {
             template    <typename T>
             inline  Tally<T>::operator Iterator<T> () const
             {
-                Iterator<T> it (const_cast<Tally<T> *> (this)->fRep->MakeIterator ());
-                ++it;
-                return it;
+                Iterator<T> tmp = Iterator<T> (const_cast<Tally<T> *> (this)->fRep->MakeIterator ());
+                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                tmp++;
+                return tmp;
             }
             template    <typename T>
             inline  Tally<T>::operator Iterator<TallyEntry<T> > () const
             {
-                Iterator<TallyEntry<T>> it (const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ());
-                ++it;
-                return it;
+                Iterator<TallyEntry<T>> tmp =   Iterator<TallyEntry<T>> (const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ());
+                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                tmp++;
+                return tmp;
             }
             template    <typename T>
             inline  Tally<T>::operator TallyMutator<T> ()
             {
-                return (fRep->MakeTallyMutator ());
+                TallyMutator<T>     tmp = (fRep->MakeTallyMutator ());
+                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                tmp++;
+                return tmp;
             }
             template    <typename T>
             inline  Iterator<T>    Tally<T>::begin () const

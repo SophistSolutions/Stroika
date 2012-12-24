@@ -35,11 +35,7 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 RequireNotNull (doToElement.second);
 #endif
-                //tmphack - must call ++ crap until we fix that
-                // -- LGP 2012-12-22
-                Iterator<T> i = MakeIterator ();
-                ++i;
-                for (; i != Iterable<T>::end (); ++i) {
+                for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                     (doToElement) (*i);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
@@ -57,11 +53,7 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 RequireNotNull (doToElement.second);
 #endif
-                //tmphack - must call ++ crap until we fix that
-                // -- LGP 2012-12-22
-                Iterator<T> i = MakeIterator ();
-                ++i;
-                for (; i != Iterable<T>::end (); ++i) {
+                for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                     if ((doToElement) (*i)) {
                         return i;
@@ -127,11 +119,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
-                //return _GetRep ().MakeIterator ();
-                // Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
-                Iterator<T> it  = _GetRep ().MakeIterator ();
-                ++it;
-                return it;
+                return _GetRep ().MakeIterator ();
             }
             template    <typename T>
             inline  size_t  Iterable<T>::GetLength () const
