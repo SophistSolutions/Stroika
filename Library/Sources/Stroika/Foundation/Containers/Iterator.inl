@@ -55,11 +55,6 @@ namespace   Stroika {
             inline Iterator<T>::IRep::~IRep ()
             {
             }
-            template    <typename T>
-            inline bool    Iterator<T>::IRep::Done () const
-            {
-                return not const_cast<IRep*> (this)->More (nullptr, false);
-            }
 
 
 
@@ -111,7 +106,11 @@ namespace   Stroika {
             template    <typename T>
             inline bool    Iterator<T>::Done () const
             {
-                return fIterator_->Done ();
+                // must redo to use cached done flag.
+				// Reason for cast stuff is to avoid Clone if unneeded.
+				//
+                IRep*   rep =   const_cast<IRep*> (fIterator_.get ());
+                return not rep->More (nullptr, false);
             }
             template    <typename T>
             inline    T   Iterator<T>::operator* () const
@@ -204,7 +203,7 @@ namespace   Stroika {
                     }
                     virtual bool    StrongEquals (typename Iterator<T>::IRep* rhs) override {
                         RequireNotNull (rhs);
-                        return (rhs == this) or rhs->Done ();
+                        return (rhs == this) or rhs->More (nullptr, false);
                     }
                     virtual IRep*    Clone () const override {
                         RequireNotReached ();
@@ -219,8 +218,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 #endif /* _Stroika_Foundation_Containers_Iterator_inl_ */
 

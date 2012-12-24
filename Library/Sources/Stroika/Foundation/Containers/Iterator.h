@@ -475,12 +475,12 @@ namespace   Stroika {
                  */
                 virtual IRep*   Clone () const                      = 0;
                 /**
-                 * More () is dual function - depending on its arguments. If advance is true, it moves the
-                 * iterator to the next legal position.
+                 *  More () is dual function - depending on its arguments. If advance is true, it moves the
+                 *  iterator to the next legal position.
                  *
-                 * If current is not nullptr, then after that advance (if any) - the current value is copied back out.
+                 *  If current is not nullptr, then after that advance (if any) - the current value is copied back out.
                  *
-                 * It IS legal to call More () with advance true even when already at the end of iteration.
+                 *  It IS legal to call More () with advance true even when already at the end of iteration.
                  *  This design choice was made to be multi-threading friendly.
                  *
                  *  This function returns true iff the iterator is positioned at a valid position, and if (advance
@@ -491,13 +491,14 @@ namespace   Stroika {
                  *
                  */
                 virtual bool    StrongEquals (IRep* rhs)            = 0;
-
+#if 0
             public:
                 /*
                  * This checks if the current iterator is done iterating. In STL idiom this means
                  *  i == end(). It is also equivilent to More (nullptr, false).
                  */
                 nonvirtual bool Done () const;
+#endif
             };
 
         }
