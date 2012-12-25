@@ -8,9 +8,6 @@
  *
  *  \file
  *
- *  @todo   RETHINK RangedForIterator - I'm not sure why we need this. Make Tally<T> subclass
- *          from Iterable<TallyEntry<T>>?
- *
  *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
  *          constructed in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
@@ -264,7 +261,7 @@ namespace   Stroika {
                  *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between
                  *  the iterators, so they can never be equal again.
                  *
-                 *  This definition was chosen to be sufficient to provide for efficient implementaiton of STL-style
+                 *  This definition was chosen to be sufficient to provide for efficient implementation of STL-style
                  *  iteration (note that operator==() is an alias for WeakEquals()).
                  *
                  *      Iterator<T> i   =   getIterator();
@@ -488,17 +485,11 @@ namespace   Stroika {
                  */
                 virtual bool    More (T* current, bool advance)     = 0;
                 /**
+                 * \brief two iterators must be iterating over the same source, and be up to the same position.
                  *
+                 *  @see Iterator<T>::StrongEquals
                  */
-                virtual bool    StrongEquals (IRep* rhs)            = 0;
-#if 0
-            public:
-                /*
-                 * This checks if the current iterator is done iterating. In STL idiom this means
-                 *  i == end(). It is also equivilent to More (nullptr, false).
-                 */
-                nonvirtual bool Done () const;
-#endif
+                virtual bool    StrongEquals (const IRep* rhs) const            = 0;
             };
 
         }

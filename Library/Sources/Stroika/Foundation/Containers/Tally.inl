@@ -5,15 +5,14 @@
 #define _Stroika_Foundation_Containers_Tally_inl_
 
 #include    "../Debug/Assertions.h"
-#include "Tally.h"
+#include    "Tally.h"
 
-#include "Concrete/Tally_Array.h"  // needed for default constructor
+#include    "Concrete/Tally_Array.h"  // needed for default constructor
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-
 
 
             template    <typename T>
@@ -51,6 +50,7 @@ namespace   Stroika {
                 virtual void    UpdateCount (size_t newCount)   =   0;
             };
 
+
             template    <typename T>
             class  TallyIterateOnTRep : public Iterator<T>::IRep {
             public:
@@ -59,13 +59,11 @@ namespace   Stroika {
 
                 virtual bool            More (T* current, bool advance) override;
                 virtual typename Iterator<T>::IRep*  Clone () const override;
-                virtual bool    StrongEquals (typename Iterator<T>::IRep* rhs) override;
+                virtual bool    StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
 
             private:
                 typename Iterator<TallyEntry<T> >::IRep* fIt;
             };
-
-
 
 
 
@@ -91,10 +89,6 @@ namespace   Stroika {
             size_t Tally<T>::TotalTally () const
             {
                 size_t sum = 0;
-
-// warning - dangerous - since TallyEntry::(T) CTOR exists, we can do for (TallyEntry<T> i : *this), and
-// it silently does the wrong thing!
-//for (TallyEntry<T> i : *this) {
                 for (Iterator<TallyEntry<T>> i = ebegin (); i != eend (); ++i) {
                     sum += (*i).fCount;
                 }
@@ -156,33 +150,6 @@ namespace   Stroika {
             {
                 fRep->Compact ();
             }
-#if 0
-            template    <typename T>
-            inline  Tally<T>::operator Iterator<T> () const
-            {
-                Iterator<T> tmp = Iterator<T> (const_cast<Tally<T> *> (this)->fRep->MakeIterator ());
-                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                tmp++;
-                return tmp;
-            }
-            template    <typename T>
-            inline  Tally<T>::operator Iterator<TallyEntry<T> > () const
-            {
-                Iterator<TallyEntry<T>> tmp =   Iterator<TallyEntry<T>> (const_cast<Tally<T> *> (this)->fRep->MakeTallyIterator ());
-                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                tmp++;
-                return tmp;
-            }
-            template    <typename T>
-            inline  Tally<T>::operator TallyMutator<T> ()
-            {
-                TallyMutator<T>     tmp = (fRep->MakeTallyMutator ());
-                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                tmp++;
-                return tmp;
-            }
-#endif
-
             template    <typename T>
             inline  Iterator<TallyEntry<T>>    Tally<T>::ebegin () const
             {
@@ -196,8 +163,6 @@ namespace   Stroika {
             {
                 return (Iterator<TallyEntry<T>>::GetEmptyIterator ());
             }
-
-
             template    <typename T>
             inline  Iterator<T>    Tally<T>::begin () const
             {
@@ -231,7 +196,7 @@ namespace   Stroika {
                         RequireNotReached ();
                         return nullptr;
                     }
-                    virtual bool    StrongEquals (typename Iterator<TallyEntry<T>>::IRep* rhs) override {
+                    virtual bool    StrongEquals (typename const Iterator<TallyEntry<T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
@@ -351,15 +316,15 @@ namespace   Stroika {
 
             // typename TallyEntry<T>
             template    <typename T>
-            inline  TallyEntry<T>::TallyEntry (T item) :
-                fItem (item),
-                fCount (1)
+            inline  TallyEntry<T>::TallyEntry (T item)
+                : fItem (item)
+                , fCount (1)
             {
             }
             template    <typename T>
-            inline  TallyEntry<T>::TallyEntry (T item, size_t count) :
-                fItem (item),
-                fCount (count)
+            inline  TallyEntry<T>::TallyEntry (T item, size_t count)
+                : fItem (item)
+                , fCount (count)
             {
             }
             template    <typename T>
@@ -378,8 +343,8 @@ namespace   Stroika {
 
             // typename TallyMutator<T>
             template    <typename T>
-            inline  TallyMutator<T>::TallyMutator (TallyMutatorRep<T>* it) :
-                Iterator<TallyEntry<T>> (it)
+            inline  TallyMutator<T>::TallyMutator (TallyMutatorRep<T>* it)
+                : Iterator<TallyEntry<T>> (it)
             {
             }
             template    <typename T>
@@ -398,10 +363,13 @@ namespace   Stroika {
 
             // typename TallyMutatorRep<T>
             template    <typename T>
-            inline TallyMutatorRep<T>::TallyMutatorRep () :
-                Iterator<TallyEntry<T> >::IRep ()
+            inline TallyMutatorRep<T>::TallyMutatorRep ()
+                : Iterator<TallyEntry<T> >::IRep ()
             {
             }
+
+
+
             // typename TallyIterateOnTRep<T>
             template    <typename T>
             TallyIterateOnTRep<T>::TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::IRep* it) :
@@ -435,12 +403,11 @@ namespace   Stroika {
                 return (new TallyIterateOnTRep<T> (fIt->Clone ()));
             }
             template    <typename T>
-            inline  bool    TallyIterateOnTRep<T>::StrongEquals (typename Iterator<T>::IRep* rhs)
+            inline  bool    TallyIterateOnTRep<T>::StrongEquals (typename const Iterator<T>::IRep* rhs) const
             {
                 AssertNotImplemented ();
                 return false;
             }
-
 
 
         }

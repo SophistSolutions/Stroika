@@ -61,7 +61,7 @@ namespace   Stroika {
                     Tally_ArrayMutatorRep (Tally_ArrayRep<T>& owner);
 
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
-                    virtual bool                            StrongEquals (typename Iterator<TallyEntry<T> >::IRep* rhs) override;
+                    virtual bool            StrongEquals (typename const Iterator<TallyEntry<T> >::IRep* rhs) const override;
 
                     virtual typename Iterator<TallyEntry<T> >::IRep* Clone () const override;
 
@@ -124,7 +124,7 @@ namespace   Stroika {
                     return (fIterator.More(current, advance));
                 }
                 template    <typename T>
-                bool    Tally_ArrayMutatorRep<T>::StrongEquals (typename Iterator<TallyEntry<T> >::IRep* rhs)
+                bool    Tally_ArrayMutatorRep<T>::StrongEquals (typename const Iterator<TallyEntry<T> >::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;

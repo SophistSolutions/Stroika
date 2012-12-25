@@ -18,7 +18,6 @@
  *  TODO:
  *
  *      (o)         Tally<T> probably Iterable<TallyEntry<T>>.
- *      o           Correctly implement override of Iterator<T>::IRep::StrongEquals ()
  *
  */
 
@@ -107,15 +106,9 @@ namespace   Stroika {
                 nonvirtual  Tally<T>&   operator+= (const Tally<T>& t);
 
             public:
-#if 0
-                nonvirtual  operator Iterator<T> () const;
-                nonvirtual  operator Iterator<TallyEntry<T> > () const;
-                nonvirtual  operator TallyMutator<T> ();
-#endif
-
+                //TERRIBLE NAMES
                 nonvirtual  Iterator<TallyEntry<T>> ebegin () const;
                 nonvirtual  Iterator<TallyEntry<T>> eend () const;
-
 
                 // Support for ranged for, and stl syntax in general
                 nonvirtual  Iterator<T> begin () const;

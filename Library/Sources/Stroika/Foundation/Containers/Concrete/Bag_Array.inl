@@ -62,7 +62,7 @@ namespace   Stroika {
                 public:
                     virtual typename Iterator<T>::IRep*     Clone () const override;
                     virtual bool                            More (T* current, bool advance) override;
-                    virtual bool                            StrongEquals (typename Iterator<T>::IRep* rhs) override;
+                    virtual bool                            StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
 
                 private:
                     mutable ForwardArrayMutator_Patch<T>    fIterator_;
@@ -88,7 +88,7 @@ namespace   Stroika {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_Array<T>::IteratorRep_::StrongEquals (typename Iterator<T>::IRep* rhs)
+                bool    Bag_Array<T>::IteratorRep_::StrongEquals (typename const Iterator<T>::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;

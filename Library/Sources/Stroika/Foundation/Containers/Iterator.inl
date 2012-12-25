@@ -173,9 +173,9 @@ namespace   Stroika {
                     virtual bool    More (T* current, bool advance) override {
                         return false;
                     }
-                    virtual bool    StrongEquals (typename Iterator<T>::IRep* rhs) override {
+                    virtual bool    StrongEquals (typename const Iterator<T>::IRep* rhs) const override {
                         RequireNotNull (rhs);
-                        return (rhs == this) or rhs->More (nullptr, false);
+                        return (rhs == this) or const_cast<typename Iterator<T>::IRep*> (rhs)->More (nullptr, false);
                     }
                     virtual IRep*    Clone () const override {
                         RequireNotReached ();
