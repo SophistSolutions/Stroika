@@ -47,7 +47,7 @@ namespace   Stroika {
                     virtual size_t  TallyOf (T item) const override;
 
                     virtual typename Iterator<TallyEntry<T> >::IRep* MakeTallyIterator () const override;
-                    virtual TallyMutatorRep<T>*             MakeTallyMutator () override;
+                    virtual TallyMutator<T>             MakeTallyMutator () override;
 
                 private:
                     LinkedList_Patch<TallyEntry<T> >    fData;
@@ -57,9 +57,9 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                class   Tally_LinkedList<T>::MutatorRep_ : public TallyMutatorRep<T> {
+                class   Tally_LinkedList<T>::MutatorRep_ : public TallyMutator<T>::IRep {
                 public:
-                    MutatorRep_ (Rep_& owner);
+                    MutatorRep_ (typename Tally_LinkedList<T>::Rep_& owner);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
@@ -271,9 +271,9 @@ namespace   Stroika {
                     return (new MutatorRep_ (*const_cast<Rep_*> (this)));
                 }
                 template    <typename T>
-                TallyMutatorRep<T>*    Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
+                TallyMutator<T>   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
                 {
-                    return (new MutatorRep_ (*this));
+                    return TallyMutator<T> (new MutatorRep_ (*this));
                 }
 
 

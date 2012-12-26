@@ -16,6 +16,8 @@
 /*
  *
  *  TODO:
+ *      @todo   consider if this should inherit from Iterable<TallyEntry<T>>. Be sure and document
+ *              why we chose one way or the other
  *
  */
 
@@ -23,12 +25,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-            template    <typename T>    class   TallyEntry {
+            template    <typename T>
+            class   TallyEntry {
             public:
 #if qIteratorsRequireNoArgContructorForT
                 TallyEntry () {}
 #endif
-
                 TallyEntry (T item);
                 TallyEntry (T item, size_t count);
 
@@ -38,34 +40,9 @@ namespace   Stroika {
                 T       fItem;
                 size_t  fCount;
             };
-
-
-            template    <typename T>
-            class  Tally;
-            template    <typename T>
-            class  TallyIteratorRep;
-            template    <typename T>
-            class  TallyMutatorRep;
-
             template    <typename T>
             bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
 
-            template    <typename T>
-            bool    operator== (const Tally<T>& lhs, const Tally<T>& rhs);
-            template    <typename T>
-            bool    operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
-
-
-            template    <typename T>
-            class  TallyMutator : public Iterator<TallyEntry<T>> {
-            public:
-                TallyMutator (TallyMutatorRep<T>* it);
-
-                nonvirtual  void    RemoveCurrent ();
-
-                // if newCount == 0, equivilent to RemoveCurrent().
-                nonvirtual  void    UpdateCount (size_t newCount);
-            };
 
 
             template    <typename T>
@@ -83,12 +60,6 @@ namespace   Stroika {
 
             protected:
                 explicit Tally (_IRep* rep);
-
-#if 0
-            public:
-                nonvirtual  Tally<T>& operator= (const Tally<T>& src);
-#endif
-
 
             public:
                 nonvirtual  bool    Contains (T item) const;
@@ -153,7 +124,7 @@ namespace   Stroika {
 
                 // from Iterable<T>::_IRep
             public:
-                virtual  Iterator<T>             MakeIterator () const override;
+                virtual  Iterator<T>    MakeIterator () const override;
 
             public:
                 virtual bool    Contains (T item) const                         =   0;
@@ -163,9 +134,27 @@ namespace   Stroika {
                 virtual void    Add (T item, size_t count)                      =   0;
                 virtual void    Remove (T item, size_t count)                   =   0;
                 virtual size_t  TallyOf (T item) const                          =   0;
+
             public:
                 virtual typename Iterator<TallyEntry<T> >::IRep*    MakeTallyIterator () const    =   0;
-                virtual TallyMutatorRep<T>*                         MakeTallyMutator ()     =   0;
+                virtual TallyMutator<T>                         MakeTallyMutator ()     =   0;
+            };
+
+            /**
+             */
+            template    <typename T>
+            class  TallyMutator : public Iterator<TallyEntry<T>> {
+            public:
+                class IRep;
+            public:
+                TallyMutator (IRep* it);
+
+            public:
+                nonvirtual  void    RemoveCurrent ();
+
+            public:
+                // if newCount == 0, equivilent to RemoveCurrent().
+                nonvirtual  void    UpdateCount (size_t newCount);
             };
 
         }
