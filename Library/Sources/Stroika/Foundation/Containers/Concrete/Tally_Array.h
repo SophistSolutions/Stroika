@@ -20,8 +20,11 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-                template    <typename T>    class   Tally_ArrayRep;
-                template    <typename T>    class   Tally_Array : public Tally<T> {
+                /**
+                 *
+                 */
+                template    <typename T>
+                class   Tally_Array : public Tally<T> {
                 public:
                     Tally_Array ();
                     Tally_Array (const Tally<T>& src);
@@ -34,19 +37,18 @@ namespace   Stroika {
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
-                    nonvirtual  const Tally_ArrayRep<T>*    GetRep () const;
-                    nonvirtual  Tally_ArrayRep<T>*          GetRep ();
-                };
+                    class IRep_;
+                    class MutatorRep_;
 
+                private:
+                    nonvirtual  const IRep_&    GetRep_ () const;
+                    nonvirtual  IRep_&          GetRep_ ();
+                };
 
             }
         }
     }
 }
-
-
-
-
 
 #endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
 

@@ -17,8 +17,6 @@
  *
  *  TODO:
  *
- *      (o)         Tally<T> probably Iterable<TallyEntry<T>>.
- *
  */
 
 namespace   Stroika {
@@ -44,8 +42,6 @@ namespace   Stroika {
 
             template    <typename T>
             class  Tally;
-            template    <typename T>
-            class  TallyRep;
             template    <typename T>
             class  TallyIteratorRep;
             template    <typename T>
@@ -73,35 +69,51 @@ namespace   Stroika {
 
 
             template    <typename T>
-            class  Tally {
+            class  Tally : public Iterable<T> {
+            private:
+                typedef Iterable<T> inherited;
+
+            protected:
+                class _IRep;
+
             public:
                 Tally ();
                 Tally (const Tally<T>& src);
                 Tally (const T* items, size_t size);
 
             protected:
-                Tally (TallyRep<T>* rep);
+                explicit Tally (_IRep* rep);
 
+#if 0
             public:
                 nonvirtual  Tally<T>& operator= (const Tally<T>& src);
+#endif
 
 
             public:
-                nonvirtual  size_t  GetLength () const;
-                nonvirtual  bool    IsEmpty () const;
                 nonvirtual  bool    Contains (T item) const;
                 nonvirtual  void    RemoveAll ();
                 nonvirtual  void    Compact ();
 
+            public:
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (T item, size_t count);
                 nonvirtual  void    Add (const T* begin, const T* end);
+
+            public:
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (T item, size_t count);
+
+            public:
                 nonvirtual  void    RemoveAll (T item);
+
+            public:
                 nonvirtual  size_t  TallyOf (T item) const;
+
+            public:
                 nonvirtual  size_t  TotalTally () const;
 
+            public:
                 nonvirtual  Tally<T>&   operator+= (T item);
                 nonvirtual  Tally<T>&   operator+= (const Tally<T>& t);
 
@@ -110,39 +122,51 @@ namespace   Stroika {
                 nonvirtual  Iterator<TallyEntry<T>> ebegin () const;
                 nonvirtual  Iterator<TallyEntry<T>> eend () const;
 
-                // Support for ranged for, and stl syntax in general
+            public:
                 nonvirtual  Iterator<T> begin () const;
                 nonvirtual  Iterator<T> end () const;
-
                 nonvirtual  TallyMutator<T> begin ();
                 nonvirtual  TallyMutator<T> end ();
 
-
-
             protected:
-
-                nonvirtual  const TallyRep<T>*  GetRep () const;
-                nonvirtual  TallyRep<T>*        GetRep ();
-
-            private:
-                struct  Rep_Cloner_ {
-                    inline  static  TallyRep<T>*    Copy (const TallyRep<T>& t) {
-                        return Tally::Clone (t);
-                    }
-                };
-                Memory::SharedByValue<TallyRep<T>, Rep_Cloner_>  fRep;
-
-            private:
-                static  TallyRep<T>*    Clone (const TallyRep<T>& rep);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
 
             private:
                 friend  bool    operator==<T> (const Tally<T>& lhs, const Tally<T>& rhs);
             };
 
-            template    <typename T> bool   operator== (const Tally<T>& lhs, const Tally<T>& rhs);
-            template    <typename T> bool   operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
+            template    <typename T>
+            bool   operator== (const Tally<T>& lhs, const Tally<T>& rhs);
+            template    <typename T>
+            bool   operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
+            /**
+             */
+            template    <typename T>
+            class   Tally<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
 
+            public:
+                virtual ~_IRep ();
+
+                // from Iterable<T>::_IRep
+            public:
+                virtual  Iterator<T>             MakeIterator () const override;
+
+            public:
+                virtual bool    Contains (T item) const                         =   0;
+                virtual size_t  GetLength () const                              =   0;
+                virtual void    Compact ()                                      =   0;
+                virtual void    RemoveAll ()                                    =   0;
+                virtual void    Add (T item, size_t count)                      =   0;
+                virtual void    Remove (T item, size_t count)                   =   0;
+                virtual size_t  TallyOf (T item) const                          =   0;
+            public:
+                virtual typename Iterator<TallyEntry<T> >::IRep*    MakeTallyIterator () const    =   0;
+                virtual TallyMutatorRep<T>*                         MakeTallyMutator ()     =   0;
+            };
 
         }
     }

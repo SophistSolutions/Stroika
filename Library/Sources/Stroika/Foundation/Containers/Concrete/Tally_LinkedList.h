@@ -21,15 +21,26 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+                /**
+                 *
+                 */
+                template    <typename T>
+                class  Tally_LinkedList : public Tally<T> {
+                private:
+                    typedef Tally<T> inherited;
 
-                template    <typename T> class  Tally_LinkedList : public Tally<T> {
                 public:
                     Tally_LinkedList ();
                     Tally_LinkedList (const Tally<T>& src);
                     Tally_LinkedList (const Tally_LinkedList<T>& src);
                     Tally_LinkedList (const T* items, size_t size);
 
+                public:
                     nonvirtual  Tally_LinkedList<T>& operator= (const Tally_LinkedList<T>& src);
+
+                private:
+                    class   Rep_;
+                    class   MutatorRep_;
                 };
 
             }
