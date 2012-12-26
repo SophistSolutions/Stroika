@@ -10,8 +10,6 @@
  *
  * TODO:
  *
- *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
- *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
@@ -106,9 +104,6 @@ namespace   Stroika {
 
             protected:
                 explicit Bag (_IRep* rep);
-
-            public:
-                nonvirtual  Bag<T>& operator= (const Bag<T>& rhs);
 
             public:
                 /**

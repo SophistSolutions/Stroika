@@ -37,12 +37,6 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  Bag<T>& Bag<T>::operator= (const Bag<T>& rhs)
-            {
-                (void)Iterable<T>::operator= (rhs);
-                return (*this);
-            }
-            template    <typename T>
             inline  bool    Bag<T>::Contains (T item) const
             {
                 return (_GetRep ().Contains (item));
