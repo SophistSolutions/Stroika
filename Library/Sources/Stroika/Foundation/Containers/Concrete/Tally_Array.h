@@ -9,9 +9,12 @@
 
 #include    "../Tally.h"
 
-/*
+/**
  *  TODO:
- *      o   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *
+ *      @todo   Implementation currently stores list of T's rather than a list of
+ *              TallyEntry<T>, and as a result computes tally's less efficiently
  */
 
 
@@ -31,8 +34,10 @@ namespace   Stroika {
                     Tally_Array (const Tally_Array<T>& src);
                     Tally_Array (const T* items, size_t size);
 
+                public:
                     nonvirtual  Tally_Array<T>& operator= (const Tally_Array<T>& src);
 
+                public:
                     nonvirtual  size_t  GetCapacity () const;
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 

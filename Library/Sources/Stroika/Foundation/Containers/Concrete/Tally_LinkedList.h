@@ -10,9 +10,12 @@
 #include    "../Tally.h"
 
 
-/*
+/**
  *  TODO:
- *      o   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *
+ *      @todo   Implementation currently stores list of T's rather than a list of
+ *              TallyEntry<T>, and as a result computes tally's less efficiently
  */
 
 

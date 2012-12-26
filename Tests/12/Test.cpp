@@ -96,7 +96,7 @@ static	void	TallyIteratorTests(Tally<size_t>& s)
 			s.Add (i);
 		}
 
-		for (TallyMutator<size_t> it = s.begin (); it != s.end (); ++it) {
+		for (Tally<size_t>::TallyMutator it = s.begin (); it != s.end (); ++it) {
 			it.UpdateCount (1);
 		}
 

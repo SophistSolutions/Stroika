@@ -28,6 +28,8 @@
  *  @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
  *          has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
  *          for SharedByValue<> template.
+ *
+ *  @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to (maybe test space)
  */
 
 

@@ -19,6 +19,10 @@
  *      @todo   consider if this should inherit from Iterable<TallyEntry<T>>. Be sure and document
  *              why we chose one way or the other
  *
+ *      @todo   Need Tally_Tree<T> implementaiton - where we use btree to keep tally's sorted,
+ *              so faster lookup. PROBLEM with that impl is it requires an ordering on T, which the others dont
+ *
+ *      @todo   redo APIs so all (or most) using shared_ptr not IRep*  - eg for MakeIterator and CTOR.
  */
 
 namespace   Stroika {
@@ -94,10 +98,14 @@ namespace   Stroika {
                 nonvirtual  Iterator<TallyEntry<T>> eend () const;
 
             public:
+                class TallyMutator;
+            public:
                 nonvirtual  Iterator<T> begin () const;
+                nonvirtual  TallyMutator begin ();
+
+            public:
                 nonvirtual  Iterator<T> end () const;
-                nonvirtual  TallyMutator<T> begin ();
-                nonvirtual  TallyMutator<T> end ();
+                nonvirtual  TallyMutator end ();
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -137,13 +145,13 @@ namespace   Stroika {
 
             public:
                 virtual typename Iterator<TallyEntry<T> >::IRep*    MakeTallyIterator () const    =   0;
-                virtual TallyMutator<T>                         MakeTallyMutator ()     =   0;
+                virtual TallyMutator                         MakeTallyMutator ()     =   0;
             };
 
             /**
              */
             template    <typename T>
-            class  TallyMutator : public Iterator<TallyEntry<T>> {
+            class  Tally<T>::TallyMutator : public Iterator<TallyEntry<T>> {
             public:
                 class IRep;
             public:

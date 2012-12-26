@@ -47,17 +47,17 @@ namespace   Stroika {
                     virtual size_t  TallyOf (T item) const override;
 
                     virtual typename Iterator<TallyEntry<T> >::IRep* MakeTallyIterator () const override;
-                    virtual TallyMutator<T>             MakeTallyMutator () override;
+                    virtual TallyMutator             MakeTallyMutator () override;
 
                 private:
-                    LinkedList_Patch<TallyEntry<T> >    fData;
+                    LinkedList_Patch<TallyEntry<T>>    fData;
 
                     friend  class   MutatorRep_;
                 };
 
 
                 template    <typename T>
-                class   Tally_LinkedList<T>::MutatorRep_ : public TallyMutator<T>::IRep {
+                class   Tally_LinkedList<T>::MutatorRep_ : public Tally<T>::TallyMutator::IRep {
                 public:
                     MutatorRep_ (typename Tally_LinkedList<T>::Rep_& owner);
 
@@ -82,21 +82,6 @@ namespace   Stroika {
 
 
 
-                /*
-                 ********************************************************************************
-                 ******************************* Implementation Details *************************
-                 ********************************************************************************
-                 */
-
-                template    <typename T> inline Tally_LinkedList<T>::Tally_LinkedList (const Tally_LinkedList<T>& src) :
-                    Tally<T> (src)
-                {
-                }
-                template    <typename T> inline Tally_LinkedList<T>& Tally_LinkedList<T>::operator= (const Tally_LinkedList<T>& src)
-                {
-                    Tally<T>::operator= (src);
-                    return (*this);
-                }
 
 
                 /*
@@ -271,9 +256,9 @@ namespace   Stroika {
                     return (new MutatorRep_ (*const_cast<Rep_*> (this)));
                 }
                 template    <typename T>
-                TallyMutator<T>   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
+                typename Tally<T>::TallyMutator   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
                 {
-                    return TallyMutator<T> (new MutatorRep_ (*this));
+                    return TallyMutator (new MutatorRep_ (*this));
                 }
 
 
@@ -281,12 +266,9 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************************* Tally_ *******************************
+                 **************************** Tally_LinkedList<T> *******************************
                  ********************************************************************************
                  */
-                template    <class  T>  class   Tally_LinkedList;   // Tmp hack so GenClass will fixup following CTOR/DTORs
-                // Harmless, but silly.
-
                 template    <typename T>
                 Tally_LinkedList<T>::Tally_LinkedList ()
                     : inherited (new Rep_ ())
@@ -303,6 +285,17 @@ namespace   Stroika {
                     Tally<T> (new Rep_ ())
                 {
                     operator+= (src);
+                }
+                template    <typename T>
+                inline Tally_LinkedList<T>::Tally_LinkedList (const Tally_LinkedList<T>& src) :
+                    Tally<T> (src)
+                {
+                }
+                template    <typename T>
+                inline Tally_LinkedList<T>& Tally_LinkedList<T>::operator= (const Tally_LinkedList<T>& src)
+                {
+                    Tally<T>::operator= (src);
+                    return (*this);
                 }
 
             }

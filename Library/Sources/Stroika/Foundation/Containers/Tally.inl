@@ -20,7 +20,7 @@ namespace   Stroika {
             /**
              */
             template    <typename T>
-            class  TallyMutator<T>::IRep : public Iterator<TallyEntry<T> >::IRep {
+            class  Tally<T>::TallyMutator::IRep : public Iterator<TallyEntry<T> >::IRep {
             protected:
                 IRep ();
 
@@ -92,33 +92,35 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************** TallyMutator<T>::IRep ***********************************
+             ********************** Tally<T>::TallyMutator::IRep ****************************
              ********************************************************************************
              */
             template    <typename T>
-            inline TallyMutator<T>::IRep::IRep ()
+            inline Tally<T>::TallyMutator::IRep::IRep ()
                 : Iterator<TallyEntry<T>>::IRep ()
             {
             }
 
 
+
+
             /*
             ********************************************************************************
-            **************************** TallyMutator<T> ***********************************
+            ********************* Tally<T>::TallyMutator ***********************************
             ********************************************************************************
             */
             template    <typename T>
-            inline  TallyMutator<T>::TallyMutator (IRep* it)
+            inline  Tally<T>::TallyMutator::TallyMutator (IRep* it)
                 : Iterator<TallyEntry<T>> (it)
             {
             }
             template    <typename T>
-            inline  void    TallyMutator<T>::RemoveCurrent ()
+            inline  void    Tally<T>::TallyMutator::RemoveCurrent ()
             {
                 dynamic_cast<IRep&> (GetRep ()).RemoveCurrent ();
             }
             template    <typename T>
-            inline  void    TallyMutator<T>::UpdateCount (size_t newCount)
+            inline  void    Tally<T>::TallyMutator::UpdateCount (size_t newCount)
             {
                 dynamic_cast<IRep&> (GetRep ()).UpdateCount (newCount);
             }
@@ -243,17 +245,17 @@ namespace   Stroika {
                 return (Iterator<T>::GetEmptyIterator ());
             }
             template    <typename T>
-            inline  TallyMutator<T>    Tally<T>::begin ()
+            inline  typename Tally<T>::TallyMutator    Tally<T>::begin ()
             {
-                TallyMutator<T>     tmp = _GetRep ().MakeTallyMutator ();
+                TallyMutator    tmp = _GetRep ().MakeTallyMutator ();
                 //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                 tmp++;
                 return tmp;
             }
             template    <typename T>
-            inline  TallyMutator<T>    Tally<T>::end ()
+            inline  typename Tally<T>::TallyMutator    Tally<T>::end ()
             {
-                class   RepSentinal_ : public TallyMutator<T>::IRep  {
+                class   RepSentinal_ : public Tally<T>::TallyMutator::IRep  {
                 public:
                     virtual bool    More (TallyEntry<T>* current, bool advance) override {
                         return false;
@@ -273,7 +275,7 @@ namespace   Stroika {
                         RequireNotReached ();
                     }
                 };
-                static  TallyMutator<T> kSentinal = TallyMutator<T> (new RepSentinal_ ());
+                static  TallyMutator kSentinal = TallyMutator (new RepSentinal_ ());
                 return kSentinal;
             }
             template    <typename T>
