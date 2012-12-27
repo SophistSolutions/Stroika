@@ -15,8 +15,6 @@ namespace   Stroika {
         namespace   Containers {
 
 
-
-
             /**
              */
             template    <typename T>
@@ -31,19 +29,26 @@ namespace   Stroika {
 
 
 
-            // REDO AS PRIVATE
+            /**
+             * Protected helper class to convert from an iterator of TallyEntries
+             * to an iterator over individual items.
+             *
+             *  @todo   BUG - _TallyEntryToItemIterator should stop N times where N is the value of count
+             *          in the source iterator!
+             *
+             *          But document and verify the calling code is expecting this.
+             */
             template    <typename T>
-            class  TallyIterateOnTRep : public Iterator<T>::IRep {
+            class  Tally<T>::_TallyEntryToItemIterator : public Iterator<T>::IRep {
             public:
-                TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::IRep* it);
-                ~TallyIterateOnTRep ();
+                _TallyEntryToItemIterator (const Iterator<TallyEntry<T>>& fDelegateTo);
 
                 virtual bool            More (T* current, bool advance) override;
                 virtual typename Iterator<T>::IRep*  Clone () const override;
                 virtual bool    StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
 
             private:
-                typename Iterator<TallyEntry<T> >::IRep* fIt;
+                Iterator<TallyEntry<T>> fDelegateTo_;
             };
 
 
@@ -74,17 +79,17 @@ namespace   Stroika {
                 return (fCount == rhs.fCount and fItem == rhs.fItem);
             }
             template    <typename T>
-            inline bool   TallyEntry<T>::operator!= (const TallyEntry<T>& rhs)  const
-            {
-                return not (operator== (rhs));
-            }
-            template    <typename T>
             bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs)
             {
                 if (not (lhs.fItem == rhs.fItem))  {
                     return false;
                 }
                 return (bool (lhs.fCount == rhs.fCount));
+            }
+            template    <typename T>
+            inline bool   TallyEntry<T>::operator!= (const TallyEntry<T>& rhs)  const
+            {
+                return not (operator== (rhs));
             }
 
 
@@ -138,13 +143,9 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  Tally<T>::_IRep::~_IRep ()
-            {
-            }
-            template    <typename T>
             Iterator<T> Tally<T>::_IRep::MakeIterator () const
             {
-                return Iterator<T> (new TallyIterateOnTRep<T> (MakeTallyIterator ()));
+                return Iterator<T> (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (MakeTallyIterator ())));
             }
 
 
@@ -354,47 +355,41 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************** TallyIterateOnTRep<T> ***********************************
+             ********************** Tally<T>::_TallyEntryToItemIterator *********************
              ********************************************************************************
              */
             template    <typename T>
-            TallyIterateOnTRep<T>::TallyIterateOnTRep (typename Iterator<TallyEntry<T> >::IRep* it) :
-                fIt (it)
+            Tally<T>::_TallyEntryToItemIterator::_TallyEntryToItemIterator (const Iterator<TallyEntry<T>>& delegateTo)
+                : fDelegateTo_ (delegateTo)
             {
-                RequireNotNull (fIt);
             }
             template    <typename T>
-            TallyIterateOnTRep<T>::~TallyIterateOnTRep ()
+            inline bool    Tally<T>::_TallyEntryToItemIterator::More (T* current, bool advance)
             {
-                delete fIt;
-            }
-            template    <typename T>
-            inline bool    TallyIterateOnTRep<T>::More (T* current, bool advance)
-            {
-                RequireNotNull (fIt);
                 if (current == nullptr) {
-                    return fIt->More (nullptr, false);
+                    return not fDelegateTo_.Done ();
                 }
                 else {
-                    TallyEntry<T> xx (*current);
-                    bool    result = fIt->More (&xx, advance);
-                    *current = xx.fItem;
-                    return (result);
+                    fDelegateTo_++;
+                    bool done = fDelegateTo_.Done ();
+                    if (current != nullptr and not done) {
+                        *current = (*fDelegateTo_).fItem;
+                    }
+                    return (not done);
                 }
             }
             template    <typename T>
-            inline typename Iterator<T>::IRep*  TallyIterateOnTRep<T>::Clone () const
+            inline typename Iterator<T>::IRep*  Tally<T>::_TallyEntryToItemIterator::Clone () const
             {
-                RequireNotNull (fIt);
-                return (new TallyIterateOnTRep<T> (fIt->Clone ()));
+                //return (new _TallyEntryToItemIterator (fDelegateTo_->Clone ()));
+                return (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (fDelegateTo_)));
             }
             template    <typename T>
-            inline  bool    TallyIterateOnTRep<T>::StrongEquals (typename const Iterator<T>::IRep* rhs) const
+            inline  bool    Tally<T>::_TallyEntryToItemIterator::StrongEquals (typename const Iterator<T>::IRep* rhs) const
             {
                 AssertNotImplemented ();
                 return false;
             }
-
 
         }
     }

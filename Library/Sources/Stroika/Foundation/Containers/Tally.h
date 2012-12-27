@@ -111,6 +111,11 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
 
+
+
+            protected:
+                class _TallyEntryToItemIterator;
+
             private:
                 friend  bool    operator==<T> (const Tally<T>& lhs, const Tally<T>& rhs);
             };
@@ -126,9 +131,6 @@ namespace   Stroika {
             class   Tally<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
-
-            public:
-                virtual ~_IRep ();
 
                 // from Iterable<T>::_IRep
             public:
