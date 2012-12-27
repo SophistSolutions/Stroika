@@ -220,6 +220,20 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
+                 *      Return a pointer to the current value pointed to by the Iterator<T> (like Current())
+                 *
+                 *  This function allows you to write i->b, where i is an iterator and b is a member of the type
+                 *  iterated over by i.
+                 *
+                 *  Note - the lifetime of this pointer is short - only until the next operation on the wrapper
+                 *  class instance Iterator<T>.
+                 */
+                nonvirtual  T*       operator-> ();
+                nonvirtual  const T*       operator-> () const;
+
+            public:
+                /**
+                 *  \brief
                  *      Advance iterator; support for range-based-for, and STL style iteration in
                  *      general (containers must also support begin, end).
                  *

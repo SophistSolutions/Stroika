@@ -88,7 +88,22 @@ namespace   Stroika {
             inline    T   Iterator<T>::operator* () const
             {
                 RequireNotNull (fIterator_);
+                Require (not Done ());
                 return (fCurrent_);
+            }
+            template    <typename T>
+            inline    T*   Iterator<T>::operator-> ()
+            {
+                RequireNotNull (fIterator_);
+                Require (not Done ());
+                return (&fCurrent_);
+            }
+            template    <typename T>
+            inline    const T*   Iterator<T>::operator-> () const
+            {
+                RequireNotNull (fIterator_);
+                Require (not Done ());
+                return (&fCurrent_);
             }
             template    <typename T>
             inline   void  Iterator<T>::operator++ ()

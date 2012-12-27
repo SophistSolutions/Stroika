@@ -193,7 +193,7 @@ namespace   Stroika {
             Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
             {
                 for (auto i = t.ebegin (); i != t.eend (); ++i) {
-                    Add ((*i).fItem, (*i).fCount);
+                    Add (i->fItem, i->fCount);
                 }
                 return (*this);
             }
@@ -339,7 +339,7 @@ namespace   Stroika {
                     return (false);
                 }
                 for (auto i = rhs.ebegin (); i != rhs.eend (); ++i) {
-                    if ((*i).fCount != rhs.TallyOf ((*i).fItem)) {
+                    if (i->fCount != rhs.TallyOf (i->fItem)) {
                         return (false);
                     }
                 }
