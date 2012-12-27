@@ -148,6 +148,9 @@ namespace   Stroika {
              *          and probabe virtual function calls, the current approach of freezing / copying
              *          on iteration seemed better.
              *
+             *          Iterator<T> can never 'be null' and so there is no need to check for a null
+             *          Iterator 'Rep'.
+             *
              *  @see Iterable<T>
              */
             template    <typename T>
