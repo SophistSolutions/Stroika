@@ -19,12 +19,12 @@ namespace   Stroika {
                 using namespace Private;
 
                 template    <typename T>
-                class   Tally_Array<T>::IRep_ : public Tally<T>::_IRep {
+                class   Tally_Array<T>::Rep_ : public Tally<T>::_IRep {
                 public:
-                    IRep_ ();
+                    Rep_ ();
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IRep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -65,7 +65,7 @@ namespace   Stroika {
                     typedef     typename TallyMutator::IRep  inherited;
 
                 public:
-                    MutatorRep_ (typename Tally_Array<T>::IRep_& owner);
+                    MutatorRep_ (typename Tally_Array<T>::Rep_& owner);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (MutatorRep_);
@@ -81,7 +81,7 @@ namespace   Stroika {
 
                 private:
                     ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator;
-                    friend  class   Tally_Array<T>::IRep_;
+                    friend  class   Tally_Array<T>::Rep_;
                 };
 
 
@@ -99,7 +99,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <class  T>
-                Tally_Array<T>::MutatorRep_::MutatorRep_ (typename Tally_Array<T>::IRep_& owner)
+                Tally_Array<T>::MutatorRep_::MutatorRep_ (typename Tally_Array<T>::Rep_& owner)
                     : inherited ()
                     , fIterator (owner.fData)
                 {
@@ -144,58 +144,58 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************** Tally_Array<T>::IRep_ *******************************
+                 *************************** Tally_Array<T>::Rep_ *******************************
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Tally_Array<T>::IRep_::IRep_ ()
+                inline  Tally_Array<T>::Rep_::Rep_ ()
                     : _IRep ()
                     , fData ()
                 {
                 }
                 template    <typename T>
-                size_t  Tally_Array<T>::IRep_::GetLength () const
+                size_t  Tally_Array<T>::Rep_::GetLength () const
                 {
                     return (fData.GetLength ());
                 }
                 template    <typename T>
-                bool  Tally_Array<T>::IRep_::IsEmpty () const
+                bool  Tally_Array<T>::Rep_::IsEmpty () const
                 {
                     return (fData.GetLength () == 0);
                 }
                 template    <typename T>
-                Iterator<T> Tally_Array<T>::IRep_::MakeIterator () const
+                Iterator<T> Tally_Array<T>::Rep_::MakeIterator () const
                 {
                     return Iterator<T> (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (MakeTallyIterator ())));
                 }
                 template    <typename T>
-                void      Tally_Array<T>::IRep_::Apply (_APPLY_ARGTYPE doToElement) const
+                void      Tally_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Tally_Array<T>::IRep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Tally_Array<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
-                bool    Tally_Array<T>::IRep_::Contains (T item) const
+                bool    Tally_Array<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
                     return (bool (Find_ (tmp) != kNotFound));
                 }
                 template    <typename T>
-                void    Tally_Array<T>::IRep_::Compact ()
+                void    Tally_Array<T>::Rep_::Compact ()
                 {
                     fData.Compact ();
                 }
                 template    <typename T>
-                typename Iterable<T>::_IRep*    Tally_Array<T>::IRep_::Clone () const
+                typename Iterable<T>::_IRep*    Tally_Array<T>::Rep_::Clone () const
                 {
-                    return (new IRep_ (*this));
+                    return (new Rep_ (*this));
                 }
                 template    <typename T>
-                void    Tally_Array<T>::IRep_::Add (T item, size_t count)
+                void    Tally_Array<T>::Rep_::Add (T item, size_t count)
                 {
                     TallyEntry<T> tmp (item, count);
                     size_t index = Find_ (tmp);
@@ -208,7 +208,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Tally_Array<T>::IRep_::Remove (T item, size_t count)
+                void    Tally_Array<T>::Rep_::Remove (T item, size_t count)
                 {
                     TallyEntry<T> tmp (item);
 
@@ -226,12 +226,12 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Tally_Array<T>::IRep_::RemoveAll ()
+                void    Tally_Array<T>::Rep_::RemoveAll ()
                 {
                     fData.RemoveAll ();
                 }
                 template    <typename T>
-                size_t  Tally_Array<T>::IRep_::TallyOf (T item) const
+                size_t  Tally_Array<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T> tmp (item);
 
@@ -241,24 +241,24 @@ namespace   Stroika {
                     return (tmp.fCount);
                 }
                 template    <typename T>
-                typename Iterator<TallyEntry<T> >::IRep* Tally_Array<T>::IRep_::MakeTallyIterator () const
+                typename Iterator<TallyEntry<T> >::IRep* Tally_Array<T>::Rep_::MakeTallyIterator () const
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators
-                    return (new MutatorRep_ (*const_cast<IRep_*> (this)));
+                    return (new MutatorRep_ (*const_cast<Rep_*> (this)));
                 }
                 template    <typename T>
-                typename Tally<T>::TallyMutator     Tally_Array<T>::IRep_::MakeTallyMutator ()
+                typename Tally<T>::TallyMutator     Tally_Array<T>::Rep_::MakeTallyMutator ()
                 {
                     return TallyMutator (new MutatorRep_ (*this));
                 }
                 template    <typename T>
-                void    Tally_Array<T>::IRep_::RemoveAt_ (size_t index)
+                void    Tally_Array<T>::Rep_::RemoveAt_ (size_t index)
                 {
                     fData.RemoveAt (index);
                 }
                 template    <typename T>
-                size_t  Tally_Array<T>::IRep_::Find_ (TallyEntry<T>& item) const
+                size_t  Tally_Array<T>::Rep_::Find_ (TallyEntry<T>& item) const
                 {
                     size_t length = fData.GetLength ();
                     for (size_t i = 0; i < length; i++) {
@@ -283,11 +283,11 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 Tally_Array<T>::Tally_Array () :
-                    Tally<T> (new IRep_ ())
+                    Tally<T> (new Rep_ ())
                 {
                 }
                 template    <typename T>    Tally_Array<T>::Tally_Array (const T* items, size_t size) :
-                    Tally<T> (new IRep_ ())
+                    Tally<T> (new Rep_ ())
                 {
                     SetCapacity (size);
                     AddItems (items, size);
@@ -299,7 +299,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 Tally_Array<T>::Tally_Array (const Tally<T>& src) :
-                    Tally<T> (new IRep_ ())
+                    Tally<T> (new Rep_ ())
                 {
                     SetCapacity (src.GetLength ());
                     operator+= (src);
@@ -311,14 +311,14 @@ namespace   Stroika {
                     return (*this);
                 }
                 template    <typename T>
-                inline  typename const Tally_Array<T>::IRep_&    Tally_Array<T>::GetRep_ () const
+                inline  typename const Tally_Array<T>::Rep_&    Tally_Array<T>::GetRep_ () const
                 {
-                    return reinterpret_cast<const Tally_Array<T>::IRep_&> (_GetRep ());
+                    return reinterpret_cast<const Tally_Array<T>::Rep_&> (_GetRep ());
                 }
                 template    <typename T>
-                inline  typename Tally_Array<T>::IRep_&  Tally_Array<T>::GetRep_ ()
+                inline  typename Tally_Array<T>::Rep_&  Tally_Array<T>::GetRep_ ()
                 {
-                    return reinterpret_cast<Tally_Array<T>::IRep_&> (_GetRep ());
+                    return reinterpret_cast<Tally_Array<T>::Rep_&> (_GetRep ());
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::GetCapacity () const

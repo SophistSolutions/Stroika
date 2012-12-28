@@ -42,12 +42,12 @@ namespace   Stroika {
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
-                    class IRep_;
+                    class Rep_;
                     class MutatorRep_;
 
                 private:
-                    nonvirtual  const IRep_&    GetRep_ () const;
-                    nonvirtual  IRep_&          GetRep_ ();
+                    nonvirtual  const Rep_&    GetRep_ () const;
+                    nonvirtual  Rep_&          GetRep_ ();
                 };
 
             }
