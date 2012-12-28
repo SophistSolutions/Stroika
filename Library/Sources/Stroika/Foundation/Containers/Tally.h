@@ -132,10 +132,6 @@ namespace   Stroika {
             protected:
                 _IRep ();
 
-                // from Iterable<T>::_IRep
-            public:
-                virtual  Iterator<T>    MakeIterator () const override;
-
             public:
                 virtual bool    Contains (T item) const                         =   0;
                 virtual size_t  GetLength () const                              =   0;

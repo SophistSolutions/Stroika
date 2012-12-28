@@ -31,6 +31,7 @@ namespace   Stroika {
                     virtual typename Iterable<T>::_IRep*    Clone () const override;
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
+                    virtual Iterator<T>                     MakeIterator () const override;
                     virtual void                            Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
@@ -161,6 +162,11 @@ namespace   Stroika {
                 bool  Tally_Array<T>::IRep_::IsEmpty () const
                 {
                     return (fData.GetLength () == 0);
+                }
+                template    <typename T>
+                Iterator<T> Tally_Array<T>::IRep_::MakeIterator () const
+                {
+                    return Iterator<T> (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (MakeTallyIterator ())));
                 }
                 template    <typename T>
                 void      Tally_Array<T>::IRep_::Apply (_APPLY_ARGTYPE doToElement) const

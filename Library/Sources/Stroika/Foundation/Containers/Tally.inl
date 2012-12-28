@@ -142,11 +142,9 @@ namespace   Stroika {
             inline  Tally<T>::_IRep::_IRep ()
             {
             }
-            template    <typename T>
-            Iterator<T> Tally<T>::_IRep::MakeIterator () const
-            {
-                return Iterator<T> (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (MakeTallyIterator ())));
-            }
+
+
+
 
 
 
