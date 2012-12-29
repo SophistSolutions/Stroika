@@ -188,16 +188,13 @@ namespace   Stroika {
                  *      This overload is usually not called directly. Instead, iterators are
                  *      usually created from a container (eg. Bag<T>::begin()).
                  */
-                explicit Iterator (IRep* it);
+                explicit Iterator (const SharedByValueRepType& rep);
 
             public:
                 /**
                  *  \brief  Iterators are safely copyable, preserving their current position.
                  */
                 Iterator (const Iterator<T>& from);
-
-            public:
-                ~Iterator ();
 
             public:
                 /**

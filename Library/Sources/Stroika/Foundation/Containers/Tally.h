@@ -111,8 +111,6 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
 
-
-
             protected:
                 class _TallyEntryToItemIterator;
 

@@ -111,12 +111,12 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ********************* Tally<T>::TallyMutator ***********************************
+            ************************* Tally<T>::TallyMutator *******************************
             ********************************************************************************
             */
             template    <typename T>
             inline  Tally<T>::TallyMutator::TallyMutator (IRep* it)
-                : Iterator<TallyEntry<T>> (it)
+                : Iterator<TallyEntry<T>> (SharedByValueRepType (it))
             {
             }
             template    <typename T>
@@ -220,7 +220,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<TallyEntry<T>>    Tally<T>::ebegin () const
             {
-                Iterator<TallyEntry<T>> tmp =   Iterator<TallyEntry<T>> (const_cast<Tally<T> *> (this)->_GetRep ().MakeTallyIterator ());
+                Iterator<TallyEntry<T>> tmp =   Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (const_cast<Tally<T>*> (this)->_GetRep ().MakeTallyIterator ()));
                 //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                 tmp++;
                 return tmp;

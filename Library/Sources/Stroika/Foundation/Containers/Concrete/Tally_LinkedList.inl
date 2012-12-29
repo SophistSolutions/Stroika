@@ -164,7 +164,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T> Tally_LinkedList<T>::Rep_::MakeIterator () const
                 {
-                    return Iterator<T> (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (MakeTallyIterator ())));
+                    return Iterator<T> (typename Iterator<T>::SharedByValueRepType (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (MakeTallyIterator ())))));
                 }
                 template    <typename T>
                 void      Tally_LinkedList<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const

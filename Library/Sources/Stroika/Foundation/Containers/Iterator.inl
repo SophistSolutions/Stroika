@@ -39,14 +39,9 @@ namespace   Stroika {
                 RequireNotNull (from.fIterator_.get ());
             }
             template    <typename T>
-            inline Iterator<T>::Iterator (IRep* it)
-                : fIterator_ (it)
+            inline Iterator<T>::Iterator (const SharedByValueRepType& rep)
+                : fIterator_ (rep)
                 , fCurrent_ ()
-            {
-                RequireNotNull (it);
-            }
-            template    <typename T>
-            inline Iterator<T>::~Iterator ()
             {
             }
             template    <typename T>
@@ -197,10 +192,9 @@ namespace   Stroika {
                         return nullptr;
                     }
                 };
-                static  Iterator<T> kSentinal = Iterator<T> (new RepSentinal_ ());
-                return kSentinal;
+                static  Iterator<T> kSentinal_ = Iterator<T> (Iterator<T>::SharedByValueRepType (new RepSentinal_ ()));
+                return kSentinal_;
             }
-
 
         }
     }
