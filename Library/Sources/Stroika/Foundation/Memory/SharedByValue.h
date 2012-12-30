@@ -71,11 +71,20 @@ namespace   Stroika {
             template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = shared_ptr<T> >
             class   SharedByValue {
             public:
+                /**
+                 * SharedByValue::SharedByValue():
+                 *  The constructor takes either no/args to nullptr, to construct an empty SharedByValue.
+                 *
+                 *  It can be copied by another copy of the same kind (including same kind of copier).
+                 *
+                 *  Or it can be explicitly constructed from a SHARED_IMPL (any existing shared_ptr, along
+                 *  with a copier (defaults to SharedByValue_CopyByDefault). If passed a bare pointer, that
+                 *  pointer will be wrapped in a shared_ptr (so it better not be already), and the SharedByValue()
+                 *  will take ownership of the lifetime of that pointer.
+                 */
                 SharedByValue ();
                 SharedByValue (nullptr_t n);
                 SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from);
-
-            public:
                 explicit SharedByValue (const SHARED_IMLP& from, const COPIER& copier = COPIER ());
                 explicit SharedByValue (T* from, const COPIER& copier = COPIER ());
 
@@ -124,7 +133,7 @@ namespace   Stroika {
             public:
                 /**
                  * Assure there is a single reference to this object, and if there are more, break references.
-                 * This metho should be applied before destructive operations are applied to the shared object.
+                 * This method should be applied before destructive operations are applied to the shared object.
                  */
                 nonvirtual  void    Assure1Reference ();
 
