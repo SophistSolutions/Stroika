@@ -14,11 +14,22 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+            /*
+            ********************************************************************************
+            *********************** Iterator<T>::Rep_Cloner_ *******************************
+            ********************************************************************************
+            */
+            template    <typename T>
+            inline  typename    Iterator<T>::IRep*  Iterator<T>::Rep_Cloner_::Copy (const IRep& t)
+            {
+                return Iterator<T>::Clone_ (t);
+            }
 
-
-
-
-            // class IRep<T>
+            /*
+            ********************************************************************************
+            ****************************** Iterator<T>::IRep *******************************
+            ********************************************************************************
+            */
             template    <typename T>
             inline Iterator<T>::IRep::IRep ()
             {
@@ -30,7 +41,11 @@ namespace   Stroika {
 
 
 
-            // class Iterator<T>
+            /*
+            ********************************************************************************
+            ********************************** Iterator<T> *********************************
+            ********************************************************************************
+            */
             template    <typename T>
             inline Iterator<T>::Iterator (const Iterator<T>& from)
                 : fIterator_ (from.fIterator_)

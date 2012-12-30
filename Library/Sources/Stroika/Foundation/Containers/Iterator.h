@@ -167,9 +167,7 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  IRep*  Copy (const IRep& t) {
-                        return Iterator<T>::Clone_ (t);
-                    }
+                    inline  static  IRep*  Copy (const IRep& t);
                 };
 
             public:
@@ -225,8 +223,8 @@ namespace   Stroika {
                  *  Note - the lifetime of this pointer is short - only until the next operation on the wrapper
                  *  class instance Iterator<T>.
                  */
-                nonvirtual  T*       operator-> ();
-                nonvirtual  const T*       operator-> () const;
+                nonvirtual  T*          operator-> ();
+                nonvirtual  const T*    operator-> () const;
 
             public:
                 /**
