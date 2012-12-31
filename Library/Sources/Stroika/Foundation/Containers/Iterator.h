@@ -167,7 +167,7 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  IRep*  Copy (const IRep& t);
+                    static  IRep*  Copy (const IRep& t);
                 };
 
             public:
@@ -175,7 +175,7 @@ namespace   Stroika {
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
                  *          by users).
                  */
-                typedef Memory::SharedByValue<IRep, Rep_Cloner_>   SharedByValueRepType;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, Rep_Cloner_>>   SharedByValueRepType;
 
             private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);

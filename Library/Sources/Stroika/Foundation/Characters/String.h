@@ -533,7 +533,8 @@ namespace   Stroika {
                 String (_Rep* sharedPart, _REPCTOR);
 
             protected:
-                Memory::SharedByValue<_Rep, _Rep_Cloner> _fRep;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_Rep, _Rep_Cloner>>  _SharedRepPtr;
+                _SharedRepPtr _fRep;
 
             protected:
                 static  _Rep*   Clone_ (const _Rep& rep);

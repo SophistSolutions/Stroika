@@ -58,6 +58,21 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  SharedByValue_Traits is a utilitity struct to provide parameterized support
+             *          for SharedByValue<>
+             *
+             *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
+            */
+            template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = shared_ptr<T> >
+            struct   SharedByValue_Traits {
+                typedef T               element_type;
+                typedef COPIER          copier_type;
+                typedef SHARED_IMLP     shared_ptr_type;
+            };
+
+
+
+            /**
              *  \brief  SharedByValue is a utility class to implement Copy-On-Write.
              *
              *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
@@ -68,8 +83,13 @@ namespace   Stroika {
              *
              *  This class template was originally called CopyOnWrite.
             */
-            template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = shared_ptr<T> >
+            template    <typename TRAITS = SharedByValue_Traits<T> >
             class   SharedByValue {
+            public:
+                typedef typename TRAITS::element_type           element_type;
+                typedef typename TRAITS::copier_type            copier_type;
+                typedef typename TRAITS::shared_ptr_type        shared_ptr_type;
+
             public:
                 /**
                  * SharedByValue::SharedByValue():
@@ -84,12 +104,12 @@ namespace   Stroika {
                  */
                 SharedByValue ();
                 SharedByValue (nullptr_t n);
-                SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from);
-                explicit SharedByValue (const SHARED_IMLP& from, const COPIER& copier = COPIER ());
-                explicit SharedByValue (T* from, const COPIER& copier = COPIER ());
+                SharedByValue (const SharedByValue<TRAITS>& from);
+                explicit SharedByValue (const shared_ptr_type& from, const copier_type& copier = copier_type ());
+                explicit SharedByValue (element_type* from, const copier_type& copier = copier_type ());
 
             public:
-                nonvirtual  SharedByValue<T, COPIER, SHARED_IMLP>& operator= (const SharedByValue<T, COPIER, SHARED_IMLP>& src);
+                nonvirtual  SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
 
             public:
                 /**
@@ -97,28 +117,28 @@ namespace   Stroika {
                  * rarely be used - use operator-> in preference. This is only for dealing with cases where
                  * the ptr could legitimately be nil.
                  */
-                nonvirtual  const T*    get () const;
-                nonvirtual  T*          get ();
+                nonvirtual  const element_type*    get () const;
+                nonvirtual  element_type*          get ();
 
             public:
                 /*
                  * These operators require that the underlying ptr is non-nil.
                  */
-                nonvirtual  const T*    operator-> () const;
-                nonvirtual  T*          operator-> ();
-                nonvirtual  const T&    operator* () const;
-                nonvirtual  T&          operator* ();
+                nonvirtual  const element_type*    operator-> () const;
+                nonvirtual  element_type*          operator-> ();
+                nonvirtual  const element_type&    operator* () const;
+                nonvirtual  element_type&          operator* ();
 
 
             public:
                 /**
                  */
-                nonvirtual  bool operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
+                nonvirtual  bool operator== (const SharedByValue<TRAITS>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  bool operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const;
+                nonvirtual  bool operator!= (const SharedByValue<TRAITS>& rhs) const;
 
             public:
                 /**
@@ -127,8 +147,8 @@ namespace   Stroika {
                 nonvirtual  bool    unique () const;
 
             private:
-                SHARED_IMLP fSharedImpl_;
-                COPIER      fCopier_;
+                shared_ptr_type fSharedImpl_;
+                copier_type     fCopier_;
 
             public:
                 /**

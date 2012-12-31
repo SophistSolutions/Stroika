@@ -468,7 +468,7 @@ namespace   {
     struct String_Substring_ : public String {
         class   MyRep_ : public String::_Rep {
         public:
-            MyRep_ (const SharedByValue<_Rep, _Rep_Cloner>& baseString, size_t from, size_t length);
+            MyRep_ (const _SharedRepPtr& baseString, size_t from, size_t length);
 
             virtual     _Rep*   Clone () const override;
 
@@ -487,7 +487,7 @@ namespace   {
             virtual int Compare (const _Rep& rhs, CompareOptions co) const override;
 
         private:
-            SharedByValue<_Rep, _Rep_Cloner> fBase;
+            _SharedRepPtr fBase;
 
             size_t  fFrom;
             size_t  fLength;
@@ -520,12 +520,12 @@ namespace   {
         static  String::_Rep*   Clone_ (const _Rep& rep) {
             return (rep.Clone ());
         }
-        static  SharedByValue<_Rep, _Rep_Cloner> mkEmptyStrRep_ () {
+        static  _SharedRepPtr mkEmptyStrRep_ () {
             static  bool                            sInited_    =   false;
-            static  SharedByValue<_Rep, _Rep_Cloner> s_;
+            static  _SharedRepPtr s_;
             if (not sInited_) {
                 sInited_ = true;
-                s_ = SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0), _Rep_Cloner ());
+                s_ = _SharedRepPtr (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0));
             }
             return s_;
         }
@@ -548,20 +548,20 @@ String::String (const char16_t* cString)
 }
 
 String::String (const wchar_t* cString)
-    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _Rep_Cloner ()))
+    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepPtr (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
 {
     RequireNotNull (cString);
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (from, to), _Rep_Cloner ()))
+    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepPtr (DEBUG_NEW String_BufferedArray_Rep_ (from, to)))
 {
     Require (from <= to);
     Require (from != nullptr or from == to);
 }
 
 String::String (const Character* from, const Character* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)), _Rep_Cloner ()))
+    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepPtr (DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))))
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
     Require (from <= to);
@@ -569,7 +569,7 @@ String::String (const Character* from, const Character* to)
 }
 
 String::String (const std::wstring& r)
-    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : SharedByValue<_Rep, _Rep_Cloner> (DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ()), _Rep_Cloner ()))
+    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepPtr (DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ())))
 {
 }
 
@@ -1234,7 +1234,7 @@ String_ExternalMemoryOwnership_StackLifetime_ReadWrite::String_ExternalMemoryOwn
  ************************** String_Substring_::MyRep_ ***************************
  ********************************************************************************
  */
-String_Substring_::MyRep_::MyRep_ (const SharedByValue<_Rep, _Rep_Cloner>& baseString, size_t from, size_t length)
+String_Substring_::MyRep_::MyRep_ (const _SharedRepPtr& baseString, size_t from, size_t length)
     : fBase (baseString)
     , fFrom (from)
     , fLength (length)

@@ -49,52 +49,52 @@ namespace   Stroika {
 
 
 
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue ()
-                : fCopier_ (COPIER ())
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::SharedByValue ()
+                : fCopier_ (copier_type ())
                 , fSharedImpl_ ()
             {
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (nullptr_t n)
-                : fCopier_ (COPIER ())
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::SharedByValue (nullptr_t n)
+                : fCopier_ (copier_type ())
                 , fSharedImpl_ ()
             {
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SharedByValue<T, COPIER, SHARED_IMLP>& from)
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from)
                 : fCopier_ (from.fCopier_)
                 , fSharedImpl_ (from.fSharedImpl_)
             {
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (const SHARED_IMLP& from, const COPIER& copier)
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const copier_type& copier)
                 : fCopier_ (copier)
                 , fSharedImpl_ (from.fSharedImpl_)
             {
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>::SharedByValue (T* from, const COPIER& copier)
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::SharedByValue (element_type* from, const copier_type& copier)
                 : fCopier_ (copier)
                 , fSharedImpl_ (from)
             {
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  SharedByValue<T, COPIER, SHARED_IMLP>& SharedByValue<T, COPIER, SHARED_IMLP>::operator= (const SharedByValue<T, COPIER, SHARED_IMLP>& src)
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& src)
             {
                 fCopier_ = src.fCopier_;
                 fSharedImpl_ = src.fSharedImpl_;
                 return *this;
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::get () const
+            template    <typename TRAITS>
+            inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::get () const
             {
                 return (fSharedImpl_.get ());
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            T* SharedByValue<T, COPIER, SHARED_IMLP>::get ()
+            template    <typename TRAITS>
+            typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get ()
             {
-                T*  ptr =   fSharedImpl_.get ();
+                element_type*  ptr =   fSharedImpl_.get ();
                 /*
                  * For non-const pointing, we must clone ourselves (if there are
                  * extra referneces). If we are a nullptr pointer, nobody could actually
@@ -109,61 +109,61 @@ namespace   Stroika {
                 EnsureNotNull (ptr);
                 return (ptr);
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T*    SharedByValue<T, COPIER, SHARED_IMLP>::operator-> () const
+            template    <typename TRAITS>
+            inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::operator-> () const
             {
                 return (fSharedImpl_.get ());
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  T* SharedByValue<T, COPIER, SHARED_IMLP>::operator-> ()
+            template    <typename TRAITS>
+            inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::operator-> ()
             {
                 return get ();
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  const T&    SharedByValue<T, COPIER, SHARED_IMLP>::operator* () const
+            template    <typename TRAITS>
+            inline  const typename SharedByValue<TRAITS>::element_type&    SharedByValue<TRAITS>::operator* () const
             {
-                const T*  ptr =   get ();
+                const element_type*  ptr =   get ();
                 EnsureNotNull (ptr);
                 return (*ptr);
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            T& SharedByValue<T, COPIER, SHARED_IMLP>::operator* ()
+            template    <typename TRAITS>
+            typename SharedByValue<TRAITS>::element_type& SharedByValue<TRAITS>::operator* ()
             {
-                T*  ptr =   get ();
                 /*
                  * For non-const dereferencing, we must clone ourselves (if there are
                  * extra referneces).
                  */
                 Assure1Reference ();
+                element_type*  ptr =   get ();
                 EnsureNotNull (ptr);
                 return (*ptr);
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            bool SharedByValue<T, COPIER, SHARED_IMLP>::operator== (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const
+            template    <typename TRAITS>
+            bool SharedByValue<TRAITS>::operator== (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ == rhs.fSharedImpl_;
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            bool SharedByValue<T, COPIER, SHARED_IMLP>::operator!= (const SharedByValue<T, COPIER, SHARED_IMLP>& rhs) const
+            template    <typename TRAITS>
+            bool SharedByValue<TRAITS>::operator!= (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ != rhs.fSharedImpl_;
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            bool    SharedByValue<T, COPIER, SHARED_IMLP>::unique () const
+            template    <typename TRAITS>
+            bool    SharedByValue<TRAITS>::unique () const
             {
                 return fSharedImpl_.unique ();
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            inline  void    SharedByValue<T, COPIER, SHARED_IMLP>::Assure1Reference ()
+            template    <typename TRAITS>
+            inline  void    SharedByValue<TRAITS>::Assure1Reference ()
             {
                 if (!fSharedImpl_.unique ()) {
                     BreakReferences_ ();
                 }
             }
-            template    <typename   T, typename COPIER, typename SHARED_IMLP>
-            void    SharedByValue<T, COPIER, SHARED_IMLP>::BreakReferences_ ()
+            template    <typename TRAITS>
+            void    SharedByValue<TRAITS>::BreakReferences_ ()
             {
-                T*  ptr =   fSharedImpl_.get ();
+                element_type*  ptr =   fSharedImpl_.get ();
                 RequireNotNull (ptr);
                 /*
                  *      For a valid pointer that is reference counted and multiply shared,
@@ -179,7 +179,7 @@ namespace   Stroika {
                 //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
                 // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
                 // value and it should go away.
-                *this = SharedByValue<T, COPIER, SHARED_IMLP> (fCopier_.Copy (*ptr), fCopier_);
+                *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr), fCopier_);
                 Ensure (fSharedImpl_.unique ());
             }
 
