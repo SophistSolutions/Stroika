@@ -21,27 +21,27 @@ namespace   Stroika {
 
 
 #if     !qCompilerAndStdLib_Supports_lambda_default_argument
-            template    <typename   T>
-            T*  SharedByValue_CopyByFunction<T>::DefaultElementCopier_ (const T& t)
+            template    <typename   T, typename SHARED_IMLP>
+            T*  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t)
             {
                 return new T (t);
             }
 #endif
-            template    <typename   T>
-            inline  SharedByValue_CopyByFunction<T>::SharedByValue_CopyByFunction (T * (*copier) (const T&))
+            template    <typename   T, typename SHARED_IMLP>
+            inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (T * (*copier) (const T&))
                 : fCopier (copier)
             {
             }
-            template    <typename   T>
-            inline  T*  SharedByValue_CopyByFunction<T>::Copy (const T& t) const
+            template    <typename   T, typename SHARED_IMLP>
+            inline  T*  SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
             {
                 return (*fCopier) (t);
             }
 
 
 
-            template    <typename   T>
-            inline  T*  SharedByValue_CopyByDefault<T>::Copy (const T& t)
+            template    <typename   T, typename SHARED_IMLP>
+            inline  T*  SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
             {
                 return new T (t);
             }

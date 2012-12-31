@@ -32,7 +32,7 @@ namespace   Stroika {
              *  It is not the most efficient approach (since it stores an actual pointer for the
              *  copy function. But its very simple and usually adequate.
              */
-            template    <typename   T>
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T> >
             struct  SharedByValue_CopyByFunction {
 #if     qCompilerAndStdLib_Supports_lambda_default_argument
                 SharedByValue_CopyByFunction (T * (*copier) (const T&) = [](const T& t) { return new T (t); });
@@ -51,7 +51,7 @@ namespace   Stroika {
              * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
              * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
              */
-            template    <typename   T>
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T> >
             struct  SharedByValue_CopyByDefault {
                 static  T*  Copy (const T& t);
             };
@@ -62,8 +62,15 @@ namespace   Stroika {
              *          for SharedByValue<>
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
+             *
+             *  Design Note:
+             *      We considered re-ordering the template parameters so that SHARED_IMPL came first.
+             *      This would be better in some ways becauses the SHARED_IMPL must be passed as a
+             *      parameter to SharedByValue_CopyByDefault<>. But since its fairly common to override
+             *      the COPIER, and rare to overrided the SHARED_PTR_IMPL (and since we cannot
+             *      overload) - we chose this ordering of template parameters.
             */
-            template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T>, typename SHARED_IMLP = shared_ptr<T> >
+            template    <typename   T, typename COPIER = SharedByValue_CopyByDefault<T, shared_ptr<T> >, typename SHARED_IMLP = shared_ptr<T> >
             struct   SharedByValue_Traits {
                 typedef T               element_type;
                 typedef COPIER          copier_type;
