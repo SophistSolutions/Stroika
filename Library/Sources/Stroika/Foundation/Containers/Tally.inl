@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_Tally_inl_
 #define _Stroika_Foundation_Containers_Tally_inl_
 
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
 #include    "../Debug/Assertions.h"
 #include    "Tally.h"
 
@@ -28,7 +34,6 @@ namespace   Stroika {
             };
 
 
-
             /**
              * Protected helper class to convert from an iterator of TallyEntries
              * to an iterator over individual items.
@@ -50,10 +55,6 @@ namespace   Stroika {
             private:
                 Iterator<TallyEntry<T>> fDelegateTo_;
             };
-
-
-
-
 
 
             /*
@@ -93,8 +94,6 @@ namespace   Stroika {
             }
 
 
-
-
             /*
              ********************************************************************************
              ********************** Tally<T>::TallyMutator::IRep ****************************
@@ -105,8 +104,6 @@ namespace   Stroika {
                 : Iterator<TallyEntry<T>>::IRep ()
             {
             }
-
-
 
 
             /*
@@ -131,8 +128,6 @@ namespace   Stroika {
             }
 
 
-
-
             /*
              ********************************************************************************
              **************************** Tally<T>::_IRep ***********************************
@@ -142,10 +137,6 @@ namespace   Stroika {
             inline  Tally<T>::_IRep::_IRep ()
             {
             }
-
-
-
-
 
 
             /*
@@ -345,12 +336,6 @@ namespace   Stroika {
             }
 
 
-
-
-
-
-
-
             /*
              ********************************************************************************
              ********************** Tally<T>::_TallyEntryToItemIterator *********************
@@ -388,6 +373,7 @@ namespace   Stroika {
                 AssertNotImplemented ();
                 return false;
             }
+
 
         }
     }

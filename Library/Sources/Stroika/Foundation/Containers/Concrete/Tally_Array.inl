@@ -4,11 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_Tally_Array_inl_
 #define _Stroika_Foundation_Containers_Tally_Array_inl_ 1
 
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
 #include    "Private/Array.h"
 
 #include    "../../Memory/BlockAllocated.h"
-
-
 
 
 namespace   Stroika {
@@ -16,7 +20,9 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+
                 using namespace Private;
+
 
                 template    <typename T>
                 class   Tally_Array<T>::Rep_ : public Tally<T>::_IRep {
@@ -59,6 +65,7 @@ namespace   Stroika {
                     friend  class   MutatorRep_;
                 };
 
+
                 template    <typename T>
                 class  Tally_Array<T>::MutatorRep_ : public Tally<T>::TallyMutator::IRep {
                 private:
@@ -83,14 +90,6 @@ namespace   Stroika {
                     ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator;
                     friend  class   Tally_Array<T>::Rep_;
                 };
-
-
-
-
-
-
-
-
 
 
                 /*
@@ -137,9 +136,6 @@ namespace   Stroika {
                         fIterator.UpdateCurrent (c);
                     }
                 }
-
-
-
 
 
                 /*
@@ -271,11 +267,6 @@ namespace   Stroika {
                 }
 
 
-
-
-
-
-
                 /*
                  ********************************************************************************
                  ********************************* Tally_Array<T> *******************************
@@ -330,6 +321,7 @@ namespace   Stroika {
                 {
                     GetRep ().fData.SetCapacity (slotsAlloced);
                 }
+
 
             }
         }

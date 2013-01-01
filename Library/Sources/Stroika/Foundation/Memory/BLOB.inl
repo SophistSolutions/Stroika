@@ -4,7 +4,6 @@
 #ifndef _Stroika_Foundation_Memory_BLOB_inl_
 #define _Stroika_Foundation_Memory_BLOB_inl_   1
 
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

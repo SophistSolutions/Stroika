@@ -4,14 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_inl_
 #define _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_inl_    1
 
-
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 
 #include    "Private/LinkedList.h"
 
 #include    "../../Memory/BlockAllocated.h"
-
-
-
 
 
 namespace   Stroika {
@@ -79,12 +80,6 @@ namespace   Stroika {
                 };
 
 
-
-
-
-
-
-
                 /*
                  ********************************************************************************
                  ********************** Tally_LinkedList<T>::MutatorRep_ ************************
@@ -128,12 +123,6 @@ namespace   Stroika {
                         fIterator.UpdateCurrent (c);
                     }
                 }
-
-
-
-
-
-
 
 
                 /*
@@ -268,8 +257,6 @@ namespace   Stroika {
                 }
 
 
-
-
                 /*
                  ********************************************************************************
                  **************************** Tally_LinkedList<T> *******************************
@@ -303,6 +290,7 @@ namespace   Stroika {
                     Tally<T>::operator= (src);
                     return (*this);
                 }
+
 
             }
         }

@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Bag_Array_inl_
 #define _Stroika_Foundation_Containers_Concrete_Bag_Array_inl_
 
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "Private/Array.h"
