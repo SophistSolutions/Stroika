@@ -18,7 +18,11 @@ namespace   Stroika {
         namespace   Characters {
 
 
-            //  class   String::_Rep
+            /*
+            ********************************************************************************
+            ********************************* String::_Rep *********************************
+            ********************************************************************************
+            */
             inline  String::_Rep::_Rep ()
             {
             }
@@ -42,7 +46,11 @@ namespace   Stroika {
 
 
 
-            //  class   String
+            /*
+            ********************************************************************************
+            ************************************* String ***********************************
+            ********************************************************************************
+            */
             inline  String::String (const String& from)
                 : _fRep (from._fRep)
             {
@@ -368,7 +376,11 @@ namespace   Stroika {
 
 
 
-            //  class   String_BufferedArray
+            /*
+            ********************************************************************************
+            ************************** String_BufferedArray ********************************
+            ********************************************************************************
+            */
             inline  String_BufferedArray::String_BufferedArray (const String_BufferedArray& s)
                 : String (s)
             {
@@ -381,7 +393,11 @@ namespace   Stroika {
 
 
 
-            //  class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly
+            /*
+            ********************************************************************************
+            ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly **********
+            ********************************************************************************
+            */
             inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
                 : String (s)
             {
@@ -393,7 +409,12 @@ namespace   Stroika {
             }
 
 
-            //  class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
+
+            /*
+            ********************************************************************************
+            ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite *********
+            ********************************************************************************
+            */
             inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s)
                 : String (s)
             {

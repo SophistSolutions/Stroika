@@ -17,9 +17,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
-
-
-
+            /*
+            ********************************************************************************
+            ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
+            ********************************************************************************
+            */
 #if     !qCompilerAndStdLib_Supports_lambda_default_argument
             template    <typename   T, typename SHARED_IMLP>
             T*  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t)
@@ -40,6 +42,11 @@ namespace   Stroika {
 
 
 
+            /*
+            ********************************************************************************
+            *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
+            ********************************************************************************
+            */
             template    <typename   T, typename SHARED_IMLP>
             inline  T*  SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
             {
@@ -49,6 +56,11 @@ namespace   Stroika {
 
 
 
+            /*
+            ********************************************************************************
+            ****************************** SharedByValue<TRAITS> ***************************
+            ********************************************************************************
+            */
             template    <typename TRAITS>
             inline  SharedByValue<TRAITS>::SharedByValue ()
                 : fCopier_ (copier_type ())

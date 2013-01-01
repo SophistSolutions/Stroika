@@ -15,7 +15,6 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
-
                 template    <typename T>
                 class   Bag_LinkedList<T>::Rep_ : public Bag<T>::_IRep {
                 public:
@@ -79,7 +78,11 @@ namespace   Stroika {
 
 
 
-                //  class   Bag_LinkedList<T>::Rep_
+                /*
+                ********************************************************************************
+                ****************************** Bag_LinkedList<T>::Rep_ *************************
+                ********************************************************************************
+                */
                 template    <typename T>
                 inline  Bag_LinkedList<T>::Rep_::Rep_ ()
                     : fData_ ()
@@ -162,7 +165,11 @@ namespace   Stroika {
 
 
 
-                //Bag_LinkedList<T>::IteratorRep_
+                /*
+                ********************************************************************************
+                ********************** Bag_LinkedList<T>::IteratorRep_ *************************
+                ********************************************************************************
+                */
                 template    <typename T>
                 Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner)
                     : fIterator_ (owner.fData_)
@@ -193,7 +200,11 @@ namespace   Stroika {
 
 
 
-                // Bag_LinkedList
+                /*
+                ********************************************************************************
+                ********************************* Bag_LinkedList<T> ****************************
+                ********************************************************************************
+                */
                 template    <typename T>
                 Bag_LinkedList<T>::Bag_LinkedList ()
                     : Bag<T> (new Rep_ ())
