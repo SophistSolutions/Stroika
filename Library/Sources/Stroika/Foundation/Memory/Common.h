@@ -14,8 +14,12 @@
 /*
  * TODO:
  *
- *      o   See if Valgrind works well tracking leaks. If so - even on windows - see about just losing DEBUG_NEW code!
- *          (maybe http://code.google.com/p/drmemory/ - or http://www.codersnotes.com/sleepy
+ *      @todo   See if Valgrind works well tracking leaks. If so - even on windows - see about just losing
+ *              DEBUG_NEW code! (maybe http://code.google.com/p/drmemory/
+ *              - or http://www.codersnotes.com/sleepy
+ *
+ *              SERIOUSLY consider losing DEBUG_NEW anyhow - because it really interacts badly with overloaded
+ *              operator new - such as with block allocation.
  */
 
 
@@ -50,7 +54,7 @@
 
 
 
-/*
+/**
  * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
  * to 'new' so it can be safely used in places where the global new operator would have been used.
  *      -- LGP 2009-05-25
