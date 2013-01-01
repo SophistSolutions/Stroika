@@ -17,6 +17,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
+
             /*
             ********************************************************************************
             ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
@@ -41,7 +42,6 @@ namespace   Stroika {
             }
 
 
-
             /*
             ********************************************************************************
             *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
@@ -52,8 +52,6 @@ namespace   Stroika {
             {
                 return new T (t);
             }
-
-
 
 
             /*
@@ -194,6 +192,7 @@ namespace   Stroika {
                 *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr), fCopier_);
                 Ensure (fSharedImpl_.unique ());
             }
+
 
         }
     }

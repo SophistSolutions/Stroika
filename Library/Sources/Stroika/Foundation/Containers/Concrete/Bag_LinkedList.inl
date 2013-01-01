@@ -15,6 +15,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+
                 template    <typename T>
                 class   Bag_LinkedList<T>::Rep_ : public Bag<T>::_IRep {
                 public:
@@ -71,11 +72,6 @@ namespace   Stroika {
                 private:
                     friend  class   Bag_LinkedList<T>::Rep_;
                 };
-
-
-
-
-
 
 
                 /*
@@ -164,7 +160,6 @@ namespace   Stroika {
                 }
 
 
-
                 /*
                 ********************************************************************************
                 ********************** Bag_LinkedList<T>::IteratorRep_ *************************
@@ -196,8 +191,6 @@ namespace   Stroika {
                 {
                     return (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
                 }
-
-
 
 
                 /*
@@ -234,6 +227,7 @@ namespace   Stroika {
                     Bag<T>::operator= (bag);
                     return (*this);
                 }
+
 
             }
         }

@@ -14,6 +14,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             /*
             ********************************************************************************
             *********************** Iterator<T>::Rep_Cloner_ *******************************
@@ -24,6 +25,7 @@ namespace   Stroika {
             {
                 return Iterator<T>::Clone_ (t);
             }
+
 
             /*
             ********************************************************************************
@@ -38,7 +40,6 @@ namespace   Stroika {
             inline Iterator<T>::IRep::~IRep ()
             {
             }
-
 
 
             /*
@@ -210,6 +211,7 @@ namespace   Stroika {
                 static  Iterator<T> kSentinal_ = Iterator<T> (Iterator<T>::SharedByValueRepType (new RepSentinal_ ()));
                 return kSentinal_;
             }
+
 
         }
     }

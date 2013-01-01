@@ -16,7 +16,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
-            //  class   Optional::Optional<T>
+
+            /*
+             ********************************************************************************
+             ********************************** Optional<T> *********************************
+             ********************************************************************************
+             */
             template    <typename T>
             inline  Optional<T>::Optional ()
                 : fValue_ (nullptr)
@@ -119,6 +124,7 @@ namespace   Stroika {
             {
                 return not (*this == rhs);
             }
+
 
         }
     }

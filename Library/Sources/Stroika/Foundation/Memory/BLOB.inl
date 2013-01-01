@@ -32,15 +32,17 @@ namespace   Stroika {
             };
 
 
-
-            //  class BLOB::_IRep
+            /*
+             ********************************************************************************
+             *********************************** BLOB::_IRep ********************************
+             ********************************************************************************
+             */
             inline  BLOB::_IRep::_IRep ()
             {
             }
             inline  BLOB::_IRep::~_IRep ()
             {
             }
-
 
 
             struct  BLOB::BasicRep_ : public _IRep {
@@ -56,6 +58,7 @@ namespace   Stroika {
                 DECLARE_USE_BLOCK_ALLOCATION (BasicRep_);
             };
 
+
             struct  BLOB::ZeroRep_ : public _IRep {
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
@@ -65,8 +68,11 @@ namespace   Stroika {
             };
 
 
-
-            //  class   BLOB
+            /*
+             ********************************************************************************
+             ************************************** BLOB ************************************
+             ********************************************************************************
+             */
             inline  BLOB::BLOB ()
                 : fRep_ (DEBUG_NEW ZeroRep_ ())
             {
