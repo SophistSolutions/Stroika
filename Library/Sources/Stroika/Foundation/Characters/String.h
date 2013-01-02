@@ -522,7 +522,7 @@ namespace   Stroika {
             protected:
                 class   _Rep;
                 struct  _Rep_Cloner {
-                    inline  static  _Rep*   Copy (const _Rep& t) {
+                    inline  static  shared_ptr<_Rep>   Copy (const _Rep& t) {
                         return String::Clone_ (t);
                     }
                 };
@@ -537,11 +537,11 @@ namespace   Stroika {
                 _SharedRepPtr _fRep;
 
             protected:
-                static  _Rep*   Clone_ (const _Rep& rep);
+                static  shared_ptr<_Rep>   Clone_ (const _Rep& rep);
 
             private:
                 /*
-                 * These are made friends so they can peek at the shared part, as an optimization/
+                 * These are made friends so they can peek at the shared part, as an optimization.
                  */
                 friend  bool    operator== (const String& lhs, const String& rhs);
                 friend  bool    operator!= (const String& lhs, const String& rhs);
@@ -585,7 +585,7 @@ namespace   Stroika {
             public:
                 virtual ~_Rep ();
 
-                virtual _Rep*   Clone () const                      = 0;
+                virtual shared_ptr<_Rep>   Clone () const           = 0;
 
                 virtual size_t  GetLength () const                  = 0;
                 virtual bool    Contains (Character item) const     = 0;

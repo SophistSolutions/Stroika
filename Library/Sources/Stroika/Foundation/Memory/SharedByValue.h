@@ -34,14 +34,14 @@ namespace   Stroika {
              */
             template    <typename   T, typename SHARED_IMLP = shared_ptr<T> >
             struct  SharedByValue_CopyByFunction {
-#if     qCompilerAndStdLib_Supports_lambda_default_argument
-                SharedByValue_CopyByFunction (T * (*copier) (const T&) = [](const T& t) { return new T (t); });
+#if     qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); });
 #else
-                static  T*  DefaultElementCopier_ (const T& t);
-                SharedByValue_CopyByFunction (T * (*copier) (const T&) = DefaultElementCopier_);
+                static  SHARED_IMLP  DefaultElementCopier_ (const T& t);
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = DefaultElementCopier_);
 #endif
-                nonvirtual  T*  Copy (const T& t) const;
-                T*      (*fCopier) (const T&);
+                nonvirtual  SHARED_IMLP  Copy (const T& t) const;
+                SHARED_IMLP      (*fCopier) (const T&);
             };
 
 
@@ -53,7 +53,7 @@ namespace   Stroika {
              */
             template    <typename   T, typename SHARED_IMLP = shared_ptr<T> >
             struct  SharedByValue_CopyByDefault {
-                static  T*  Copy (const T& t);
+                static  SHARED_IMLP  Copy (const T& t);
             };
 
 

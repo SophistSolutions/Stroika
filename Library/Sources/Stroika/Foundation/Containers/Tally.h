@@ -140,7 +140,7 @@ namespace   Stroika {
                 virtual size_t  TallyOf (T item) const                          =   0;
 
             public:
-                virtual typename Iterator<TallyEntry<T> >::IRep*    MakeTallyIterator () const    =   0;
+                virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep>    MakeTallyIterator () const    =   0;
                 virtual TallyMutator                         MakeTallyMutator ()     =   0;
             };
 

@@ -95,7 +95,7 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  _IRep*  Copy (const _IRep& t) {
+                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t) {
                         return Iterable<T>::Clone_ (t);
                     }
                 };
@@ -238,7 +238,7 @@ namespace   Stroika {
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             private:
-                static  _IRep*  Clone_ (const _IRep& rep);
+                static  shared_ptr<_IRep>  Clone_ (const _IRep& rep);
 
             private:
                 _SharedByValueRepType    fRep_;
@@ -270,7 +270,7 @@ namespace   Stroika {
 #endif
 
             public:
-                virtual _IRep*          Clone () const                                              =   0;
+                virtual shared_ptr<_IRep>          Clone () const                                   =   0;
                 virtual Iterator<T>     MakeIterator () const                                       =   0;
                 virtual size_t          GetLength () const                                          =   0;
                 virtual bool            IsEmpty () const                                            =   0;

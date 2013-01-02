@@ -34,7 +34,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual typename Iterable<T>::_IRep*    Clone () const override;
+                    virtual shared_ptr<typename Iterable<T>::_IRep>    Clone () const override;
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
                     virtual Iterator<T>                     MakeIterator () const override;
@@ -49,7 +49,7 @@ namespace   Stroika {
                     virtual void        Add (T item, size_t count) override;
                     virtual void        Remove (T item, size_t count) override;
                     virtual size_t      TallyOf (T item) const override;
-                    virtual typename Iterator<TallyEntry<T> >::IRep*    MakeTallyIterator () const override;
+                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep>    MakeTallyIterator () const override;
                     virtual TallyMutator                         MakeTallyMutator () override;
 
                 private:
@@ -80,7 +80,7 @@ namespace   Stroika {
                 public:
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
                     virtual bool            StrongEquals (typename const Iterator<TallyEntry<T> >::IRep* rhs) const override;
-                    virtual typename Iterator<TallyEntry<T> >::IRep* Clone () const override;
+                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
 
                 public:
                     virtual void    RemoveCurrent () override;
@@ -115,9 +115,9 @@ namespace   Stroika {
                     return false;
                 }
                 template    <typename T>
-                typename Iterator<TallyEntry<T> >::IRep* Tally_Array<T>::MutatorRep_::Clone () const
+                shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Tally_Array<T>::MutatorRep_::Clone () const
                 {
-                    return (new MutatorRep_ (*this));
+                    return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new MutatorRep_ (*this));
                 }
                 template    <typename T>
                 void    Tally_Array<T>::MutatorRep_::RemoveCurrent ()
@@ -186,9 +186,9 @@ namespace   Stroika {
                     fData.Compact ();
                 }
                 template    <typename T>
-                typename Iterable<T>::_IRep*    Tally_Array<T>::Rep_::Clone () const
+                shared_ptr<typename Iterable<T>::_IRep>    Tally_Array<T>::Rep_::Clone () const
                 {
-                    return (new Rep_ (*this));
+                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Add (T item, size_t count)
@@ -237,11 +237,11 @@ namespace   Stroika {
                     return (tmp.fCount);
                 }
                 template    <typename T>
-                typename Iterator<TallyEntry<T> >::IRep* Tally_Array<T>::Rep_::MakeTallyIterator () const
+                shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Tally_Array<T>::Rep_::MakeTallyIterator () const
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators
-                    return (new MutatorRep_ (*const_cast<Rep_*> (this)));
+                    return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new MutatorRep_ (*const_cast<Rep_*> (this)));
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator     Tally_Array<T>::Rep_::MakeTallyMutator ()

@@ -167,7 +167,7 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    static  IRep*  Copy (const IRep& t);
+                    static  shared_ptr<IRep>  Copy (const IRep& t);
                 };
 
             public:
@@ -444,7 +444,7 @@ namespace   Stroika {
                 T       fCurrent_;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
-                static  IRep*    Clone_ (const IRep& rep);
+                static  shared_ptr<IRep>    Clone_ (const IRep& rep);
             };
 
 
@@ -484,7 +484,7 @@ namespace   Stroika {
                  * Clone() makes a copy of the state of this iterator, which can separately be tracked with StrongEquals ()
                  * and/or More() to get values and move forward through the iteration.
                  */
-                virtual IRep*   Clone () const                      = 0;
+                virtual shared_ptr<IRep>   Clone () const                      = 0;
                 /**
                  *  More () is dual function - depending on its arguments. If advance is true, it moves the
                  *  iterator to the next legal position.

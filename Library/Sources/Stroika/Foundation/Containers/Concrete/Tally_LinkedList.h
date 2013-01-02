@@ -42,6 +42,9 @@ namespace   Stroika {
                     nonvirtual  Tally_LinkedList<T>& operator= (const Tally_LinkedList<T>& src);
 
                 private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
                     class   Rep_;
                     class   MutatorRep_;
                 };

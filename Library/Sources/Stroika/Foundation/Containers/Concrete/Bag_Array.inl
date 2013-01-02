@@ -33,7 +33,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual typename Iterable<T>::_IRep*    Clone () const override;
+                    virtual shared_ptr<typename Iterable<T>::_IRep>    Clone () const override;
                     virtual Iterator<T>                     MakeIterator () const override;
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
@@ -66,7 +66,7 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::IRep*     Clone () const override;
+                    virtual shared_ptr<typename Iterator<T>::IRep>     Clone () const override;
                     virtual bool                            More (T* current, bool advance) override;
                     virtual bool                            StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
 
@@ -101,9 +101,9 @@ namespace   Stroika {
                     return false;
                 }
                 template    <typename T>
-                typename Iterator<T>::IRep*  Bag_Array<T>::IteratorRep_::Clone () const
+                shared_ptr<typename Iterator<T>::IRep>  Bag_Array<T>::IteratorRep_::Clone () const
                 {
-                    return (new IteratorRep_ (*this));
+                    return shared_ptr<typename Iterator<T>::IRep> (new IteratorRep_ (*this));
                 }
 
 
@@ -122,9 +122,9 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                typename Iterable<T>::_IRep*  Bag_Array<T>::Rep_::Clone () const
+                shared_ptr<typename Iterable<T>::_IRep>  Bag_Array<T>::Rep_::Clone () const
                 {
-                    return (new Rep_ (*this));
+                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
                 }
                 template    <typename T>
                 Iterator<T>  Bag_Array<T>::Rep_::MakeIterator () const

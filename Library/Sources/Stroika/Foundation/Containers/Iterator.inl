@@ -21,7 +21,7 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename T>
-            inline  typename    Iterator<T>::IRep*  Iterator<T>::Rep_Cloner_::Copy (const IRep& t)
+            inline  shared_ptr<typename    Iterator<T>::IRep>  Iterator<T>::Rep_Cloner_::Copy (const IRep& t)
             {
                 return Iterator<T>::Clone_ (t);
             }
@@ -187,7 +187,7 @@ namespace   Stroika {
                 return not operator== (rhs);
             }
             template    <typename T>
-            inline  typename Iterator<T>::IRep*   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
+            inline  shared_ptr<typename Iterator<T>::IRep>   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
             {
                 return rep.Clone ();
             }
@@ -203,7 +203,7 @@ namespace   Stroika {
                         RequireNotNull (rhs);
                         return (rhs == this) or const_cast<typename Iterator<T>::IRep*> (rhs)->More (nullptr, false);
                     }
-                    virtual IRep*    Clone () const override {
+                    virtual shared_ptr<IRep>    Clone () const override {
                         RequireNotReached ();
                         return nullptr;
                     }

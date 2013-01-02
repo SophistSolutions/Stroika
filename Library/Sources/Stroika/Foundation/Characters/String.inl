@@ -57,12 +57,12 @@ namespace   Stroika {
             inline  String& String::operator= (const String& newString)
             {
                 _fRep = newString._fRep;
-                return (*this);
+                return *this;
             }
             inline  String::~String ()
             {
             }
-            inline  String::_Rep*   String::Clone_ (const _Rep& rep)
+            inline  shared_ptr<String::_Rep>   String::Clone_ (const _Rep& rep)
             {
                 return (rep.Clone ());
             }

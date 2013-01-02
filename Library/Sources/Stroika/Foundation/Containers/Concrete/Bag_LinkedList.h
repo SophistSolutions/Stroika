@@ -35,6 +35,9 @@ namespace   Stroika {
                     nonvirtual  Bag_LinkedList<T>&  operator= (const Bag_LinkedList<T>& bag);
 
                 private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
                     class   Rep_;
                     class   IteratorRep_;
                 };

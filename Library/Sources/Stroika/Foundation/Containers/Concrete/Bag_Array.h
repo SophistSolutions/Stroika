@@ -44,14 +44,17 @@ namespace   Stroika {
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
                     class   Rep_;
+                    class   IteratorRep_;
+
                 private:
                     nonvirtual  const Rep_&  GetRep_ () const;
                     nonvirtual  Rep_&        GetRep_ ();
-
-                private:
-                    class   IteratorRep_;
                 };
+
 
             }
         }

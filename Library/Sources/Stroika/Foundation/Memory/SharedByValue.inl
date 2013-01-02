@@ -23,20 +23,20 @@ namespace   Stroika {
             ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
             ********************************************************************************
             */
-#if     !qCompilerAndStdLib_Supports_lambda_default_argument
+#if     !qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
             template    <typename   T, typename SHARED_IMLP>
-            T*  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t)
+            SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t)
             {
-                return new T (t);
+                return SHARED_IMLP (new T (t));
             }
 #endif
             template    <typename   T, typename SHARED_IMLP>
-            inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (T * (*copier) (const T&))
+            inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&))
                 : fCopier (copier)
             {
             }
             template    <typename   T, typename SHARED_IMLP>
-            inline  T*  SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
+            inline  SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
             {
                 return (*fCopier) (t);
             }
@@ -48,9 +48,9 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename   T, typename SHARED_IMLP>
-            inline  T*  SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
+            inline  SHARED_IMLP  SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
             {
-                return new T (t);
+                return SHARED_IMLP (new T (t));
             }
 
 
@@ -80,7 +80,7 @@ namespace   Stroika {
             template    <typename TRAITS>
             inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const copier_type& copier)
                 : fCopier_ (copier)
-                , fSharedImpl_ (from.fSharedImpl_)
+                , fSharedImpl_ (from)
             {
             }
             template    <typename TRAITS>

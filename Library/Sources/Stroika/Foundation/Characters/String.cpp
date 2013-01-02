@@ -377,8 +377,8 @@ namespace   {
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
             : BufferedStringRep_ (start, end, reserve) {
         }
-        virtual _Rep*   Clone () const override {
-            return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        virtual shared_ptr<_Rep>   Clone () const override {
+            return shared_ptr<_Rep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -402,12 +402,12 @@ public:
         : _ReadOnlyRep (start, end) {
         Require (start + ::wcslen (start) == end);
     }
-    virtual _Rep*   Clone () const override {
+    virtual shared_ptr<_Rep>   Clone () const override {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
          * make a rep that is modifyable
          */
-        return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return shared_ptr<_Rep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
     virtual const wchar_t*  c_str_peek () const  noexcept override {
         // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
@@ -438,12 +438,12 @@ public:
     MyRep_ (wchar_t* start, wchar_t* end)
         : _ReadWriteRep (start, end) {
     }
-    virtual _Rep*   Clone () const override {
+    virtual shared_ptr<_Rep>   Clone () const override {
         /*
          * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
          * one can use it, and the other must make a copy.
          */
-        return (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return shared_ptr<_Rep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
 public:
     DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -517,7 +517,7 @@ static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t mu
 
 namespace   {
     struct  MyEmptyString_ : String {
-        static  String::_Rep*   Clone_ (const _Rep& rep) {
+        static  shared_ptr<String::_Rep>   Clone_ (const _Rep& rep) {
             return (rep.Clone ());
         }
         static  _SharedRepPtr mkEmptyStrRep_ () {
@@ -1244,7 +1244,7 @@ String_Substring_::MyRep_::MyRep_ (const _SharedRepPtr& baseString, size_t from,
     Require ((from + length) <= fBase->GetLength ());
 }
 
-String::_Rep*   String_Substring_::MyRep_::Clone () const
+shared_ptr<String::_Rep>   String_Substring_::MyRep_::Clone () const
 {
     return (new String_CharArray::MyRep_ (Peek (), GetLength ()));
 }
