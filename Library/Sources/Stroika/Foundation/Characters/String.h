@@ -216,6 +216,7 @@ namespace   Stroika {
                 String (const Character* from, const Character* to);
                 String (const std::wstring& r);
                 String (const String& from);
+                String (const String&& from);
                 ~String ();
 
                 nonvirtual  String& operator= (const String& newString);
@@ -520,24 +521,27 @@ namespace   Stroika {
                 nonvirtual  String      substr (size_t from, size_t count = kBadStringIndex) const;
 
             protected:
-                class   _Rep;
+                class   _IRep;
+            protected:
+                static  shared_ptr<_IRep>   _Clone (const _IRep& rep);
+
+            protected:
                 struct  _Rep_Cloner {
-                    inline  static  shared_ptr<_Rep>   Copy (const _Rep& t) {
-                        return String::Clone_ (t);
+                    inline  static  shared_ptr<_IRep>   Copy (const _IRep& t) {
+                        return String::_Clone (t);
                     }
                 };
 
             protected:
-                enum _REPCTOR { _eRepCTOR };
-                // _Rep MUST be not-null
-                String (_Rep* sharedPart, _REPCTOR);
-
-            protected:
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_Rep, _Rep_Cloner>>  _SharedRepPtr;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _Rep_Cloner>>  _SharedRepPtr;
                 _SharedRepPtr _fRep;
 
             protected:
-                static  shared_ptr<_Rep>   Clone_ (const _Rep& rep);
+                /**
+                 * rep MUST be not-null
+                 */
+                String (const _SharedRepPtr::shared_ptr_type& rep);
+                String (const _SharedRepPtr::shared_ptr_type && rep);
 
             private:
                 /*
@@ -575,41 +579,41 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              * Protected helper Rep class.
              */
-            class   String::_Rep {
+            class   String::_IRep {
             protected:
-                _Rep ();
+                _IRep ();
 
             public:
-                virtual ~_Rep ();
+                virtual ~_IRep ();
 
-                virtual shared_ptr<_Rep>   Clone () const           = 0;
+                virtual shared_ptr<_IRep>   Clone () const                          = 0;
 
-                virtual size_t  GetLength () const                  = 0;
-                virtual bool    Contains (Character item) const     = 0;
-                virtual void    RemoveAll ()                        = 0;
+                virtual size_t              GetLength () const                      = 0;
+                virtual bool                Contains (Character item) const         = 0;
+                virtual void                RemoveAll ()                            = 0;
 
-                virtual Character   GetAt (size_t index) const              = 0;
-                virtual void        SetAt (Character item, size_t index)    = 0;
+                virtual Character           GetAt (size_t index) const              = 0;
+                virtual void                SetAt (Character item, size_t index)    = 0;
                 // This rep is NEVER called with nullptr src/end nor start==end
-                virtual void        InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
-                virtual void        RemoveAt (size_t index, size_t nCharsToRemove)  = 0;
+                virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
+                virtual void                RemoveAt (size_t index, size_t nCharsToRemove)  = 0;
 
-                virtual void    SetLength (size_t newLength)                = 0;
+                virtual void                SetLength (size_t newLength)            = 0;
 
                 // return nullptr if its not already NUL-terminated
-                virtual const wchar_t*      c_str_peek () const noexcept    = 0;
+                virtual const wchar_t*      c_str_peek () const noexcept            = 0;
 
                 // change rep so its NUL-termainted
-                virtual const wchar_t*      c_str_change ()                 = 0;
+                virtual const wchar_t*      c_str_change ()                         = 0;
 
-                virtual const Character*    Peek () const                   = 0;
+                virtual const Character*    Peek () const                           = 0;
 
-                virtual pair<const Character*, const Character*> GetData () const    = 0;
+                virtual pair<const Character*, const Character*> GetData () const   = 0;
 
-                virtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const   =   0;
+                virtual int                 Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const   =   0;
 
             public:
                 /*
@@ -727,6 +731,9 @@ namespace   Stroika {
                 String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);
 
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 class   MyRep_;
             };
 
@@ -781,6 +788,9 @@ namespace   Stroika {
                 String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s);
 
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 class   MyRep_;
             };
 

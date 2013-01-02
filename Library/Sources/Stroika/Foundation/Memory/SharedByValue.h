@@ -112,7 +112,9 @@ namespace   Stroika {
                 SharedByValue ();
                 SharedByValue (nullptr_t n);
                 SharedByValue (const SharedByValue<TRAITS>& from);
+                SharedByValue (const SharedByValue<TRAITS> && from);
                 explicit SharedByValue (const shared_ptr_type& from, const copier_type& copier = copier_type ());
+                explicit SharedByValue (const shared_ptr_type && from, const copier_type& copier = copier_type ());
                 explicit SharedByValue (element_type* from, const copier_type& copier = copier_type ());
 
             public:

@@ -55,9 +55,9 @@ namespace   {
 
 namespace   {
 
-    // This is a utility class to implement most of the basic String::_Rep functionality
+    // This is a utility class to implement most of the basic String::_IRep functionality
     struct  HELPER_ : String {
-        struct  _ReadOnlyRep : public String::_Rep {
+        struct  _ReadOnlyRep : public String::_IRep {
         public:
             _ReadOnlyRep (const wchar_t* start, const wchar_t* end)
                 : _fStart (start)
@@ -166,7 +166,7 @@ namespace   {
             const wchar_t*  _fEnd;
         };
 
-        // This is a utility class to implement most of the basic String::_Rep functionality. This implements functions that change the string, but dont GROW it,
+        // This is a utility class to implement most of the basic String::_IRep functionality. This implements functions that change the string, but dont GROW it,
         // since we don't know in general we can (thats left to subtypes)
         struct  _ReadWriteRep : public _ReadOnlyRep {
         public:
@@ -377,8 +377,8 @@ namespace   {
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
             : BufferedStringRep_ (start, end, reserve) {
         }
-        virtual shared_ptr<_Rep>   Clone () const override {
-            return shared_ptr<_Rep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        virtual shared_ptr<_IRep>   Clone () const override {
+            return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -402,12 +402,12 @@ public:
         : _ReadOnlyRep (start, end) {
         Require (start + ::wcslen (start) == end);
     }
-    virtual shared_ptr<_Rep>   Clone () const override {
+    virtual shared_ptr<_IRep>   Clone () const override {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
          * make a rep that is modifyable
          */
-        return shared_ptr<_Rep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
     virtual const wchar_t*  c_str_peek () const  noexcept override {
         // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
@@ -438,12 +438,12 @@ public:
     MyRep_ (wchar_t* start, wchar_t* end)
         : _ReadWriteRep (start, end) {
     }
-    virtual shared_ptr<_Rep>   Clone () const override {
+    virtual shared_ptr<_IRep>   Clone () const override {
         /*
          * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
          * one can use it, and the other must make a copy.
          */
-        return shared_ptr<_Rep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
 public:
     DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -466,11 +466,11 @@ namespace   {
 
 #if     qString_SubStringClassWorks
     struct String_Substring_ : public String {
-        class   MyRep_ : public String::_Rep {
+        class   MyRep_ : public String::_IRep {
         public:
             MyRep_ (const _SharedRepPtr& baseString, size_t from, size_t length);
 
-            virtual     _Rep*   Clone () const override;
+            virtual     _IRep*   Clone () const override;
 
             virtual     size_t  GetLength () const override;
             virtual     bool    Contains (Character item) const override;
@@ -484,7 +484,7 @@ namespace   {
             virtual     void    SetLength (size_t newLength) override;
 
             virtual     const Character*    Peek () const override;
-            virtual int Compare (const _Rep& rhs, CompareOptions co) const override;
+            virtual int Compare (const _IRep& rhs, CompareOptions co) const override;
 
         private:
             _SharedRepPtr fBase;
@@ -517,7 +517,7 @@ static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t mu
 
 namespace   {
     struct  MyEmptyString_ : String {
-        static  shared_ptr<String::_Rep>   Clone_ (const _Rep& rep) {
+        static  shared_ptr<String::_IRep>   Clone_ (const _IRep& rep) {
             return (rep.Clone ());
         }
         static  _SharedRepPtr mkEmptyStrRep_ () {
@@ -573,11 +573,16 @@ String::String (const std::wstring& r)
 {
 }
 
-String::String (_Rep* sharedPart, _REPCTOR)
-    : _fRep (sharedPart, _Rep_Cloner ())
+String::String (const _SharedRepPtr::shared_ptr_type& rep)
+    : _fRep (rep, _Rep_Cloner ())
 {
-    RequireNotNull (sharedPart);
-    Require (_fRep.unique ());
+    RequireNotNull (rep.get ());
+}
+
+String::String (const _SharedRepPtr::shared_ptr_type && rep)
+    : _fRep (rep, _Rep_Cloner ())
+{
+    RequireNotNull (rep.get ());
 }
 
 String  String::FromUTF8 (const char* from)
@@ -1076,44 +1081,44 @@ String      String::substr (size_t from, size_t count) const
  ********************************************************************************
  */
 String_BufferedArray::String_BufferedArray ()
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0)))
 {
 }
 
 String_BufferedArray::String_BufferedArray (size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve)))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString, size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve)))
 {
     Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ()), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ())))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str, size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve)))
 {
     Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const String& from)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ()), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ())))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const String& from, size_t reserve)
-    : String (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve)))
 {
     Require (GetLength () <= reserve);
 }
@@ -1146,7 +1151,7 @@ void    String_BufferedArray::reserve (size_t n)
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
-    : String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
 {
 }
 
@@ -1163,7 +1168,7 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemo
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
-    : String (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString)), _eRepCTOR)
+    : String (_SharedRepPtr::shared_ptr_type (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
 {
 }
 
@@ -1244,7 +1249,7 @@ String_Substring_::MyRep_::MyRep_ (const _SharedRepPtr& baseString, size_t from,
     Require ((from + length) <= fBase->GetLength ());
 }
 
-shared_ptr<String::_Rep>   String_Substring_::MyRep_::Clone () const
+shared_ptr<String::_IRep>   String_Substring_::MyRep_::Clone () const
 {
     return (new String_CharArray::MyRep_ (Peek (), GetLength ()));
 }

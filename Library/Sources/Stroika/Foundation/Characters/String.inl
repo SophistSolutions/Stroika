@@ -20,23 +20,23 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ********************************* String::_Rep *********************************
+            ********************************* String::_IRep ********************************
             ********************************************************************************
             */
-            inline  String::_Rep::_Rep ()
+            inline  String::_IRep::_IRep ()
             {
             }
-            inline  String::_Rep::~_Rep ()
+            inline  String::_IRep::~_IRep ()
             {
             }
-            inline  void    String::_Rep::CopyTo (Character* bufFrom, Character* bufTo) const
+            inline  void    String::_IRep::CopyTo (Character* bufFrom, Character* bufTo) const
             {
                 RequireNotNull (bufFrom);
                 Require (bufFrom + GetLength () >= bufTo);
                 size_t  nChars  =   GetLength ();
                 (void)::memcpy (bufFrom, Peek (), nChars * sizeof (Character));
             }
-            inline  void    String::_Rep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
+            inline  void    String::_IRep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
                 RequireNotNull (bufFrom);
                 Require (bufFrom + GetLength () >= bufTo);
@@ -54,6 +54,10 @@ namespace   Stroika {
                 : _fRep (from._fRep)
             {
             }
+            inline  String::String (const String && from)
+                : _fRep (from._fRep)
+            {
+            }
             inline  String& String::operator= (const String& newString)
             {
                 _fRep = newString._fRep;
@@ -62,7 +66,7 @@ namespace   Stroika {
             inline  String::~String ()
             {
             }
-            inline  shared_ptr<String::_Rep>   String::Clone_ (const _Rep& rep)
+            inline  shared_ptr<String::_IRep>   String::_Clone (const _IRep& rep)
             {
                 return (rep.Clone ());
             }
