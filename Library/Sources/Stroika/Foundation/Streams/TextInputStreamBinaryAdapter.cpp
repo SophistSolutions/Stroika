@@ -78,7 +78,7 @@ protected:
                     if (offset > (fTmpHackTextRemaining_.size ())) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
+                    // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
                     fOffset_ = offset;
                 }
                 break;
