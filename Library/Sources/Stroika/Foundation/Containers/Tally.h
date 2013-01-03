@@ -55,6 +55,14 @@ namespace   Stroika {
             bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
 
 
+
+#if     qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
+            template    <typename T>
+            class   Tally;
+            template    <typename T>
+            bool    operator== (const Tally<T>& lhs, const Tally<T>& rhs);
+#endif
+
             /**
              *  A Tally<T> a collection of <T> elements, but where each time you add something, the tally
              *  tracks the number of times that thing has been entered. This is not a commonly used class,
