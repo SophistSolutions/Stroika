@@ -59,7 +59,7 @@ namespace   Stroika {
                     virtual void                                    Add (T item, size_t count) override;
                     virtual void                                    Remove (T item, size_t count) override;
                     virtual size_t                                  TallyOf (T item) const override;
-                    virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const override;
+                    virtual Iterator<T>                             MakeBagIterator () const override;
                     virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
 
                 private:
@@ -251,9 +251,12 @@ namespace   Stroika {
                     return (tmp.fCount);
                 }
                 template    <typename T>
-                shared_ptr<typename Iterator<T>::IRep>    Tally_Array<T>::Rep_::MakeBagIterator () const
+                Iterator<T>    Tally_Array<T>::Rep_::MakeBagIterator () const
                 {
-                    return shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIterator (MakeIterator ()));
+                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIterator (MakeIterator ()))));
+                    //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                    tmp++;
+                    return tmp;
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_Array<T>::Rep_::MakeTallyMutator ()
@@ -292,7 +295,7 @@ namespace   Stroika {
                 template    <typename T>    Tally_Array<T>::Tally_Array (const T* start, const T* end)
                     : Tally<T> (new Rep_ ())
                 {
-                    SetCapacity (end-start);
+                    SetCapacity (end - start);
                     Add (start, end);
                 }
                 template    <typename T>

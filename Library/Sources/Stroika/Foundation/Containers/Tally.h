@@ -175,7 +175,7 @@ namespace   Stroika {
                 virtual size_t  TallyOf (T item) const                          =   0;
 
             public:
-                virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const        =   0;
+                virtual Iterator<T>  MakeBagIterator () const        =   0;
 
                 virtual typename Tally<T>::TallyMutator                            MakeTallyMutator ()             =   0;
             };

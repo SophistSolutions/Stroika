@@ -56,7 +56,7 @@ namespace   Stroika {
                     virtual void    Add (T item, size_t count) override;
                     virtual void    Remove (T item, size_t count) override;
                     virtual size_t  TallyOf (T item) const override;
-                    virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const override;
+                    virtual Iterator<T>  MakeBagIterator () const override;
                     virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
 
                 private:
@@ -258,9 +258,12 @@ namespace   Stroika {
                     return (0);
                 }
                 template    <typename T>
-                shared_ptr<typename Iterator<T>::IRep>    Tally_LinkedList<T>::Rep_::MakeBagIterator () const
+                Iterator<T>    Tally_LinkedList<T>::Rep_::MakeBagIterator () const
                 {
-                    return shared_ptr<typename Iterator<T>::IRep> (new typename Tally<T>::_TallyEntryToItemIterator (MakeIterator ()));
+                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIterator (MakeIterator ()))));
+                    //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
+                    tmp++;
+                    return tmp;
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
