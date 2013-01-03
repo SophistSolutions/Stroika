@@ -58,9 +58,10 @@ namespace   Stroika {
                     virtual void                                    RemoveAll () override;
                     virtual void                                    Add (T item, size_t count) override;
                     virtual void                                    Remove (T item, size_t count) override;
+                    virtual void                                    Remove (const Iterator<TallyEntry<T>>& i) override;
+                    virtual void                                    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
                     virtual size_t                                  TallyOf (T item) const override;
                     virtual Iterator<T>                             MakeBagIterator () const override;
-                    virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
 
                 private:
                     nonvirtual  void    RemoveAt_ (size_t index);
@@ -77,9 +78,9 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                class  Tally_Array<T>::MutatorRep_ : public Tally<T>::TallyMutator::IRep {
+                class  Tally_Array<T>::MutatorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:
-                    typedef     typename Tally<T>::TallyMutator::IRep  inherited;
+                    typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
 
                 public:
                     MutatorRep_ (typename Tally_Array<T>::Rep_& owner);
@@ -92,12 +93,8 @@ namespace   Stroika {
                     virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
                     virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
 
-                public:
-                    virtual void    RemoveCurrent () override;
-                    virtual void    UpdateCount (size_t newCount) override;
-
                 private:
-                    ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator;
+                    mutable ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 
@@ -110,13 +107,13 @@ namespace   Stroika {
                 template    <class  T>
                 Tally_Array<T>::MutatorRep_::MutatorRep_ (typename Tally_Array<T>::Rep_& owner)
                     : inherited ()
-                    , fIterator (owner.fData_)
+                    , fIterator_ (owner.fData_)
                 {
                 }
                 template    <class  T>
                 bool    Tally_Array<T>::MutatorRep_::More (TallyEntry<T>* current, bool advance)
                 {
-                    return (fIterator.More (current, advance));
+                    return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
                 bool    Tally_Array<T>::MutatorRep_::StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const
@@ -128,23 +125,6 @@ namespace   Stroika {
                 shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Tally_Array<T>::MutatorRep_::Clone () const
                 {
                     return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new MutatorRep_ (*this));
-                }
-                template    <typename T>
-                void    Tally_Array<T>::MutatorRep_::RemoveCurrent ()
-                {
-                    fIterator.RemoveCurrent ();
-                }
-                template    <typename T>
-                void    Tally_Array<T>::MutatorRep_::UpdateCount (size_t newCount)
-                {
-                    if (newCount == 0) {
-                        fIterator.RemoveCurrent ();
-                    }
-                    else {
-                        TallyEntry<T>   c   =   fIterator.Current ();
-                        c.fCount = newCount;
-                        fIterator.UpdateCurrent (c);
-                    }
                 }
 
 
@@ -237,9 +217,32 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
+                void    Tally_Array<T>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
+                {
+                    const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, MutatorRep_);
+                    const typename Tally_Array<T>::MutatorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::MutatorRep_&> (ir);
+                    mir.fIterator_.RemoveCurrent ();
+                }
+                template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAll ()
                 {
                     fData_.RemoveAll ();
+                }
+                template    <typename T>
+                void    Tally_Array<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
+                {
+                    const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, MutatorRep_);
+                    const typename Tally_Array<T>::MutatorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::MutatorRep_&> (ir);
+                    if (newCount == 0) {
+                        mir.fIterator_.RemoveCurrent ();
+                    }
+                    else {
+                        TallyEntry<T>   c   =   mir.fIterator_.Current ();
+                        c.fCount = newCount;
+                        mir.fIterator_.UpdateCurrent (c);
+                    }
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::TallyOf (T item) const
@@ -257,11 +260,6 @@ namespace   Stroika {
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
                     return tmp;
-                }
-                template    <typename T>
-                typename Tally<T>::TallyMutator   Tally_Array<T>::Rep_::MakeTallyMutator ()
-                {
-                    return typename Tally<T>::TallyMutator (new MutatorRep_ (*this));
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAt_ (size_t index)

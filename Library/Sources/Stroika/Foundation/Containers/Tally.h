@@ -16,13 +16,6 @@
 /*
  *
  *  TODO:
- *      @todo   consider if this should inherit from Iterable<TallyEntry<T>>. Be sure and document
- *              why we chose one way or the other
- *              (did switch but still must document why)
- *
- *      @todo   Lose mutator code - instead do like I did in Bag<T> code - with update methods taking iteraotr
- *              arugment.
- *
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
  *
@@ -68,6 +61,10 @@ namespace   Stroika {
              *  tracks the number of times that thing has been entered. This is not a commonly used class,
              *  but handy when you want to count things.
              *
+             *  Tally<T> inherits from Iterable<TallyEntry<T>> instead of Iterable<T> because if you are
+             *  using a Tally, you probably want access to the counts as you iterate - not just the
+             *  unique elements (though we make it easy to get that iterator too with MakeBagIterator()).
+             *
              *  A Tally<T> makes no promises about ordering of elements in iteration.
              */
             template    <typename T>
@@ -103,7 +100,19 @@ namespace   Stroika {
                 nonvirtual  void    Remove (T item, size_t count);
 
             public:
+                /**
+                 * This function requires that the iterator 'i' came from this container.
+                 *
+                 * The value pointed to by 'i' is removed.
+                 */
+                nonvirtual  void    Remove (const Iterator<TallyEntry<T>>& i);
+
+            public:
                 nonvirtual  void    RemoveAll (T item);
+
+            public:
+                // if newCount == 0, equivilent to Remove(i). Require not i.Done () - so it must point to a given item.
+                nonvirtual  void    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount);
 
             public:
                 nonvirtual  size_t  TallyOf (T item) const;
@@ -123,20 +132,6 @@ namespace   Stroika {
                 nonvirtual  Iterator<T> MakeBagIterator () const;
                 nonvirtual  Iterator<T> bagbegin () const;
                 nonvirtual  Iterator<T> bagend () const;
-
-
-                // SOON TO BE OBSOLETE MUTATOR CODE - DO LIKE WITH BAG<T>
-            public:
-                class TallyMutator;
-            public:
-                nonvirtual  TallyMutator begin ();
-                nonvirtual  TallyMutator end ();
-
-                // NOTE - once we lose TallyMutator code - we can lose this method too, since
-                // its inherited from Iterable.
-            public:
-                nonvirtual  Iterator<TallyEntry<T>> begin () const;
-                nonvirtual  Iterator<TallyEntry<T>> end () const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -166,37 +161,18 @@ namespace   Stroika {
                 _IRep ();
 
             public:
-                virtual bool    Contains (T item) const                         =   0;
-                virtual size_t  GetLength () const                              =   0;
-                virtual void    Compact ()                                      =   0;
-                virtual void    RemoveAll ()                                    =   0;
-                virtual void    Add (T item, size_t count)                      =   0;
-                virtual void    Remove (T item, size_t count)                   =   0;
-                virtual size_t  TallyOf (T item) const                          =   0;
+                virtual bool    Contains (T item) const                                         =   0;
+                virtual size_t  GetLength () const                                              =   0;
+                virtual void    Compact ()                                                      =   0;
+                virtual void    RemoveAll ()                                                    =   0;
+                virtual void    Add (T item, size_t count)                                      =   0;
+                virtual void    Remove (T item, size_t count)                                   =   0;
+                virtual void    Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
+                virtual void    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
+                virtual size_t  TallyOf (T item) const                                          =   0;
 
             public:
                 virtual Iterator<T>  MakeBagIterator () const        =   0;
-
-                virtual typename Tally<T>::TallyMutator                            MakeTallyMutator ()             =   0;
-            };
-
-
-            /**
-             * SOON TO BE OBSOLETE
-             */
-            template    <typename T>
-            class  Tally<T>::TallyMutator : public Iterator<TallyEntry<T>> {
-            public:
-                class IRep;
-            public:
-                TallyMutator (IRep* it);
-
-            public:
-                nonvirtual  void    RemoveCurrent ();
-
-            public:
-                // if newCount == 0, equivilent to RemoveCurrent().
-                nonvirtual  void    UpdateCount (size_t newCount);
             };
 
 

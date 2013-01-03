@@ -50,14 +50,15 @@ namespace   Stroika {
 
                     // Tally<T>::_IRep overrides
                 public:
-                    virtual bool    Contains (T item) const override;
-                    virtual void    Compact () override;
-                    virtual void    RemoveAll () override;
-                    virtual void    Add (T item, size_t count) override;
-                    virtual void    Remove (T item, size_t count) override;
-                    virtual size_t  TallyOf (T item) const override;
-                    virtual Iterator<T>  MakeBagIterator () const override;
-                    virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
+                    virtual bool                                Contains (T item) const override;
+                    virtual void                                Compact () override;
+                    virtual void                                RemoveAll () override;
+                    virtual void                                Add (T item, size_t count) override;
+                    virtual void                                Remove (T item, size_t count) override;
+                    virtual void                                Remove (const Iterator<TallyEntry<T>>& i) override;
+                    virtual void                                UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
+                    virtual size_t                              TallyOf (T item) const override;
+                    virtual Iterator<T>                         MakeBagIterator () const override;
 
                 private:
                     LinkedList_Patch<TallyEntry<T>>    fData_;
@@ -67,7 +68,9 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                class   Tally_LinkedList<T>::MutatorRep_ : public Tally<T>::TallyMutator::IRep {
+                class   Tally_LinkedList<T>::MutatorRep_ : public Iterator<TallyEntry<T>>::IRep {
+                private:
+                    typedef typename Iterator<TallyEntry<T>>::IRep  inherited;
                 public:
                     MutatorRep_ (typename Tally_LinkedList<T>::Rep_& owner);
 
@@ -80,11 +83,10 @@ namespace   Stroika {
 
                     virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
 
-                    virtual void    RemoveCurrent () override;
-                    virtual void    UpdateCount (size_t newCount) override;
-
                 private:
-                    LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
+                    mutable LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
+
+                    friend class Tally_LinkedList<T>::Rep_;
                 };
 
 
@@ -113,23 +115,6 @@ namespace   Stroika {
                 shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Tally_LinkedList<T>::MutatorRep_::Clone () const
                 {
                     return shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new MutatorRep_ (*this));
-                }
-                template    <typename T>
-                void   Tally_LinkedList<T>::MutatorRep_::RemoveCurrent ()
-                {
-                    fIterator_.RemoveCurrent ();
-                }
-                template    <typename T>
-                void   Tally_LinkedList<T>::MutatorRep_::UpdateCount (size_t newCount)
-                {
-                    if (newCount == 0) {
-                        fIterator_.RemoveCurrent ();
-                    }
-                    else {
-                        TallyEntry<T>   c   =   fIterator_.Current ();
-                        c.fCount = newCount;
-                        fIterator_.UpdateCurrent (c);
-                    }
                 }
 
 
@@ -241,9 +226,32 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
+                void    Tally_LinkedList<T>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
+                {
+                    const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, MutatorRep_);
+                    const typename Tally_LinkedList<T>::MutatorRep_&       mir =   dynamic_cast<const typename Tally_LinkedList<T>::MutatorRep_&> (ir);
+                    mir.fIterator_.RemoveCurrent ();
+                }
+                template    <typename T>
                 void   Tally_LinkedList<T>::Rep_::RemoveAll ()
                 {
                     fData_.RemoveAll ();
+                }
+                template    <typename T>
+                void    Tally_LinkedList<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
+                {
+                    const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
+                    AssertMember (&ir, MutatorRep_);
+                    const typename Tally_LinkedList<T>::MutatorRep_&       mir =   dynamic_cast<const typename Tally_LinkedList<T>::MutatorRep_&> (ir);
+                    if (newCount == 0) {
+                        mir.fIterator_.RemoveCurrent ();
+                    }
+                    else {
+                        TallyEntry<T>   c   =   mir.fIterator_.Current ();
+                        c.fCount = newCount;
+                        mir.fIterator_.UpdateCurrent (c);
+                    }
                 }
                 template    <typename T>
                 size_t Tally_LinkedList<T>::Rep_::TallyOf (T item) const
@@ -264,11 +272,6 @@ namespace   Stroika {
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
                     return tmp;
-                }
-                template    <typename T>
-                typename Tally<T>::TallyMutator   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
-                {
-                    return typename Tally<T>::TallyMutator (new MutatorRep_ (*this));
                 }
 
 

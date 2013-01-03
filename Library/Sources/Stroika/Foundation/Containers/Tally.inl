@@ -22,19 +22,6 @@ namespace   Stroika {
 
 
             /**
-             */
-            template    <typename T>
-            class  Tally<T>::TallyMutator::IRep : public Iterator<TallyEntry<T> >::IRep {
-            protected:
-                IRep ();
-
-            public:
-                virtual void    RemoveCurrent ()                =   0;
-                virtual void    UpdateCount (size_t newCount)   =   0;
-            };
-
-
-            /**
              * Protected helper class to convert from an iterator of TallyEntries
              * to an iterator over individual items.
              *
@@ -91,40 +78,6 @@ namespace   Stroika {
             inline bool   TallyEntry<T>::operator!= (const TallyEntry<T>& rhs)  const
             {
                 return not (operator== (rhs));
-            }
-
-
-            /*
-             ********************************************************************************
-             ********************** Tally<T>::TallyMutator::IRep ****************************
-             ********************************************************************************
-             */
-            template    <typename T>
-            inline Tally<T>::TallyMutator::IRep::IRep ()
-                : Iterator<TallyEntry<T>>::IRep ()
-            {
-            }
-
-
-            /*
-            ********************************************************************************
-            ************************* Tally<T>::TallyMutator *******************************
-            ********************************************************************************
-            */
-            template    <typename T>
-            inline  Tally<T>::TallyMutator::TallyMutator (IRep* it)
-                : Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (it))
-            {
-            }
-            template    <typename T>
-            inline  void    Tally<T>::TallyMutator::RemoveCurrent ()
-            {
-                dynamic_cast<IRep&> (this->GetRep ()).RemoveCurrent ();
-            }
-            template    <typename T>
-            inline  void    Tally<T>::TallyMutator::UpdateCount (size_t newCount)
-            {
-                dynamic_cast<IRep&> (this->GetRep ()).UpdateCount (newCount);
             }
 
 
@@ -229,50 +182,6 @@ namespace   Stroika {
                 return (Iterator<T>::GetEmptyIterator ());
             }
             template    <typename T>
-            inline  Iterator<TallyEntry<T>>    Tally<T>::begin () const
-            {
-                return inherited::begin ();
-            }
-            template    <typename T>
-            inline  Iterator<TallyEntry<T>>    Tally<T>::end () const
-            {
-                return inherited::end ();
-            }
-            template    <typename T>
-            inline  typename Tally<T>::TallyMutator    Tally<T>::begin ()
-            {
-                TallyMutator    tmp = _GetRep ().MakeTallyMutator ();
-                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                tmp++;
-                return tmp;
-            }
-            template    <typename T>
-            inline  typename Tally<T>::TallyMutator    Tally<T>::end ()
-            {
-                class   RepSentinal_ : public Tally<T>::TallyMutator::IRep  {
-                public:
-                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
-                        return false;
-                    }
-                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>    Clone () const override {
-                        RequireNotReached ();
-                        return nullptr;
-                    }
-                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override {
-                        AssertNotImplemented ();
-                        return false;
-                    }
-                    virtual void    RemoveCurrent () override {
-                        RequireNotReached ();
-                    }
-                    virtual void    UpdateCount (size_t newCount) override {
-                        RequireNotReached ();
-                    }
-                };
-                static  TallyMutator kSentinal = TallyMutator (new RepSentinal_ ());
-                return kSentinal;
-            }
-            template    <typename T>
             inline  void    Tally<T>::Add (T item)
             {
                 _GetRep ().Add (item, 1);
@@ -291,6 +200,16 @@ namespace   Stroika {
             inline  void    Tally<T>::Remove (T item, size_t count)
             {
                 _GetRep ().Remove (item, count);
+            }
+            template    <typename T>
+            inline  void    Tally<T>::Remove (const Iterator<TallyEntry<T>>& i)
+            {
+                _GetRep ().Remove (i);
+            }
+            template    <typename T>
+            inline  void    Tally<T>::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
+            {
+                _GetRep ().UpdateCount (i, newCount);
             }
             template    <typename T>
             inline  size_t  Tally<T>::TallyOf (T item) const

@@ -50,8 +50,8 @@ for (TallyEntry<size_t> i : s) {
                 s.Add (i);
             }
 
-            for (Tally<size_t>::TallyMutator it = s.begin (); it != s.end (); ++it) {
-                it.UpdateCount (1);
+            for (auto it = s.begin (); it != s.end (); ++it) {
+                s.UpdateCount (it, 1);
             }
 
             VerifyTestResult (s.GetLength () == kTestSize);
@@ -75,7 +75,7 @@ for (TallyEntry<size_t> it : s) {
             VerifyTestResult (s.GetLength () == kTestSize);
             {
                 for (auto it = s.begin (); it != s.end (); ++it) {
-                    it.RemoveCurrent ();
+                    s.Remove (it);
                 }
                 VerifyTestResult (s.IsEmpty ());
                 VerifyTestResult (s.GetLength () == 0);
@@ -107,8 +107,8 @@ for (TallyEntry<size_t> it : s) {
                 for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
                     for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
                         if (s.GetLength () != 0) {
-                            it3.UpdateCount (3);
-                            it3.RemoveCurrent ();
+                            s.UpdateCount (it3, 3);
+                            s.Remove (it3);
                             s.Add (i);
                             s.Remove (i);
                         }
