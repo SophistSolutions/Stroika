@@ -293,7 +293,7 @@ namespace   Stroika {
                     : Tally<T> (new Rep_ ())
                 {
                     SetCapacity (size);
-                    AddItems (start, end);
+                    Add (start, end);
                 }
                 template    <typename T>
                 inline  Tally_Array<T>::Tally_Array (const Tally_Array<T>& src) :
