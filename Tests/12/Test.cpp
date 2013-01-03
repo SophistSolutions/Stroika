@@ -216,8 +216,8 @@ void	SimpleTallyTests (Tally<size_t>& s)
 			}
 		}
 	}
-	for (auto it = s.ebegin (); it != s.eend (); ++it) {
-		for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
+	for (auto it = s.begin (); it != s.end (); ++it) {
+		for (auto it1 = s.bagbegin (); it1 != s.bagend (); ++it1) {
 			s.RemoveAll ();
 		}
 	}

@@ -23,6 +23,8 @@ namespace   Stroika {
 
                 template    <typename T>
                 class   Tally_LinkedList<T>::Rep_ : public Tally<T>::_IRep {
+                private:
+                    typedef _IRep   inherited;
                 public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
@@ -32,12 +34,18 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual shared_ptr<typename Iterable<T>::_IRep>    Clone () const override;
-                    virtual size_t                          GetLength () const override;
-                    virtual bool                            IsEmpty () const override;
-                    virtual Iterator<T>                     MakeIterator () const override;
-                    virtual void                            Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override {
+                        return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
+                    }
+#else
+                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override;
+#endif
+                    virtual size_t                                              GetLength () const override;
+                    virtual bool                                                IsEmpty () const override;
+                    virtual Iterator<TallyEntry<T>>                             MakeIterator () const override;
+                    virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<TallyEntry<T>>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Tally<T>::_IRep overrides
                 public:
@@ -47,9 +55,8 @@ namespace   Stroika {
                     virtual void    Add (T item, size_t count) override;
                     virtual void    Remove (T item, size_t count) override;
                     virtual size_t  TallyOf (T item) const override;
-
-                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> MakeTallyIterator () const override;
-                    virtual TallyMutator             MakeTallyMutator () override;
+                    virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const override;
+                    virtual TallyMutator                            MakeTallyMutator () override;
 
                 private:
                     LinkedList_Patch<TallyEntry<T>>    fData;
@@ -151,9 +158,11 @@ namespace   Stroika {
                     return (fData.GetLength () == 0);
                 }
                 template    <typename T>
-                Iterator<T> Tally_LinkedList<T>::Rep_::MakeIterator () const
+                Iterator<TallyEntry<T>> Tally_LinkedList<T>::Rep_::MakeIterator () const
                 {
-                    return Iterator<T> (typename Iterator<T>::SharedByValueRepType (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (MakeTallyIterator ())))));
+                    // const cast cuz this mutator won't really be used to change anything - except stuff like
+                    // link list of owned iterators
+                    return Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new MutatorRep_ (*const_cast<Rep_*> (this)))));
                 }
                 template    <typename T>
                 void      Tally_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -161,7 +170,7 @@ namespace   Stroika {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Tally_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<TallyEntry<T>>     Tally_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }
@@ -181,11 +190,13 @@ namespace   Stroika {
                 void   Tally_LinkedList<T>::Rep_::Compact ()
                 {
                 }
+#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>
-                shared_ptr<typename Iterable<T>::_IRep>   Tally_LinkedList<T>::Rep_::Clone () const
+                typename Iterable<TallyEntry<T>>::_SharedPtrIRep   Tally_LinkedList<T>::Rep_::Clone () const
                 {
-                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
+                    return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
                 }
+#endif
                 template    <typename T>
                 void   Tally_LinkedList<T>::Rep_::Add (T item, size_t count)
                 {
@@ -244,11 +255,9 @@ namespace   Stroika {
                     return (0);
                 }
                 template    <typename T>
-                shared_ptr<typename Iterator<TallyEntry<T> >::IRep>    Tally_LinkedList<T>::Rep_::MakeTallyIterator () const
+                shared_ptr<typename Iterator<T>::IRep>    Tally_LinkedList<T>::Rep_::MakeBagIterator () const
                 {
-                    // const cast cuz this mutator won't really be used to change anything - except stuff like
-                    // link list of owned iterators
-                    return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new MutatorRep_ (*const_cast<Rep_*> (this)));
+                    return shared_ptr<typename Iterator<T>::IRep> (new _TallyEntryToItemIterator (MakeIterator ()));
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()

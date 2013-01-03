@@ -48,9 +48,9 @@ namespace   Stroika {
             public:
                 _TallyEntryToItemIterator (const Iterator<TallyEntry<T>>& fDelegateTo);
 
-                virtual bool            More (T* current, bool advance) override;
+                virtual bool                                    More (T* current, bool advance) override;
                 virtual shared_ptr<typename Iterator<T>::IRep>  Clone () const override;
-                virtual bool    StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
+                virtual bool                                    StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
 
             private:
                 Iterator<TallyEntry<T>> fDelegateTo_;
@@ -156,12 +156,17 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Tally<T>::Tally (_IRep* rep)
-                : inherited (typename Iterable<T>::_SharedByValueRepType (rep))
+                : inherited (typename Iterable<TallyEntry<T>>::_SharedByValueRepType (rep))
             {
             }
             template    <typename T>
-            Tally<T>::Tally (const T* items, size_t size)
-                : inherited (Concrete::Tally_Array<T> (items, size))
+            Tally<T>::Tally (const T* start, const T* end)
+                : inherited (Concrete::Tally_Array<T> (start, end))
+            {
+            }
+            template    <typename T>
+            Tally<T>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
+                : inherited (Concrete::Tally_Array<T> (start, end))
             {
             }
             template    <typename T>
@@ -173,15 +178,15 @@ namespace   Stroika {
             size_t Tally<T>::TotalTally () const
             {
                 size_t sum = 0;
-                for (Iterator<TallyEntry<T>> i = ebegin (); i != eend (); ++i) {
+                for (auto i = begin (); i != end (); ++i) {
                     sum += (*i).fCount;
                 }
-                return (sum);
+                return sum;
             }
             template    <typename T>
             Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
             {
-                for (auto i = t.ebegin (); i != t.eend (); ++i) {
+                for (auto i = t.begin (); i != t.end (); ++i) {
                     Add (i->fItem, i->fCount);
                 }
                 return (*this);
@@ -209,30 +214,32 @@ namespace   Stroika {
                 _GetRep ().Compact ();
             }
             template    <typename T>
-            inline  Iterator<TallyEntry<T>>    Tally<T>::ebegin () const
+            inline  Iterator<T>    Tally<T>::MakeBagIterator () const
             {
-                Iterator<TallyEntry<T>> tmp =   Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (const_cast<Tally<T>*> (this)->_GetRep ().MakeTallyIterator ()));
+                Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (const_cast<Tally<T>*> (this)->_GetRep ().MakeBagIterator ()));
                 //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                 tmp++;
                 return tmp;
             }
             template    <typename T>
-            inline  Iterator<TallyEntry<T>>       Tally<T>::eend () const
+            inline  Iterator<T>    Tally<T>::bagbegin () const
             {
-                return (Iterator<TallyEntry<T>>::GetEmptyIterator ());
+                return MakeBagIterator ();
             }
             template    <typename T>
-            inline  Iterator<T>    Tally<T>::begin () const
-            {
-                Iterator<T> tmp = Iterator<T> (const_cast<Tally<T> *> (this)->fRep->MakeIterator ());
-                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                tmp++;
-                return tmp;
-            }
-            template    <typename T>
-            inline  Iterator<T>    Tally<T>::end () const
+            inline  Iterator<T>       Tally<T>::bagend () const
             {
                 return (Iterator<T>::GetEmptyIterator ());
+            }
+            template    <typename T>
+            inline  Iterator<TallyEntry<T>>    Tally<T>::begin () const
+            {
+                return inherited::begin ();
+            }
+            template    <typename T>
+            inline  Iterator<TallyEntry<T>>    Tally<T>::end () const
+            {
+                return inherited::end ();
             }
             template    <typename T>
             inline  typename Tally<T>::TallyMutator    Tally<T>::begin ()
@@ -303,15 +310,15 @@ namespace   Stroika {
             inline  typename const Tally<T>::_IRep&  Tally<T>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Tally<T>::_IRep);
-                return *static_cast<const Tally<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), Tally<T>::_IRep);
+                return *static_cast<const Tally<T>::_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline  typename Tally<T>::_IRep&        Tally<T>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Tally<T>::_IRep);
-                return *static_cast<Tally<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), Tally<T>::_IRep);
+                return *static_cast<Tally<T>::_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline bool    operator!= (const Tally<T>& lhs, const Tally<T>& rhs)
@@ -327,7 +334,7 @@ namespace   Stroika {
                 if (lhs.GetLength () != rhs.GetLength ()) {
                     return (false);
                 }
-                for (auto i = rhs.ebegin (); i != rhs.eend (); ++i) {
+                for (auto i = rhs.begin (); i != rhs.end (); ++i) {
                     if (i->fCount != rhs.TallyOf (i->fItem)) {
                         return (false);
                     }

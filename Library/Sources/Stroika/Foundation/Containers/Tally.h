@@ -19,6 +19,12 @@
  *      @todo   consider if this should inherit from Iterable<TallyEntry<T>>. Be sure and document
  *              why we chose one way or the other
  *
+ *      @todo   Lose mutator code - instead do like I did in Bag<T> code - with update methods taking iteraotr
+ *              arugment.
+ *
+ *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
+ *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
+ *
  *      @todo   Need Tally_Tree<T> implementaiton - where we use btree to keep tally's sorted,
  *              so faster lookup. PROBLEM with that impl is it requires an ordering on T, which the others dont
  *
@@ -50,9 +56,9 @@ namespace   Stroika {
 
 
             template    <typename T>
-            class  Tally : public Iterable<T> {
+            class  Tally : public Iterable<TallyEntry<T>> {
             private:
-                typedef Iterable<T> inherited;
+                typedef Iterable<TallyEntry<T>> inherited;
 
             protected:
                 class _IRep;
@@ -60,7 +66,8 @@ namespace   Stroika {
             public:
                 Tally ();
                 Tally (const Tally<T>& src);
-                Tally (const T* items, size_t size);
+                Tally (const T* start, const T* end);
+                Tally (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
             protected:
                 explicit Tally (_IRep* rep);
@@ -93,19 +100,27 @@ namespace   Stroika {
                 nonvirtual  Tally<T>&   operator+= (const Tally<T>& t);
 
             public:
-                //TERRIBLE NAMES
-                nonvirtual  Iterator<TallyEntry<T>> ebegin () const;
-                nonvirtual  Iterator<TallyEntry<T>> eend () const;
+                /**
+                 * Return an iterator over individual items in the tally - as if the Tally was a Bag,
+                 * not a Tally.
+                 */
+                nonvirtual  Iterator<T> MakeBagIterator () const;
+                nonvirtual  Iterator<T> bagbegin () const;
+                nonvirtual  Iterator<T> bagend () const;
 
+
+                // SOON TO BE OBSOLETE MUTATOR CODE - DO LIKE WITH BAG<T>
             public:
                 class TallyMutator;
             public:
-                nonvirtual  Iterator<T> begin () const;
                 nonvirtual  TallyMutator begin ();
-
-            public:
-                nonvirtual  Iterator<T> end () const;
                 nonvirtual  TallyMutator end ();
+
+                // NOTE - once we lose TallyMutator code - we can lose this method too, since
+                // its inherited from Iterable.
+            public:
+                nonvirtual  Iterator<TallyEntry<T>> begin () const;
+                nonvirtual  Iterator<TallyEntry<T>> end () const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -123,10 +138,14 @@ namespace   Stroika {
             template    <typename T>
             bool   operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
+
             /**
              */
             template    <typename T>
-            class   Tally<T>::_IRep : public Iterable<T>::_IRep {
+            class   Tally<T>::_IRep : public Iterable<TallyEntry<T>>::_IRep {
+            private:
+                typedef Iterable<TallyEntry<T>>::_IRep  inherited;
+
             protected:
                 _IRep ();
 
@@ -140,11 +159,14 @@ namespace   Stroika {
                 virtual size_t  TallyOf (T item) const                          =   0;
 
             public:
-                virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep>    MakeTallyIterator () const    =   0;
-                virtual TallyMutator                         MakeTallyMutator ()     =   0;
+                virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const        =   0;
+                // SOON TO BE OBSOLETE
+                virtual TallyMutator                            MakeTallyMutator ()             =   0;
             };
 
+
             /**
+             * SOON TO BE OBSOLETE
              */
             template    <typename T>
             class  Tally<T>::TallyMutator : public Iterator<TallyEntry<T>> {
@@ -160,6 +182,7 @@ namespace   Stroika {
                 // if newCount == 0, equivilent to RemoveCurrent().
                 nonvirtual  void    UpdateCount (size_t newCount);
             };
+
 
         }
     }
