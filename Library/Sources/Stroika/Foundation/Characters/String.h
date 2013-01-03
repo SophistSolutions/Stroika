@@ -216,7 +216,7 @@ namespace   Stroika {
                 String (const Character* from, const Character* to);
                 String (const std::wstring& r);
                 String (const String& from);
-                String (const String&& from);
+                String (const String && from);
                 ~String ();
 
                 nonvirtual  String& operator= (const String& newString);
