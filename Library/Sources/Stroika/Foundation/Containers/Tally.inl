@@ -229,25 +229,25 @@ namespace   Stroika {
                 return *static_cast<Tally<T>::_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
-            inline bool    operator!= (const Tally<T>& lhs, const Tally<T>& rhs)
+            bool   Tally<T>::operator== (const Tally<T>& rhs) const
             {
-                return (not operator== (lhs, rhs));
-            }
-            template    <typename T>
-            bool   operator== (const Tally<T>& lhs, const Tally<T>& rhs)
-            {
-                if (&lhs._GetRep () == &rhs._GetRep ()) {
-                    return (true);
+                if (&this->_GetRep () == &rhs._GetRep ()) {
+                    return true;
                 }
-                if (lhs.GetLength () != rhs.GetLength ()) {
-                    return (false);
+                if (this->GetLength () != rhs.GetLength ()) {
+                    return false;
                 }
-                for (auto i = rhs.begin (); i != rhs.end (); ++i) {
+                for (auto i = this->begin (); i != this->end (); ++i) {
                     if (i->fCount != rhs.TallyOf (i->fItem)) {
                         return (false);
                     }
                 }
                 return (true);
+            }
+            template    <typename T>
+            inline bool    Tally<T>::operator!= (const Tally<T>& rhs) const
+            {
+                return (not this->operator== (rhs));
             }
 
 

@@ -38,8 +38,8 @@ namespace   Stroika {
                 TallyEntry (T item);
                 TallyEntry (T item, size_t count);
 
-                nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;
                 nonvirtual  bool    operator== (const TallyEntry<T>& rhs) const;
+                nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;
 
                 T       fItem;
                 size_t  fCount;
@@ -136,14 +136,11 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
 
-            private:
-                friend  bool    operator==<T> (const Tally<T>& lhs, const Tally<T>& rhs);
+            public:
+                nonvirtual  bool    operator== (const Tally<T>& rhs) const;
+                nonvirtual  bool    operator!= (const Tally<T>& rhs) const;
             };
 
-            template    <typename T>
-            bool   operator== (const Tally<T>& lhs, const Tally<T>& rhs);
-            template    <typename T>
-            bool   operator!= (const Tally<T>& lhs, const Tally<T>& rhs);
 
 
             /**
