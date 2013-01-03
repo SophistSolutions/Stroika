@@ -76,7 +76,7 @@ namespace   Stroika {
                 template    <typename T>
                 class  Tally_Array<T>::MutatorRep_ : public Tally<T>::TallyMutator::IRep {
                 private:
-                    typedef     typename TallyMutator::IRep  inherited;
+                    typedef     typename Tally<T>::TallyMutator::IRep  inherited;
 
                 public:
                     MutatorRep_ (typename Tally_Array<T>::Rep_& owner);
