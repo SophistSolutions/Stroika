@@ -90,7 +90,7 @@ namespace   Stroika {
              *
              *  This class template was originally called CopyOnWrite.
             */
-            template    <typename TRAITS = SharedByValue_Traits<T> >
+            template    <typename TRAITS>
             class   SharedByValue {
             public:
                 typedef typename TRAITS::element_type           element_type;
