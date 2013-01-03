@@ -61,6 +61,7 @@ namespace   Stroika {
                 private:
                     LinkedList_Patch<TallyEntry<T>>    fData;
 
+                    class   MutatorRep_;
                     friend  class   MutatorRep_;
                 };
 
