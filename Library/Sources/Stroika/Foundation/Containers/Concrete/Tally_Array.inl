@@ -253,7 +253,7 @@ namespace   Stroika {
                 template    <typename T>
                 shared_ptr<typename Iterator<T>::IRep>    Tally_Array<T>::Rep_::MakeBagIterator () const
                 {
-                    return shared_ptr<typename Iterator<T>::IRep> (new _TallyEntryToItemIterator (MakeIterator ()));
+                    return shared_ptr<typename Iterator<T>::IRep> (new typename Rep_::_TallyEntryToItemIterator (MakeIterator ()));
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_Array<T>::Rep_::MakeTallyMutator ()
@@ -285,15 +285,15 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                Tally_Array<T>::Tally_Array () :
-                    Tally<T> (new Rep_ ())
+                Tally_Array<T>::Tally_Array ()
+                    : Tally<T> (new Rep_ ())
                 {
                 }
-                template    <typename T>    Tally_Array<T>::Tally_Array (const T* items, size_t size) :
-                    Tally<T> (new Rep_ ())
+                template    <typename T>    Tally_Array<T>::Tally_Array (const T* start, const T* end)
+                    : Tally<T> (new Rep_ ())
                 {
                     SetCapacity (size);
-                    AddItems (items, size);
+                    AddItems (start, end);
                 }
                 template    <typename T>
                 inline  Tally_Array<T>::Tally_Array (const Tally_Array<T>& src) :
@@ -316,22 +316,22 @@ namespace   Stroika {
                 template    <typename T>
                 inline  const typename Tally_Array<T>::Rep_&    Tally_Array<T>::GetRep_ () const
                 {
-                    return reinterpret_cast<const Tally_Array<T>::Rep_&> (_GetRep ());
+                    return reinterpret_cast<const Tally_Array<T>::Rep_&> (this->_GetRep ());
                 }
                 template    <typename T>
                 inline  typename Tally_Array<T>::Rep_&  Tally_Array<T>::GetRep_ ()
                 {
-                    return reinterpret_cast<Tally_Array<T>::Rep_&> (_GetRep ());
+                    return reinterpret_cast<Tally_Array<T>::Rep_&> (this->_GetRep ());
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::GetCapacity () const
                 {
-                    return (GetRep ().fData_.GetCapacity ());
+                    return (this->GetRep ().fData_.GetCapacity ());
                 }
                 template    <typename T>
                 void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep ().fData_.SetCapacity (slotsAlloced);
+                    this->GetRep ().fData_.SetCapacity (slotsAlloced);
                 }
 
 

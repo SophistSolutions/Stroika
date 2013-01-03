@@ -88,6 +88,7 @@ namespace   Stroika {
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (T item, size_t count);
                 nonvirtual  void    Add (const T* begin, const T* end);
+                nonvirtual  void    Add (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
             public:
                 nonvirtual  void    Remove (T item);
