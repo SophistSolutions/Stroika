@@ -24,7 +24,8 @@ namespace   Stroika {
                 template    <typename T>
                 class   Tally_LinkedList<T>::Rep_ : public Tally<T>::_IRep {
                 private:
-                    typedef _IRep   inherited;
+                    typedef typename Tally<T>::_IRep   inherited;
+                    
                 public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
