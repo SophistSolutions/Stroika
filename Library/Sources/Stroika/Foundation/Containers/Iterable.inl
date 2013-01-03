@@ -28,7 +28,7 @@ namespace   Stroika {
                 return GetLength () == 0;
             }
             template    <typename T>
-            inline  void    Iterable<T>::_IRep::_Apply (typename _APPLY_ARGTYPE doToElement) const
+            inline  void    Iterable<T>::_IRep::_Apply (_APPLY_ARGTYPE doToElement) const
             {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 RequireNotNull (doToElement);
@@ -46,7 +46,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (typename _APPLYUNTIL_ARGTYPE doToElement) const
+            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
             {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 RequireNotNull (doToElement);
@@ -172,7 +172,13 @@ namespace   Stroika {
                         (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
                     }
                 };
+#if qCompilerAndStdLib_Supports_AddressOfTemporary
                 _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
+#else
+                CheapLambda_    tmp =   CheapLambda_(doToElement);
+                _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE (&tmp, &CheapLambda_::DoToItem));
+#endif
+
 #endif
             }
             template    <typename T>

@@ -199,7 +199,7 @@ namespace   Stroika {
                     virtual bool    More (T* current, bool advance) override {
                         return false;
                     }
-                    virtual bool    StrongEquals (typename const Iterator<T>::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
                         RequireNotNull (rhs);
                         return (rhs == this) or const_cast<typename Iterator<T>::IRep*> (rhs)->More (nullptr, false);
                     }
@@ -208,7 +208,7 @@ namespace   Stroika {
                         return nullptr;
                     }
                 };
-                static  Iterator<T> kSentinal_ = Iterator<T> (Iterator<T>::SharedByValueRepType (new RepSentinal_ ()));
+                static  Iterator<T> kSentinal_ = Iterator<T> (typename Iterator<T>::SharedByValueRepType (new RepSentinal_ ()));
                 return kSentinal_;
             }
 

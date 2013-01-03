@@ -34,23 +34,23 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual shared_ptr<typename Iterable<T>::_IRep>    Clone () const override;
-                    virtual size_t                          GetLength () const override;
-                    virtual bool                            IsEmpty () const override;
-                    virtual Iterator<T>                     MakeIterator () const override;
-                    virtual void                            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override;
+                    virtual size_t                                  GetLength () const override;
+                    virtual bool                                    IsEmpty () const override;
+                    virtual Iterator<T>                             MakeIterator () const override;
+                    virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Tally<T>::_IRep overrides
                 public:
-                    virtual bool        Contains (T item) const override;
-                    virtual void        Compact () override;
-                    virtual void        RemoveAll () override;
-                    virtual void        Add (T item, size_t count) override;
-                    virtual void        Remove (T item, size_t count) override;
-                    virtual size_t      TallyOf (T item) const override;
-                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep>    MakeTallyIterator () const override;
-                    virtual TallyMutator                         MakeTallyMutator () override;
+                    virtual bool                                                Contains (T item) const override;
+                    virtual void                                                Compact () override;
+                    virtual void                                                RemoveAll () override;
+                    virtual void                                                Add (T item, size_t count) override;
+                    virtual void                                                Remove (T item, size_t count) override;
+                    virtual size_t                                              TallyOf (T item) const override;
+                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> MakeTallyIterator () const override;
+                    virtual TallyMutator                                        MakeTallyMutator () override;
 
                 private:
                     nonvirtual  void    RemoveAt_ (size_t index);
@@ -79,7 +79,7 @@ namespace   Stroika {
 
                 public:
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
-                    virtual bool            StrongEquals (typename const Iterator<TallyEntry<T> >::IRep* rhs) const override;
+                    virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
                     virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
 
                 public:
@@ -165,12 +165,12 @@ namespace   Stroika {
                     return Iterator<T> (typename Iterator<T>::SharedByValueRepType (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (MakeTallyIterator ())))));
                 }
                 template    <typename T>
-                void      Tally_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                void      Tally_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Tally_Array<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Tally_Array<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }

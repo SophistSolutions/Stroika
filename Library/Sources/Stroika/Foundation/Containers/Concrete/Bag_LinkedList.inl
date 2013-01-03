@@ -38,8 +38,8 @@ namespace   Stroika {
                     virtual Iterator<T>                     MakeIterator () const override;
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
-                    virtual void                            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void                            Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                     ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Bag<T>::_IRep overrides
                 public:
@@ -71,9 +71,9 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual shared_ptr<typename Iterator<T>::IRep>     Clone () const override;
-                    virtual bool                            More (T* current, bool advance) override;
-                    virtual bool                            StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
+                    virtual shared_ptr<typename Iterator<T>::IRep>  Clone () const override;
+                    virtual bool                                    More (T* current, bool advance) override;
+                    virtual bool                                    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
                     mutable LinkedListMutator_Patch<T>  fIterator_;
@@ -95,7 +95,7 @@ namespace   Stroika {
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Bag_LinkedList<T>::Rep_::Clone () const
                 {
-                    return shared_ptr<Iterable<T>::_IRep> (new Rep_ (*this));
+                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
                 }
                 template    <typename T>
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
@@ -117,12 +117,12 @@ namespace   Stroika {
                     return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
-                void      Bag_LinkedList<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                void      Bag_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }
@@ -189,7 +189,7 @@ namespace   Stroika {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (typename const Iterator<T>::IRep* rhs) const
+                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (const typename Iterator<T>::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;

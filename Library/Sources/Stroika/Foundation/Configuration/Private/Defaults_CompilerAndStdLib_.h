@@ -689,12 +689,14 @@
 
 
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
+
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k12_VER_)
 #else
-#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported && qCompilerAndStdLib_Supports_lambda_default_argument
+#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   qCompilerAndStdLib_Supports_lambda_default_argument
 #endif
-#endif  qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
+
+#endif
 
 
 
@@ -774,6 +776,23 @@
 
 
 
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_AddressOfTemporary
+@DESCRIPTION:   <p>From a quick review of the C++ standard spec, I can see no place where this is prohibited. In many cases this can be unsafe, but
+                if the address value will only exist for less time than the temporary, it should be safe!</p>
+*/
+#ifndef qCompilerAndStdLib_Supports_AddressOfTemporary
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_AddressOfTemporary      ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_AddressOfTemporary       1
+#endif
+
+#endif
 
 
 
