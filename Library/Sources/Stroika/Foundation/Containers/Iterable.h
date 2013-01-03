@@ -93,6 +93,9 @@ namespace   Stroika {
             protected:
                 class  _IRep;
 
+            protected:
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             private:
                 struct  Rep_Cloner_ {
                     inline  static  shared_ptr<_IRep>  Copy (const _IRep& t) {
@@ -238,7 +241,7 @@ namespace   Stroika {
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             private:
-                static  shared_ptr<_IRep>  Clone_ (const _IRep& rep);
+                static  _SharedPtrIRep  Clone_ (const _IRep& rep);
 
             private:
                 _SharedByValueRepType    fRep_;
@@ -249,8 +252,8 @@ namespace   Stroika {
             /**
              *  \brief  Implementation detail for iterator implementors.
              *
-             *	Abstract class used in subclasses which extend the idea of Iterable. 
-			 *	Most abstract Containers in Stroika subclass of Iterable<T>.
+             *  Abstract class used in subclasses which extend the idea of Iterable.
+             *  Most abstract Containers in Stroika subclass of Iterable<T>.
              */
             template    <typename T>
             class  Iterable<T>::_IRep {
@@ -259,6 +262,9 @@ namespace   Stroika {
 
             public:
                 virtual ~_IRep ();
+
+            protected:
+                typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;
 
             public:
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
@@ -270,12 +276,12 @@ namespace   Stroika {
 #endif
 
             public:
-                virtual shared_ptr<_IRep>          Clone () const                                   =   0;
-                virtual Iterator<T>     MakeIterator () const                                       =   0;
-                virtual size_t          GetLength () const                                          =   0;
-                virtual bool            IsEmpty () const                                            =   0;
-                virtual void            Apply (_APPLY_ARGTYPE doToElement) const                    =   0;
-                virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE) const                  =   0;
+                virtual _SharedPtrIRep      Clone () const                                              =   0;
+                virtual Iterator<T>         MakeIterator () const                                       =   0;
+                virtual size_t              GetLength () const                                          =   0;
+                virtual bool                IsEmpty () const                                            =   0;
+                virtual void                Apply (_APPLY_ARGTYPE doToElement) const                    =   0;
+                virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE) const                  =   0;
 
             protected:
                 /*
