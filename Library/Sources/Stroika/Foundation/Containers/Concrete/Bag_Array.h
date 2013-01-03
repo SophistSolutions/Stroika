@@ -28,6 +28,9 @@ namespace   Stroika {
                  */
                 template    <class T>
                 class   Bag_Array : public Bag<T> {
+                private:
+                	typedef		Bag<T>	inherited;
+
                 public:
                     Bag_Array ();
                     Bag_Array (const Bag<T>& bag);

@@ -26,6 +26,9 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 class  Bag_LinkedList : public Bag<T> {
+                private:
+                	typedef		Bag<T>	inherited;
+
                 public:
                     Bag_LinkedList ();
                     Bag_LinkedList (const T* start, const T* end);

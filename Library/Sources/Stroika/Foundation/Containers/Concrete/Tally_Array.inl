@@ -290,11 +290,11 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 Tally_Array<T>::Tally_Array ()
-                    : Tally<T> (_SharedPtrIRep (new Rep_ ()))
+                    : Tally<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>    Tally_Array<T>::Tally_Array (const T* start, const T* end)
-                    : Tally<T> (new Rep_ ())
+                    : Tally<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (end - start);
                     Add (start, end);
@@ -306,7 +306,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 Tally_Array<T>::Tally_Array (const Tally<T>& src) :
-                    Tally<T> (new Rep_ ())
+                    Tally<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (src.GetLength ());
                     operator+= (src);

@@ -137,13 +137,6 @@ namespace   Stroika {
                 return (*this);
             }
             template    <typename T>
-            void   Tally<T>::Add (const T* begin, const T* end)
-            {
-                for (const T* i = begin; i != end; ++i) {
-                    Add (*i);
-                }
-            }
-            template    <typename T>
             inline  bool    Tally<T>::Contains (T item) const
             {
                 return (_GetRep ().Contains (item));
@@ -189,10 +182,10 @@ namespace   Stroika {
                 _GetRep ().Add (item.fItem, item.fCount);
             }
             template    <typename T>
-            inline  void    Tally<T>::Add (const T* begin, const T* end)
+            void   Tally<T>::Add (const T* begin, const T* end)
             {
-                for (auto i = begin; i != end; ++i) {
-                    _GetRep ().Add (*i, 1);
+                for (const T* i = begin; i != end; ++i) {
+                    Add (*i);
                 }
             }
             template    <typename T>
