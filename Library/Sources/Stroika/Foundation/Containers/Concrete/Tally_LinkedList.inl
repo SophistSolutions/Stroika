@@ -103,7 +103,7 @@ namespace   Stroika {
                     return (fIterator.More (current, advance));
                 }
                 template    <typename T>
-                bool    Tally_LinkedList<T>::MutatorRep_::StrongEquals (typename const Iterator<TallyEntry<T>>::IRep* rhs) const
+                bool    Tally_LinkedList<T>::MutatorRep_::StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;

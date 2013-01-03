@@ -50,7 +50,7 @@ namespace   Stroika {
 
                 virtual bool                                    More (T* current, bool advance) override;
                 virtual shared_ptr<typename Iterator<T>::IRep>  Clone () const override;
-                virtual bool                                    StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
+                virtual bool                                    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
             private:
                 Iterator<TallyEntry<T>> fDelegateTo_;
@@ -261,7 +261,7 @@ namespace   Stroika {
                         RequireNotReached ();
                         return nullptr;
                     }
-                    virtual bool    StrongEquals (typename const Iterator<TallyEntry<T>>::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
@@ -307,7 +307,7 @@ namespace   Stroika {
                 return (*this);
             }
             template    <typename T>
-            inline  typename const Tally<T>::_IRep&  Tally<T>::_GetRep () const
+            inline  const typename Tally<T>::_IRep&  Tally<T>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
                 EnsureMember (&inherited::_GetRep (), Tally<T>::_IRep);
@@ -374,7 +374,7 @@ namespace   Stroika {
                 return shared_ptr<typename Iterator<T>::IRep> (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (fDelegateTo_)));
             }
             template    <typename T>
-            inline  bool    Tally<T>::_TallyEntryToItemIterator::StrongEquals (typename const Iterator<T>::IRep* rhs) const
+            inline  bool    Tally<T>::_TallyEntryToItemIterator::StrongEquals (const typename Iterator<T>::IRep* rhs) const
             {
                 AssertNotImplemented ();
                 return false;

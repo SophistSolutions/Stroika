@@ -116,7 +116,7 @@ namespace   Stroika {
                     return (fIterator.More (current, advance));
                 }
                 template    <typename T>
-                bool    Tally_Array<T>::MutatorRep_::StrongEquals (typename const Iterator<TallyEntry<T> >::IRep* rhs) const
+                bool    Tally_Array<T>::MutatorRep_::StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;
@@ -311,7 +311,7 @@ namespace   Stroika {
                     return (*this);
                 }
                 template    <typename T>
-                inline  typename const Tally_Array<T>::Rep_&    Tally_Array<T>::GetRep_ () const
+                inline  const typename Tally_Array<T>::Rep_&    Tally_Array<T>::GetRep_ () const
                 {
                     return reinterpret_cast<const Tally_Array<T>::Rep_&> (_GetRep ());
                 }
