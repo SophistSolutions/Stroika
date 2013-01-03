@@ -57,7 +57,7 @@ namespace   Stroika {
                     virtual void        Remove (T item, size_t count) override;
                     virtual size_t      TallyOf (T item) const override;
                     virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const override;
-                    virtual TallyMutator                            MakeTallyMutator () override;
+                    virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
 
                 private:
                     nonvirtual  void    RemoveAt_ (size_t index);
