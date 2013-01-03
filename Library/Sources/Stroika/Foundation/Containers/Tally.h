@@ -159,16 +159,16 @@ namespace   Stroika {
                 _IRep ();
 
             public:
-                virtual bool		Contains (T item) const                                         =   0;
-                virtual size_t		GetLength () const                                              =   0;
-                virtual void		Compact ()                                                      =   0;
-                virtual void		RemoveAll ()                                                    =   0;
-                virtual void		Add (T item, size_t count)                                      =   0;
-                virtual void		Remove (T item, size_t count)                                   =   0;
-                virtual void		Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
-                virtual void		UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
-                virtual size_t		TallyOf (T item) const                                          =   0;
-                virtual Iterator<T> MakeBagIterator () const										=   0;
+                virtual bool        Contains (T item) const                                         =   0;
+                virtual size_t      GetLength () const                                              =   0;
+                virtual void        Compact ()                                                      =   0;
+                virtual void        RemoveAll ()                                                    =   0;
+                virtual void        Add (T item, size_t count)                                      =   0;
+                virtual void        Remove (T item, size_t count)                                   =   0;
+                virtual void        Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
+                virtual void        UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
+                virtual size_t      TallyOf (T item) const                                          =   0;
+                virtual Iterator<T> MakeBagIterator () const                                        =   0;
 
             protected:
                 class _TallyEntryToItemIteratorHelperRep;

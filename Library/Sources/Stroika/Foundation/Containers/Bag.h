@@ -97,13 +97,13 @@ namespace   Stroika {
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
-            
+
             public:
                 Bag ();
                 Bag (const Bag<T>& bag);
                 explicit Bag (const T* start, const T* end);
 
-			protected:
+            protected:
                 explicit Bag (const _SharedPtrIRep& rep);
 
             public:

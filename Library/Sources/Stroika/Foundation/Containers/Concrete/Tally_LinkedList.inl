@@ -78,9 +78,9 @@ namespace   Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual bool												More (TallyEntry<T>* current, bool advance) override;
-                    virtual bool												StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
-                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>	Clone () const override;
+                    virtual bool                                                More (TallyEntry<T>* current, bool advance) override;
+                    virtual bool                                                StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
+                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>  Clone () const override;
 
                 private:
                     mutable LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
