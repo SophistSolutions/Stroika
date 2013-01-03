@@ -67,14 +67,6 @@ namespace   Stroika {
                 return (fCount == rhs.fCount and fItem == rhs.fItem);
             }
             template    <typename T>
-            bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs)
-            {
-                if (not (lhs.fItem == rhs.fItem))  {
-                    return false;
-                }
-                return (bool (lhs.fCount == rhs.fCount));
-            }
-            template    <typename T>
             inline bool   TallyEntry<T>::operator!= (const TallyEntry<T>& rhs)  const
             {
                 return not (operator== (rhs));

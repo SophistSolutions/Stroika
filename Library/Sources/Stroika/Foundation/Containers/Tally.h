@@ -44,8 +44,6 @@ namespace   Stroika {
                 T       fItem;
                 size_t  fCount;
             };
-            template    <typename T>
-            bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
 
 
 
