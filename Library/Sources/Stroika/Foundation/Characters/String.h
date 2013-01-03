@@ -522,26 +522,27 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
+                typedef     shared_ptr<_IRep>   _SharedPtrIRep;
             protected:
-                static  shared_ptr<_IRep>   _Clone (const _IRep& rep);
+                static  _SharedPtrIRep   _Clone (const _IRep& rep);
 
             protected:
                 struct  _Rep_Cloner {
-                    inline  static  shared_ptr<_IRep>   Copy (const _IRep& t) {
+                    inline  static  _SharedPtrIRep   Copy (const _IRep& t) {
                         return String::_Clone (t);
                     }
                 };
 
             protected:
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _Rep_Cloner>>  _SharedRepPtr;
-                _SharedRepPtr _fRep;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>  _SharedRepByValuePtr;
+                _SharedRepByValuePtr _fRep;
 
             protected:
                 /**
                  * rep MUST be not-null
                  */
-                String (const _SharedRepPtr::shared_ptr_type& rep);
-                String (const _SharedRepPtr::shared_ptr_type && rep);
+                String (const _SharedRepByValuePtr::shared_ptr_type& rep);
+                String (const _SharedRepByValuePtr::shared_ptr_type && rep);
 
             private:
                 /*
@@ -589,7 +590,12 @@ namespace   Stroika {
             public:
                 virtual ~_IRep ();
 
-                virtual shared_ptr<_IRep>   Clone () const                          = 0;
+            public:
+                typedef     String::_SharedPtrIRep  _SharedPtrIRep;
+
+            public:
+
+                virtual _SharedPtrIRep      Clone () const                          = 0;
 
                 virtual size_t              GetLength () const                      = 0;
                 virtual bool                Contains (Character item) const         = 0;

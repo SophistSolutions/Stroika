@@ -14,6 +14,9 @@
  *          MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
  *          to assure right behavior when not constructed. Be careful about MOVE semantics...
  *          TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
+ *          {{{{{{{{{{IMPORTANT - DO VERY SOON}}}}}}}}}}}}}}}}
+ *
+ *
  *
  *  @todo   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
@@ -29,7 +32,9 @@
  *          has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
  *          for SharedByValue<> template.
  *
- *  @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to (maybe test space)
+ *  @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to
+ *          (maybe test space). From preliminary testing (VC++2012) - it appears to just make things
+ *          bigger, not smaller. Must test other compilers too, and maybe disassemble.
  */
 
 
@@ -164,10 +169,11 @@ namespace   Stroika {
 
             public:
                 class   IRep;
+                typedef shared_ptr<IRep>    SharedIRepPtr;
 
             private:
                 struct  Rep_Cloner_ {
-                    static  shared_ptr<IRep>  Copy (const IRep& t);
+                    static  SharedIRepPtr  Copy (const IRep& t);
                 };
 
             public:
@@ -175,7 +181,7 @@ namespace   Stroika {
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
                  *          by users).
                  */
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, Rep_Cloner_>>   SharedByValueRepType;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>   SharedByValueRepType;
 
             private:
                 NO_DEFAULT_CONSTRUCTOR (Iterator);
@@ -444,7 +450,7 @@ namespace   Stroika {
                 T       fCurrent_;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
-                static  shared_ptr<IRep>    Clone_ (const IRep& rep);
+                static  SharedIRepPtr    Clone_ (const IRep& rep);
             };
 
 
@@ -480,11 +486,14 @@ namespace   Stroika {
                 virtual ~IRep ();
 
             public:
+                typedef typename Iterator<T>::SharedIRepPtr SharedIRepPtr;
+
+            public:
                 /**
                  * Clone() makes a copy of the state of this iterator, which can separately be tracked with StrongEquals ()
                  * and/or More() to get values and move forward through the iteration.
                  */
-                virtual shared_ptr<IRep>   Clone () const                      = 0;
+                virtual SharedIRepPtr   Clone () const                      = 0;
                 /**
                  *  More () is dual function - depending on its arguments. If advance is true, it moves the
                  *  iterator to the next legal position.

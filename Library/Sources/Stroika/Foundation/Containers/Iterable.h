@@ -107,7 +107,7 @@ namespace   Stroika {
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  */
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, Rep_Cloner_>>   _SharedByValueRepType;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>   _SharedByValueRepType;
 
             public:
                 /**
