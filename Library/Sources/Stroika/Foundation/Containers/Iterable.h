@@ -249,8 +249,8 @@ namespace   Stroika {
             /**
              *  \brief  Implementation detail for iterator implementors.
              *
-             *	Abstract class used in subclasses which extend the idea of Iterable. 
-			 *	Most abstract Containers in Stroika subclass of Iterable<T>.
+             *  Abstract class used in subclasses which extend the idea of Iterable.
+             *  Most abstract Containers in Stroika subclass of Iterable<T>.
              */
             template    <typename T>
             class  Iterable<T>::_IRep {

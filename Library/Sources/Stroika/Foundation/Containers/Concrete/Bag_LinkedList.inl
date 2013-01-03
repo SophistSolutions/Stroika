@@ -117,12 +117,12 @@ namespace   Stroika {
                     return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
-                void      Bag_LinkedList<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                void      Bag_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }
