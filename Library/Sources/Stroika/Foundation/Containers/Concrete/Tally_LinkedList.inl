@@ -265,7 +265,7 @@ namespace   Stroika {
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
                 {
-                    return TallyMutator (new MutatorRep_ (*this));
+                    return typename Tally<T>::TallyMutator (new MutatorRep_ (*this));
                 }
 
 
