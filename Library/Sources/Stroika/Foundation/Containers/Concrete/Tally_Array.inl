@@ -26,6 +26,9 @@ namespace   Stroika {
 
                 template    <typename T>
                 class   Tally_Array<T>::Rep_ : public Tally<T>::_IRep {
+                private:
+                    typedef typename    Tally<T>::_IRep inherited;
+
                 public:
                     Rep_ ();
 
@@ -50,12 +53,12 @@ namespace   Stroika {
 
                     // Tally<T>::_IRep overrides
                 public:
-                    virtual bool        Contains (T item) const override;
-                    virtual void        Compact () override;
-                    virtual void        RemoveAll () override;
-                    virtual void        Add (T item, size_t count) override;
-                    virtual void        Remove (T item, size_t count) override;
-                    virtual size_t      TallyOf (T item) const override;
+                    virtual bool                                    Contains (T item) const override;
+                    virtual void                                    Compact () override;
+                    virtual void                                    RemoveAll () override;
+                    virtual void                                    Add (T item, size_t count) override;
+                    virtual void                                    Remove (T item, size_t count) override;
+                    virtual size_t                                  TallyOf (T item) const override;
                     virtual shared_ptr<typename Iterator<T>::IRep>  MakeBagIterator () const override;
                     virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
 
@@ -63,9 +66,9 @@ namespace   Stroika {
                     nonvirtual  void    RemoveAt_ (size_t index);
 
                 private:
-                    Array_Patch<TallyEntry<T> > fData;
+                    Array_Patch<TallyEntry<T>> fData_;
 
-                    DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound, (size_t) - 1);
+                    DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound_, (size_t) - 1);
 
                     nonvirtual  size_t  Find_ (TallyEntry<T>& item) const;
 
@@ -107,7 +110,7 @@ namespace   Stroika {
                 template    <class  T>
                 Tally_Array<T>::MutatorRep_::MutatorRep_ (typename Tally_Array<T>::Rep_& owner)
                     : inherited ()
-                    , fIterator (owner.fData)
+                    , fIterator (owner.fData_)
                 {
                 }
                 template    <class  T>
@@ -152,19 +155,19 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 inline  Tally_Array<T>::Rep_::Rep_ ()
-                    : _IRep ()
-                    , fData ()
+                    : inherited ()
+                    , fData_ ()
                 {
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::GetLength () const
                 {
-                    return (fData.GetLength ());
+                    return (fData_.GetLength ());
                 }
                 template    <typename T>
                 bool  Tally_Array<T>::Rep_::IsEmpty () const
                 {
-                    return (fData.GetLength () == 0);
+                    return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>> Tally_Array<T>::Rep_::MakeIterator () const
@@ -189,12 +192,12 @@ namespace   Stroika {
                 bool    Tally_Array<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    return (bool (Find_ (tmp) != kNotFound));
+                    return (bool (Find_ (tmp) != kNotFound_));
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Compact ()
                 {
-                    fData.Compact ();
+                    fData_.Compact ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>
@@ -208,12 +211,12 @@ namespace   Stroika {
                 {
                     TallyEntry<T> tmp (item, count);
                     size_t index = Find_ (tmp);
-                    if (index == kNotFound) {
-                        fData.InsertAt (tmp, GetLength ());
+                    if (index == kNotFound_) {
+                        fData_.InsertAt (tmp, GetLength ());
                     }
                     else {
                         tmp.fCount += count;
-                        fData.SetAt (tmp, index);
+                        fData_.SetAt (tmp, index);
                     }
                 }
                 template    <typename T>
@@ -221,7 +224,7 @@ namespace   Stroika {
                 {
                     TallyEntry<T> tmp (item);
                     size_t index = Find_ (tmp);
-                    if (index != kNotFound) {
+                    if (index != kNotFound_) {
                         Assert (index < GetLength ());
                         Assert (tmp.fCount >= count);
                         tmp.fCount -= count;
@@ -229,14 +232,14 @@ namespace   Stroika {
                             RemoveAt_ (index);
                         }
                         else {
-                            fData.SetAt (tmp, index);
+                            fData_.SetAt (tmp, index);
                         }
                     }
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAll ()
                 {
-                    fData.RemoveAll ();
+                    fData_.RemoveAll ();
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::TallyOf (T item) const
@@ -260,19 +263,19 @@ namespace   Stroika {
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAt_ (size_t index)
                 {
-                    fData.RemoveAt (index);
+                    fData_.RemoveAt (index);
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::Find_ (TallyEntry<T>& item) const
                 {
-                    size_t length = fData.GetLength ();
+                    size_t length = fData_.GetLength ();
                     for (size_t i = 0; i < length; i++) {
-                        if (fData.GetAt (i).fItem == item.fItem) {
-                            item = fData.GetAt (i);
+                        if (fData_.GetAt (i).fItem == item.fItem) {
+                            item = fData_.GetAt (i);
                             return (i);
                         }
                     }
-                    return (kNotFound);
+                    return kNotFound_;
                 }
 
 
@@ -323,12 +326,12 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Tally_Array<T>::GetCapacity () const
                 {
-                    return (GetRep ().fData.GetCapacity ());
+                    return (GetRep ().fData_.GetCapacity ());
                 }
                 template    <typename T>
                 void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep ().fData.SetCapacity (slotsAlloced);
+                    GetRep ().fData_.SetCapacity (slotsAlloced);
                 }
 
 
