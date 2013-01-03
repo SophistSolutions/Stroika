@@ -162,7 +162,9 @@ namespace   Stroika {
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators
-                    return Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new MutatorRep_ (*const_cast<Rep_*> (this)))));
+                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new MutatorRep_ (*const_cast<Rep_*> (this)))));
+                    tmp++;  //tmphack - redo iterator impl itself
+                    return tmp;
                 }
                 template    <typename T>
                 void      Tally_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const

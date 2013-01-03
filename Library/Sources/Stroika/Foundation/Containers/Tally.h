@@ -18,7 +18,7 @@
  *  TODO:
  *      @todo   consider if this should inherit from Iterable<TallyEntry<T>>. Be sure and document
  *              why we chose one way or the other
- *				(did switch but still must document why)
+ *              (did switch but still must document why)
  *
  *      @todo   Lose mutator code - instead do like I did in Bag<T> code - with update methods taking iteraotr
  *              arugment.
@@ -55,13 +55,13 @@ namespace   Stroika {
             bool   operator== (const TallyEntry<T>& lhs, const TallyEntry<T>& rhs);
 
 
-			/**
-			 *	A Tally<T> a collection of <T> elements, but where each time you add something, the tally tracks the number
-			 *	of times that thing has been entered. This is not a commonly used class, but handy when you want to count
-			 *	things.
-			 *
-			 *	A Tally<T> makes no promises about ordering of elements in iteration.
-			 */
+            /**
+             *  A Tally<T> a collection of <T> elements, but where each time you add something, the tally tracks the number
+             *  of times that thing has been entered. This is not a commonly used class, but handy when you want to count
+             *  things.
+             *
+             *  A Tally<T> makes no promises about ordering of elements in iteration.
+             */
             template    <typename T>
             class  Tally : public Iterable<TallyEntry<T>> {
             private:
