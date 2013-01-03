@@ -71,9 +71,9 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual shared_ptr<typename Iterator<T>::IRep>     Clone () const override;
-                    virtual bool                            More (T* current, bool advance) override;
-                    virtual bool                            StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
+                    virtual shared_ptr<typename Iterator<T>::IRep>  Clone () const override;
+                    virtual bool                                    More (T* current, bool advance) override;
+                    virtual bool                                    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
                     mutable LinkedListMutator_Patch<T>  fIterator_;

@@ -68,7 +68,7 @@ namespace   Stroika {
 
                 public:
                     virtual bool            More (TallyEntry<T>* current, bool advance) override;
-                    virtual bool            StrongEquals (typename const Iterator<TallyEntry<T> >::IRep* rhs) const override;
+                    virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
 
                     virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
 
