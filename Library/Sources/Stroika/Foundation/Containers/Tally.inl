@@ -131,7 +131,7 @@ namespace   Stroika {
             size_t Tally<T>::TotalTally () const
             {
                 size_t sum = 0;
-                for (auto i = begin (); i != end (); ++i) {
+                for (auto i = this->begin (); i != this->end (); ++i) {
                     sum += (*i).fCount;
                 }
                 return sum;
