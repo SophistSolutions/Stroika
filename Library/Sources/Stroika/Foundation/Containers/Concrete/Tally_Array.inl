@@ -69,8 +69,7 @@ namespace   Stroika {
 
                     nonvirtual  size_t  Find_ (TallyEntry<T>& item) const;
 
-                    class   MutatorRep_;
-                    friend  class   MutatorRep_;
+                    friend  class Tally_Array<T>::MutatorRep_;
                 };
 
 
