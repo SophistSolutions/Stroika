@@ -38,8 +38,8 @@ namespace   Stroika {
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
                     virtual Iterator<T>                     MakeIterator () const override;
-                    virtual void                            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void                            Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                     ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Tally<T>::_IRep overrides
                 public:
@@ -165,12 +165,12 @@ namespace   Stroika {
                     return Iterator<T> (typename Iterator<T>::SharedByValueRepType (new _TallyEntryToItemIterator (Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (MakeTallyIterator ())))));
                 }
                 template    <typename T>
-                void      Tally_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                void      Tally_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     return _Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Tally_Array<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Tally_Array<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return _ApplyUntilTrue (doToElement);
                 }
