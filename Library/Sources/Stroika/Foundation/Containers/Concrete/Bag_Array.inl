@@ -37,8 +37,8 @@ namespace   Stroika {
                     virtual Iterator<T>                     MakeIterator () const override;
                     virtual size_t                          GetLength () const override;
                     virtual bool                            IsEmpty () const override;
-                    virtual void                            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void                            Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                     ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Bag<T>::_IRep overrides
                 public:
@@ -68,7 +68,7 @@ namespace   Stroika {
                 public:
                     virtual shared_ptr<typename Iterator<T>::IRep>     Clone () const override;
                     virtual bool                            More (T* current, bool advance) override;
-                    virtual bool                            StrongEquals (typename const Iterator<T>::IRep* rhs) const override;
+                    virtual bool                            StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
                     mutable ForwardArrayMutator_Patch<T>    fIterator_;
