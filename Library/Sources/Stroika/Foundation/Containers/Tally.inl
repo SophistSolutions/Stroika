@@ -216,10 +216,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>    Tally<T>::MakeBagIterator () const
             {
-                Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (const_cast<Tally<T>*> (this)->_GetRep ().MakeBagIterator ()));
-                //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                tmp++;
-                return tmp;
+                return _GetRep ().MakeBagIterator ();
             }
             template    <typename T>
             inline  Iterator<T>    Tally<T>::bagbegin () const
