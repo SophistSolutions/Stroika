@@ -201,10 +201,13 @@ namespace   Stroika {
                     }
                     virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
                         RequireNotNull (rhs);
-                        return (rhs == this) or const_cast<typename Iterator<T>::IRep*> (rhs)->More (nullptr, false);
+                        return const_cast<typename Iterator<T>::IRep*> (rhs)->More (nullptr, false);
                     }
                     virtual shared_ptr<IRep>    Clone () const override {
-                        RequireNotReached ();
+                        // May never be called since we never really call More() - except in special case of
+                        // checking for at end. But it would be legal, and possible to call, so must fix at
+                        // some point.
+                        AssertNotImplemented ();
                         return nullptr;
                     }
                 };
