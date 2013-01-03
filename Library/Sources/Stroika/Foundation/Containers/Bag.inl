@@ -27,20 +27,20 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
+            Bag<T>::Bag ()
+                : Iterable<T> (Concrete::Bag_Array<T> ())
+            {
+            }
+            template    <typename T>
             inline  Bag<T>::Bag (const Bag<T>& bag)
                 : Iterable<T> (bag)
             {
             }
             template    <typename T>
-            inline  Bag<T>::Bag (typename Bag<T>::_IRep* rep)
+            inline  Bag<T>::Bag (const _SharedPtrIRep& rep)
                 : Iterable<T> (typename Iterable<T>::_SharedByValueRepType (rep))
             {
                 RequireNotNull (rep);
-            }
-            template    <typename T>
-            Bag<T>::Bag ()
-                : Iterable<T> (Concrete::Bag_Array<T> ())
-            {
             }
             template    <typename T>
             Bag<T>::Bag (const T* start, const T* end)

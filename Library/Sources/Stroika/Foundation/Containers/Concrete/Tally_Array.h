@@ -50,7 +50,7 @@ namespace   Stroika {
                 public:
 #endif
                     class Rep_;
-                    class MutatorRep_;
+                    class IteratorRep_;
 
                 private:
                     nonvirtual  const Rep_&   GetRep_ () const;

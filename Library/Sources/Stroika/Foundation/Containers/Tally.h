@@ -74,6 +74,7 @@ namespace   Stroika {
 
             protected:
                 class _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
                 Tally ();
@@ -82,7 +83,7 @@ namespace   Stroika {
                 Tally (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
             protected:
-                explicit Tally (_IRep* rep);
+                explicit Tally (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  bool    Contains (T item) const;
@@ -158,20 +159,18 @@ namespace   Stroika {
                 _IRep ();
 
             public:
-                virtual bool    Contains (T item) const                                         =   0;
-                virtual size_t  GetLength () const                                              =   0;
-                virtual void    Compact ()                                                      =   0;
-                virtual void    RemoveAll ()                                                    =   0;
-                virtual void    Add (T item, size_t count)                                      =   0;
-                virtual void    Remove (T item, size_t count)                                   =   0;
-                virtual void    Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
-                virtual void    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
-                virtual size_t  TallyOf (T item) const                                          =   0;
+                virtual bool		Contains (T item) const                                         =   0;
+                virtual size_t		GetLength () const                                              =   0;
+                virtual void		Compact ()                                                      =   0;
+                virtual void		RemoveAll ()                                                    =   0;
+                virtual void		Add (T item, size_t count)                                      =   0;
+                virtual void		Remove (T item, size_t count)                                   =   0;
+                virtual void		Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
+                virtual void		UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
+                virtual size_t		TallyOf (T item) const                                          =   0;
+                virtual Iterator<T> MakeBagIterator () const										=   0;
 
-            public:
-                virtual Iterator<T>  MakeBagIterator () const        =   0;
-
-			protected:
+            protected:
                 class _TallyEntryToItemIteratorHelperRep;
             };
 

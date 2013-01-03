@@ -213,19 +213,19 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Bag_Array<T>::Bag_Array ()
-                    : Bag<T> (new Rep_ ())
+                    : Bag<T> (_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>
                 Bag_Array<T>::Bag_Array (const Bag<T>& bag)
-                    : Bag<T> (new Rep_ ())
+                    : Bag<T> (_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (bag.GetLength ());
                     operator+= (bag);
                 }
                 template    <typename T>
                 Bag_Array<T>::Bag_Array (const T* start, const T* end)
-                    : Bag<T> (new Rep_ ())
+                    : Bag<T> (_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     if (start != end) {
@@ -242,7 +242,7 @@ namespace   Stroika {
                 inline  Bag_Array<T>&   Bag_Array<T>::operator= (const Bag_Array<T>& bag)
                 {
                     Bag<T>::operator= (bag);
-                    return (*this);
+                    return *this;
                 }
                 template    <typename T>
                 inline  const typename Bag_Array<T>::Rep_&  Bag_Array<T>::GetRep_ () const

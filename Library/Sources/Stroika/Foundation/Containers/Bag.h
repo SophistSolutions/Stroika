@@ -96,14 +96,15 @@ namespace   Stroika {
             class   Bag : public Iterable<T> {
             protected:
                 class   _IRep;
-
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+            
             public:
                 Bag ();
                 Bag (const Bag<T>& bag);
                 explicit Bag (const T* start, const T* end);
 
-            protected:
-                explicit Bag (_IRep* rep);
+			protected:
+                explicit Bag (const _SharedPtrIRep& rep);
 
             public:
                 /**

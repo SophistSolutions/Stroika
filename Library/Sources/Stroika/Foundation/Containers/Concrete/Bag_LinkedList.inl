@@ -208,7 +208,7 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Bag_LinkedList<T>::Bag_LinkedList ()
-                    : Bag<T> (new Rep_ ())
+                    : Bag<T> (_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>
@@ -233,7 +233,7 @@ namespace   Stroika {
                 inline  Bag_LinkedList<T>& Bag_LinkedList<T>::operator= (const Bag_LinkedList<T>& bag)
                 {
                     Bag<T>::operator= (bag);
-                    return (*this);
+                    return *this;
                 }
 
 
