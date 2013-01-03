@@ -59,7 +59,7 @@ namespace   Stroika {
                     virtual typename Tally<T>::TallyMutator         MakeTallyMutator () override;
 
                 private:
-                    LinkedList_Patch<TallyEntry<T>>    fData;
+                    LinkedList_Patch<TallyEntry<T>>    fData_;
 
                     friend  class Tally_LinkedList<T>::MutatorRep_;
                 };
@@ -83,7 +83,7 @@ namespace   Stroika {
                     virtual void    UpdateCount (size_t newCount) override;
 
                 private:
-                    LinkedListMutator_Patch<TallyEntry<T>> fIterator;
+                    LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
                 };
 
 
@@ -94,13 +94,13 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 Tally_LinkedList<T>::MutatorRep_::MutatorRep_ (Rep_& owner)
-                    : fIterator (owner.fData)
+                    : fIterator_ (owner.fData_)
                 {
                 }
                 template    <typename T>
                 bool    Tally_LinkedList<T>::MutatorRep_::More (TallyEntry<T>* current, bool advance)
                 {
-                    return (fIterator.More (current, advance));
+                    return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
                 bool    Tally_LinkedList<T>::MutatorRep_::StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const
@@ -116,18 +116,18 @@ namespace   Stroika {
                 template    <typename T>
                 void   Tally_LinkedList<T>::MutatorRep_::RemoveCurrent ()
                 {
-                    fIterator.RemoveCurrent ();
+                    fIterator_.RemoveCurrent ();
                 }
                 template    <typename T>
                 void   Tally_LinkedList<T>::MutatorRep_::UpdateCount (size_t newCount)
                 {
                     if (newCount == 0) {
-                        fIterator.RemoveCurrent ();
+                        fIterator_.RemoveCurrent ();
                     }
                     else {
-                        TallyEntry<T>   c   =   fIterator.Current ();
+                        TallyEntry<T>   c   =   fIterator_.Current ();
                         c.fCount = newCount;
-                        fIterator.UpdateCurrent (c);
+                        fIterator_.UpdateCurrent (c);
                     }
                 }
 
@@ -139,23 +139,23 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 inline  Tally_LinkedList<T>::Rep_::Rep_ ()
-                    : fData ()
+                    : fData_ ()
                 {
                 }
                 template    <typename T>
                 inline  Tally_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
-                    : fData (from.fData)
+                    : fData_ (from.fData_)
                 {
                 }
                 template    <typename T>
                 size_t  Tally_LinkedList<T>::Rep_::GetLength () const
                 {
-                    return (fData.GetLength ());
+                    return (fData_.GetLength ());
                 }
                 template    <typename T>
                 bool  Tally_LinkedList<T>::Rep_::IsEmpty () const
                 {
-                    return (fData.GetLength () == 0);
+                    return (fData_.GetLength () == 0);
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>> Tally_LinkedList<T>::Rep_::MakeIterator () const
@@ -180,7 +180,7 @@ namespace   Stroika {
                 bool   Tally_LinkedList<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T>   c;
-                    for (LinkedListIterator<TallyEntry<T>> it (fData); it.More (&c, true); ) {
+                    for (LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
                         if (c.fItem == item) {
                             Assert (c.fCount != 0);
                             return (true);
@@ -204,14 +204,14 @@ namespace   Stroika {
                 {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current, true); ) {
+                        for (LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                             if (current.fItem == item) {
                                 current.fCount += count;
                                 it.UpdateCurrent (current);
                                 return;
                             }
                         }
-                        fData.Prepend (TallyEntry<T> (item, count));
+                        fData_.Prepend (TallyEntry<T> (item, count));
                     }
                 }
                 template    <typename T>
@@ -219,7 +219,7 @@ namespace   Stroika {
                 {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        for (LinkedListMutator_Patch<TallyEntry<T> > it (fData); it.More (&current, true); ) {
+                        for (LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
 
                             if (current.fItem == item) {
                                 if (current.fCount > count) {
@@ -242,13 +242,13 @@ namespace   Stroika {
                 template    <typename T>
                 void   Tally_LinkedList<T>::Rep_::RemoveAll ()
                 {
-                    fData.RemoveAll ();
+                    fData_.RemoveAll ();
                 }
                 template    <typename T>
                 size_t Tally_LinkedList<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T>   c;
-                    for (LinkedListIterator<TallyEntry<T> > it (fData); it.More (&c, true); ) {
+                    for (LinkedListIterator<TallyEntry<T> > it (fData_); it.More (&c, true); ) {
                         if (c.fItem == item) {
                             Ensure (c.fCount != 0);
                             return (c.fCount);

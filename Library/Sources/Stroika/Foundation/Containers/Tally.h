@@ -56,9 +56,9 @@ namespace   Stroika {
 
 
             /**
-             *  A Tally<T> a collection of <T> elements, but where each time you add something, the tally tracks the number
-             *  of times that thing has been entered. This is not a commonly used class, but handy when you want to count
-             *  things.
+             *  A Tally<T> a collection of <T> elements, but where each time you add something, the tally
+             *  tracks the number of times that thing has been entered. This is not a commonly used class,
+             *  but handy when you want to count things.
              *
              *  A Tally<T> makes no promises about ordering of elements in iteration.
              */
