@@ -29,7 +29,7 @@ namespace   Stroika {
                 template    <typename T>
                 class   Tally_Array : public Tally<T> {
                 private:
-                	typedef	Tally<T>	inherited;
+                    typedef Tally<T>    inherited;
 
                 public:
                     Tally_Array ();
@@ -43,7 +43,7 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  size_t  GetCapacity () const;
-                    nonvirtual  void  	SetCapacity (size_t slotsAlloced);
+                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

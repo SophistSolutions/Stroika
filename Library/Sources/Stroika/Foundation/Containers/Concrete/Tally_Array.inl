@@ -253,7 +253,7 @@ namespace   Stroika {
                 template    <typename T>
                 shared_ptr<typename Iterator<T>::IRep>    Tally_Array<T>::Rep_::MakeBagIterator () const
                 {
-                    return shared_ptr<typename Iterator<T>::IRep> (new typename Rep_::_TallyEntryToItemIterator (MakeIterator ()));
+                    return shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIterator (MakeIterator ()));
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_Array<T>::Rep_::MakeTallyMutator ()
@@ -293,7 +293,7 @@ namespace   Stroika {
                     : Tally<T> (new Rep_ ())
                 {
                     SetCapacity (size);
-                    AddItems (start, end);
+                    Add (start, end);
                 }
                 template    <typename T>
                 inline  Tally_Array<T>::Tally_Array (const Tally_Array<T>& src) :
