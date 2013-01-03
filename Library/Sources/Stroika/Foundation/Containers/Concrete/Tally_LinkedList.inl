@@ -260,7 +260,7 @@ namespace   Stroika {
                 template    <typename T>
                 shared_ptr<typename Iterator<T>::IRep>    Tally_LinkedList<T>::Rep_::MakeBagIterator () const
                 {
-                    return shared_ptr<typename Iterator<T>::IRep> (new _TallyEntryToItemIterator (MakeIterator ()));
+                    return shared_ptr<typename Iterator<T>::IRep> (new typename Tally<T>::_TallyEntryToItemIterator (MakeIterator ()));
                 }
                 template    <typename T>
                 typename Tally<T>::TallyMutator   Tally_LinkedList<T>::Rep_::MakeTallyMutator ()
