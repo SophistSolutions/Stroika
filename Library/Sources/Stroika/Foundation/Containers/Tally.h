@@ -137,9 +137,6 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
 
-            protected:
-                class _TallyEntryToItemIteratorHelperRep;
-
             private:
                 friend  bool    operator==<T> (const Tally<T>& lhs, const Tally<T>& rhs);
             };
@@ -173,6 +170,9 @@ namespace   Stroika {
 
             public:
                 virtual Iterator<T>  MakeBagIterator () const        =   0;
+
+			protected:
+                class _TallyEntryToItemIteratorHelperRep;
             };
 
 

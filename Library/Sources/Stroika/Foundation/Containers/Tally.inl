@@ -31,7 +31,7 @@ namespace   Stroika {
              *          But document and verify the calling code is expecting this.
              */
             template    <typename T>
-            class  Tally<T>::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
+            class  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
             public:
                 _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& fDelegateTo);
 
@@ -261,16 +261,16 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************** Tally<T>::_TallyEntryToItemIteratorHelperRep *****************
+             ************* Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep **************
              ********************************************************************************
              */
             template    <typename T>
-            Tally<T>::_TallyEntryToItemIteratorHelperRep::_TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
+            Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::_TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
                 : fDelegateTo_ (delegateTo)
             {
             }
             template    <typename T>
-            inline bool    Tally<T>::_TallyEntryToItemIteratorHelperRep::More (T* current, bool advance)
+            inline bool    Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::More (T* current, bool advance)
             {
                 if (current == nullptr) {
                     return not fDelegateTo_.Done ();
@@ -285,12 +285,12 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline shared_ptr<typename Iterator<T>::IRep>  Tally<T>::_TallyEntryToItemIteratorHelperRep::Clone () const
+            inline shared_ptr<typename Iterator<T>::IRep>  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::Clone () const
             {
                 return shared_ptr<typename Iterator<T>::IRep> (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
             }
             template    <typename T>
-            inline  bool    Tally<T>::_TallyEntryToItemIteratorHelperRep::StrongEquals (const typename Iterator<T>::IRep* rhs) const
+            inline  bool    Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::StrongEquals (const typename Iterator<T>::IRep* rhs) const
             {
                 AssertNotImplemented ();
                 return false;
