@@ -95,7 +95,7 @@ namespace   Stroika {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_Array<T>::IteratorRep_::StrongEquals (typename const Iterator<T>::IRep* rhs) const
+                bool    Bag_Array<T>::IteratorRep_::StrongEquals (const typename Iterator<T>::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;

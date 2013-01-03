@@ -95,7 +95,7 @@ namespace   Stroika {
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Bag_LinkedList<T>::Rep_::Clone () const
                 {
-                    return shared_ptr<Iterable<T>::_IRep> (new Rep_ (*this));
+                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
                 }
                 template    <typename T>
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
@@ -189,7 +189,7 @@ namespace   Stroika {
                     return (fIterator_.More (current, advance));
                 }
                 template    <typename T>
-                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (typename const Iterator<T>::IRep* rhs) const
+                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (const typename Iterator<T>::IRep* rhs) const
                 {
                     AssertNotImplemented ();
                     return false;
