@@ -113,7 +113,7 @@ namespace   Stroika {
             */
             template    <typename T>
             inline  Tally<T>::TallyMutator::TallyMutator (IRep* it)
-                : Iterator<TallyEntry<T>> (SharedByValueRepType (it))
+                : Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (it))
             {
             }
             template    <typename T>
