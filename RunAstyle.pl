@@ -34,25 +34,33 @@ foreach $i (@ARGV) {
 }
 
 
-my $aStyleFileTargets = "";
-$aStyleFileTargets .= "Library/*.cpp ";
-$aStyleFileTargets .= "Library/*.h ";
-$aStyleFileTargets .= "Library/*.inl ";
-
-$aStyleFileTargets .= "Samples/*.cpp ";
-$aStyleFileTargets .= "Samples/*.h ";
-$aStyleFileTargets .= "Samples/*.inl ";
-
-$aStyleFileTargets .= "Tests/*.cpp ";
-$aStyleFileTargets .= "Tests/*.h ";
-$aStyleFileTargets .= "Tests/*.inl ";
-
-$aStyleFileTargets .= "Tools/*.cpp ";
-$aStyleFileTargets .= "Tools/*.h ";
-$aStyleFileTargets .= "Tools/*.inl ";
-
-
 if ($runFile == "") {
+	## Had to break the run of system() into parts, cuz otherwise params
+	## at end cutoff on cygwin/Windows 8...
+	##
+	
+	my $aStyleFileTargets = "";
+	$aStyleFileTargets .= "Library/*.cpp ";
+	$aStyleFileTargets .= "Library/*.h ";
+	$aStyleFileTargets .= "Library/*.inl ";
+	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	
+	my $aStyleFileTargets = "";
+	$aStyleFileTargets .= "Samples/*.cpp ";
+	$aStyleFileTargets .= "Samples/*.h ";
+	$aStyleFileTargets .= "Samples/*.inl ";
+	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	
+	my $aStyleFileTargets = "";
+	$aStyleFileTargets .= "Tests/*.cpp ";
+	$aStyleFileTargets .= "Tests/*.h ";
+	$aStyleFileTargets .= "Tests/*.inl ";
+	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	
+	my $aStyleFileTargets = "";
+	$aStyleFileTargets .= "Tools/*.cpp ";
+	$aStyleFileTargets .= "Tools/*.h ";
+	$aStyleFileTargets .= "Tools/*.inl ";
 	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
 }
 else {
