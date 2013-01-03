@@ -249,7 +249,7 @@ namespace   Stroika {
                 size_t Tally_LinkedList<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T>   c;
-                    for (LinkedListIterator<TallyEntry<T> > it (fData_); it.More (&c, true); ) {
+                    for (LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
                         if (c.fItem == item) {
                             Ensure (c.fCount != 0);
                             return (c.fCount);
@@ -260,7 +260,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>    Tally_LinkedList<T>::Rep_::MakeBagIterator () const
                 {
-                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIterator (MakeIterator ()))));
+                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIteratorHelperRep (MakeIterator ()))));
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
                     return tmp;

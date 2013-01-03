@@ -253,7 +253,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>    Tally_Array<T>::Rep_::MakeBagIterator () const
                 {
-                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIterator (MakeIterator ()))));
+                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (shared_ptr<typename Iterator<T>::IRep> (new typename Tally_Array<T>::_TallyEntryToItemIteratorHelperRep (MakeIterator ()))));
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
                     return tmp;

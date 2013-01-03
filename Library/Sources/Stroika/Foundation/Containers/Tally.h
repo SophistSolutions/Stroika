@@ -143,7 +143,7 @@ namespace   Stroika {
                 nonvirtual  _IRep&          _GetRep ();
 
             protected:
-                class _TallyEntryToItemIterator;
+                class _TallyEntryToItemIteratorHelperRep;
 
             private:
                 friend  bool    operator==<T> (const Tally<T>& lhs, const Tally<T>& rhs);
