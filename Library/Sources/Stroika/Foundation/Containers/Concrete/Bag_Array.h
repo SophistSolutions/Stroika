@@ -29,7 +29,7 @@ namespace   Stroika {
                 template    <class T>
                 class   Bag_Array : public Bag<T> {
                 private:
-                	typedef		Bag<T>	inherited;
+                    typedef     Bag<T>  inherited;
 
                 public:
                     Bag_Array ();
