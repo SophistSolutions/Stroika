@@ -43,7 +43,7 @@ namespace   Stroika {
                     }
 #else
                     virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override;
-#endif // qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+#endif
 
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
@@ -249,8 +249,11 @@ namespace   Stroika {
                 {
                     TallyEntry<T> tmp (item);
                     size_t index = Find_ (tmp);
-                    Require (index >= 0);
-                    Require (index < GetLength ());
+                    if (index == kNotFound_) {
+                        return 0;
+                    }
+                    Assert (index >= 0);
+                    Assert (index < GetLength ());
                     return (tmp.fCount);
                 }
                 template    <typename T>

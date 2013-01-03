@@ -184,6 +184,25 @@ namespace   Stroika {
                 _GetRep ().Add (item, count);
             }
             template    <typename T>
+            inline  void    Tally<T>::Add (const TallyEntry<T>& item)
+            {
+                _GetRep ().Add (item.fItem, item.fCount);
+            }
+            template    <typename T>
+            inline  void    Tally<T>::Add (const T* begin, const T* end)
+            {
+                for (auto i = begin; i != end; ++i) {
+                    _GetRep ().Add (*i, 1);
+                }
+            }
+            template    <typename T>
+            inline  void    Tally<T>::Add (const TallyEntry<T>* start, const TallyEntry<T>* end)
+            {
+                for (auto i = begin; i != end; ++i) {
+                    _GetRep ().Add (i->fItem, i->fEnd);
+                }
+            }
+            template    <typename T>
             inline  void    Tally<T>::Remove (T item)
             {
                 _GetRep ().Remove (item, 1);

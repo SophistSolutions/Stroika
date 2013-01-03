@@ -53,8 +53,8 @@ namespace   Stroika {
                     class IteratorRep_;
 
                 private:
-                    nonvirtual  const Rep_&   GetRep_ () const;
-                    nonvirtual  Rep_&          GetRep_ ();
+                    nonvirtual  const Rep_& GetRep_ () const;
+                    nonvirtual  Rep_&       GetRep_ ();
                 };
 
             }

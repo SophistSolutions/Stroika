@@ -22,7 +22,6 @@
  *      @todo   Need Tally_Tree<T> implementaiton - where we use btree to keep tally's sorted,
  *              so faster lookup. PROBLEM with that impl is it requires an ordering on T, which the others dont
  *
- *      @todo   redo APIs so all (or most) using shared_ptr not IRep*  - eg for MakeIterator and CTOR.
  */
 
 namespace   Stroika {
@@ -91,6 +90,7 @@ namespace   Stroika {
             public:
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (T item, size_t count);
+                nonvirtual  void    Add (const TallyEntry<T>& item);
                 nonvirtual  void    Add (const T* begin, const T* end);
                 nonvirtual  void    Add (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
@@ -114,6 +114,11 @@ namespace   Stroika {
                 nonvirtual  void    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount);
 
             public:
+                /*
+                 *  TallyOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
+                 *
+                 *  If there are no copies of item in the Tally, 0 is returned.
+                 */
                 nonvirtual  size_t  TallyOf (T item) const;
 
             public:
