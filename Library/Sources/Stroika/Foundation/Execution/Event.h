@@ -37,7 +37,14 @@
 
 /*
  * TODO:
- *      o   Consider if there is a need for timed mutexes.
+ *      @todo   Consider if there is a need for timed mutexes.
+ *
+ *      @todo   Perhaps rename to WaitableEvent
+ *
+ *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
+ *              http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html (which is already in README file for
+ *              Foundation::Execution::ReadMe.md
+ *
  *
  */
 namespace   Stroika {
