@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef _Stroia_Foundation_Execution_Propagate_inl_
 #define _Stroia_Foundation_Execution_Propagate_inl_ 1

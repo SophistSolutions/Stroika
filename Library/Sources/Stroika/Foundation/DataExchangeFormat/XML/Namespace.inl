@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchangeFormat_XML_Namespace_inl_
 #define _Stroika_Foundation_DataExchangeFormat_XML_Namespace_inl_   1

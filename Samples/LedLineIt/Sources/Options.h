@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef __Options_h__
 #define __Options_h__   1

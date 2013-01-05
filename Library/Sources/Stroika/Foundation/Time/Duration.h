@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2012.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Duration_h_
 #define _Stroika_Foundation_Time_Duration_h_    1
@@ -67,7 +67,7 @@ namespace   Stroika {
              *      See also: http://bugzilla/show_bug.cgi?id=468
              *
              *  This class is roughly equivilent to the .Net Timespan class, and also might be called
-             *  "time period".
+             *  "time period", or "timespan".
              *
              *  Note that a Duration may be negative.
              *
