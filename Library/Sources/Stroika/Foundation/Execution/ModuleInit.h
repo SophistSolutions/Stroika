@@ -115,7 +115,11 @@ namespace   Stroika {
             };
 
 
-
+#if 0
+			//
+			// NOT USED CURRENTLY - and not sure well thorugh through useful...
+			//
+			//
             // Only useful with ModuleInitializer - to implement singleton design pattern, but assuring constructed
             // once per application, at just the 'right' time - for access to this object.
             template    <typename T>
@@ -129,6 +133,7 @@ namespace   Stroika {
             private:
                 T   fThe;
             };
+#endif
 
 
             // Help to construct an object - and NEVER call its DTOR. Assure its

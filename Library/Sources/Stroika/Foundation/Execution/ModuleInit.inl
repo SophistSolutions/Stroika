@@ -14,6 +14,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+#if 0
             template    <typename T>
             inline  SingletonObjActualInitializer<T>::SingletonObjActualInitializer ()
                 : fThe ()
@@ -33,6 +34,7 @@ namespace   Stroika {
             {
                 return fThe;
             }
+#endif
 
 
 
