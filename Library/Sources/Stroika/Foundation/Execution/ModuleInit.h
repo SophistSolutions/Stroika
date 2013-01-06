@@ -53,7 +53,8 @@ namespace   Stroika {
              */
 #ifndef qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
 // Really right now just triggered whenever anyone uses tracefile ability - since that triggers call from trace to date to string...
-#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    1
+//#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    1
+#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    0
 #endif // !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
 
 

@@ -41,12 +41,15 @@ namespace   Stroika {
 #endif
 
 
-
             struct  TraceModuleData_ {
                 TraceModuleData_ ();
                 ~TraceModuleData_ ();
 
-                Emitter fEmitter;
+                Emitter                                 fEmitter;
+
+                // Really SB STRING DEPENDENCY!!!
+                Execution::DependableModule::Dependency fBlockAllocationDependency;
+
             };
 
 

@@ -115,6 +115,7 @@ namespace   {
 
 
 TraceModuleData_::TraceModuleData_ ()
+    : fBlockAllocationDependency (Memory::_BlockAllocated2_ ())
 {
     Assert (sEmitTraceCritSec == nullptr);
     sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
