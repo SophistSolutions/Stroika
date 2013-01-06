@@ -18,6 +18,7 @@ namespace   Stroika {
             using   namespace   Configuration;
 
 
+
             /**
              *      @todo   Must fix qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
              *              MAYBE use new feature - wherw e have some kind of templated module reference that doesn't include
@@ -43,9 +44,8 @@ namespace   Stroika {
              *
              */
 #ifndef qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
-            // no particular reason for this value, but I only saw this on gcc -- LGP 2012-12-02
-            // must must fix anywhere/everywhere!
-#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    !qPlatform_Windows
+// Really right now just triggered whenever anyone uses tracefile ability - since that triggers call from trace to date to string...
+#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    1
 #endif // !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
 
 
