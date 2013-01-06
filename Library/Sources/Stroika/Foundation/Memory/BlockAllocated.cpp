@@ -36,7 +36,9 @@ ActualModuleInit::ActualModuleInit ()
 
 ActualModuleInit::~ActualModuleInit ()
 {
+#if     !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
     RequireNotNull (sCritSection_);
+#endif
     delete sCritSection_;
     sCritSection_ = nullptr;
 }
