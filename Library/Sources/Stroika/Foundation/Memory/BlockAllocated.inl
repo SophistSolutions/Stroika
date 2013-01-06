@@ -29,9 +29,9 @@ namespace   Stroika {
             namespace   Private {
                 using   Stroika::Foundation::Execution::CriticalSection;
 
-                struct  ActualModuleInit {
-                    ActualModuleInit ();
-                    ~ActualModuleInit ();
+                struct  BlockAllocation_ModuleInit_ {
+                    BlockAllocation_ModuleInit_ ();
+                    ~BlockAllocation_ModuleInit_ ();
                 };
 
                 extern  CriticalSection*    sCritSection_;
@@ -265,6 +265,6 @@ namespace   Stroika {
     }
 }
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::ActualModuleInit>   _Stroika_Foundation_Memory_BlockAllocated_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::BlockAllocation_ModuleInit_>   _Stroika_Foundation_Memory_BlockAllocated_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Memory_BlockAllocated_inl_*/

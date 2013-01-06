@@ -26,7 +26,7 @@ using   Execution::CriticalSection;
 CriticalSection*    Private::sCritSection_  =   nullptr;
 
 
-ActualModuleInit::ActualModuleInit ()
+BlockAllocation_ModuleInit_::BlockAllocation_ModuleInit_ ()
 {
 #if     !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
     Require (sCritSection_ == nullptr);
@@ -34,7 +34,7 @@ ActualModuleInit::ActualModuleInit ()
 #endif
 }
 
-ActualModuleInit::~ActualModuleInit ()
+BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
 {
 #if     !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
     RequireNotNull (sCritSection_);
@@ -45,15 +45,15 @@ ActualModuleInit::~ActualModuleInit ()
 
 
 
-Execution::DependableModule Memory::_BlockAllocated_    =   Execution::ModuleInitializer<Private::ActualModuleInit>::GetDependableModule ();
+Execution::DependableModule Memory::_BlockAllocated_    =   Execution::ModuleInitializer<Private::BlockAllocation_ModuleInit_>::GetDependableModule ();
 
 
 
 
 
 #if     qAllowBlockAllocation
-void*   Private::sSizeof_4_NextLink =   nullptr;
-void*   Private::sSizeof_8_NextLink =   nullptr;
+void*   Private::sSizeof_4_NextLink     =   nullptr;
+void*   Private::sSizeof_8_NextLink     =   nullptr;
 void*   Private::sSizeof_12_NextLink    =   nullptr;
 void*   Private::sSizeof_16_NextLink    =   nullptr;
 void*   Private::sSizeof_20_NextLink    =   nullptr;
